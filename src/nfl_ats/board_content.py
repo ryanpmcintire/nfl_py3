@@ -73,6 +73,7 @@ from nfl_ats.card_explanation import BANNED_BOILERPLATE, PickExplanation
 from nfl_ats.card_view import resolve_card_view
 from nfl_ats.clv import load_paper_decisions, pick_correct
 from nfl_ats.dashboard.findings_content import (
+    CHALLENGER_DISPLAY_NAMES,
     OVERLAY_UNION_SUBSET_COUNT,
     PLAYED_CARD_EXPECTATION_PERCENT,
 )
@@ -750,34 +751,79 @@ def human_update_time(raw: str | None) -> str:
     return f"{parsed:%A} {period}"
 
 
+#: The five sentences :func:`injury_pick_note` can produce, named so
+#: :data:`_INJURY_STATES` can key a scannable state off them without a second
+#: copy of the wording drifting away from the first.
+INJURY_NOTE_NOT_RECORDED = "Whether injury reports informed these picks was not recorded."
+INJURY_NOTE_NONE_PUBLISHED_YET = (
+    "No injury reports had been published yet when these picks were made; "
+    "they lean on lineups and recent play."
+)
+INJURY_NOTE_NOT_AVAILABLE = (
+    "Injury reports were not available for these picks; they lean on lineups and recent play."
+)
+INJURY_NOTE_OLDER_COPY = "Injury data was stale, so these picks used an older copy."
+INJURY_NOTE_INFORMED_PREFIX = "Injury reports informed these picks"
+
+#: The word that introduces the injury chip under the board.
+INJURY_STATE_NAME = "Injury reports"
+
+#: UI-20 item (f). The card already carried a SENTENCE about injuries; a
+#: reader could not see the STATE, because prose does not scan and the
+#: SOURCES panel one screen down actively contradicts it -- measured
+#: 2026-09-08 on the live card, ``injuries_nflverse_timestamps`` reads
+#: ``complete`` (the feed is perfectly fresh) while this week's picks in fact
+#: saw no injury report at all, because the league publishes Week 1's first
+#: report on Wednesday and the lock is Tuesday. "Fresh feed" and "reports
+#: existed" are different facts and the page now says which one it means.
+#:
+#: Each entry is ``(sentence prefix, reader label, state class)``. The state
+#: class is deliberately one of the SOURCES panel's own
+#: (``complete``/``degraded``/``blocked``/``not_due``/``not_recorded``), so
+#: the chip borrows that panel's established ink -- green for used, amber for
+#: an older copy, red for missing, grey for "not due yet" -- and this feature
+#: adds no new colour vocabulary to the design system. Keyed off the sentence
+#: rather than recomputed from the metadata so the chip and the sentence can
+#: never disagree; ``tests/test_board_content.py`` pins every branch.
+_INJURY_STATES: tuple[tuple[str, str, str], ...] = (
+    (INJURY_NOTE_NONE_PUBLISHED_YET, "NONE PUBLISHED YET", "not_due"),
+    (INJURY_NOTE_NOT_AVAILABLE, "NOT AVAILABLE", "blocked"),
+    (INJURY_NOTE_OLDER_COPY, "OLDER COPY", "degraded"),
+    (INJURY_NOTE_INFORMED_PREFIX, "REPORTS USED", "complete"),
+)
+
+
+def injury_report_state(note: str) -> tuple[str, str]:
+    """``(reader label, state class)`` for one :func:`injury_pick_note` sentence."""
+
+    for prefix, label, state in _INJURY_STATES:
+        if note.startswith(prefix):
+            return label, state
+    return "NOT RECORDED", SOURCE_POLICY_NOT_RECORDED
+
+
 def injury_pick_note(metadata: Mapping[str, Any], sources: SourcePolicyView) -> str:
     """Describe the saved pick inputs, never treating a live feed as proof of use."""
     audit = metadata.get("prediction_safety")
     if not isinstance(audit, Mapping) or "injury_feature_presence" not in audit.get(
         "checks_passed", ()
     ):
-        return "Whether injury reports informed these picks was not recorded."
+        return INJURY_NOTE_NOT_RECORDED
     warnings = audit.get("warnings", ())
     if any("no injury report rows exist yet" in str(w) for w in warnings):
-        return (
-            "No injury reports had been published yet when these picks were made; "
-            "they lean on lineups and recent play."
-        )
+        return INJURY_NOTE_NONE_PUBLISHED_YET
     missing = any("injury feature block is entirely null/zero" in str(w) for w in warnings)
     row = next((r for r in sources.rows if r.source_id == "injuries_nflverse_timestamps"), None)
     if missing or (sources.recorded and row is not None and row.state == "blocked"):
-        return (
-            "Injury reports were not available for these picks; "
-            "they lean on lineups and recent play."
-        )
+        return INJURY_NOTE_NOT_AVAILABLE
     if sources.recorded and row is not None and row.state == "degraded":
-        return "Injury data was stale, so these picks used an older copy."
+        return INJURY_NOTE_OLDER_COPY
     if sources.recorded and row is not None and row.state == "complete" and row.observed_at:
         return (
-            "Injury reports informed these picks "
+            f"{INJURY_NOTE_INFORMED_PREFIX} "
             f"(latest copy from {human_update_time(row.observed_at)})."
         )
-    return "Injury reports informed these picks; the report time was not recorded."
+    return f"{INJURY_NOTE_INFORMED_PREFIX}; the report time was not recorded."
 
 
 @dataclass(frozen=True)
@@ -1025,7 +1071,16 @@ WEEK_REFRESH_PASSES: tuple[tuple[str, str, bool], ...] = (
 
 @dataclass(frozen=True)
 class WeekTimeline:
-    title: str = "This week"
+    #: The ONE line the page shows. Owner, 2026-09-08, on the forty-line
+    #: schedule wall this replaced: "nothing short of a mistake". A pool
+    #: player needs when the lines locked, when their picks are due, and
+    #: whether the picks can still move -- not a minute-by-minute itinerary.
+    #: The full itinerary stays in ``groups``/``deadlines`` for the assistant,
+    #: which answers per-game deadline questions on request.
+    summary: str = (
+        "Pool lines lock Tuesday at 12:00 PM ET. Each pick is due at its game's "
+        "kickoff or Sunday 4:00 PM ET, whichever comes first."
+    )
     rule: str = (
         "Pool lines lock Tuesday at 12:00 PM ET. Each pick is due at its game's "
         "kickoff or Sunday 4:00 PM ET, whichever comes first."
@@ -1084,11 +1139,16 @@ def build_week_timeline(
     sunday = _week_sunday_lock(frame)
     if not games:
         return WeekTimeline(
+            summary="No forecast is available yet, so there are no pick deadlines to show.",
             publication="No forecast is available.",
             remaining="Refresh dates and game deadlines will appear with the forecast.",
         )
     if sunday is None:
         return WeekTimeline(
+            summary=(
+                "Pool lines lock Tuesday at 12:00 PM ET. Game times are missing, so this "
+                "week's pick deadlines cannot be listed."
+            ),
             publication=publication,
             remaining="Game times are missing, so this week's dates cannot be listed.",
         )
@@ -1104,6 +1164,7 @@ def build_week_timeline(
         )
     ]
     future = 0
+    next_refresh: pd.Timestamp | None = None
     offsets = {"tue": 0, "wed": 1, "thu": 2, "fri": 3, "sat": 4, "sun": 5, "mon": 6}
     for day, at, publishes in WEEK_REFRESH_PASSES:
         local_date = tuesday + timedelta(days=offsets[day])
@@ -1115,6 +1176,8 @@ def build_week_timeline(
         )
         if instant > now:
             future += 1
+            if next_refresh is None or instant < next_refresh:
+                next_refresh = instant
             suffix = " and card publication" if publishes else ""
             events.append((instant, f"{_timeline_time(instant)} refresh{suffix}."))
 
@@ -1152,7 +1215,19 @@ def build_week_timeline(
         grouped.setdefault(day_label, []).append(sentence)
     if missing:
         grouped["Game times not recorded"] = missing
+    summary = " ".join(
+        (
+            f"Pool lines {'locked' if line_lock <= now else 'lock'} {_timeline_time(line_lock)}.",
+            "Each pick is due at its game's kickoff, or Sunday 4:00 PM ET, whichever comes first.",
+            (
+                f"Picks can still change; the next check is {_timeline_time(next_refresh)}."
+                if next_refresh is not None
+                else "No more checks are scheduled this week."
+            ),
+        )
+    )
     return WeekTimeline(
+        summary=summary,
         publication=publication,
         remaining=(
             "Refresh passes still to come:"
@@ -1161,6 +1236,196 @@ def build_week_timeline(
         ),
         groups=tuple((day, tuple(lines)) for day, lines in grouped.items()),
         deadlines=tuple(deadlines),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Rival rules (UI-20 item (e)) -- the alternative pick rules recorded beside
+# the played card at the same lock, made visible to a reader.
+# ---------------------------------------------------------------------------
+
+#: "Challenger" is the repository's word and it is research jargon: it tells a
+#: pool player nothing, and reader text may not carry it (AGENTS.md, "The board
+#: is for humans"). The page says RIVAL RULES -- plainly competitive, plainly
+#: about picks, and it carries the point of the exercise: these are other ways
+#: of choosing, running against the card in the open. (The Model and History
+#: pages still print "Challenger"; those renderers belong to another lane and
+#: are flagged, not edited, here.)
+RIVAL_RULES_TITLE = "Rival rules"
+
+#: Shown until the week's lock has actually written rows. Measured
+#: 2026-09-08: before this week's lock both ledgers were empty by design, so
+#: this is the state the section shipped in for every earlier build.
+RIVAL_RULES_NONE_RECORDED = (
+    "Other ways of picking are written down when the pool's lines lock. "
+    "None are recorded for this week yet."
+)
+
+#: The one sentence that carries the method, in pool-player words: this is a
+#: fair fight recorded in advance, not a comparison assembled after the
+#: results are known.
+RIVAL_RULES_METHOD_NOTE = (
+    "Every rule here was written down at the same moment as the card, off the same lines, "
+    "before any game kicked off. None of them can be changed once the games start."
+)
+
+
+@dataclass(frozen=True)
+class RivalRuleRow:
+    """One alternative rule's disagreement with the played card this week."""
+
+    name: str
+    #: Games where this rule takes the other team, out of ``paired``.
+    differs: int
+    paired: int
+    #: ``"BAL at IND, CHI at CAR"`` -- the games it takes the other side of,
+    #: or the agreement sentence when there are none.
+    games_text: str
+
+    @property
+    def differs_text(self) -> str:
+        return f"{self.differs} of {self.paired}"
+
+
+@dataclass(frozen=True)
+class RivalRulesPanel:
+    """The rival-rules section's content. ``recorded`` is ``False`` before the
+    week's lock has written any row, in which case only ``summary`` renders."""
+
+    recorded: bool
+    summary: str
+    count_text: str = ""
+    rows: tuple[RivalRuleRow, ...] = ()
+    #: Rules that name a single game rather than a whole card (the Best Pick
+    #: rankers today), summarised in one line. ``None`` when there are none.
+    single_game_line: str | None = None
+    method_note: str = RIVAL_RULES_METHOD_NOTE
+
+
+def _default_rival_rules() -> RivalRulesPanel:
+    """``BoardContent.rivals``' default -- see that field's docstring."""
+
+    return RivalRulesPanel(recorded=False, summary=RIVAL_RULES_NONE_RECORDED)
+
+
+def _week_ledger_rows(ledger: pd.DataFrame, *, season: Any, week: Any) -> pd.DataFrame:
+    """``ledger`` narrowed to one ``(season, week)``, or an empty frame."""
+
+    if ledger.empty or season is None or week is None:
+        return ledger.iloc[0:0]
+    if "season" not in ledger.columns or "week" not in ledger.columns:
+        return ledger.iloc[0:0]
+    same_season = pd.to_numeric(ledger["season"], errors="coerce").eq(float(season))
+    same_week = pd.to_numeric(ledger["week"], errors="coerce").eq(float(week))
+    return ledger.loc[same_season & same_week]
+
+
+def _matchup_label(away: Any, home: Any) -> str:
+    """``"BAL at IND"`` -- the board's own matchup vocabulary."""
+
+    return f"{away} at {home}"
+
+
+def _build_rival_rules(
+    paper_decisions: pd.DataFrame,
+    challenger_decisions: pd.DataFrame,
+    *,
+    season: Any,
+    week: Any,
+) -> RivalRulesPanel:
+    """Pair every alternative rule recorded for this week against the played
+    card's OWN recorded picks.
+
+    Both sides come from the ledgers written at the same lock, never from the
+    live forecast on the page above: a late-week refresh can move a played
+    pick after Tuesday (measured 2026-09-08: two of sixteen had moved by the
+    time this ran), and comparing a frozen rival against a moved card would
+    invent disagreements that nobody actually recorded. This is the same
+    ledger-to-ledger pairing :func:`_build_prospective_scoreboard` already
+    settles its record with, and the panel says out loud that both were
+    written down at the lock.
+    """
+
+    played = _week_ledger_rows(paper_decisions, season=season, week=week)
+    if "decision_policy_id" in played.columns:
+        played = played.loc[played["decision_policy_id"].astype(str).eq(POLICY_ID)]
+    rivals = _week_ledger_rows(challenger_decisions, season=season, week=week)
+    if played.empty or rivals.empty or "challenger_id" not in rivals.columns:
+        return _default_rival_rules()
+
+    played_side = dict(
+        zip(played["game_id"].astype(str), played["pick_side"].astype(str), strict=False)
+    )
+    rows: list[RivalRuleRow] = []
+    contested: dict[str, int] = {}
+    single_games: dict[str, int] = {}
+    single_count = 0
+    for challenger_id, group in rivals.groupby("challenger_id", sort=True):
+        paired = group.loc[group["game_id"].astype(str).isin(played_side)]
+        if paired.empty:
+            continue
+        name = CHALLENGER_DISPLAY_NAMES.get(
+            str(challenger_id), humanize_identifier(str(challenger_id))
+        )
+        matchups = [
+            _matchup_label(entry.away_team, entry.home_team) for entry in paired.itertuples()
+        ]
+        if len(paired) < len(played_side):
+            single_count += 1
+            for matchup in matchups:
+                single_games[matchup] = single_games.get(matchup, 0) + 1
+            continue
+        differing = [
+            matchup
+            for matchup, entry in zip(matchups, paired.itertuples(), strict=False)
+            if str(entry.pick_side) != played_side[str(entry.game_id)]
+        ]
+        for matchup in differing:
+            contested[matchup] = contested.get(matchup, 0) + 1
+        rows.append(
+            RivalRuleRow(
+                name=name,
+                differs=len(differing),
+                paired=len(paired),
+                games_text=", ".join(sorted(differing)) or "Takes the same side everywhere",
+            )
+        )
+
+    if not rows and not single_count:
+        return _default_rival_rules()
+
+    disagreeing = sum(1 for row in rows if row.differs)
+    summary = (
+        f"Of the {len(rows)} that pick a whole card, {disagreeing} take a different team "
+        "somewhere this week."
+        if rows
+        else "None of them picks a whole card this week."
+    )
+    if contested:
+        matchup, count = max(sorted(contested.items()), key=lambda item: item[1])
+        if count > 1:
+            summary += (
+                f" {matchup} is the pick they argue with most: "
+                f"{count} of the {len(rows)} take the other side."
+            )
+    single_line = None
+    if single_count:
+        listed = ", ".join(
+            f"{matchup} ({count})"
+            for matchup, count in sorted(single_games.items(), key=lambda item: (-item[1], item[0]))
+        )
+        single_line = (
+            f"{single_count} more rules name a single game each rather than a whole card: {listed}."
+            if single_count != 1
+            else f"1 more rule names a single game rather than a whole card: {listed}."
+        )
+    total = len(rows) + single_count
+    return RivalRulesPanel(
+        recorded=True,
+        summary=summary,
+        count_text=f"{total} recorded beside this week's card",
+        rows=tuple(sorted(rows, key=lambda row: (-row.differs, row.name))),
+        single_game_line=single_line,
     )
 
 
@@ -1216,10 +1481,27 @@ class BoardContent:
     #: explicit not-published view -- see :class:`TiebreakerView`. Defaulted
     #: for the same reason ``source_policy`` is.
     tiebreaker: TiebreakerView = field(default_factory=_default_tiebreaker_view)
+    #: UI-20(e): the alternative pick rules recorded beside this week's card,
+    #: or an explicit none-recorded view -- see :class:`RivalRulesPanel`.
+    #: Defaulted for the same reason ``source_policy`` is.
+    rivals: RivalRulesPanel = field(default_factory=_default_rival_rules)
 
     @property
     def pick_lock_note(self) -> str | None:
         return pick_lock_window_text(self.games)
+
+    @property
+    def injury_state_label(self) -> str:
+        """UI-20(f): ``"NONE PUBLISHED YET"`` -- the scannable state behind
+        ``injury_note``, derived from that sentence so the two cannot drift."""
+
+        return injury_report_state(self.injury_note)[0]
+
+    @property
+    def injury_state_class(self) -> str:
+        """The SOURCES panel state class whose ink the injury chip borrows."""
+
+        return injury_report_state(self.injury_note)[1]
 
 
 # ---------------------------------------------------------------------------
@@ -2899,6 +3181,12 @@ def load_board_content(
         source_policy=source_policy_view,
         injury_note=injury_pick_note(artifacts.metadata, source_policy_view),
         tiebreaker=tiebreaker_view,
+        rivals=_build_rival_rules(
+            paper_decisions,
+            challenger_decisions,
+            season=artifacts.metadata.get("season"),
+            week=artifacts.metadata.get("week"),
+        ),
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,
         season_record=season_record,
@@ -2909,6 +3197,10 @@ def load_board_content(
 __all__ = [
     "BANNED_BOILERPLATE",
     "CADENCE_NOTE",
+    "INJURY_STATE_NAME",
+    "RIVAL_RULES_METHOD_NOTE",
+    "RIVAL_RULES_NONE_RECORDED",
+    "RIVAL_RULES_TITLE",
     "SOURCE_POLICY_LEGEND",
     "SOURCE_POLICY_NOT_RECORDED",
     "TIEBREAKER_NOT_PUBLISHED_TEXT",
@@ -2927,12 +3219,15 @@ __all__ = [
     "NumberProvenanceError",
     "PolicyNote",
     "ProspectiveScoreboard",
+    "RivalRuleRow",
+    "RivalRulesPanel",
     "SeasonRecordStrip",
     "SourcePolicyRow",
     "SourcePolicyView",
     "SpreadAdjusterParams",
     "TickerChrome",
     "TiebreakerView",
+    "injury_report_state",
     "load_board_content",
     "verify_number_provenance",
 ]

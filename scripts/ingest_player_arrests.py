@@ -154,6 +154,31 @@ def table_post_fields(nonce: str, page: int) -> dict[str, str]:
     }
 
 
+#: Windows' WSAEACCES. Seen 2026-09-08 07:00 ET (all 3 in-process attempts,
+#: 3s/6s apart) then gone by a manual re-run at 07:15 -- a transient local
+#: socket/firewall block (commonly a Windows excluded-ephemeral-port-range
+#: collision with Hyper-V/WSL/Docker Desktop, or a momentary AV/firewall
+#: hold), not a source-side error. Detected so the raised message says so
+#: instead of leaving a reader to guess from a bare urlopen error, and
+#: capture_scheduler.py's player_arrests_tue job carries its own
+#: retry_backoff_minutes=15/max_retries=2 to automate the same recovery a
+#: human's manual re-run demonstrated.
+_WINERROR_SOCKET_PERMISSION = 10013
+
+
+def _diagnose(error: Exception) -> str:
+    """A one-line, human-readable cause for a request failure, when known."""
+
+    winerror = getattr(getattr(error, "reason", None), "winerror", None)
+    if winerror == _WINERROR_SOCKET_PERMISSION:
+        return (
+            " -- transient Windows socket/firewall block (WinError 10013): usually a "
+            "local port-reservation or AV/firewall collision that clears within minutes; "
+            "retry via `capture_scheduler.py --run-job player_arrests_tue`"
+        )
+    return ""
+
+
 def _request(
     url: str,
     *,
@@ -180,7 +205,9 @@ def _request(
             if attempt + 1 < retries:
                 time.sleep(3.0 * (attempt + 1))
     assert last_error is not None
-    raise PlayerArrestsIngestError(f"Request failed after {retries} attempts: {last_error}")
+    raise PlayerArrestsIngestError(
+        f"Request failed after {retries} attempts: {last_error}{_diagnose(last_error)}"
+    )
 
 
 def fetch_landing() -> bytes:

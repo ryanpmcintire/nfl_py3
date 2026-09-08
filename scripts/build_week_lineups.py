@@ -48,6 +48,7 @@ from nfl_ats.lineup_availability import (
     no_designation_rate_lookup,
 )
 from nfl_ats.lineup_view import STABLE_LINEUP_PATH
+from nfl_ats.nflverse_current_season import SeasonReleaseNotPublished, load_season_frame
 from nfl_ats.play_probability import (
     PLAY_PROBABILITY_MODEL_VERSION,
     PlayProbabilityPredictor,
@@ -187,15 +188,26 @@ def _fetch_current_week_injuries(
     (``nfl_ats.players.canonicalize_injuries``), since a current in-season
     release may omit ``date_modified`` entirely (docs/injury_timestamp_fallback.md).
 
-    Returns an empty frame with a note, never an exception, when nflverse
-    has not published this season yet (a live ``ValueError`` before kickoff
-    week 1 -- measured this session) or has no rows for this week.
+    Returns an empty frame with a note, never an exception, when nflverse has
+    genuinely published nothing for this season yet, or has no rows for this
+    week.
+
+    The season is fetched through :func:`nfl_ats.nflverse_current_season
+    .load_season_frame`, NOT ``nflreadpy.load_injuries`` directly. That
+    loader's own season guard rolls over on the Thursday after Labor Day,
+    which for 2026 is 2026-09-10 -- a day AFTER Week 1 opens on Wednesday
+    2026-09-09. This function used to catch that guard's ``ValueError`` and
+    report it as "nflverse has not published season 2026 injuries yet", which
+    was false: measured 2026-09-08, the 2026 release already held eleven rows
+    for exactly that opener (three New England, seven Seattle). Nothing
+    crashed, and the card told readers no injury report existed. A genuinely
+    absent release still degrades the same way, now with a true reason.
     """
 
     try:
-        raw = nfl.load_injuries(seasons=[season]).to_pandas()
-    except ValueError as exc:
-        return pd.DataFrame(), f"nflverse has not published season {season} injuries yet ({exc})"
+        raw = load_season_frame("injuries", season)
+    except SeasonReleaseNotPublished as exc:
+        return pd.DataFrame(), str(exc)
     raw = raw.loc[pd.to_numeric(raw["week"], errors="coerce") == week].copy()
     if raw.empty:
         return raw, f"nflverse has season {season} but no injury rows yet for week {week}"

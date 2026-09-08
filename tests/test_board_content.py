@@ -963,3 +963,200 @@ def test_scoreboard_pairs_new_played_policy_with_retired_union() -> None:
         played, challengers, pd.DataFrame([{"game_id": "g", "result": 10.0}])
     )
     assert "played policy 1-0 vs. prior chain 0-1" in result.headline_text
+
+
+# ---------------------------------------------------------------------------
+# UI-20(f): the injury STATE behind the injury sentence
+# ---------------------------------------------------------------------------
+
+
+def test_injury_report_state_covers_every_sentence_injury_pick_note_can_produce() -> None:
+    """The chip is keyed off the sentence, so a reworded sentence must not
+    silently fall through to NOT RECORDED.
+
+    Every branch of ``injury_pick_note`` is driven here from real-shaped
+    inputs (never from the constants), and each one must land on a specific
+    state -- so rewriting a sentence without updating ``_INJURY_STATES``
+    fails here rather than shipping a grey "NOT RECORDED" chip beside a
+    sentence that plainly says otherwise.
+    """
+
+    from nfl_ats.board_content import (
+        SourcePolicyRow,
+        SourcePolicyView,
+        injury_pick_note,
+        injury_report_state,
+    )
+
+    passed = {"prediction_safety": {"checks_passed": ["injury_feature_presence"], "warnings": []}}
+
+    def view(state: str, *, observed: str | None = "2026-09-04T10:00:00Z") -> SourcePolicyView:
+        return SourcePolicyView(
+            card_state=state,
+            evaluated_at="2026-09-05T20:00:00Z",
+            recorded=True,
+            rows=(SourcePolicyRow("injuries_nflverse_timestamps", state, observed, 60, ""),),
+        )
+
+    none_yet = {
+        "prediction_safety": {
+            "checks_passed": ["injury_feature_presence"],
+            "warnings": ["no injury report rows exist yet for 2026 week 1"],
+        }
+    }
+    empty_block = {
+        "prediction_safety": {
+            "checks_passed": ["injury_feature_presence"],
+            "warnings": ["injury feature block is entirely null/zero across 9 column(s)"],
+        }
+    }
+    cases = [
+        (injury_pick_note({}, view("complete")), "NOT RECORDED", "not_recorded"),
+        (injury_pick_note(none_yet, view("complete")), "NONE PUBLISHED YET", "not_due"),
+        (injury_pick_note(empty_block, view("complete")), "NOT AVAILABLE", "blocked"),
+        (injury_pick_note(passed, view("blocked")), "NOT AVAILABLE", "blocked"),
+        (injury_pick_note(passed, view("degraded")), "OLDER COPY", "degraded"),
+        (injury_pick_note(passed, view("complete")), "REPORTS USED", "complete"),
+        # The "complete, but no report time recorded" branch is still USED.
+        (injury_pick_note(passed, view("complete", observed=None)), "REPORTS USED", "complete"),
+    ]
+    for note, expected_label, expected_state in cases:
+        assert injury_report_state(note) == (expected_label, expected_state), note
+    assert sum(1 for _note, label, _state in cases if label == "NOT RECORDED") == 1
+
+
+def test_board_content_injury_chip_reads_off_its_own_sentence() -> None:
+    """``injury_note`` stays the single source: both chip properties derive
+    from it, so the page can never show a state the sentence denies."""
+
+    from dataclasses import replace
+
+    from _board_content_fixtures import build_fixture_content
+
+    from nfl_ats.board_content import INJURY_NOTE_OLDER_COPY
+
+    content = replace(build_fixture_content(), injury_note=INJURY_NOTE_OLDER_COPY)
+    assert content.injury_state_label == "OLDER COPY"
+    assert content.injury_state_class == "degraded"
+
+
+# ---------------------------------------------------------------------------
+# UI-20(e): rival rules recorded beside the played card
+# ---------------------------------------------------------------------------
+
+
+def _rival_ledgers() -> tuple[pd.DataFrame, pd.DataFrame]:
+    from nfl_ats.four_overlay_composition import POLICY_ID
+
+    games = [
+        ("2026_01_BAL_IND", "BAL", "IND", "HOME"),
+        ("2026_01_CHI_CAR", "CHI", "CAR", "AWAY"),
+        ("2026_01_NE_SEA", "NE", "SEA", "AWAY"),
+    ]
+    played = pd.DataFrame(
+        [
+            {
+                "season": 2026,
+                "week": 1,
+                "decision_policy_id": POLICY_ID,
+                "game_id": game_id,
+                "away_team": away,
+                "home_team": home,
+                "pick_side": side,
+            }
+            for game_id, away, home, side in games
+        ]
+    )
+    rival_sides = {
+        "rain_on_grass_dog_challenger": ["AWAY", "HOME", "AWAY"],
+        "hc_year_one_fade_overlay": ["HOME", "AWAY", "AWAY"],
+        "division_revenge_tilt_overlay": ["AWAY", "AWAY", "AWAY"],
+    }
+    rows = [
+        {
+            "season": 2026,
+            "week": 1,
+            "challenger_id": challenger_id,
+            "game_id": game_id,
+            "away_team": away,
+            "home_team": home,
+            "pick_side": side,
+        }
+        for challenger_id, sides in rival_sides.items()
+        for (game_id, away, home, _played_side), side in zip(games, sides, strict=True)
+    ]
+    rows.append(
+        {
+            "season": 2026,
+            "week": 1,
+            "challenger_id": "best_pick_nomination_v2",
+            "game_id": "2026_01_NE_SEA",
+            "away_team": "NE",
+            "home_team": "SEA",
+            "pick_side": "AWAY",
+        }
+    )
+    return played, pd.DataFrame(rows)
+
+
+def test_build_rival_rules_counts_disagreements_and_names_the_contested_game() -> None:
+    played, rivals = _rival_ledgers()
+    panel = board_content._build_rival_rules(played, rivals, season=2026, week=1)
+
+    assert panel.recorded
+    assert panel.count_text == "4 recorded beside this week's card"
+    assert panel.summary == (
+        "Of the 3 that pick a whole card, 2 take a different team somewhere this week. "
+        "BAL at IND is the pick they argue with most: 2 of the 3 take the other side."
+    )
+    assert [(row.name, row.differs_text, row.games_text) for row in panel.rows] == [
+        ("Rain-on-grass underdog tilt", "2 of 3", "BAL at IND, CHI at CAR"),
+        ("Division-revenge tilt", "1 of 3", "BAL at IND"),
+        ("Year-one coach fade", "0 of 3", "Takes the same side everywhere"),
+    ]
+    assert panel.single_game_line == (
+        "1 more rule names a single game rather than a whole card: NE at SEA (1)."
+    )
+
+
+def test_build_rival_rules_is_dormant_until_the_week_has_rows() -> None:
+    """Before the week's lock both ledgers are empty by design, and a week
+    with no rival rows must not render an empty table."""
+
+    from nfl_ats.board_content import RIVAL_RULES_NONE_RECORDED
+
+    played, rivals = _rival_ledgers()
+    empty = pd.DataFrame()
+    for first, second in ((empty, rivals), (played, empty), (empty, empty)):
+        panel = board_content._build_rival_rules(first, second, season=2026, week=1)
+        assert not panel.recorded
+        assert panel.summary == RIVAL_RULES_NONE_RECORDED
+    assert not board_content._build_rival_rules(played, rivals, season=2026, week=2).recorded
+    assert not board_content._build_rival_rules(played, rivals, season=None, week=None).recorded
+
+
+def test_build_rival_rules_pairs_the_two_ledgers_not_the_live_forecast() -> None:
+    """A late-week refresh can move a played pick after the lock (measured
+    2026-09-08: two of sixteen had moved). The panel keeps comparing the rows
+    that were written down together, so a rival row with no played
+    counterpart is simply not paired rather than counted as a disagreement."""
+
+    played, rivals = _rival_ledgers()
+    unpaired = pd.DataFrame(
+        [
+            {
+                "season": 2026,
+                "week": 1,
+                "challenger_id": "surface_switch_tilt_overlay",
+                "game_id": "2026_01_NOT_ON_THE_CARD",
+                "away_team": "SF",
+                "home_team": "LA",
+                "pick_side": "HOME",
+            }
+        ]
+    )
+    panel = board_content._build_rival_rules(
+        played, pd.concat([rivals, unpaired], ignore_index=True), season=2026, week=1
+    )
+    assert "Turf-surface switch" not in [row.name for row in panel.rows]
+    assert panel.count_text == "4 recorded beside this week's card"

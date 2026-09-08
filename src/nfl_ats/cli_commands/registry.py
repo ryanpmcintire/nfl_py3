@@ -6,6 +6,7 @@ import argparse
 import json
 import sys
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 from nfl_ats import registry_explorer
@@ -38,15 +39,20 @@ from nfl_ats.weak_signals import (
     EFFECT_UNITS,
     LEAGUES,
     POOLING_WEIGHTINGS,
+    QuarantinedSignal,
     WeakSignal,
+    WeakSignalError,
     combination_report,
     family_overlap_warnings,
     invalidate_signal,
+    load_registry_permissive,
     record_signal,
     retag_effect_units,
+    save_registry_preserving_quarantine,
     set_reliability,
 )
 from nfl_ats.weak_signals import CLOSING_GROUNDS as WEAK_SIGNAL_CLOSING_GROUNDS
+from nfl_ats.weak_signals import Registry as WeakSignalRegistry
 from nfl_ats.weak_signals import coherence_problems as weak_signal_coherence_problems
 from nfl_ats.weak_signals import default_registry_path as weak_signal_registry_path
 from nfl_ats.weak_signals import load_registry as load_weak_signals
@@ -67,6 +73,48 @@ def _rotation_family_payload(registry: Registry, name: str) -> dict[str, Any]:
 def _cmd_rotation_status(_: argparse.Namespace) -> None:
     registry = load_registry()
     _print_json({"registry": str(default_registry_path()), **registry_status(registry)})
+
+
+def _load_weak_signals_for_write(
+    path: Path,
+) -> tuple[WeakSignalRegistry, dict[str, QuarantinedSignal]]:
+    """Load the weak-signal registry for a WRITE command.
+
+    The common case is a strict, fully-valid load, returned with an empty
+    quarantine map so every write command behaves exactly as it always has.
+    Only when the file currently holds an entry that fails validation does
+    this fall back to a permissive load that sets that one entry aside --
+    read-only commands (``status``, ``pool``) stay on the strict path
+    unchanged, since their job IS to surface exactly this kind of problem.
+
+    Measured 2026-09-08: a single degenerate entry (``standard_error: 0.0``)
+    made ``weak-signals record --replace`` -- the one sanctioned tool for
+    fixing it -- unusable on ITSELF, forcing a hand-edit of the JSON file
+    that AGENTS.md exists to prevent. Every write command below now falls
+    back the same way, so an unrelated broken row can never block a write to
+    a different, valid one either.
+    """
+
+    try:
+        return load_weak_signals(path), {}
+    except WeakSignalError:
+        return load_registry_permissive(path)
+
+
+def _save_weak_signals_for_write(
+    registry: WeakSignalRegistry, quarantined: dict[str, QuarantinedSignal], path: Path
+) -> None:
+    """Save after a WRITE command, preserving any quarantined entry this call
+    did not touch (see :func:`_load_weak_signals_for_write` and
+    ``weak_signals.save_registry_preserving_quarantine``): a repair must
+    never silently delete a DIFFERENT entry's history just because loading
+    had to set it aside to get past it.
+    """
+
+    if quarantined:
+        save_registry_preserving_quarantine(registry, quarantined, path)
+    else:
+        save_weak_signals(registry, path)
 
 
 def _cmd_weak_signals_status(args: argparse.Namespace) -> None:
@@ -117,13 +165,14 @@ def _cmd_weak_signals_status(args: argparse.Namespace) -> None:
 
 def _cmd_weak_signals_invalidate(args: argparse.Namespace) -> None:
     path = weak_signal_registry_path()
+    loaded, quarantined = _load_weak_signals_for_write(path)
     registry = invalidate_signal(
-        load_weak_signals(path),
+        loaded,
         name=args.name,
         reason=args.reason,
         superseded_by=args.superseded_by,
     )
-    save_weak_signals(registry, path)
+    _save_weak_signals_for_write(registry, quarantined, path)
     signal = registry.signals[args.name]
     _print_json(
         {
@@ -179,9 +228,15 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
     # recording at once must queue, never overwrite each other's rows
     # (2026-09-08: two lanes racing this block lost and corrupted rows).
     with file_lock(path):
-        registry = load_weak_signals(path)
+        registry, quarantined = _load_weak_signals_for_write(path)
+        if signal.name in quarantined and not args.replace:
+            raise WeakSignalError(
+                f"Signal {signal.name!r} is already recorded but currently fails "
+                f"validation ({quarantined[signal.name].error}); pass --replace to "
+                "repair it with this record"
+            )
         registry = record_signal(registry, signal, replace=args.replace)
-        save_weak_signals(registry, path)
+        _save_weak_signals_for_write(registry, quarantined, path)
     # Both fields are optional (475 pre-existing rows carry neither), but a
     # NEW record that skips them is the ledger's raw-description/Uncategorised
     # fallback silently choosing itself -- warn out loud on stderr so this
@@ -241,7 +296,7 @@ def _cmd_weak_signals_retag_units(args: argparse.Namespace) -> None:
     """
 
     path = weak_signal_registry_path()
-    registry = load_weak_signals(path)
+    registry, quarantined = _load_weak_signals_for_write(path)
     previous_units = (
         registry.signals[args.name].effect_units if args.name in registry.signals else None
     )
@@ -251,7 +306,7 @@ def _cmd_weak_signals_retag_units(args: argparse.Namespace) -> None:
         effect_units=args.effect_units,
         reason=args.reason,
     )
-    save_weak_signals(registry, path)
+    _save_weak_signals_for_write(registry, quarantined, path)
     signal = registry.signals[args.name]
     _print_json(
         {
@@ -278,7 +333,7 @@ def _cmd_weak_signals_set_reliability(args: argparse.Namespace) -> None:
     """
 
     path = weak_signal_registry_path()
-    registry = load_weak_signals(path)
+    registry, quarantined = _load_weak_signals_for_write(path)
     previous = registry.signals[args.name].reliability if args.name in registry.signals else None
     registry = set_reliability(
         registry,
@@ -290,7 +345,7 @@ def _cmd_weak_signals_set_reliability(args: argparse.Namespace) -> None:
         source=args.source,
         reason=args.reason,
     )
-    save_weak_signals(registry, path)
+    _save_weak_signals_for_write(registry, quarantined, path)
     signal = registry.signals[args.name]
     _print_json(
         {

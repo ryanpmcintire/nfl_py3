@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T18:52:17.225114+00:00`
+Refreshed at: `2026-09-08T20:21:46.386554+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-08T18:52:17.225114+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d0b3ae89c8d6` — Refresh the session handoff after the correction commit
-- Pending change set: 23 paths
+- Baseline commit: `7bf8134645d3` — Collapse session-added multi-line comments to one line each
+- Pending change set: 54 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
+  - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
+  - `A  docs/mod18_discrete_margin_mapping.md`
   - `M  docs/model.html`
-  - `A  registry/experiments/opener-evaluation/20260908T184333Z.json`
-  - `A  registry/experiments/opener-evaluation/20260908T184350Z.json`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/evidence_conventions.py`
-  - `M  src/nfl_ats/features.py`
-  - `M  src/nfl_ats/pool_decision_lines.py`
-  - `M  src/nfl_ats/weak_signals.py`
-  - `M  tests/test_board_terminal.py`
-  - `M  tests/test_cfb_opponent_adjustment.py`
-  - `M  tests/test_evidence_conventions.py`
-  - `M  tests/test_experiment_runner.py`
-  - `M  tests/test_features.py`
-  - `M  tests/test_played_card_lineage.py`
-  - ...and 3 more
+  - `A  docs/nflverse_season_rollover.md`
+  - `M  docs/site_content_pipeline.md`
+  - `M  docs/weak_signal_pooling.md`
+  - `A  registry/experiments/margin-backtest/20260908T190735Z.json`
+  - `A  registry/experiments/margin-backtest/20260908T192425Z.json`
+  - `A  registry/experiments/margin-backtest/20260908T194146Z.json`
+  - `A  registry/experiments/margin-backtest/20260908T195212Z.json`
+  - `A  registry/experiments/margin-backtest/20260908T200240Z.json`
+  - `A  registry/experiments/margin-backtest/20260908T200538Z.json`
+  - `A  registry/experiments/margin-backtest/20260908T201934Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T190829Z.json`
+  - ...and 34 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -56,13 +56,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260908T184350Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-08T18:39:44.231283+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-08T19:25:11.755815+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c526cf6636cef6f8`, published `2026-09-08T18:44:27.574207+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c526cf6636cef6f8`, published `2026-09-08T19:31:32.460599+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

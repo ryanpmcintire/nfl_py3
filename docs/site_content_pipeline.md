@@ -212,6 +212,32 @@ one grade renders an explicit sentence ("No opener/close line archived...",
 computed dynamically from the live gap between the archive's population and
 the model's own long-run evaluation, never a hardcoded count), never a blank.
 
+## 2026-09-08 -- UI-20(h) second pass: the week table covers the archive
+
+The per-week half of that section could only ever show weeks the paper
+ledger had recorded, so it rendered exactly one unsettled row while the
+season table above it carried six finished seasons. `board_site_content
+._archive_week_grades` now grades every finished week of the opener
+archive too, from the SAME run the season table is built from
+(`public_board.find_matching_opener_evaluation`, keyed to the active
+model, exactly as `load_model_weak_spots` locates it) -- reading its
+`per_game.parquet` served columns (`correct_at_open_probability_rule` /
+`correct_at_close_probability_rule`, the ones behind every accuracy the
+site already shows) and counting them by week. Both sources go through
+one shared counter (`_week_grades_from_graded_games`), so a recorded week
+and an archived week can never be counted differently, and
+`_combined_week_grades` merges them newest-week-first with the recorded
+week always winning its `(season, week)` slot. No matching run means no
+archived rows at all -- never a week graded with another model's picks.
+`HISTORY_WEEK_REPLAY_CAPTION` is appended to the section caption whenever
+archived weeks appear, telling the reader in plain words that the older
+weeks re-run the model on the opening numbers those weeks really had while
+the current season's weeks are the picks as they were written down before
+kickoff. `tests/test_history_opener_close.py` pins all of it, including a
+real-artifact test that a season's archived weeks sum back to that
+season's own row above them, so the two tables cannot tell a reader two
+different stories.
+
 **Removed: the scroll-gated content reveal.** The IntersectionObserver-based
 fade-and-stagger reveal and its KPI number roll-up (formerly
 `board_terminal._MOTION_SCRIPT`) are gone -- every element on every page

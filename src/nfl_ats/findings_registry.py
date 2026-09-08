@@ -253,6 +253,26 @@ def load_weak_signal_registry(registry_root: Path | None = None) -> weak_signals
     not the flattened :class:`RegistryEntry` map) never have to duplicate the
     ``registry_root``-vs-default-path logic :func:`load_all_entries` also
     uses internally.
+
+    This is the SINGLE choke point every public-site reader of the
+    weak-signal registry goes through (``board_site_content.py``'s findings
+    and signal-ledger-summary loaders, ``public_board.py``'s findings and
+    signal-ledger pages), so it reads with ``on_unknown_field="warn"``
+    instead of ``weak_signals.load_registry``'s strict default. Measured
+    2026-09-08: a session added a ``corrections`` field to registry entries
+    and to ``weak_signals._SIGNAL_FIELDS`` in the same commit, but a
+    scheduled ``publish-board`` ran between the two writes, read the data
+    file a field ahead of the code, and aborted the entire ``weekly-run`` at
+    the ``publish-board`` step -- an unrecognised field is additive schema
+    drift, not corrupt data, and must never be able to take the public site
+    down. Every OTHER malformed-entry error (a missing required field, an
+    unrecognised classification, an incoherent effect/interval, an
+    inadmissible closing ground) still raises unchanged: those are real data
+    problems the build is right to refuse to publish on top of. The
+    ``weak-signals`` CLI (``status``/``pool``/``record``, via
+    ``cli_commands/registry.py``) calls ``weak_signals.load_registry``
+    directly and keeps the strict default, so an operator actively editing
+    the ledger still hears about a typo'd field immediately.
     """
 
     path = (
@@ -260,7 +280,7 @@ def load_weak_signal_registry(registry_root: Path | None = None) -> weak_signals
         if registry_root is not None
         else weak_signals.default_registry_path()
     )
-    return weak_signals.load_registry(path)
+    return weak_signals.load_registry(path, on_unknown_field="warn")
 
 
 def load_rotation_registry(registry_root: Path | None = None) -> rotation.Registry:
@@ -271,6 +291,25 @@ def load_rotation_registry(registry_root: Path | None = None) -> rotation.Regist
     registry, not an error -- ``rotation.load_registry`` itself raises on a
     missing file, unlike ``weak_signals.load_registry``, so that is handled
     here.
+
+    This is the choke point every public-site reader of the rotation
+    registry goes through (``board_site_content._load_findings_content``'s
+    "Research this week" section, reached from the live ``publish-board``
+    handler via ``board_site.build_site`` -> ``load_site_content``), so it
+    reads with ``on_unknown_field="warn"`` instead of
+    ``rotation.load_registry``'s strict default -- the same fix applied to
+    ``load_weak_signal_registry`` above, for the same measured failure shape
+    (an additive field on a registry entry must not be able to abort the
+    scheduled site build; see ``weak_signals.UnknownRegistryFieldWarning``
+    and ``rotation._handle_unknown_fields`` for the full incident). Every
+    OTHER malformed-entry error -- including the closing-ground taxonomy
+    (``rotation._validate_closing_ground`` and the inline closing_ground
+    checks in ``rotation._window_from_payload``) -- still raises unchanged in
+    both modes; that enforcement is release-blocking and is never weakened.
+    The ``rotation`` CLI (via ``cli_commands/registry.py``) calls
+    ``rotation.load_registry`` directly and keeps the strict default, so an
+    operator actively editing the ledger still hears about a typo'd field
+    immediately.
     """
 
     path = (
@@ -280,7 +319,7 @@ def load_rotation_registry(registry_root: Path | None = None) -> rotation.Regist
     )
     if not path.is_file():
         return rotation.Registry(version=rotation.ROTATION_REGISTRY_VERSION, notes=(), families={})
-    return rotation.load_registry(path)
+    return rotation.load_registry(path, on_unknown_field="warn")
 
 
 def load_all_entries(

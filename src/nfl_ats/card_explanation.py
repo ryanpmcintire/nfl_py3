@@ -746,9 +746,15 @@ def _lead_sentence(
         return f"{lead} No model probability is recorded for this pick."
     word = confidence_word(model_probability.probability)
     phrase = _CONFIDENCE_PHRASES.get(word, word)
+    # One decimal, matching the board's own Decision score column. It used
+    # to round to whole percent, which let two picks print the SAME number
+    # with different words: Week 1 2026 showed "ATL a 56% cover, a lean"
+    # beside "MIA a 56% cover, a strong lean" (0.559 and 0.561 -- either
+    # side of confidence_word's 0.56 band edge). A reader cannot be shown
+    # one number described two ways.
     return (
         f"{lead} The model makes {pick_side or 'the pick'} a "
-        f"{model_probability.probability:.0%} cover, {phrase}."
+        f"{model_probability.probability:.1%} cover, {phrase}."
     )
 
 

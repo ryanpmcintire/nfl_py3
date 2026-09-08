@@ -48,7 +48,9 @@ from pathlib import Path
 from nfl_ats import board_assistant
 from nfl_ats.board_content import (
     CADENCE_NOTE,
+    INJURY_STATE_NAME,
     REFRESH_POLICY_NOTE,
+    RIVAL_RULES_TITLE,
     SOURCE_POLICY_COMPUTED_LIVE_NOTE,
     SOURCE_POLICY_LEGEND,
     BoardContent,
@@ -56,6 +58,7 @@ from nfl_ats.board_content import (
     GameRow,
     HeadlineStats,
     LinkPreview,
+    RivalRulesPanel,
     SourcePolicyView,
     TickerChrome,
     TiebreakerView,
@@ -757,6 +760,32 @@ def _tiebreaker_panel_html(view: TiebreakerView) -> str:
     )
 
 
+def _injury_state_html(content: BoardContent) -> str:
+    """UI-20(f): the injury sentence under the board, now led by a scannable
+    state.
+
+    The sentence alone was not readable as a STATE -- and the SOURCES panel
+    below it says ``injuries_nflverse_timestamps: COMPLETE`` even in the week
+    measured 2026-09-08, where no injury report existed at all (the league
+    publishes Week 1's first report on Wednesday; the pool locks Tuesday).
+    A fresh feed and a published report are different facts, so the chip
+    names which one the picks actually had.
+
+    Built entirely from ``board_content`` (the label, the state class, and
+    the sentence), and rendered in the same ``<b>label</b> &mdash; text``
+    idiom the Policy overlay line one row down already uses, so it needs no
+    new CSS: the chip's ink comes from the SOURCES panel's own
+    ``.src-state`` classes.
+    """
+
+    return (
+        f'<p class="policy-note"><b>{escape(INJURY_STATE_NAME)}</b> '
+        f'<span class="src-state {escape(content.injury_state_class)}">'
+        f"{escape(content.injury_state_label)}</span> &mdash; "
+        f"{escape(content.injury_note)}</p>"
+    )
+
+
 def _why_this_pick_html(explanation_text: str) -> str:
     """ "Why this pick" (dashboard queue, ROADMAP.md UI-20(a); relocated
     2026-09-05 for layout A, "board + inspector"): the ENG-12 explanation
@@ -969,7 +998,7 @@ def _board_section(content: BoardContent) -> str:
         "</div>"
         f"{_board_sort_toggle_html()}"
         f'<div class="board-scroll">{table}</div>'
-        f'<p class="policy-note">{escape(content.injury_note)}</p>'
+        f"{_injury_state_html(content)}"
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
         f'<p class="policy-note">{escape(REFRESH_POLICY_NOTE)}</p>'
@@ -1401,6 +1430,54 @@ def _findings_teaser_section(content: BoardContent) -> str:
     )
 
 
+def _rival_rules_section(content: BoardContent) -> str:
+    """UI-20(e): the alternative pick rules recorded beside this week's card.
+
+    Volume discipline (owner, 2026-09-08, on the forty-line schedule wall
+    struck off the top of this same page: "nothing short of a mistake"): a
+    heading, two sentences, and a collapsed table. The per-rule detail --
+    eleven rows of names and matchups -- earns no default-visible space, so
+    it lives behind one ``<details>``, matching the tiebreaker disclosure.
+    Reuses ``.section-head``/``.policy-note``/``.board-scroll``/
+    ``table.board``; zero new CSS.
+    """
+
+    panel: RivalRulesPanel = content.rivals
+    if not panel.recorded:
+        return (
+            '<section aria-labelledby="rivals-h"><div class="section-head">'
+            f'<h2 id="rivals-h">{escape(RIVAL_RULES_TITLE)}</h2></div>'
+            f'<p class="policy-note">{escape(panel.summary)}</p></section>'
+        )
+    body = "".join(
+        '<tr class="game">'
+        f'<td data-label="Rule"><b>{escape(row.name)}</b></td>'
+        f'<td data-label="Picks differently on" class="num">{escape(row.differs_text)}</td>'
+        f'<td data-label="Games">{escape(row.games_text)}</td>'
+        "</tr>"
+        for row in panel.rows
+    )
+    table = (
+        '<div class="board-scroll"><table class="board">'
+        "<thead><tr><th>Rule</th><th>Picks differently on</th><th>Games</th></tr></thead>"
+        f"<tbody>{body}</tbody></table></div>"
+    )
+    single = (
+        f'<p class="micro">{escape(panel.single_game_line)}</p>' if panel.single_game_line else ""
+    )
+    return (
+        '<section aria-labelledby="rivals-h"><div class="section-head">'
+        f'<h2 id="rivals-h">{escape(RIVAL_RULES_TITLE)}</h2>'
+        f'<span class="sub">{escape(panel.count_text)}</span></div>'
+        f'<p class="policy-note">{escape(panel.summary)}</p>'
+        '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
+        "Where each one differs</summary>"
+        f"{table}{single}"
+        f'<p class="micro">{escape(panel.method_note)}</p>'
+        "</details></section>"
+    )
+
+
 def _footer_html(generated_at_text: str, *, model_bit: str) -> str:
     """2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
     fucking legal bullshit words"): the compliance disclaimer block and the
@@ -1505,20 +1582,21 @@ def _season_record_strip_html(content: BoardContent) -> str:
 
 
 def _week_timeline_panel(content: BoardContent) -> str:
-    timeline = content.week_timeline
-    groups = "".join(
-        f"<h3>{escape(day)}</h3><ul>"
-        + "".join(f"<li>{escape(line)}</li>" for line in lines)
-        + "</ul>"
-        for day, lines in timeline.groups
-    )
+    """One line: when the lines locked, when picks are due, when they may move.
+
+    This was a full-width section listing every scheduled refresh time and
+    every game's deadline -- roughly forty lines above the board. The owner
+    struck it on 2026-09-08 ("nothing short of a mistake"), and he is right:
+    a pool player needs three facts, not an itinerary. The itinerary itself
+    is still built (``WeekTimeline.groups``/``deadlines``) and the assistant
+    answers "when is my pick due for X" from it, so nothing was lost -- it
+    just stopped being the first thing on the page. The ``week-timeline-h``
+    id stays because the assistant's answers anchor to it.
+    """
+
     return (
-        '<section class="policy-note" aria-labelledby="week-timeline-h">'
-        f'<h2 id="week-timeline-h">{escape(timeline.title)}</h2>'
-        f"<p>{escape(timeline.rule)}</p>"
-        f"<p>{escape(timeline.publication)}</p>"
-        f"<p>{escape(timeline.refresh_note)}</p>"
-        f"<p>{escape(timeline.remaining)}</p>" + groups + "</section>"
+        '<p class="policy-note week-line" id="week-timeline-h">'
+        f"{escape(content.week_timeline.summary)}</p>"
     )
 
 
@@ -1531,8 +1609,9 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
     and the selected game's inspector (:func:`_inspector_section`) sit side
     by side in one ``.week-grid`` -- at least 700px for the board at
     >=1100px, stacked board-then-inspector below that width (see the
-    ``.week-grid`` rules appended to ``board_terminal_style.css``). Findings
-    and the assistant panel stay exactly as they were, below the grid.
+    ``.week-grid`` rules appended to ``board_terminal_style.css``). Below the
+    grid: the rival rules recorded beside this week's card (UI-20(e)), then
+    findings and the assistant panel, exactly as they were.
     """
 
     body = (
@@ -1552,6 +1631,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         + _board_section(content)
         + _inspector_section(content)
         + "</div>"
+        + _rival_rules_section(content)
         + _findings_teaser_section(content)
         + board_assistant.assistant_section(board_assistant.build_knowledge_for_board(content))
         + "</main>"

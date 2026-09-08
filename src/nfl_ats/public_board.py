@@ -811,17 +811,30 @@ def _default_data_root() -> Path:
     return Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
 
 
+#: Decimal places a probability is rounded to before it is banded, matching
+#: the one-decimal percent the board prints (55.9%, 56.1%). The word must be
+#: a function of the number the READER SEES, or one printed percentage can
+#: carry two different words. Week 1 2026 did exactly that: 0.559 and 0.561
+#: both printed "56%" on opposite sides of the 0.56 edge, so the card read
+#: "ATL a 56% cover, a lean" beside "MIA a 56% cover, a strong lean".
+CONFIDENCE_ROUNDING_PLACES = 3
+
+
 def confidence_word(probability: float) -> str:
     """Plain-English decision-strength label for the week board (D1).
 
-    Three bands on the final side-oriented score. For an unflipped row it is
-    the calibrated model probability; for a production-policy flip it is the
-    mirrored raw-model score and must not be read as newly calibrated.
+    Three bands on the final side-oriented score, applied to the probability
+    ROUNDED to what the board displays (see
+    :data:`CONFIDENCE_ROUNDING_PLACES`) so the word and the number can never
+    contradict each other. For an unflipped row the score is the calibrated
+    model probability; for a production-policy flip it is the mirrored
+    raw-model score and must not be read as newly calibrated.
     """
 
-    if probability > 0.56:
+    shown = round(float(probability), CONFIDENCE_ROUNDING_PLACES)
+    if shown > 0.56:
         return "strong"
-    if probability >= 0.53:
+    if shown >= 0.53:
         return "lean"
     return "slight"
 

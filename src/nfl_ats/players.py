@@ -32,6 +32,7 @@ from nfl_ats.constants import (
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
 from nfl_ats.nfl_week import week_cycle_sunday
+from nfl_ats.nflverse_current_season import load_seasons_frame
 from nfl_ats.participation import canonicalize_participation_ratings
 from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS, season_scope_mask
 from nfl_ats.quarterbacks import build_qb_game_metrics, build_qb_states
@@ -704,9 +705,14 @@ def fetch_player_snapshot(
     _valid_seasons(snap_seasons, "Snap")
     import nflreadpy as nfl
 
-    injuries = _to_pandas(nfl.load_injuries(seasons=injury_seasons))
-    rosters = _to_pandas(nfl.load_rosters_weekly(seasons=roster_seasons))
-    snaps = _to_pandas(nfl.load_snap_counts(seasons=snap_seasons))
+    # Not nflreadpy's loaders directly: their season guard rolls over on the
+    # Thursday after Labor Day, so on 2026-09-08 they refused season 2026
+    # while nflverse was already serving its Week 1 injury rows. See
+    # nfl_ats.nflverse_current_season. Seasons the guard allows still take
+    # the ordinary bulk call, so archive snapshots reproduce byte for byte.
+    injuries = load_seasons_frame("injuries", injury_seasons)
+    rosters = load_seasons_frame("rosters_weekly", roster_seasons)
+    snaps = load_seasons_frame("snap_counts", snap_seasons)
     injury_schedule = None
     if injury_timestamp_fallback == "week_proxy":
         schedules = _to_pandas(nfl.load_schedules(seasons=injury_seasons))

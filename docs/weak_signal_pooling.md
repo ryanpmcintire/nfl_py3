@@ -270,3 +270,171 @@ owner decision plus an audit line per row; it is **not** applied here.
 The other two buckets are genuinely unknown and are listed as such. Flagging a
 measurement for re-measurement is not a verdict on the signal: no row here is
 refuted, bounded by a control, or reclassified.
+
+**Applied later the same day.** The 346 rows in the first bucket were restated
+to 0.5 with an append-only `corrections` entry each (commit `819ff7f`), and the
+`zero_atom_probability_positive` bucket is now empty. The section below covers
+what happened to the other two buckets.
+
+---
+
+## 2026-09-08, second pass: the strict-zero rows were re-measurable after all
+
+The paragraph above says the remaining rows "cannot be honestly recomputed from
+what is on disk". That is true of the *draws* and false of the *measurement*.
+The MOD-18 research lanes each kept their scored per-game frame — the candidate
+and baseline pick for every game, with the season and week the block bootstrap
+resamples on — so the identical bootstrap can simply be run again. Nothing has
+to be assumed about the draws, because the draws can be regenerated.
+
+`scripts/weak_signal_zero_atom_remeasure.py` does this. For each lane it rebuilds
+the cell grid from `scored.parquet` (or the lane's `paired.parquet`) using the
+lane's own grouping code and the same shared `comparison()` helper, at the same
+20,000 draws and the same seed, and then **requires every field except
+`probability_positive` to reproduce the recorded cell exactly** before the
+corrected value is allowed to stand. Effect, interval bounds, standard error,
+sample size, block count and flip count all have to come back bit-for-bit.
+
+**Measured: 463 rows reproduced, 0 drifted.** Not one cell in nine lane grids
+came back with a different effect or interval, at a tolerance of 1e-9. That
+equality is the whole argument — it is what makes this a re-measurement of the
+same measurement rather than an edit of a recorded number. **457 of the 463
+needed a corrected `probability_positive`**; the other six already carried the
+value the re-measurement produced.
+
+| lane | source still on disk | rows verified | rows corrected |
+|---|---|---|---|
+| R (`r1`, residual slope) | `artifacts/research/laneR/scored.parquet` | 92 | 92 |
+| U (`r2`, shrunk slope) | `artifacts/research/laneU/scored.parquet` | 64 | 64 |
+| I (`s5`, home-side prior) | `artifacts/research/laneI/scored.parquet` | 55 | 55 |
+| V (`oos1`, out-of-sample declaration) | `artifacts/research/laneV/scored.parquet` | 54 | 54 |
+| G (`s4`, side-aware) | `artifacts/research/laneG/scored.parquet` | 44 | 44 |
+| T (`kl1`, key-line lattice) | `artifacts/research/laneT/scored.parquet` | 38 | 38 |
+| T (home-side mapping) | session scratchpad `laneT/paired.parquet` | 32 | 32 |
+| S (`S1`/`S2`, buckets + seasons) | session scratchpad `laneS/paired.parquet` | 42 | 41 |
+| Q (`Q1`/`Q2`, buckets + seasons) | session scratchpad `laneQ/paired.parquet` | 42 | 37 |
+| **total** | | **463** | **457** |
+
+**Every correction moved the same way: up.** Measured across all 457:
+minimum **+0.00010**, median **+0.04537**, mean **+0.06152**, maximum
+**+0.18477**, and **457 of 457 non-negative** — exactly what a defect that
+charged the zero atom against the candidate predicts. The **75** rows that
+recorded `probability_positive` of exactly **0.0** re-measure between
+**0.00028 and 0.18477**; the worst of them,
+`mod18_home_side_location_v1_r2_r2b_pick_home_card_2020_2025`, was filed as
+"no chance the candidate is better" when the honest reading is **18.5%**.
+
+Each row was re-recorded through `nfl-ats weak-signals record --replace`,
+carrying its stored payload back verbatim with the one field changed. Diffed
+against the pre-pass registry, **457 rows moved `probability_positive` and not
+one of them moved any other field** — description, source, effect, interval,
+standard error, sample size, classification, family, notes, plain summary and
+category all came back byte-identical. (Other rows in the file changed during
+the same window; those are other lanes recording, not this pass.)
+
+### What this changes for the decision, and what it does not
+
+**It does not move the pool, measured rather than asserted.** Pooling the same
+registry twice — once as it now stands, once with only these 457
+`probability_positive` values reverted — returns the identical number to the
+last digit: **−0.042455 accuracy points, 95% [−0.088496, +0.003587],
+`probability_positive` 0.0354**, on 1,569 pooled signals, and the identical sign
+test (636 candidate / 840 baseline among 1,476 informative signals, 213 ties
+excluded, p = 1.21e-07). That is expected from the construction:
+`pooled_effect` weights by effect and standard error, and the sign test reads
+the effect's sign; a row's own `probability_positive` is not an input to either.
+
+**The pile of small signals still leans slightly to the baseline, and it is
+still not resolved.** Per the binding rule that is not grounds to close
+anything, and nothing here closes anything. (The pooled read is also not
+comparable to the −0.0155 on 1,369 signals recorded earlier in this document:
+other lanes added 200 eligible rows to the registry between the two readings.
+Re-run the command for the current number.)
+
+**It changes what 457 rows say, one at a time.** `AGENTS.md` requires each
+result to be reported as its `probability_positive` rather than as the binary
+"contains zero", so that per-row number is the one a session reads when deciding
+whether a candidate is worth playing. Every one of these 457 rows was
+understating the candidate's side, and 75 of them by the largest margin the
+scale allows. A row that reads 0.0 gets discarded on sight; the same row reading
+0.18 is a small unresolved lean that stays in the pile. That is the failure mode
+the four defects were fixed to stop, showing up one row at a time instead of in
+the headline.
+
+Measured on the pool report, before and after, same registry:
+`needs_remeasurement.strict_zero_with_nonzero_effect` **80 → 5**;
+`zero_atom_probability_positive` stays 0; `implausible_standard_error` is
+unchanged at 20 (it grew from 15 during the session as other lanes recorded).
+
+### Inventory: what is still not re-measured
+
+| bucket | rows | verdict |
+|---|---|---|
+| re-measured this pass | 75 of the 80 `strict_zero_with_nonzero_effect` rows | done |
+| re-measurable, costs a screen re-run | 5 strict-zero rows + the `implausible_standard_error` rows | not done here |
+| unreproducible (source gone) | 0 | — |
+
+**Nothing in either flagged bucket turned out to be unreproducible.** Every
+source named by a flagged row still exists on disk. The five strict-zero rows
+left (`bias_battery_short_week_opener`, `movement_leads_rising_total_dog`,
+`week1_dog_on_production`, `pol09_best_pick_composed_v1_tiebreak_dispersion_vs_alphabetical`,
+`roof_battery_visiting_dome_open_vs_closed_opener`) come from screens rather
+than lanes, and a screen stores per-cell summaries rather than the per-game
+arms — so they need the screen re-run, not a rebuild from a parquet. All of the
+screens involved (`scripts/roof_decision_screen.py`,
+`scripts/nfl_bias_battery_screen.py`, `scripts/movement_leads_battery.py`,
+`scripts/schedule_flag_on_production.py`,
+`scripts/best_pick_composed_rule_eval.py`, and `nfl-ats experiment run`) route
+through code that now calls `probability_positive_from_draws`, so re-running
+them produces the corrected value directly. Each re-run also rewrites its whole
+battery, which is why they are a separate piece of work.
+
+### The `implausible_standard_error` flag is measuring the wrong thing
+
+Measured on the live pool (at 1,376 NFL `accuracy_points` rows with a usable
+band): the median `SE² · n` is **599.7**, and all 15 rows flagged at that
+moment sit between **0.0000 and 3.0** — two to seven orders of magnitude below
+the curve. Reading their sources explains why, and it is not a bad band:
+
+`artifacts/body_clock_night_screen/20260821T222542Z/results.json` records
+`body_clock_night_west_road_ge2000et` as `raw_gap_pts` −6.21 on `n_flag` 119 of
+`n_total` 4,317, scaled to a `full_slate_effect_pts` of −0.171 by
+`fraction_of_slate` 0.0276. The registry row stores that scaled effect and its
+scaled band — correct — alongside `sample_games` **119**, the flagged subset.
+The plausibility curve then compares a band scaled to the whole 4,317-game slate
+against a 119-game sample size. `SE² · n` is understated by both the wrong `n`
+and the squared slate fraction.
+
+This is the limitation D4 already names ("these effects are `raw_gap × slate
+share`, so a rule touching 0.5% of games legitimately has both a small effect
+and a small SE, and `SE²·n` is not constant across the pool"), now measured. The
+flag is a **commensurability defect** — two conventions for expressing an
+`accuracy_points` effect, per-subset-game and per-card-game, sharing one pool —
+not evidence that these 15 measurements are wrong. Two of the 15
+(`body_clock_night_dose_1700_1959` at `n_flag` 3,
+`divisional_rematch_revenge_early_w1to6` at `n_flag` 4) are genuinely tiny cells
+as well. The fix belongs in the recording convention (store the population the
+effect is scaled to) or in the curve (fit against that population), not in the
+rows; flooring them is conservative but is answering a question they were not
+asked. **This is a defect report, not a closure**: no row here is refuted,
+bounded by a control, or reclassified, and all 15 stay `unresolved_below_power`.
+
+Re-running those screens would fix their `probability_positive` — every one of
+them reaches the number through `scripts/_common.py`, `nfl_ats.clv` or
+`nfl_ats.experiment_runner`, all of which now call
+`probability_positive_from_draws` — but it would **not** clear this flag, because
+the flag is about which population `sample_games` names. Fixing the flag is a
+recording-convention change, and it belongs to whoever owns
+`src/nfl_ats/weak_signals.py` and the screen recorders.
+
+### Reproducing this pass
+
+```
+python scripts/weak_signal_zero_atom_remeasure.py --report out.json           # verify only
+python scripts/weak_signal_zero_atom_remeasure.py --report out.json --apply   # re-record
+```
+
+The apply step is idempotent — it skips any row already carrying the
+re-measured value — so an interrupted pass is resumed by running it again, and
+`--from-report` reuses an earlier verification instead of re-running the
+bootstraps.

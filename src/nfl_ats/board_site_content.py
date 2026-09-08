@@ -417,6 +417,24 @@ HISTORY_GRADE_CAPTION = (
     "what gets played."
 )
 
+#: UI-20(h), second pass: the per-week table below the season table now
+#: carries two kinds of row -- weeks recorded live in the paper ledger, and
+#: finished weeks replayed on the opening numbers those weeks actually had
+#: (:func:`_archive_week_grades`).  A reader must be told which is which,
+#: so this sentence is appended to the caption whenever both kinds appear.
+HISTORY_WEEK_REPLAY_CAPTION = (
+    "Week by week: the weeks of finished seasons run the model again on the opening "
+    "numbers those weeks really had, using only what was known before each week "
+    "kicked off; weeks of the current season are the picks exactly as they were "
+    "written down before kickoff."
+)
+
+#: The two per-game columns the opener archive grades weeks on: the ones
+#: behind every accuracy already shown on this site (the served picks,
+#: home-side push included), never the unadjusted twins beside them.
+ARCHIVE_OPENER_CORRECT_COLUMN = "correct_at_open_probability_rule"
+ARCHIVE_CLOSE_CORRECT_COLUMN = "correct_at_close_probability_rule"
+
 #: Explicit non-blank cells for :class:`HistoryWeekGrade`/:class:`SeasonGradeRow`
 #: rows where one grade -- or, for a week, neither -- could not be computed.
 #: Never a silent gap: see each builder's docstring for when each applies.
@@ -1305,10 +1323,34 @@ def _history_week_grades(
     if decisions.empty:
         return ()
     settled = settle_prospective_picks(decisions, outcomes, close_reference=close_reference)
+    return _week_grades_from_graded_games(
+        settled,
+        opener_column=f"correct_at_{DECISION_GRADE}",
+        close_column=f"correct_at_{CLOSE_GRADE}",
+    )
+
+
+def _week_grades_from_graded_games(
+    graded: pd.DataFrame, *, opener_column: str, close_column: str
+) -> tuple[HistoryWeekGrade, ...]:
+    """One :class:`HistoryWeekGrade` per ``(season, week)`` of ``graded``.
+
+    The single place a week's opener/close record is counted, shared by the
+    recorded paper ledger (:func:`_history_week_grades`) and the archived
+    replay (:func:`_archive_week_grades`) so the two can never count a week
+    differently.  Both callers hand it a frame of already-graded games whose
+    two correctness columns are 1 (right), 0 (wrong) or missing (a push, or
+    a line that does not exist for that game).
+    """
+
+    if graded.empty or not {"season", "week"}.issubset(graded.columns):
+        return ()
+    if not {opener_column, close_column}.issubset(graded.columns):
+        return ()
     rows: list[HistoryWeekGrade] = []
-    for (season, week), group in settled.groupby(["season", "week"], sort=True):
-        opener_correct = pd.to_numeric(group[f"correct_at_{DECISION_GRADE}"], errors="coerce")
-        close_correct = pd.to_numeric(group[f"correct_at_{CLOSE_GRADE}"], errors="coerce")
+    for (season, week), group in graded.groupby(["season", "week"], sort=True):
+        opener_correct = pd.to_numeric(group[opener_column], errors="coerce")
+        close_correct = pd.to_numeric(group[close_column], errors="coerce")
         opener_resolved = opener_correct.dropna()
         close_resolved = close_correct.dropna()
         opener_settled, close_settled = len(opener_resolved), len(close_resolved)
@@ -1338,6 +1380,57 @@ def _history_week_grades(
             )
         )
     return tuple(rows)
+
+
+def _archive_week_grades(
+    artifacts_root: Path, active: Mapping[str, Any]
+) -> tuple[HistoryWeekGrade, ...]:
+    """Every finished week of the opener archive, graded at both lines.
+
+    Why this exists (UI-20(h), second pass): the recorded paper ledger only
+    starts at the first Tuesday lock, so the per-week table showed exactly
+    one unsettled row while the season table above it carried six seasons
+    of real opener-vs-close pairs.  A reader could see the difference the
+    pool's own line makes over a season but never week to week -- which is
+    the whole point of the section.
+
+    The rows come from the SAME evaluation run the season table is built
+    from -- :func:`find_matching_opener_evaluation` keyed to the ACTIVE
+    model, exactly as :func:`load_model_weak_spots` does -- reading its
+    per-game grades and counting them by week.  Summing a season's weeks
+    reproduces that season's row above it exactly, by construction.  The
+    served columns are used (the ones behind every accuracy the site
+    already shows), never the unadjusted twins.  No matching run means no
+    rows at all: a week is never graded with another model's picks.
+    """
+
+    match = find_matching_opener_evaluation(artifacts_root, active)
+    if match is None:
+        return ()
+    try:
+        per_game = pd.read_parquet(match[1] / "per_game.parquet")
+    except (OSError, ValueError):
+        return ()
+    return _week_grades_from_graded_games(
+        per_game,
+        opener_column=ARCHIVE_OPENER_CORRECT_COLUMN,
+        close_column=ARCHIVE_CLOSE_CORRECT_COLUMN,
+    )
+
+
+def _combined_week_grades(
+    recorded: tuple[HistoryWeekGrade, ...], archived: tuple[HistoryWeekGrade, ...]
+) -> tuple[HistoryWeekGrade, ...]:
+    """Recorded weeks and archived weeks in one newest-first table.
+
+    A week recorded in the paper ledger always wins its ``(season, week)``
+    slot: those picks were locked in before kickoff, so they are the honest
+    record, while the archive's row for the same week is a replay of it.
+    """
+
+    merged = {(row.season, row.week): row for row in archived}
+    merged.update({(row.season, row.week): row for row in recorded})
+    return tuple(sorted(merged.values(), key=lambda row: (row.season, row.week), reverse=True))
 
 
 def _evidence_values(entry: Mapping[str, Any]) -> tuple[float | None, float | None, float | None]:
@@ -1587,11 +1680,20 @@ def _load_history_page_content(
         except (DataContractError, ValueError, OSError):
             close_reference = pd.DataFrame()
     try:
-        week_grades = _history_week_grades(primary, outcomes, close_reference)
+        recorded_week_grades = _history_week_grades(primary, outcomes, close_reference)
     except (ValueError, OSError) as error:
-        week_grades = ()
+        recorded_week_grades = ()
         primary_error = primary_error or str(error) or "primary ledger could not be settled"
+    # UI-20(h) second pass: the recorded ledger only starts at the first
+    # Tuesday lock, so the finished weeks of the opener archive -- the same
+    # active-model run the season table above is built from -- join it, and
+    # the whole table reads newest week first.
+    archived_week_grades = _archive_week_grades(artifacts_root, active)
+    week_grades = _combined_week_grades(recorded_week_grades, archived_week_grades)
     season_grades = _season_grade_rows(_season_rows(opener.seasons), active)
+    grade_caption = HISTORY_GRADE_CAPTION if (season_grades or week_grades) else ""
+    if archived_week_grades:
+        grade_caption = f"{grade_caption} {HISTORY_WEEK_REPLAY_CAPTION}"
     return HistoryPageContent(
         generated_at_text=_generated_at_text(generated_at),
         picks=picks,
@@ -1608,7 +1710,7 @@ def _load_history_page_content(
         ),
         season_grades=season_grades,
         week_grades=week_grades,
-        grade_caption=HISTORY_GRADE_CAPTION if (season_grades or week_grades) else "",
+        grade_caption=grade_caption,
         headline=board.headline,
     )
 
@@ -1875,8 +1977,11 @@ def load_site_content(
 
 
 __all__ = [
+    "ARCHIVE_CLOSE_CORRECT_COLUMN",
+    "ARCHIVE_OPENER_CORRECT_COLUMN",
     "HISTORY_GRADE_CAPTION",
     "HISTORY_WEEK_NOT_SETTLED_NOTE",
+    "HISTORY_WEEK_REPLAY_CAPTION",
     "NO_CLOSE_LINE_ARCHIVED_WEEK_NOTE",
     "NO_OPENER_LINE_ARCHIVED_SEASON_NOTE",
     "NO_OPENER_LINE_ARCHIVED_WEEK_NOTE",

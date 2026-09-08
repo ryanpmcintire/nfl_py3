@@ -517,3 +517,40 @@ def test_family_contributions_from_waterfall_entry_extracts_family_steps() -> No
     assert family_contributions_from_waterfall_entry(None) is None
     assert family_contributions_from_waterfall_entry({"steps": []}) is None
     assert family_contributions_from_waterfall_entry({"steps": [{"kind": "other"}]}) is None
+
+
+def test_one_printed_percentage_never_carries_two_confidence_words() -> None:
+    """A reader must never see one number described two ways.
+
+    Week 1 2026 shipped "ATL a 56% cover, a lean" beside "MIA a 56% cover,
+    a strong lean" -- 0.559 and 0.561, either side of ``confidence_word``'s
+    0.56 band edge, both rounded to "56%" for printing. The explanation now
+    prints one decimal and the band is applied to the rounded number, so
+    the word is a function of what the reader sees.
+    """
+
+    from nfl_ats.public_board import confidence_word
+
+    by_printed: dict[str, set[str]] = {}
+    step = 0.0001
+    probability = 0.40
+    while probability <= 0.75:
+        printed = f"{probability:.1%}"
+        by_printed.setdefault(printed, set()).add(confidence_word(probability))
+        probability += step
+    split = {shown: words for shown, words in by_printed.items() if len(words) > 1}
+    assert not split, f"one printed percentage mapped to several words: {split}"
+
+
+def test_confidence_word_bands_are_unchanged_away_from_the_edges() -> None:
+    """Rounding to the printed number must not move the bands themselves."""
+
+    from nfl_ats.public_board import confidence_word
+
+    assert confidence_word(0.499) == "slight"
+    assert confidence_word(0.529) == "slight"
+    assert confidence_word(0.530) == "lean"
+    assert confidence_word(0.559) == "lean"
+    assert confidence_word(0.560) == "lean"
+    assert confidence_word(0.561) == "strong"
+    assert confidence_word(0.642) == "strong"

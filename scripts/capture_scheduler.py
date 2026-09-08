@@ -79,12 +79,14 @@ READ_ONLY_EXCEPTIONS: dict[int, str] = {
     # first recorded them; the destinations themselves are unchanged.
     # 2026-09-07: re-synced again (LEAD-61 half-line jobs shifted them 52
     # lines, this note two more); tests/test_experiment_registry.py pins these against the scanner.
-    # 2026-09-08: re-synced twice (noon-lock schedule change).
-    1201: "STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
-    1203: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
-    1230: "HEARTBEAT_PATH == REPO / 'data' / 'scheduler_heartbeat.json'",
-    1243: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
-    1327: "LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+    # 2026-09-08: re-synced three times today (noon-lock schedule change,
+    # then the retry-with-backoff addition, then the injury/player-snapshot
+    # jobs -- both of the latter two add lines ABOVE these sites).
+    1339: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1341: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1368: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
+    1381: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1465: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
 }
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
@@ -155,6 +157,21 @@ class Job:
     # job becomes due. This is intentionally scheduler state (not wall-clock
     # inference): a paper forecast must never assume its opener capture landed.
     requires: tuple[str, ...] = ()
+    # Opt-in retry for a job that RAN and FAILED (distinct from catch_up,
+    # which only covers a window that closed with nothing attempted at all --
+    # see sweep_missed's own docstring). 0 (default) preserves every existing
+    # job's behaviour byte-for-byte: a FAIL record still blocks a second
+    # attempt at the same occurrence. player_arrests_tue is the job this was
+    # built for (2026-09-08, WinError 10013: "An attempt was made to access a
+    # socket in a way forbidden by its access permissions" on all 3 of its
+    # own in-process attempts at 07:00, three seconds apart -- a transient
+    # Windows socket/firewall block that a same-process retry inside one
+    # 12-second span could not ride out, but a human's manual re-run 15
+    # minutes later did). due_jobs() re-offers the occurrence once
+    # retry_backoff_minutes have passed since the failed attempt, up to
+    # max_retries times, as long as the window's own grace has not closed.
+    retry_backoff_minutes: int = 0
+    max_retries: int = 0
 
 
 def _ps(script: str) -> list[str]:
@@ -211,6 +228,101 @@ def _sportradar_injury_job(day: str, at: str, report: str) -> Job:
         dedupe_dir="data/raw/sportradar_injuries",
         dedupe_minutes=300,
         added_on="2026-09-02",
+    )
+
+
+def _nflverse_injuries_job(day: str) -> Job:
+    return Job(
+        f"nflverse_injuries_{day}",
+        day,
+        "06:00",
+        180,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "nflverse_injuries_ingest.py"),
+        ],
+        True,
+        "2026-09-08: measured that no job in this file EVER captured injury data into "
+        "the model pipeline -- the NFL.com jobs (injuries_wed/thu/fri/sat) are paused by "
+        "MKT-09 source policy and sportradar_injuries_* are disabled without a paid key, "
+        "so the active card's injury input was frozen at whatever snapshot a session "
+        "built by hand. This bulk-ingests the nflverse injuries release (a public GitHub "
+        "release asset, not NFL.com, so MKT-09 does not apply) that "
+        "specialist_absence_fade_refresh_overlay.latest_nflverse_injuries_snapshot reads. "
+        "06:00 ET clears every same-day consumer with hours to spare (earliest same-day "
+        "deadline: refresh_sun 10:00 ET); catch_up=True because a late run is still a "
+        "valid, un-mislabelled bulk snapshot, matching player_arrests_tue's own reasoning.",
+        dedupe_dir="data/raw/nflverse_injuries",
+        dedupe_minutes=240,
+        added_on="2026-09-08",
+        catch_up=True,
+    )
+
+
+def _player_snapshot_job(day: str) -> Job:
+    return Job(
+        f"player_snapshot_{day}",
+        day,
+        "06:15",
+        180,
+        _cli(
+            "player-ingest",
+            "--injury-start-season",
+            "2009",
+            "--injury-end-season",
+            "2026",
+            "--roster-start-season",
+            "2009",
+            "--roster-end-season",
+            "2026",
+            "--snap-start-season",
+            "2013",
+            # 2026-09-08: pinned at 2025, NOT current_year - 1's usual value once
+            # 2026 becomes it -- snap_counts_2026 404s (no games played yet) and will
+            # keep 404ing until after Week 1's first Sunday (2026-09-13). player-ingest
+            # raises on a 404 (nflreadpy has no partial-season snap result), so asking
+            # for 2026 here would take this job down every run until that Sunday.
+            # DECISION: stay pinned at 2025 through Week 1; bump this literal to 2026
+            # in a dated follow-up once a manual `nfl-ats player-ingest
+            # --snap-end-season 2026 ...` probe confirms the season has rows (the same
+            # verify-before-scheduling discipline AGENTS.md's "label how you know it"
+            # rule requires elsewhere in this file). Not derived from current_year
+            # automatically on purpose: an auto-rolling snap upper bound would silently
+            # reintroduce the exact 404 this pin exists to avoid every future September.
+            "--snap-end-season",
+            "2025",
+            "--include-postseason",
+            "--timestamp-fallback",
+            "week_proxy",
+        ),
+        True,
+        "2026-09-08: the second half of closing the same injury-data gap its "
+        "nflverse_injuries_<day> counterpart closes -- this is what weekly-run's "
+        "--refresh-player-data (every lineups_* job, and implicitly every refresh-picks "
+        "pass that reads the active card's feature table) actually consumes. "
+        "--timestamp-fallback week_proxy (ENG-39) is required: nflverse's 2025+ injuries "
+        "release omits date_modified entirely, so the plain default ('drop') zeroes the "
+        "injury block for every 2025+ game -- this is the exact argv the 2026-09-08 "
+        "manual snapshot (20260908T192720Z) used to put the season's first non-zero "
+        "injury cells on the SEA/NE opener. KNOWN, BY-DESIGN LIMIT (not a scheduler "
+        "defect): canonicalize_injuries's week_proxy timestamp is "
+        "INJURY_PROXY_HOURS_BEFORE_KICKOFF (24h) before that team's own kickoff, and "
+        "prediction_safety's lineage check correctly refuses a snapshot whose "
+        "effective_timestamp is still in the future -- so a proxied row is not actually "
+        "usable by weekly-run's margin-predict step until 24h before its own game's "
+        "kickoff, regardless of how early this job runs (measured 2026-09-08: lineups_sat "
+        "FAIL(2), 'lineage effective_timestamp is after the prediction timestamp', for "
+        "exactly this reason on the Wednesday opener). 06:15 ET (5m after "
+        "nflverse_injuries_<day>, avoiding same-tick contention rather than any real "
+        "dependency) clears every same-day consumer with hours to spare. catch_up=True: "
+        "a late run is still a valid snapshot, matching player_arrests_tue.",
+        dedupe_dir="data/players/raw",
+        dedupe_minutes=240,
+        added_on="2026-09-08",
+        catch_up=True,
     )
 
 
@@ -684,7 +796,33 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_minutes=240,
         added_on="2026-09-01",
         catch_up=True,
+        # 2026-09-08: FAIL(2) at 07:00 with WinError 10013 ("An attempt was
+        # made to access a socket in a way forbidden by its access
+        # permissions") on all 3 of the in-process retries inside _request()
+        # (3s/6s apart, ~12s total) -- a transient Windows socket/firewall
+        # block, not a source-side error. A human's manual re-run 15 minutes
+        # later (07:15) succeeded. Two scheduler-level retries, 15 minutes
+        # apart, automate that same recovery inside the existing 90m grace
+        # (07:00 -> 07:15 -> 07:30, closing 08:30) instead of depending on a
+        # session noticing the FAIL row.
+        retry_backoff_minutes=15,
+        max_retries=2,
     ),
+    # --- Injury data into the model pipeline (2026-09-08) --------------------
+    # Measured this session: no job anywhere in this file ever captured injury
+    # data into the model's own feature-building path (grep -c
+    # "player-ingest|nflverse_injuries_ingest" against this file's own
+    # pre-session text returned 0) -- the only injury-shaped jobs are the
+    # paused NFL.com scrape (injuries_wed/thu/fri/sat, MKT-09) and the
+    # credential-gated Sportradar jobs (disabled without SPORTRADAR_API_KEY).
+    # The active card's injury input was therefore frozen at whatever
+    # snapshot a session happened to build by hand. Five days (Wed-Sun,
+    # matching every refresh_*/lineups_* pass that day), 06:00/06:15 ET so
+    # every capture clears the day's tightest consumer (refresh_sun 10:00 ET)
+    # with hours to spare -- see each job's own "why" for the argv and the
+    # known week_proxy/lineage-check interaction.
+    *(_nflverse_injuries_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
+    *(_player_snapshot_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
     # --- Official game-day inactives (WP17) -----------------------------------
     # docs/inactives_channel.md Section 2 (measured this session) computes T-90
     # ("official inactives instant" = kickoff - 90 minutes) against each slot's
@@ -1348,6 +1486,30 @@ def occurrence(job: Job, now: datetime) -> datetime:
     return stamp
 
 
+def retry_eligible(job: Job, record: dict[str, Any], now: datetime) -> bool:
+    """True when a FAILED occurrence may be attempted again right now.
+
+    Opt-in per job (``retry_backoff_minutes`` and ``max_retries`` both > 0);
+    every pre-existing job leaves both at 0, so this is always False for them
+    and a FAIL record blocks a second attempt exactly as it always has.
+    """
+
+    if job.retry_backoff_minutes <= 0 or job.max_retries <= 0:
+        return False
+    if not str(record.get("status", "")).startswith("FAIL"):
+        return False
+    if int(record.get("retries", 0)) >= job.max_retries:
+        return False
+    ran_at_raw = record.get("ran_at")
+    if not ran_at_raw:
+        return False
+    try:
+        ran_at = datetime.fromisoformat(str(ran_at_raw))
+    except ValueError:
+        return False
+    return now >= ran_at + timedelta(minutes=job.retry_backoff_minutes)
+
+
 def due_jobs(now: datetime, state: dict[str, Any]) -> list[tuple[Job, datetime]]:
     due: list[tuple[Job, datetime]] = []
     for job in SCHEDULE:
@@ -1355,7 +1517,11 @@ def due_jobs(now: datetime, state: dict[str, Any]) -> list[tuple[Job, datetime]]
             continue
         start = occurrence(job, now)
         key = f"{job.name}@{start.date().isoformat()}"
-        if key in state["runs"] or (job.season_guarded and not season_active(start)):
+        record = state["runs"].get(key)
+        if record is not None:
+            if not retry_eligible(job, record, now):
+                continue
+        elif job.season_guarded and not season_active(start):
             continue
         if predates_job(job, start):
             continue
@@ -1555,7 +1721,12 @@ def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> i
 
 
 def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False) -> None:
-    log(f"{'CATCH-UP-RUN' if catch_up else 'RUN'} {job.name} (window {start.isoformat()})")
+    key = f"{job.name}@{start.date().isoformat()}"
+    previous = state["runs"].get(key)
+    retries = int(previous.get("retries", 0)) + 1 if previous is not None else 0
+    label = "RETRY" if previous is not None else ("CATCH-UP-RUN" if catch_up else "RUN")
+    attempt_note = f", attempt {retries + 1}" if previous is not None else ""
+    log(f"{label} {job.name} (window {start.isoformat()}{attempt_note})")
     status, detail = execute_job(list(job.command))
     if catch_up and status == "OK":
         # Honest about the original miss: not OK (which reads as on time),
@@ -1568,7 +1739,9 @@ def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool 
     }
     if catch_up:
         record["caught_up"] = True
-    state["runs"][f"{job.name}@{start.date().isoformat()}"] = record
+    if retries:
+        record["retries"] = retries
+    state["runs"][key] = record
     entry = _job_health_entry(state, job.name)
     if status in {"OK", "CAUGHT_UP"}:
         entry["last_success_at"] = record["ran_at"]
@@ -1775,6 +1948,9 @@ def show_status(now: datetime, state: dict[str, Any]) -> None:
         record = state["runs"].get(key)
         if record:
             last = f"{record['status']} ({start.date()})"
+            retries = record.get("retries")
+            if retries:
+                last += f" after {retries} {'retry' if retries == 1 else 'retries'}"
         elif predates_job(job, start):
             last = f"added {job.added_on} (window predates job)"
         elif job.season_guarded and not season_active(start):

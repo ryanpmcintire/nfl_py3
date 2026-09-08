@@ -27,7 +27,7 @@ from _board_content_fixtures import (
     build_fixture_timeline,
 )
 
-from nfl_ats import board_terminal
+from nfl_ats import board_content, board_terminal
 from nfl_ats.board_content import (
     BANNED_BOILERPLATE,
     WEEK_REFRESH_PASSES,
@@ -1268,25 +1268,55 @@ def test_week_refresh_schedule_matches_enabled_pick_refresh_commands() -> None:
 @pytest.mark.parametrize(
     ("now", "expected", "absent"),
     [
-        ("2026-09-08T17:00:00+00:00", "Wednesday 6:15 PM ET refresh", "deadline passed"),
-        ("2026-09-09T22:15:00+00:00", "Thursday 11:55 AM ET refresh", "Wednesday 6:15"),
-        ("2026-09-15T12:00:00+00:00", "No scheduled refresh passes remain", "ET refresh"),
+        (
+            "2026-09-08T17:00:00+00:00",
+            "the next check is Wednesday 6:15 PM ET",
+            "deadline passed",
+        ),
+        (
+            "2026-09-09T22:15:00+00:00",
+            "the next check is Thursday 11:55 AM ET",
+            "Wednesday 6:15",
+        ),
+        (
+            "2026-09-15T12:00:00+00:00",
+            "No more checks are scheduled this week",
+            "the next check is",
+        ),
     ],
 )
-def test_week_timeline_renders_remaining_passes(now: str, expected: str, absent: str) -> None:
+def test_week_timeline_names_only_the_next_check(now: str, expected: str, absent: str) -> None:
+    """The page says when the lines locked, when picks are due, and what is next.
+
+    Owner, 2026-09-08, on the forty-line schedule wall this replaced:
+    "nothing short of a mistake". The itinerary is still BUILT -- the
+    per-game deadlines below prove it -- it is just no longer printed.
+    """
+
     content = build_fixture_content()
     timeline = build_fixture_timeline(content.games, datetime.fromisoformat(now))
     html = board_terminal._week_timeline_panel(replace(content, week_timeline=timeline))
     assert expected in html
     assert absent not in html
     assert "Pool lines locked Tuesday 12:00 PM ET" in html
-    assert "Monday 7:00 AM ET, August 31, 2026" in html
-    assert "Wednesday, September 09" in html
-    assert "Thursday, September 10" in html
-    assert "Sunday, September 13" in html
-    assert "DEN at KC (Monday game)" in html
-    assert "Sunday 4:00 PM ET, before kickoff" in html
-    assert "Monday, September 14" not in html
+    assert "kickoff, or Sunday 4:00 PM ET, whichever comes first" in html
+    # The wall itself: day headings, per-game deadline lines, the publication
+    # sentence, and the list markup must not be on the page any more.
+    for banned in (
+        "Wednesday, September 09",
+        "Thursday, September 10",
+        "Sunday, September 13",
+        "DEN at KC (Monday game)",
+        "Refresh passes still to come",
+        "Monday 7:00 AM ET, August 31, 2026",
+        "<h3>",
+        "<ul>",
+        "<li>",
+    ):
+        assert banned not in html
+    # ...but the assistant still has every deadline to answer from.
+    assert dict(timeline.deadlines)["2026_01_DEN_KC"]
+    assert timeline.groups
     for token in (*BANNED_BOILERPLATE, "refresh_wed", "2026-09-08T"):
         assert token not in html
 
@@ -1299,21 +1329,148 @@ def test_week_timeline_empty_and_missing_times() -> None:
     content = build_fixture_content()
     now = datetime(2026, 9, 8, 17, tzinfo=UTC)
     for games, expected in (
-        ((), "No forecast is available."),
+        ((), "No forecast is available yet"),
         (content.games, "Game times are missing"),
     ):
         timeline = build_week_timeline(pd.DataFrame(), games, now)
         html = board_terminal._week_timeline_panel(replace(content, week_timeline=timeline))
         assert expected in html
-        assert "Tuesday at 12:00 PM ET" in html
-        assert "Sunday 4:00 PM ET" in html
         assert not timeline.groups
 
 
 def test_week_timeline_is_on_this_week_page_and_escapes_content() -> None:
     content = build_fixture_content()
-    timeline = replace(content.week_timeline, publication="<unsafe>&")
+    timeline = replace(content.week_timeline, summary="<unsafe>&")
     html = board_terminal.render(replace(content, week_timeline=timeline))
-    assert '<h2 id="week-timeline-h">This week</h2>' in html
+    assert 'id="week-timeline-h"' in html
     assert "&lt;unsafe&gt;&amp;" in html
     assert "<unsafe>" not in html
+
+
+# ---------------------------------------------------------------------------
+# UI-20(f): the injury state chip under the board
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("note", "label", "state"),
+    [
+        (board_content.INJURY_NOTE_NONE_PUBLISHED_YET, "NONE PUBLISHED YET", "not_due"),
+        (board_content.INJURY_NOTE_NOT_AVAILABLE, "NOT AVAILABLE", "blocked"),
+        (board_content.INJURY_NOTE_OLDER_COPY, "OLDER COPY", "degraded"),
+        (board_content.INJURY_NOTE_NOT_RECORDED, "NOT RECORDED", "not_recorded"),
+    ],
+)
+def test_injury_state_chip_is_scannable_beside_its_own_sentence(
+    note: str, label: str, state: str
+) -> None:
+    """The sentence alone was not readable as a state, and the SOURCES panel
+    below it can say the injury feed is COMPLETE in a week where no report
+    existed at all. The chip names which fact the picks actually had, in the
+    same ``<b>label</b> -- text`` idiom as the Policy overlay line."""
+
+    content = replace(build_fixture_content(), injury_note=note)
+    html = board_terminal.render(content)
+    chip = f'<span class="src-state {state}">{label}</span>'
+    line = f"<b>Injury reports</b> {chip} &mdash; {escape(note)}"
+    assert html.count(line) == 1
+    # Still between the board table and the tiebreaker disclosure.
+    assert html.index("</tbody></table>") < html.index(line) < html.index("Tiebreaker guess")
+
+
+def test_injury_state_chip_borrows_only_existing_source_state_ink() -> None:
+    """No new colour vocabulary: every state the chip can print must already
+    have a ``.src-state`` rule in the stylesheet."""
+
+    css = board_terminal.TERMINAL_STYLE_CSS
+    for _prefix, _label, state in board_content._INJURY_STATES:
+        assert f".src-state.{state}" in css.replace(",", ",\n").replace(" ", ""), state
+    assert ".src-state.not_recorded" in css.replace(",", ",\n").replace(" ", "")
+
+
+# ---------------------------------------------------------------------------
+# UI-20(e): rival rules
+# ---------------------------------------------------------------------------
+
+
+def _rival_panel() -> board_content.RivalRulesPanel:
+    return board_content.RivalRulesPanel(
+        recorded=True,
+        summary="Of the 8 that pick a whole card, 7 take a different team somewhere this week.",
+        count_text="11 recorded beside this week's card",
+        rows=(
+            board_content.RivalRuleRow("Rain-on-grass underdog tilt", 5, 16, "BAL at IND"),
+            board_content.RivalRuleRow("Year-one coach fade", 0, 16, "Takes the same side"),
+        ),
+        single_game_line=(
+            "3 more rules name a single game each rather than a whole card: ARI at LAC (2)."
+        ),
+    )
+
+
+def test_rival_rules_section_shows_the_public_test_and_hides_the_detail() -> None:
+    """UI-20(e): a reader can see the card is run against rivals recorded in
+    advance -- and the per-rule detail is collapsed, because the owner struck
+    the last multi-line block off the top of this page on 2026-09-08."""
+
+    content = replace(build_fixture_content(), rivals=_rival_panel())
+    html = board_terminal.render(content)
+    assert '<h2 id="rivals-h">Rival rules</h2>' in html
+    assert "11 recorded beside this week&#x27;s card" in html
+    assert content.rivals.summary in html
+    assert content.rivals.method_note in html
+    assert content.rivals.single_game_line in html
+    for row in content.rivals.rows:
+        assert escape(row.name) in html
+        assert row.differs_text in html
+        assert escape(row.games_text) in html
+    # Everything per-rule sits inside the one disclosure, and the section
+    # sits between the week grid and the findings desk.
+    section = html[html.index('id="rivals-h"') : html.index('id="find-h"')]
+    details = section[section.index("<details") : section.index("</details>")]
+    for row in content.rivals.rows:
+        assert escape(row.name) in details
+    assert section.count("<details") == 1
+    # Default-visible text is a heading, a caption and one sentence.
+    visible = section[: section.index("<details")]
+    assert visible.count("<p") == 1
+
+
+def test_rival_rules_section_speaks_pool_words_not_research_words() -> None:
+    """Reader text carries no registry id, no research jargon, and none of
+    the banned boilerplate (AGENTS.md, "The board is for humans"). "Rival
+    rules" is the deliberate plain-English rename of "challenger"."""
+
+    content = replace(build_fixture_content(), rivals=_rival_panel())
+    section = board_terminal._rival_rules_section(content)
+    for token in (
+        *BANNED_BOILERPLATE,
+        "challenger",
+        "Challenger",
+        "rain_on_grass",
+        "prospective",
+        "ledger",
+        "fingerprint",
+        "P+",
+        "probability_positive",
+    ):
+        assert token not in section, token
+
+
+def test_rival_rules_section_is_dormant_and_escapes_content() -> None:
+    content = build_fixture_content()
+    assert not content.rivals.recorded
+    html = board_terminal.render(content)
+    assert escape(board_content.RIVAL_RULES_NONE_RECORDED) in html
+    assert "<details" not in html[html.index('id="rivals-h"') : html.index('id="find-h"')]
+
+    unsafe = replace(
+        _rival_panel(),
+        summary="<unsafe>&",
+        rows=(board_content.RivalRuleRow("<b>x</b>", 1, 2, "<i>y</i>"),),
+    )
+    html = board_terminal.render(replace(content, rivals=unsafe))
+    assert "&lt;unsafe&gt;&amp;" in html
+    assert "<unsafe>" not in html
+    assert "&lt;b&gt;x&lt;/b&gt;" in html
+    assert "&lt;i&gt;y&lt;/i&gt;" in html

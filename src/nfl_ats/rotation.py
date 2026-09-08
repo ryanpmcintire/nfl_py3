@@ -16,6 +16,7 @@ import json
 import math
 import os
 import sys
+import warnings
 from dataclasses import dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
@@ -301,12 +302,17 @@ _NO_ROTATION_FIELDS = frozenset(
 )
 
 
-def _no_rotation_record_from_payload(key: str, payload: Any) -> NoRotationRecord:
+def _no_rotation_record_from_payload(
+    key: str, payload: Any, *, on_unknown_field: weak_signals.OnUnknownField = "raise"
+) -> NoRotationRecord:
     if not isinstance(payload, dict):
         raise RegistryError(f"no_rotation_needed entry {key!r} is not an object")
     unknown = sorted(set(payload).difference(_NO_ROTATION_FIELDS))
     if unknown:
-        raise RegistryError(f"no_rotation_needed entry {key!r} has unknown fields: {unknown}")
+        _handle_unknown_fields(
+            f"no_rotation_needed entry {key!r} has unknown fields: {unknown}",
+            on_unknown_field=on_unknown_field,
+        )
     weak_signal_family = str(payload.get("weak_signal_family", ""))
     if not weak_signal_family:
         raise RegistryError(f"no_rotation_needed entry {key!r} is missing weak_signal_family")
@@ -338,6 +344,40 @@ class RegistryError(ValueError):
     A ``ValueError`` subclass so the CLI reports it as a user-facing error
     rather than a traceback, matching ``DataContractError``.
     """
+
+
+def _handle_unknown_fields(message: str, *, on_unknown_field: weak_signals.OnUnknownField) -> None:
+    """``"raise"`` (default, every existing caller) raises :class:`RegistryError`
+    exactly as before; ``"warn"`` drops the field and emits
+    :class:`weak_signals.UnknownRegistryFieldWarning` instead.
+
+    Mirrors ``weak_signals._handle_unknown_fields`` -- same incident, same
+    fix, same shared warning type (``rotation.py`` already borrows
+    ``weak_signals``'s vocabulary for ``CLOSING_GROUNDS``/``LEAGUES``, so a
+    caller watching for schema-drift warnings across BOTH registries only
+    ever has one class to catch). See that module's docstring on
+    :class:`~nfl_ats.weak_signals.UnknownRegistryFieldWarning` for the full
+    incident writeup; the rotation-registry instance of the same failure
+    shape was measured 2026-09-08 (``findings_registry.load_rotation_registry``
+    reached via ``board_site_content._load_findings_content`` on the live
+    ``publish-board`` path, unguarded, same as the weak-signal registry was).
+    Only an UNRECOGNISED FIELD is affected: every other rotation-registry
+    invariant -- including the closing-ground taxonomy enforced by
+    :func:`_validate_closing_ground` and the inline closing_ground checks in
+    :func:`_window_from_payload` -- keeps raising unconditionally in BOTH
+    modes. Those describe corrupted or contradictory data, and per repo
+    policy ("Directives now enforced in code -- never weaken the
+    validators") that enforcement must never be loosened.
+    """
+
+    if on_unknown_field == "raise":
+        raise RegistryError(message)
+    warnings.warn(
+        f"{message} -- ignored so this cannot abort a site build; add the field "
+        "to the matching allowlist in rotation.py to stop seeing this warning",
+        weak_signals.UnknownRegistryFieldWarning,
+        stacklevel=3,
+    )
 
 
 def earliest_eligible_start_season(
@@ -684,12 +724,17 @@ def _validate_plain_summary(context: str, plain_summary: Any) -> str | None:
 _LEG_RESULT_FIELDS = frozenset({"season", "effect", "probability_positive", "sample_blocks"})
 
 
-def _leg_result_from_payload(context: str, payload: Any) -> LegResult:
+def _leg_result_from_payload(
+    context: str, payload: Any, *, on_unknown_field: weak_signals.OnUnknownField = "raise"
+) -> LegResult:
     if not isinstance(payload, dict):
         raise RegistryError(f"{context}: leg_effects entries must be objects")
     unknown = sorted(set(payload).difference(_LEG_RESULT_FIELDS))
     if unknown:
-        raise RegistryError(f"{context}: unknown leg_effects fields: {unknown}")
+        _handle_unknown_fields(
+            f"{context}: unknown leg_effects fields: {unknown}",
+            on_unknown_field=on_unknown_field,
+        )
     if "season" not in payload or "effect" not in payload:
         raise RegistryError(f"{context}: a leg_effects entry requires season and effect")
     season = int(payload["season"])
@@ -712,7 +757,12 @@ def _leg_result_from_payload(context: str, payload: Any) -> LegResult:
 
 
 def _validate_leg_effects(
-    context: str, *, window_kind: str, seasons: tuple[int, ...], payload: Any
+    context: str,
+    *,
+    window_kind: str,
+    seasons: tuple[int, ...],
+    payload: Any,
+    on_unknown_field: weak_signals.OnUnknownField = "raise",
 ) -> tuple[LegResult, ...] | None:
     """Validate the per-leg magnitude report on a stratified window.
 
@@ -730,7 +780,10 @@ def _validate_leg_effects(
         raise RegistryError(f"{context}: leg_effects is only meaningful on a stratified window")
     if not isinstance(payload, list):
         raise RegistryError(f"{context}: leg_effects must be a list")
-    results = tuple(_leg_result_from_payload(context, entry) for entry in payload)
+    results = tuple(
+        _leg_result_from_payload(context, entry, on_unknown_field=on_unknown_field)
+        for entry in payload
+    )
     result_seasons = sorted(result.season for result in results)
     expected_seasons = sorted(seasons)
     if result_seasons != expected_seasons:
@@ -741,12 +794,17 @@ def _validate_leg_effects(
     return results
 
 
-def _window_from_payload(family_name: str, payload: Any) -> Window:
+def _window_from_payload(
+    family_name: str, payload: Any, *, on_unknown_field: weak_signals.OnUnknownField = "raise"
+) -> Window:
     if not isinstance(payload, dict):
         raise RegistryError(f"Family {family_name!r} has a non-object window entry")
     unknown = sorted(set(payload).difference(_WINDOW_FIELDS))
     if unknown:
-        raise RegistryError(f"Family {family_name!r} has unknown window fields: {unknown}")
+        _handle_unknown_fields(
+            f"Family {family_name!r} has unknown window fields: {unknown}",
+            on_unknown_field=on_unknown_field,
+        )
     window_kind = str(payload.get("window_kind", "contiguous"))
     if window_kind not in _WINDOW_KINDS:
         raise RegistryError(f"Family {family_name!r} has an unknown window_kind: {window_kind!r}")
@@ -802,6 +860,7 @@ def _window_from_payload(family_name: str, payload: Any) -> Window:
         window_kind=window_kind,
         seasons=(start, end),
         payload=payload.get("leg_effects"),
+        on_unknown_field=on_unknown_field,
     )
     # A closed_negative window carrying NO ground is tolerated here, and only
     # here: historical ledger entries are never re-judged on load (the same
@@ -830,12 +889,17 @@ def _window_from_payload(family_name: str, payload: Any) -> Window:
     )
 
 
-def _family_from_payload(name: str, payload: Any) -> Family:
+def _family_from_payload(
+    name: str, payload: Any, *, on_unknown_field: weak_signals.OnUnknownField = "raise"
+) -> Family:
     if not isinstance(payload, dict):
         raise RegistryError(f"Family {name!r} is not an object")
     unknown = sorted(set(payload).difference(_FAMILY_FIELDS))
     if unknown:
-        raise RegistryError(f"Family {name!r} has unknown fields: {unknown}")
+        _handle_unknown_fields(
+            f"Family {name!r} has unknown fields: {unknown}",
+            on_unknown_field=on_unknown_field,
+        )
     grade = str(payload.get("grade", ""))
     if grade not in GRADE_POOLS:
         raise RegistryError(f"Family {name!r} has an unknown grade: {grade!r}")
@@ -864,7 +928,10 @@ def _family_from_payload(name: str, payload: Any) -> Family:
         status=status,
         inherits=tuple(str(parent) for parent in inherits_payload),
         acknowledges_mined_2018_2025=bool(payload.get("acknowledges_mined_2018_2025", False)),
-        windows=tuple(_window_from_payload(name, window) for window in windows_payload),
+        windows=tuple(
+            _window_from_payload(name, window, on_unknown_field=on_unknown_field)
+            for window in windows_payload
+        ),
         coverage_weak_signal_family=(None if coverage_family is None else str(coverage_family)),
         coverage_league=None if coverage_league is None else str(coverage_league),
         coverage_effect_units=tuple(str(unit) for unit in coverage_effect_units_payload),
@@ -1272,14 +1339,30 @@ def registry_payload(registry: Registry) -> dict[str, Any]:
     return payload
 
 
-def registry_from_payload(payload: Any) -> Registry:
-    """Parse and validate a ledger payload."""
+def registry_from_payload(
+    payload: Any, *, on_unknown_field: weak_signals.OnUnknownField = "raise"
+) -> Registry:
+    """Parse and validate a ledger payload.
+
+    ``on_unknown_field`` (default ``"raise"``, unchanged behaviour) governs
+    ONLY the unrecognised-field checks -- at this level and at every nested
+    level (``no_rotation_needed`` entries, families, windows, leg effects) --
+    not any other validation. Pass ``"warn"`` for a reader that must never
+    abort on a purely additive schema change; every other rule (an unknown
+    grade/status/verdict, a malformed window, and above all the
+    closing-ground taxonomy in :func:`_validate_closing_ground` and the
+    inline closing_ground checks in :func:`_window_from_payload`) still
+    raises regardless of this setting -- see :func:`_handle_unknown_fields`.
+    """
 
     if not isinstance(payload, dict):
         raise RegistryError("Rotation registry must be a JSON object")
     unknown = sorted(set(payload).difference(_TOP_LEVEL_FIELDS))
     if unknown:
-        raise RegistryError(f"Rotation registry has unknown top-level fields: {unknown}")
+        _handle_unknown_fields(
+            f"Rotation registry has unknown top-level fields: {unknown}",
+            on_unknown_field=on_unknown_field,
+        )
     families_payload = payload.get("families", {})
     if not isinstance(families_payload, dict):
         raise RegistryError("Rotation registry families must be an object")
@@ -1293,11 +1376,13 @@ def registry_from_payload(payload: Any) -> Registry:
         version=int(payload.get("version", 0)),
         notes=tuple(str(note) for note in notes_payload),
         families={
-            str(name): _family_from_payload(str(name), family)
+            str(name): _family_from_payload(str(name), family, on_unknown_field=on_unknown_field)
             for name, family in families_payload.items()
         },
         no_rotation_needed={
-            str(key): _no_rotation_record_from_payload(str(key), record)
+            str(key): _no_rotation_record_from_payload(
+                str(key), record, on_unknown_field=on_unknown_field
+            )
             for key, record in no_rotation_payload.items()
         },
     )
@@ -1305,8 +1390,17 @@ def registry_from_payload(payload: Any) -> Registry:
     return registry
 
 
-def load_registry(path: Path | None = None) -> Registry:
-    """Read and validate the ledger; every rule violation raises ``RegistryError``."""
+def load_registry(
+    path: Path | None = None, *, on_unknown_field: weak_signals.OnUnknownField = "raise"
+) -> Registry:
+    """Read and validate the ledger; every rule violation raises ``RegistryError``.
+
+    ``on_unknown_field`` (default ``"raise"``, unchanged behaviour) is
+    forwarded to :func:`registry_from_payload`; pass ``"warn"`` for a reader
+    that must never abort on a purely additive schema change -- currently
+    only ``findings_registry.load_rotation_registry``, the site build's
+    entry point.
+    """
 
     destination = path or default_registry_path()
     if not destination.is_file():
@@ -1315,7 +1409,7 @@ def load_registry(path: Path | None = None) -> Registry:
         payload = json.loads(destination.read_text(encoding="utf-8"))
     except json.JSONDecodeError as error:
         raise RegistryError(f"Rotation registry is not valid JSON: {destination}") from error
-    return registry_from_payload(payload)
+    return registry_from_payload(payload, on_unknown_field=on_unknown_field)
 
 
 def save_registry(registry: Registry, path: Path | None = None) -> None:

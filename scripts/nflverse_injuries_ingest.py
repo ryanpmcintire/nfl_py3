@@ -95,18 +95,27 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.io import atomic_json, atomic_parquet  # noqa: E402
+from nfl_ats.nflverse_current_season import load_season_frame  # noqa: E402
 from nfl_ats.provenance import sha256_file  # noqa: E402
 
 RELEASE_URL_TEMPLATE = (
     "https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_{season}.parquet"
 )
 SEASON_START = 2009
-# One past the last season nflreadpy's own get_current_season() resolved to,
-# measured this session (2026-08-26) -- kept as a literal upper bound (not a
-# live call to get_current_season() at import time) so a snapshot's season
-# range is reproducible from this script's own text, matching every other
-# ingest script's SEASON_START/SEASON_END convention in this repo.
-SEASON_END = 2025
+# Kept as a literal upper bound (not a live call to get_current_season() at
+# import time) so a snapshot's season range is reproducible from this
+# script's own text, matching every other ingest script's
+# SEASON_START/SEASON_END convention in this repo.
+#
+# Was 2025, chosen on 2026-08-26 as "one past the last season nflreadpy's own
+# get_current_season() resolved to". That reasoning imported nflreadpy's
+# rollover rule -- the Thursday after Labor Day -- into this repo's data
+# coverage, and for 2026 that Thursday (09-10) falls AFTER Week 1 opens on
+# Wednesday 09-09. Measured 2026-09-08: injuries_2026.parquet was already
+# published (11 rows, the NE/SEA opener) while every snapshot taken under the
+# old bound held zero 2026 rows, so the refresh overlays that read the newest
+# snapshot saw no injuries for the season's first game.
+SEASON_END = 2026
 
 
 def _to_pandas(frame: Any) -> pd.DataFrame:
@@ -123,12 +132,14 @@ def _to_pandas(frame: Any) -> pd.DataFrame:
 
 
 def fetch_season(season: int) -> dict[str, Any]:
-    import nflreadpy as nfl
 
     t0 = time.time()
     url = RELEASE_URL_TEMPLATE.format(season=season)
     try:
-        polars_frame = nfl.load_injuries(seasons=[season])
+        # Not nfl.load_injuries: its season guard refuses the current season
+        # until the Thursday after Labor Day. See
+        # nfl_ats.nflverse_current_season for the measurement.
+        polars_frame = load_season_frame("injuries", season)
     except Exception as exc:  # record the failure, keep going
         return {
             "season": season,

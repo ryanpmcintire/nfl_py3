@@ -5203,7 +5203,9 @@
                   "hybrid_key_distance",
                   "hybrid_key_distance_by_size",
                   "smooth_home_side_shift",
-                  "lattice_home_side"
+                  "lattice_home_side",
+                  "discrete_conditional_lattice",
+                  "discrete_conditional_key_neighbourhood"
                 ]
               },
               "required": false,
@@ -8935,7 +8937,9 @@
                   "hybrid_key_distance",
                   "hybrid_key_distance_by_size",
                   "smooth_home_side_shift",
-                  "lattice_home_side"
+                  "lattice_home_side",
+                  "discrete_conditional_lattice",
+                  "discrete_conditional_key_neighbourhood"
                 ]
               },
               "required": false,
@@ -9926,7 +9930,9 @@
                   "hybrid_key_distance",
                   "hybrid_key_distance_by_size",
                   "smooth_home_side_shift",
-                  "lattice_home_side"
+                  "lattice_home_side",
+                  "discrete_conditional_lattice",
+                  "discrete_conditional_key_neighbourhood"
                 ]
               },
               "required": false,

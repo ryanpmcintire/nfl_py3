@@ -36,16 +36,18 @@ measured, and does arithmetic on it.
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import math
 import os
 import re
 import statistics
-from collections.abc import Iterable, Sequence
+import warnings
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 from nfl_ats.evidence_conventions import binomial_two_sided_p
 from nfl_ats.io import atomic_json
@@ -247,6 +249,48 @@ class WeakSignalError(ValueError):
     A ``ValueError`` subclass so the CLI reports it as a user-facing error
     rather than a traceback, matching ``RegistryError`` and ``DataContractError``.
     """
+
+
+class UnknownRegistryFieldWarning(UserWarning):
+    """Emitted instead of :class:`WeakSignalError` when a field this build of
+    the code does not recognise is tolerated rather than rejected.
+
+    See ``on_unknown_field`` on :func:`signal_from_payload`,
+    :func:`registry_from_payload` and :func:`load_registry` -- the incident
+    this exists for (measured 2026-09-08): a session committed a new
+    ``corrections`` field on registry entries and the matching addition to
+    ``_SIGNAL_FIELDS`` in the SAME commit, but a scheduled ``publish-board``
+    ran between the data write and the code write and read a payload one
+    field ahead of the code that had to parse it -- aborting the whole
+    ``weekly-run`` at the ``publish-board`` step. A schema addition is
+    forward-compatible by construction; it is never grounds to take down the
+    public site.
+    """
+
+
+#: ``"raise"`` (the default everywhere -- unchanged behaviour for the
+#: ``weak-signals`` CLI, where an unrecognised field is exactly the kind of
+#: typo an operator should hear about immediately) or ``"warn"`` (emit
+#: :class:`UnknownRegistryFieldWarning` and drop the field instead of
+#: raising). Every OTHER validation -- missing required fields, an
+#: unrecognised enum value, an incoherent effect/interval, an inadmissible
+#: closing ground -- still raises regardless of this setting: those describe
+#: corrupted or contradictory DATA, not additive schema drift, and a site
+#: build has no business publishing on top of either. Only the read path
+#: feeding the public site (``findings_registry.load_weak_signal_registry``)
+#: passes ``"warn"``.
+OnUnknownField = Literal["raise", "warn"]
+
+
+def _handle_unknown_fields(message: str, *, on_unknown_field: OnUnknownField) -> None:
+    if on_unknown_field == "raise":
+        raise WeakSignalError(message)
+    warnings.warn(
+        f"{message} -- ignored so this cannot abort a site build; add the field "
+        "to the matching allowlist in weak_signals.py to stop seeing this warning",
+        UnknownRegistryFieldWarning,
+        stacklevel=3,
+    )
 
 
 @dataclass(frozen=True)
@@ -454,6 +498,44 @@ def validate_coherence(
     )
 
 
+def _validate_signal_numeric_fields(
+    name: str,
+    *,
+    effect: float,
+    standard_error: float | None,
+    interval: tuple[float, float] | None,
+    probability_positive: float | None,
+) -> None:
+    """The value-level numeric checks a stored signal must satisfy.
+
+    Shared between the load path (:func:`signal_from_payload`) and the write
+    path (:func:`record_signal`) -- exactly the same messages either way, so
+    a caller cannot tell which path caught the problem from the text alone.
+    Structural/type coercion (JSON payload shapes) stays in
+    ``signal_from_payload`` alone; this is only the values.
+
+    ``record_signal`` needs this call explicitly because the CLI's ``record``
+    command builds a :class:`WeakSignal` directly rather than routing through
+    :func:`signal_from_payload` (the same reason :func:`validate_closure` is
+    already called from both places). Without it, ``weak-signals record``
+    accepted ``--standard-error 0.0`` with no complaint -- measured
+    2026-09-08 -- and the row only failed on the NEXT load, by which point it
+    was already written and blocking every other write to the registry too.
+    """
+
+    _require(math.isfinite(effect), f"Signal {name!r} has a non-finite effect")
+    if standard_error is not None:
+        _require(standard_error > 0.0, f"Signal {name!r} has a non-positive standard_error")
+    if interval is not None:
+        low, high = interval
+        _require(low <= high, f"Signal {name!r} has an inverted interval")
+    if probability_positive is not None:
+        _require(
+            0.0 <= probability_positive <= 1.0,
+            f"Signal {name!r} has probability_positive outside [0, 1]",
+        )
+
+
 def coherence_problems(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
     """Report signals whose point estimate sits outside their own interval.
 
@@ -482,7 +564,9 @@ def coherence_problems(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
     return problems
 
 
-def _validate_corrections(name: str, corrections: Any) -> None:
+def _validate_corrections(
+    name: str, corrections: Any, *, on_unknown_field: OnUnknownField = "raise"
+) -> None:
     """A correction may fix a wrong SUMMARY; it may never revise a measurement.
 
     Keeping this narrow is the point. ``probability_positive`` is a summary of
@@ -506,7 +590,11 @@ def _validate_corrections(name: str, corrections: Any) -> None:
         missing = sorted(_CORRECTION_FIELDS.difference(entry))
         _require(not missing, f"{where}: missing {', '.join(missing)}")
         extra = sorted(set(entry).difference(_CORRECTION_FIELDS))
-        _require(not extra, f"{where}: unknown fields: {', '.join(extra)}")
+        if extra:
+            _handle_unknown_fields(
+                f"{where}: unknown fields: {', '.join(extra)}",
+                on_unknown_field=on_unknown_field,
+            )
         field = entry["field"]
         _require(
             field in _CORRECTABLE_FIELDS,
@@ -521,12 +609,25 @@ def _validate_corrections(name: str, corrections: Any) -> None:
         )
 
 
-def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
+def signal_from_payload(
+    name: str, payload: dict[str, Any], *, on_unknown_field: OnUnknownField = "raise"
+) -> WeakSignal:
+    """Build a :class:`WeakSignal` from its raw JSON payload.
+
+    ``on_unknown_field`` (default ``"raise"``) governs ONLY the unrecognised
+    -field check, not any other validation -- see :data:`OnUnknownField` for
+    why that split exists and who is expected to pass ``"warn"``.
+    """
+
     unknown = sorted(set(payload).difference(_SIGNAL_FIELDS))
-    _require(not unknown, f"Signal {name!r} has unknown fields: {', '.join(unknown)}")
+    if unknown:
+        _handle_unknown_fields(
+            f"Signal {name!r} has unknown fields: {', '.join(unknown)}",
+            on_unknown_field=on_unknown_field,
+        )
     for field in ("recorded_at", "description", "source", "effect", "effect_units"):
         _require(field in payload, f"Signal {name!r} is missing {field!r}")
-    _validate_corrections(name, payload.get("corrections"))
+    _validate_corrections(name, payload.get("corrections"), on_unknown_field=on_unknown_field)
     classification = payload.get("classification")
     status = payload.get("status", "active")
     validate_invalidation(
@@ -567,7 +668,6 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
     start, end = int(seasons[0]), int(seasons[1])
     _require(start <= end, f"Signal {name!r} has seasons out of order")
     effect = float(payload["effect"])
-    _require(math.isfinite(effect), f"Signal {name!r} has a non-finite effect")
 
     interval_payload = payload.get("interval")
     interval: tuple[float, float] | None = None
@@ -578,21 +678,23 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
         )
         assert isinstance(interval_payload, (list, tuple))
         low, high = float(interval_payload[0]), float(interval_payload[1])
-        _require(low <= high, f"Signal {name!r} has an inverted interval")
         interval = (low, high)
 
     standard_error = payload.get("standard_error")
     if standard_error is not None:
         standard_error = float(standard_error)
-        _require(standard_error > 0.0, f"Signal {name!r} has a non-positive standard_error")
 
     probability_positive = payload.get("probability_positive")
     if probability_positive is not None:
         probability_positive = float(probability_positive)
-        _require(
-            0.0 <= probability_positive <= 1.0,
-            f"Signal {name!r} has probability_positive outside [0, 1]",
-        )
+
+    _validate_signal_numeric_fields(
+        name,
+        effect=effect,
+        standard_error=standard_error,
+        interval=interval,
+        probability_positive=probability_positive,
+    )
 
     probability_positive_payload = payload.get("probability_positive")
     reliability = payload.get("reliability")
@@ -642,9 +744,22 @@ def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
     )
 
 
-def registry_from_payload(payload: dict[str, Any]) -> Registry:
+def registry_from_payload(
+    payload: dict[str, Any], *, on_unknown_field: OnUnknownField = "raise"
+) -> Registry:
+    """Build a :class:`Registry` from the raw ``weak_signals.json`` payload.
+
+    ``on_unknown_field`` is forwarded to :func:`signal_from_payload` for every
+    entry and also governs this function's own top-level check; see
+    :data:`OnUnknownField`.
+    """
+
     unknown = sorted(set(payload).difference(_TOP_LEVEL_FIELDS))
-    _require(not unknown, f"Ledger has unknown top-level fields: {', '.join(unknown)}")
+    if unknown:
+        _handle_unknown_fields(
+            f"Ledger has unknown top-level fields: {', '.join(unknown)}",
+            on_unknown_field=on_unknown_field,
+        )
     version = int(payload.get("version", 0))
     _require(
         version == WEAK_SIGNAL_REGISTRY_VERSION,
@@ -652,9 +767,81 @@ def registry_from_payload(payload: dict[str, Any]) -> Registry:
     )
     raw_signals = payload.get("signals", {})
     _require(isinstance(raw_signals, dict), "Ledger 'signals' must be an object")
-    signals = {name: signal_from_payload(name, body) for name, body in raw_signals.items()}
+    signals = {
+        name: signal_from_payload(name, body, on_unknown_field=on_unknown_field)
+        for name, body in raw_signals.items()
+    }
     notes = tuple(str(note) for note in payload.get("notes", ()))
     return Registry(version=version, notes=notes, signals=signals)
+
+
+@dataclass(frozen=True)
+class QuarantinedSignal:
+    """One registry entry that failed its own validation on a permissive load.
+
+    Produced only by :func:`registry_from_payload_permissive` /
+    :func:`load_registry_permissive` -- the strict path
+    (:func:`registry_from_payload` / :func:`load_registry`) never quarantines
+    anything, it raises, exactly as before. Exists so a WRITE command
+    (``weak-signals record --replace``, ``invalidate``, ``retag-units``,
+    ``set-reliability``) is never blocked from repairing the very entry that
+    is broken, or from touching an unrelated, valid entry, just because SOME
+    entry in the file currently fails validation.
+
+    Measured 2026-09-08: a degenerate ``standard_error: 0.0`` entry made
+    ``record --replace`` -- the one sanctioned repair tool -- unusable on
+    itself. The registry had to be hand-edited with a throwaway script to
+    delete the row before it could be re-recorded, exactly the workaround
+    AGENTS.md exists to make unnecessary.
+    """
+
+    name: str
+    payload: dict[str, Any]
+    error: str
+
+
+def registry_from_payload_permissive(
+    payload: dict[str, Any], *, on_unknown_field: OnUnknownField = "raise"
+) -> tuple[Registry, dict[str, QuarantinedSignal]]:
+    """Like :func:`registry_from_payload`, but a signal that fails ITS OWN
+    validation (a non-positive standard_error, an inverted interval, an
+    unrecognised classification, ...) is set aside in the returned
+    quarantine map instead of aborting the whole load.
+
+    Top-level structural problems (an unsupported version, a non-object
+    ``signals`` map) still raise -- those are not one entry's problem a
+    targeted repair can fix, and quarantining them would only hide a much
+    bigger break. The returned :class:`Registry` never needs re-validating:
+    every signal in it individually passed :func:`signal_from_payload`, and
+    this module enforces no CROSS-signal invariant (unlike ``rotation.py``'s
+    "at most one assigned window"), so dropping the quarantined entries out
+    of the parsed registry cannot silently violate a rule that spans
+    multiple signals.
+    """
+
+    unknown = sorted(set(payload).difference(_TOP_LEVEL_FIELDS))
+    if unknown:
+        _handle_unknown_fields(
+            f"Ledger has unknown top-level fields: {', '.join(unknown)}",
+            on_unknown_field=on_unknown_field,
+        )
+    version = int(payload.get("version", 0))
+    _require(
+        version == WEAK_SIGNAL_REGISTRY_VERSION,
+        f"Unsupported weak-signal registry version: {version}",
+    )
+    raw_signals = payload.get("signals", {})
+    _require(isinstance(raw_signals, dict), "Ledger 'signals' must be an object")
+    signals: dict[str, WeakSignal] = {}
+    quarantined: dict[str, QuarantinedSignal] = {}
+    for name, body in raw_signals.items():
+        key = str(name)
+        try:
+            signals[key] = signal_from_payload(key, body, on_unknown_field=on_unknown_field)
+        except WeakSignalError as error:
+            quarantined[key] = QuarantinedSignal(name=key, payload=body, error=str(error))
+    notes = tuple(str(note) for note in payload.get("notes", ()))
+    return Registry(version=version, notes=notes, signals=signals), quarantined
 
 
 def registry_to_payload(registry: Registry) -> dict[str, Any]:
@@ -709,15 +896,68 @@ def default_registry_path(root: Path | None = None) -> Path:
     return base / WEAK_SIGNAL_REGISTRY_FILENAME
 
 
-def load_registry(path: Path) -> Registry:
+def load_registry(path: Path, *, on_unknown_field: OnUnknownField = "raise") -> Registry:
+    """Load the ledger at ``path``, or an empty one if it does not exist yet.
+
+    ``on_unknown_field`` (default ``"raise"``, unchanged behaviour) is
+    forwarded to :func:`registry_from_payload`; pass ``"warn"`` for a reader
+    that must never abort on a purely additive schema change -- currently
+    only ``findings_registry.load_weak_signal_registry``, the site build's
+    entry point. See :data:`OnUnknownField`.
+    """
+
     if not path.is_file():
         return Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
     payload = json.loads(path.read_text(encoding="utf-8"))
-    return registry_from_payload(payload)
+    return registry_from_payload(payload, on_unknown_field=on_unknown_field)
+
+
+def load_registry_permissive(
+    path: Path, *, on_unknown_field: OnUnknownField = "raise"
+) -> tuple[Registry, dict[str, QuarantinedSignal]]:
+    """Load the ledger the way :func:`load_registry` does, except an
+    individually-invalid entry is quarantined instead of aborting the whole
+    file. See :func:`registry_from_payload_permissive`; pair with
+    :func:`save_registry_preserving_quarantine` so a write that uses this to
+    get past someone else's broken row does not silently delete that row.
+    """
+
+    if not path.is_file():
+        return Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={}), {}
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return registry_from_payload_permissive(payload, on_unknown_field=on_unknown_field)
 
 
 def save_registry(registry: Registry, path: Path) -> None:
     atomic_json(registry_to_payload(registry), path)
+
+
+def save_registry_preserving_quarantine(
+    registry: Registry, quarantined: Mapping[str, QuarantinedSignal], path: Path
+) -> None:
+    """Write ``registry``, re-inserting the RAW payload of every entry in
+    ``quarantined`` that ``registry.signals`` does not now hold, verbatim.
+
+    Pairs with :func:`load_registry_permissive`. A repair -- ``record
+    --replace`` on the one broken entry, or any other write while some
+    UNRELATED entry is still broken -- must never silently delete a
+    different entry's history from the file just because a permissive load
+    set it aside to get past it. AGENTS.md forbids silently discarding a
+    recorded measurement; a quarantined entry is already invalid, but
+    "invalid" is not "gone", and a future session must still be able to see
+    and repair it in its own turn. An entry that WAS quarantined and is now
+    present in ``registry.signals`` (the one this call just repaired) is
+    correctly not re-added -- its fixed, validated form is what
+    :func:`registry_to_payload` already wrote for it.
+    """
+
+    payload = registry_to_payload(registry)
+    signals = payload["signals"]
+    for name, entry in quarantined.items():
+        if name not in registry.signals:
+            signals[name] = entry.payload
+    payload["signals"] = dict(sorted(signals.items()))
+    atomic_json(payload, path)
 
 
 def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = False) -> Registry:
@@ -740,9 +980,19 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
         raise WeakSignalError(
             f"Signal {signal.name!r} is already recorded; pass replace=True to correct it"
         )
-    # The CLI constructs WeakSignal directly, so the closure taxonomy must be
-    # enforced here too, not only on load — record time is when the session
-    # that is about to write an inadmissible verdict needs to hear about it.
+    # The CLI constructs WeakSignal directly, so every check signal_from_payload
+    # would otherwise apply on load must be enforced here too — record time is
+    # when the session about to write a bad row needs to hear about it, not the
+    # NEXT load (measured 2026-09-08: a --standard-error 0.0 record went
+    # straight into the file with no complaint here, and only failed to load
+    # afterwards -- by which point it was already written).
+    _validate_signal_numeric_fields(
+        signal.name,
+        effect=signal.effect,
+        standard_error=signal.standard_error,
+        interval=signal.interval,
+        probability_positive=signal.probability_positive,
+    )
     validate_closure(
         signal.name,
         classification=signal.classification,
@@ -753,6 +1003,26 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
         probability_positive=signal.probability_positive,
     )
     validate_coherence(signal.name, effect=signal.effect, interval=signal.interval)
+    # docs/weak_signal_pooling.md defect 4: a band narrower than its own
+    # sample_games can support is a block-bootstrap artifact, not power, and
+    # is floored rather than trusted at POOL time. Applying the SAME floor
+    # here, at RECORD time, means a future lane cannot store a zero-width (or
+    # otherwise implausibly narrow) band in the first place -- widening only,
+    # and only ever with a warning; see ImplausibleStandardErrorWarning.
+    floor = _floor_standard_error_for_record(registry, signal)
+    if floor is not None and signal.standard_error is not None and signal.standard_error < floor:
+        warnings.warn(
+            f"Signal {signal.name!r}: standard_error {signal.standard_error:.6g} is narrower "
+            f"than its own sample size plausibly supports; widened to {floor:.6g} at record "
+            "time instead of stored as offered (docs/weak_signal_pooling.md defect 4's floor, "
+            "applied here so this cannot be stored narrower than the pool already trusts)",
+            ImplausibleStandardErrorWarning,
+            stacklevel=2,
+        )
+        # dataclasses.replace, fully qualified: this function's own `replace`
+        # PARAMETER (whether to overwrite an existing name) shadows the
+        # `replace` imported from `dataclasses` for the rest of this scope.
+        signal = dataclasses.replace(signal, standard_error=floor)
     signals = dict(registry.signals)
     signals[signal.name] = signal
     return Registry(version=registry.version, notes=registry.notes, signals=signals)
@@ -1023,6 +1293,23 @@ POOLING_WEIGHTINGS = ("sample_floored", "inverse_variance")
 _IMPLAUSIBLE_SE_ROBUST_SIGMAS = 3.0
 
 
+def _median_games_per_block(signals: Sequence[WeakSignal]) -> float | None:
+    """The pool's own median games-per-block, or ``None`` when nothing in
+    ``signals`` carries both ``sample_games`` and ``sample_blocks`` to derive
+    it from. Shared by :func:`_pool_sample_sizes` (imputing a missing sample
+    size at POOL time) and :func:`_floor_standard_error_for_record`
+    (converting a single new signal's ``sample_blocks`` at RECORD time) --
+    the same conversion, so the two never drift apart.
+    """
+
+    per_block = [
+        s.sample_games / s.sample_blocks
+        for s in signals
+        if s.sample_games and s.sample_blocks and s.sample_blocks > 0
+    ]
+    return statistics.median(per_block) if per_block else None
+
+
 def _pool_sample_sizes(usable: Sequence[WeakSignal]) -> tuple[list[float] | None, int]:
     """How much football each entry actually saw, with missing values imputed.
 
@@ -1033,12 +1320,7 @@ def _pool_sample_sizes(usable: Sequence[WeakSignal]) -> tuple[list[float] | None
     signal to fall back to the legacy inverse-variance weighting.
     """
 
-    per_block = [
-        s.sample_games / s.sample_blocks
-        for s in usable
-        if s.sample_games and s.sample_blocks and s.sample_blocks > 0
-    ]
-    games_per_block = statistics.median(per_block) if per_block else None
+    games_per_block = _median_games_per_block(usable)
 
     partial: list[float | None] = []
     for signal in usable:
@@ -1119,6 +1401,67 @@ def _plausibility_curve(usable: Sequence[WeakSignal]) -> _PlausibilityCurve | No
     return _PlausibilityCurve(
         scale=scale, sample_sizes=sample_sizes, log_ratios=log_ratios, cutoff=cutoff
     )
+
+
+class ImplausibleStandardErrorWarning(UserWarning):
+    """Emitted when :func:`record_signal` widens an incoming ``standard_error``
+    up to the pool's own plausibility floor instead of storing it as offered.
+
+    ``docs/weak_signal_pooling.md`` defect 4 already establishes the
+    convention -- a band narrower than its own ``sample_games`` can support is
+    a block-bootstrap artifact, not statistical power, so it is FLOORED, not
+    trusted and not dropped -- and :attr:`_PlausibilityCurve.floor_for`
+    applies it at POOL time. This is the same formula applied at RECORD time
+    instead, so a future lane cannot store a zero-width (or otherwise
+    implausibly narrow) band in the first place. Measured 2026-09-08: a
+    15-game positive-control cell where a leaked feature was right on all 15
+    games and the baseline wrong on all 15 recorded ``standard_error: 0.0`` --
+    a genuinely degenerate bootstrap, not a typo -- and that single row later
+    took the whole public site build down and blocked its own repair (see
+    :class:`UnknownRegistryFieldWarning` and :func:`load_registry_permissive`
+    for the rest of that incident). Widening is a courtesy, not a silent
+    rewrite: it only ever WIDENS (never narrows) an already-positive value
+    that fails :func:`_validate_signal_numeric_fields`'s own hard floor of
+    zero, and it always warns when it fires.
+    """
+
+
+def _floor_standard_error_for_record(registry: Registry, signal: WeakSignal) -> float | None:
+    """The narrowest ``standard_error`` ``signal`` may plausibly store, per
+    the REST of the registry's own same-unit pool -- or ``None`` when there
+    is nothing to floor against (fewer than three usable same-unit,
+    non-invalidated entries elsewhere in the registry, or this signal's own
+    sample size cannot be determined), in which case :func:`record_signal`
+    stores the offered value unchanged.
+
+    Deliberately excludes ``signal.name`` itself from the fitting pool (the
+    entry being written -- new or a ``--replace`` -- must never be able to
+    move its own floor), and only ever widens: the caller compares the
+    result against the signal's OWN standard_error and keeps the larger.
+    """
+
+    if signal.standard_error is None or signal.standard_error <= 0.0:
+        return None
+    pool_source = [
+        other
+        for name, other in registry.signals.items()
+        if name != signal.name
+        and other.status != "invalidated"
+        and other.effect_units == signal.effect_units
+    ]
+    curve = _plausibility_curve(pool_source)
+    if curve is None:
+        return None
+    sample_games: float | None = None
+    if signal.sample_games and signal.sample_games > 0:
+        sample_games = float(signal.sample_games)
+    else:
+        games_per_block = _median_games_per_block(pool_source)
+        if signal.sample_blocks and signal.sample_blocks > 0 and games_per_block:
+            sample_games = float(signal.sample_blocks) * games_per_block
+    if sample_games is None or sample_games <= 0.0:
+        return None
+    return math.exp(curve.cutoff) * math.sqrt(curve.scale / sample_games)
 
 
 def pooled_effect(

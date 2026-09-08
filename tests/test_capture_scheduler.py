@@ -909,3 +909,305 @@ def test_tuesday_opener_is_captured_after_the_pool_locks_at_noon() -> None:
     for job in capture_scheduler.SCHEDULE:
         if job.day == "tue" and "odds" in job.name:
             assert capture_scheduler.occurrence(job, tuesday) > pool_lock, job.name
+
+
+# ---------------------------------------------------------------------------
+# Retry-with-backoff for a job that RAN and FAILED (2026-09-08:
+# player_arrests_tue's WinError 10013 -- distinct from catch_up, which only
+# covers a window that closed with nothing attempted at all).
+# ---------------------------------------------------------------------------
+
+
+def test_retry_is_opt_in_and_every_pre_existing_job_defaults_off() -> None:
+    for job in capture_scheduler.SCHEDULE:
+        if job.name == "player_arrests_tue":
+            continue
+        assert job.retry_backoff_minutes == 0
+        assert job.max_retries == 0
+
+
+def test_a_failed_occurrence_without_retry_policy_is_never_retried(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The pre-existing behaviour, pinned: a FAIL record blocks a second
+    attempt at the same occurrence unless the job opts in."""
+    job = make_job(day="tue", at="07:00", grace_minutes=90)
+    monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
+    start = datetime(2026, 9, 8, 7, 0, tzinfo=ET)
+    key = f"{job.name}@{start.date().isoformat()}"
+    state = {
+        "runs": {
+            key: {
+                "status": "FAIL(2)",
+                "window_start": start.isoformat(),
+                "ran_at": start.isoformat(),
+            }
+        }
+    }
+
+    assert capture_scheduler.due_jobs(start + timedelta(hours=1), state) == []
+
+
+def test_a_failed_occurrence_is_retried_once_backoff_elapses(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    job = make_job(day="tue", at="07:00", grace_minutes=90, retry_backoff_minutes=15, max_retries=2)
+    monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
+    first_attempt = datetime(2026, 9, 8, 7, 0, tzinfo=ET)
+    key = f"{job.name}@{first_attempt.date().isoformat()}"
+    state = {
+        "runs": {
+            key: {
+                "status": "FAIL(2)",
+                "window_start": first_attempt.isoformat(),
+                "ran_at": first_attempt.isoformat(),
+            }
+        }
+    }
+
+    too_soon = first_attempt + timedelta(minutes=10)
+    assert capture_scheduler.due_jobs(too_soon, state) == []
+
+    ready = first_attempt + timedelta(minutes=15)
+    due = capture_scheduler.due_jobs(ready, state)
+    assert [j.name for j, _ in due] == [job.name]
+
+
+def test_retry_stops_after_max_retries_even_inside_the_grace_window(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    job = make_job(day="tue", at="07:00", grace_minutes=90, retry_backoff_minutes=15, max_retries=2)
+    monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
+    first_attempt = datetime(2026, 9, 8, 7, 0, tzinfo=ET)
+    key = f"{job.name}@{first_attempt.date().isoformat()}"
+    state = {
+        "runs": {
+            key: {
+                "status": "FAIL(2)",
+                "window_start": first_attempt.isoformat(),
+                "ran_at": first_attempt.isoformat(),
+                "retries": 2,  # both retries already spent
+            }
+        }
+    }
+
+    later = first_attempt + timedelta(minutes=40)
+    assert capture_scheduler.due_jobs(later, state) == []
+
+
+def test_a_successful_retry_is_never_retried_again(monkeypatch: pytest.MonkeyPatch) -> None:
+    job = make_job(day="tue", at="07:00", grace_minutes=90, retry_backoff_minutes=15, max_retries=2)
+    monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
+    first_attempt = datetime(2026, 9, 8, 7, 0, tzinfo=ET)
+    key = f"{job.name}@{first_attempt.date().isoformat()}"
+    state = {
+        "runs": {
+            key: {
+                "status": "OK",
+                "window_start": first_attempt.isoformat(),
+                "ran_at": first_attempt.isoformat(),
+                "retries": 1,
+            }
+        }
+    }
+
+    assert capture_scheduler.due_jobs(first_attempt + timedelta(minutes=20), state) == []
+
+
+def test_run_job_labels_a_retry_and_increments_the_counter_until_it_succeeds(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    _isolate_state(monkeypatch, tmp_path)
+    marker = tmp_path / "attempts.txt"
+    script = (
+        "import pathlib, sys; "
+        f"p = pathlib.Path(r'{marker}'); "
+        "n = int(p.read_text()) if p.exists() else 0; "
+        "p.write_text(str(n + 1)); "
+        "sys.exit(1 if n < 1 else 0)"
+    )
+    job = make_job(
+        name="demo_retry",
+        command=[sys.executable, "-c", script],
+        day="tue",
+        at="07:00",
+        grace_minutes=90,
+        retry_backoff_minutes=15,
+        max_retries=2,
+    )
+    monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
+    state = empty_state()
+    start = datetime(2026, 9, 8, 7, 0, tzinfo=ET)
+    key = f"{job.name}@{start.date().isoformat()}"
+
+    capture_scheduler.run_job(job, start, state)
+    assert state["runs"][key]["status"] == "FAIL(1)"
+    assert "retries" not in state["runs"][key]
+
+    capture_scheduler.run_job(job, start, state)
+    assert state["runs"][key]["status"] == "OK"
+    assert state["runs"][key]["retries"] == 1
+
+    log_text = (tmp_path / "log.txt").read_text(encoding="utf-8")
+    assert "RUN demo_retry" in log_text
+    assert "RETRY demo_retry" in log_text
+
+
+def test_status_shows_the_retry_count_on_an_eventually_ok_row(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    job = make_job(retry_backoff_minutes=15, max_retries=2)
+    monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
+    start = capture_scheduler.occurrence(job, THURSDAY)
+    key = f"{job.name}@{start.date().isoformat()}"
+    state = {
+        "runs": {
+            key: {
+                "status": "OK",
+                "window_start": start.isoformat(),
+                "ran_at": THURSDAY.isoformat(),
+                "retries": 1,
+            }
+        }
+    }
+
+    capture_scheduler.show_status(THURSDAY, state)
+
+    out = capsys.readouterr().out
+    assert "OK" in out
+    assert "after 1 retry" in out
+
+
+def test_player_arrests_tue_retry_policy_fits_inside_its_own_grace_window() -> None:
+    """2026-09-08: FAIL(2) at 07:00 on WinError 10013 (a transient Windows
+    socket/firewall block) on all 3 in-process attempts; a manual re-run 15
+    minutes later succeeded. Two scheduler-level retries, 15 minutes apart,
+    automate that recovery -- and must fully land before the 90m grace (and
+    the two-hour buffer to odds_tue_open) closes."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    arrests = schedule["player_arrests_tue"]
+
+    assert arrests.retry_backoff_minutes == 15
+    assert arrests.max_retries == 2
+    last_retry_offset = arrests.retry_backoff_minutes * arrests.max_retries
+    assert last_retry_offset < arrests.grace_minutes
+
+
+def test_player_arrests_tue_diagnoses_winerror_10013() -> None:
+    """The clear-diagnosis half of the 2026-09-08 fix: the raised message
+    names the transient socket/firewall block instead of a bare urlopen
+    error, so a reader is not left guessing from a WinError code alone."""
+    import scripts.ingest_player_arrests as ingest_player_arrests
+
+    class _FakeReason:
+        winerror = 10013
+
+    class _FakeURLError(Exception):
+        reason = _FakeReason()
+
+    message = ingest_player_arrests._diagnose(_FakeURLError())
+    assert "WinError 10013" in message
+    assert "transient" in message
+
+    assert ingest_player_arrests._diagnose(TimeoutError("timed out")) == ""
+
+
+# ---------------------------------------------------------------------------
+# Injury data reaching the model pipeline (2026-09-08): before this, no job
+# anywhere in SCHEDULE ever captured injury data into the feature-building
+# path -- injuries_wed/thu/fri/sat are paused (MKT-09) and sportradar_injuries_*
+# are disabled without a paid key.
+# ---------------------------------------------------------------------------
+
+_INJURY_PIPELINE_DAYS = ("wed", "thu", "fri", "sat", "sun")
+
+
+def test_injury_pipeline_jobs_exist_for_every_late_week_day() -> None:
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    for day in _INJURY_PIPELINE_DAYS:
+        assert f"nflverse_injuries_{day}" in schedule
+        assert f"player_snapshot_{day}" in schedule
+
+
+def test_injury_pipeline_jobs_are_enabled_catch_up_and_dated_today() -> None:
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    for day in _INJURY_PIPELINE_DAYS:
+        for prefix in ("nflverse_injuries_", "player_snapshot_"):
+            job = schedule[f"{prefix}{day}"]
+            assert job.enabled is True
+            assert job.catch_up is True, job.name
+            assert job.added_on == "2026-09-08", job.name
+
+
+def test_nflverse_injuries_job_command_and_dedupe() -> None:
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    job = schedule["nflverse_injuries_wed"]
+    assert job.command[-1].endswith("nflverse_injuries_ingest.py")
+    assert job.dedupe_dir == "data/raw/nflverse_injuries"
+    assert job.dedupe_minutes > 0
+
+
+def test_player_snapshot_argv_matches_the_known_good_recipe() -> None:
+    """Pins the exact argv the 2026-09-08 manual snapshot (20260908T192720Z)
+    used to put the season's first non-zero injury cells on the model's
+    feature table -- a different argv silently changes the feature table's
+    shape (coordinator's own warning)."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    job = schedule["player_snapshot_wed"]
+    argv = _nfl_ats_argv(job)
+    assert argv is not None
+    assert argv[0] == "player-ingest"
+    assert argv[1:] == [
+        "--injury-start-season",
+        "2009",
+        "--injury-end-season",
+        "2026",
+        "--roster-start-season",
+        "2009",
+        "--roster-end-season",
+        "2026",
+        "--snap-start-season",
+        "2013",
+        "--snap-end-season",
+        "2025",
+        "--include-postseason",
+        "--timestamp-fallback",
+        "week_proxy",
+    ]
+    assert job.dedupe_dir == "data/players/raw"
+
+
+def test_player_snapshot_snap_end_season_stays_below_the_2026_404() -> None:
+    """snap_counts_2026 404s until Week 1's first Sunday (no games played
+    yet); every player_snapshot_* job must ask for 2025 or earlier, never a
+    season with no snap-count release yet, or the job goes down on every run."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    for day in _INJURY_PIPELINE_DAYS:
+        argv = _nfl_ats_argv(schedule[f"player_snapshot_{day}"])
+        assert argv is not None
+        snap_end = argv[argv.index("--snap-end-season") + 1]
+        assert int(snap_end) <= 2025
+
+
+def test_injury_pipeline_jobs_run_before_every_same_day_consumer() -> None:
+    """Both captures must land before the tightest same-day consumer: that
+    day's noon lineups_* pass, and (Wed/Thu/Sat/Sun) that day's refresh_*
+    pass -- refresh_sun (10:00 ET) is the tightest of all."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    # A representative Tuesday; occurrence() only reads day-of-week/time, not
+    # the specific date, so any anchor date works here.
+    anchor = datetime(2026, 9, 8, 12, 0, tzinfo=ET)
+    consumers_by_day = {
+        "wed": ("lineups_wed", "refresh_wed"),
+        "thu": ("lineups_thu", "refresh_thu"),
+        "fri": ("lineups_fri",),
+        "sat": ("lineups_sat", "refresh_sat"),
+        "sun": ("lineups_sun", "refresh_sun"),
+    }
+    for day, consumer_names in consumers_by_day.items():
+        injuries_start = capture_scheduler.occurrence(schedule[f"nflverse_injuries_{day}"], anchor)
+        snapshot_start = capture_scheduler.occurrence(schedule[f"player_snapshot_{day}"], anchor)
+        for consumer_name in consumer_names:
+            consumer_start = capture_scheduler.occurrence(schedule[consumer_name], anchor)
+            assert injuries_start < consumer_start, (day, consumer_name)
+            assert snapshot_start < consumer_start, (day, consumer_name)

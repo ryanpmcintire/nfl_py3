@@ -14,6 +14,10 @@ from sklearn.linear_model import LogisticRegression
 
 from nfl_ats.conditional_margin import CONDITIONAL_MARGIN_METHODS, fit_conditional_margin
 from nfl_ats.constants import DEFAULT_MIN_CALIBRATION_GAMES
+from nfl_ats.discrete_margin_mapping import (
+    DISCRETE_MARGIN_METHODS,
+    discrete_conditional_cover_probability,
+)
 from nfl_ats.home_side_mapping import (
     HOME_SIDE_MAPPING_METHODS,
     fit_home_side_shift,
@@ -262,6 +266,8 @@ ResidualSmoothingMethod = Literal[
     "hybrid_key_distance_by_size",
     "smooth_home_side_shift",
     "lattice_home_side",
+    "discrete_conditional_lattice",
+    "discrete_conditional_key_neighbourhood",
 ]
 RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "ecdf",
@@ -277,6 +283,8 @@ RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "hybrid_key_distance_by_size",
     "smooth_home_side_shift",
     "lattice_home_side",
+    "discrete_conditional_lattice",
+    "discrete_conditional_key_neighbourhood",
 )
 _SURVIVAL_EPSILON = 1e-9
 
@@ -357,6 +365,7 @@ def fit_residual_smoother(
         *CONDITIONAL_MARGIN_METHODS,
         *HYBRID_MARGIN_METHODS,
         *HOME_SIDE_MAPPING_METHODS,
+        *DISCRETE_MARGIN_METHODS,
     ):
         raise ValueError(
             "Conditional margin methods require prior predicted/actual margin pairs, not residuals"
@@ -408,6 +417,30 @@ def smoothed_home_cover_probability(
     above for why that is a distinct lever from rescaling).
     """
 
+    if method in DISCRETE_MARGIN_METHODS:
+        # MOD-18 C2 (docs/mod18_discrete_margin_mapping.md): the served
+        # mass-preserving lattice deciding the SIDE, either on every line or
+        # only on the key numbers and the half points either side of them.
+        # ``conditional_history`` is the caller's already cutoff-filtered
+        # prior stream, the same contract the conditional-margin methods
+        # state; only its ``spread_line`` and integer ``result`` are read.
+        if conditional_history is None:
+            raise ValueError("Discrete margin methods require prior completed prediction history")
+        smooth = (
+            None
+            if method == "discrete_conditional_lattice"
+            else smoothed_home_cover_probability(
+                residuals, centers, lines, method="gaussian_median"
+            )
+        )
+        return discrete_conditional_cover_probability(
+            np.asarray(residuals, dtype=np.float64),
+            centers,
+            lines,
+            conditional_history,
+            method=method,
+            smooth=smooth,
+        )
     if method in HOME_SIDE_MAPPING_METHODS:
         # ``conditional_history.predicted_margin`` is the prior forecasts'
         # mapping centre (point + gaussian_median location), as in lane K.
