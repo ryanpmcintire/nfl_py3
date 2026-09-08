@@ -264,7 +264,7 @@ def record_expected_lineup_loss_challenger_decisions(
         )
         model = margin_models["market_residual"]
         card_refit = load_card_refit(metadata, card, forecast)
-        predicted = card_refit.predict(model, target)
+        predicted = card_refit.predict(model, target, replay_served_pick=False)
     candidate = pd.DataFrame(
         {
             "game_id": target["game_id"].astype(str).to_numpy(),

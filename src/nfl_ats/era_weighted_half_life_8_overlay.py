@@ -424,8 +424,17 @@ def apply_era_weighted_half_life_8_overlay(
             card_refit.probability_method if card_refit is not None else "gaussian"
         )
         uniform_centers = uniform_predicted["predicted_margin"].to_numpy(dtype=float)
-        uniform_check = smoothed_home_cover_probability(
-            uniform_model.residuals, uniform_centers, spread, method=probability_method
+        # The reproduction check compares what the card refit actually
+        # returned: on lines quoted exactly on a key number the served number
+        # is the key-line pick read (docs/key_line_pick_read.md), which
+        # ``CardRefit.predict`` replays; a smooth recompute would refuse every
+        # such card (Codex lane AC, 2026-09-08).
+        uniform_check = (
+            uniform_predicted["home_cover_probability"].to_numpy(dtype=float)
+            if card_refit is not None
+            else smoothed_home_cover_probability(
+                uniform_model.residuals, uniform_centers, spread, method=probability_method
+            )
         )
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
         if not np.allclose(uniform_check, supplied, rtol=0.0, atol=1e-9):

@@ -30,7 +30,15 @@ class CardRefit:
     #: refit reproduces the number the card actually played.
     pick_overrides: Mapping[str, float] | None = None
 
-    def predict(self, model: MarginModel, frame: pd.DataFrame) -> pd.DataFrame:
+    def predict(
+        self, model: MarginModel, frame: pd.DataFrame, *, replay_served_pick: bool = True
+    ) -> pd.DataFrame:
+        """``replay_served_pick`` replays the card's key-line pick read on the
+        touched games -- right for the INCUMBENT arm, which must equal the
+        card; a CANDIDATE arm (its own fitted model) passes ``False`` so its
+        own probability is what gets recorded (Codex lane AC, 2026-09-08:
+        candidate predictions of 0.20 and 0.80 were both becoming 0.472)."""
+
         if self.center_offsets is None:
             result = model.predict(frame, probability_method=self.probability_method)
         else:
@@ -39,7 +47,7 @@ class CardRefit:
                 probability_method=self.probability_method,
                 center_offset=center_offset_for_frame(frame, self.center_offsets),
             )
-        if self.pick_overrides:
+        if replay_served_pick and self.pick_overrides:
             result = result.copy()
             result["home_cover_probability"] = apply_pick_overrides(
                 result["home_cover_probability"], frame["game_id"], self.pick_overrides

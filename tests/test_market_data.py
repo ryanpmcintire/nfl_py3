@@ -150,10 +150,10 @@ _SCHEDULES = pd.DataFrame(
 
 
 def test_tuesday_opener_quotes_selects_earliest_tuesday_capture() -> None:
-    tuesday = datetime(2026, 8, 18, 12, tzinfo=UTC)
+    tuesday = datetime(2026, 9, 8, 12, tzinfo=UTC)
     assert tuesday.weekday() == 1
     later_tuesday = tuesday + timedelta(hours=3)
-    wednesday = datetime(2026, 8, 19, 9, tzinfo=UTC)
+    wednesday = datetime(2026, 9, 9, 9, tzinfo=UTC)
     assert wednesday.weekday() == 2
 
     opener_quotes = attach_nflverse_game_ids(
@@ -182,8 +182,8 @@ def test_tuesday_opener_quotes_prefers_the_first_capture_after_the_pool_lock() -
     the post-lock capture exists (the full rule is pinned in
     ``tests/test_pool_spread_lock.py``)."""
 
-    pre_lock = datetime(2026, 8, 18, 13, tzinfo=UTC)  # 09:00 ET
-    post_lock = datetime(2026, 8, 18, 16, 5, tzinfo=UTC)  # 12:05 ET
+    pre_lock = datetime(2026, 9, 8, 13, tzinfo=UTC)  # 09:00 ET
+    post_lock = datetime(2026, 9, 8, 16, 5, tzinfo=UTC)  # 12:05 ET
     assert pre_lock.weekday() == post_lock.weekday() == 1
     history = pd.concat(
         [
@@ -203,7 +203,7 @@ def test_tuesday_opener_quotes_prefers_the_first_capture_after_the_pool_lock() -
 
 
 def test_tuesday_opener_quotes_empty_without_a_tuesday_capture() -> None:
-    wednesday = datetime(2026, 8, 19, 9, tzinfo=UTC)
+    wednesday = datetime(2026, 9, 9, 9, tzinfo=UTC)
     quotes = attach_nflverse_game_ids(
         parse_odds_api_response(_payload(-4.0), observed_at=wednesday), _SCHEDULES
     )
@@ -223,7 +223,7 @@ def test_tuesday_opener_quotes_includes_cross_book_dispersion() -> None:
     (``nfl_ats.clv.build_pairing_table``) has no equivalent for the free-form
     ``odds-ingest`` store this function reads."""
 
-    tuesday = datetime(2026, 8, 18, 12, tzinfo=UTC)
+    tuesday = datetime(2026, 9, 8, 12, tzinfo=UTC)
     assert tuesday.weekday() == 1
     lines = [-3.0, -3.5, -2.5]
     quotes = pd.DataFrame(
@@ -243,7 +243,7 @@ def test_tuesday_opener_quotes_includes_cross_book_dispersion() -> None:
 
 
 def test_tuesday_opener_quotes_std_is_nan_not_zero_for_a_single_book() -> None:
-    tuesday = datetime(2026, 8, 18, 12, tzinfo=UTC)
+    tuesday = datetime(2026, 9, 8, 12, tzinfo=UTC)
     quotes = pd.DataFrame(
         {
             "nflverse_game_id": ["2026_01_NE_SEA"],

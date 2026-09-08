@@ -507,7 +507,18 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
     history["observed_at_utc"] = pd.to_datetime(history["observed_at_utc"], utc=True)
     history["commence_time_utc"] = pd.to_datetime(history["commence_time_utc"], utc=True)
     spreads = history.loc[history["market"].eq("spreads") & history["outcome_side"].eq("HOME")]
-    tuesday = spreads.loc[spreads["observed_at_utc"].dt.weekday.eq(1)].copy()
+    # The game's OWN Tuesday (the most recent UTC Tuesday on or before its
+    # kickoff), pregame only: a quote from an earlier week's Tuesday is never
+    # an opener, post-lock or not (Codex lane AC, 2026-09-08: an August 18
+    # quote had been standing in for a September 13 game).
+    days_since_tuesday = (spreads["commence_time_utc"].dt.weekday - 1) % 7
+    own_week_tuesday = spreads["commence_time_utc"].dt.normalize() - pd.to_timedelta(
+        days_since_tuesday, unit="D"
+    )
+    tuesday = spreads.loc[
+        spreads["observed_at_utc"].dt.normalize().eq(own_week_tuesday)
+        & spreads["observed_at_utc"].lt(spreads["commence_time_utc"])
+    ].copy()
     if tuesday.empty:
         return pd.DataFrame(columns=columns)
     lock = _pool_lock_for_observations(tuesday["observed_at_utc"])
