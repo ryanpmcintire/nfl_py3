@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
+from datetime import datetime
 from typing import cast
 
 import numpy as np
@@ -91,7 +92,12 @@ def add_ats_outcomes(schedules: pd.DataFrame) -> pd.DataFrame:
 #: Version of the override/refusal rules in :func:`apply_decision_lines`.
 #: Recorded in the feature-table manifest, so a table can say which semantics
 #: produced its lines.  Bump it when the rules below change.
-DECISION_LINE_VERSION = "v1"
+#:
+#: ``v2`` (2026-09-08) replaced the "any played game refuses" rule with the
+#: retroactivity rule: a capture frozen BEFORE a game's kickoff is the number
+#: that game was actually graded on and is applied whether or not the game has
+#: since finished; a capture taken at or after kickoff is refused.
+DECISION_LINE_VERSION = "v2"
 
 
 @dataclass(frozen=True)
@@ -105,6 +111,13 @@ class DecisionLineOverride:
     ``captured_at_utc`` are provenance only: they never change a number, they
     are what lets a reader of ``lineage.json`` tell which board the pick was
     formed against.
+
+    ``captured_at`` is the one field here that IS load-bearing: the instant the
+    board was read, timezone-aware.  :func:`apply_decision_lines` compares it
+    against each covered game's kickoff to tell a legitimately pre-kickoff line
+    from a retroactive one, and refuses when it is absent or naive -- a missing
+    timestamp is never permission.  ``captured_at_utc`` remains the string the
+    manifest carries; this is the value the rules read.
     """
 
     season: int
@@ -113,6 +126,7 @@ class DecisionLineOverride:
     source: str
     capture_id: str
     captured_at_utc: str | None = None
+    captured_at: datetime | None = None
 
 
 @dataclass(frozen=True)
@@ -131,6 +145,12 @@ def _override_label(override: DecisionLineOverride) -> str:
         f"{override.source} capture '{override.capture_id}' "
         f"({override.season} week {override.week})"
     )
+
+
+def _first_few(identifiers: Sequence[str], limit: int = 5) -> str:
+    """``a, b, c`` -- the first few ids, with ``, ...`` when the list is longer."""
+
+    return ", ".join(identifiers[:limit]) + (", ..." if len(identifiers) > limit else "")
 
 
 def apply_decision_lines(
@@ -156,12 +176,33 @@ def apply_decision_lines(
        games would leave that week half on the pool's line and half on
        nflverse's -- the worst of both, and invisible on the card.  Missing
        games, or lines for games that are not on the week's schedule, raise.
-    2. **A completed game.**  ``ats_margin`` is derived (``result -
-       spread_line``), so moving the line under a played game silently rewrites
-       the graded outcome that the archive and the weak-signal registry were
-       scored on.  Any covered row with a recorded ``result`` raises.
+    2. **A RETROACTIVE line.**  ``ats_margin`` is derived (``result -
+       spread_line``), so a line written under a game *after* it started
+       silently rewrites the graded outcome that the archive and the
+       weak-signal registry were scored on.  What makes that dangerous is the
+       retroactivity, not the fact that the game finished: the pool's board is
+       frozen Tuesday at noon Eastern, before any game of that week kicks off,
+       and it is the number the pool actually settled the owner's picks on.
+       Archiving a played week on nflverse's close instead would grade the
+       project's own record against a line it never played.  So the rule keys
+       on the capture instant, per covered game with a recorded ``result``:
+
+       - capture **before** that game's kickoff -> legitimate, applied;
+       - capture **at or after** kickoff -> refused.
+
+       And it **fails closed** where the comparison cannot be made at all: an
+       override with no (or a naive) ``captured_at``, or a played covered game
+       whose kickoff is not on the schedules frame, raises rather than falling
+       through to "apply anyway".  A missing timestamp is not permission.
+       Games with no recorded ``result`` are untouched by this rule -- nothing
+       has been graded yet, so nothing can be rewritten.
     3. **A non-finite line.**  A NaN or infinite override is a broken capture,
        not a number.
+
+    Kickoffs come from the schedules frame's own ``gameday`` + ``gametime``
+    (Eastern), through :func:`_kickoff_utc` -- the same pair the ``kickoff``
+    feature column is built from, so the guard and the table agree by
+    construction.
 
     A week the schedules frame does not contain at all is skipped and not
     reported: the schedule is the authority on which games exist, so a capture
@@ -183,6 +224,11 @@ def apply_decision_lines(
         if "result" in result
         else pd.Series(False, index=result.index)
     )
+
+    # Built once, and only if a covered game has actually been played: parsing
+    # gameday+gametime over the whole schedule costs something, and the common
+    # case (an upcoming week) never needs it.
+    kickoffs: pd.Series | None = None
 
     applied: list[AppliedDecisionLines] = []
     for override in overrides:
@@ -221,18 +267,51 @@ def apply_decision_lines(
                 "game (or on none at all). Refusing."
             )
 
-        completed = tuple(game_ids.loc[mask & played])
-        if completed:
-            raise DataContractError(
-                f"{label} covers {len(completed)} game(s) whose result is already recorded "
-                f"({', '.join(completed[:5])}"
-                f"{', ...' if len(completed) > 5 else ''}). ats_margin is derived from "
-                "spread_line, so moving the line under a played game rewrites the graded "
-                "outcome that the opener archive and every registry cell were scored on. "
-                "Refusing. Retire the capture from data/splash/, or rebuild with "
-                "--splash-decision-lines off, once a decision has been made about which "
-                "number the played week should be archived against."
+        completed_mask = mask & played
+        completed_ids = game_ids.loc[completed_mask]
+        if not completed_ids.empty:
+            # A played game is not automatically off limits: the pool's board
+            # is frozen before the week's first kickoff, so for these games it
+            # IS the graded number. Only a line captured at or after kickoff is
+            # retroactive. Everything the comparison needs must be present.
+            captured_at = override.captured_at
+            if captured_at is None or captured_at.tzinfo is None:
+                raise DataContractError(
+                    f"{label} covers {len(completed_ids)} game(s) whose result is already "
+                    f"recorded ({_first_few(tuple(completed_ids))}), and the capture carries no "
+                    "timezone-aware instant. A played game's line may only be replaced by a "
+                    "board that was frozen BEFORE kickoff, and without a capture instant there "
+                    "is no way to establish that. Refusing: a missing timestamp is not "
+                    "permission."
+                )
+            if kickoffs is None:
+                kickoffs = _kickoff_utc(result)
+            covered_kickoffs = kickoffs.loc[completed_mask]
+            undated = tuple(completed_ids.loc[covered_kickoffs.isna()])
+            if undated:
+                raise DataContractError(
+                    f"{label} covers {len(undated)} played game(s) with no usable kickoff time "
+                    f"on the schedule ({_first_few(undated)}). Whether the board predates "
+                    "kickoff cannot be established without one, and ats_margin is derived from "
+                    "spread_line, so applying the line anyway could rewrite a graded outcome. "
+                    "Refusing: a missing kickoff is not permission. The schedules frame needs "
+                    "its 'gameday' and 'gametime' columns populated for these games."
+                )
+            retroactive = tuple(
+                completed_ids.loc[covered_kickoffs.le(pd.Timestamp(captured_at).tz_convert("UTC"))]
             )
+            if retroactive:
+                raise DataContractError(
+                    f"{label} is RETROACTIVE for {len(retroactive)} game(s): the board was read "
+                    f"at {captured_at.isoformat()}, at or after the kickoff of "
+                    f"{_first_few(retroactive)}, whose result is already recorded. ats_margin is "
+                    "derived from spread_line, so moving the line under a game that was already "
+                    "under way rewrites the graded outcome that the opener archive and every "
+                    "registry cell were scored on. Refusing. (A capture frozen BEFORE kickoff is "
+                    "applied to a played game deliberately -- that is the number the pool graded "
+                    "it on.) Retire the capture from data/splash/, or rebuild with "
+                    "--splash-decision-lines off."
+                )
 
         replacement = game_ids.loc[mask].map(lines).astype("float64")
         previous = pd.to_numeric(result.loc[mask, "spread_line"], errors="coerce")

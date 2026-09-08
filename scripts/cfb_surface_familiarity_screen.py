@@ -106,6 +106,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.cfb_benchmark import CFB_CLEAN_CORE_SEASONS  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 
 OUT_DIR = Path(
     r"C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3"
@@ -306,7 +307,9 @@ def _interval(draws: np.ndarray, fraction_of_slate: float) -> dict[str, Any]:
     return {
         "estimate": float(np.mean(scaled)) if len(scaled) else float("nan"),
         "ci95": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(draws > 0)) if len(draws) else float("nan"),
+        "probability_positive": float(probability_positive_from_draws(draws))
+        if len(draws)
+        else float("nan"),
         "samples": len(scaled),
     }
 

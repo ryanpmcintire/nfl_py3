@@ -90,6 +90,7 @@ from nfl_ats.estimation_variance import (  # noqa: E402
     picks_differ_fraction,
     refit_aware_paired_interval,
 )
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.experiments import paired_feature_comparisons  # noqa: E402
 from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
@@ -240,7 +241,7 @@ def split_half_reliability(
         ],
         "spearman_rho": rho,
         "spearman_brown_full_length_reliability": sb,
-        "probability_positive": float(np.mean(boots > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(boots)),
     }
 
 

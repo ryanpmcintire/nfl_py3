@@ -136,6 +136,7 @@ from nfl_ats.estimation_variance import (  # noqa: E402
     BootstrapDegeneracyError,
     guard_block_count,
 )
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.io import run_id  # noqa: E402
 from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
@@ -396,13 +397,13 @@ def bootstrap_correlation(
             float(np.nanquantile(pearson_draws, 0.025)),
             float(np.nanquantile(pearson_draws, 0.975)),
         ],
-        "pearson_probability_positive": float(np.mean(pearson_draws > 0.0)),
+        "pearson_probability_positive": float(probability_positive_from_draws(pearson_draws)),
         "spearman_rho": spearman_rho,
         "spearman_rho_ci95": [
             float(np.nanquantile(spearman_draws, 0.025)),
             float(np.nanquantile(spearman_draws, 0.975)),
         ],
-        "spearman_probability_positive": float(np.mean(spearman_draws > 0.0)),
+        "spearman_probability_positive": float(probability_positive_from_draws(spearman_draws)),
         "samples": samples,
         "seed": seed,
     }

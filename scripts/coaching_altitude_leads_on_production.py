@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.altitude_split_features import denver_home_flag, quarter_margins
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.pbp import latest_pbp_snapshot
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
 from nfl_ats.public_board import find_matching_opener_evaluation
@@ -42,7 +43,7 @@ def blocked_means(frame: pd.DataFrame, columns: list[str]) -> dict[str, Any]:
         result[column] = {
             "estimate": float(frame[column].mean()),
             "interval95": np.quantile(values, [0.025, 0.975]).tolist(),
-            "probability_positive": float((values > 0).mean()),
+            "probability_positive": float(probability_positive_from_draws(values)),
             "standard_error": float(values.std(ddof=1)),
             "games": int(frame[column].count()),
         }
@@ -52,7 +53,7 @@ def blocked_means(frame: pd.DataFrame, columns: list[str]) -> dict[str, Any]:
         result["denver_minus_league_fourth"] = {
             "estimate": float(frame.denver_fourth.mean() - frame.fourth_margin.mean()),
             "interval95": np.quantile(delta, [0.025, 0.975]).tolist(),
-            "probability_positive": float((delta > 0).mean()),
+            "probability_positive": float(probability_positive_from_draws(delta)),
         }
     return result
 
@@ -71,7 +72,7 @@ def split_half(frame: pd.DataFrame) -> dict[str, Any]:
     return {
         "estimate": float(np.corrcoef(values.T)[0, 1]),
         "interval95": np.quantile(correlations, [0.025, 0.975]).tolist(),
-        "probability_positive": float((np.array(correlations) > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(np.array(correlations))),
         "seasons": len(values),
         "halves": {
             str(h): blocked_means(g, ["late_minus_early_rate"]) for h, g in denver.groupby("half")

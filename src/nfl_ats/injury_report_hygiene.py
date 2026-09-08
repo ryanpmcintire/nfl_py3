@@ -30,6 +30,7 @@ import pandas as pd
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 from nfl_ats.data import DataContractError, require_columns
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.pbp import season_scope_mask
 from nfl_ats.players import attach_snap_player_ids, canonicalize_rosters, canonicalize_snaps
 
@@ -442,7 +443,9 @@ def season_block_bootstrap_gap(
         estimate=point_a - point_b,
         lower=float(np.quantile(diff, tail)) if len(diff) else float("nan"),
         upper=float(np.quantile(diff, 1.0 - tail)) if len(diff) else float("nan"),
-        probability_positive=float(np.mean(diff > 0.0)) if len(diff) else float("nan"),
+        probability_positive=float(probability_positive_from_draws(diff))
+        if len(diff)
+        else float("nan"),
         n_a=int(a_cnt.sum()),
         n_b=int(b_cnt.sum()),
         rate_a=point_a,

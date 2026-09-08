@@ -88,6 +88,7 @@ from overlay_subset_composition import (  # noqa: E402
     reconstruct_arrest_flip_set,
 )
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.provenance import (  # noqa: E402
     artifact_provenance,
     sha256_file,
@@ -145,7 +146,7 @@ def summarize_gap(
         "fraction_of_slate": fraction_of_slate,
         "full_slate_effect_pts": raw_gap_pts * fraction_of_slate,
         "ci95_scaled": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(draws > 0)),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "bootstrap_samples": int(samples),
         "bootstrap_seed": int(seed),
         "insufficient_data": False,

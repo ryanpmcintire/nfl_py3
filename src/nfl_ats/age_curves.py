@@ -148,6 +148,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.players import (
     _DEFENSE_DISRUPTION_WEIGHTS,
     PLAYER_STATS_REQUIRED_COLUMNS,
@@ -888,7 +889,7 @@ def _reliability_for_group(
     else:
         ci_low = float(np.quantile(valid_boot, 0.025))
         ci_high = float(np.quantile(valid_boot, 0.975))
-        probability_positive = float(np.mean(valid_boot > 0.0))
+        probability_positive = float(probability_positive_from_draws(valid_boot))
 
     return base | {
         "pearson_r": pearson_r,

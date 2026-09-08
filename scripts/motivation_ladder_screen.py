@@ -39,6 +39,7 @@ sys.path.append(str(REPO / "scripts"))
 from _common import block_bootstrap_two_group, latest_schedules  # noqa: E402
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.experiment_runner import scale_subset_effect  # noqa: E402
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
@@ -381,7 +382,9 @@ def summarize(
         "fraction_of_slate": fraction_of_slate,
         "full_slate_effect_pts": full_slate_effect_pts,
         "ci95_scaled": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(scaled_draws > 0)) if len(scaled_draws) else np.nan,
+        "probability_positive": float(probability_positive_from_draws(scaled_draws))
+        if len(scaled_draws)
+        else np.nan,
         "bootstrap_samples": samples,
         "dropped_draws": int(dropped),
         "insufficient_data": False,

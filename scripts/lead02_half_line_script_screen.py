@@ -105,6 +105,7 @@ sys.path.append(str(REPO / "scripts"))
 from _common import block_bootstrap_two_group, default_schedules  # noqa: E402
 from vi_dispersion_screen import vi_to_sched  # noqa: E402
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.io import atomic_parquet  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
@@ -385,7 +386,9 @@ def summarize(
         "fraction_of_slate": fraction_of_slate,
         "full_slate_effect_pts": full_slate_effect_pts,
         "week_blocked_ci95_scaled": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(draws > 0)) if len(draws) else float("nan"),
+        "probability_positive": float(probability_positive_from_draws(draws))
+        if len(draws)
+        else float("nan"),
         "bootstrap_samples": samples,
         "dropped_draws": int(dropped),
         "insufficient_data": False,

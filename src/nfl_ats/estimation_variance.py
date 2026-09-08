@@ -81,6 +81,7 @@ import numpy as np
 import numpy.typing as npt
 import pandas as pd
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.margin import make_margin_estimator
 
 #: MDE80 = coefficient * sqrt(f / n), points of forced-pick accuracy. Derived
@@ -493,7 +494,7 @@ def naive_block_bootstrap_interval(
         estimate=float(np.mean(improvements)),
         lower=float(np.quantile(draws, tail)),
         upper=float(np.quantile(draws, 1.0 - tail)),
-        probability_positive=float(np.mean(draws > 0.0)),
+        probability_positive=float(probability_positive_from_draws(draws)),
         samples=samples,
         kind="naive",
         block_count=len(grouped),
@@ -552,7 +553,7 @@ def refit_aware_paired_interval(
         estimate=float(np.mean(point_improvements)),
         lower=float(np.quantile(draws, tail)),
         upper=float(np.quantile(draws, 1.0 - tail)),
-        probability_positive=float(np.mean(draws > 0.0)),
+        probability_positive=float(probability_positive_from_draws(draws)),
         samples=n_boot,
         kind="refit_aware",
     )
@@ -1048,7 +1049,7 @@ def refit_aware_interval(
         estimate=estimate,
         lower=float(np.quantile(conditional_draws, tail)),
         upper=float(np.quantile(conditional_draws, 1.0 - tail)),
-        probability_positive=float(np.mean(conditional_draws > 0.0)),
+        probability_positive=float(probability_positive_from_draws(conditional_draws)),
         samples=samples,
         kind="naive",
         block_count=verdict.block_count,
@@ -1060,7 +1061,7 @@ def refit_aware_interval(
         estimate=estimate,
         lower=float(np.quantile(scaled, tail)),
         upper=float(np.quantile(scaled, 1.0 - tail)),
-        probability_positive=float(np.mean(scaled > 0.0)),
+        probability_positive=float(probability_positive_from_draws(scaled)),
         samples=samples,
         kind="refit_aware",
         block_count=verdict.block_count,

@@ -55,6 +55,7 @@ from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.calibration import ResidualSmoothingMethod
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.home_side_location import (
     HOME_SIDE_OFFSET_POLICY,
     HOME_SIDE_OFFSET_SERVED,
@@ -775,7 +776,7 @@ def week_blocked_bootstrap(
             "upper": upper,
             # Continuous evidence alongside the interval endpoints: the
             # fraction of blocked resamples in which the metric is positive.
-            "probability_positive": np.mean(draws > 0.0, axis=0),
+            "probability_positive": probability_positive_from_draws(draws, axis=0),
             "confidence": confidence,
             "block": block,
             "samples": samples,

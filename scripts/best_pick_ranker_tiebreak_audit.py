@@ -52,6 +52,7 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.provenance import write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
@@ -156,7 +157,7 @@ def analyse(
         return {
             "lower": float(lo),
             "upper": float(hi),
-            "probability_positive": float((delta_draws > 0).mean()),
+            "probability_positive": float(probability_positive_from_draws(delta_draws)),
         }
 
     n_correct = round(alpha_acc * n_weeks)

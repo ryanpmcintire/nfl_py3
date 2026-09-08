@@ -85,6 +85,7 @@ import pandas as pd
 from nfl_ats.availability import practice_category, report_category
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 from nfl_ats.data import DataContractError, require_columns
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.io import atomic_json, atomic_parquet, run_id
 from nfl_ats.lineup_availability import depth_chart_position_group
 from nfl_ats.nfl_week import pool_decision_cutoff
@@ -1185,7 +1186,7 @@ def season_blocked_bootstrap(
         "point_estimate": point_estimate,
         "interval_low": float(low),
         "interval_high": float(high),
-        "probability_positive": float(np.mean(samples > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(samples)),
         "n_seasons": int(n),
     }
 

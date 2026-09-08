@@ -83,6 +83,7 @@ from nfl_ats.estimation_variance import (
     MIN_BLOCKS_FOR_INTERVAL,
     guard_block_count,
 )
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.experiments import paired_feature_comparisons
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES
 from nfl_ats.odds_backfill import HISTORICAL_CAPTURE_KIND
@@ -3323,7 +3324,7 @@ def _interval_summary(
         lower=float(np.quantile(scaled, tail)),
         upper=float(np.quantile(scaled, 1.0 - tail)),
         standard_error=float(np.std(scaled, ddof=1)),
-        probability_positive=float(np.mean(scaled > 0.0)),
+        probability_positive=float(probability_positive_from_draws(scaled)),
         samples=len(scaled),
     )
 

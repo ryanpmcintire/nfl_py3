@@ -28,6 +28,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.data import DataContractError  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.io import atomic_parquet, run_id  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
@@ -160,13 +161,13 @@ def blocked_bootstrap_correlation(
             float(np.nanquantile(pearson_draws, 0.025)),
             float(np.nanquantile(pearson_draws, 0.975)),
         ],
-        "pearson_probability_positive": float(np.mean(pearson_draws > 0.0)),
+        "pearson_probability_positive": float(probability_positive_from_draws(pearson_draws)),
         "spearman_rho": _spearman(x, y),
         "spearman_rho_ci95": [
             float(np.nanquantile(spearman_draws, 0.025)),
             float(np.nanquantile(spearman_draws, 0.975)),
         ],
-        "spearman_probability_positive": float(np.mean(spearman_draws > 0.0)),
+        "spearman_probability_positive": float(probability_positive_from_draws(spearman_draws)),
         "samples": samples,
         "seed": seed,
         "blocks": len(unique_blocks),

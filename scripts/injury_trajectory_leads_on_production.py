@@ -12,6 +12,7 @@ import pandas as pd
 
 from nfl_ats.coach_fade_overlay import apply_coach_fade_overlay
 from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.injury_trajectory_features import (
     LEADS,
     build_flags,
@@ -58,7 +59,7 @@ def summarize(frame: pd.DataFrame, lead: str) -> dict[str, Any]:
         "effect": float(delta.mean()),
         "interval_low": float(low),
         "interval_high": float(high),
-        "probability_positive": float((draws > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "probability_tie": float((draws == 0).mean()),
         "standard_error": float(draws.std(ddof=1)),
     }

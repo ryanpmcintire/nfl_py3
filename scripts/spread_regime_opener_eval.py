@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from threadpoolctl import threadpool_limits
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.key_numbers import implied_key_number_mass
 from nfl_ats.margin import fit_margin_model
 from nfl_ats.modeling import regular_season_rows
@@ -141,7 +142,7 @@ def comparison(
         "delta": float(100 * diff.mean()),
         "lower": float(np.quantile(draws, 0.025)),
         "upper": float(np.quantile(draws, 0.975)),
-        "probability_positive": float((draws > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "standard_error": float(draws.std(ddof=1)),
         "n": len(scored),
         "weeks": len(groups),

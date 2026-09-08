@@ -64,6 +64,7 @@ from nfl_bias_battery_screen import (  # noqa: E402
     load_merged,
 )
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
 PFT_INDEX = REPO / "data/raw/injury_news/20260819T191639Z/index.parquet"
@@ -530,7 +531,9 @@ def summarize_population(
         "full_slate_effect_pts": full_slate_effect_pts,
         "week_blocked_ci95_scaled": [float(lower), float(upper)],
         "standard_error": float(np.std(scaled_draws, ddof=1)) if len(scaled_draws) > 1 else np.nan,
-        "probability_positive": float(np.mean(signed_draws > 0)) if len(signed_draws) else np.nan,
+        "probability_positive": float(probability_positive_from_draws(signed_draws))
+        if len(signed_draws)
+        else np.nan,
         "bootstrap_samples": samples,
         "sample_blocks": int(work["week_block"].nunique()),
     }

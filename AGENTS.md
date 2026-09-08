@@ -152,6 +152,50 @@ invariant, not a preference.
   command for the current number rather than quoting a fixed one here.
   Measured 2026-09-05 (CX11), `nfl-ats weak-signals pool --league nfl --effect-units accuracy_points` reports +0.00700322 accuracy points, 95% [-0.00736752, +0.02137396], `excludes_zero: false`, 619 pooled signals, sign test 327 candidate / 301 baseline among 628 eligible signals (p=0.31846963), and 2 excluded invalidated measurements; invalidation is not a mechanism verdict.
 
+  **The 2026-09-05 reading above is the last one taken before the pooling
+  machinery was found to be broken, and it is superseded.** Four defects were
+  measured and fixed 2026-09-08 (`docs/weak_signal_pooling.md` has the full
+  write-up); every one of them pushed the same way, turning measurements that
+  said NOTHING into resolved-looking negatives:
+
+  1. the command itself **crashed** above ~1,030 signals (`math.comb` times an
+     underflowed `0.5**n` overflows the int-to-float conversion), so at
+     n=1,489 the command this file tells every session to re-run was
+     unexecutable — that is why the number above sat stale;
+  2. `probability_positive` used a strict `draws > 0`, so a candidate making
+     IDENTICAL picks on every game recorded **0.0** — the strongest negative
+     the scale can express, for a no-op. It is now
+     `P(>0) + 0.5*P(==0)`, one shared helper
+     (`nfl_ats.evidence_conventions.probability_positive_from_draws`) called
+     from every site;
+  3. the sign test scored **exact ties as baseline wins** (208 of 1,489). Ties
+     are now excluded (classical sign test) with the half-credit reading
+     reported alongside;
+  4. inverse-variance pooling weighted by the recorded band, which for a block
+     bootstrap **narrows as the cell gets smaller** — one three-game cell held
+     99.997% of the fixed-effect weight and made `--method fixed` report
+     `excludes_zero: true` on that single cell's own estimate. Bands too
+     narrow for their own `sample_games` are now floored, not trusted and not
+     dropped.
+
+  Measured 2026-09-08 under the fixed code, `nfl-ats weak-signals pool
+  --league nfl --effect-units accuracy_points` reports a random-effects pool of
+  **-0.0155 accuracy points, 95% [-0.0358, +0.0049]**, `probability_positive`
+  **0.068**, on 1,369 pooled signals; the sign test is 576 candidate / 705
+  baseline among 1,281 informative signals (208 exact ties excluded,
+  p=0.00034). The pile leans slightly to the baseline and is **not resolved** —
+  and per the rule above, that is not grounds to close anything. The interval
+  still overstates precision (the `overlap_warnings` are extensive); the
+  sign-test and per-entry rows remain the safer read. Re-run the command for
+  the current number rather than quoting a fixed one here.
+
+  The report also carries `needs_remeasurement`: **115** NFL `accuracy_points`
+  rows recorded `probability_positive` 0.0 on an exactly-zero effect with a
+  degenerate `[0, 0]` interval (346 registry-wide) and are dead heats whose
+  correct value is 0.5, plus 15 rows whose recorded band is too narrow for
+  their own sample. Those stored values were NOT rewritten — the original
+  bootstrap draws were never kept — and flagging them closes nothing.
+
 The one discipline that stays, because it protects the pooled result rather
 than gating the inputs: **pooled inputs must be commensurable** — same units,
 same scale, same population — and **the family must be declared before the

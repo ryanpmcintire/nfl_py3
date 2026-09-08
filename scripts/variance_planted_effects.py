@@ -59,6 +59,7 @@ from nfl_ats.cfb_benchmark import (
     CFB_BENCHMARK_START_SEASON,
     cfb_walk_forward_benchmark,
 )
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.experiments import _paired_row_improvements
 from nfl_ats.variance_reduction import (
     DEFAULT_CUPED_COVARIATES,
@@ -163,7 +164,7 @@ def _run_replication(
         seed=seed,
     )
     lower = np.quantile(draws, DETECTION_TAIL, axis=0)
-    positive_share = np.mean(draws > 0.0, axis=0)
+    positive_share = probability_positive_from_draws(draws, axis=0)
 
     accuracy_raw, brier_raw, log_loss_raw = 0, 1, 2
     accuracy_adj, brier_adj = 3, 4

@@ -55,6 +55,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
@@ -294,7 +295,7 @@ def interval(draws: np.ndarray, confidence: float = 0.95) -> dict[str, float]:
         "point": float(np.mean(draws)),
         "lower": float(np.quantile(draws, tail)),
         "upper": float(np.quantile(draws, 1.0 - tail)),
-        "probability_positive": float(np.mean(draws > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "samples": len(draws),
     }
 

@@ -100,6 +100,7 @@ from nfl_ats.age_curves import (
     load_pbp_seasons,
 )
 from nfl_ats.data import DataContractError, require_columns
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.players import (
     _stable_crosswalk,
     attach_snap_player_ids,
@@ -800,7 +801,7 @@ def _reliability_row(
     valid = boot[np.isfinite(boot)]
     if len(valid) >= _MIN_VALID_BOOTSTRAP_DRAWS:
         ci_low, ci_high = float(np.quantile(valid, 0.025)), float(np.quantile(valid, 0.975))
-        probability_positive = float(np.mean(valid > 0.0))
+        probability_positive = float(probability_positive_from_draws(valid))
     else:
         ci_low = ci_high = probability_positive = float("nan")
 

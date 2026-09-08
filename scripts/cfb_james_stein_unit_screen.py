@@ -150,6 +150,7 @@ from nfl_ats.cfb_roles import (  # noqa: E402
 )
 from nfl_ats.data import DataContractError, require_columns  # noqa: E402
 from nfl_ats.estimation_variance import mde80, picks_differ_fraction  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.experiments import paired_feature_comparisons  # noqa: E402
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id  # noqa: E402
 from nfl_ats.margin import fit_market_baseline  # noqa: E402
@@ -570,7 +571,7 @@ def split_half_reliability(
         ],
         "spearman_rho": rho,
         "spearman_brown_full_length_reliability": sb,
-        "probability_positive": float(np.mean(boots > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(boots)),
     }
 
 

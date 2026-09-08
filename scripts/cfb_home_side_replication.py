@@ -15,6 +15,7 @@ import pandas as pd
 from threadpoolctl import threadpool_limits
 
 from nfl_ats.cfb_benchmark import CFB_CLEAN_CORE_SEASONS, fit_cfb_residual_model
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.home_side_location import fit_home_side_offsets, prior_rows_before
 from nfl_ats.margin import fit_market_baseline
 from nfl_ats.provenance import sha256_file, stamp_sidecar, write_stamped_artifact
@@ -95,7 +96,7 @@ def interval(frame: pd.DataFrame, values: np.ndarray) -> dict:
         "effect": float(values.mean()),
         "interval_low": float(np.quantile(draws, 0.025)),
         "interval_high": float(np.quantile(draws, 0.975)),
-        "probability_positive": float((draws > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "sample_games": len(frame),
         "sample_blocks": len(groups),
         "season_start": int(frame.season.min()),

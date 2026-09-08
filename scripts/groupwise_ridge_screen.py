@@ -44,6 +44,7 @@ from nfl_ats.cfb_features import (
     CFB_MODEL_FEATURE_COLUMNS,
     CFB_STATE_METRICS,
 )
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.margin import MarginModel, column_penalty_multipliers, make_margin_estimator
 from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
@@ -315,7 +316,7 @@ def paired_bootstrap(
                 "improvement": float(better.mean() - worse.mean()),
                 "lower": float(np.quantile(sample, 0.025)),
                 "upper": float(np.quantile(sample, 0.975)),
-                "probability_positive": float(np.mean(sample > 0.0)),
+                "probability_positive": float(probability_positive_from_draws(sample)),
                 "games": len(merged),
                 "blocks": len(indices),
                 "samples": int(samples),

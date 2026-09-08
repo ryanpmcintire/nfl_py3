@@ -47,6 +47,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.experiments import PairedBlock, _paired_row_improvements
 from nfl_ats.key_numbers import DEFAULT_KEY_NUMBERS
 
@@ -370,10 +371,14 @@ def covariate_adjusted_paired_comparisons(
                     "raw_estimate": float(raw_matrix[:, metric_index].mean()),
                     "lower": float(np.quantile(adjusted_draws[:, metric_index], tail)),
                     "upper": float(np.quantile(adjusted_draws[:, metric_index], 1.0 - tail)),
-                    "probability_positive": float(np.mean(adjusted_draws[:, metric_index] > 0.0)),
+                    "probability_positive": float(
+                        probability_positive_from_draws(adjusted_draws[:, metric_index])
+                    ),
                     "raw_lower": float(np.quantile(raw_draws[:, metric_index], tail)),
                     "raw_upper": float(np.quantile(raw_draws[:, metric_index], 1.0 - tail)),
-                    "raw_probability_positive": float(np.mean(raw_draws[:, metric_index] > 0.0)),
+                    "raw_probability_positive": float(
+                        probability_positive_from_draws(raw_draws[:, metric_index])
+                    ),
                     "raw_variance": raw_variance,
                     "adjusted_variance": adjusted_variance,
                     "variance_reduction_pct": variance_reduction,

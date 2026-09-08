@@ -40,12 +40,14 @@ import json
 import math
 import os
 import re
+import statistics
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from nfl_ats.evidence_conventions import binomial_two_sided_p
 from nfl_ats.io import atomic_json
 
 WEAK_SIGNAL_REGISTRY_VERSION = 1
@@ -277,13 +279,43 @@ class WeakSignal:
 
     @property
     def favours_candidate(self) -> bool:
-        """Which side of zero the point estimate fell on.
+        """Whether the point estimate fell strictly on the candidate's side of zero.
 
         The single most valuable field in the registry: precision accumulates
         slowly, but signs accumulate at one bit per experiment.
+
+        NOT the negation of :attr:`favours_baseline`. This is False for an
+        effect of exactly zero as well as for a negative one, so ``not
+        favours_candidate`` means "did not favour the candidate", never
+        "favoured the baseline". Reading it the second way is what made the
+        sign test score 208 exact ties as baseline wins; use :attr:`direction`
+        when a three-way answer is what you need.
         """
 
         return self.effect > 0.0
+
+    @property
+    def favours_baseline(self) -> bool:
+        """Whether the point estimate fell strictly on the baseline's side of zero."""
+
+        return self.effect < 0.0
+
+    @property
+    def direction(self) -> int:
+        """+1 for the candidate, -1 for the baseline, 0 for an exact tie.
+
+        An effect of exactly zero is the common case here, not a curiosity:
+        two arms that make the same picks on every game produce a paired delta
+        of exactly zero, and 208 of the 1,489 eligible NFL signals sit there.
+        A tie carries no directional information, so it belongs in its own
+        bucket rather than being folded into either side.
+        """
+
+        if self.effect > 0.0:
+            return 1
+        if self.effect < 0.0:
+            return -1
+        return 0
 
     @property
     def season_range(self) -> range:
@@ -862,54 +894,202 @@ def set_reliability(
 # ---------------------------------------------------------------------------
 
 
-def _binomial_two_sided_p(favourable: int, total: int) -> float:
-    """Exact two-sided binomial p-value against a fair coin."""
-
-    if total <= 0:
-        return 1.0
-
-    def pmf(k: int) -> float:
-        return math.comb(total, k) * 0.5**total
-
-    observed = pmf(favourable)
-    # Sum every outcome no more likely than the observed one (the standard
-    # small-sample two-sided construction; symmetric here since p = 0.5).
-    tolerance = 1e-12
-    return min(1.0, sum(pmf(k) for k in range(total + 1) if pmf(k) <= observed + tolerance))
-
-
 def sign_test(signals: Sequence[WeakSignal]) -> dict[str, Any]:
     """Do the point estimates lean one way more than chance allows?
 
     Precision accumulates slowly; signs accumulate at one bit per experiment.
     Under a true null each candidate is equally likely to land either side of
     zero, so a lopsided tally is testable even when no single result is.
+
+    Tie convention (fixed 2026-09-08, and the headline number moved)
+    ---------------------------------------------------------------
+    An effect of exactly zero used to be counted a win for the BASELINE,
+    because the tally was ``favours_candidate`` on one side and everything
+    else on the other. That is not a tie-breaking convention, it is a
+    one-directional thumb on the scale, and it was heavy: 208 of the 1,489
+    eligible NFL signals are exact zeros, so the pile read 576/1489 = 38.7%
+    (p = 2.2e-18, "resolved") when the informative signals alone read
+    576/1281 = 45.0% (p = 3.4e-04, "leaning").
+
+    The reported test now EXCLUDES ties, which is the classical sign-test
+    construction (Dixon-Mood): a tie carries zero information about direction,
+    so conditioning on the informative comparisons keeps the binomial exact
+    rather than forcing a half-integer count through it. The half-credit
+    reading -- ties split evenly, matching
+    :func:`~nfl_ats.evidence_conventions.probability_positive_from_draws`'s
+    zero-atom convention -- is reported alongside it as
+    ``favouring_candidate_half_credit``, and ``ties`` is always reported, so
+    no number here is ambiguous about which convention produced it.
+
+    Both conventions leaned the same way on the registry as it stood when this
+    was fixed, so nothing about the pile's DIRECTION changed. Neither reading
+    resolves anything on its own, and neither is grounds to close a line of
+    work.
     """
 
     excluded_invalidated = sum(s.status == "invalidated" for s in signals)
     signals = [s for s in signals if s.status != "invalidated"]
-    favourable = sum(1 for signal in signals if signal.favours_candidate)
-    total = len(signals)
+    favourable = sum(1 for signal in signals if signal.direction > 0)
+    against = sum(1 for signal in signals if signal.direction < 0)
+    ties = len(signals) - favourable - against
+    informative = favourable + against
+    p_value = binomial_two_sided_p(favourable, informative)
     return {
-        "signals": total,
+        "signals": len(signals),
         "excluded_invalidated": excluded_invalidated,
+        "tie_convention": (
+            "ties excluded from the test (classical sign test); "
+            "'*_half_credit' fields report the ties-split-evenly reading"
+        ),
         "favouring_candidate": favourable,
-        "favouring_baseline": total - favourable,
-        "p_value": _binomial_two_sided_p(favourable, total),
+        "favouring_baseline": against,
+        "ties": ties,
+        "informative_signals": informative,
+        "favouring_candidate_half_credit": favourable + 0.5 * ties,
+        "favouring_baseline_half_credit": against + 0.5 * ties,
+        "share_favouring_candidate": (None if informative == 0 else favourable / informative),
+        "share_favouring_candidate_half_credit": (
+            None if not signals else (favourable + 0.5 * ties) / len(signals)
+        ),
+        "p_value": p_value,
         "interpretation": (
             "no signals recorded"
-            if total == 0
+            if not signals
             else (
-                "directions are consistent with a coin flip"
-                if _binomial_two_sided_p(favourable, total) > 0.10
-                else "directions lean further than chance comfortably explains"
+                "every signal is an exact tie; the pile has no direction to test"
+                if informative == 0
+                else (
+                    "directions are consistent with a coin flip"
+                    if p_value > 0.10
+                    else "directions lean further than chance comfortably explains"
+                )
             )
         ),
     }
 
 
-def pooled_effect(signals: Sequence[WeakSignal], *, method: str = "random") -> dict[str, Any]:
-    """Inverse-variance pooled effect across signals sharing one unit.
+#: Weighting schemes accepted by :func:`pooled_effect`.
+POOLING_WEIGHTINGS = ("sample_floored", "inverse_variance")
+
+#: How many robust standard deviations below the pool's own SE-versus-sample
+#: curve an entry's recorded standard error has to sit before it is treated as
+#: implausibly narrow. Three is the ordinary robust-outlier convention; the
+#: cutoff it produces is derived from the pool being measured, not fixed in
+#: advance. Crossing it FLOORS an entry's variance and FLAGS it for
+#: re-measurement -- it never drops the entry or closes anything.
+_IMPLAUSIBLE_SE_ROBUST_SIGMAS = 3.0
+
+
+def _pool_sample_sizes(usable: Sequence[WeakSignal]) -> tuple[list[float] | None, int]:
+    """How much football each entry actually saw, with missing values imputed.
+
+    ``sample_games`` first; then ``sample_blocks`` converted at the pool's own
+    median games-per-block; then the pool's median sample size, so an entry
+    that recorded neither field keeps an ordinary voice instead of being
+    dropped. Returns ``None`` when no entry carries either field, which is the
+    signal to fall back to the legacy inverse-variance weighting.
+    """
+
+    per_block = [
+        s.sample_games / s.sample_blocks
+        for s in usable
+        if s.sample_games and s.sample_blocks and s.sample_blocks > 0
+    ]
+    games_per_block = statistics.median(per_block) if per_block else None
+
+    partial: list[float | None] = []
+    for signal in usable:
+        if signal.sample_games and signal.sample_games > 0:
+            partial.append(float(signal.sample_games))
+        elif signal.sample_blocks and signal.sample_blocks > 0 and games_per_block:
+            partial.append(float(signal.sample_blocks) * games_per_block)
+        else:
+            partial.append(None)
+
+    known = [n for n in partial if n is not None]
+    if not known:
+        return None, 0
+    fallback = statistics.median(known)
+    return [fallback if n is None else n for n in partial], len(partial) - len(known)
+
+
+@dataclass(frozen=True)
+class _PlausibilityCurve:
+    """The pool's own standard-error-versus-sample-size relationship.
+
+    An honest estimator's standard error scales as ``sigma / sqrt(n)``, so
+    ``SE^2 * n`` should be roughly constant across a commensurable pool. The
+    scale is estimated by MEDIAN so a handful of degenerate bootstrap bands
+    cannot set it, and how far an entry may fall below the curve before it
+    stops being ordinary variation is measured in the pool's own robust
+    standard deviations rather than picked in advance.
+    """
+
+    scale: float
+    sample_sizes: list[float]
+    log_ratios: list[float]
+    cutoff: float
+
+    def floor_for(self, index: int) -> float:
+        """The narrowest standard error this entry's sample size can support."""
+
+        return math.exp(self.cutoff) * math.sqrt(self.scale / self.sample_sizes[index])
+
+    def is_implausible(self, index: int) -> bool:
+        return self.log_ratios[index] < self.cutoff
+
+
+def _plausibility_curve(usable: Sequence[WeakSignal]) -> _PlausibilityCurve | None:
+    """Fit the SE-versus-sample curve, or ``None`` when the pool is too thin to."""
+
+    sample_sizes, _ = _pool_sample_sizes(usable)
+    if sample_sizes is None or len(usable) < 3:
+        return None
+    errors = [s.resolved_standard_error() for s in usable]
+    positive = [
+        (float(se), n)
+        for se, n in zip(errors, sample_sizes, strict=True)
+        if se is not None and se > 0.0 and n > 0.0
+    ]
+    if len(positive) < 3:
+        return None
+    scale = statistics.median([se**2 * n for se, n in positive])
+    if scale <= 0.0:
+        return None
+
+    log_ratios = [
+        math.log(float(se) / math.sqrt(scale / n))
+        if se is not None and se > 0.0 and n > 0.0
+        else -math.inf
+        for se, n in zip(errors, sample_sizes, strict=True)
+    ]
+    finite = [r for r in log_ratios if math.isfinite(r)]
+    centre = statistics.median(finite)
+    deviations = [abs(r - centre) for r in finite]
+    # 1.4826 rescales a median absolute deviation to a standard deviation
+    # under normality. When more than half the pool records an identical ratio
+    # the MAD collapses to zero and says nothing, so fall back to the mean
+    # absolute deviation (1.2533 = sqrt(pi/2) is its own consistency constant):
+    # less resistant, but still derived from the pool and still not a constant
+    # picked in advance.
+    robust_sigma = 1.4826 * statistics.median(deviations)
+    if robust_sigma <= 0.0:
+        robust_sigma = 1.2533 * statistics.fmean(deviations)
+    if robust_sigma <= 0.0:
+        return None
+    cutoff = centre - _IMPLAUSIBLE_SE_ROBUST_SIGMAS * robust_sigma
+    return _PlausibilityCurve(
+        scale=scale, sample_sizes=sample_sizes, log_ratios=log_ratios, cutoff=cutoff
+    )
+
+
+def pooled_effect(
+    signals: Sequence[WeakSignal],
+    *,
+    method: str = "random",
+    weighting: str = "sample_floored",
+) -> dict[str, Any]:
+    """Pooled effect across signals sharing one unit, weighted by football seen.
 
     Fixed-effect pooling assumes every input estimates the SAME quantity, which
     is rarely true across different football signals, so ``random`` (the
@@ -918,9 +1098,60 @@ def pooled_effect(signals: Sequence[WeakSignal], *, method: str = "random") -> d
 
     The payoff is the sqrt(K) shrinkage in the standard error, which is what
     makes a pile of individually invisible effects visible together.
+
+    Why the weights are not ``1 / SE^2`` any more (fixed 2026-09-08)
+    ----------------------------------------------------------------
+    Textbook inverse-variance weighting is right when the reported standard
+    errors are trustworthy. In THIS registry they systematically are not, and
+    they fail in the one direction that does maximum damage: these intervals
+    come from block bootstraps of mined cells, and a bootstrap band SHRINKS as
+    the cell it resamples gets smaller and more degenerate. Weighting by
+    ``1 / SE^2`` therefore handed the least informative entries the most
+    influence. Measured on the NFL ``accuracy_points`` pool before this fix:
+    ``roof_battery_visiting_dome_open_vs_closed_opener`` -- a THREE-game cell
+    whose own ``classification_evidence`` says in as many words that its
+    narrowness "is an artifact of resampling a 3-point sample, not statistical
+    power" -- held 99.997% of the fixed-effect weight, and ``--method fixed``
+    reported ``excludes_zero: True`` on a number that was that single cell's
+    own estimate to five decimals.
+
+    The fix keeps inverse-variance weighting and stops taking the untrustworthy
+    field at face value. An honest estimator's variance scales as
+    ``sigma^2 / n``, so the per-entry variance is REBUILT from the fields that
+    do reflect how much football was seen -- ``sample_games``, falling back to
+    ``sample_blocks`` -- with a single per-game variance scale ``sigma^2``
+    estimated robustly as the MEDIAN of ``SE^2 * n`` across the pool. A handful
+    of degenerate bands cannot move a median, so one three-game cell can no
+    longer set the scale for 1,369 entries.
+
+    That makes an entry's influence proportional to its sample size (exactly
+    the Hunter-Schmidt convention, and the same thing inverse-variance
+    weighting would do if the variances were honest), which is what "no single
+    entry dominates" means here: influence is bounded by the largest real
+    window in the pool rather than by the narrowest resampling artifact.
+    Under ``random`` the weights ``n / (sigma^2 + tau^2 * n)`` saturate at
+    ``1 / tau^2``, so heterogeneity bounds a big window's influence further.
+
+    NOTHING IS DROPPED. There is no minimum sample size and no admissibility
+    rule: a three-game cell keeps a three-game cell's voice, which is small but
+    real. Excluding a signal for being underpowered is exactly the move
+    AGENTS.md forbids, and the whole point of this registry is that
+    below-power entries are kept.
+
+    Args:
+        method: ``random`` (DerSimonian-Laird, the default) or ``fixed``.
+        weighting: ``sample_size`` (the default, described above) or
+            ``inverse_variance`` (the legacy scheme, kept so the change stays
+            auditable; the fixed weighting's result is reported under
+            ``legacy_inverse_variance`` on every call).
     """
 
     _require(method in ("fixed", "random"), f"Unknown pooling method {method!r}")
+    _require(
+        weighting in POOLING_WEIGHTINGS,
+        f"Unknown pooling weighting {weighting!r}. Expected one of "
+        f"{', '.join(POOLING_WEIGHTINGS)}.",
+    )
     excluded_invalidated = sum(s.status == "invalidated" for s in signals)
     usable = [
         s for s in signals if s.status != "invalidated" and s.resolved_standard_error() is not None
@@ -943,8 +1174,43 @@ def pooled_effect(signals: Sequence[WeakSignal], *, method: str = "random") -> d
     )
 
     effects = [s.effect for s in usable]
-    errors = [s.resolved_standard_error() for s in usable]
-    variances = [float(se) ** 2 for se in errors if se is not None]
+    errors = [float(se) for s in usable if (se := s.resolved_standard_error()) is not None]
+    recorded_variances = [se**2 for se in errors]
+
+    _, imputed = _pool_sample_sizes(usable)
+    curve = _plausibility_curve(usable) if weighting == "sample_floored" else None
+    applied = weighting
+    floored: list[dict[str, Any]] = []
+    if weighting == "sample_floored" and curve is None:
+        # Nothing better than the recorded bands exists here (synthetic pools,
+        # and pools too thin to fit a curve), so say so out loud rather than
+        # inventing a floor.
+        applied = "inverse_variance_fallback_no_curve"
+        variances = recorded_variances
+    elif curve is not None:
+        variances = []
+        for index, recorded in enumerate(recorded_variances):
+            floor = curve.floor_for(index) ** 2
+            if curve.is_implausible(index):
+                floored.append(
+                    {
+                        "name": usable[index].name,
+                        "recorded_standard_error": math.sqrt(recorded),
+                        "floored_to": math.sqrt(floor),
+                        "sample_games": usable[index].sample_games,
+                    }
+                )
+                variances.append(floor)
+            else:
+                variances.append(recorded)
+    else:
+        variances = recorded_variances
+
+    if any(v <= 0.0 for v in variances):
+        raise WeakSignalError(
+            "Cannot pool a signal whose variance is zero or negative; "
+            "re-measure it or record an interval that has width."
+        )
 
     weights = [1.0 / v for v in variances]
     total_weight = sum(weights)
@@ -967,23 +1233,209 @@ def pooled_effect(signals: Sequence[WeakSignal], *, method: str = "random") -> d
     standard_error = math.sqrt(1.0 / total_weight)
     half = 1.959963984540054 * standard_error
 
-    smallest_individual = min(float(se) for se in errors if se is not None)
-    return {
+    shares = [w / total_weight for w in weights]
+    heaviest = max(range(len(shares)), key=lambda i: shares[i])
+    # Kish's effective sample size: how many equally-weighted signals this
+    # pool is really worth. A pool dominated by one entry collapses toward 1.
+    effective_signals = (total_weight**2) / sum(w**2 for w in weights)
+
+    result: dict[str, Any] = {
         "signals": len(usable),
         "excluded_invalidated": excluded_invalidated,
         "method": method,
+        "weighting": applied,
         "effect_units": usable[0].effect_units,
         "pooled_effect": mean,
         "standard_error": standard_error,
         "interval": (mean - half, mean + half),
+        # AGENTS.md, binding: report probability_positive, never the binary
+        # "contains zero" -- the binary phrasing is what smuggles a rejection
+        # back in. ``excludes_zero`` is kept for the callers that already read
+        # it, but this is the number to quote.
+        "probability_positive": (
+            None
+            if standard_error <= 0.0
+            else 0.5 * math.erfc(-mean / (standard_error * math.sqrt(2.0)))
+        ),
         "excludes_zero": bool((mean - half) * (mean + half) > 0.0),
         "heterogeneity_tau_squared": tau_squared,
+        # Measured against the sharpest input the pool actually TRUSTS, i.e.
+        # after flooring. Using the narrowest recorded band made the pool look
+        # 400x worse than its "best single input" on the live registry, because
+        # that input was a three-game cell's resampling artifact.
         "sharpening_vs_best_single": (
-            None if standard_error == 0 else smallest_individual / standard_error
+            None if standard_error == 0 else math.sqrt(min(variances)) / standard_error
         ),
+        "max_weight_share": shares[heaviest],
+        "most_influential_signal": usable[heaviest].name,
+        "effective_signals": effective_signals,
+        "per_game_variance": None if curve is None else curve.scale,
+        "sample_sizes_imputed": imputed,
+        "variance_floor_log_ratio_cutoff": None if curve is None else curve.cutoff,
+        "standard_errors_floored": len(floored),
+        "floored_signals": floored,
         "note": (
             "Pooling assumes the inputs are independent. Check overlap_warnings "
-            "before believing this interval."
+            "before believing this interval. Entries listed under "
+            "'floored_signals' recorded a band too narrow for their own sample "
+            "size and need re-measurement; they are still pooled, at the "
+            "weakest precision their sample supports."
+        ),
+    }
+    if applied == "sample_floored":
+        note = (
+            "The superseded 1/SE^2 weighting, reported so the change stays "
+            "auditable. It weighted narrow bootstrap artifacts hardest; do "
+            "not quote it."
+        )
+        try:
+            legacy = pooled_effect(
+                [s for s in signals if s.status != "invalidated"],
+                method=method,
+                weighting="inverse_variance",
+            )
+        except WeakSignalError as error:
+            result["legacy_inverse_variance"] = {"unavailable": str(error), "note": note}
+        else:
+            result["legacy_inverse_variance"] = {
+                "pooled_effect": legacy["pooled_effect"],
+                "interval": legacy["interval"],
+                "excludes_zero": legacy["excludes_zero"],
+                "max_weight_share": legacy["max_weight_share"],
+                "most_influential_signal": legacy["most_influential_signal"],
+                "effective_signals": legacy["effective_signals"],
+                "note": note,
+            }
+    return result
+
+
+def implausible_standard_errors(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
+    """Entries whose recorded band is far too narrow for the sample they name.
+
+    Reads the same curve :func:`pooled_effect` floors against, so the list of
+    rows flagged for re-measurement can never disagree with the list of rows
+    whose variance was floored.
+
+    One curve is fitted PER (league, effect_units) group. ``SE^2 * n`` is only
+    comparable within a commensurable population -- same units, same scale,
+    same league, exactly the rule AGENTS.md already imposes on pooling -- so
+    fitting a single curve across a mixed pile would flag rows for belonging to
+    the tighter unit rather than for being implausible. ``pooled_effect``
+    already validates a single unit before it calls this, but the registry-wide
+    callers do not.
+
+    This FLAGS rows. It does not drop them from the pool, and it says nothing
+    about whether the underlying signal is real: a band that is too narrow is
+    a measurement to redo, not a mechanism to close. Nothing here closes a
+    line of work.
+    """
+
+    usable = [
+        s for s in signals if s.status != "invalidated" and s.resolved_standard_error() is not None
+    ]
+    groups: dict[tuple[str, str], list[WeakSignal]] = {}
+    for signal in usable:
+        groups.setdefault((signal.league, signal.effect_units), []).append(signal)
+
+    flagged: list[dict[str, Any]] = []
+    for group in groups.values():
+        curve = _plausibility_curve(group)
+        if curve is None:
+            continue
+        flagged.extend(
+            {
+                "name": signal.name,
+                "league": signal.league,
+                "effect_units": signal.effect_units,
+                "standard_error": signal.resolved_standard_error(),
+                "sample_games": signal.sample_games,
+                "plausible_floor": curve.floor_for(index),
+                "log_ratio": curve.log_ratios[index],
+            }
+            for index, signal in enumerate(group)
+            if curve.is_implausible(index)
+        )
+    return sorted(flagged, key=lambda row: float(row["log_ratio"]))
+
+
+def rows_needing_remeasurement(signals: Sequence[WeakSignal]) -> dict[str, Any]:
+    """Rows recorded under conventions since found defective, listed for re-measurement.
+
+    Recorded values are NOT rewritten by this function or anywhere else: the
+    original bootstrap draws were never stored, so most of these rows cannot be
+    honestly recomputed from what is on disk. Flagging is not closing. None of
+    these rows is refuted, none is bounded by a control, and nothing here
+    changes any classification -- they are measurements to redo, and until they
+    are redone they stay exactly as unresolved as they already were.
+
+    Three buckets:
+
+    ``zero_atom_probability_positive``
+        ``probability_positive`` of exactly 0.0 recorded alongside an effect of
+        exactly 0.0 and a degenerate ``[0, 0]`` interval. Under the strict
+        ``draws > 0`` convention this repository used until 2026-09-08, a
+        candidate making IDENTICAL picks on every game scored the strongest
+        negative the scale can express. Under
+        :func:`~nfl_ats.evidence_conventions.probability_positive_from_draws`
+        the same measurement is 0.5. These are DETERMINISTICALLY correctable --
+        every resample was an exact tie, so no stored draws are needed -- and
+        two rows in the registry were already recorded at 0.5 by hand, with
+        reasoning, before the convention was fixed.
+
+    ``strict_zero_with_nonzero_effect``
+        ``probability_positive`` of exactly 0.0 on a NON-zero effect. These may
+        or may not have had a zero atom folded into the count; without the
+        draws it cannot be told from the registry. Listed as unknown, not
+        assumed wrong.
+
+    ``implausible_standard_error``
+        Bands too narrow for the sample size the row itself records; see
+        :func:`implausible_standard_errors`.
+    """
+
+    active = [s for s in signals if s.status != "invalidated"]
+    deterministic = [
+        s.name
+        for s in active
+        if s.probability_positive == 0.0 and s.effect == 0.0 and s.interval == (0.0, 0.0)
+    ]
+    unknown = [s.name for s in active if s.probability_positive == 0.0 and s.effect != 0.0]
+    implausible = implausible_standard_errors(active)
+    return {
+        "zero_atom_probability_positive": {
+            "count": len(deterministic),
+            "correctable_value": 0.5,
+            "signals": sorted(deterministic),
+            "note": (
+                "Recorded 0.0 by the strict 'draws > 0' convention; the "
+                "measurement is a dead heat, whose value under the corrected "
+                "convention is 0.5. Not rewritten in place -- propose the "
+                "correction explicitly rather than editing recorded numbers."
+            ),
+        },
+        "strict_zero_with_nonzero_effect": {
+            "count": len(unknown),
+            "signals": sorted(unknown),
+            "note": (
+                "Cannot be corrected from the registry: whether a zero atom was "
+                "folded in depends on draws that were never stored. Re-measure "
+                "to find out; do not assume either way."
+            ),
+        },
+        "implausible_standard_error": {
+            "count": len(implausible),
+            "signals": [row["name"] for row in implausible],
+            "note": (
+                "The recorded band is far narrower than this row's own sample "
+                "size can support. Pooling floors these rather than trusting "
+                "or dropping them."
+            ),
+        },
+        "total_flagged": len(deterministic) + len(unknown) + len(implausible),
+        "nothing_is_closed_by_this": (
+            "Flagging a measurement for re-measurement is not a verdict on the "
+            "signal. No row here is refuted, bounded by a control, or "
+            "reclassified."
         ),
     }
 
@@ -1170,6 +1622,7 @@ def combination_report(
     league: str | None = None,
     effect_units: str | None = None,
     method: str = "random",
+    weighting: str = "sample_floored",
 ) -> dict[str, Any]:
     """Everything needed to decide whether the pile is worth one combined look."""
 
@@ -1208,7 +1661,9 @@ def combination_report(
     pooled: dict[str, Any] = {}
     for unit, group in sorted(unit_groups.items()):
         pooled[unit] = pooled_effect(
-            group + [s for s in invalidated if s.effect_units == unit], method=method
+            group + [s for s in invalidated if s.effect_units == unit],
+            method=method,
+            weighting=weighting,
         )
 
     used_seasons = sorted({season for signal in eligible for season in signal.season_range})
@@ -1218,6 +1673,7 @@ def combination_report(
         "excluded_with_reason": excluded,
         "excluded_invalidated": len(invalidated),
         "sign_test": sign_test(eligible + invalidated),
+        "needs_remeasurement": rows_needing_remeasurement(eligible + invalidated),
         "pooled_by_unit": pooled,
         "overlap_warnings": family_overlap_warnings(eligible + invalidated),
         "overlap_pairwise_count": len(overlap_warnings(eligible)),

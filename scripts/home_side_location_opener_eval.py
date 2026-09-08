@@ -21,6 +21,7 @@ import spread_regime_opener_eval as common
 from threadpoolctl import threadpool_limits
 
 from nfl_ats.active_model import active_artifact_path
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.home_side_location import (
     HOME_SIDE_HINGE_COLUMNS,
     TRAILING_SEASONS,
@@ -169,7 +170,7 @@ def metric(frame: pd.DataFrame, differences: np.ndarray) -> dict:
         "delta": float(differences.mean()),
         "lower": float(np.quantile(values, 0.025)),
         "upper": float(np.quantile(values, 0.975)),
-        "probability_positive": float((values > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(values)),
         "standard_error": float(values.std(ddof=1)),
         "n": len(frame),
         "weeks": len(groups),

@@ -11,6 +11,7 @@ import pandas as pd
 from scipy.special import ndtr
 
 from nfl_ats.data import DataContractError
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.expected_lineup_loss_features import (
     EXPECTED_LINEUP_LOSS_COLUMNS,
     _lineup_group,
@@ -119,7 +120,7 @@ def paired_summary(frame: pd.DataFrame, column: str, *, draws: int = 20_000) -> 
         "interval_low": float(np.quantile(samples, 0.025)),
         "interval_high": float(np.quantile(samples, 0.975)),
         "standard_error": float(np.std(samples, ddof=1)),
-        "probability_positive": float(np.mean(np.asarray(samples) > 0)),
+        "probability_positive": float(probability_positive_from_draws(np.asarray(samples))),
         "sample_games": len(frame),
         "sample_blocks": len(blocks),
         "draws": draws,

@@ -8,6 +8,7 @@ import pandas as pd
 import pytest
 
 from nfl_ats.clv import week_blocked_bootstrap
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 
 SPEC = importlib.util.spec_from_file_location(
     "residual_offset_eval",
@@ -92,7 +93,10 @@ def test_fast_bootstrap_matches_repository_whole_week_draws():
     assert estimate[0] == pytest.approx(reference["estimate"])
     assert np.quantile(draws[:, 0], 0.025) == pytest.approx(reference["lower"])
     assert np.quantile(draws[:, 0], 0.975) == pytest.approx(reference["upper"])
-    assert (draws[:, 0] > 0).mean() == reference["probability_positive"]
+    # Both sides must use the shared zero-atom convention: these draws
+    # contain exact ties, and a strict `> 0` here would disagree with the
+    # repository helper by exactly the tie mass (0.81 vs 0.905).
+    assert probability_positive_from_draws(draws[:, 0]) == reference["probability_positive"]
 
 
 def test_null_freezes_picks_and_summary_excludes_pushes():
@@ -107,7 +111,11 @@ def test_null_freezes_picks_and_summary_excludes_pushes():
     assert result["archive_rows"] == 6 and result["graded_games"] == 5
     assert result["pushes"] == 1
     assert result["arms"]["production"]["delta"] == 0
-    assert result["arms"]["production"]["probability_positive"] == 0
+    # The frozen-pick null makes the production arm identical to itself, so
+    # every resample is an exact tie. That is a dead heat -- 0.5 -- not the
+    # 0.0 the strict `draws > 0` convention recorded until 2026-09-08
+    # (docs/weak_signal_pooling.md, D2).
+    assert result["arms"]["production"]["probability_positive"] == 0.5
 
 
 def test_prediction_frame_reproduces_probability_boundary_and_checks_drift(model_frame):

@@ -274,7 +274,12 @@ def test_paired_margin_comparison_contracts(
         samples=50,
     )
     assert identical["estimate"].abs().max() == pytest.approx(0.0)
-    assert identical["probability_positive"].eq(0.0).all()
+    # An arm compared against ITSELF is a dead heat, not a loss. This assertion
+    # pinned 0.0 until 2026-09-08, which is the strongest negative the scale can
+    # express awarded to a no-op -- see docs/weak_signal_pooling.md (D2). The
+    # zero atom is now split evenly, so a perfect tie reads 0.5: "this told us
+    # nothing".
+    assert identical["probability_positive"].eq(0.5).all()
 
 
 def test_adjusted_feature_contracts(

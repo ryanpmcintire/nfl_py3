@@ -43,6 +43,7 @@ import pandas as pd
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
 
@@ -256,7 +257,9 @@ def summarize_slope_cell(
         np.quantile(slope_pts_draws, [0.025, 0.975]) if len(slope_pts_draws) else (np.nan, np.nan)
     )
     # Predicted sign is positive (higher combined_z -> higher home_cover).
-    prob_positive_anchored = float(np.mean(anchored_draws > 0)) if len(anchored_draws) else np.nan
+    prob_positive_anchored = (
+        float(probability_positive_from_draws(anchored_draws)) if len(anchored_draws) else np.nan
+    )
 
     return {
         "n_total": n,

@@ -22,6 +22,7 @@ from nfl_ats.backup_qb_fade_overlay import apply_backup_qb_fade_overlay
 from nfl_ats.clv import pick_correct, week_blocked_bootstrap
 from nfl_ats.coach_fade_overlay import apply_coach_fade_overlay
 from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.injury_value_tilt_overlay import apply_injury_value_tilt_overlay
 from nfl_ats.provenance import sha256_file, write_stamped_artifact
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
@@ -368,7 +369,7 @@ def blocked_bootstrap_matrix(
         "estimate": deltas.mean(axis=0),
         "lower": np.quantile(draws, tail, axis=0),
         "upper": np.quantile(draws, 1.0 - tail, axis=0),
-        "probability_positive": np.mean(draws > 0.0, axis=0),
+        "probability_positive": probability_positive_from_draws(draws, axis=0),
         "standard_error": draws.std(axis=0, ddof=1),
         "block_count": len(grouped_indices),
     }

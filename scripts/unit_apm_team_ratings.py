@@ -30,6 +30,7 @@ from unit_apm_screen import (  # noqa: E402
 )
 
 from nfl_ats.data import DataContractError  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.io import run_id  # noqa: E402
 from nfl_ats.participation import (  # noqa: E402
     _player_ids,
@@ -116,7 +117,7 @@ def correlation_summary(frame: pd.DataFrame, x: str, y: str) -> dict:
         "teams": len(stats),
         "pearson": r,
         "ci95": np.quantile(draws, [0.025, 0.975]).tolist(),
-        "probability_positive": float((draws > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "spearman_brown": 2 * r / (1 + r),
         "bootstrap": "team clusters, 20000 draws, seed 20260902",
     }

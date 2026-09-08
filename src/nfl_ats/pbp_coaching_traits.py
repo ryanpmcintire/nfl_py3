@@ -87,6 +87,7 @@ from scipy.stats import spearmanr
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 from nfl_ats.data import require_columns
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.pbp import build_drive_table
 
 # ---------------------------------------------------------------------------
@@ -736,12 +737,12 @@ def paired_split_half_reliability(
         float(np.nanquantile(boots["pearson"], 0.025)),
         float(np.nanquantile(boots["pearson"], 0.975)),
     ]
-    pearson_pp = float(np.nanmean(boots["pearson"] > 0))
+    pearson_pp = float(probability_positive_from_draws(boots["pearson"], ignore_nan=True))
     spearman_ci = [
         float(np.nanquantile(boots["spearman"], 0.025)),
         float(np.nanquantile(boots["spearman"], 0.975)),
     ]
-    spearman_pp = float(np.nanmean(boots["spearman"] > 0))
+    spearman_pp = float(probability_positive_from_draws(boots["spearman"], ignore_nan=True))
 
     sb: float | None = None
     if spearman_brown and math.isfinite(pearson_r) and pearson_r > -1.0:

@@ -25,6 +25,7 @@ import pandas as pd
 import spread_regime_opener_eval as common
 from threadpoolctl import threadpool_limits
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.home_side_location import (
     PRIOR_WEIGHT_GAMES,
     archive_prior_stream,
@@ -221,7 +222,9 @@ def week_blocked_slope(
         "estimate": float(slope(np.arange(n.size))),
         "lower": float(np.quantile(finite, 0.025)) if finite.size else float("nan"),
         "upper": float(np.quantile(finite, 0.975)) if finite.size else float("nan"),
-        "probability_positive": float(np.mean(finite > 0.0)) if finite.size else float("nan"),
+        "probability_positive": float(probability_positive_from_draws(finite))
+        if finite.size
+        else float("nan"),
         "n": int(x.size),
         "weeks": int(n.size),
     }

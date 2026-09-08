@@ -15,6 +15,7 @@ import pandas as pd
 
 from nfl_ats import clv
 from nfl_ats.apm_unit_feature import APM_UNIT_COLUMNS, attach_apm_unit_features
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.participation import (
     build_participation_play_table,
     latest_participation_snapshot,
@@ -56,7 +57,7 @@ def summary(frame: pd.DataFrame, samples: int) -> dict:
         "delta": 100 * float(delta.mean()),
         "lower": float(np.quantile(draws, 0.025)),
         "upper": float(np.quantile(draws, 0.975)),
-        "probability_positive": float((draws > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "flips": int(valid.baseline_pick_home_pr.ne(valid.candidate_pick_home_pr).sum()),
     }
 

@@ -63,6 +63,7 @@ from nfl_ats.cfb_benchmark import (
 )
 from nfl_ats.cfb_features import CFB_MODEL_FEATURE_COLUMNS
 from nfl_ats.data import DataContractError, require_columns
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.experiments import paired_feature_comparisons
 from nfl_ats.margin import MarginModel, fit_market_baseline
 from nfl_ats.opponent_adjustment import (
@@ -462,7 +463,7 @@ def paired_margin_error_comparison(
                 "upper": float(np.quantile(draws, 1.0 - tail)),
                 # Continuous evidence, never a bare pass/fail: the fraction of
                 # blocked resamples in which the candidate beats the baseline.
-                "probability_positive": float(np.mean(draws > 0.0)),
+                "probability_positive": float(probability_positive_from_draws(draws)),
                 "games": len(paired),
                 "blocks": len(blocks),
                 "block": block,

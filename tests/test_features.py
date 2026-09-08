@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import shutil
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 import pytest
@@ -33,6 +35,7 @@ from nfl_ats.pool_decision_lines import (
     decision_lines_manifest_block,
     splash_decision_line_overrides,
 )
+from nfl_ats.splash_lines import load_splash_capture
 
 
 def test_ats_target_sign_and_push() -> None:
@@ -655,8 +658,10 @@ def test_surface_switch_features_land_in_build_game_features_and_leave_other_col
 # ---------------------------------------------------------------------------
 
 
-#: The board capture the tests below apply. Half-point, home-signed, and for a
-#: week that has not been played -- the only shape a real capture ever has.
+_EASTERN = ZoneInfo("America/New_York")
+
+#: The board capture the tests below apply, frozen the Tuesday before the week
+#: it covers -- the only instant a real capture ever carries.
 _POOL_CAPTURE = DecisionLineOverride(
     season=2022,
     week=6,
@@ -664,6 +669,7 @@ _POOL_CAPTURE = DecisionLineOverride(
     source="splashsports.com",
     capture_id="2022_week06_20221011_noon",
     captured_at_utc="2022-10-11T12:45:00-04:00",
+    captured_at=datetime(2022, 10, 11, 12, 45, tzinfo=_EASTERN),
 )
 
 
@@ -679,6 +685,22 @@ def _with_upcoming_week(schedules: pd.DataFrame) -> pd.DataFrame:
     upcoming["result"] = float("nan")
     upcoming["spread_line"] = 2.0
     return pd.concat([schedules, upcoming], ignore_index=True)
+
+
+def _with_played_week(schedules: pd.DataFrame) -> pd.DataFrame:
+    """The same week 6, now PLAYED, with a real Sunday-night kickoff time.
+
+    Kickoff is 2022-10-16 20:20 Eastern, four days after ``_POOL_CAPTURE`` was
+    frozen -- so the pool's number is the number this game was graded on.
+    """
+
+    played = _with_upcoming_week(schedules)
+    played["gametime"] = "20:20"
+    row = played["game_id"].eq("2022_06_B_A")
+    played.loc[row, "away_score"] = 17.0
+    played.loc[row, "home_score"] = 20.0
+    played.loc[row, "result"] = 3.0
+    return played
 
 
 def test_pool_capture_becomes_the_decision_line_for_the_week_it_covers(
@@ -730,22 +752,81 @@ def test_pool_capture_leaves_every_uncaptured_row_bit_identical(
     )
 
 
-def test_pool_capture_refuses_a_game_whose_result_is_already_recorded(
+def test_pool_capture_applies_to_a_played_game_when_the_board_predates_kickoff(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """``ats_margin`` is derived, so a played row's line may never be moved."""
+    """A finished game is not off limits -- a RETROACTIVE line is.
+
+    The board froze Tuesday at 12:45 ET and the game kicked off the following
+    Sunday at 20:20 ET, so -1.5 is the number the pool actually settled this
+    pick on. Archiving the week on nflverse's +2.0 instead would grade the
+    project's own record against a line it never played.
+    """
 
     schedules, _ = schedules_and_stats
-    played = DecisionLineOverride(
+    played = _with_played_week(schedules)
+
+    overridden, applied = apply_decision_lines(played, (_POOL_CAPTURE,))
+
+    row = overridden.loc[overridden["game_id"].eq("2022_06_B_A")].iloc[0]
+    assert row["spread_line"] == pytest.approx(-1.5)
+    assert row["result"] == pytest.approx(3.0)
+    assert len(applied) == 1
+    assert applied[0].changed_game_ids == ("2022_06_B_A",)
+
+
+def test_pool_capture_refuses_a_played_game_when_the_board_postdates_kickoff(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """``ats_margin`` is derived, so a line written after kickoff may not land."""
+
+    schedules, _ = schedules_and_stats
+    played = _with_played_week(schedules)
+    # Read the morning AFTER the game -- the number nobody could have played.
+    afterwards = DecisionLineOverride(
         season=2022,
-        week=5,
-        lines={"2022_05_B_A": -1.5},
+        week=6,
+        lines={"2022_06_B_A": -1.5},
         source="splashsports.com",
-        capture_id="2022_week05_20221004_noon",
+        capture_id="2022_week06_20221017_morning",
+        captured_at_utc="2022-10-17T09:00:00-04:00",
+        captured_at=datetime(2022, 10, 17, 9, 0, tzinfo=_EASTERN),
     )
 
-    with pytest.raises(DataContractError, match="result is already recorded"):
-        apply_decision_lines(schedules, (played,))
+    with pytest.raises(DataContractError, match="RETROACTIVE") as error:
+        apply_decision_lines(played, (afterwards,))
+    assert "2022_06_B_A" in str(error.value)
+
+
+def test_pool_capture_refuses_a_played_game_when_the_capture_has_no_instant(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """Fails closed: an unstamped capture is not permission to move the line."""
+
+    schedules, _ = schedules_and_stats
+    played = _with_played_week(schedules)
+    unstamped = DecisionLineOverride(
+        season=2022,
+        week=6,
+        lines={"2022_06_B_A": -1.5},
+        source="splashsports.com",
+        capture_id="2022_week06_unstamped",
+    )
+
+    with pytest.raises(DataContractError, match="missing timestamp is not permission"):
+        apply_decision_lines(played, (unstamped,))
+
+
+def test_pool_capture_refuses_a_played_game_with_no_kickoff_on_the_schedule(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """Fails closed the other way: no kickoff, no comparison, no override."""
+
+    schedules, _ = schedules_and_stats
+    played = _with_played_week(schedules).drop(columns="gametime")
+
+    with pytest.raises(DataContractError, match="missing kickoff is not permission"):
+        apply_decision_lines(played, (_POOL_CAPTURE,))
 
 
 def test_pool_capture_refuses_a_week_it_only_half_covers(
@@ -834,6 +915,54 @@ def test_captures_on_disk_become_validated_overrides(tmp_path: Path) -> None:
     # Home-signed: Seattle favored by 3.5 at home over New England.
     assert override.lines["2026_01_NE_SEA"] == pytest.approx(3.5)
     assert all(abs(value * 2 - round(value * 2)) < 1e-9 for value in override.lines.values())
+
+
+def test_the_real_week_one_board_still_applies_once_its_opener_is_played(
+    tmp_path: Path,
+) -> None:
+    """The operational hazard this rule was written for, on the real capture.
+
+    2026 Week 1's first game (NE at SEA) kicks off Wednesday 2026-09-09 at
+    20:20 ET and the board was frozen the previous day at 12:45 ET. The moment
+    that game finishes, ``build-features`` has to keep applying the pool's
+    number -- otherwise every refresh job and the next weekly lock hard-fail
+    for as long as the capture is on disk, and the only escape hatch silently
+    reverts the whole week to nflverse's close.
+    """
+
+    fixture = (
+        Path(__file__).resolve().parent / "fixtures" / "splash" / "2026_week01_20260908_noon.json"
+    )
+    splash_root = tmp_path / "splash"
+    splash_root.mkdir()
+    shutil.copy(fixture, splash_root / fixture.name)
+    capture = load_splash_capture(tmp_path, 2026, 1)
+    assert capture is not None
+
+    schedules = pd.DataFrame(
+        {
+            "game_id": [game.game_id for game in capture.games],
+            "season": 2026,
+            "game_type": "REG",
+            "week": 1,
+            "gameday": [f"{game.kickoff_et:%Y-%m-%d}" for game in capture.games],
+            "gametime": [f"{game.kickoff_et:%H:%M}" for game in capture.games],
+            "away_team": [game.away for game in capture.games],
+            "home_team": [game.home for game in capture.games],
+            "result": float("nan"),
+            "spread_line": 0.0,
+        }
+    )
+    opener = schedules["game_id"].eq("2026_01_NE_SEA")
+    assert schedules.loc[opener, "gameday"].iloc[0] == "2026-09-09"
+    assert schedules.loc[opener, "gametime"].iloc[0] == "20:20"
+    schedules.loc[opener, "result"] = -7.0
+
+    overridden, applied = apply_decision_lines(schedules, splash_decision_line_overrides(tmp_path))
+
+    assert overridden.loc[opener, "spread_line"].iloc[0] == pytest.approx(3.5)
+    assert len(applied) == 1
+    assert len(applied[0].game_ids) == 16
 
 
 def test_applied_captures_are_recorded_for_the_build_manifest(

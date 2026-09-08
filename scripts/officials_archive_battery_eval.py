@@ -46,6 +46,7 @@ import nfl_ats.officials_archive as officials_archive
 import nfl_ats.officials_flag_features as flag_features
 from nfl_ats.clv import opener_pick_evaluation
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.margin import fit_margin_model
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.officials_archive import CORE_CREW_POSITIONS, load_officials, normalize_position
@@ -582,7 +583,7 @@ def paired_accuracy(
         "delta": float(100 * diff.mean()),
         "lower": float(np.quantile(draws, 0.025)),
         "upper": float(np.quantile(draws, 0.975)),
-        "probability_positive": float((draws > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "standard_error": float(draws.std(ddof=1)),
         "n": len(scored),
         "weeks": len(groups),

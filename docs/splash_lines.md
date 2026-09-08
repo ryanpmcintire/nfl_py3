@@ -93,10 +93,21 @@ nobody can trust:
    the worst of both, and invisible once the card is built. Missing games, or
    a line for a game that is not on that week's schedule (a mis-read board, or
    a team-abbreviation mismatch), both raise.
-2. **A completed game.** `ats_margin` is derived (`result - spread_line`), so
-   moving the line under a played game rewrites the graded outcome the archive
-   and every registry cell were scored on. Any covered row with a recorded
-   `result` raises.
+2. **A retroactive line.** `ats_margin` is derived (`result - spread_line`), so
+   a line written under a game *after* it started rewrites the graded outcome
+   the archive and every registry cell were scored on. The test is the capture
+   instant against that game's kickoff, for every covered game whose `result`
+   is recorded:
+   - captured **before** kickoff — legitimate, applied (see the resolution
+     below);
+   - captured **at or after** kickoff — refused.
+
+   It **fails closed** where the comparison cannot be made at all: an override
+   with no timezone-aware capture instant, or a played covered game with no
+   kickoff on the schedules frame, raises rather than applying anyway. A
+   missing timestamp is not permission. Kickoffs come from the schedules
+   frame's own `gameday` + `gametime` (Eastern), the same pair the `kickoff`
+   feature column is built from.
 3. **A non-finite line.** A capture that cannot state a number is a defect.
 
 Weeks with no capture are not touched at all. Measured 2026-09-08 on the full
@@ -105,20 +116,41 @@ Weeks with no capture are not touched at all. Measured 2026-09-08 on the full
 column that differed anywhere was `spread_line`, on the 8 Week 1 games where
 Splash and nflverse disagree.
 
-### An open decision, for the week after Week 1 is played
+### Resolved: played weeks are archived on the pool's own graded number
 
-Rule 2 above will fire the first time `build-features` runs with results
-recorded for a week that still has a capture on disk — that is the point of
-it, and it is a question a human should answer rather than a build should
-guess:
+This was an open question until 2026-09-08 — keep played weeks on nflverse's
+close, or archive them on the board the pool actually settled them on. It is
+settled: **played weeks are archived on the pool's own graded number.** That is
+the honest record of how the pool settled, and it is the number the project's
+primary goal is measured against. Archiving a played week on nflverse's close
+instead would grade the project's own record against a line it never played,
+which is exactly the defect this capture layer exists to remove.
 
-- keep the archive on nflverse's number for played weeks (retire the capture
-  from `data/splash/`, or rebuild with `--splash-decision-lines off`); or
-- archive played weeks on the pool's own graded number, which is the honest
-  record of how the pool actually settled and which would move `ats_margin`
-  and `home_cover` for those rows.
+The refusal that used to enforce the other answer was the wrong shape. What
+makes moving a line dangerous is **retroactivity** — changing the number after
+the outcome is known — not the fact that a game has finished. The pool's board
+is frozen Tuesday at noon Eastern, before any game of that week kicks off, so
+for every game on it the captured line predates kickoff and was the graded
+number all along. So the guard now keys on the capture instant versus each
+game's kickoff (rule 2 above), and the two cases separate cleanly:
 
-Nothing here picks one. The build stops and says so.
+- capture before kickoff — applied, played or not;
+- capture at or after kickoff — refused, loudly, for the original reason.
+
+Why this mattered operationally: 2026 Week 1's first game (NE at SEA) kicks off
+Wednesday 2026-09-09 at 20:20 ET. Under the old rule, the moment it finished
+`build-features` would have hard-failed for as long as `data/splash/` held a
+Week 1 capture — breaking the Thursday, Saturday and Sunday refresh jobs and
+the next weekly lock — and the only escape hatch,
+`--splash-decision-lines off`, silently reverts the whole week to nflverse's
+close.
+
+Two consequences worth stating plainly. `ats_margin` and `home_cover` for a
+captured week are computed against the pool's line, so those rows read
+differently than a pre-capture build would have produced — deliberately, and
+only for weeks with a capture on disk. And weeks with no capture are still not
+touched at all, so the opener archive and every registry cell keep the numbers
+they were scored on.
 
 ### Provenance
 
@@ -128,13 +160,17 @@ The build manifest records which weeks were overridden, by which capture:
 "decision_lines": {
   "policy": "pool_capture",
   "builder_module": "nfl_ats.pool_decision_lines",
-  "builder_version": "v1",
+  "builder_version": "v2",
   "weeks": [{"season": 2026, "week": 1, "source": "splashsports.com",
              "capture_id": "2026_week01_20260908_noon",
              "captured_at_utc": "2026-09-08T12:45:00-04:00",
              "games": 16, "changed_games": 8, "changed_game_ids": ["..."]}]
 }
 ```
+
+`builder_version` names the override/refusal semantics a table was built under:
+`v1` refused any covered game with a recorded `result`; `v2` (2026-09-08) is
+the retroactivity rule above.
 
 That block rides the same ENG-22 inheritance chain the nflverse
 `source_snapshot` does, so it survives every enrichment step and reaches the

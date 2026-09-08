@@ -73,6 +73,7 @@ import hc_year_one_fade as hc_module  # noqa: E402
 import nfl_weather_battery_screen as weather_battery  # noqa: E402
 
 from nfl_ats.clv import week_blocked_bootstrap  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.experiment_runner import (  # noqa: E402
     FLAG_BUILDERS,
     _block_bootstrap_subset_gap,
@@ -294,7 +295,7 @@ def era_summary(
             "estimate": float(np.mean(scaled)),
             "lower": float(lower),
             "upper": float(upper),
-            "probability_positive": float(np.mean(scaled > 0.0)),
+            "probability_positive": float(probability_positive_from_draws(scaled)),
             "samples_used": len(scaled),
             "samples_dropped": int(samples - len(scaled)),
         }
@@ -548,7 +549,7 @@ def season_trend_and_changepoint(
             "intercept_point_estimate": intercept_point,
             "bootstrap_lower": float(slope_lower),
             "bootstrap_upper": float(slope_upper),
-            "probability_positive": float(np.mean(slope_draws > 0.0))
+            "probability_positive": float(probability_positive_from_draws(slope_draws))
             if n_valid_draws
             else float("nan"),
             "units": "accuracy_points_per_season",
@@ -631,7 +632,7 @@ def season_trend_and_changepoint(
                     "slope_point_estimate": slope_mod_point,
                     "bootstrap_lower": float(lower_m),
                     "bootstrap_upper": float(upper_m),
-                    "probability_positive": float(np.mean(slope_mod_draws > 0.0)),
+                    "probability_positive": float(probability_positive_from_draws(slope_mod_draws)),
                 }
             else:
                 result["modulator"] = {"name": modulator_name, "degenerate": True}
@@ -927,7 +928,7 @@ def signal7_modulator(combined: pd.DataFrame, *, samples: int, seed: int) -> dic
         "slope_point_estimate": slope_point,
         "bootstrap_lower": float(lower),
         "bootstrap_upper": float(upper),
-        "probability_positive": float(np.mean(slope_draws > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(slope_draws)),
         "caveat": (
             "6 seasons only (2020-2025) -- the SBR proxy leg (2011-2019) carries no book-count "
             "field. Likely underpowered; reported per the owner's instruction to show the spread "

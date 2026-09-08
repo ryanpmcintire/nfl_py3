@@ -12029,7 +12029,7 @@
               },
               {
                 "name": "pool",
-                "help": "sign test plus inverse-variance pooling across the unresolved pile, with shared-season warnings; says whether a combined look is worth a window"
+                "help": "sign test plus sample-floored inverse-variance pooling across the unresolved pile, with shared-season warnings; says whether a combined look is worth a window"
               },
               {
                 "name": "retag-units",
@@ -12846,6 +12846,27 @@
                     },
                     "required": false,
                     "help": "random effects (default) inflates the variance by observed heterogeneity",
+                    "metavar": null
+                  },
+                  {
+                    "action_class": "_StoreAction",
+                    "option_strings": [
+                      "--weighting"
+                    ],
+                    "dest": "weighting",
+                    "nargs": null,
+                    "const": null,
+                    "default": "sample_floored",
+                    "type": null,
+                    "choices": {
+                      "__type__": "tuple",
+                      "items": [
+                        "sample_floored",
+                        "inverse_variance"
+                      ]
+                    },
+                    "required": false,
+                    "help": "sample_floored (default) keeps each entry's recorded precision but never below what its own sample size can support; inverse_variance is the superseded raw 1/SE^2 scheme, kept for audit only because bootstrap bands narrow as a cell gets smaller and it handed the thinnest cells the most weight",
                     "metavar": null
                   }
                 ],

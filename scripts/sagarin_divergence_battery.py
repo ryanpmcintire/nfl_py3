@@ -84,6 +84,7 @@ from _common import block_bootstrap_two_group, latest_schedules  # noqa: E402
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model  # noqa: E402
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.experiment_runner import ExperimentRunnerError, _opener_graded_features  # noqa: E402
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
@@ -379,7 +380,9 @@ def summarize_single(df: pd.DataFrame, *, samples: int, seed: int) -> dict[str, 
         "sagarin_side_cover_rate": cover_rate,
         "effect_pts": (cover_rate - 0.5) * 100.0,
         "ci95": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(draws > 0)) if len(draws) else float("nan"),
+        "probability_positive": float(probability_positive_from_draws(draws))
+        if len(draws)
+        else float("nan"),
         "bootstrap_samples": samples,
         "dropped_draws": int(dropped),
         "insufficient_data": False,
@@ -423,7 +426,9 @@ def summarize_two_group(
         "disagree_accuracy": complement_mean,
         "effect_pts": gap_pts,
         "ci95": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(draws > 0)) if len(draws) else float("nan"),
+        "probability_positive": float(probability_positive_from_draws(draws))
+        if len(draws)
+        else float("nan"),
         "bootstrap_samples": samples,
         "dropped_draws": int(dropped),
         "insufficient_data": False,

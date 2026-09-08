@@ -76,6 +76,8 @@ sys.path.append(str(REPO / "scripts"))
 
 from _common import latest_schedules  # noqa: E402
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
+
 _BATTERY_PATH = REPO / "scripts" / "nfl_weather_battery_screen.py"
 _spec = importlib.util.spec_from_file_location("nfl_weather_battery_screen", _BATTERY_PATH)
 assert _spec is not None and _spec.loader is not None
@@ -98,8 +100,8 @@ READ_ONLY_SCRIPT = True
 # docstring), never artifacts/ or registry/; the module mentions an
 # artifacts/... path only as a citation of another script's prior output.
 READ_ONLY_EXCEPTIONS: dict[int, str] = {
-    267: "OUT_DIR is the scratchpad temp directory defined above, not artifacts/",
-    432: "output_path == OUT_DIR / 'results.json', the scratchpad temp directory",
+    271: "OUT_DIR is the scratchpad temp directory defined above, not artifacts/",
+    438: "output_path == OUT_DIR / 'results.json', the scratchpad temp directory",
 }
 
 BOOTSTRAP_SAMPLES = 20_000
@@ -208,7 +210,9 @@ def score_pair(
         return {
             "estimate": float(np.mean(scaled)) if len(scaled) else float("nan"),
             "ci95": [float(lower), float(upper)],
-            "probability_positive": float(np.mean(draws > 0)) if len(draws) else float("nan"),
+            "probability_positive": float(probability_positive_from_draws(draws))
+            if len(draws)
+            else float("nan"),
             "samples": len(scaled),
         }
 
@@ -380,7 +384,9 @@ def main() -> None:
         "n_blocks": n_franchise_blocks,
         "estimate": float(np.mean(r4_scaled)) if len(r4_scaled) else float("nan"),
         "ci95": [float(r4_lower), float(r4_upper)],
-        "probability_positive": float(np.mean(r4_draws > 0)) if len(r4_draws) else float("nan"),
+        "probability_positive": float(probability_positive_from_draws(r4_draws))
+        if len(r4_draws)
+        else float("nan"),
         "samples": len(r4_scaled),
     }
     results["R4_franchise_cluster_robustness"] = r4

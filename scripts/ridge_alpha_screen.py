@@ -34,6 +34,7 @@ from nfl_ats.cfb_benchmark import (
     CFB_BENCHMARK_RIDGE_ALPHA,
     cfb_walk_forward_benchmark,
 )
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 # Predeclared grid: log-spaced from 1e-3 (essentially unregularised beyond
@@ -141,7 +142,7 @@ def paired_bootstrap(
                 "improvement": float(better.mean() - worse.mean()),
                 "lower": float(np.quantile(sample, 0.025)),
                 "upper": float(np.quantile(sample, 0.975)),
-                "probability_positive": float(np.mean(sample > 0.0)),
+                "probability_positive": float(probability_positive_from_draws(sample)),
                 "games": len(merged),
                 "blocks": len(indices),
                 "samples": int(samples),

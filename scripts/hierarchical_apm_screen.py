@@ -31,6 +31,7 @@ for _path in (str(REPO), str(REPO / "src")):
         sys.path.insert(0, _path)
 
 from nfl_ats.data import DataContractError  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.io import run_id  # noqa: E402
 from nfl_ats.participation import (  # noqa: E402
     PARTICIPATION_RATING_EPA_CLIP,
@@ -168,7 +169,7 @@ def paired_mse_comparison(
         "mse_hierarchical": float(np.mean(hier_se)),
         "mse_delta_flat_minus_hier": delta,
         "mse_delta_ci95": [float(np.quantile(draws, 0.025)), float(np.quantile(draws, 0.975))],
-        "probability_hierarchical_better": float(np.mean(draws > 0.0)),
+        "probability_hierarchical_better": float(probability_positive_from_draws(draws)),
         "samples": samples,
         "seed": seed,
     }

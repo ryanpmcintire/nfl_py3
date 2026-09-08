@@ -83,6 +83,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot  # noqa: E402
 from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
@@ -264,7 +265,7 @@ def interval_summary(
         "lower": float(np.quantile(scaled, tail)),
         "upper": float(np.quantile(scaled, 1.0 - tail)),
         "standard_error": float(np.std(scaled, ddof=1)),
-        "probability_positive": float(np.mean(scaled > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(scaled)),
         "samples": len(scaled),
     }
 

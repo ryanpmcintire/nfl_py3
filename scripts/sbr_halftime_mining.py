@@ -53,6 +53,7 @@ from ingest_sbr_odds import (  # noqa: E402
     _to_number,
 )
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E402
 
 DEFAULT_SNAPSHOT = REPO_ROOT / "data" / "raw" / "sbr_odds" / "20260819T192226Z"
@@ -266,7 +267,7 @@ def week_cluster_bootstrap_deltas(df: pd.DataFrame, rng: np.random.Generator) ->
             "delta_accuracy_mean_boot": float(arr.mean()),
             "ci_low": float(np.percentile(arr, 2.5)),
             "ci_high": float(np.percentile(arr, 97.5)),
-            "probability_positive": float((arr > 0).mean()),
+            "probability_positive": float(probability_positive_from_draws(arr)),
         }
 
     return {

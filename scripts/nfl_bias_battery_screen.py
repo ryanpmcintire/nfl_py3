@@ -59,6 +59,7 @@ sys.path.append(str(REPO / "scripts"))
 from _common import block_bootstrap_two_group, latest_schedules  # noqa: E402
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
 DEFAULT_FEATURES = REPO / "data/processed/game_features.parquet"
@@ -446,7 +447,9 @@ def summarize_population(
         "fraction_of_slate": fraction_of_slate,
         "full_slate_effect_pts": full_slate_effect_pts,
         "week_blocked_ci95_scaled": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(signed_draws > 0)) if len(signed_draws) else np.nan,
+        "probability_positive": float(probability_positive_from_draws(signed_draws))
+        if len(signed_draws)
+        else np.nan,
         "bootstrap_samples": samples,
         "dropped_draws": int(dropped),
         "insufficient_data": False,

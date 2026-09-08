@@ -121,6 +121,7 @@ from scipy.stats import spearmanr
 
 from nfl_ats.cfb_features import cfb_competitive_plays
 from nfl_ats.data import DataContractError, require_columns
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 
 # ---------------------------------------------------------------------------
 # Frozen configuration (see docs/qb_dependence.md; fixed before any run that
@@ -542,7 +543,7 @@ def split_half_reliability(
         ],
         "spearman_rho": rho,
         "spearman_brown_full_length_reliability": spearman_brown,
-        "probability_positive": float(np.mean(boots > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(boots)),
     }
 
 

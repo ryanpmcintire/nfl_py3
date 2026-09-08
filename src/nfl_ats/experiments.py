@@ -16,6 +16,7 @@ from nfl_ats.calibration import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_SETS
 from nfl_ats.estimation_variance import MIN_BLOCKS_FOR_INTERVAL, OnDegenerate, guard_block_count
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.outcomes import summarize_outcome_method, walk_forward_outcomes
 from nfl_ats.prediction_safety import validate_outcome_prediction_card
@@ -265,7 +266,9 @@ def paired_feature_comparisons(
                     # of blocked resamples in which the candidate beats the
                     # baseline. 0.61 means roughly 3:2 odds the improvement
                     # is real; interval endpoints are convention, this isn't.
-                    "probability_positive": float(np.mean(draws[:, metric_index] > 0.0)),
+                    "probability_positive": float(
+                        probability_positive_from_draws(draws[:, metric_index])
+                    ),
                     "confidence": confidence,
                     "block": block,
                     "samples": samples,

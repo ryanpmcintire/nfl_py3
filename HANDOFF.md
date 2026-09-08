@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T17:26:01.030542+00:00`
+Refreshed at: `2026-09-08T18:22:55.382844+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-08T17:26:01.030542+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fc522c84c224` — LEAD-59 lane AD: officials battery with the Wayback archive on -- the flag is a no-op until the crew traits stop inner-joining the 2015+ penalty table; rookie-crew rule +0.73 pts with the wiring fixed; 23 cells recorded [skip ci]
-- Pending change set: 77 paths
-  - `M  .gitignore`
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `013e99b1d7c1` — Serve the pool's own spreads: the card now runs on the Splash Sports board
+- Pending change set: 103 paths
+  - `M  AGENTS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  docs/audit_20260908.md`
-  - `M  docs/discrete_push_read.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/key_line_pick_read.md`
-  - `M  docs/model.html`
-  - `A  docs/splash_lines.md`
-  - `A  registry/experiments/margin-backtest/20260908T162837Z.json`
-  - `A  registry/experiments/margin-backtest/20260908T170903Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T162923Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T165428Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T170550Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T171006Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T171308Z.json`
-  - ...and 57 more
+  - `M  docs/audit_20260908.md`
+  - `M  docs/pool_edge_plan.md`
+  - `M  docs/splash_lines.md`
+  - `A  docs/weak_signal_pooling.md`
+  - `M  docs/weak_signal_registry.md`
+  - `M  scripts/_common.py`
+  - `M  scripts/apm_unit_opener_eval.py`
+  - `M  scripts/arctic_shift_battery_screen.py`
+  - `M  scripts/attention_battery_screen.py`
+  - `M  scripts/attention_followup_screen.py`
+  - `M  scripts/best_pick_ranker_tiebreak_audit.py`
+  - `M  scripts/big_spread_diagnosis.py`
+  - `M  scripts/bye_overvaluation_screen.py`
+  - `M  scripts/cfb_home_side_replication.py`
+  - `M  scripts/cfb_james_stein_unit_screen.py`
+  - `M  scripts/cfb_role_continuity_remeasurement.py`
+  - `M  scripts/cfb_special_teams_screen.py`
+  - ...and 83 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

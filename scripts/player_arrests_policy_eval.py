@@ -24,6 +24,7 @@ import pandas as pd
 
 from nfl_ats.clv import pick_correct
 from nfl_ats.estimation_variance import guard_block_count
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.io import atomic_csv, atomic_parquet, run_id
 from nfl_ats.provenance import artifact_provenance, sha256_file, write_experiment_artifact
 
@@ -242,7 +243,7 @@ def paired_policy_bootstrap(
         "lower": float(np.quantile(draws, 0.025)),
         "upper": float(np.quantile(draws, 0.975)),
         "standard_error": float(draws.std(ddof=1)),
-        "probability_positive": float(np.mean(draws > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "paired_games": len(paired),
     }
 

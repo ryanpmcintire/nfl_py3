@@ -46,6 +46,7 @@ sys.path.append(str(REPO / "scripts"))
 from _common import latest_schedules  # noqa: E402
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.features import add_ats_outcomes  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
@@ -262,7 +263,7 @@ def summarize(df: pd.DataFrame, *, samples: int, seed: int) -> dict[str, Any]:
         return {
             "effect_pts": float((scored["value"].mean() - 0.5) * 100.0),
             "ci95": [float(lower), float(upper)],
-            "probability_positive": float(np.mean(draws > 0)),
+            "probability_positive": float(probability_positive_from_draws(draws)),
             "n_blocks": blocks,
             "dropped_draws": int(samples - len(draws)),
         }

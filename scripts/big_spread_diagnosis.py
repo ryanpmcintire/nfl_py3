@@ -35,6 +35,7 @@ if str(REPO / "src") not in sys.path:
     sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.active_model import load_active_ats_model  # noqa: E402
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.home_side_location import HOME_SIDE_OFFSET_BUCKETS  # noqa: E402
 from nfl_ats.modeling import regular_season_rows  # noqa: E402
 from nfl_ats.provenance import sha256_file, stamp_sidecar, write_stamped_artifact  # noqa: E402
@@ -422,7 +423,7 @@ def week_blocked_mean(
         "estimate": float(v.mean()),
         "lower": float(np.quantile(means, 0.025)),
         "upper": float(np.quantile(means, 0.975)),
-        "probability_positive": float(np.mean(means > 0.0)),
+        "probability_positive": float(probability_positive_from_draws(means)),
     }
 
 
@@ -468,7 +469,9 @@ def week_blocked_slope(
         "estimate": float(slope(np.arange(n.size))),
         "lower": float(np.quantile(finite, 0.025)) if finite.size else np.nan,
         "upper": float(np.quantile(finite, 0.975)) if finite.size else np.nan,
-        "probability_positive": float(np.mean(finite > 0.0)) if finite.size else np.nan,
+        "probability_positive": float(probability_positive_from_draws(finite))
+        if finite.size
+        else np.nan,
     }
 
 

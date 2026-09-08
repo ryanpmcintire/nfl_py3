@@ -37,6 +37,7 @@ from nfl_ats.weak_signals import (
     CLASSIFICATIONS,
     EFFECT_UNITS,
     LEAGUES,
+    POOLING_WEIGHTINGS,
     WeakSignal,
     combination_report,
     family_overlap_warnings,
@@ -221,6 +222,7 @@ def _cmd_weak_signals_pool(args: argparse.Namespace) -> None:
         league=args.league,
         effect_units=args.effect_units,
         method=args.method,
+        weighting=args.weighting,
     )
     _print_json({"registry": str(path), **report})
 
@@ -645,8 +647,8 @@ def register(
 
     weak_signals_pool = weak_signal_commands.add_parser(
         "pool",
-        help="sign test plus inverse-variance pooling across the unresolved pile, "
-        "with shared-season warnings; says whether a combined look is worth a window",
+        help="sign test plus sample-floored inverse-variance pooling across the unresolved "
+        "pile, with shared-season warnings; says whether a combined look is worth a window",
     )
     weak_signals_pool.add_argument("--league", choices=tuple(LEAGUES), default=None)
     weak_signals_pool.add_argument("--effect-units", choices=tuple(EFFECT_UNITS), default=None)
@@ -655,6 +657,15 @@ def register(
         choices=("random", "fixed"),
         default="random",
         help="random effects (default) inflates the variance by observed heterogeneity",
+    )
+    weak_signals_pool.add_argument(
+        "--weighting",
+        choices=tuple(POOLING_WEIGHTINGS),
+        default="sample_floored",
+        help="sample_floored (default) keeps each entry's recorded precision but never "
+        "below what its own sample size can support; inverse_variance is the superseded "
+        "raw 1/SE^2 scheme, kept for audit only because bootstrap bands narrow as a cell "
+        "gets smaller and it handed the thinnest cells the most weight",
     )
     weak_signals_pool.set_defaults(handler=_cmd_weak_signals_pool)
 

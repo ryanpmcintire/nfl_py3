@@ -349,9 +349,24 @@ def _write_played_card_fixture(root: Path) -> tuple[Path, Path]:
     metadata = {
         "active_model_id": "model-123",
         "synchronization_status": "SYNCHRONIZED",
+        # Without this the fresh base lineage falls back to datetime.now(), and
+        # "the cutoff only ever moves LATER" then keeps the wall clock over the
+        # publish instant the caller passed -- so the test was wall-clock
+        # dependent and went red every day after this stamp's time of day.
+        "created_at_utc": PREDICTION_TIMESTAMP,
         "season": 2026,
         "week": 1,
         "feature_profile": "player",
+        # Likewise: with no feature-table manifest every source's effective
+        # timestamp falls back to the wall clock, which then trips the
+        # "effective_timestamp is after the prediction timestamp" check.
+        "provenance": {
+            "feature_table": {
+                "path": "data/processed/game_features_player.parquet",
+                "sha256": "b" * 64,
+                "manifest": {"built_at_utc": FEATURE_BUILD},
+            }
+        },
     }
     (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
     pd.DataFrame(

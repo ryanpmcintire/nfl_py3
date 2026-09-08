@@ -121,6 +121,7 @@ import pandas as pd
 
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.estimation_variance import MIN_BLOCKS_FOR_INTERVAL, guard_block_count
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.experiment_runner import classify_subset_bias_result
 from nfl_ats.outcomes import walk_forward_outcomes
 
@@ -396,7 +397,7 @@ def _score_construct(
     signed_estimate = float(np.mean(signed_week))
     signed_lower = float(np.quantile(signed_week, 0.025))
     signed_upper = float(np.quantile(signed_week, 0.975))
-    probability_positive = float(np.mean(signed_week > 0.0))
+    probability_positive = float(probability_positive_from_draws(signed_week))
 
     season_block_count = int(df["season"].nunique())
     season_verdict = guard_block_count(

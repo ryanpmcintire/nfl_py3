@@ -35,6 +35,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws
+
 REPO = Path(__file__).resolve().parents[1]
 
 _SRC = REPO / "src"
@@ -150,7 +152,9 @@ def summarize(
         "fraction_of_slate": fraction_of_slate,
         "full_slate_effect_pts": full_slate_effect_pts,
         "ci95_scaled": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(draws > 0)) if len(draws) else np.nan,
+        "probability_positive": float(probability_positive_from_draws(draws))
+        if len(draws)
+        else np.nan,
         "bootstrap_samples": samples,
         "dropped_draws": int(dropped),
         "insufficient_data": False,

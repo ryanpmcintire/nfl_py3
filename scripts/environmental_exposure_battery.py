@@ -59,6 +59,7 @@ sys.path.append(str(REPO / "scripts"))
 
 from _common import block_bootstrap_two_group  # noqa: E402
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.experiment_runner import _opener_graded_features  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
@@ -207,7 +208,9 @@ def summarize(
         "fraction_of_slate": fraction_of_slate,
         "full_slate_effect_pts": full_slate_effect_pts,
         "week_blocked_ci95_scaled": [float(lower), float(upper)],
-        "probability_positive": float(np.mean(draws > 0)) if len(draws) else np.nan,
+        "probability_positive": float(probability_positive_from_draws(draws))
+        if len(draws)
+        else np.nan,
         "bootstrap_samples": samples,
         "dropped_draws": int(dropped),
         "insufficient_data": False,

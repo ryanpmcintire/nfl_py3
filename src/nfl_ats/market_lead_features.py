@@ -65,6 +65,7 @@ from sklearn.linear_model import LogisticRegression
 from nfl_ats.clv import build_pairing_table, close_reference_table, load_decision_quotes
 from nfl_ats.constants import MIN_FITTABLE_TRAIN_GAMES
 from nfl_ats.data import DataContractError
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.odds import no_vig_probabilities
 from nfl_ats.odds_backfill import HISTORICAL_CAPTURE_KIND
 
@@ -332,7 +333,7 @@ def split_half_rank_reliability(
         "n_books_common": len(common),
         "spearman_rho": point_rho,
         "bootstrap_ci95": [float(np.quantile(values, 0.025)), float(np.quantile(values, 0.975))],
-        "probability_positive": float((values > 0.0).mean()),
+        "probability_positive": float(probability_positive_from_draws(values)),
         "bootstrap_samples": len(values),
     }
 

@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 from threadpoolctl import threadpool_limits
 
+from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.margin import fit_margin_model
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
@@ -186,7 +187,7 @@ def summarize(
             "delta": float(estimate[index]),
             "interval_low": float(low),
             "interval_high": float(high),
-            "probability_positive": float(np.mean(draws[:, index] > 0)),
+            "probability_positive": float(probability_positive_from_draws(draws[:, index])),
             "standard_error": float(draws[:, index].std(ddof=1)),
             "n": len(valid),
             "accuracy": float(valid[f"correct_{arm}"].mean()),

@@ -98,6 +98,12 @@ def splash_decision_line_overrides(data_root: Path | str) -> tuple[DecisionLineO
                     capture.path.stem if capture.path is not None else f"{season}_week{week:02d}"
                 ),
                 captured_at_utc=capture.captured_at_et.isoformat(),
+                # Load-bearing, not provenance: apply_decision_lines compares
+                # this instant against each covered game's kickoff to separate
+                # a board frozen before kickoff (the number the pool graded)
+                # from a retroactive one. splash_lines._require_datetime
+                # guarantees it is timezone-aware.
+                captured_at=capture.captured_at_et,
             )
         )
     return tuple(overrides)
@@ -111,7 +117,7 @@ def decision_lines_manifest_block(applied: Sequence[AppliedDecisionLines]) -> di
 
         {"policy": "pool_capture",
          "builder_module": "nfl_ats.pool_decision_lines",
-         "builder_version": "v1",
+         "builder_version": "v2",
          "weeks": [{"season": 2026, "week": 1, "source": "splashsports.com",
                     "capture_id": "2026_week01_20260908_noon",
                     "captured_at_utc": "2026-09-08T12:45:00-04:00",

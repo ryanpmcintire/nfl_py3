@@ -16,6 +16,7 @@ from nfl_ats.weak_signals import (
     coherence_problems,
     combination_report,
     family_overlap_warnings,
+    implausible_standard_errors,
     load_registry,
     overlap_warnings,
     poolable_signals,
@@ -23,6 +24,7 @@ from nfl_ats.weak_signals import (
     record_signal,
     registry_from_payload,
     retag_effect_units,
+    rows_needing_remeasurement,
     save_registry,
     sign_test,
     signal_family,
@@ -158,6 +160,54 @@ def test_sign_test_on_an_empty_pile_is_not_a_finding() -> None:
     assert sign_test([])["p_value"] == 1.0
 
 
+def test_sign_test_does_not_score_exact_ties_against_the_candidate() -> None:
+    # The defect: `favours_candidate` is `effect > 0`, and the tally counted
+    # everything else as a baseline win -- so an exact tie, which carries no
+    # direction at all, became evidence for the baseline. Measured on the real
+    # registry 2026-09-08: 208 of 1,489 eligible NFL signals are exact zeros,
+    # which moved the read from 576/1489 = 38.7% (p = 2.2e-18) to 576/1281 =
+    # 45.0% (p = 3.4e-04) -- "resolved" versus "leaning".
+    signals = [
+        signal_from_payload("up", _signal(effect=0.05)),
+        signal_from_payload("down", _signal(effect=-0.05)),
+        *[signal_from_payload(f"tie{i}", _signal(effect=0.0)) for i in range(8)],
+    ]
+    result = sign_test(signals)
+    assert result["signals"] == 10
+    assert result["ties"] == 8
+    assert result["favouring_candidate"] == 1
+    assert result["favouring_baseline"] == 1
+    assert result["informative_signals"] == 2
+    # A pile that is 80% dead heats and otherwise split 1-1 leans nowhere.
+    assert result["p_value"] == pytest.approx(1.0)
+    assert "coin flip" in result["interpretation"]
+
+
+def test_sign_test_reports_both_tie_conventions_so_no_number_is_ambiguous() -> None:
+    signals = [
+        signal_from_payload("up", _signal(effect=0.05)),
+        signal_from_payload("tie", _signal(effect=0.0)),
+        signal_from_payload("down1", _signal(effect=-0.05)),
+        signal_from_payload("down2", _signal(effect=-0.05)),
+    ]
+    result = sign_test(signals)
+    assert result["favouring_candidate"] == 1
+    assert result["favouring_candidate_half_credit"] == pytest.approx(1.5)
+    assert result["favouring_baseline_half_credit"] == pytest.approx(2.5)
+    assert result["share_favouring_candidate"] == pytest.approx(1 / 3)
+    assert result["share_favouring_candidate_half_credit"] == pytest.approx(1.5 / 4)
+    assert "ties excluded" in result["tie_convention"]
+
+
+def test_sign_test_says_so_when_every_signal_is_a_dead_heat() -> None:
+    signals = [signal_from_payload(f"tie{i}", _signal(effect=0.0)) for i in range(5)]
+    result = sign_test(signals)
+    assert result["ties"] == 5
+    assert result["informative_signals"] == 0
+    assert result["p_value"] == pytest.approx(1.0)
+    assert "no direction to test" in result["interpretation"]
+
+
 def test_pooling_sharpens_the_standard_error_toward_sqrt_k() -> None:
     # The mechanism: K identical signals pool to sqrt(K) times the precision.
     signals = [
@@ -204,6 +254,131 @@ def test_random_effects_widens_when_signals_disagree() -> None:
     random = pooled_effect(disagreeing, method="random")
     assert random["heterogeneity_tau_squared"] > 0.0
     assert random["standard_error"] > fixed["standard_error"]
+
+
+def _sized(name: str, *, effect: float, se: float, games: int) -> Any:
+    return signal_from_payload(
+        name,
+        _signal(
+            effect=effect, standard_error=se, effect_units="accuracy_points", sample_games=games
+        ),
+    )
+
+
+def test_a_three_game_cell_cannot_hold_the_whole_pool() -> None:
+    # The defect, reproduced: a block bootstrap's band SHRINKS as the cell it
+    # resamples gets smaller and more degenerate, so raw 1/SE^2 weighting hands
+    # the least informative entries the most influence. Measured on the real
+    # registry 2026-09-08: a THREE-game cell whose own classification_evidence
+    # says its narrowness "is an artifact of resampling a 3-point sample, not
+    # statistical power" held 99.997% of the fixed-effect weight, and
+    # `--method fixed` reported excludes_zero TRUE on what was that one cell's
+    # own estimate to five decimals.
+    honest = [_sized(f"honest{i}", effect=0.1, se=1.0, games=4000) for i in range(20)]
+    degenerate = _sized("degenerate", effect=-9.0, se=1e-5, games=3)
+
+    legacy = pooled_effect([*honest, degenerate], method="fixed", weighting="inverse_variance")
+    assert legacy["max_weight_share"] > 0.99
+    assert legacy["most_influential_signal"] == "degenerate"
+    assert legacy["pooled_effect"] == pytest.approx(-9.0, abs=1e-6)
+
+    fixed = pooled_effect([*honest, degenerate], method="fixed")
+    assert fixed["max_weight_share"] < 0.2
+    assert fixed["most_influential_signal"] != "degenerate"
+    # The honest majority now decides the pooled estimate.
+    assert fixed["pooled_effect"] > 0.0
+
+
+def test_the_thin_cell_is_floored_and_flagged_but_never_dropped() -> None:
+    # AGENTS.md: excluding a signal for being underpowered is exactly the move
+    # the crossing-zero rule forbids. A three-game cell keeps a three-game
+    # cell's voice -- small, but real.
+    honest = [_sized(f"honest{i}", effect=0.1, se=1.0, games=4000) for i in range(20)]
+    degenerate = _sized("degenerate", effect=-9.0, se=1e-5, games=3)
+    result = pooled_effect([*honest, degenerate], method="fixed")
+
+    assert result["signals"] == 21  # nothing dropped
+    assert result["standard_errors_floored"] == 1
+    floored = result["floored_signals"][0]
+    assert floored["name"] == "degenerate"
+    assert floored["floored_to"] > floored["recorded_standard_error"]
+    assert [row["name"] for row in implausible_standard_errors([*honest, degenerate])] == [
+        "degenerate"
+    ]
+
+
+def test_pooling_leaves_plausible_standard_errors_alone() -> None:
+    # The floor must only bite on bands too narrow for their own sample size;
+    # genuine precision differences between honest entries are information and
+    # must survive.
+    signals = [
+        _sized("wide", effect=0.1, se=2.0, games=100),
+        _sized("mid", effect=0.1, se=1.0, games=400),
+        _sized("tight", effect=0.1, se=0.5, games=1600),
+        _sized("tighter", effect=0.1, se=0.4, games=2500),
+    ]
+    result = pooled_effect(signals, method="fixed")
+    assert result["standard_errors_floored"] == 0
+    assert result["floored_signals"] == []
+    # Same answer the honest inverse-variance pool gives.
+    legacy = pooled_effect(signals, method="fixed", weighting="inverse_variance")
+    assert result["pooled_effect"] == pytest.approx(legacy["pooled_effect"])
+
+
+def test_pooling_reports_the_superseded_weighting_so_the_change_is_auditable() -> None:
+    honest = [_sized(f"honest{i}", effect=0.1, se=1.0, games=4000) for i in range(20)]
+    degenerate = _sized("degenerate", effect=-9.0, se=1e-5, games=3)
+    result = pooled_effect([*honest, degenerate], method="fixed")
+    legacy = result["legacy_inverse_variance"]
+    assert legacy["most_influential_signal"] == "degenerate"
+    assert legacy["max_weight_share"] > 0.99
+    assert result["max_weight_share"] < legacy["max_weight_share"]
+    assert result["effective_signals"] > legacy["effective_signals"]
+
+
+def test_pooling_reports_probability_positive_not_just_a_zero_crossing() -> None:
+    # AGENTS.md, binding: report probability_positive, never the binary
+    # "contains zero" -- the binary phrasing is what smuggles a rejection back
+    # in. The pooled read must carry the continuous number.
+    signals = [_sized(f"s{i}", effect=0.2, se=1.0, games=1000) for i in range(4)]
+    result = pooled_effect(signals, method="fixed")
+    assert not result["excludes_zero"]
+    assert 0.5 < result["probability_positive"] < 0.95
+
+
+def test_pooling_falls_back_when_no_entry_records_a_sample_size() -> None:
+    # Synthetic pools and older rows carry no sample size; say so out loud
+    # rather than inventing one.
+    signals = [
+        signal_from_payload(f"s{i}", _signal(effect=0.2, standard_error=0.4)) for i in range(4)
+    ]
+    result = pooled_effect(signals, method="fixed")
+    assert result["weighting"] == "inverse_variance_fallback_no_curve"
+    assert result["pooled_effect"] == pytest.approx(0.20)
+
+
+def test_rows_recorded_under_the_strict_zero_convention_are_flagged_not_rewritten() -> None:
+    signals = [
+        signal_from_payload(
+            "dead_heat",
+            _signal(effect=0.0, standard_error=None, interval=[0.0, 0.0], probability_positive=0.0),
+        ),
+        signal_from_payload(
+            "real_negative",
+            _signal(effect=-0.4, standard_error=0.2, probability_positive=0.0),
+        ),
+        signal_from_payload("ordinary", _signal(effect=0.1, probability_positive=0.7)),
+    ]
+    flagged = rows_needing_remeasurement(signals)
+    zero_atom = flagged["zero_atom_probability_positive"]
+    assert zero_atom["count"] == 1
+    assert zero_atom["signals"] == ["dead_heat"]
+    assert zero_atom["correctable_value"] == 0.5
+    # A non-zero effect at P+ 0.0 cannot be corrected from the registry: the
+    # draws that would say whether a zero atom was folded in were never stored.
+    assert flagged["strict_zero_with_nonzero_effect"]["signals"] == ["real_negative"]
+    # Flagging is not closing.
+    assert "not a verdict" in flagged["nothing_is_closed_by_this"]
 
 
 def test_pooling_refuses_to_mix_units() -> None:

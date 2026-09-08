@@ -16,12 +16,25 @@ full `effect_units` vocabulary and its sign conventions, and the
   signal. Refuses to overwrite an existing name unless `--replace` is passed.
   Enforces the AGENTS.md closing-grounds taxonomy at write time (a terminal
   classification needs an admissible `--closing-ground`).
-- **`pool [--league ...] [--effect-units ...] [--method random|fixed]`** —
-  sign test plus inverse-variance pooling across the unresolved
+- **`pool [--league ...] [--effect-units ...] [--method random|fixed]
+  [--weighting sample_floored|inverse_variance]`** —
+  sign test plus pooling across the unresolved
   (`unresolved_below_power`) pile, with per-family overlap warnings. Refuses
   to mix leagues or mix effect units within one pooled group (units must be
   commensurable — see AGENTS.md). Read-only; safe to run against an empty or
   single-entry bucket for any unit, including the new ones below.
+
+  Four defects in this command's arithmetic were fixed 2026-09-08 — it could
+  not even execute above ~1,030 signals — and the conventions it now uses for
+  ties, for the zero atom in `probability_positive`, and for weighting are
+  written up in `docs/weak_signal_pooling.md`. Two things worth knowing at the
+  call site: the sign test **excludes exact ties** (and reports the
+  half-credit reading alongside), and weights come from each entry's recorded
+  precision **floored at what its own `sample_games` can support**, because a
+  block-bootstrap band narrows as the cell gets smaller. The report also
+  carries a `needs_remeasurement` block listing rows recorded under the old
+  conventions; those stored values are flagged, never rewritten, and flagging
+  closes nothing.
 - **`retag-units --name ... --effect-units ... --reason ...`** — corrects a
   mis-tagged `effect_units` on one already-recorded entry (see below).
 

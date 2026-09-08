@@ -21,6 +21,7 @@ from nfl_ats.clv import (  # noqa: E402
     pick_correct,
     resolve_active_model_config,
 )
+from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.io import atomic_csv, atomic_parquet, run_id  # noqa: E402
 from nfl_ats.modeling import regular_season_rows  # noqa: E402
 from nfl_ats.provenance import (  # noqa: E402
@@ -60,7 +61,7 @@ def summarize(frame: pd.DataFrame, candidate: str, baseline: str) -> dict[str, A
         "effect": float(paired.delta.mean()),
         "interval_low": float(np.quantile(draws, 0.025)),
         "interval_high": float(np.quantile(draws, 0.975)),
-        "probability_positive": float((draws > 0).mean()),
+        "probability_positive": float(probability_positive_from_draws(draws)),
         "season_effects": {
             str(s): float(v) for s, v in paired.groupby("season").delta.mean().items()
         },
