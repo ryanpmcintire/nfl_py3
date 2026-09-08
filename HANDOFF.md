@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T15:38:02.473973+00:00`
+Refreshed at: `2026-09-08T15:54:55.627613+00:00`
 
 ## Start here
 
@@ -20,18 +20,14 @@ Refreshed at: `2026-09-08T15:38:02.473973+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `eba71d3cdd0c` — Opener rule keyed to the pool's noon lock (lane AB); officials Wayback archive loader, archive opt-in (lane Z) [skip ci]
-- Pending change set: 10 paths
+- Baseline commit: `fa8942e3a16c` — Pre-lock fixes (Codex lane AC): era recorder compares the refit's returned number; candidate arms keep their own probability on key-line games; the opener is the game's own pregame Tuesday [skip ci]
+- Pending change set: 6 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `A  docs/officials_archive_battery.md`
-  - `M  src/nfl_ats/card_refit.py`
-  - `M  src/nfl_ats/deadline_drag_challenger.py`
-  - `M  src/nfl_ats/era_weighted_half_life_8_overlay.py`
-  - `M  src/nfl_ats/expected_lineup_loss_challenger.py`
-  - `M  src/nfl_ats/market_data.py`
-  - `M  src/nfl_ats/qb_revenge_deadline_drag_stack_challenger.py`
-  - `M  tests/test_market_data.py`
+  - `A  scripts/officials_archive_battery_eval.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  tests/test_key_line_pick_read.py`
+  - `A  tests/test_officials_archive_battery.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

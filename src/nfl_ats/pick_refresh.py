@@ -58,6 +58,34 @@ revenge, player-arrest, or spread-gap inputs, so a later source revision cannot
 retroactively change the Tuesday information set. See
 ``docs/late_week_refresh.md`` for the reasoning.
 
+Lattice reads at the frozen line (MOD-18, 2026-09-08)
+-----------------------------------------------------
+The Tuesday card reads two quantities off the week's key-number lattice
+(``docs/discrete_push_read.md``, ``docs/key_line_pick_read.md``): the
+cover / push / loss split on every served game, and, on a game whose line
+sits exactly on an atom (3 or 7), the pick-deciding two-way probability.
+``margin-predict`` applies them in a fixed order -- home-side offset, then
+the discrete split, then the key-line pick read, then the decision columns
+(``nfl_ats.outcomes._score_methods``) -- and the refresh frame reproduces
+that order exactly (:func:`_served_lattice_reads`), so the frame a refresh
+plans from never carries a lattice pick beside a smooth split.
+
+**The atom test is keyed to the FROZEN Tuesday line, never the current
+one.** The refit replaces the feature table's current ``spread_line`` with
+the ledger's ``decision_home_spread`` before any lattice read runs, so a
+game quoted 3 on Tuesday stays touched on Sunday even if the market has
+since moved it to 3.5, and a game that has since drifted ONTO 3 stays
+untouched. That is the only reading consistent with invariant 1 above: the
+pool grades at the frozen line, so the line the read conditions on is the
+frozen line.
+
+A pre-promotion card (no served sidecar) refits with the smooth split and
+the smooth pick, byte-identical to the historical refit. When the sidecars
+say the lattice served the card but it cannot be rebuilt now, the served
+split and the served pick are restored verbatim from the sidecars (the
+policy degrades to "keep Tuesday's numbers", never to "silently drop
+them").
+
 Observed-movement pick policy (POL-11 addendum, 2026-08-20)
 -------------------------------------------------------------
 One market-based decision rule IS applied to the played pick, distinct from
@@ -101,6 +129,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 
+from nfl_ats import mass_preserving_lattice
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.calibration import ResidualSmoothingMethod
 from nfl_ats.clv import (
@@ -124,6 +153,11 @@ from nfl_ats.key_line_pick_read import (
 from nfl_ats.lines import apply_external_lines
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.market_data import load_quote_history, spread_consensus
+from nfl_ats.mass_preserving_lattice import (
+    THREE_WAY_COLUMNS,
+    load_forecast_discrete_push_read,
+    serve_discrete_three_way,
+)
 from nfl_ats.nfl_week import week_cycle_sunday
 from nfl_ats.outcomes import MARGIN_DISTRIBUTION_METHODS, fit_margin_models_for_week
 from nfl_ats.prediction_safety import validate_three_way_split
@@ -861,13 +895,15 @@ def plan_refresh(
         forecasts = model.predict(
             overridden, probability_method=probability_method, center_offset=center_offset
         )
-        # Key-line pick read (docs/key_line_pick_read.md): the Tuesday card
-        # read the side off the key-number lattice where the frozen line sits
-        # exactly on 3 or 7; the refit applies the SAME policy at the same
-        # frozen line, so with nothing new the served probability reproduces
-        # bit-for-bit and a late switch can only come from new information.
-        # Pre-promotion cards (no sidecar) refit exactly as before.
-        forecasts = _served_key_line_pick_read(
+        # Lattice reads (docs/discrete_push_read.md, docs/key_line_pick_read.md):
+        # the Tuesday card read its cover / push / loss split off the
+        # key-number lattice on every game, and the side off the same lattice
+        # where the frozen line sits exactly on 3 or 7; the refit applies the
+        # SAME reads in the SAME order at the same frozen line, so with
+        # nothing new the served numbers reproduce bit-for-bit and a late
+        # switch can only come from new information. Pre-promotion cards (no
+        # sidecar) refit exactly as before.
+        forecasts = _served_lattice_reads(
             artifacts_root,
             active,
             features,
@@ -1463,7 +1499,7 @@ def _served_home_side_center_offset(
     return np.asarray([by_game.get(game_id, 0.0) for game_id in ids], dtype=float)
 
 
-def _served_key_line_pick_read(
+def _served_lattice_reads(
     artifacts_root: Path,
     active: Mapping[str, Any],
     features: pd.DataFrame,
@@ -1475,50 +1511,147 @@ def _served_key_line_pick_read(
     season: int,
     week: int,
 ) -> pd.DataFrame:
-    """``forecasts`` with the served key-line pick read applied at the frozen lines.
+    """``forecasts`` with the served lattice reads applied at the frozen lines.
 
-    ``forecasts`` unchanged when the linked forecast carries no served
-    ``key_line_pick_read.json`` (a card produced before the promotion), so
-    the refit reproduces the pre-promotion behaviour bit-for-bit. Otherwise
-    the week's walk-forward lattice is rebuilt exactly as ``margin-predict``
-    built it and the policy is re-applied at the refit's own point, so new
-    information moves a touched game's chance the same way it moves every
-    other game's. Should that rebuild fail, the served probability recorded
-    in the sidecar is substituted verbatim on the touched games (the policy
-    degrades to "keep Tuesday's number", never to "silently drop it").
+    ``frame`` carries the FROZEN Tuesday ``spread_line`` per game (the
+    ledger's ``decision_home_spread``, substituted by :func:`plan_refresh`
+    before ``predict``), so every read here -- the atom test included -- is
+    keyed to the frozen line, never to the feature table's current one.
+
+    ``forecasts`` is returned unchanged (the same object) when the linked
+    forecast carries neither a served ``discrete_push_read.json`` nor a
+    served ``key_line_pick_read.json`` (a card produced before the
+    promotions), so the refit reproduces the pre-promotion behaviour
+    bit-for-bit. Otherwise the week's walk-forward lattice is rebuilt
+    exactly as ``margin-predict`` built it and the reads are re-applied at
+    the refit's own point in ``margin-predict``'s order: the three-way
+    split on every game (:func:`serve_discrete_three_way`), then the
+    key-line pick read on the touched games (:func:`apply_key_line_pick_read`,
+    only when that sidecar says it served), so new information moves a
+    touched game's chance the same way it moves every other game's and the
+    pick beside a game's split is the lattice's own on both. Should that
+    rebuild fail, the served numbers recorded in the sidecars are
+    substituted verbatim -- the split on every game from the discrete push
+    sidecar, the split and the pick on the touched games from the key-line
+    sidecar -- so the policy degrades to "keep Tuesday's numbers", never to
+    "silently drop them".
     """
 
     forecast = active_artifact_path(artifacts_root, dict(active), "weekly_forecast")
     if forecast is None:
         return forecasts
-    sidecar = load_forecast_key_line_pick_read(forecast)
-    if sidecar is None or not sidecar.get("served"):
+    push_sidecar = load_forecast_discrete_push_read(forecast)
+    key_sidecar = load_forecast_key_line_pick_read(forecast)
+    push_served = push_sidecar is not None and bool(push_sidecar.get("served"))
+    key_served = key_sidecar is not None and bool(key_sidecar.get("served"))
+    if not push_served and not key_served:
         return forecasts
-    recorded_atoms = sidecar.get("atoms")
+    recorded_atoms = key_sidecar.get("atoms") if key_sidecar is not None else None
     atoms = (
         tuple(float(atom) for atom in recorded_atoms)
         if isinstance(recorded_atoms, list) and recorded_atoms
         else KEY_LINE_ATOMS
     )
     try:
-        from nfl_ats.mass_preserving_lattice import fit_production_discrete_push_reader
-
-        production = fit_production_discrete_push_reader(
+        # Resolved through the module so a test can stand in a synthetic
+        # lattice for the week (the production fit needs the opener archive).
+        production = mass_preserving_lattice.fit_production_discrete_push_reader(
             features, artifacts_root, dict(active), season=season, week=week
         )
         if production.reader is None:
             raise ValueError("no discrete lattice for the target week")
-        return apply_key_line_pick_read(
+        # The card's split is discrete whenever the lattice served the card:
+        # the key-line read needs the same reader, so a served key-line
+        # sidecar implies a served split even if the push sidecar is absent.
+        result = serve_discrete_three_way(
             forecasts,
             frame,
-            KeyLinePickRead(reader=production.reader, atoms=atoms),
+            production.reader,
             residuals=residuals,
             probability_method=probability_method,
         )
-    except Exception:
-        overrides = served_pick_overrides(forecast)
-        result = forecasts.copy()
-        result["home_cover_probability"] = apply_pick_overrides(
-            result["home_cover_probability"], frame["game_id"], overrides
-        )
+        if key_served:
+            result = apply_key_line_pick_read(
+                result,
+                frame,
+                KeyLinePickRead(reader=production.reader, atoms=atoms),
+                residuals=residuals,
+                probability_method=probability_method,
+            )
         return result
+    except Exception:
+        return _restore_served_lattice_reads(
+            forecasts,
+            frame,
+            push_sidecar=push_sidecar if push_served else None,
+            key_sidecar=key_sidecar if key_served else None,
+            pick_overrides=served_pick_overrides(forecast) if key_served else None,
+        )
+
+
+def _sidecar_split(row: Mapping[str, Any], source: Mapping[str, Any]) -> tuple[float, ...] | None:
+    """One game's recorded ``(cover, push, loss)`` from a sidecar row, or
+    ``None`` when any of the three is missing or not a finite number."""
+
+    split: list[float] = []
+    for key in ("cover", "push", "loss"):
+        value = source.get(key)
+        if value is None or isinstance(value, bool):
+            return None
+        try:
+            split.append(float(value))
+        except (TypeError, ValueError):
+            return None
+    if not np.isfinite(split).all():
+        return None
+    return tuple(split)
+
+
+def _restore_served_lattice_reads(
+    forecasts: pd.DataFrame,
+    frame: pd.DataFrame,
+    *,
+    push_sidecar: Mapping[str, Any] | None,
+    key_sidecar: Mapping[str, Any] | None,
+    pick_overrides: Mapping[str, float] | None,
+) -> pd.DataFrame:
+    """``forecasts`` with Tuesday's served numbers substituted verbatim.
+
+    The three-way split on every game comes from the discrete push
+    sidecar's ``games[].served``; on the games the key-line read touched,
+    the split and the pick come from the key-line sidecar's own rows (the
+    two agree on Tuesday by construction -- same reader, same point -- and
+    the key-line row is the one the served pick was read from). A game
+    absent from both keeps the refit's own smooth numbers.
+    """
+
+    splits: dict[str, tuple[float, ...]] = {}
+    if push_sidecar is not None:
+        games = push_sidecar.get("games")
+        for row in games if isinstance(games, list) else []:
+            if not isinstance(row, Mapping):
+                continue
+            served = row.get("served")
+            split = _sidecar_split(row, served) if isinstance(served, Mapping) else None
+            if split is not None:
+                splits[str(row.get("game_id"))] = split
+    if key_sidecar is not None:
+        games = key_sidecar.get("games")
+        for row in games if isinstance(games, list) else []:
+            if not isinstance(row, Mapping) or not row.get("touched"):
+                continue
+            split = _sidecar_split(row, row)
+            if split is not None:
+                splits[str(row.get("game_id"))] = split
+    result = forecasts.copy()
+    ids = frame["game_id"].astype(str).to_list()
+    for position, column in enumerate(THREE_WAY_COLUMNS):
+        if column not in result.columns:
+            continue
+        result[column] = apply_pick_overrides(
+            result[column], ids, {game_id: split[position] for game_id, split in splits.items()}
+        )
+    result["home_cover_probability"] = apply_pick_overrides(
+        result["home_cover_probability"], ids, pick_overrides
+    )
+    return result

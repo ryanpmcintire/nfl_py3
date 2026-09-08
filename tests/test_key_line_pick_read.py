@@ -62,19 +62,24 @@ from nfl_ats.key_line_pick_read_incumbent_overlay import (
     record_key_line_pick_read_incumbent_challenger_decisions,
     smooth_card,
 )
+from nfl_ats.margin import MarginModel
 from nfl_ats.mass_preserving_lattice import (
+    DISCRETE_PUSH_READ_FILENAME,
+    THREE_WAY_COLUMNS,
     DiscretePushReader,
     ProductionDiscretePushRead,
     ServedPushRead,
     discrete_read,
     prior_pool,
     residual_location,
+    serve_discrete_three_way,
 )
 from nfl_ats.outcomes import (
     fit_margin_models_for_week,
     score_outcome_week,
     score_outcome_week_line_sweep,
 )
+from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.prospective_scoring import load_challenger_decisions
 from nfl_ats.public_board import assert_spread_explorer_matches_card
 from nfl_ats.spread_explorer import (
@@ -782,8 +787,32 @@ def test_board_curve_adjuster_and_widget_carry_the_pinned_number() -> None:
 # ---------------------------------------------------------------------------
 
 
+#: Tuesday's served three-way split per game, as the discrete push sidecar
+#: records it (``games[].served``): push is exactly zero on the half-point
+#: lines (-1.5, 0.5) and positive on the whole-number lines (-1.0, 3.0), so
+#: a restored split passes ``validate_three_way_split`` at the frozen lines.
+_TUESDAY_PUSH_SPLITS: dict[str, tuple[float, float, float]] = {
+    "2026_02_AAA_BBB": (0.47, 0.0, 0.53),
+    "2026_02_CCC_DDD": (0.45, 0.06, 0.49),
+    "2026_02_EEE_FFF": (0.52, 0.0, 0.48),
+    "2026_02_GGG_HHH": (0.40, 0.11, 0.49),
+}
+#: The touched game's split as the KEY-LINE sidecar records it -- deliberately
+#: different from the push sidecar's row above so the fallback's precedence
+#: (the key-line row wins on a touched game) is pinned, not assumed.
+_TUESDAY_KEY_LINE_SPLIT = (0.38, 0.12, 0.50)
+
+
 def _refresh_setup(
-    tmp_path: Path, model_frame: pd.DataFrame, *, with_sidecar: bool, served_value: float = 0.31
+    tmp_path: Path,
+    model_frame: pd.DataFrame,
+    *,
+    with_sidecar: bool,
+    served_value: float = 0.31,
+    with_push_sidecar: bool = False,
+    key_line_split: tuple[float, float, float] | None = None,
+    key_served: bool = True,
+    push_served: bool = True,
 ) -> tuple[Path, Path, Path, dict[str, float]]:
     from test_pick_refresh import (
         GAMES,
@@ -829,20 +858,21 @@ def _refresh_setup(
         games = []
         for game_id, line in ORIGINAL_LINES.items():
             is_touched = game_id in touched
-            games.append(
-                {
-                    "game_id": game_id,
-                    "spread_line": line,
-                    "touched": is_touched,
-                    "atom": 3.0 if is_touched else None,
-                    "home_cover_probability_smooth": reference[game_id],
-                    "home_cover_probability": served_value if is_touched else reference[game_id],
-                }
-            )
+            row: dict[str, object] = {
+                "game_id": game_id,
+                "spread_line": line,
+                "touched": is_touched,
+                "atom": 3.0 if is_touched else None,
+                "home_cover_probability_smooth": reference[game_id],
+                "home_cover_probability": served_value if is_touched else reference[game_id],
+            }
+            if is_touched and key_line_split is not None:
+                row["cover"], row["push"], row["loss"] = key_line_split
+            games.append(row)
         (forecast / KEY_LINE_PICK_READ_FILENAME).write_text(
             json.dumps(
                 {
-                    "served": True,
+                    "served": key_served,
                     "policy": KEY_LINE_PICK_READ_POLICY,
                     "atoms": [3.0, 7.0],
                     "games": games,
@@ -850,7 +880,114 @@ def _refresh_setup(
             ),
             encoding="utf-8",
         )
+    if with_push_sidecar:
+        (forecast / DISCRETE_PUSH_READ_FILENAME).write_text(
+            json.dumps(
+                {
+                    "schema": "discrete_push_read/1",
+                    "served": push_served,
+                    "policy": "discrete_push_read_v1",
+                    "games": [
+                        {
+                            "game_id": game_id,
+                            "spread_line": ORIGINAL_LINES[game_id],
+                            "home_cover_probability": reference[game_id],
+                            "served": {"cover": cover, "push": push, "loss": loss},
+                            "smooth": {"cover": 0.5, "push": 0.0, "loss": 0.5},
+                        }
+                        for game_id, (cover, push, loss) in _TUESDAY_PUSH_SPLITS.items()
+                    ],
+                }
+            ),
+            encoding="utf-8",
+        )
     return artifacts_root, data_root, features_path, reference
+
+
+def _frozen_line_refit(features: pd.DataFrame) -> tuple[MarginModel, pd.DataFrame, pd.DataFrame]:
+    """The refit ``plan_refresh`` performs, reproduced outside it: the active
+    recipe fitted for 2026 week 2, the target frame with the FROZEN Tuesday
+    lines substituted, and the smooth forecasts at those lines."""
+
+    from test_pick_refresh import MIN_TRAIN_GAMES, ORIGINAL_LINES
+
+    from nfl_ats.lines import apply_external_lines
+
+    target, models = fit_margin_models_for_week(
+        features,
+        season=2026,
+        week=2,
+        regressor="ridge",
+        min_train_games=MIN_TRAIN_GAMES,
+        feature_profile="base",
+        ridge_alpha=10.0,
+        methods=("market_residual",),
+    )
+    model = models["market_residual"]
+    target = target.copy()
+    target["game_id"] = target["game_id"].astype(str)
+    overridden = apply_external_lines(
+        target,
+        pd.DataFrame(
+            {"game_id": list(ORIGINAL_LINES), "home_spread": list(ORIGINAL_LINES.values())}
+        ),
+    )
+    return model, overridden, model.predict(overridden, probability_method="ecdf")
+
+
+def _stand_in_lattice(monkeypatch: pytest.MonkeyPatch) -> DiscretePushReader:
+    """A synthetic week's lattice in place of the production fit (which needs
+    the opener archive the refresh fixture does not carry)."""
+
+    from nfl_ats import mass_preserving_lattice
+
+    reader = DiscretePushReader.for_week(
+        synthetic_pool(), season=2020, week=1, cutoff=pd.Timestamp("2020-09-10")
+    )
+    monkeypatch.setattr(
+        mass_preserving_lattice,
+        "fit_production_discrete_push_reader",
+        lambda *a, **k: ProductionDiscretePushRead(
+            policy="p",
+            reader=reader,
+            source_path=None,
+            source_model_id=None,
+            active_model_id=None,
+            opener_lines_matched=0,
+            warnings=(),
+        ),
+    )
+    return reader
+
+
+def _refresh_lattice_reads(
+    artifacts_root: Path, features_path: Path
+) -> tuple[MarginModel, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """``(model, frozen-line frame, smooth forecasts, refresh frame)`` --
+    the refresh helper applied exactly as ``plan_refresh`` applies it."""
+
+    from nfl_ats.pick_refresh import _served_lattice_reads
+
+    active = json.loads((artifacts_root / "active_ats_model.json").read_text(encoding="utf-8"))
+    features = pd.read_parquet(features_path)
+    model, overridden, forecasts = _frozen_line_refit(features)
+    result = _served_lattice_reads(
+        artifacts_root,
+        active,
+        features,
+        overridden,
+        forecasts,
+        residuals=model.residuals,
+        probability_method="ecdf",
+        season=2026,
+        week=2,
+    )
+    return model, overridden, forecasts, result
+
+
+def _split(frame: pd.DataFrame, position: int) -> tuple[float, float, float]:
+    cover, push, loss = (float(frame[column].iloc[position]) for column in THREE_WAY_COLUMNS)
+    return cover, push, loss
 
 
 def test_refresh_reproduces_the_served_number_and_reapplies_the_policy(
@@ -966,6 +1103,294 @@ def test_refresh_without_a_sidecar_is_the_pre_promotion_refit(
     )
     for game in plan.games:
         assert game.new_home_cover_probability == pytest.approx(reference[game.game_id])
+
+
+# Lane AE (2026-09-08, Codex lane AC finding 4): the refresh frame used to
+# carry a lattice pick beside the model's SMOOTH split on a touched game. It
+# now applies margin-predict's order -- discrete split on every game, then
+# the key-line pick on the touched games -- and restores both from the
+# sidecars when the lattice cannot be rebuilt.
+
+
+def test_refresh_frame_split_is_the_lattice_split_beside_the_key_line_pick(
+    tmp_path: Path, model_frame: pd.DataFrame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from test_pick_refresh import MIN_TRAIN_GAMES
+
+    from nfl_ats.pick_refresh import plan_refresh
+
+    artifacts_root, data_root, features_path, reference = _refresh_setup(
+        tmp_path, model_frame, with_sidecar=True, with_push_sidecar=True
+    )
+    reader = _stand_in_lattice(monkeypatch)
+    model, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    # The frame is exactly margin-predict's composition: the discrete split
+    # on every game, then the key-line pick on the touched game.
+    expected = serve_discrete_three_way(
+        forecasts, overridden, reader, residuals=model.residuals, probability_method="ecdf"
+    )
+    expected = apply_key_line_pick_read(
+        expected, overridden, _policy(), residuals=model.residuals, probability_method="ecdf"
+    )
+    pd.testing.assert_frame_equal(result, expected)
+    ids = overridden["game_id"].astype(str).to_list()
+    location = residual_location(model.residuals, "ecdf")
+    for position, game_id in enumerate(ids):
+        line = float(overridden["spread_line"].iloc[position])
+        point = float(forecasts["predicted_margin"].iloc[position]) + location
+        assert _split(result, position) == reader.read(line, point).three_way()
+        if game_id == "2026_02_GGG_HHH":
+            # The touched pick is the decision number of ITS OWN split in the
+            # same frame -- the consistency lane AC measured as broken.
+            cover, push, _ = _split(result, position)
+            assert result["home_cover_probability"].iloc[position] == cover + 0.5 * push
+            assert result["home_cover_probability"].iloc[position] == key_line_decision_probability(
+                reader.read(3.0, point)
+            )
+        else:
+            assert result["home_cover_probability"].iloc[position] == float(
+                forecasts["home_cover_probability"].iloc[position]
+            )
+    # The split really moved off the smooth read on the whole-number lines.
+    touched = ids.index("2026_02_GGG_HHH")
+    assert _split(result, touched) != _split(forecasts, touched)
+    scored = pd.concat(
+        [
+            overridden[["game_id", "spread_line"]].reset_index(drop=True),
+            result.reset_index(drop=True),
+        ],
+        axis=1,
+    )
+    validate_three_way_split(scored, line_column="spread_line")
+    # And the plan serves the same pick on every game.
+    plan = plan_refresh(
+        artifacts_root,
+        data_root,
+        season=2026,
+        week=2,
+        features_path=features_path,
+        min_train_games=MIN_TRAIN_GAMES,
+        now=datetime(2026, 9, 16, tzinfo=UTC),
+    )
+    by_id = {game.game_id: game for game in plan.games}
+    for position, game_id in enumerate(ids):
+        assert by_id[game_id].new_home_cover_probability == float(
+            result["home_cover_probability"].iloc[position]
+        )
+    assert by_id["2026_02_GGG_HHH"].new_home_cover_probability != pytest.approx(
+        reference["2026_02_GGG_HHH"]
+    )
+
+
+def test_refresh_serves_the_discrete_split_without_a_key_line_sidecar(
+    tmp_path: Path, model_frame: pd.DataFrame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # The push read served the card (its sidecar says so) but the key-line
+    # read did not: the split is the lattice's on every game, the pick is
+    # the smooth one on every game -- exactly what the card served.
+    artifacts_root, _, features_path, _ = _refresh_setup(
+        tmp_path, model_frame, with_sidecar=False, with_push_sidecar=True
+    )
+    reader = _stand_in_lattice(monkeypatch)
+    model, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    expected = serve_discrete_three_way(
+        forecasts, overridden, reader, residuals=model.residuals, probability_method="ecdf"
+    )
+    pd.testing.assert_frame_equal(result, expected)
+    assert np.array_equal(
+        result["home_cover_probability"].to_numpy(dtype=float),
+        forecasts["home_cover_probability"].to_numpy(dtype=float),
+    )
+
+
+def test_refresh_fallback_restores_the_split_and_the_pick_from_the_sidecars(
+    tmp_path: Path, model_frame: pd.DataFrame
+) -> None:
+    from test_pick_refresh import MIN_TRAIN_GAMES
+
+    from nfl_ats.pick_refresh import plan_refresh
+
+    # No prior season within the lattice's window -> the production fit
+    # raises -> Tuesday's numbers are substituted verbatim.
+    artifacts_root, data_root, features_path, reference = _refresh_setup(
+        tmp_path,
+        model_frame,
+        with_sidecar=True,
+        with_push_sidecar=True,
+        key_line_split=_TUESDAY_KEY_LINE_SPLIT,
+    )
+    _, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    ids = overridden["game_id"].astype(str).to_list()
+    for position, game_id in enumerate(ids):
+        if game_id == "2026_02_GGG_HHH":
+            # The key-line row wins on the touched game: its split AND its pick.
+            assert _split(result, position) == _TUESDAY_KEY_LINE_SPLIT
+            assert result["home_cover_probability"].iloc[position] == 0.31
+        else:
+            assert _split(result, position) == _TUESDAY_PUSH_SPLITS[game_id]
+            assert result["home_cover_probability"].iloc[position] == float(
+                forecasts["home_cover_probability"].iloc[position]
+            )
+    # Every other column is the refit's own.
+    untouched = [
+        c for c in forecasts.columns if c not in (*THREE_WAY_COLUMNS, "home_cover_probability")
+    ]
+    pd.testing.assert_frame_equal(result[untouched], forecasts[untouched])
+    # The restored frame passes the same guard plan_refresh applies, and the
+    # plan serves Tuesday's pick on the touched game.
+    plan = plan_refresh(
+        artifacts_root,
+        data_root,
+        season=2026,
+        week=2,
+        features_path=features_path,
+        min_train_games=MIN_TRAIN_GAMES,
+        now=datetime(2026, 9, 16, tzinfo=UTC),
+    )
+    by_id = {game.game_id: game for game in plan.games}
+    assert by_id["2026_02_GGG_HHH"].new_home_cover_probability == 0.31
+    for game_id, value in reference.items():
+        if game_id != "2026_02_GGG_HHH":
+            assert by_id[game_id].new_home_cover_probability == pytest.approx(value)
+
+
+def test_refresh_fallback_restores_from_whichever_sidecar_served(
+    tmp_path: Path, model_frame: pd.DataFrame
+) -> None:
+    # Push sidecar alone: every split restored, every pick smooth.
+    artifacts_root, _, features_path, _ = _refresh_setup(
+        tmp_path / "push", model_frame, with_sidecar=False, with_push_sidecar=True
+    )
+    _, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    ids = overridden["game_id"].astype(str).to_list()
+    for position, game_id in enumerate(ids):
+        assert _split(result, position) == _TUESDAY_PUSH_SPLITS[game_id]
+    assert np.array_equal(
+        result["home_cover_probability"].to_numpy(dtype=float),
+        forecasts["home_cover_probability"].to_numpy(dtype=float),
+    )
+    # Key-line sidecar alone, with the split recorded: the touched game gets
+    # its split and its pick, every other game keeps the smooth split.
+    artifacts_root, _, features_path, _ = _refresh_setup(
+        tmp_path / "key",
+        model_frame,
+        with_sidecar=True,
+        key_line_split=_TUESDAY_KEY_LINE_SPLIT,
+    )
+    _, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    for position, game_id in enumerate(ids):
+        if game_id == "2026_02_GGG_HHH":
+            assert _split(result, position) == _TUESDAY_KEY_LINE_SPLIT
+            assert result["home_cover_probability"].iloc[position] == 0.31
+        else:
+            assert _split(result, position) == _split(forecasts, position)
+    # An older key-line row without the split fields restores the pick alone.
+    artifacts_root, _, features_path, _ = _refresh_setup(
+        tmp_path / "old", model_frame, with_sidecar=True
+    )
+    _, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    touched = ids.index("2026_02_GGG_HHH")
+    assert result["home_cover_probability"].iloc[touched] == 0.31
+    assert _split(result, touched) == _split(forecasts, touched)
+    # A sidecar that says the read was NOT served restores nothing.
+    artifacts_root, _, features_path, _ = _refresh_setup(
+        tmp_path / "off",
+        model_frame,
+        with_sidecar=True,
+        with_push_sidecar=True,
+        key_line_split=_TUESDAY_KEY_LINE_SPLIT,
+        key_served=False,
+        push_served=False,
+    )
+    _, _, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    assert result is forecasts
+
+
+def test_refresh_without_any_sidecar_keeps_the_smooth_split_bit_for_bit(
+    tmp_path: Path, model_frame: pd.DataFrame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    artifacts_root, _, features_path, _ = _refresh_setup(
+        tmp_path, model_frame, with_sidecar=False, with_push_sidecar=False
+    )
+    # Even with a lattice at hand: a pre-promotion card is refit as it was.
+    _stand_in_lattice(monkeypatch)
+    _, _, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    assert result is forecasts
+    pd.testing.assert_frame_equal(result, forecasts)
+
+
+def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
+    tmp_path: Path, model_frame: pd.DataFrame, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import copy
+
+    from test_pick_refresh import GAMES, MIN_TRAIN_GAMES, ORIGINAL_LINES, _target_frame
+
+    from nfl_ats import pick_refresh
+    from nfl_ats.io import atomic_parquet
+    from nfl_ats.pick_refresh import plan_refresh
+
+    assert "atom test is keyed to the FROZEN Tuesday line" in str(pick_refresh.__doc__)
+    artifacts_root, data_root, features_path, reference = _refresh_setup(
+        tmp_path, model_frame, with_sidecar=True, with_push_sidecar=True
+    )
+    # Since Tuesday the market moved CCC-DDD (frozen -1.0) onto the atom 7
+    # and GGG-HHH (frozen 3.0) off the atom to -3.5: the CURRENT feature
+    # table says the opposite of the frozen ledger on both.
+    moved = copy.deepcopy(GAMES)
+    for game in moved:
+        if game["game_id"] == "2026_02_CCC_DDD":
+            game["spread_line"] = 7.0
+    assert next(g for g in moved if g["game_id"] == "2026_02_GGG_HHH")["spread_line"] == -3.5
+    assert ORIGINAL_LINES["2026_02_GGG_HHH"] == 3.0 and ORIGINAL_LINES["2026_02_CCC_DDD"] == -1.0
+    atomic_parquet(_target_frame(model_frame, moved), features_path)
+    reader = _stand_in_lattice(monkeypatch)
+    model, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
+    # The frame the reads run on carries the frozen lines, and only the
+    # frozen 3 is on an atom.
+    ids = overridden["game_id"].astype(str).to_list()
+    assert dict(zip(ids, overridden["spread_line"].astype(float), strict=True)) == ORIGINAL_LINES
+    assert key_line_mask(overridden["spread_line"]).tolist() == [
+        game_id == "2026_02_GGG_HHH" for game_id in ids
+    ]
+    plan = plan_refresh(
+        artifacts_root,
+        data_root,
+        season=2026,
+        week=2,
+        features_path=features_path,
+        min_train_games=MIN_TRAIN_GAMES,
+        now=datetime(2026, 9, 16, tzinfo=UTC),
+    )
+    by_id = {game.game_id: game for game in plan.games}
+    touched = ids.index("2026_02_GGG_HHH")
+    point = float(forecasts["predicted_margin"].iloc[touched]) + residual_location(
+        model.residuals, "ecdf"
+    )
+    # Frozen on 3 -> read off the lattice at 3, although the market left it.
+    assert by_id["2026_02_GGG_HHH"].new_home_cover_probability == key_line_decision_probability(
+        reader.read(3.0, point)
+    )
+    assert by_id["2026_02_GGG_HHH"].new_home_cover_probability == float(
+        result["home_cover_probability"].iloc[touched]
+    )
+    # Frozen off the atoms -> the smooth read, although the market now says 7.
+    assert by_id["2026_02_CCC_DDD"].new_home_cover_probability == pytest.approx(
+        reference["2026_02_CCC_DDD"]
+    )
+    drifted = ids.index("2026_02_CCC_DDD")
+    assert result["home_cover_probability"].iloc[drifted] == float(
+        forecasts["home_cover_probability"].iloc[drifted]
+    )
+    # Its split is nonetheless the lattice's at the FROZEN -1.0, never at 7.
+    assert (
+        _split(result, drifted)
+        == reader.read(
+            -1.0,
+            float(forecasts["predicted_margin"].iloc[drifted])
+            + residual_location(model.residuals, "ecdf"),
+        ).three_way()
+    )
 
 
 # ---------------------------------------------------------------------------
