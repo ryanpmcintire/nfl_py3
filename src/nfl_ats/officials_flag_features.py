@@ -49,6 +49,7 @@ from nfl_ats.experiment_runner import (
     _build_referee_trait_data,
     _latest_officials_snapshot,
 )
+from nfl_ats.officials_archive import load_officials
 from nfl_ats.pbp_coaching_traits import (
     PBP_TRAIT_N_BOOT,
     PBP_TRAIT_N_NULL,
@@ -121,7 +122,10 @@ def home_away_penalty_game_table(repo_root: Path | None = None) -> pd.DataFrame:
 
     root = repo_root or REPO_ROOT
     officials_path, game_penalties_path, _snapshot_id = _latest_officials_snapshot(root)
-    officials = pd.read_parquet(officials_path)
+    # LEAD-59: nfl_ats.officials_archive is the single officials loader. At
+    # its shipped default it returns this feed bit-for-bit, so this routing
+    # changes nothing; the 2009-2014 Wayback crews are opt-in there.
+    officials = load_officials(root, officials_path=officials_path)
     refs = officials.loc[
         (officials["position"] == _REFEREE_POSITION)
         & (officials["season_type"] == _REFEREE_SEASON_TYPE)
@@ -446,7 +450,7 @@ def describe_referee_left_censoring(repo_root: Path | None = None) -> dict[str, 
 
     root = repo_root or REPO_ROOT
     officials_path, _game_penalties_path, _snapshot_id = _latest_officials_snapshot(root)
-    officials = pd.read_parquet(officials_path)
+    officials = load_officials(root, officials_path=officials_path)
     refs = officials.loc[
         (officials["position"] == _REFEREE_POSITION)
         & (officials["season_type"] == _REFEREE_SEASON_TYPE)

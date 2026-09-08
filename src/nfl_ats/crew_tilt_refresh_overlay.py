@@ -94,6 +94,7 @@ from nfl_ats.experiment_runner import (
     _merge_home_pass_rate_quartile,
 )
 from nfl_ats.io import atomic_parquet
+from nfl_ats.officials_archive import load_officials_for_prospective_channel
 from nfl_ats.pick_refresh import RefreshResult, original_card
 
 #: Registered in artifacts/prospective/challengers.json.
@@ -319,7 +320,14 @@ def _referee_name_season(repo_root: Path, *, penalty_type: str | None) -> pd.Dat
     """
 
     officials_path, game_penalties_path, _snapshot = _latest_officials_snapshot(repo_root)
-    officials = pd.read_parquet(officials_path)
+    # LEAD-59 timing contract: this is the PROSPECTIVE channel, so it loads
+    # through the loader that refuses Wayback-archive rows outright -- every
+    # archive capture is after kickoff and can never satisfy this path's
+    # ``captured_at_utc < min(kickoff, Sunday 16:00 ET)`` test. See
+    # ``docs/officials_archive.md``.
+    officials = load_officials_for_prospective_channel(
+        repo_root, officials_path=officials_path, channel=CHALLENGER_ID
+    )
     refs = officials.loc[
         (officials["position"] == _REFEREE_POSITION)
         & (officials["season_type"] == _REFEREE_SEASON_TYPE)

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T15:13:14.604687+00:00`
+Refreshed at: `2026-09-08T15:24:48.575816+00:00`
 
 ## Start here
 
@@ -20,9 +20,26 @@ Refreshed at: `2026-09-08T15:13:14.604687+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6917dbb21a18` — Serve the key-line pick read (lane W): on lines quoted exactly on 3 or 7 the pick comes from the discrete key-number read; paired challenger registered; Week 1 NO at DET -> NO +7 [skip ci]
-- Pending change set: 1 paths
-  - `M  src/nfl_ats/dashboard/findings_content.py`
+- Baseline commit: `66ea408cc08b` — Shorten the key-line challenger display name (lint) [skip ci]
+- Pending change set: 18 paths
+  - `M  HANDOFF.md`
+  - `M  ROADMAP.md`
+  - `M  docs/capture_scheduling.md`
+  - `A  docs/officials_archive.md`
+  - `M  docs/ops_runbook.md`
+  - `M  scripts/refresh_now.py`
+  - `M  scripts/tuesday_line_gap.py`
+  - `M  src/nfl_ats/clv.py`
+  - `M  src/nfl_ats/crew_tilt_refresh_overlay.py`
+  - `M  src/nfl_ats/experiment_runner.py`
+  - `M  src/nfl_ats/market_data.py`
+  - `M  src/nfl_ats/market_observation.py`
+  - `A  src/nfl_ats/officials_archive.py`
+  - `M  src/nfl_ats/officials_flag_features.py`
+  - `M  tests/test_market_data.py`
+  - `A  tests/test_officials_archive.py`
+  - `A  tests/test_pool_spread_lock.py`
+  - `M  tests/test_refresh_now.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

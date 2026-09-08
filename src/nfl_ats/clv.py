@@ -1262,10 +1262,21 @@ def live_tuesday_openers(root: Path) -> pd.DataFrame:
     kickoff -- NFL games fall on Thu-Mon, so that is always the Tuesday the
     game's week opened), reduced by
     :func:`nfl_ats.market_data.tuesday_opener_quotes` to the cross-book
-    median of each book's earliest such quote.
+    median of each book's earliest such quote at or after the pool's spread
+    lock (``nfl_ats.market_data.POOL_SPREAD_LOCK_ET``), falling back to the
+    earliest pre-lock quote only when no post-lock quote exists; the
+    ``opener_basis`` column (``post_lock`` / ``pre_lock_fallback``) says
+    which. The historical ``tue_open`` decision label
+    (:func:`build_pairing_table`) is a different path and is untouched.
     """
 
-    columns = ["game_id", "tue_open_home_spread", "opener_books", "opener_observed_at_utc"]
+    columns = [
+        "game_id",
+        "tue_open_home_spread",
+        "opener_books",
+        "opener_observed_at_utc",
+        "opener_basis",
+    ]
     quotes = load_decision_quotes(root, capture_kind=LIVE_CAPTURE_KIND)
     if quotes.empty:
         return pd.DataFrame(columns=columns)

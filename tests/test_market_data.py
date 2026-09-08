@@ -7,6 +7,8 @@ import pandas as pd
 import pytest
 
 from nfl_ats.market_data import (
+    OPENER_BASIS_POST_LOCK,
+    OPENER_BASIS_PRE_LOCK_FALLBACK,
     attach_nflverse_game_ids,
     closing_line_value,
     latest_book_quotes,
@@ -168,8 +170,36 @@ def test_tuesday_opener_quotes_selects_earliest_tuesday_capture() -> None:
     opener = tuesday_opener_quotes(history)
     assert len(opener) == 1
     assert opener.iloc[0]["nflverse_game_id"] == "2026_01_NE_SEA"
-    # The earliest Tuesday capture wins, not the later Tuesday or the Wednesday quote.
+    # Both Tuesday captures (12:00Z and 15:00Z, i.e. 08:00 and 11:00 ET) are
+    # before the pool's 12:00 ET lock, so the earliest Tuesday capture wins as
+    # the fallback -- not the later Tuesday or the Wednesday quote.
     assert opener.iloc[0]["opener_home_spread"] == 3.0
+    assert opener.iloc[0]["opener_basis"] == OPENER_BASIS_PRE_LOCK_FALLBACK
+
+
+def test_tuesday_opener_quotes_prefers_the_first_capture_after_the_pool_lock() -> None:
+    """2026-09-08: a stray pre-lock capture must not become the opener once
+    the post-lock capture exists (the full rule is pinned in
+    ``tests/test_pool_spread_lock.py``)."""
+
+    pre_lock = datetime(2026, 8, 18, 13, tzinfo=UTC)  # 09:00 ET
+    post_lock = datetime(2026, 8, 18, 16, 5, tzinfo=UTC)  # 12:05 ET
+    assert pre_lock.weekday() == post_lock.weekday() == 1
+    history = pd.concat(
+        [
+            attach_nflverse_game_ids(
+                parse_odds_api_response(_payload(-3.0), observed_at=pre_lock), _SCHEDULES
+            ),
+            attach_nflverse_game_ids(
+                parse_odds_api_response(_payload(-3.5), observed_at=post_lock), _SCHEDULES
+            ),
+        ],
+        ignore_index=True,
+    )
+    opener = tuesday_opener_quotes(history)
+    assert opener.iloc[0]["opener_home_spread"] == 3.5
+    assert opener.iloc[0]["observed_at_utc"] == pd.Timestamp(post_lock)
+    assert opener.iloc[0]["opener_basis"] == OPENER_BASIS_POST_LOCK
 
 
 def test_tuesday_opener_quotes_empty_without_a_tuesday_capture() -> None:

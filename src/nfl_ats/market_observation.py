@@ -39,6 +39,14 @@ from nfl_ats.market_data import QUOTE_COLUMNS, load_quote_history, tuesday_opene
 #: for the ``market_line`` record when present.
 MARKET_OBSERVED_AT_COLUMN = "market_observed_at_utc"
 
+#: Which rule produced that instant: ``"post_lock"`` (the opener is the
+#: earliest Tuesday quote at or after the pool's spread lock,
+#: ``nfl_ats.market_data.POOL_SPREAD_LOCK_ET``) or ``"pre_lock_fallback"``
+#: (no post-lock Tuesday quote existed, so the earliest Tuesday quote stood
+#: in and may predate the lock). Null when no capture matched the game.
+#: Provenance only, like the instant beside it: never read by a pick rule.
+MARKET_OPENER_BASIS_COLUMN = "market_opener_basis"
+
 
 def _empty_quote_history() -> pd.DataFrame:
     return pd.DataFrame(columns=QUOTE_COLUMNS)
@@ -76,6 +84,7 @@ def attach_market_observed_at(
     result = frame.copy()
     if "game_id" not in result.columns:
         result[MARKET_OBSERVED_AT_COLUMN] = _null_column(result.index)
+        result[MARKET_OPENER_BASIS_COLUMN] = pd.Series(pd.NA, index=result.index, dtype="string")
         return result
 
     if quote_history is None:
@@ -86,17 +95,20 @@ def attach_market_observed_at(
         )
     if quote_history.empty:
         result[MARKET_OBSERVED_AT_COLUMN] = _null_column(result.index)
+        result[MARKET_OPENER_BASIS_COLUMN] = pd.Series(pd.NA, index=result.index, dtype="string")
         return result
 
-    opener = tuesday_opener_quotes(quote_history)
-    lookup = (
-        opener.dropna(subset=["nflverse_game_id"])
+    opener = (
+        tuesday_opener_quotes(quote_history)
+        .dropna(subset=["nflverse_game_id"])
         .drop_duplicates("nflverse_game_id", keep="last")
-        .set_index("nflverse_game_id")["observed_at_utc"]
+        .set_index("nflverse_game_id")
     )
-    observed = result["game_id"].astype(str).map(lookup)
+    game_ids = result["game_id"].astype(str)
+    observed = game_ids.map(opener["observed_at_utc"])
     result[MARKET_OBSERVED_AT_COLUMN] = pd.to_datetime(observed, utc=True, errors="coerce")
+    result[MARKET_OPENER_BASIS_COLUMN] = game_ids.map(opener["opener_basis"]).astype("string")
     return result
 
 
-__all__ = ["MARKET_OBSERVED_AT_COLUMN", "attach_market_observed_at"]
+__all__ = ["MARKET_OBSERVED_AT_COLUMN", "MARKET_OPENER_BASIS_COLUMN", "attach_market_observed_at"]

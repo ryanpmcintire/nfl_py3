@@ -9,9 +9,10 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, time
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -23,6 +24,25 @@ from nfl_ats.provenance import sha256_file
 ODDS_API_PROVIDER = "the-odds-api"
 ODDS_API_SPORT = "americanfootball_nfl"
 ODDS_API_URL = f"https://api.the-odds-api.com/v4/sports/{ODDS_API_SPORT}/odds/"
+
+#: The pool's wall clock. The pool publishes its lock in US Eastern time
+#: ("Spreads lock: Tue, Sep 8, 2026, 12:00 PM"), so the lock is declared in
+#: that zone and converted to UTC per calendar day -- never as a fixed UTC
+#: offset, which would drift by an hour across the DST change.
+POOL_TIMEZONE = ZoneInfo("America/New_York")
+
+#: The one declared pool spread-lock time (owner, 2026-09-08, quoting the
+#: pool: "Spreads lock: Tue, Sep 8, 2026, 12:00 PM"). Every guard, report and
+#: opener rule that needs the lock reads THIS name: ``tuesday_opener_quotes``
+#: (the live opener prefers quotes at or after it), ``scripts/refresh_now.py``
+#: (refuses a Tuesday capture before it) and ``scripts/tuesday_line_gap.py``
+#: (its default ``--lock``). The scheduler's ``odds_tue_open`` job is pinned
+#: to land after it by ``tests/test_pool_spread_lock.py``.
+POOL_SPREAD_LOCK_ET = time(12, 0)
+
+#: ``opener_basis`` values returned by :func:`tuesday_opener_quotes`.
+OPENER_BASIS_POST_LOCK = "post_lock"
+OPENER_BASIS_PRE_LOCK_FALLBACK = "pre_lock_fallback"
 
 NFL_TEAM_NAMES = {
     "Arizona Cardinals": "ARI",
@@ -383,17 +403,72 @@ def spread_consensus(quotes: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def pool_spread_lock_utc(day: date) -> pd.Timestamp:
+    """The pool's spread-lock instant (UTC) for the calendar day ``day``.
+
+    ``day`` is a calendar date in the pool's own zone (:data:`POOL_TIMEZONE`);
+    the instant is :data:`POOL_SPREAD_LOCK_ET` on that date, converted to
+    UTC. Because the conversion goes through the zone, the UTC hour follows
+    the DST rule: 16:00Z while Eastern Daylight Time is in force (a September
+    Tuesday) and 17:00Z under Eastern Standard Time (a November Tuesday).
+    """
+
+    local = datetime.combine(day, POOL_SPREAD_LOCK_ET, tzinfo=POOL_TIMEZONE)
+    return pd.Timestamp(local).tz_convert(UTC)
+
+
+def _pool_lock_for_observations(observed_at_utc: pd.Series) -> pd.Series:
+    """Per-quote lock instant: the pool lock on each quote's own UTC calendar day.
+
+    "Tuesday" is keyed on the UTC day throughout this module, so a quote at
+    Tuesday 01:00Z (Monday 21:00 ET) belongs to that Tuesday and its lock is
+    that Tuesday's 12:00 ET -- fifteen hours later, so the quote is pre-lock.
+    """
+
+    days = observed_at_utc.dt.tz_convert(UTC).dt.normalize()
+    lookup = {day: pool_spread_lock_utc(day.date()) for day in days.unique()}
+    lock: pd.Series = days.map(lookup)
+    return lock
+
+
 def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
-    """The earliest Tuesday-captured home spread per game (the "Tuesday opener").
+    """The Tuesday-captured home spread per game the pool locks on (the "Tuesday opener").
 
     Bookmakers conventionally release opening lines for the coming week's
-    slate on Tuesday. This selects, per game and bookmaker, the earliest
-    quote observed on a Tuesday (UTC), then reports the cross-book median as
-    the game's opener line -- distinct from ``spread_consensus``, which
-    reports the *latest* pre-kickoff quote instead of the opening one.
+    slate on Tuesday, and the pool fixes its spreads at
+    :data:`POOL_SPREAD_LOCK_ET` that day. "Tuesday" is the UTC calendar day
+    of ``observed_at_utc`` (so a Monday 21:00 ET capture already counts as
+    Tuesday, and a Tuesday 20:30 ET capture counts as Wednesday); the lock
+    for a Tuesday quote is that same calendar day's 12:00 ET
+    (:func:`pool_spread_lock_utc`).
 
-    ``opener_std`` (cross-book standard deviation of each book's own earliest
-    Tuesday line) is the same dispersion proxy ``nfl_ats.clv.build_pairing_table``
+    Rule (2026-09-08, after a legacy 09:00 ET task fired on lock day and
+    silently became the opener): per game and bookmaker, the opener is the
+    EARLIEST quote observed on a Tuesday **at or after the pool lock**; only
+    a book with no post-lock Tuesday quote falls back to its earliest
+    pre-lock Tuesday quote. At the game level the cross-book median is taken
+    over post-lock books ONLY whenever at least one book has a post-lock
+    quote -- a book that quoted only before the lock is excluded rather than
+    mixed in, since its line could still have moved before the lock. The
+    returned ``opener_basis`` column says which happened: ``"post_lock"``
+    (the median is over post-lock quotes) or ``"pre_lock_fallback"`` (no
+    book has a post-lock Tuesday quote for the game, so the previous
+    earliest-Tuesday rule stands and the line may predate the lock).
+    ``observed_at_utc`` is the earliest instant among the quotes that formed
+    the median. A pre-lock manual press, a legacy task or a future job can
+    therefore no longer displace the locked line once the post-lock capture
+    exists.
+
+    This is the LIVE rule only. The historical archive the model is graded
+    on (``nfl_ats.clv.build_pairing_table``'s ``tue_open`` decision label,
+    backfilled at 09:00 ET) never routes through this function and is
+    unchanged.
+
+    Distinct from ``spread_consensus``, which reports the *latest*
+    pre-kickoff quote instead of the opening one.
+
+    ``opener_std`` (cross-book standard deviation of each book's own opener
+    line) is the same dispersion proxy ``nfl_ats.clv.build_pairing_table``
     computes for the historical decision-labeled archive (its ``spread_std``,
     ``line_std`` renamed) -- added here so a LIVE production caller has the
     identical measure available from the free-form ``odds-ingest`` capture
@@ -426,23 +501,34 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
         "opener_max",
         "opener_std",
         "observed_at_utc",
+        "opener_basis",
     ]
     history = quotes.copy()
     history["observed_at_utc"] = pd.to_datetime(history["observed_at_utc"], utc=True)
     history["commence_time_utc"] = pd.to_datetime(history["commence_time_utc"], utc=True)
     spreads = history.loc[history["market"].eq("spreads") & history["outcome_side"].eq("HOME")]
-    tuesday = spreads.loc[spreads["observed_at_utc"].dt.weekday.eq(1)]
+    tuesday = spreads.loc[spreads["observed_at_utc"].dt.weekday.eq(1)].copy()
     if tuesday.empty:
         return pd.DataFrame(columns=columns)
+    lock = _pool_lock_for_observations(tuesday["observed_at_utc"])
+    # 0 for a post-lock quote, 1 for a pre-lock one: sorting on it first puts
+    # every post-lock quote ahead of every pre-lock quote within a book.
+    tuesday["_pre_lock"] = tuesday["observed_at_utc"].lt(lock).astype(int)
     earliest_per_book = (
-        tuesday.sort_values("observed_at_utc")
+        tuesday.sort_values(["_pre_lock", "observed_at_utc"])
         .groupby(["nflverse_game_id", "bookmaker_key"], as_index=False, dropna=False)
         .head(1)
     )
+    # A game with any post-lock book takes the median over post-lock books only.
+    game_best = earliest_per_book.groupby("nflverse_game_id", dropna=False)["_pre_lock"].transform(
+        "min"
+    )
+    chosen = earliest_per_book.loc[earliest_per_book["_pre_lock"].eq(game_best)].copy()
+    chosen["opener_basis"] = np.where(
+        chosen["_pre_lock"].eq(0), OPENER_BASIS_POST_LOCK, OPENER_BASIS_PRE_LOCK_FALLBACK
+    )
     opener: pd.DataFrame = (
-        earliest_per_book.groupby(
-            ["nflverse_game_id", "commence_time_utc"], as_index=False, dropna=False
-        )
+        chosen.groupby(["nflverse_game_id", "commence_time_utc"], as_index=False, dropna=False)
         .agg(
             bookmakers=("bookmaker_key", "nunique"),
             opener_home_spread=("home_spread_line", "median"),
@@ -450,11 +536,12 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
             opener_max=("home_spread_line", "max"),
             opener_std=("home_spread_line", "std"),
             observed_at_utc=("observed_at_utc", "min"),
+            opener_basis=("opener_basis", "first"),
         )
         .sort_values("commence_time_utc")
         .reset_index(drop=True)
     )
-    return opener
+    return opener[columns]
 
 
 def closing_line_value(decisions: pd.DataFrame, quotes: pd.DataFrame) -> pd.DataFrame:

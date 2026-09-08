@@ -8,11 +8,14 @@ It runs, in order, the SAME commands the scheduler already runs on its own
 clock -- nothing here is a new code path:
 
 1. ``odds_capture.ps1`` -- a fresh point-in-time spread capture (The Odds
-   API, 3 requests). Skipped on a Tuesday before the 12:05 opener window has
-   passed (the pool locks its spreads at noon), because the card's opener is
-   the EARLIEST Tuesday quote per book
-   (``nfl_ats.market_data.tuesday_opener_quotes``) and a button press at
-   10:30 would silently become the week's opener line.
+   API, 3 requests). Skipped on a Tuesday (UTC) before the pool's spread
+   lock (``nfl_ats.market_data.POOL_SPREAD_LOCK_ET``, 12:00 ET): the card's
+   opener (``nfl_ats.market_data.tuesday_opener_quotes``) prefers the
+   earliest Tuesday quote AT OR AFTER that lock, but falls back to the
+   earliest pre-lock Tuesday quote when no post-lock quote exists, so a
+   button press at 10:30 on a day the 12:05 capture then fails would become
+   the week's opener line. After the lock a press is harmless: it IS the
+   locked line.
 2. ``refresh_lineup_forecast.py`` -- current depth charts, then a
    ``weekly-run`` with ``--refresh-player-data`` (the nflverse player
    snapshot, which is where the injury reports the model reads come from),
@@ -45,14 +48,11 @@ REPO = Path(__file__).resolve().parents[1]
 if str(REPO) not in sys.path:
     sys.path.insert(0, str(REPO))
 
+from nfl_ats.market_data import POOL_SPREAD_LOCK_ET  # noqa: E402
 from scripts.capture_scheduler import ET, LINEUP_CAPTURE, _cli, _ps  # noqa: E402
 
 READ_ONLY_SCRIPT = True
 
-#: Tuesday-opener guard: the capture scheduler's ``odds_tue_open`` window
-#: opens at 12:05 ET, just after the pool locks its spreads at noon; until
-#: then a manual capture would BE the opener (the earliest Tuesday quote).
-OPENER_HOUR, OPENER_MINUTE = 12, 5
 MANUAL_NOTE = "manual_refresh"
 
 
@@ -71,16 +71,17 @@ def plan(now: datetime) -> tuple[Step, ...]:
     # ``tuesday_opener_quotes`` keys "Tuesday" on the UTC day, which starts at
     # 20:00 ET (EDT): a Monday-evening press is already Tuesday to it.
     utc_tuesday = now.astimezone(UTC).weekday() == 1
-    opener_landed = local.weekday() == 1 and (local.hour, local.minute) >= (
-        OPENER_HOUR,
-        OPENER_MINUTE,
-    )
+    # The pool's lock is the ONE declared constant (nfl_ats.market_data); the
+    # guard reads it rather than restating a clock time here.
+    pool_locked = local.weekday() == 1 and local.time() >= POOL_SPREAD_LOCK_ET
     odds_skip = None
-    if utc_tuesday and not opener_landed:
+    if utc_tuesday and not pool_locked:
+        lock = POOL_SPREAD_LOCK_ET.strftime("%H:%M")
         odds_skip = (
-            "it is Tuesday (UTC) before the 12:05 ET opener capture: the week's opener "
-            "is the earliest Tuesday capture, so a capture now would become the opener "
-            "line; the scheduler captures the pool's locked line at 12:05"
+            f"it is Tuesday (UTC) before the pool's {lock} ET spread lock: the week's "
+            "opener is the earliest Tuesday capture at or after the lock, falling back "
+            "to the earliest pre-lock capture when none exists, so a capture now could "
+            "become the opener line; the scheduler captures the locked line at 12:05"
         )
     return (
         Step("spreads", "capture the current spreads", tuple(_ps("odds_capture.ps1")), odds_skip),

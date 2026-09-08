@@ -57,8 +57,10 @@ def test_every_nfl_ats_argv_parses_against_the_real_parser() -> None:
 @pytest.mark.parametrize(
     ("now", "skipped"),
     [
-        (datetime(2026, 9, 8, 8, 30, tzinfo=ET), True),  # Tuesday before the opener
-        (datetime(2026, 9, 8, 12, 4, tzinfo=ET), True),  # pool locked, capture not yet
+        (datetime(2026, 9, 8, 8, 30, tzinfo=ET), True),  # Tuesday before the pool lock
+        (datetime(2026, 9, 8, 11, 59, tzinfo=ET), True),  # one minute before the lock
+        (datetime(2026, 9, 8, 12, 0, tzinfo=ET), False),  # pool locked: a press IS the line
+        (datetime(2026, 9, 8, 12, 4, tzinfo=ET), False),  # locked; the 12:05 job not yet run
         (datetime(2026, 9, 8, 12, 5, tzinfo=ET), False),  # opener window open
         (datetime(2026, 9, 8, 12, 30, tzinfo=ET), False),
         (datetime(2026, 9, 7, 8, 30, tzinfo=ET), False),  # Monday morning
@@ -70,8 +72,11 @@ def test_every_nfl_ats_argv_parses_against_the_real_parser() -> None:
 def test_spreads_capture_is_skipped_on_tuesday_before_the_opener(
     now: datetime, skipped: bool
 ) -> None:
-    """A capture before 12:05 ET on a Tuesday would BE the week's opener
-    (``tuesday_opener_quotes`` takes the earliest Tuesday quote per book)."""
+    """A capture before the pool's spread lock (``POOL_SPREAD_LOCK_ET``,
+    12:00 ET) on a Tuesday could BE the week's opener: ``tuesday_opener_quotes``
+    prefers the earliest quote at or after the lock but falls back to the
+    earliest pre-lock quote when the 12:05 capture never lands. From the lock
+    onward a press is the locked line itself, so it is allowed."""
     spreads = _by_name(now)["spreads"]
     assert (spreads.skip_reason is not None) is skipped
     others = [step for step in refresh_now.plan(now) if step.name != "spreads"]

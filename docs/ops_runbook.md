@@ -51,7 +51,7 @@ outright — see `docs/prospective_evidence.md`.
 | Time (ET) | What happens |
 |---|---|
 | **12:00** | **Pool spreads lock** (owner, 2026-09-08: "Spreads lock: Tue 12:00 PM"). This is the line every pick settles against. |
-| 12:05 | `odds_tue_open` captures that locked line (the first odds capture of the day; nothing captures earlier on a Tuesday). |
+| 12:05 | `odds_tue_open` captures that locked line. The live opener is each book's earliest quote at or after the noon lock; an earlier Tuesday capture can no longer become the opener. |
 | 12:20 | `weekly_lock` runs `weekly-run --record-decisions` on it. Budget **15 minutes** for the card, ~35 with the evaluation; closes 14:20. |
 | ~13:00 | Card published, Pages redeployed. Picks are due at each game's own kickoff (Sunday 4 PM ET cap), not at noon. |
 | 14:30 | Tuesday's daily lineup refresh, after the lock chain. |

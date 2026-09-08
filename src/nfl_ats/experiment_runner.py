@@ -86,6 +86,7 @@ from nfl_ats.estimation_variance import (
 from nfl_ats.experiments import paired_feature_comparisons
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES
 from nfl_ats.odds_backfill import HISTORICAL_CAPTURE_KIND
+from nfl_ats.officials_archive import load_officials
 from nfl_ats.outcomes import walk_forward_outcomes
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
@@ -1280,7 +1281,10 @@ def _referee_year_over_year_reliability(
 
 def _build_referee_trait_data(repo_root: Path) -> _RefereeTraitData:
     officials_path, game_penalties_path, snapshot_id = _latest_officials_snapshot(repo_root)
-    officials = pd.read_parquet(officials_path)
+    # nfl_ats.officials_archive is the single officials loader (LEAD-59). At
+    # its shipped default it returns this feed bit-for-bit; the Wayback
+    # 2009-2014 archive is opt-in there, never here.
+    officials = load_officials(repo_root, officials_path=officials_path)
     game_penalties = pd.read_parquet(game_penalties_path)
 
     required_off = {"game_id", "official_name", "position", "season", "season_type"}
@@ -1653,7 +1657,7 @@ def _build_referee_type_trait_data(repo_root: Path, penalty_type: str) -> _Refer
     officials_path, _game_penalties_path, officials_snapshot_id = _latest_officials_snapshot(
         repo_root
     )
-    officials = pd.read_parquet(officials_path)
+    officials = load_officials(repo_root, officials_path=officials_path)
     refs = officials.loc[
         (officials["position"] == _REFEREE_POSITION)
         & (officials["season_type"] == _REFEREE_SEASON_TYPE)

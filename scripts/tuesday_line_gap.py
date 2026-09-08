@@ -1,18 +1,20 @@
 """How far the line moved between the 09:00 opener and the pool's noon lock (OPS-05).
 
 Owner, 2026-09-08: "Spreads lock: Tue, Sep 8, 2026, 12:00 PM". The card is
-formed at the Tuesday opener (the earliest Tuesday quote per book,
-``nfl_ats.market_data.tuesday_opener_quotes``); the pool's spreads are fixed
-at noon and captured by the ``odds_tue_noon`` job. This read-only report
-puts the two side by side for one Tuesday: per game, the opener consensus,
-the latest pre-noon-lock consensus, and the move, so the question "should
-the card be formed at the noon line?" is answered from recorded lines.
+formed at the Tuesday opener (``nfl_ats.market_data.tuesday_opener_quotes``:
+per book the earliest Tuesday quote at or after the pool's lock,
+``nfl_ats.market_data.POOL_SPREAD_LOCK_ET``, with the earliest pre-lock
+quote as the fallback); the pool's spreads are fixed at noon and captured
+by the ``odds_tue_open`` job at 12:05. This read-only report puts the two
+side by side for one Tuesday: per game, the opener consensus (and its
+``opener_basis``), the lock-moment consensus, and the move, so any week
+that gets an earlier capture shows how far the line moved before the lock.
 
 Usage::
 
     uv run --no-sync python scripts/tuesday_line_gap.py             # today's Tuesday
     uv run --no-sync python scripts/tuesday_line_gap.py --date 2026-09-01
-    uv run --no-sync python scripts/tuesday_line_gap.py --lock 12:00  # ET lock time
+    uv run --no-sync python scripts/tuesday_line_gap.py --lock 12:00  # override the ET lock
 
 Prints a table and a JSON summary; writes nothing.
 """
@@ -24,7 +26,6 @@ import json
 import sys
 from datetime import date, datetime, time
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -33,10 +34,16 @@ if str(REPO / "src") not in sys.path:
     sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.clv import LIVE_CAPTURE_KIND, load_decision_quotes  # noqa: E402
-from nfl_ats.market_data import tuesday_opener_quotes  # noqa: E402
+from nfl_ats.market_data import (  # noqa: E402
+    POOL_SPREAD_LOCK_ET,
+    POOL_TIMEZONE,
+    tuesday_opener_quotes,
+)
 
 READ_ONLY_SCRIPT = True
-ET = ZoneInfo("America/New_York")
+ET = POOL_TIMEZONE
+#: The ``--lock`` default: the one declared pool lock, never a local restatement.
+DEFAULT_LOCK = POOL_SPREAD_LOCK_ET.strftime("%H:%M")
 
 
 def home_spreads(quotes: pd.DataFrame) -> pd.DataFrame:
@@ -63,7 +70,15 @@ def tuesday_gap(quotes: pd.DataFrame, tuesday: date, lock: time) -> pd.DataFrame
     ].copy()
     if on_day.empty:
         return pd.DataFrame(
-            columns=["game_id", "opener", "at_lock", "move", "opener_at", "lock_quote_at"]
+            columns=[
+                "game_id",
+                "opener",
+                "opener_basis",
+                "at_lock",
+                "move",
+                "opener_at",
+                "lock_quote_at",
+            ]
         )
     lock_at = datetime.combine(tuesday, lock, tzinfo=ET)
     opener = tuesday_opener_quotes(on_day).rename(
@@ -72,7 +87,7 @@ def tuesday_gap(quotes: pd.DataFrame, tuesday: date, lock: time) -> pd.DataFrame
             "opener_home_spread": "opener",
             "observed_at_utc": "opener_at",
         }
-    )[["game_id", "opener", "opener_at"]]
+    )[["game_id", "opener", "opener_basis", "opener_at"]]
     # The lock-moment line is the FIRST capture at or after the lock (the
     # ``odds_tue_noon`` job, 12:05 + grace); when none exists yet, the latest
     # capture before the lock stands in and is labelled as such.
@@ -105,7 +120,11 @@ def tuesday_gap(quotes: pd.DataFrame, tuesday: date, lock: time) -> pd.DataFrame
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--date", type=date.fromisoformat, default=None, help="Tuesday (ET)")
-    parser.add_argument("--lock", default="12:00", help="pool lock time, ET (HH:MM)")
+    parser.add_argument(
+        "--lock",
+        default=DEFAULT_LOCK,
+        help=f"pool lock time, ET (HH:MM); default {DEFAULT_LOCK}, the declared pool lock",
+    )
     args = parser.parse_args(argv)
     tuesday = args.date or datetime.now(tz=ET).date()
     hour, minute = (int(part) for part in args.lock.split(":"))

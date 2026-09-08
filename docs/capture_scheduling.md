@@ -561,11 +561,15 @@ first odds capture of the day, landing just after the pool lock -- it IS the
 pool's line), `odds_tue_open_halves` alongside it, `weekly_lock` at **12:20**
 (closes 14:20), and Tuesday's daily lineup refresh at 14:30 so two
 `weekly-run`s never overlap. No scheduled job captures odds earlier on a
-Tuesday: the week's opener is the EARLIEST Tuesday quote per book
-(`nfl_ats.market_data.tuesday_opener_quotes`, UTC day), so an earlier
-capture would silently become the opener -- the one-click refresh
-(`scripts/refresh_now.py`) refuses a spread capture on a Tuesday (UTC) before
-12:05 ET for the same reason. Picks are due at each game's own kickoff
+Tuesday, and since 2026-09-08 the live opener rule is robust to one anyway:
+`nfl_ats.market_data.POOL_SPREAD_LOCK_ET` (12:00 ET) makes the week's opener
+each book's earliest Tuesday quote AT OR AFTER the pool lock, the cross-book
+median over post-lock books only (`opener_basis = "post_lock"`); only when no
+post-lock quote exists does the earliest Tuesday quote stand in, labelled
+`pre_lock_fallback`. The historical `tue_open` archive is untouched. The
+one-click refresh (`scripts/refresh_now.py`) still refuses a spread capture on
+a Tuesday (UTC) before the lock, and `scripts/tuesday_line_gap.py` reads the
+same constant. Picks are due at each game's own kickoff
 (Sunday 4 PM ET cap), so a lock after noon costs nothing. The historical
 `tue_open` archive stays as captured (09:00 ET); the 09:00-to-noon gap on
 those seasons is not measured, which is recorded on ROADMAP OPS-05.
