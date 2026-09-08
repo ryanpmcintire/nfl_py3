@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T15:12:39.726191+00:00`
+Refreshed at: `2026-09-08T15:13:14.604687+00:00`
 
 ## Start here
 
@@ -20,29 +20,9 @@ Refreshed at: `2026-09-08T15:12:39.726191+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `e3437eeae217` — Scheduling doc: 12:20 lock timing; legacy Task Scheduler entries documented [skip ci]
-- Pending change set: 24 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `A  docs/key_line_pick_read.md`
-  - `M  scripts/lockday_rehearsal.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/card_explanation.py`
-  - `M  src/nfl_ats/card_refit.py`
-  - `M  src/nfl_ats/cli_commands/prediction.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
+- Baseline commit: `6917dbb21a18` — Serve the key-line pick read (lane W): on lines quoted exactly on 3 or 7 the pick comes from the discrete key-number read; paired challenger registered; Week 1 NO at DET -> NO +7 [skip ci]
+- Pending change set: 1 paths
   - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/ecdf_mapping_incumbent_overlay.py`
-  - `M  src/nfl_ats/gaussian_mean_mapping_incumbent_overlay.py`
-  - `A  src/nfl_ats/key_line_pick_read.py`
-  - `A  src/nfl_ats/key_line_pick_read_incumbent_overlay.py`
-  - `M  src/nfl_ats/outcomes.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `M  src/nfl_ats/public_board.py`
-  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
