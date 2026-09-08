@@ -25969,6 +25969,4038 @@
       "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneG\\cells.json",
       "standard_error": null
     },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_0-3_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_0-3_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_0-3_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_0-3_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_0-3_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_0-3_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_0-3_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_0-3_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_10p5plus_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_10p5plus_all_brier, positive favours the candidate",
+      "effect": 0.000430777857,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001637908211,
+        0.002419460983
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6636,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_10p5plus_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_10p5plus_all_card, positive favours the candidate",
+      "effect": -1.526717557252,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -5.263157894737,
+        2.189781021898
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.14985,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_10p5plus_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_10p5plus_all_log_loss, positive favours the candidate",
+      "effect": 0.000746279016,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.003516186376,
+        0.004835140872
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.64,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_10p5plus_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_10p5plus_all_standalone, positive favours the candidate",
+      "effect": -0.763358778626,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -4.724409448819,
+        3.174603174603
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.2881,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_3p5-6p5_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_3p5-6p5_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_3p5-6p5_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_3p5-6p5_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_3p5-6p5_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_3p5-6p5_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_3p5-6p5_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_3p5-6p5_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_7_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_7_all_brier, positive favours the candidate",
+      "effect": -0.000245326352,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001859049934,
+        0.001410131593
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3851,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_7_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_7_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_7_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_7_all_log_loss, positive favours the candidate",
+      "effect": -0.000583294526,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.003895735566,
+        0.002789954102
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.36525,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_7_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_7_all_standalone, positive favours the candidate",
+      "effect": 6.756756756757,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        1.408450704225,
+        12.987012987013
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.99425,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_7p5-10_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_7p5-10_all_brier, positive favours the candidate",
+      "effect": -0.000166934168,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001166584932,
+        0.000781352225
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.37395,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_7p5-10_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_7p5-10_all_card, positive favours the candidate",
+      "effect": -2.061855670103,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -4.736842105263,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.02345,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_7p5-10_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_7p5-10_all_log_loss, positive favours the candidate",
+      "effect": -0.000296456869,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00233238234,
+        0.001623053333
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.39035,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_cell_bucket_7p5-10_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_cell_bucket_7p5-10_all_standalone, positive favours the candidate",
+      "effect": -2.061855670103,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -4.736842105263,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.02345,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_overall_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_overall_brier, positive favours the candidate",
+      "effect": 3.920506e-06,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00023347642,
+        0.000238726839
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.52045,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_overall_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_overall_card, positive favours the candidate",
+      "effect": -0.399201596806,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.868983957219,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0249,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_overall_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_overall_log_loss, positive favours the candidate",
+      "effect": -1.938707e-06,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000487303834,
+        0.000478687085
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.504,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_overall_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_overall_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.539456166741,
+        0.533689126084
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.4531,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2020_brier_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2020_brier, positive favours the candidate",
+      "effect": -0.000146763122,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00083500044,
+        0.000467518505
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3393,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2020_card_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2020_card, positive favours the candidate",
+      "effect": -0.909090909091,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.325581395349,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2020_log_loss_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2020_log_loss, positive favours the candidate",
+      "effect": -0.000306868769,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001703467921,
+        0.000949475762
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3352,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2020_standalone_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2020_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.860465116279,
+        1.801801801802
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.40155,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2021_brier_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2021_brier, positive favours the candidate",
+      "effect": 0.000237172472,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000182893954,
+        0.000729329389
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.84965,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2021_card_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2021_card, positive favours the candidate",
+      "effect": 0.423728813559,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.862068965517,
+        1.74672489083
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6099,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2021_log_loss_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2021_log_loss, positive favours the candidate",
+      "effect": 0.000479110062,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000381556932,
+        0.001486354614
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.84755,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2021_standalone_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2021_standalone, positive favours the candidate",
+      "effect": 0.423728813559,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.862068965517,
+        1.74672489083
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6099,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2022_brier_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2022_brier, positive favours the candidate",
+      "effect": 0.000115743343,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000568742258,
+        0.0007686337
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.64065,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2022_card_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2022_card, positive favours the candidate",
+      "effect": -0.806451612903,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.10970464135,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2022_log_loss_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2022_log_loss, positive favours the candidate",
+      "effect": 0.000220561157,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001169146381,
+        0.001540433358
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6331,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2022_standalone_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2022_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.68776371308,
+        1.556420233463
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3978,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2023_brier_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2023_brier, positive favours the candidate",
+      "effect": -7.183904e-06,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000690124738,
+        0.000616125805
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.49595,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2023_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.127819548872,
+        1.115241635688
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3454,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2023_log_loss_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2023_log_loss, positive favours the candidate",
+      "effect": -3.7496409e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001440378691,
+        0.001240081731
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.48425,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2023_standalone, positive favours the candidate",
+      "effect": 0.751879699248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.749063670412,
+        2.238805970149
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.7809,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2024_brier_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2024_brier, positive favours the candidate",
+      "effect": -0.000239556022,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000732857206,
+        0.000212705661
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.15945,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2024_card, positive favours the candidate",
+      "effect": -0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.153846153846,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2024_log_loss_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2024_log_loss, positive favours the candidate",
+      "effect": -0.000506526501,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001525515737,
+        0.000422067215
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.1526,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2024_standalone, positive favours the candidate",
+      "effect": -0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.153846153846,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2025_brier_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2025_brier, positive favours the candidate",
+      "effect": 7.1671068e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000396020652,
+        0.000544533864
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.61195,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2025_card, positive favours the candidate",
+      "effect": -0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.893939393939,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2025_log_loss_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2025_log_loss, positive favours the candidate",
+      "effect": 0.000155573803,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000808705088,
+        0.00113274655
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6176,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5a_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5a_season_2025_standalone, positive favours the candidate",
+      "effect": -0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.893939393939,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_0-3_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_0-3_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_0-3_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_0-3_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_0-3_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_0-3_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_0-3_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_0-3_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_10p5plus_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_10p5plus_all_brier, positive favours the candidate",
+      "effect": 0.000601518918,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.003270071825,
+        0.004333759722
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6259,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_10p5plus_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_10p5plus_all_card, positive favours the candidate",
+      "effect": -2.290076335878,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -6.4,
+        1.538461538462
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.08605,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_10p5plus_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_10p5plus_all_log_loss, positive favours the candidate",
+      "effect": 0.000931758802,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.007068521272,
+        0.008573760511
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.59525,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_10p5plus_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_10p5plus_all_standalone, positive favours the candidate",
+      "effect": -0.763358778626,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -5.303197908286,
+        3.81679389313
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.31095,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_3p5-6p5_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_3p5-6p5_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_3p5-6p5_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_3p5-6p5_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_3p5-6p5_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_3p5-6p5_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_3p5-6p5_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_3p5-6p5_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_7_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_7_all_brier, positive favours the candidate",
+      "effect": -0.000720744525,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00423551307,
+        0.002857932047
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_7_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_7_all_card, positive favours the candidate",
+      "effect": 1.351351351351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        4.347826086957
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6348,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_7_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_7_all_log_loss, positive favours the candidate",
+      "effect": -0.001701150849,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.008924014871,
+        0.005678711885
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3216,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_7_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_7_all_standalone, positive favours the candidate",
+      "effect": 6.756756756757,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        13.924050632911
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.96905,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_7p5-10_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_7p5-10_all_brier, positive favours the candidate",
+      "effect": -0.000399815831,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.002689174236,
+        0.001717230593
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.36655,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_7p5-10_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_7p5-10_all_card, positive favours the candidate",
+      "effect": -2.577319587629,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -5.464480874317,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0113,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_7p5-10_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_7p5-10_all_log_loss, positive favours the candidate",
+      "effect": -0.000728248904,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.005375378635,
+        0.003553125946
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3817,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_cell_bucket_7p5-10_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_cell_bucket_7p5-10_all_standalone, positive favours the candidate",
+      "effect": -2.577319587629,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -5.464480874317,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0113,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_overall_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_overall_brier, positive favours the candidate",
+      "effect": -3.4664263e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000523250706,
+        0.000442322665
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.4495,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_overall_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_overall_card, positive favours the candidate",
+      "effect": -0.465735196274,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.988793671721,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.02305,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_overall_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_overall_log_loss, positive favours the candidate",
+      "effect": -9.6543611e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001097966176,
+        0.000879104082
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.42875,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_overall_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_overall_standalone, positive favours the candidate",
+      "effect": -0.066533599468,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.732844770153,
+        0.592495062541
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.388,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2020_brier_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2020_brier, positive favours the candidate",
+      "effect": -0.000430615876,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.002267848054,
+        0.001182465375
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3222,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2020_card_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2020_card, positive favours the candidate",
+      "effect": -1.363636363636,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.884615384615,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2020_log_loss_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2020_log_loss, positive favours the candidate",
+      "effect": -0.000911208958,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.004636325186,
+        0.002408957169
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.31515,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2020_standalone_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2020_standalone, positive favours the candidate",
+      "effect": -0.454545454545,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.403846153846,
+        1.401869158879
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.2478,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2021_brier_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2021_brier, positive favours the candidate",
+      "effect": 0.000426530915,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000454991551,
+        0.001441682233
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.81235,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2021_card_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2021_card, positive favours the candidate",
+      "effect": 0.423728813559,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.862068965517,
+        1.74672489083
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6099,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2021_log_loss_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2021_log_loss, positive favours the candidate",
+      "effect": 0.000856185462,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00094536847,
+        0.002923070856
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.8077,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2021_standalone_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2021_standalone, positive favours the candidate",
+      "effect": 0.847457627119,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.829875518672,
+        2.542372881356
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.78205,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2022_brier_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2022_brier, positive favours the candidate",
+      "effect": 0.000182385646,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001172324892,
+        0.0014674893
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6141,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2022_card_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2022_card, positive favours the candidate",
+      "effect": -0.403225806452,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.26582278481,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2022_log_loss_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2022_log_loss, positive favours the candidate",
+      "effect": 0.000337120293,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.002416112118,
+        0.002936519002
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.60515,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2022_standalone_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2022_standalone, positive favours the candidate",
+      "effect": 0.403225806452,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.851063829787,
+        1.632653061224
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.60755,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2023_brier_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2023_brier, positive favours the candidate",
+      "effect": -2.7356933e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001304487912,
+        0.0011340417
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.487,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2023_card, positive favours the candidate",
+      "effect": -0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.550387596899,
+        0.763358778626
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.17955,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2023_log_loss_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2023_log_loss, positive favours the candidate",
+      "effect": -0.000107077769,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.002735574391,
+        0.002270982576
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.47445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2023_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.264150943396,
+        1.893939393939
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.44165,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2024_brier_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2024_brier, positive favours the candidate",
+      "effect": -0.000456008556,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001357312729,
+        0.000361882353
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.148,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2024_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.132075471698,
+        1.107011070111
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3454,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2024_log_loss_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2024_log_loss, positive favours the candidate",
+      "effect": -0.000969072189,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.002840153336,
+        0.000718278573
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.13975,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2024_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.132075471698,
+        1.107011070111
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3454,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2025_brier_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2025_brier, positive favours the candidate",
+      "effect": 9.4821681e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000725370186,
+        0.000923529665
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.5861,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2025_card, positive favours the candidate",
+      "effect": -1.123595505618,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.298850574713,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2025_log_loss_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2025_log_loss, positive favours the candidate",
+      "effect": 0.000209555097,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001490293691,
+        0.001925952001
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.59155,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5b_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5b_season_2025_standalone, positive favours the candidate",
+      "effect": -1.123595505618,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.298850574713,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_0-3_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_0-3_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_0-3_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_0-3_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_0-3_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_0-3_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_0-3_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_0-3_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_10p5plus_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_10p5plus_all_brier, positive favours the candidate",
+      "effect": -0.000582669911,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.002462033165,
+        0.001354944746
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.2748,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_10p5plus_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_10p5plus_all_card, positive favours the candidate",
+      "effect": -4.580152671756,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -8.759124087591,
+        -0.757575757576
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.00585,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_10p5plus_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_10p5plus_all_log_loss, positive favours the candidate",
+      "effect": -0.001112460781,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.004953522683,
+        0.002872555844
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.2881,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_10p5plus_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_10p5plus_all_standalone, positive favours the candidate",
+      "effect": -4.580152671756,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -8.759124087591,
+        -0.757575757576
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.00585,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_3p5-6p5_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_3p5-6p5_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_3p5-6p5_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_3p5-6p5_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_3p5-6p5_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_3p5-6p5_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_3p5-6p5_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_3p5-6p5_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_7_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_7_all_brier, positive favours the candidate",
+      "effect": 9.7231904e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001096236186,
+        0.001252534242
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.5653,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_7_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_7_all_card, positive favours the candidate",
+      "effect": -2.702702702703,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -7.142857142857,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_7_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_7_all_log_loss, positive favours the candidate",
+      "effect": 0.000245388115,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.002177693528,
+        0.002602116262
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.58095,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_7_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_7_all_standalone, positive favours the candidate",
+      "effect": 1.351351351351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.898550724638,
+        6.060606060606
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.60715,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_7p5-10_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_7p5-10_all_brier, positive favours the candidate",
+      "effect": 0.00011362579,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000684053745,
+        0.000935076548
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6044,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_7p5-10_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_7p5-10_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_7p5-10_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_7p5-10_all_log_loss, positive favours the candidate",
+      "effect": 0.000192002707,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001426428629,
+        0.001857761082
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.5865,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_cell_bucket_7p5-10_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_cell_bucket_7p5-10_all_standalone, positive favours the candidate",
+      "effect": -1.546391752577,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -3.381847211987,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_overall_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_overall_brier, positive favours the candidate",
+      "effect": -3.1331467e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000237170867,
+        0.000176337368
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.37975,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_overall_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_overall_card, positive favours the candidate",
+      "effect": -0.532268795742,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.942760942761,
+        -0.133779264214
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.00115,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_overall_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_overall_log_loss, positive favours the candidate",
+      "effect": -6.0096551e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000481005138,
+        0.000366915549
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.38715,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_overall_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_overall_standalone, positive favours the candidate",
+      "effect": -0.532268795742,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.008742434432,
+        -0.066269052353
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.00935,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2020_brier_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2020_brier, positive favours the candidate",
+      "effect": 7.2297866e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00027817318,
+        0.000455228981
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6407,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2020_card_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2020_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2020_log_loss_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2020_log_loss, positive favours the candidate",
+      "effect": 0.00014912799,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000566020101,
+        0.000931335844
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.6427,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2020_standalone_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2020_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2021_brier_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2021_brier, positive favours the candidate",
+      "effect": -0.000212792622,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000594452386,
+        0.000101665474
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.1043,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2021_card_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2021_card, positive favours the candidate",
+      "effect": -0.423728813559,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.293103448276,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2021_log_loss_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2021_log_loss, positive favours the candidate",
+      "effect": -0.000432812629,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001213714978,
+        0.000213494282
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.1066,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2021_standalone_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2021_standalone, positive favours the candidate",
+      "effect": -0.423728813559,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.293103448276,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2022_brier_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2022_brier, positive favours the candidate",
+      "effect": -0.000131851684,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000681762421,
+        0.000442337259
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.31755,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2022_card_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2022_card, positive favours the candidate",
+      "effect": -1.612903225806,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -3.212851405622,
+        -0.392156862745
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2022_log_loss_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2022_log_loss, positive favours the candidate",
+      "effect": -0.000261323312,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00137145304,
+        0.000900457367
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.32095,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2022_standalone_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2022_standalone, positive favours the candidate",
+      "effect": -1.612903225806,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -3.212851405622,
+        -0.392156862745
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2023_brier_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2023_brier, positive favours the candidate",
+      "effect": -4.833359e-06,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000586959492,
+        0.000630678629
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.4888,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2023_card, positive favours the candidate",
+      "effect": -0.751879699248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.851851851852,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2023_log_loss_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2023_log_loss, positive favours the candidate",
+      "effect": 5.8018e-07,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001192458787,
+        0.00130592067
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.49465,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2023_standalone, positive favours the candidate",
+      "effect": -1.127819548872,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -2.281368821293,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2024_brier_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2024_brier, positive favours the candidate",
+      "effect": 0.000208716307,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000241406994,
+        0.000691097183
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.81105,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2024_card, positive favours the candidate",
+      "effect": -0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.550387596899,
+        0.760456273764
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.1819,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2024_log_loss_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2024_log_loss, positive favours the candidate",
+      "effect": 0.000436537537,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000482851916,
+        0.001431072571
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.81585,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2024_standalone, positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.145038167939,
+        1.930501930502
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.59385,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2025_brier_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2025_brier, positive favours the candidate",
+      "effect": -0.000128506788,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000642844105,
+        0.000375011764
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.3158,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2025_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2025_log_loss_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2025_log_loss, positive favours the candidate",
+      "effect": -0.000271365638,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00132973161,
+        0.000762412325
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.312,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s5_s5c_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm s5_s5c_season_2025_standalone, positive favours the candidate",
+      "effect": -0.374531835206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.149425287356,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Prior-weight sensitivity on the mined archive on which S2/S3 were selected; correlated sensitivity; not independent confirmation.",
+      "plain_summary": "Adjust the home team's predicted margin using earlier games with the same spread size, varying only the predeclared shrinkage toward zero.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneI\\cells.json",
+      "standard_error": null
+    },
     "mod18_home_side_mapping_v1_T1_2020_2021": {
       "category": "modeling",
       "classification": "unresolved_below_power",
