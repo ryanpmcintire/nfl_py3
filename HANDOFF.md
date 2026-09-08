@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T12:35:01.679420+00:00`
+Refreshed at: `2026-09-08T12:53:27.613298+00:00`
 
 ## Start here
 
@@ -20,29 +20,23 @@ Refreshed at: `2026-09-08T12:35:01.679420+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `38bf0828a0f1` — MOD-18: serve the home-side point offset (lane S S2, +0.33 pts P+ 0.695 through the card); lanes T/U recorded; Week 1 NE -> SEA [skip ci]
-- Pending change set: 53 paths
+- Baseline commit: `537d064a38b7` — MOD-18: serve the home-side push only on spreads >= 7 (S3, +0.33 pts P+ 0.74 through the card); opener-evaluation applies the served offset (headline 55.9%); Week 1 lock moved to the pool's noon spread lock; one-click refresh button; Codex lanes A-F applied [skip ci]
+- Pending change set: 15 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  docs/capture_scheduling.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
-  - `M  docs/home_side_offset_promotion.md`
+  - `A  docs/home_side_side_aware.md`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `M  docs/opener_evaluation.md`
-  - `M  docs/ops_runbook.md`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T120939Z.json`
-  - `A  registry/experiments/opener-evaluation/20260908T110201Z.json`
-  - `A  registry/experiments/opener-evaluation/20260908T115957Z.json`
+  - `A  registry/experiments/margin-backtest/20260908T124423Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T124514Z.json`
   - `M  registry/weak_signals.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  scripts/home_side_location_opener_eval.py`
-  - `A  scripts/refresh_now.cmd`
-  - `A  scripts/refresh_now.py`
-  - ...and 33 more
+  - `A  scripts/home_side_side_aware_opener_eval.py`
+  - `A  tests/test_home_side_side_aware.py`
+  - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -56,13 +50,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260908T115957Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-08T12:09:39.008770+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-08T12:45:14.161318+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-08T12:33:07.112616+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-08T12:51:22.388796+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
