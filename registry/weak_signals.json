@@ -13901,6 +13901,2750 @@
       "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneK\\composition.json",
       "standard_error": null
     },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_0-3_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_0-3_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_0-3_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_0-3_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_0-3_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_0-3_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_0-3_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_0-3_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_10p5plus_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_10p5plus_all_brier, positive favours the candidate",
+      "effect": -0.011883126337,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.027658899439,
+        0.003959386073
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0725,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_10p5plus_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_10p5plus_all_card, positive favours the candidate",
+      "effect": 0.763358778626,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -7.2,
+        9.009193619849
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.53575,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_10p5plus_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_10p5plus_all_log_loss, positive favours the candidate",
+      "effect": -0.025260127108,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.057992136605,
+        0.007591201938
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0666,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_10p5plus_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_10p5plus_all_standalone, positive favours the candidate",
+      "effect": 2.290076335878,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -7.194388489209,
+        12.121212121212
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.6506,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_3p5-6p5_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_3p5-6p5_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_3p5-6p5_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_3p5-6p5_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_3p5-6p5_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_3p5-6p5_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_3p5-6p5_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_3p5-6p5_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_7_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_7_all_brier, positive favours the candidate",
+      "effect": 0.000598398428,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.017507662933,
+        0.019444300577
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.5217,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_7_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_7_all_card, positive favours the candidate",
+      "effect": -6.756756756757,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -16.25,
+        2.702702702703
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.05615,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_7_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_7_all_log_loss, positive favours the candidate",
+      "effect": 0.001465524567,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.035946042482,
+        0.04037381541
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.5255,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_7_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_7_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -12.328767123288,
+        12.857142857143
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.45265,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_7p5-10_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_7p5-10_all_brier, positive favours the candidate",
+      "effect": 0.005543580806,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.008662487999,
+        0.02015948636
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.77655,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_7p5-10_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_7p5-10_all_card, positive favours the candidate",
+      "effect": 1.030927835052,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -5.741626794258,
+        8.040201005025
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.5949,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_7p5-10_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_7p5-10_all_log_loss, positive favours the candidate",
+      "effect": 0.01053138869,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.018554543784,
+        0.040521515261
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.7608,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_cell_bucket_7p5-10_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_cell_bucket_7p5-10_all_standalone, positive favours the candidate",
+      "effect": 3.092783505155,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -5.583756345178,
+        12.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.74265,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_overall_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_overall_brier, positive favours the candidate",
+      "effect": -0.000290720818,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00265649559,
+        0.002050221943
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.4148,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_overall_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_overall_card, positive favours the candidate",
+      "effect": -0.133067198935,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.355105602686,
+        1.076716016151
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.40095,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_overall_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_overall_log_loss, positive favours the candidate",
+      "effect": -0.000770151981,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.005639818788,
+        0.004019071152
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.3888,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_overall_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_overall_standalone, positive favours the candidate",
+      "effect": 0.59880239521,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.855263157895,
+        2.081934184016
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.77815,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_push_at_3_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_push_at_3_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 94,
+      "sample_games": 199,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2020_brier_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2020_brier, positive favours the candidate",
+      "effect": 0.00396132913,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.001160913108,
+        0.009748132226
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.9273,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2020_card_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2020_card, positive favours the candidate",
+      "effect": 0.909090909091,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.222222222222,
+        4.326923076923
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.65425,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2020_log_loss_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2020_log_loss, positive favours the candidate",
+      "effect": 0.008082307225,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.002279501335,
+        0.019811369016
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.92885,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2020_standalone_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2020_standalone, positive favours the candidate",
+      "effect": 1.818181818182,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.851851851852,
+        5.882352941176
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.785,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2021_brier_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2021_brier, positive favours the candidate",
+      "effect": -0.007265857339,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.015151843396,
+        -0.000323773643
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0199,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2021_card_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2021_card, positive favours the candidate",
+      "effect": -1.694915254237,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.347826086957,
+        1.234567901235
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0857,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2021_log_loss_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2021_log_loss, positive favours the candidate",
+      "effect": -0.015288428693,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.031433289076,
+        -0.001156214279
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.01625,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2021_standalone_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2021_standalone, positive favours the candidate",
+      "effect": -0.847457627119,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -5.309734513274,
+        3.765690376569
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.3238,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2022_brier_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2022_brier, positive favours the candidate",
+      "effect": 0.004006043289,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00116352412,
+        0.009082284964
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.93705,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2022_card_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2022_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.225806451613,
+        2.941486721271
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.47455,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2022_log_loss_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2022_log_loss, positive favours the candidate",
+      "effect": 0.008005696834,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00253220217,
+        0.018358110675
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.93365,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2022_standalone_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2022_standalone, positive favours the candidate",
+      "effect": 2.822580645161,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.396825396825,
+        6.060912771439
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.9418,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2023_brier_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2023_brier, positive favours the candidate",
+      "effect": -0.002257997611,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.007177649592,
+        0.002374812096
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.173,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2023_card, positive favours the candidate",
+      "effect": -0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.135338345865,
+        3.435114503817
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.3862,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2023_log_loss_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2023_log_loss, positive favours the candidate",
+      "effect": -0.004886815727,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.015031188819,
+        0.004650068229
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.1639,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2023_standalone, positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.333333333333,
+        4.089219330855
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.5394,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2024_brier_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2024_brier, positive favours the candidate",
+      "effect": -0.000649255341,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.005559996388,
+        0.004057744934
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.3949,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2024_card, positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.901140684411,
+        2.352941176471
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.58085,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2024_log_loss_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2024_log_loss, positive favours the candidate",
+      "effect": -0.00138995147,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.011601268555,
+        0.008381222364
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.3926,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2024_standalone, positive favours the candidate",
+      "effect": -0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.041825095057,
+        2.255639097744
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.3419,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2025_brier_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2025_brier, positive favours the candidate",
+      "effect": 0.000697105179,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.004656902461,
+        0.006498522415
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.5839,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2025_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.583264999317,
+        2.238805970149
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.44735,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2025_log_loss_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2025_log_loss, positive favours the candidate",
+      "effect": 0.001335694437,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.009685340215,
+        0.013248476756
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.5781,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1_season_2025_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.370786516854,
+        3.435114503817
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.44345,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_0-3_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_0-3_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_0-3_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_0-3_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_0-3_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_0-3_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_0-3_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_0-3_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_10p5plus_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_10p5plus_all_brier, positive favours the candidate",
+      "effect": -0.006349568534,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.022623636177,
+        0.009613930823
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.21465,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_10p5plus_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_10p5plus_all_card, positive favours the candidate",
+      "effect": 3.053435114504,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.838709677419,
+        11.111111111111
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.74785,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_10p5plus_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_10p5plus_all_log_loss, positive favours the candidate",
+      "effect": -0.014156860365,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.047894204146,
+        0.018735633896
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.19765,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_10p5plus_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_10p5plus_all_standalone, positive favours the candidate",
+      "effect": 5.343511450382,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.285714285714,
+        15.037593984962
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.84445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_3p5-6p5_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_3p5-6p5_all_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_3p5-6p5_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_3p5-6p5_all_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_3p5-6p5_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_3p5-6p5_all_log_loss, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_3p5-6p5_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_3p5-6p5_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_7_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_7_all_brier, positive favours the candidate",
+      "effect": -0.010092501628,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.032982280724,
+        0.012919104826
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.1908,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_7_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_7_all_card, positive favours the candidate",
+      "effect": -5.405405405405,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -18.30985915493,
+        7.576237054085
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.17495,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_7_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_7_all_log_loss, positive favours the candidate",
+      "effect": -0.020164307124,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.066903871392,
+        0.027039591787
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.1969,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_7_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_7_all_standalone, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -15.068493150685,
+        15.068493150685
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.46565,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_7p5-10_all_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_7p5-10_all_brier, positive favours the candidate",
+      "effect": 0.002637436994,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.012306345738,
+        0.018151440403
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.63435,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_7p5-10_all_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_7p5-10_all_card, positive favours the candidate",
+      "effect": -2.061855670103,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -9.844559585492,
+        6.010928961749
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.29035,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_7p5-10_all_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_7p5-10_all_log_loss, positive favours the candidate",
+      "effect": 0.004753847788,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.025864205647,
+        0.036412301589
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.61865,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_cell_bucket_7p5-10_all_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_cell_bucket_7p5-10_all_standalone, positive favours the candidate",
+      "effect": -1.030927835052,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -10.606272219401,
+        9.090909090909
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.40495,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_overall_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_overall_brier, positive favours the candidate",
+      "effect": -0.00070989742,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.003280903404,
+        0.001934689343
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.30035,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_overall_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_overall_card, positive favours the candidate",
+      "effect": -0.266134397871,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.718468598426,
+        1.195219123506
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.34645,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_overall_log_loss_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_overall_log_loss, positive favours the candidate",
+      "effect": -0.001613081147,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.006896198118,
+        0.003783490373
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.27895,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_overall_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_overall_standalone, positive favours the candidate",
+      "effect": 0.332667997339,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.325381047051,
+        2.046204620462
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.6414,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_push_at_3_brier_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_push_at_3_brier, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 94,
+      "sample_games": 199,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2020_brier_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2020_brier, positive favours the candidate",
+      "effect": 0.004017256564,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00400511246,
+        0.012039361945
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.8389,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2020_card_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2020_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.310344827586,
+        4.524886877828
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.4609,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2020_log_loss_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2020_log_loss, positive favours the candidate",
+      "effect": 0.008342821901,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.007778567535,
+        0.024573143687
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.84555,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2020_standalone_2020_2020": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2020_standalone, positive favours the candidate",
+      "effect": 0.454545454545,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.977375565611,
+        5.990783410138
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.53735,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2021_brier_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2021_brier, positive favours the candidate",
+      "effect": -0.009235404582,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.016159713609,
+        -0.00244177936
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.00455,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2021_card_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2021_card, positive favours the candidate",
+      "effect": -1.271186440678,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -5.128205128205,
+        2.575107296137
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.22285,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2021_log_loss_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2021_log_loss, positive favours the candidate",
+      "effect": -0.019386540176,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.033521923509,
+        -0.005523129055
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.00355,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2021_standalone_2021_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2021_standalone, positive favours the candidate",
+      "effect": -1.694915254237,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -6.779661016949,
+        3.478260869565
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.23335,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2022_brier_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2022_brier, positive favours the candidate",
+      "effect": 0.002014174348,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.003988127694,
+        0.008247510953
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.7425,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2022_card_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2022_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.488372093023,
+        3.292181069959
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.47595,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2022_log_loss_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2022_log_loss, positive favours the candidate",
+      "effect": 0.00391950717,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00828650717,
+        0.016592533292
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.7324,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2022_standalone_2022_2022": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2022_standalone, positive favours the candidate",
+      "effect": 2.822580645161,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.787401574803,
+        6.477732793522
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.92365,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2023_brier_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2023_brier, positive favours the candidate",
+      "effect": -0.000355091779,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.005839627469,
+        0.004944463171
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.4526,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2023_card, positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.610435305813,
+        3.63702963703
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.45495,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2023_log_loss_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2023_log_loss, positive favours the candidate",
+      "effect": -0.000979034532,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.012267002957,
+        0.009898916444
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.43415,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2023_standalone, positive favours the candidate",
+      "effect": 1.127819548872,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.592592592593,
+        4.669260700389
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.69475,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2024_brier_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2024_brier, positive favours the candidate",
+      "effect": -0.001561607661,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.006682175449,
+        0.003633609954
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.27105,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2024_card, positive favours the candidate",
+      "effect": -0.751879699248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.135338345865,
+        1.930501930502
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.29255,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2024_log_loss_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2024_log_loss, positive favours the candidate",
+      "effect": -0.003237514902,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.01389104624,
+        0.007457722806
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.27185,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2024_standalone, positive favours the candidate",
+      "effect": -1.87969924812,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -5.166051660517,
+        1.111111111111
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.08645,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2025_brier_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2025_brier, positive favours the candidate",
+      "effect": 0.000895543177,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.004547669426,
+        0.006583020608
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.61285,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2025_card, positive favours the candidate",
+      "effect": 0.374531835206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.583025830258,
+        3.237996559274
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.55015,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2025_log_loss_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2025_log_loss, positive favours the candidate",
+      "effect": 0.001741221237,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.009433899524,
+        0.013407058321
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.608,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
+    "mod18_conditional_margin_v1_m1_m1b_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, reliability or positive-control closing ground established.",
+      "closing_ground": null,
+      "description": "Home-side location arm m1_m1b_season_2025_standalone, positive favours the candidate",
+      "effect": 1.123595505618,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.238805970149,
+        4.761904761905
+      ],
+      "league": "nfl",
+      "notes": "Post-hoc big-spread restriction on the mined archive lanes K and S were selected on; correlated siblings, not independent confirmation.",
+      "plain_summary": "On big spreads, read the home team's chance from prior integer football margins near its corrected prediction; keep the existing read on small spreads.",
+      "probability_positive": 0.6917,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneH\\cells.json",
+      "standard_error": null
+    },
     "mod18_home_dog_location_v1_Q1_2020_2021": {
       "category": "modeling",
       "classification": "unresolved_below_power",

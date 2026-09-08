@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T12:53:27.613298+00:00`
+Refreshed at: `2026-09-08T13:05:59.792438+00:00`
 
 ## Start here
 
@@ -20,23 +20,15 @@ Refreshed at: `2026-09-08T12:53:27.613298+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `537d064a38b7` — MOD-18: serve the home-side push only on spreads >= 7 (S3, +0.33 pts P+ 0.74 through the card); opener-evaluation applies the served offset (headline 55.9%); Week 1 lock moved to the pool's noon spread lock; one-click refresh button; Codex lanes A-F applied [skip ci]
-- Pending change set: 15 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `98e4c9835ae3` — MOD-18 lane G: side-aware home push (S4/S4b) measured through the played card, S3 kept; lineups_wed exercised (full weekly-run, card regenerated) [skip ci]
+- Pending change set: 7 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `A  docs/home_side_side_aware.md`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260908T124423Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T124514Z.json`
+  - `A  docs/big_spread_lattice.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/home_side_side_aware_opener_eval.py`
-  - `A  tests/test_home_side_side_aware.py`
-  - `M  tiebreaker.json`
+  - `A  scripts/big_spread_lattice_opener_eval.py`
+  - `A  tests/test_big_spread_lattice.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
