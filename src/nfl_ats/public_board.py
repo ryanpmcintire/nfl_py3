@@ -119,6 +119,7 @@ from nfl_ats.findings_registry import (
     validate_curation,
 )
 from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
+from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.injury_value_tilt_overlay import (
     PLAYER_FEATURE_TABLE_NAME,
     apply_injury_value_tilt_overlay,
@@ -4807,6 +4808,7 @@ def build_public_site(
             feature_profile=str(artifacts.metadata.get("feature_profile")),
             min_train_games=int(artifacts.metadata.get("min_train_games", 500)),
             probability_method=str(artifacts.metadata["probability_method"]),
+            center_offsets=center_offsets_from_metadata(artifacts.metadata, artifacts.predictions),
         )
         # REQUIRED consistency check: the widget's own formula must reproduce
         # the published card at each game's own line before it ships.

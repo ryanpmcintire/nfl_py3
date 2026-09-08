@@ -1716,6 +1716,18 @@ for _home_dog_prefix in ("football", "full"):
         *HOME_DOG_HINGE_COLUMNS,
     )
 
+# MOD-18 lane S additive research profile, frozen in docs/home_side_location.md:
+# weak_stack plus the row-local symmetric spread-size hinge above seven
+# points (S1). Never used by the active model.
+from nfl_ats.home_side_location import HOME_SIDE_HINGE_COLUMNS  # noqa: E402
+
+FEATURE_FAMILIES["home_side_location_hinge"] = HOME_SIDE_HINGE_COLUMNS
+for _home_side_prefix in ("football", "full"):
+    FEATURE_SETS[f"{_home_side_prefix}_weak_stack_home_side_hinge_7"] = (
+        *FEATURE_SETS[f"{_home_side_prefix}_weak_stack"],
+        *HOME_SIDE_HINGE_COLUMNS,
+    )
+
 
 # PER-07: research-only September staff turnover; incumbent untouched.
 FEATURE_FAMILIES["per07_coord_change_on_production"] = (

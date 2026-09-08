@@ -2723,6 +2723,35 @@
       "weekly_generation_command": "N/A -- reuses the synchronized active forecast, Tuesday-frozen arrest flags, and the former production composition.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_retired_four_member_union_decisions)",
       "reader_summary": "The former card: coach, division revenge and player-arrest adjustments plus the retired mid-spread fade, tracked against the current three-adjustment card on the same games."
+    },
+    {
+      "challenger_id": "home_side_offset_off_incumbent",
+      "status": "ACTIVE_PROSPECTIVE",
+      "registered_at_utc": "2026-09-08T01:30:00+00:00",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "config_fingerprint": "bc77638d47e2748c",
+      "reader_summary": "Tracks the forecast without the home-team adjustment on big spreads, so the adjusted and unadjusted picks can be compared on the same games.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "known_gap": "Forced picks only; no paper bets. Historical evidence is selected and reused, not independent confirmation.",
+      "model_note": "Reads the uncorrected point read the served forecast wrote beside its card (home_side_offset.json); never refits. Refuses a card without that sidecar or a recipe drift.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions",
+      "weekly_generation_command": "Uses the synchronized active forecast.",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "registry_source": "registry/weak_signals.json:mod18_home_side_location_v1_S2_three_member_card_2020_2025",
+        "write_up": "docs/home_side_offset_promotion.md"
+      }
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

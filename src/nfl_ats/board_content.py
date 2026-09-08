@@ -83,6 +83,7 @@ from nfl_ats.four_overlay_composition import (
     POLICY_ID,
     SPREAD_GAP_ZONE_FADE,
 )
+from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_refresh import (
@@ -2125,6 +2126,7 @@ def _load_spread_explorer_params(
         feature_profile=str(metadata.get("feature_profile")),
         min_train_games=int(metadata.get("min_train_games", 500)),
         probability_method=str(metadata["probability_method"]),
+        center_offsets=center_offsets_from_metadata(metadata, predictions),
     )
     assert_spread_explorer_matches_card(params, predictions)
     return params

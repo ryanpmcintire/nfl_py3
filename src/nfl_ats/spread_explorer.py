@@ -144,6 +144,7 @@ def compute_spread_explorer_params(
     feature_profile: str,
     min_train_games: int,
     probability_method: str = "gaussian",
+    center_offsets: Mapping[str, float] | None = None,
 ) -> dict[str, SpreadExplorerGameParams]:
     """Refit each (season, week) group and return every game's widget params.
 
@@ -205,6 +206,13 @@ def compute_spread_explorer_params(
         aligned = target_indexed.loc[group_ids]
         predicted = model.predict(aligned)
         centers = predicted["predicted_margin"].to_numpy(dtype=float)
+        # Served home-side offset (docs/home_side_offset_promotion.md): the
+        # card's centre is the refit centre plus the per-game offset it served.
+        if center_offsets is not None:
+            centers = centers + np.asarray(
+                [float(center_offsets.get(str(game_id), 0.0)) for game_id in group_ids],
+                dtype=float,
+            )
         spread = aligned["spread_line"].to_numpy(dtype=float)
 
         gaussian_check = smoothed_home_cover_probability(
@@ -356,6 +364,7 @@ def compute_spread_explorer_distribution(
     feature_profile: str,
     min_train_games: int,
     probability_method: str = "gaussian",
+    center_offsets: Mapping[str, float] | None = None,
 ) -> SpreadExplorerGameDistribution:
     """Refit ONE game's week (the exact production recipe) and return its
     centre plus full residual sample, verified against the published card's
@@ -406,6 +415,8 @@ def compute_spread_explorer_distribution(
 
     predicted = model.predict(target_rows, probability_method=probability_method)  # type: ignore[arg-type]
     center = float(predicted["predicted_margin"].iloc[0])
+    if center_offsets is not None:
+        center += float(center_offsets.get(str(game_id), 0.0))
     line = float(target_rows["spread_line"].iloc[0])
     supplied = float(row["home_cover_probability"])
 

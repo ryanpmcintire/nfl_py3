@@ -31,6 +31,11 @@ from nfl_ats.cli_common import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_SETS
 from nfl_ats.data import DataContractError
+from nfl_ats.home_side_location import (
+    HOME_SIDE_OFFSET_FILENAME,
+    HOME_SIDE_OFFSET_SERVED,
+    fit_production_home_side_offsets,
+)
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
 from nfl_ats.key_numbers import (
     DEFAULT_KEY_NUMBERS,
@@ -93,6 +98,7 @@ from nfl_ats.prediction_safety import (
 )
 from nfl_ats.prospective import freeze_forecast
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
+from nfl_ats.spread_regime import spread_bucket
 
 
 @dataclass(frozen=True)
@@ -182,6 +188,13 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         _active_model_for_compatibility(), _feature_table_manifest_for(request.features)
     )
     fit_compatibility.refuse_if_incompatible(action="fit a model on this feature table")
+    # MOD-18 lane S promotion (2026-09-07, docs/home_side_offset_promotion.md):
+    # the served market_residual point carries a walk-forward home-side offset
+    # by spread bucket, fitted from the archived out-of-time opener stream.
+    # The uncorrected read is scored too and kept beside the card so the
+    # paired challenger (home_side_offset_off_incumbent) records it verbatim.
+    home_side = _served_home_side_offsets(features, request)
+    center_offsets = home_side["center_offsets"] if home_side is not None else None
     predictions = score_outcome_week(
         features,
         season=request.season,
@@ -192,6 +205,22 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         feature_profile=request.feature_profile,
         ridge_alpha=request.ridge_alpha,
         probability_method=request.probability_method,
+        center_offsets=center_offsets,
+    )
+    uncorrected = (
+        score_outcome_week(
+            features,
+            season=request.season,
+            week=request.week,
+            regressor=request.regressor,
+            min_edge=request.min_edge,
+            min_train_games=request.min_train_games,
+            feature_profile=request.feature_profile,
+            ridge_alpha=request.ridge_alpha,
+            probability_method=request.probability_method,
+        )
+        if home_side is not None
+        else None
     )
     # ENG-23: join the point-in-time odds capture's observation instant onto
     # the forecast frame; never touches spread_line or which side is picked.
@@ -254,6 +283,10 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
     # so weekly-run's margin-predict step metadata carries the environment lock
     # report without digging into provenance.
     metadata["environment"] = metadata["provenance"]["environment"]
+    if home_side is not None and uncorrected is not None:
+        metadata["home_side_offset"] = _home_side_offset_summary(
+            home_side, predictions, uncorrected
+        )
     # ENG-16: every decision-bearing card field says where it came from, and
     # the lineage audit is release-blocking -- a card that cannot answer that
     # never reaches the artifact directory.
@@ -273,6 +306,11 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
     }
     atomic_csv(predictions, output / "predictions.csv")
     atomic_json(safety.to_dict(), output / "prediction_safety.json")
+    if home_side is not None and uncorrected is not None:
+        atomic_json(
+            _home_side_offset_sidecar(home_side, predictions, uncorrected),
+            output / HOME_SIDE_OFFSET_FILENAME,
+        )
     write_card_lineage(card_lineage, output)
     ats_predictions = predictions.loc[predictions["method"].eq(metadata["ats_method"])].copy()
     if ats_predictions.empty:
@@ -301,6 +339,7 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             feature_profile=request.feature_profile,
             ridge_alpha=request.ridge_alpha,
             probability_method=request.probability_method,
+            center_offsets=center_offsets,
         )
         atomic_parquet(sweep, output / "line_sweep.parquet")
         metadata["line_sweep"] = {
@@ -906,3 +945,105 @@ def register(
         help="archive an immutable forecast after verifying every game is pre-kickoff",
     )
     predict.set_defaults(handler=_cmd_predict)
+
+
+def _served_home_side_offsets(
+    features: pd.DataFrame, request: MarginPredictRequest
+) -> dict[str, Any] | None:
+    """Fit the promoted home-side offsets for this week, or ``None`` when the
+    served policy is off. Never raises: a failure here degrades to zero
+    offsets with the error recorded, because this layer must not block the lock."""
+
+    if not HOME_SIDE_OFFSET_SERVED:
+        return None
+    target = features.loc[
+        features["season"].eq(request.season) & features["week"].eq(request.week),
+        ["game_id", "spread_line"],
+    ].copy()
+    target["game_id"] = target["game_id"].astype(str)
+    spread = pd.to_numeric(target["spread_line"], errors="coerce")
+    try:
+        fitted = fit_production_home_side_offsets(
+            _artifacts_root(),
+            _active_model_for_compatibility(),
+            season=request.season,
+            week=request.week,
+        )
+    except Exception as error:
+        per_game = target.assign(bucket=None, home_side_offset=0.0)
+        return {"fitted": None, "center_offsets": {}, "per_game": per_game, "error": str(error)}
+    offsets = fitted.offset_for(spread).fillna(0.0).astype(float)
+    per_game = target.assign(
+        bucket=spread_bucket(spread).astype(object).where(spread.notna(), None),
+        home_side_offset=offsets,
+    )
+    return {
+        "fitted": fitted,
+        "center_offsets": dict(zip(per_game["game_id"], per_game["home_side_offset"], strict=True)),
+        "per_game": per_game,
+        "error": None,
+    }
+
+
+def _served_rows(predictions: pd.DataFrame) -> pd.DataFrame:
+    rows = predictions.loc[predictions["method"].eq("market_residual")].copy()
+    rows["game_id"] = rows["game_id"].astype(str)
+    return rows.set_index("game_id")
+
+
+def _home_side_offset_sidecar(
+    home_side: dict[str, Any], predictions: pd.DataFrame, uncorrected: pd.DataFrame
+) -> dict[str, Any]:
+    """Both reads per game, so the paired challenger never has to refit."""
+
+    served = _served_rows(predictions)
+    base = _served_rows(uncorrected).reindex(served.index)
+    per_game = home_side["per_game"].set_index("game_id").reindex(served.index)
+
+    def number(frame: pd.DataFrame, game_id: str, column: str) -> float:
+        return float(pd.to_numeric(frame.loc[game_id, column], errors="coerce"))
+
+    games = []
+    for game_id in served.index:
+        corrected_p = number(served, game_id, "home_cover_probability")
+        base_p = number(base, game_id, "home_cover_probability")
+        bucket = per_game.loc[game_id, "bucket"]
+        games.append(
+            {
+                "game_id": str(game_id),
+                "spread_line": number(served, game_id, "spread_line"),
+                "bucket": None if bucket is None or pd.isna(bucket) else str(bucket),
+                "home_side_offset": number(per_game, game_id, "home_side_offset"),
+                "predicted_margin_uncorrected": number(base, game_id, "predicted_margin"),
+                "predicted_margin": number(served, game_id, "predicted_margin"),
+                "home_cover_probability_uncorrected": base_p,
+                "home_cover_probability": corrected_p,
+                "side_changed": bool((corrected_p >= 0.5) != (base_p >= 0.5)),
+            }
+        )
+    fitted = home_side["fitted"]
+    return {
+        "schema": "home_side_offset/1",
+        "served": True,
+        "fit": fitted.to_dict() if fitted is not None else None,
+        "error": home_side["error"],
+        "games": games,
+    }
+
+
+def _home_side_offset_summary(
+    home_side: dict[str, Any], predictions: pd.DataFrame, uncorrected: pd.DataFrame
+) -> dict[str, Any]:
+    sidecar = _home_side_offset_sidecar(home_side, predictions, uncorrected)
+    fit = sidecar["fit"] or {}
+    return {
+        "path": HOME_SIDE_OFFSET_FILENAME,
+        "policy": fit.get("policy"),
+        "offsets": fit.get("offsets"),
+        "prior_games": fit.get("prior_games"),
+        "source_path": fit.get("source_path"),
+        "source_model_id": fit.get("source_model_id"),
+        "warnings": fit.get("warnings", []),
+        "error": sidecar["error"],
+        "sides_changed": [g["game_id"] for g in sidecar["games"] if g["side_changed"]],
+    }

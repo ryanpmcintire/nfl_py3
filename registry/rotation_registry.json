@@ -3497,6 +3497,172 @@
         }
       ]
     },
+    "mod18_home_side_location_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-08",
+      "description": "Frozen S1 home_side_hinge_7 = max(0, |spread| - 7) row-local ridge feature on weak_stack, and S2 walk-forward home-side offset by spread bucket outside the ridge (prior weight 100 games), gaussian_median mapping unchanged; docs/home_side_location.md; inherited active-model, lane H/K/L/Q diagnosis and overlay-subset mining discount; both arms recorded.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "On big point spreads the model has been selling the home team short by a few points whichever side it is on. These two versions learn from past seasons how much to give back to the home side as the spread grows, one inside the model and one as a nudge applied afterward, so big-spread picks lean toward the home team only when the record says they should.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneS\\window_2020_2021.json",
+          "assigned_at": "2026-09-08",
+          "closing_ground": null,
+          "effect": 0.43859649122807015,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.5453393307155832,
+            2.4663677130044843
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected S2. Mined archive; inherited active-model, lane H/K/L/Q spread diagnosis (which motivated both arms; S2 also trains on this archive walk-forward) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.624,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-08",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneS\\window_2022_2023.json",
+          "assigned_at": "2026-09-08",
+          "closing_ground": null,
+          "effect": -0.5836575875486382,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.9120458891013383,
+            0.5882352941176471
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected S1. Mined archive; inherited active-model, lane H/K/L/Q spread diagnosis (which motivated both arms; S2 also trains on this archive walk-forward) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.137,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-08",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneS\\window_2024_2025.json",
+          "assigned_at": "2026-09-08",
+          "closing_ground": null,
+          "effect": 0.37523452157598497,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.746268656716418,
+            1.5238095238095237
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected S1. Mined archive; inherited active-model, lane H/K/L/Q spread diagnosis (which motivated both arms; S2 also trains on this archive walk-forward) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.6758,
+          "sample_blocks": 36,
+          "seasons": [
+            2024,
+            2025
+          ],
+          "spent_at": "2026-09-08",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "mod18_home_side_mapping_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-08",
+      "description": "T1 home-side shrunken centre shift of the gaussian_median read and T2 same-side K1 integer-margin lattice; docs/home_side_mapping.md; inherited H/K/L/P diagnosis, model and overlay selection; mined descriptive reuse",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "Home underdogs on big spreads have covered more often than the model expected. These two reads keep the same picks line but learn from past games, separately for home underdogs and home favourites, how confident to be in each side.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2020_2021.json",
+          "assigned_at": "2026-09-08",
+          "closing_ground": null,
+          "effect": -0.8771929824561403,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -3.982521633341836,
+            2.227295776328338
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected T1. Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+          "probability_positive": 0.27255,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-08",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2022_2023.json",
+          "assigned_at": "2026-09-08",
+          "closing_ground": null,
+          "effect": -1.9455252918287937,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -5.179282868525896,
+            1.2
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected T1. Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+          "probability_positive": 0.1078,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-08",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneT\\window_2024_2025.json",
+          "assigned_at": "2026-09-08",
+          "closing_ground": null,
+          "effect": -1.5009380863039399,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.528301886792453,
+            1.4571948998178506
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected T1. Mined archive; inherited active model, H/K/L/P home-side diagnosis, lattice and overlay subset selection; two correlated arms; descriptive reused evidence, not independent confirmation.",
+          "probability_positive": 0.1459,
+          "sample_blocks": 36,
+          "seasons": [
+            2024,
+            2025
+          ],
+          "spent_at": "2026-09-08",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "mod18_hybrid_margin_v1": {
       "acknowledges_mined_2018_2025": true,
       "declared_at": "2026-09-07",
@@ -8445,12 +8611,12 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 51,
-    "2021": 51,
-    "2022": 7,
-    "2023": 7,
-    "2024": 5,
-    "2025": 6
+    "2020": 53,
+    "2021": 53,
+    "2022": 9,
+    "2023": 9,
+    "2024": 7,
+    "2025": 8
   },
   "version": 1
 }

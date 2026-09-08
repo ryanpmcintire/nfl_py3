@@ -28,7 +28,8 @@ EXPLANATION = (
     "The model's confidence barely changes with the size of the spread. "
     "Final margins pile up on 3, 7, 10 and 14 points, so lines just inside those "
     "numbers can expose weaknesses that an average confidence hides. "
-    "A spread-aware probability is being built; until then, the numbers here are the honest record."
+    "Since the 2026 opener the forecast includes an adjustment for how home teams do on big "
+    "spreads, learned from past seasons; the numbers here are the record before that change."
 )
 BUCKET_NOTE = (
     "Opening lines, ties excluded; 7.5-point lines belong to 7.5-10, not 7-7.5. "

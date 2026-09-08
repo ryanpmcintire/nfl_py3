@@ -213,6 +213,9 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         # row-local home-underdog points, and that plus its above-seven hinge.
         "weak_stack_home_dog_points",
         "weak_stack_home_dog_hinge_7",
+        # MOD-18 lane S (docs/home_side_location.md): weak_stack plus the
+        # row-local symmetric spread-size hinge above seven points.
+        "weak_stack_home_side_hinge_7",
         "weak_stack_apm_unit",  # PER-09 adds only the six unit ratings to weak_stack.
         "weak_stack",
         "weak_stack_surface",

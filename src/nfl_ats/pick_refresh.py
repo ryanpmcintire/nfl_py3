@@ -91,15 +91,17 @@ counterfactual. See ``docs/late_week_refresh.md``'s promotion section.
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, time
 from pathlib import Path
 from typing import Any, cast
 from zoneinfo import ZoneInfo
 
+import numpy as np
 import pandas as pd
 
-from nfl_ats.active_model import load_active_ats_model
+from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.calibration import ResidualSmoothingMethod
 from nfl_ats.clv import (
     LIVE_CAPTURE_KIND,
@@ -109,6 +111,7 @@ from nfl_ats.clv import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
+from nfl_ats.home_side_location import load_forecast_home_side_offsets
 from nfl_ats.io import atomic_parquet, atomic_text, run_id
 from nfl_ats.lines import apply_external_lines
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
@@ -840,7 +843,16 @@ def plan_refresh(
             columns={"decision_home_spread": "home_spread"}
         )
         overridden = apply_external_lines(refreshable, lines)
-        forecasts = model.predict(overridden, probability_method=probability_method)
+        # MOD-18 lane S promotion (docs/home_side_offset_promotion.md): the
+        # Tuesday card served a home-side point offset per game; the refit at
+        # the same frozen line carries the identical per-game offset so a
+        # late-week switch can only come from new information, never from
+        # silently dropping the correction. Pre-promotion cards (no sidecar)
+        # refit exactly as before.
+        center_offset = _served_home_side_center_offset(artifacts_root, active, overridden)
+        forecasts = model.predict(
+            overridden, probability_method=probability_method, center_offset=center_offset
+        )
         identity_columns = [
             column
             for column in (
@@ -1395,3 +1407,32 @@ def append_refresh_to_card(destination: Path, result: RefreshResult, *, note: st
     else:
         new_text = text.rstrip() + "\n\n" + block + "\n"
     atomic_text(new_text, destination)
+
+
+def _served_home_side_center_offset(
+    artifacts_root: Path, active: Mapping[str, Any], frame: pd.DataFrame
+) -> np.ndarray | None:
+    """Per-row point shift the served Tuesday card used, by game id.
+
+    ``None`` when the linked forecast carries no ``home_side_offset.json``
+    (a card produced before the promotion), so the refit reproduces the
+    pre-promotion behaviour bit-for-bit. A game absent from the sidecar gets
+    0.0: the correction degrades to nothing rather than blocking a refresh.
+    """
+
+    forecast = active_artifact_path(artifacts_root, dict(active), "weekly_forecast")
+    if forecast is None:
+        return None
+    sidecar = load_forecast_home_side_offsets(forecast)
+    if sidecar is None or not sidecar.get("served"):
+        return None
+    games = sidecar.get("games")
+    if not isinstance(games, list):
+        return None
+    by_game = {
+        str(row.get("game_id")): float(row.get("home_side_offset", 0.0) or 0.0)
+        for row in games
+        if isinstance(row, dict)
+    }
+    ids = frame["game_id"].astype(str)
+    return np.asarray([by_game.get(game_id, 0.0) for game_id in ids], dtype=float)

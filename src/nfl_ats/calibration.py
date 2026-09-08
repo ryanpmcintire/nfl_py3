@@ -14,6 +14,11 @@ from sklearn.linear_model import LogisticRegression
 
 from nfl_ats.conditional_margin import CONDITIONAL_MARGIN_METHODS, fit_conditional_margin
 from nfl_ats.constants import DEFAULT_MIN_CALIBRATION_GAMES
+from nfl_ats.home_side_mapping import (
+    HOME_SIDE_MAPPING_METHODS,
+    fit_home_side_shift,
+    fit_lattice_home_side,
+)
 from nfl_ats.hybrid_margin import HYBRID_MARGIN_METHODS, fit_hybrid_weights
 from nfl_ats.odds import choose_bet
 
@@ -255,6 +260,8 @@ ResidualSmoothingMethod = Literal[
     "conditional_margin_lattice_keyside",
     "hybrid_key_distance",
     "hybrid_key_distance_by_size",
+    "smooth_home_side_shift",
+    "lattice_home_side",
 ]
 RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "ecdf",
@@ -268,6 +275,8 @@ RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "conditional_margin_lattice_keyside",
     "hybrid_key_distance",
     "hybrid_key_distance_by_size",
+    "smooth_home_side_shift",
+    "lattice_home_side",
 )
 _SURVIVAL_EPSILON = 1e-9
 
@@ -344,7 +353,11 @@ def fit_residual_smoother(
     """
 
     normalized = normalize_residual_smoothing_method(method)
-    if normalized in (*CONDITIONAL_MARGIN_METHODS, *HYBRID_MARGIN_METHODS):
+    if normalized in (
+        *CONDITIONAL_MARGIN_METHODS,
+        *HYBRID_MARGIN_METHODS,
+        *HOME_SIDE_MAPPING_METHODS,
+    ):
         raise ValueError(
             "Conditional margin methods require prior predicted/actual margin pairs, not residuals"
         )
@@ -395,6 +408,28 @@ def smoothed_home_cover_probability(
     above for why that is a distinct lever from rescaling).
     """
 
+    if method in HOME_SIDE_MAPPING_METHODS:
+        # ``conditional_history.predicted_margin`` is the prior forecasts'
+        # mapping centre (point + gaussian_median location), as in lane K.
+        if conditional_history is None:
+            raise ValueError("Home-side methods require prior completed prediction history")
+        if method == "smooth_home_side_shift":
+            shift = fit_home_side_shift(conditional_history).shift(lines)
+            return smoothed_home_cover_probability(
+                residuals,
+                np.asarray(centers, dtype=float) + shift,
+                lines,
+                method="gaussian_median",
+            )
+        return np.asarray(
+            [
+                fit_lattice_home_side(
+                    conditional_history, float(center), float(line)
+                ).decision_probability(float(line))
+                for center, line in zip(centers, lines, strict=True)
+            ],
+            dtype=np.float64,
+        )
     if method in HYBRID_MARGIN_METHODS:
         if conditional_history is None:
             raise ValueError("Hybrid methods require prior completed prediction history")

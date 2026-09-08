@@ -69,6 +69,7 @@ MarginFeatureProfile = Literal[
     "weak_stack_spread_regime",
     "weak_stack_home_dog_points",
     "weak_stack_home_dog_hinge_7",
+    "weak_stack_home_side_hinge_7",
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
@@ -144,6 +145,7 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_spread_regime",
     "weak_stack_home_dog_points",
     "weak_stack_home_dog_hinge_7",
+    "weak_stack_home_side_hinge_7",
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
@@ -261,6 +263,12 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     "weak_stack_home_dog_hinge_7": (
         "football_weak_stack_home_dog_hinge_7",
         "full_weak_stack_home_dog_hinge_7",
+    ),
+    # MOD-18 lane S (docs/home_side_location.md): weak_stack plus the row-local
+    # symmetric spread-size hinge above seven points.
+    "weak_stack_home_side_hinge_7": (
+        "football_weak_stack_home_side_hinge_7",
+        "full_weak_stack_home_side_hinge_7",
     ),
     # POSITIVE CONTROL ONLY (docs/weak_stack_v4.md): weak_stack plus OBSERVED
     # weather. Deliberately leaky, never promotable -- it bounds the weather
@@ -955,9 +963,21 @@ class MarginModel:
         return predicted_margin[:, np.newaxis] + self.residuals[np.newaxis, :]
 
     def predict(
-        self, frame: pd.DataFrame, *, probability_method: ResidualSmoothingMethod = "ecdf"
+        self,
+        frame: pd.DataFrame,
+        *,
+        probability_method: ResidualSmoothingMethod = "ecdf",
+        center_offset: Sequence[float] | npt.NDArray[np.float64] | None = None,
     ) -> pd.DataFrame:
         """Predict every game in ``frame``.
+
+        ``center_offset`` (MOD-18 lane S, promoted 2026-09-07,
+        docs/home_side_offset_promotion.md) is an optional per-row shift, in
+        points, added to the fitted point prediction BEFORE every downstream
+        quantity is formed -- the served point, the fair spread, the market
+        residual and every probability all move together, so the card stays
+        internally consistent. ``None`` (the default for every research and
+        backtest caller) reproduces the historical output bit-for-bit.
 
         ``probability_method`` controls ONLY ``home_cover_probability`` (the
         two-way forced-pick threshold) -- ``home_win_probability`` and the
@@ -974,6 +994,10 @@ class MarginModel:
 
         spread = self._spread(frame)
         predicted_margin, predicted_residual = self._predicted_margin(frame, spread)
+        if center_offset is not None:
+            shift = _validated_center_offset(center_offset, len(frame))
+            predicted_margin = predicted_margin + shift
+            predicted_residual = predicted_residual + shift
         if self.target == "market":
             market_cover_probability = [
                 no_vig_probabilities(row.get("home_spread_odds"), row.get("away_spread_odds"))[0]
@@ -1047,6 +1071,7 @@ class MarginModel:
         *,
         offsets: Sequence[float] = DEFAULT_LINE_SWEEP_OFFSETS,
         probability_method: ResidualSmoothingMethod = "ecdf",
+        center_offset: Sequence[float] | npt.NDArray[np.float64] | None = None,
     ) -> pd.DataFrame:
         """Evaluate the predictive distribution across alternative home spreads.
 
@@ -1074,6 +1099,10 @@ class MarginModel:
         quoted = self._spread(frame)
         game_ids = frame["game_id"].to_numpy()
         predicted_margin, _ = self._predicted_margin(frame, quoted)
+        if center_offset is not None:
+            predicted_margin = predicted_margin + _validated_center_offset(
+                center_offset, len(frame)
+            )
 
         rows: list[dict[str, Any]] = []
         for offset in offsets:
@@ -1237,3 +1266,18 @@ def margin_model_metadata(model: MarginModel) -> dict[str, Any]:
             str(column): float(value) for column, value in model.column_penalties.items()
         }
     return metadata
+
+
+def _validated_center_offset(
+    center_offset: Sequence[float] | npt.NDArray[np.float64], rows: int
+) -> npt.NDArray[np.float64]:
+    """A finite, row-aligned point shift; refuses silent misalignment."""
+
+    shift = np.asarray(center_offset, dtype=float)
+    if shift.shape != (rows,):
+        raise ValueError(
+            f"center_offset must carry one value per row ({rows}), got shape {shift.shape}"
+        )
+    if not np.isfinite(shift).all():
+        raise ValueError("center_offset must be finite for every row")
+    return shift

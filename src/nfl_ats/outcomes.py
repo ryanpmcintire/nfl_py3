@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Literal, cast
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from sklearn.metrics import accuracy_score, brier_score_loss, log_loss
 
@@ -189,11 +190,23 @@ def _score_methods(
     direct_ats: CoverModel | None,
     min_edge: float,
     probability_method: ResidualSmoothingMethod = "ecdf",
+    center_offsets: Mapping[str, float] | None = None,
 ) -> list[pd.DataFrame]:
     batches: list[pd.DataFrame] = []
     for method, model in margin_models.items():
         batch = games.copy()
-        forecasts = model.predict(batch, probability_method=probability_method)
+        # MOD-18 lane S promotion (docs/home_side_offset_promotion.md): the
+        # served ATS method alone carries the home-side point offset; the
+        # market / fair-margin / straight-up companions stay untouched so the
+        # card's comparison columns keep meaning what they always meant.
+        center_offset = (
+            center_offset_for_games(batch, center_offsets)
+            if center_offsets is not None and method == "market_residual"
+            else None
+        )
+        forecasts = model.predict(
+            batch, probability_method=probability_method, center_offset=center_offset
+        )
         for column in forecasts:
             batch[column] = forecasts[column]
         batch["method"] = method
@@ -468,7 +481,13 @@ def score_outcome_week(
     # See docs/gaussian_median_promotion.md. Historical backtests keep ECDF;
     # the weekly pipeline explicitly supplies the matching median method.
     probability_method: ResidualSmoothingMethod = "gaussian_median",
+    center_offsets: Mapping[str, float] | None = None,
 ) -> pd.DataFrame:
+    """Score one week. ``center_offsets`` (game_id -> points) is the promoted
+    home-side location correction for the served ``market_residual`` method
+    only (docs/home_side_offset_promotion.md); ``None`` keeps every caller's
+    historical output unchanged."""
+
     target, margin_models, straight_up, direct_ats = _target_and_models_for_week(
         features,
         season=season,
@@ -481,7 +500,13 @@ def score_outcome_week(
     )
     predictions = pd.concat(
         _score_methods(
-            target, margin_models, straight_up, direct_ats, min_edge, probability_method
+            target,
+            margin_models,
+            straight_up,
+            direct_ats,
+            min_edge,
+            probability_method,
+            center_offsets,
         ),
         ignore_index=True,
     ).sort_values(["game_id", "method"])
@@ -496,6 +521,20 @@ def score_outcome_week(
 
 
 MARGIN_DISTRIBUTION_METHODS: tuple[str, ...] = ("market", "fair_margin", "market_residual")
+
+
+def center_offset_for_games(
+    games: pd.DataFrame, center_offsets: Mapping[str, float]
+) -> npt.NDArray[np.float64]:
+    """Row-aligned point shifts for ``games`` from a game_id -> points map.
+
+    A game missing from the map gets 0.0 (no correction), never an error: the
+    correction is a served policy layered on the model, and a gap in it must
+    degrade to the uncorrected forecast rather than block the lock.
+    """
+
+    ids = games["game_id"].astype(str)
+    return np.asarray([float(center_offsets.get(game_id, 0.0)) for game_id in ids], dtype=float)
 
 
 def fit_margin_models_for_week(
@@ -548,6 +587,7 @@ def score_outcome_week_line_sweep(
     offsets: Sequence[float] = DEFAULT_LINE_SWEEP_OFFSETS,
     methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
     probability_method: ResidualSmoothingMethod = "gaussian_median",
+    center_offsets: Mapping[str, float] | None = None,
 ) -> pd.DataFrame:
     """Line-sweep confidence curves for one week's margin-distribution methods.
 
@@ -572,7 +612,17 @@ def score_outcome_week_line_sweep(
     )
     frames: list[pd.DataFrame] = []
     for method, model in margin_models.items():
-        sweep = model.line_sweep(target, offsets=offsets, probability_method=probability_method)
+        center_offset = (
+            center_offset_for_games(target, center_offsets)
+            if center_offsets is not None and method == "market_residual"
+            else None
+        )
+        sweep = model.line_sweep(
+            target,
+            offsets=offsets,
+            probability_method=probability_method,
+            center_offset=center_offset,
+        )
         sweep.insert(0, "method", method)
         frames.append(sweep)
     return (

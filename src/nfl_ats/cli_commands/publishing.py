@@ -57,6 +57,9 @@ from nfl_ats.four_overlay_incumbent import record_former_production_incumbent_de
 from nfl_ats.gaussian_mean_mapping_incumbent_overlay import (
     record_gaussian_mean_mapping_incumbent_challenger_decisions,
 )
+from nfl_ats.home_side_offset_incumbent_overlay import (
+    record_home_side_offset_incumbent_challenger_decisions,
+)
 from nfl_ats.inactives_refresh_overlay import record_inactives_refresh_overlay
 from nfl_ats.injury_signal_refresh_tilt import record_injury_signal_refresh_tilt
 from nfl_ats.injury_value_tilt_overlay import record_injury_value_tilt_challenger_decisions
@@ -123,6 +126,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "overlay_production_chain_coach_arrest_incumbent": ("four_overlay_incumbent_challenger_ledger"),
     "ecdf_mapping_incumbent": "ecdf_mapping_incumbent_challenger_ledger",
     "gaussian_mean_mapping_incumbent": "gaussian_mean_mapping_incumbent_challenger_ledger",
+    "home_side_offset_off_incumbent": "home_side_offset_off_incumbent_challenger_ledger",
     "era_weighted_half_life_8": "era_weighted_half_life_8_challenger_ledger",
     "forecast_cold_visitor_tilt": "forecast_cold_visitor_tilt_challenger_ledger",
     "interim_hc_first_game_tilt_overlay": "interim_hc_first_game_tilt_challenger_ledger",
@@ -576,6 +580,21 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        # Home-side offset promotion (MOD-18 lane S, 2026-09-07,
+        # docs/home_side_offset_promotion.md): the uncorrected point read is
+        # the paired challenger, read verbatim from the forecast's sidecar.
+        # A failure here must not un-publish the card either.
+        try:
+            result["home_side_offset_off_incumbent_challenger_ledger"] = (
+                record_home_side_offset_incumbent_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["home_side_offset_off_incumbent_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # Era-weighted (half-life 8) challenger (docs/era_weighting_screen.md,
         # MOD-14): refits the active recipe weekly with exponential
         # season-decay sample weights, dual-tracked against the active model
@@ -953,6 +972,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append the former mean mapping "
             "overlay's picks to the prospective challenger ledger",
+        }
+        result["home_side_offset_off_incumbent_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the uncorrected point read's "
+            "picks to the prospective challenger ledger",
         }
         result["era_weighted_half_life_8_challenger_ledger"] = {
             "recorded": 0,

@@ -182,6 +182,32 @@ def week_dispersion_pool(market_root: Path, game_ids: Sequence[str]) -> Dispersi
     )
 
     frame = pd.DataFrame({"game_id": ids}).merge(dispersion, on="game_id", how="left")
+    return dispersion_pool_from_frame(frame)
+
+
+def dispersion_pool_from_frame(frame: pd.DataFrame) -> DispersionPool:
+    """The pool rule itself, isolated from the market-store read.
+
+    ``frame`` is one row per game with ``game_id`` and ``spread_std`` (NaN
+    for a game with no measurable cross-book dispersion). This is the exact
+    body :func:`week_dispersion_pool` applies to the live Tuesday capture,
+    factored out (2026-09-07, POL-09 composed-rule scoring,
+    ``docs/best_pick_composed_rule.md``) so the historical opener archive can
+    be fed to the SAME code path production runs instead of a re-implemented
+    copy. Behaviour is byte-for-byte the previous inline body; pinned by
+    ``tests/test_best_pick_nomination.py``'s pool tests through
+    :func:`week_dispersion_pool` and directly by
+    ``tests/test_best_pick_composed_rule_eval.py``.
+    """
+
+    required = {"game_id", "spread_std"}
+    missing = sorted(required.difference(frame.columns))
+    if missing:
+        raise ValueError(f"dispersion_pool_from_frame is missing columns: {', '.join(missing)}")
+    frame = frame[["game_id", "spread_std"]].copy()
+    frame["game_id"] = frame["game_id"].astype(str)
+    if frame.empty:
+        raise ValueError("dispersion_pool_from_frame needs at least one game")
     n_games = len(frame)
     n_missing = int(frame["spread_std"].isna().sum())
 

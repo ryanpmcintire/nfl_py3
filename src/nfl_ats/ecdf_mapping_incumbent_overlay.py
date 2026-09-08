@@ -39,6 +39,7 @@ fabricated paper-bet edge for the pre-promotion side.
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -51,6 +52,7 @@ from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.calibration import ResidualSmoothingMethod, smoothed_home_cover_probability
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
+from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.io import atomic_parquet
 from nfl_ats.outcomes import fit_margin_models_for_week
 from nfl_ats.prospective_scoring import (
@@ -114,6 +116,7 @@ def apply_ecdf_mapping_incumbent_overlay(
     min_train_games: int = 500,
     enabled: bool = True,
     probability_method: ResidualSmoothingMethod = "gaussian",
+    center_offsets: Mapping[str, float] | None = None,
 ) -> EcdfMappingIncumbentResult:
     """Replace ``home_cover_probability`` with the ECDF read of the same
     out-of-time residual sample the (post-promotion) production Gaussian read
@@ -178,6 +181,13 @@ def apply_ecdf_mapping_incumbent_overlay(
         aligned = target_indexed.loc[group_ids]
         predicted = model.predict(aligned)
         centers = predicted["predicted_margin"].to_numpy(dtype=float)
+        # Served home-side offset (docs/home_side_offset_promotion.md): the
+        # card's centre is the refit centre plus the per-game offset it served.
+        if center_offsets is not None:
+            centers = centers + np.asarray(
+                [float(center_offsets.get(str(game_id), 0.0)) for game_id in group_ids],
+                dtype=float,
+            )
         spread = aligned["spread_line"].to_numpy(dtype=float)
 
         gaussian_check = smoothed_home_cover_probability(
@@ -351,6 +361,7 @@ def record_ecdf_mapping_incumbent_challenger_decisions(
     mapping = apply_ecdf_mapping_incumbent_overlay(
         card,
         features,
+        center_offsets=center_offsets_from_metadata(metadata, card),
         regressor=str(observed_config.get("regressor")),
         ridge_alpha=float(observed_config.get("ridge_alpha", 10.0)),
         feature_profile=str(observed_config.get("feature_profile")),
