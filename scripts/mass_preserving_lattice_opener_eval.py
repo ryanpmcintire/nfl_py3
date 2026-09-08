@@ -16,32 +16,48 @@ import home_side_location_opener_eval as lane_s
 import numpy as np
 import pandas as pd
 import spread_regime_opener_eval as common
-from scipy import optimize
 from threadpoolctl import threadpool_limits
 
-from nfl_ats.conditional_margin import BANDWIDTH
 from nfl_ats.home_side_location import (
-    COMPLETION_ALLOWANCE_DAYS,
-    TRAILING_SEASONS,
     archive_prior_stream,
     fit_home_side_offsets,
     prior_rows_before,
 )
 from nfl_ats.margin import fit_margin_model
+from nfl_ats.mass_preserving_lattice import (
+    BAND_HALF_WIDTH,
+    BAND_STEP,
+    MAX_BAND,
+    MIN_BAND_GAMES,
+    THETA_BRACKET,
+    prior_pool,
+    tilted_atoms,
+    walk_forward_reads,
+)
+from nfl_ats.mass_preserving_lattice import band_read as _band_read
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.provenance import sha256_file, write_stamped_artifact
 from nfl_ats.public_board import find_matching_opener_evaluation
 
+# The construction now lives in ``nfl_ats.mass_preserving_lattice`` (lane S,
+# docs/discrete_push_read.md), which serves the card's push read; this script
+# imports it so the frozen research numbers replay bit-for-bit (pinned by
+# tests/test_discrete_push_read.py against artifacts/research/laneK).
+__all__ = [
+    "ARMS",
+    "BAND_STEP",
+    "MAX_BAND",
+    "MIN_BAND_GAMES",
+    "THETA_BRACKET",
+    "band_read",
+    "build_pool",
+    "mass_preserving",
+    "tilted_atoms",
+]
+
 OUT = common.REPO / "artifacts/research/laneK"
 #: MP1 reuses the frozen lane-K bandwidth; MP1b is the one predeclared sibling.
-ARMS = {"MP1": float(BANDWIDTH), "MP1b": 2.0 * float(BANDWIDTH)}
-#: Declared floor (docs/mass_preserving_lattice.md): 200 prior games put ~20 on
-#: the ~10% push atom of an integer key line, a ~22% relative standard error.
-MIN_BAND_GAMES = 200
-MAX_BAND = 20.0
-BAND_STEP = 0.5
-#: Far wider than attainable need: one point of mean shift costs theta ~0.005.
-THETA_BRACKET = 1.0
+ARMS = {"MP1": BAND_HALF_WIDTH, "MP1b": 2.0 * BAND_HALF_WIDTH}
 FAMILY = "mod18_conditional_margin_v1"
 DISCOUNT = (
     "Mass-preserving conditional read on the mined archive lanes K and S were selected on; "
@@ -55,107 +71,31 @@ SUMMARY = (
 )
 
 
-def tilted_atoms(
-    margins: np.ndarray, counts: np.ndarray, line: float, target: float
-) -> tuple[np.ndarray, float]:
-    """Reweight fixed integer atoms to a declared mean; positions never move.
-
-    ``p(m) ~ q(m) * exp(theta * (m - line))`` with ``theta`` solved so the
-    tilted mean equals ``target``. The tilted mean is strictly increasing in
-    ``theta``, so the root is unique inside the declared bracket; outside it
-    the tilt is clamped to the nearer bracket end.
-    """
-
-    base = counts / counts.sum()
-    if margins.size == 1:
-        return base, 0.0
-    offsets = margins - line
-
-    def weights(theta: float) -> np.ndarray:
-        logits = theta * offsets
-        mass = base * np.exp(logits - logits.max())
-        return mass / mass.sum()
-
-    def mean_at(theta: float) -> float:
-        return float((margins * weights(theta)).sum())
-
-    low, high = -THETA_BRACKET, THETA_BRACKET
-    if target <= mean_at(low):
-        theta = low
-    elif target >= mean_at(high):
-        theta = high
-    else:
-        theta = float(optimize.brentq(lambda t: mean_at(t) - target, low, high, xtol=1e-13))
-    return weights(theta), theta
-
-
 def band_read(
     pool_line: np.ndarray, pool_margin: np.ndarray, line: float, point: float, half_width: float
 ) -> dict[str, float]:
-    """The mass-preserving read for one game at one declared band width."""
+    """The mass-preserving read for one game at one declared band width.
 
-    band = half_width
-    while True:
-        selected = np.abs(pool_line - line) <= band
-        if int(selected.sum()) >= MIN_BAND_GAMES or band >= MAX_BAND:
-            break
-        band = min(band + BAND_STEP, MAX_BAND)
-    margins = pool_margin[selected]
-    if margins.size == 0:
-        raise ValueError(f"No prior games within {band} points of line {line}")
-    values, counts = np.unique(margins, return_counts=True)
-    mass, theta = tilted_atoms(values, counts.astype(float), line, point)
-    is_push = np.abs(values - line) < 1e-9
-    cover = float(mass[values > line + 1e-9].sum())
-    push = float(mass[is_push].sum())
-    loss = float(mass[values < line - 1e-9].sum())
-    return {
-        "cover": cover,
-        "push": push,
-        "loss": loss,
-        "home_cover_probability": cover + 0.5 * push,
-        "conditional_cover_probability": cover / (cover + loss) if cover + loss > 0 else 0.5,
-        "theta": theta,
-        "band": band,
-        "band_games": int(selected.sum()),
-        "atoms": int(values.size),
-        "key_mass_3": float(mass[np.abs(np.abs(values) - 3) < 1e-9].sum()),
-    }
+    The frozen research row shape (a dict) over the production read,
+    ``nfl_ats.mass_preserving_lattice.band_read``.
+    """
+
+    return dict(_band_read(pool_line, pool_margin, line, point, half_width).as_dict())
 
 
 def build_pool(archive: pd.DataFrame) -> pd.DataFrame:
     """Completed games with a line: the archived opener where known, else nflverse."""
 
-    features = regular_season_rows(pd.read_parquet(common.FEATURES)).copy()
-    features["gameday"] = pd.to_datetime(features.gameday)
-    pool = features.loc[
-        features.result.notna(), ["game_id", "season", "week", "gameday", "spread_line", "result"]
-    ].copy()
-    opener = archive.set_index("game_id").tue_open_home_spread
-    pool["line"] = pool.game_id.map(opener).fillna(pool.spread_line)
-    pool = pool.loc[pool.line.notna()].reset_index(drop=True)
-    pool["result"] = np.rint(pool.result.to_numpy(dtype=float))
-    return pool
+    return prior_pool(
+        regular_season_rows(pd.read_parquet(common.FEATURES)),
+        archive.set_index("game_id").tue_open_home_spread,
+    )
 
 
 def mass_preserving(pool: pd.DataFrame, targets: pd.DataFrame, half_width: float) -> pd.DataFrame:
     """Walk-forward read for every target row; prior games only, five seasons."""
 
-    rows = []
-    for (season, week), batch in targets.groupby(["season", "week"], sort=True):
-        cutoff = batch.gameday.min()
-        eligible = pool.loc[
-            (pool.gameday + pd.Timedelta(days=COMPLETION_ALLOWANCE_DAYS)).lt(cutoff)
-            & pool.season.ge(int(season) - TRAILING_SEASONS)
-            & ~(pool.season.eq(season) & pool.week.eq(week))
-            & ~pool.game_id.isin(set(batch.game_id))
-        ]
-        lines = eligible.line.to_numpy(dtype=float)
-        margins = eligible.result.to_numpy(dtype=float)
-        for _, row in batch.iterrows():
-            read = band_read(lines, margins, float(row.line), float(row.point), half_width)
-            rows.append({"game_id": row.game_id, "prior_rows": len(eligible), **read})
-    return pd.DataFrame(rows)
+    return walk_forward_reads(pool, targets, half_width)
 
 
 def verify_replay(actual: np.ndarray, served: np.ndarray) -> float:

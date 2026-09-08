@@ -837,6 +837,7 @@ def _render_text(
     freshness: FreshnessComponent,
     refresh: RefreshComponent,
     game_explanation: GameExplanation | None,
+    push_probability: float | None = None,
 ) -> str:
     """One short, human paragraph: the pick and the model's own read on it,
     the two or three biggest football-terms factors behind any gap from
@@ -848,12 +849,43 @@ def _render_text(
 
     sentences = [
         _lead_sentence(market_line, model_probability, matchup),
+        _push_sentence(market_line.home_spread_line, push_probability),
         _what_tips_it_sentence(game_explanation),
         _situational_adjustment_sentence(overlays),
         _freshness_clause(freshness),
         _REFRESH_SHORT_CLAUSES.get(refresh.status, ""),
     ]
     return " ".join(sentence for sentence in sentences if sentence)
+
+
+#: Whole-number lines football finals pile up on (docs/discrete_push_read.md).
+_KEY_NUMBER_LINES: frozenset[int] = frozenset({3, 7, 10, 14})
+
+
+def _push_sentence(home_spread_line: float | None, push_probability: float | None) -> str:
+    """One plain sentence on the push chance at a whole-number line, read
+    from the card's own served ``push_probability`` (the discrete read of
+    prior games at this number -- docs/discrete_push_read.md). Empty at a
+    half-point line (no push is possible), when no push chance is recorded,
+    or when it rounds to nothing."""
+
+    if home_spread_line is None or push_probability is None:
+        return ""
+    if not float(home_spread_line).is_integer() or push_probability <= 0.0:
+        return ""
+    per_hundred = round(push_probability * 100.0)
+    if per_hundred < 1:
+        return ""
+    number = abs(int(home_spread_line))
+    where = (
+        f"right on {number}, a number games land on a lot"
+        if number in _KEY_NUMBER_LINES
+        else "on a whole number"
+    )
+    return (
+        f"The line sits {where}: about {per_hundred} in 100 games like this finish exactly "
+        "there, a push, and that chance is counted here."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -987,6 +1019,9 @@ def explain_pick(
         freshness_component,
         refresh_component,
         game_explanation,
+        # The card's own served push chance (docs/discrete_push_read.md);
+        # absent on a row without it, and never shown at a half-point line.
+        _finite_float(row.get("push_probability")),
     )
     check_language(text)
 

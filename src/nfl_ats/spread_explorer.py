@@ -61,6 +61,7 @@ import pandas as pd
 from nfl_ats.calibration import smoothed_home_cover_probability
 from nfl_ats.data import DataContractError
 from nfl_ats.margin import _three_way_probabilities
+from nfl_ats.mass_preserving_lattice import DiscretePushReader, residual_location
 from nfl_ats.outcomes import fit_margin_models_for_week
 
 #: The slider's range and granularity. 0.5-point steps cover both the
@@ -451,18 +452,29 @@ def compute_spread_explorer_distribution(
 
 
 def spread_explorer_three_way(
-    distribution: SpreadExplorerGameDistribution, line: float
+    distribution: SpreadExplorerGameDistribution,
+    line: float,
+    discrete_read: DiscretePushReader | None = None,
 ) -> tuple[float, float, float]:
     """``(home_covers, push, home_does_not_cover)`` at a hypothetical
-    ``line`` -- the SAME discrete-rounding three-way split
-    ``margin._three_way_probabilities`` computes for the real published
-    card (unconditionally, regardless of probability method), applied to
-    this game's own refit residual sample. The three values always sum to
-    1.0. ``home_does_not_cover`` is exactly "the away side covers" once push
-    is accounted for separately (a two-outcome ATS market has no third
-    option once a push is excluded).
+    ``line``. The three values always sum to 1.0. ``home_does_not_cover``
+    is exactly "the away side covers" once push is accounted for separately
+    (a two-outcome ATS market has no third option once a push is excluded).
+
+    With ``discrete_read`` (docs/discrete_push_read.md, the served source of
+    every push / alternative-line answer) the split is read off the
+    mass-preserving lattice at ``line``, tilted to this game's served point
+    (the refit centre plus the residual location of the card's own
+    probability method). Without it, the split is the rounded residual
+    sample ``margin._three_way_probabilities`` reads -- the smooth read,
+    which is the paired challenger, never the served answer.
     """
 
+    if discrete_read is not None:
+        point = distribution.center + residual_location(
+            distribution.residuals, distribution.card_probability_method
+        )
+        return discrete_read.three_way(float(line), point)
     sample = np.asarray(distribution.center + distribution.residuals, dtype=np.float64)
     return _three_way_probabilities(sample, float(line))
 

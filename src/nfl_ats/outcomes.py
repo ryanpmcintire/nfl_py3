@@ -25,6 +25,13 @@ from nfl_ats.margin import (
     fit_market_baseline,
     margin_feature_set,
 )
+from nfl_ats.mass_preserving_lattice import (
+    DiscretePushReader,
+    ServedPushRead,
+    residual_location,
+    serve_discrete_sweep,
+    serve_discrete_three_way,
+)
 from nfl_ats.modeling import (
     CoverModel,
     fit_cover_model,
@@ -191,6 +198,8 @@ def _score_methods(
     min_edge: float,
     probability_method: ResidualSmoothingMethod = "ecdf",
     center_offsets: Mapping[str, float] | None = None,
+    discrete_read: DiscretePushReader | None = None,
+    discrete_read_log: dict[str, ServedPushRead] | None = None,
 ) -> list[pd.DataFrame]:
     batches: list[pd.DataFrame] = []
     for method, model in margin_models.items():
@@ -207,6 +216,18 @@ def _score_methods(
         forecasts = model.predict(
             batch, probability_method=probability_method, center_offset=center_offset
         )
+        # Discrete push read (docs/discrete_push_read.md): the served ATS
+        # method's push / three-way split is read off the mass-preserving
+        # lattice; ``home_cover_probability`` (the pick) is untouched.
+        if discrete_read is not None and method == "market_residual":
+            forecasts = serve_discrete_three_way(
+                forecasts,
+                batch,
+                discrete_read,
+                residuals=model.residuals,
+                probability_method=probability_method,
+                log=discrete_read_log,
+            )
         for column in forecasts:
             batch[column] = forecasts[column]
         batch["method"] = method
@@ -482,11 +503,22 @@ def score_outcome_week(
     # the weekly pipeline explicitly supplies the matching median method.
     probability_method: ResidualSmoothingMethod = "gaussian_median",
     center_offsets: Mapping[str, float] | None = None,
+    discrete_read: DiscretePushReader | None = None,
+    discrete_read_log: dict[str, ServedPushRead] | None = None,
 ) -> pd.DataFrame:
     """Score one week. ``center_offsets`` (game_id -> points) is the promoted
     home-side location correction for the served ``market_residual`` method
     only (docs/home_side_offset_promotion.md); ``None`` keeps every caller's
-    historical output unchanged."""
+    historical output unchanged.
+
+    ``discrete_read`` (docs/discrete_push_read.md) is the served week's
+    mass-preserving lattice: when given, the ``market_residual`` rows'
+    ``push_probability`` / ``home_cover_probability_excluding_push`` /
+    ``home_loss_probability`` are read off it instead of the rounded
+    residual sample. Every other column -- the pick-deciding
+    ``home_cover_probability`` above all -- is bit-for-bit what ``None``
+    returns. ``discrete_read_log`` (game_id -> both reads) lets the caller
+    record the replaced smooth split without a second fit."""
 
     target, margin_models, straight_up, direct_ats = _target_and_models_for_week(
         features,
@@ -507,6 +539,8 @@ def score_outcome_week(
             min_edge,
             probability_method,
             center_offsets,
+            discrete_read,
+            discrete_read_log,
         ),
         ignore_index=True,
     ).sort_values(["game_id", "method"])
@@ -588,6 +622,7 @@ def score_outcome_week_line_sweep(
     methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
     probability_method: ResidualSmoothingMethod = "gaussian_median",
     center_offsets: Mapping[str, float] | None = None,
+    discrete_read: DiscretePushReader | None = None,
 ) -> pd.DataFrame:
     """Line-sweep confidence curves for one week's margin-distribution methods.
 
@@ -596,6 +631,13 @@ def score_outcome_week_line_sweep(
     margin-based method's predictive distribution across a grid of
     alternative home spreads. Straight-up and direct-ATS methods have no
     margin distribution to sweep and are excluded even if requested.
+
+    ``discrete_read`` (docs/discrete_push_read.md) replaces the served
+    ``market_residual`` method's three-way split at EVERY alternative line
+    with the mass-preserving lattice read at that line; the two-way
+    ``home_cover_probability`` / ``pick_probability`` / ``confidence``
+    columns stay on the smooth read, so the sweep's side never disagrees
+    with the card's.
 
     Returns a tidy table with one row per (method, game, alternative line).
     """
@@ -623,6 +665,19 @@ def score_outcome_week_line_sweep(
             probability_method=probability_method,
             center_offset=center_offset,
         )
+        if discrete_read is not None and method == "market_residual":
+            centres = model.predict(
+                target, probability_method=probability_method, center_offset=center_offset
+            )
+            location = residual_location(model.residuals, probability_method)
+            points = centres["predicted_margin"].to_numpy(dtype=float) + location
+            sweep = serve_discrete_sweep(
+                sweep,
+                discrete_read,
+                points_by_game=dict(
+                    zip(target["game_id"].astype(str), points.tolist(), strict=True)
+                ),
+            )
         sweep.insert(0, "method", method)
         frames.append(sweep)
     return (

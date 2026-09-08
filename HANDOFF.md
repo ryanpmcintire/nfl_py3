@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T14:17:04.555780+00:00`
+Refreshed at: `2026-09-08T14:27:36.356445+00:00`
 
 ## Start here
 
@@ -20,29 +20,23 @@ Refreshed at: `2026-09-08T14:17:04.555780+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3130c55b16c8` — MOD-18 lane I: home push shrinkage prior sensitivity (50/25/200) measured through the played card, 100 kept [skip ci]
-- Pending change set: 45 paths
+- Baseline commit: `d9d08c9a7000` — Fleet: registry race fix (per-writer temp names, file_lock in every registry command); week timeline panel + Findings home-push entry; lanes K/L/N/O/Q/R/T recorded [skip ci]
+- Pending change set: 15 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  docs/big_spread_diagnosis.md`
-  - `A  docs/cfb_home_side_replication.md`
+  - `A  docs/discrete_push_read.md`
   - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `A  docs/key_line_lattice.md`
-  - `A  docs/mass_preserving_lattice.md`
-  - `M  docs/model.html`
-  - `A  docs/officials_coverage.md`
-  - `A  docs/plain_summary_backfill.md`
-  - `A  docs/residual_slope.md`
-  - `A  docs/residual_slope_shrunk.md`
+  - `A  docs/out_of_sample_declaration.md`
   - `M  registry/weak_signals.json`
-  - `M  scripts/backfill_plain_summaries.py`
-  - `A  scripts/big_spread_diagnosis.py`
-  - `A  scripts/cfb_home_side_replication.py`
-  - `A  scripts/key_line_lattice_opener_eval.py`
-  - ...and 25 more
+  - `M  scripts/cover_odds.py`
+  - `M  scripts/mass_preserving_lattice_opener_eval.py`
+  - `M  src/nfl_ats/card_explanation.py`
+  - `M  src/nfl_ats/cli_commands/prediction.py`
+  - `A  src/nfl_ats/mass_preserving_lattice.py`
+  - `M  src/nfl_ats/outcomes.py`
+  - `M  src/nfl_ats/spread_explorer.py`
+  - `A  tests/test_discrete_push_read.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -74,6 +74,14 @@ from nfl_ats.market_decomposition import (
     run_market_decomposition,
 )
 from nfl_ats.market_observation import attach_market_observed_at
+from nfl_ats.mass_preserving_lattice import (
+    DISCRETE_PUSH_READ_FILENAME,
+    DISCRETE_PUSH_READ_POLICY,
+    DISCRETE_PUSH_READ_SERVED,
+    ProductionDiscretePushRead,
+    ServedPushRead,
+    fit_production_discrete_push_reader,
+)
 from nfl_ats.modeling import MODEL_NAMES, logistic_coefficients, model_metadata
 from nfl_ats.outcomes import (
     MARGIN_DISTRIBUTION_METHODS,
@@ -195,6 +203,12 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
     # paired challenger (home_side_offset_off_incumbent) records it verbatim.
     home_side = _served_home_side_offsets(features, request)
     center_offsets = home_side["center_offsets"] if home_side is not None else None
+    # Discrete push read (docs/discrete_push_read.md, 2026-09-08): the served
+    # push / three-way split comes from the mass-preserving lattice of prior
+    # games near the line; the pick-deciding two-way probability is untouched.
+    # The smooth split it replaces is kept in a sidecar as the paired record.
+    discrete = _served_discrete_push_read(features, request)
+    discrete_read_log: dict[str, ServedPushRead] = {}
     predictions = score_outcome_week(
         features,
         season=request.season,
@@ -206,6 +220,8 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         ridge_alpha=request.ridge_alpha,
         probability_method=request.probability_method,
         center_offsets=center_offsets,
+        discrete_read=discrete.reader if discrete is not None else None,
+        discrete_read_log=discrete_read_log,
     )
     uncorrected = (
         score_outcome_week(
@@ -287,6 +303,8 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         metadata["home_side_offset"] = _home_side_offset_summary(
             home_side, predictions, uncorrected
         )
+    if discrete is not None:
+        metadata["discrete_push_read"] = _discrete_push_read_summary(discrete, discrete_read_log)
     # ENG-16: every decision-bearing card field says where it came from, and
     # the lineage audit is release-blocking -- a card that cannot answer that
     # never reaches the artifact directory.
@@ -310,6 +328,11 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         atomic_json(
             _home_side_offset_sidecar(home_side, predictions, uncorrected),
             output / HOME_SIDE_OFFSET_FILENAME,
+        )
+    if discrete is not None:
+        atomic_json(
+            _discrete_push_read_sidecar(discrete, discrete_read_log, predictions),
+            output / DISCRETE_PUSH_READ_FILENAME,
         )
     write_card_lineage(card_lineage, output)
     ats_predictions = predictions.loc[predictions["method"].eq(metadata["ats_method"])].copy()
@@ -340,6 +363,7 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             ridge_alpha=request.ridge_alpha,
             probability_method=request.probability_method,
             center_offsets=center_offsets,
+            discrete_read=discrete.reader if discrete is not None else None,
         )
         atomic_parquet(sweep, output / "line_sweep.parquet")
         metadata["line_sweep"] = {
@@ -348,6 +372,11 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             "methods": sorted(sweep["method"].unique().tolist()),
             "offsets": list(DEFAULT_LINE_SWEEP_OFFSETS),
             "probability_method": request.probability_method,
+            "push_read": (
+                DISCRETE_PUSH_READ_POLICY
+                if discrete is not None and discrete.served
+                else "smooth_rounded_residuals"
+            ),
         }
     active_model = activate_matching_ats_model(_artifacts_root(), output, metadata)
     if active_model is None:
@@ -1046,4 +1075,81 @@ def _home_side_offset_summary(
         "warnings": fit.get("warnings", []),
         "error": sidecar["error"],
         "sides_changed": [g["game_id"] for g in sidecar["games"] if g["side_changed"]],
+    }
+
+
+def _served_discrete_push_read(
+    features: pd.DataFrame, request: MarginPredictRequest
+) -> ProductionDiscretePushRead | None:
+    """The served discrete push reader for this week, or ``None`` when the
+    policy is off. Never raises: a failure degrades to the smooth read with
+    the error recorded in the sidecar, because this layer must not block
+    the lock (docs/discrete_push_read.md)."""
+
+    if not DISCRETE_PUSH_READ_SERVED:
+        return None
+    try:
+        return fit_production_discrete_push_reader(
+            features,
+            _artifacts_root(),
+            _active_model_for_compatibility(),
+            season=request.season,
+            week=request.week,
+        )
+    except Exception as error:
+        return ProductionDiscretePushRead(
+            policy=DISCRETE_PUSH_READ_POLICY,
+            reader=None,
+            source_path=None,
+            source_model_id=None,
+            active_model_id=None,
+            opener_lines_matched=0,
+            warnings=(),
+            error=str(error),
+        )
+
+
+def _discrete_push_read_sidecar(
+    discrete: ProductionDiscretePushRead,
+    log: dict[str, ServedPushRead],
+    predictions: pd.DataFrame,
+) -> dict[str, Any]:
+    """Both reads per served game: the discrete split the card carries and
+    the smooth split it replaced, so the paired record never refits."""
+
+    served = _served_rows(predictions)
+    games = [log[game_id].to_dict() for game_id in served.index if game_id in log]
+    return {
+        "schema": "discrete_push_read/1",
+        "served": discrete.served,
+        "policy": discrete.policy,
+        "challenger": "smooth_rounded_residuals",
+        "fit": discrete.to_dict(),
+        "error": discrete.error,
+        "games": games,
+    }
+
+
+def _discrete_push_read_summary(
+    discrete: ProductionDiscretePushRead, log: dict[str, ServedPushRead]
+) -> dict[str, Any]:
+    fit = discrete.to_dict()
+    whole_number = [read for read in log.values() if float(read.line).is_integer()]
+    return {
+        "path": DISCRETE_PUSH_READ_FILENAME,
+        "policy": discrete.policy,
+        "served": discrete.served,
+        "prior_rows": fit["prior_rows"],
+        "opener_lines_matched": fit["opener_lines_matched"],
+        "source_path": fit["source_path"],
+        "source_model_id": fit["source_model_id"],
+        "warnings": fit["warnings"],
+        "error": discrete.error,
+        "games": len(log),
+        "whole_number_lines": len(whole_number),
+        "mean_push_at_whole_number_lines": (
+            float(sum(read.discrete.push for read in whole_number) / len(whole_number))
+            if whole_number
+            else None
+        ),
     }

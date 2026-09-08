@@ -63,6 +63,11 @@ import pandas as pd
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.calibration import smoothed_home_cover_probability
 from nfl_ats.data import DataContractError
+from nfl_ats.mass_preserving_lattice import (
+    DISCRETE_PUSH_READ_SERVED,
+    ProductionDiscretePushRead,
+    fit_production_discrete_push_reader,
+)
 from nfl_ats.public_board import spread_words
 from nfl_ats.reporting import read_json
 from nfl_ats.spread_explorer import (
@@ -207,6 +212,37 @@ def resolve_game(predictions: pd.DataFrame, query: str) -> pd.Series:
     )
 
 
+def _discrete_push_read(
+    features: pd.DataFrame,
+    artifacts_root: Path,
+    active: dict[str, Any],
+    *,
+    season: int,
+    week: int,
+) -> ProductionDiscretePushRead | None:
+    """The same served push reader ``margin-predict`` builds for this week,
+    or ``None`` when the policy is off; a failure is carried as ``error``
+    and the smooth split is printed instead, never a stack trace."""
+
+    if not DISCRETE_PUSH_READ_SERVED:
+        return None
+    try:
+        return fit_production_discrete_push_reader(
+            features, artifacts_root, active, season=season, week=week
+        )
+    except Exception as error:
+        return ProductionDiscretePushRead(
+            policy="smooth (rounded residual sample)",
+            reader=None,
+            source_path=None,
+            source_model_id=None,
+            active_model_id=None,
+            opener_lines_matched=0,
+            warnings=(),
+            error=str(error),
+        )
+
+
 # ---------------------------------------------------------------------------
 # The query itself
 # ---------------------------------------------------------------------------
@@ -263,7 +299,18 @@ def query_cover_odds(
             method="gaussian",
         )[0]
     )
-    home_excl_push, push, home_no_cover = spread_explorer_three_way(distribution, spread)
+    # The served push / three-way source (docs/discrete_push_read.md): the
+    # mass-preserving lattice of prior games near the queried line. A fit
+    # failure degrades to the smooth rounded-residual split and says so.
+    push_read = _discrete_push_read(features, artifacts_root, active, season=season, week=week)
+    home_excl_push, push, home_no_cover = spread_explorer_three_way(
+        distribution, spread, discrete_read=push_read.reader if push_read is not None else None
+    )
+    push_read_label = (
+        push_read.policy
+        if push_read is not None and push_read.served
+        else "smooth (rounded residual sample)"
+    )
 
     headline_side = side if side is not None else ("home" if home_cover >= 0.5 else "away")
     if headline_side == "home":
@@ -304,6 +351,8 @@ def query_cover_odds(
         "provenance": {
             "model_id": active.get("model_id"),
             "probability_method": active.get("probability_method"),
+            "push_read": push_read_label,
+            "push_read_error": push_read.error if push_read is not None else None,
             "market_line_the_model_was_anchored_to": distribution.card_line,
             "market_anchored_line_words": spread_words(
                 distribution.home_team, distribution.away_team, distribution.card_line
@@ -341,8 +390,8 @@ def format_text(payload: dict[str, Any]) -> str:
         f"{payload['cover_probability']:.1%}",
         f"  Push:                              {payload['push_probability']:.1%}",
         f"  {payload['side_team']} does not cover:      {payload['no_cover_probability']:.1%}",
-        "  (a discrete read of the raw residual sample -- the same three-way math "
-        "production always uses, regardless of probability method)",
+        f"  (push read: {provenance['push_read']} -- how often past games quoted near this "
+        "line finished exactly on each number, the same source the card's push chance uses)",
         "",
         "  Two-way forced-pick read (production rule; the Gaussian mapping this pool "
         "actually plays; does not split out push):",
