@@ -72,7 +72,7 @@ from typing import Any
 import pandas as pd
 
 from nfl_ats.constants import FEATURE_FAMILIES
-from nfl_ats.feature_manifest import SOURCE_SNAPSHOTS_KEY
+from nfl_ats.feature_manifest import SOURCE_SNAPSHOTS_KEY, decision_line_week
 from nfl_ats.features import BUILDER_VERSION as FEATURES_BUILDER_VERSION
 from nfl_ats.io import atomic_json
 from nfl_ats.market_observation import MARKET_OBSERVED_AT_COLUMN
@@ -892,6 +892,24 @@ def build_card_lineage(
     market_frame_captured = _frame_observed_at(forecast, (MARKET_OBSERVED_AT_COLUMN,))
     if market_frame_captured is not None:
         market_captured = _iso(market_frame_captured)
+    # The pool grades on the spread printed on its own contest board, and the
+    # feature build applies that number as the decision line for any week it
+    # captured (docs/splash_lines.md, nfl_ats.features.apply_decision_lines).
+    # When this card's week is one of them, the board capture IS the market
+    # line's source -- so it wins over both the nflverse snapshot the rest of
+    # the schedules table came from and the odds-consensus observation above,
+    # neither of which the pick was graded against. Weeks with no capture are
+    # untouched and keep resolving exactly as they did before.
+    decision_line = decision_line_week(
+        manifest, _optional_int(metadata.get("season")), _optional_int(metadata.get("week"))
+    )
+    if decision_line is not None:
+        market_snapshot = _optional_text(decision_line.get("capture_id")) or market_snapshot
+        market_captured = _optional_text(decision_line.get("captured_at_utc")) or market_captured
+        market_builder = FamilyBuilder(
+            _optional_text(decision_line.get("builder_module")) or market_builder.builder_module,
+            _optional_text(decision_line.get("builder_version")) or market_builder.builder_version,
+        )
     market_instant = as_utc(market_captured)
     market_record = LineageRecord(
         card_field=FIELD_MARKET_LINE,

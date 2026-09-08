@@ -275,6 +275,84 @@ def test_legacy_manifests_without_a_source_snapshots_block_are_unaffected() -> N
 
 
 # ---------------------------------------------------------------------------
+# The pool's own board is the market line's source when it was captured
+# ---------------------------------------------------------------------------
+
+
+_POOL_CAPTURE_BLOCK = {
+    "policy": "pool_capture",
+    "builder_module": "nfl_ats.pool_decision_lines",
+    "builder_version": "v1",
+    "weeks": [
+        {
+            "season": 2026,
+            "week": 1,
+            "source": "splashsports.com",
+            "capture_id": "2026_week01_20260901_noon",
+            "captured_at_utc": "2026-09-01T12:45:00-04:00",
+            "games": 16,
+            "changed_games": 8,
+        }
+    ],
+}
+
+
+def test_market_line_names_the_pool_board_capture_for_a_captured_week() -> None:
+    """The pool grades on the spread printed on its own contest board, so for
+    a week the board was captured that capture -- not the nflverse snapshot
+    the rest of the schedules table came from -- is what the pick was formed
+    and graded against. A reader of lineage.json has to be able to tell."""
+
+    metadata = _synthetic_metadata()
+    manifest = metadata["provenance"]["feature_table"]["manifest"]
+    manifest["source_snapshot"] = "20260824T115346Z"
+    manifest["source_snapshots"] = {"decision_lines": _POOL_CAPTURE_BLOCK}
+
+    lineage = build_card_lineage(
+        _synthetic_forecast(),
+        metadata,
+        feature_columns=("spread_line", "elo_diff"),
+        display_fields={"Matchup": "formatted from team columns"},
+    )
+
+    market = lineage.field(FIELD_MARKET_LINE)
+    assert market is not None and market.lineage is not None
+    assert market.lineage.source_snapshot == "2026_week01_20260901_noon"
+    assert market.lineage.source_captured_at == "2026-09-01T12:45:00-04:00"
+    assert market.lineage.builder_module == "nfl_ats.pool_decision_lines"
+    assert market.lineage.unknown_source_reason is None
+    assert market.lineage.effective_timestamp_basis == "source_capture"
+    # The families the model consumed still name the nflverse snapshot: only
+    # the graded LINE moved to the pool's board, not the rest of the table.
+    market_input = lineage.field("model_input:market")
+    assert market_input is not None and market_input.lineage is not None
+    assert market_input.lineage.source_snapshot == "20260824T115346Z"
+    assert validate_prediction_lineage(lineage).status == "PASS"
+
+
+def test_market_line_keeps_the_nflverse_snapshot_for_an_uncaptured_week() -> None:
+    """Every week the board was never captured -- the whole archive -- resolves
+    exactly as it did before the pool's line existed in this repository."""
+
+    metadata = _synthetic_metadata(season=2026, week=2)
+    manifest = metadata["provenance"]["feature_table"]["manifest"]
+    manifest["source_snapshot"] = "20260824T115346Z"
+    manifest["source_snapshots"] = {"decision_lines": _POOL_CAPTURE_BLOCK}
+
+    lineage = build_card_lineage(
+        _synthetic_forecast(),
+        metadata,
+        feature_columns=("spread_line",),
+        display_fields={"Matchup": "formatted from team columns"},
+    )
+
+    market = lineage.field(FIELD_MARKET_LINE)
+    assert market is not None and market.lineage is not None
+    assert market.lineage.source_snapshot == "20260824T115346Z"
+    assert market.lineage.builder_module == "nfl_ats.features"
+
+
+# ---------------------------------------------------------------------------
 # The release-blocking half
 # ---------------------------------------------------------------------------
 

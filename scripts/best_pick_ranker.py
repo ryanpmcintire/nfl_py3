@@ -29,6 +29,7 @@ from nfl_ats.clv import (
     close_reference_table,
     key_number_distance,
     opener_pick_evaluation,
+    resolve_active_probability_method,
     week_blocked_bootstrap,
 )
 from nfl_ats.margin import DEFAULT_LINE_SWEEP_OFFSETS, fit_margin_model
@@ -345,6 +346,7 @@ def run_opener_confirmation(
     """Score ``sweep_robustness`` top-1 at the opener grade on one window."""
 
     config = {
+        "probability_method": resolve_active_probability_method(),
         "feature_profile": feature_profile,
         "regressor": REGRESSOR,
         "ridge_alpha": RIDGE_ALPHA,

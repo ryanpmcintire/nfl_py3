@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -196,3 +197,95 @@ def test_lock_scripts_weekly_run_argv_parses_against_the_real_parser() -> None:
     assert argv[argv.index("nfl-ats") + 1] == "weekly-run"
     args = build_parser().parse_args(argv[argv.index("nfl-ats") + 1 :])
     assert (args.season, args.week, args.record_decisions) == (2026, 1, True)
+
+
+#: Verbatim shape of the 2026-09-08 lock's stderr: a step-4
+#: BootstrapDegeneracyWarning (header plus its indented source echo), progress
+#: banners, the decision-package line, and the real reason last. The old
+#: `stderr[-500:]` kept the warning and threw the reason away.
+_NOISY_STDERR = """weekly-run step 4 margin-backtest ...
+F:\\Repos\\nfl_py3\\src\\nfl_ats\\cli_commands\\evaluation.py:442: \
+BootstrapDegeneracyWarning: outcome_bootstrap_intervals(block=season): 8 bootstrap blocks \
+(< 10) admit only 6,435 distinct resamples; measured coverage of a known truth at this block \
+count is well under the nominal 95% (0.47 at 2 blocks, 0.76 at 4, 0.88 at 8), and the interval \
+comes back with EXACTLY ZERO width in 25% of 2-block draws, 8% at 3 and 2% at 4. Report the \
+estimate and probability_positive, not this interval.
+  outcome_bootstrap_intervals(
+weekly-run step 5 margin-predict ...
+weekly-run step 8 publish-predictions ...
+lock-day decision package: artifacts/lockday_packages/2026_wk01_20260908T163746Z
+error: the reason the lock actually failed
+"""
+
+
+def test_failed_weekly_run_persists_its_whole_output_and_names_the_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """2026-09-08: the lock aborted and the record kept was 200 characters of a
+    step-4 warning. The child's stderr had been cut to its last 500 characters
+    here, then the scheduler kept the first 200 of the JSON line carrying it,
+    so the reason was gone twice over. Everything must now land on disk."""
+    import subprocess
+    from unittest import mock
+
+    import scripts.scheduled_weekly_lock as lock_script
+
+    monkeypatch.setattr(lock_script, "FAILURE_LOG_DIR", tmp_path / "lock_failures")
+
+    def fake_run(command: list[str], **_: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            command, 2, stdout="partial stdout", stderr=_NOISY_STDERR
+        )
+
+    with (
+        mock.patch.object(lock_script.subprocess, "run", fake_run),
+        pytest.raises(lock_script.WeeklyRunFailure) as raised,
+    ):
+        lock_script._run_weekly(2026, 1)
+
+    log_path = raised.value.log_path
+    assert log_path.is_file()
+    body = log_path.read_text(encoding="utf-8")
+    assert _NOISY_STDERR.strip() in body, "the complete stderr must survive verbatim"
+    assert "partial stdout" in body
+    assert "weekly-run\n" in body or "weekly-run " in body
+
+    message = str(raised.value)
+    assert message.startswith("weekly-run failed (2): error: the reason the lock actually failed")
+    assert log_path.name in message
+    assert "BootstrapDegeneracyWarning" not in message, (
+        "a warning from an earlier step must never stand in for the reason"
+    )
+
+
+def test_failed_lock_reports_the_log_path_inside_the_scheduler_200_char_cut(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """capture_scheduler records only the first 200 characters of this line, so
+    the path has to come before the message, and a failure raised before
+    weekly-run ever starts still has to leave a full traceback behind."""
+
+    import scripts.scheduled_weekly_lock as lock_script
+
+    monkeypatch.setattr(lock_script, "FAILURE_LOG_DIR", tmp_path / "lock_failures")
+
+    def boom(_: object) -> Any:
+        raise DataContractError("snapshot is not verified")
+
+    monkeypatch.setattr(lock_script, "latest_snapshot", lambda _: tmp_path)
+    monkeypatch.setattr(lock_script, "load_verified_snapshot", boom)
+
+    assert lock_script.main() == 1
+
+    line = capsys.readouterr().out.strip()
+    payload = json.loads(line)
+    assert payload["status"] == "failed_closed"
+    assert payload["error"] == "snapshot is not verified"
+    logged = Path(payload["error_log"])
+    assert logged.is_file()
+    assert "DataContractError: snapshot is not verified" in logged.read_text(encoding="utf-8")
+    assert "Traceback (most recent call last)" in logged.read_text(encoding="utf-8")
+    assert line.index('"error_log"') < line.index('"error":'), (
+        "the path must precede the message: capture_scheduler keeps only the "
+        "first 200 characters of this line"
+    )

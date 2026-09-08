@@ -64,7 +64,7 @@ def test_every_nfl_ats_argv_parses_against_the_real_parser() -> None:
         (datetime(2026, 9, 8, 12, 5, tzinfo=ET), False),  # opener window open
         (datetime(2026, 9, 8, 12, 30, tzinfo=ET), False),
         (datetime(2026, 9, 7, 8, 30, tzinfo=ET), False),  # Monday morning
-        (datetime(2026, 9, 7, 21, 0, tzinfo=ET), True),  # Monday 21:00 ET is Tuesday UTC
+        (datetime(2026, 9, 7, 21, 0, tzinfo=ET), False),  # Monday 21:00 ET (Tuesday UTC): Monday
         (datetime(2026, 9, 8, 20, 30, tzinfo=ET), False),  # Tuesday evening (after the opener)
         (datetime(2026, 9, 9, 8, 30, tzinfo=ET), False),  # Wednesday
     ],
@@ -76,7 +76,9 @@ def test_spreads_capture_is_skipped_on_tuesday_before_the_opener(
     12:00 ET) on a Tuesday could BE the week's opener: ``tuesday_opener_quotes``
     prefers the earliest quote at or after the lock but falls back to the
     earliest pre-lock quote when the 12:05 capture never lands. From the lock
-    onward a press is the locked line itself, so it is allowed."""
+    onward a press is the locked line itself, so it is allowed. Days are the
+    pool's Eastern calendar days, the same ones the opener rule keys on, so a
+    Monday-evening press (already Tuesday in UTC) is Monday and allowed."""
     spreads = _by_name(now)["spreads"]
     assert (spreads.skip_reason is not None) is skipped
     others = [step for step in refresh_now.plan(now) if step.name != "spreads"]

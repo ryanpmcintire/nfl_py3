@@ -313,6 +313,70 @@ def validate_three_way_split(
     return ("three_way_probabilities", "three_way_sum", "push_half_point")
 
 
+#: The owner's pool (Splash Sports NFL Pick'Em) quotes EVERY line as a half
+#: point. Measured 2026-09-08 on all sixteen Week 1 games of the contest the
+#: card is played into (``data/splash/2026_week01_20260908_noon.json``:
+#: 3.5, 3.5, -2.5, 8.5, 6.5, 3.5, 1.5, 3.5, -3.5, -1.5, 1.5, 9.5, 3.5, 5.5,
+#: -2.5, 2.5). Set ``False`` only if the pool is ever observed posting a
+#: whole number; that is a change in the pool, not a way past a failing card.
+POOL_QUOTES_HALF_POINT_LINES = True
+
+
+def validate_pool_lines(
+    frame: pd.DataFrame,
+    *,
+    line_column: str = "spread_line",
+    enforced: bool | None = None,
+) -> tuple[str, ...]:
+    """Fail closed when a SERVED decision line is not the pool's own line.
+
+    Every line the owner's pool posts is a half point (see
+    :data:`POOL_QUOTES_HALF_POINT_LINES`), so on the card that is actually
+    submitted a whole-number decision line is a provenance defect: it means
+    the line came from the schedule feed's ``spread_line`` rather than from
+    the pool, and every downstream answer -- the side, the push chance, the
+    key-number pick read -- was then computed against a line nobody can
+    play. That used to pass silently and move real picks (2026-09-08: six
+    Week 1 games were read as sitting on a key number at the feed's whole
+    numbers, three of them changing sides, while the pool quoted all six at
+    a half point), which is why it is a hard failure here rather than a
+    warning.
+
+    Scoped to the served card ON PURPOSE. The historical opener archive,
+    ``clv.opener_pick_evaluation``, every backtest and every registry cell
+    are graded on archived whole-number-capable lines where the push is real
+    and this check must never run; call it only where the line being served
+    to the pool is known.
+
+    ``enforced`` defaults to :data:`POOL_QUOTES_HALF_POINT_LINES`, read at
+    call time so a test that deliberately builds a whole-number week -- the
+    fixtures that exercise the key-number machinery on the lines it is FOR --
+    can say so explicitly rather than the check quietly not applying.
+    """
+
+    _require_columns(frame, (line_column, "game_id"), "pool line")
+    if enforced is None:
+        enforced = POOL_QUOTES_HALF_POINT_LINES
+    if frame.empty or not enforced:
+        return ("pool_line_source",)
+    lines = pd.to_numeric(frame[line_column], errors="coerce")
+    if lines.isna().any() or not np.isfinite(lines.to_numpy(dtype=float)).all():
+        _fail("pool_line_source", f"every served {line_column} must be finite")
+    values = lines.to_numpy(dtype=float)
+    whole = np.isclose(np.mod(values, 1.0), 0.0, atol=1e-9)
+    if whole.any():
+        offenders = frame.loc[whole, "game_id"].astype(str).drop_duplicates().tolist()
+        examples = ", ".join(f"{game}" for game in offenders[:5])
+        _fail(
+            "pool_line_source",
+            f"{len(offenders)} served games carry a whole-number {line_column} "
+            f"({examples}). The pool quotes only half points, so a whole number means the "
+            "decision line did not come from the pool -- substitute the pool's posted lines "
+            "before serving this card",
+        )
+    return ("pool_line_source",)
+
+
 def _validate_decisions(frame: pd.DataFrame, min_edge: float) -> tuple[str, ...]:
     if min_edge < 0:
         _fail("decision_policy", "min_edge cannot be negative")

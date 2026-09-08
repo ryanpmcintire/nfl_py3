@@ -27,7 +27,11 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.availability import fixed_unavailability  # noqa: E402
-from nfl_ats.clv import opener_pick_evaluation, week_blocked_bootstrap  # noqa: E402
+from nfl_ats.clv import (  # noqa: E402
+    opener_pick_evaluation,
+    resolve_active_probability_method,
+    week_blocked_bootstrap,
+)
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, TEAM_ABBREVIATION_ALIASES  # noqa: E402
 from nfl_ats.io import atomic_parquet, run_id  # noqa: E402
 from nfl_ats.modeling import regular_season_rows  # noqa: E402
@@ -304,6 +308,7 @@ def main() -> int:
     )
     adjusted = apply_increments(features, increments)
     config = {
+        "probability_method": resolve_active_probability_method(),
         "family": FAMILY,
         "seasons": list(SEASONS),
         "grade": "opener",
@@ -324,6 +329,7 @@ def main() -> int:
         REPO / "data/market/raw",
         features,
         active_model_config={
+            "probability_method": resolve_active_probability_method(),
             "feature_profile": "weak_stack",
             "regressor": "ridge",
             "ridge_alpha": 10.0,
@@ -334,6 +340,7 @@ def main() -> int:
         REPO / "data/market/raw",
         adjusted,
         active_model_config={
+            "probability_method": resolve_active_probability_method(),
             "feature_profile": "weak_stack",
             "regressor": "ridge",
             "ridge_alpha": 10.0,

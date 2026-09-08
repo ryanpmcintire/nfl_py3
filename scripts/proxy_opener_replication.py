@@ -37,7 +37,12 @@ from typing import Any
 
 import pandas as pd
 
-from nfl_ats.clv import opener_pick_evaluation, pick_correct, week_blocked_bootstrap
+from nfl_ats.clv import (
+    opener_pick_evaluation,
+    pick_correct,
+    resolve_active_probability_method,
+    week_blocked_bootstrap,
+)
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.margin import MarginFeatureProfile, fit_margin_model
 from nfl_ats.modeling import regular_season_rows
@@ -67,7 +72,12 @@ BOOTSTRAP_SEED = 20260817
 
 
 def _config() -> dict[str, Any]:
-    return {"feature_profile": FEATURE_PROFILE, "regressor": REGRESSOR, "ridge_alpha": RIDGE_ALPHA}
+    return {
+        "probability_method": resolve_active_probability_method(),
+        "feature_profile": FEATURE_PROFILE,
+        "regressor": REGRESSOR,
+        "ridge_alpha": RIDGE_ALPHA,
+    }
 
 
 def sbr_proxy_pick_evaluation(
@@ -414,6 +424,7 @@ def main() -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     metadata: dict[str, Any] = {
+        "probability_method": resolve_active_probability_method(),
         "feature_profile": FEATURE_PROFILE,
         "regressor": REGRESSOR,
         "ridge_alpha": RIDGE_ALPHA,

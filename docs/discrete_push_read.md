@@ -160,12 +160,52 @@ prior rows, and the walk-forward exclusions inside `discrete_read`.
   `nfl_ats.lines.rescore_at_lines` (the ad hoc rescoring at supplied lines)
   still uses `MarginModel.predict`'s smooth split.
 
+## Applicability at the pool's half-point lines (2026-09-08): still served, and it matters more here
+
+The owner's pool posts **every** line as a half point (measured 2026-09-08
+on all sixteen Week 1 games,
+`data/splash/2026_week01_20260908_noon.json`). Two things follow, and they
+pull in opposite directions -- keep them apart:
+
+1. **The push component is exactly zero there, by construction.**
+   `band_read` counts push as the mass on integers within 1e-9 of the line,
+   and no integer sits on a half point; `margin._three_way_probabilities`
+   forces the same zero on the smooth challenger, and
+   `prediction_safety.validate_three_way_split` fails closed if either ever
+   produces otherwise. Verified on the 2026-09-08 card: every half-point
+   game's `push` is `0.0` and every whole-number game's is not.
+2. **The rest of the split matters MORE, not less.** On a whole-number line
+   the key-number mass is absorbed by the push; on a half point the whole
+   block lands on ONE side. Measured on 4,431 completed regular-season
+   games (`data/processed/game_features.parquet`, 2009-2025): **14.58% of
+   finals land exactly on |3|**, and a fitted normal misses the cover rate
+   by -2.14 points at 2.5, +2.95 at 3.5, +2.66 at 6.5, +4.49 at 7.5 and
+   +3.69 at 10.5 -- understating the cliff across the 3 atom by **2.87x**
+   (7.81 empirical points vs 2.72) and erring in opposite directions on the
+   two sides of it.
+
+**So `serve_discrete_three_way` keeps serving on every game.** Nothing in
+this read is gated, disabled or narrowed by the pool's convention, and no
+part of this document may be cited as retiring the multimodal premise --
+the numbers above are further evidence for it. What IS narrowly
+inapplicable is the separate exact-match atom test in
+`docs/key_line_pick_read.md`, which compares the line to 3 and 7 for
+equality; generalising that SIDE read to every half-point line is the
+predeclared open direction recorded there (MOD-18 candidate C2). Nothing
+here is closed: every lane K and lane S cell stays
+`unresolved_below_power`.
+
 ## What a reader sees change
 
 - On the deep dive's "Why this pick" paragraph, whole-number lines gain one
   sentence, e.g. "The line sits right on 3, a number games land on a lot:
   about 9 in 100 games like this finish exactly there, a push, and that
-  chance is counted here." Half-point lines say nothing about pushes.
+  chance is counted here."
+- A half-point line -- every game in the owner's pool -- now says so plainly
+  instead of saying nothing while a 0% push chance sat beside the pick:
+  "The line is a half point, so the game cannot finish exactly on it: there
+  are no ties here, and one side or the other covers." That sentence is
+  about ties only. The cover chance beside it is still the discrete read.
 - The pool card's push column (`push_probability_at_pick` on the
   at-lines card) and the sweep behind the cover chart carry the discrete
   push mass: roughly 9-10 in 100 on a line of 3 instead of 3-4.

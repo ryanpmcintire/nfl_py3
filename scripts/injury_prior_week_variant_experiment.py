@@ -46,7 +46,11 @@ from typing import Any
 
 import pandas as pd
 
-from nfl_ats.clv import opener_pick_evaluation, week_blocked_bootstrap
+from nfl_ats.clv import (
+    opener_pick_evaluation,
+    resolve_active_probability_method,
+    week_blocked_bootstrap,
+)
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.pbp import load_pbp_snapshot
 from nfl_ats.pbp import snapshot_from_root as pbp_snapshot_from_root
@@ -88,6 +92,7 @@ RECORDED_TUESDAY_OFFICIAL_D_MINUS_A = {"delta_points": 0.000, "probability_posit
 
 def _config(profile: str) -> dict[str, Any]:
     return {
+        "probability_method": resolve_active_probability_method(),
         "feature_profile": profile,
         "regressor": REGRESSOR,
         "ridge_alpha": RIDGE_ALPHA,

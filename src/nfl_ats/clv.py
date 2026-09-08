@@ -44,7 +44,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 import numpy as np
 import pandas as pd
@@ -52,6 +52,7 @@ from scipy.stats import binomtest
 from sklearn.pipeline import Pipeline
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.calibration import ResidualSmoothingMethod
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.home_side_location import (
@@ -69,7 +70,7 @@ from nfl_ats.margin import (
     make_margin_estimator,
     margin_feature_columns,
 )
-from nfl_ats.market_data import tuesday_opener_quotes
+from nfl_ats.market_data import own_week_tuesday_quotes, tuesday_opener_quotes
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds_backfill import DECISION_LABELS, HISTORICAL_CAPTURE_KIND
 from nfl_ats.provenance import sha256_file
@@ -826,10 +827,40 @@ def resolve_active_model_config(artifacts_root: Path) -> dict[str, Any]:
         "ridge_alpha": float(ridge_alpha) if ridge_alpha is not None else 10.0,
         "target": "market_residual",
         "model_id": manifest.get("model_id"),
-        "probability_method": manifest.get("probability_method", "ecdf"),
+        **(
+            {"probability_method": manifest["probability_method"]}
+            if "probability_method" in manifest
+            else {}
+        ),
         "calibration_method": manifest.get("calibration_method", "none"),
         "feature_table_sha256": manifest.get("feature_table_sha256"),
     }
+
+
+def resolve_active_probability_method(
+    artifacts_root: Path | None = None,
+) -> ResidualSmoothingMethod:
+    """Read the served mapping through the active config loader; never guess it.
+
+    Default to this checkout's manifest, independent of the working directory
+    or the market archive being evaluated. Isolated callers can supply a root.
+    """
+    if artifacts_root is None:
+        artifacts_root = Path(__file__).resolve().parents[2] / "artifacts"
+    message = (
+        "Cannot resolve probability_method from active model manifest at "
+        f"{artifacts_root / 'active_ats_model.json'}; "
+        "pass probability_method explicitly or provide a readable synchronized "
+        "market-residual manifest containing probability_method"
+    )
+    try:
+        config = resolve_active_model_config(artifacts_root)
+    except (OSError, ValueError) as exc:
+        raise ValueError(message) from exc
+    method = config.get("probability_method")
+    if not isinstance(method, str) or not method:
+        raise ValueError(message)
+    return cast(ResidualSmoothingMethod, method)
 
 
 def active_model_residual_at_opener(
@@ -1258,9 +1289,11 @@ def live_tuesday_openers(root: Path) -> pd.DataFrame:
     Live capture manifests carry no ``decision_label`` (labels are a
     historical-backfill request concept), so the ``tue_open`` equivalent is
     derived from observation times instead: pregame quotes observed on each
-    game's own-week Tuesday (the most recent UTC Tuesday on or before
-    kickoff -- NFL games fall on Thu-Mon, so that is always the Tuesday the
-    game's week opened), reduced by
+    game's own-week Tuesday (:func:`nfl_ats.market_data.own_week_tuesday_quotes`:
+    the most recent Tuesday on or before the kickoff's calendar day in the
+    pool's zone, ``America/New_York`` -- NFL games fall on Thu-Mon, so that
+    is always the Tuesday the game's week opened, Monday night's 00:15Z
+    Tuesday kickoff included), reduced by
     :func:`nfl_ats.market_data.tuesday_opener_quotes` to the cross-book
     median of each book's earliest such quote at or after the pool's spread
     lock (``nfl_ats.market_data.POOL_SPREAD_LOCK_ET``), falling back to the
@@ -1288,11 +1321,7 @@ def live_tuesday_openers(root: Path) -> pd.DataFrame:
     ].copy()
     if spreads.empty:
         return pd.DataFrame(columns=columns)
-    days_since_tuesday = (spreads["commence_time_utc"].dt.weekday - 1) % 7
-    own_week_tuesday = spreads["commence_time_utc"].dt.normalize() - pd.to_timedelta(
-        days_since_tuesday, unit="D"
-    )
-    own_week = spreads.loc[spreads["observed_at_utc"].dt.normalize().eq(own_week_tuesday)]
+    own_week = own_week_tuesday_quotes(spreads)
     if own_week.empty:
         return pd.DataFrame(columns=columns)
     opener = tuesday_opener_quotes(own_week)
@@ -2046,6 +2075,7 @@ def opener_pick_evaluation(
     *,
     capture_kind: str = HISTORICAL_CAPTURE_KIND,
     active_model_config: dict[str, Any] | None = None,
+    artifacts_root: Path | None = None,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     home_side_offset: bool | None = None,
 ) -> pd.DataFrame:
@@ -2059,6 +2089,12 @@ def opener_pick_evaluation(
     pick is settled against the line it was formed at. A ``movement oracle``
     diagnostic (pick the side the close eventually moved toward, settle at
     the opener) bounds how much accuracy pure line-movement capture is worth.
+
+    An omitted ``probability_method`` is read from the active manifest via
+    :func:`resolve_active_probability_method` (``artifacts_root`` overrides
+    this checkout's artifacts directory). Explicit mappings are honored even
+    without a manifest. The returned ``probability_method`` column records the
+    resolved mapping for every game.
 
     The inherited approximation from :func:`active_model_residual_at_opener`
     applies: only ``spread_line`` is swapped to the opener; every other
@@ -2082,10 +2118,17 @@ def opener_pick_evaluation(
     (all zero when the policy is off, in which case served equals raw).
     """
 
+    # Resolve before reading snapshots or fitting: missing provenance is an error.
+    # An explicit challenger mapping must never consult or depend on the manifest.
     apply_offset = HOME_SIDE_OFFSET_SERVED if home_side_offset is None else bool(home_side_offset)
     config = active_model_config or dict(_ACTIVE_MODEL_FALLBACK_CONFIG)
     if config.get("calibration_method", "none") != "none":
         raise ValueError("Opener evaluation supports only uncalibrated margin probabilities")
+    probability_method = (
+        config["probability_method"]
+        if "probability_method" in config
+        else resolve_active_probability_method(artifacts_root)
+    )
     profile: MarginFeatureProfile = config["feature_profile"]
     feature_columns = margin_feature_columns("market_residual", profile)
     required = {
@@ -2136,7 +2179,6 @@ def opener_pick_evaluation(
     # have served for week W.
     stream_columns = ["game_id", "season", "week", "spread_line", "point_incumbent", "result"]
     archive_stream = pd.DataFrame(columns=stream_columns)
-    probability_method = config.get("probability_method", "ecdf")
     for (season, week), group in paired.groupby(["season", "week"], sort=True):
         week_rows = frame.loc[frame["game_id"].isin(set(group["game_id"]))]
         if week_rows.empty:
@@ -2162,6 +2204,7 @@ def opener_pick_evaluation(
         at_close = scoring.copy()
         at_close["spread_line"] = at_close["close_home_spread"]
         scored = scoring[["game_id"]].copy()
+        scored["probability_method"] = probability_method
         scored["season"] = int(str(season))
         scored["week"] = int(str(week))
         predicted_at_open = model.predict(at_open, probability_method=probability_method)

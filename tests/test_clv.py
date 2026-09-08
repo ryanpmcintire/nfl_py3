@@ -758,6 +758,7 @@ def pilot_setup(tmp_path: Path) -> tuple[Path, pd.DataFrame, dict[str, Any]]:
         "regressor": "ridge",
         "ridge_alpha": 10.0,
         "target": "market_residual",
+        "probability_method": "ecdf",
     }
     return root, features, config
 
@@ -996,6 +997,7 @@ def test_predict_close_blocked_without_training_archive(tmp_path: Path) -> None:
         "regressor": "ridge",
         "ridge_alpha": 10.0,
         "target": "market_residual",
+        "probability_method": "ecdf",
     }
     with pytest.raises(PilotProtocolBlocked, match="training data"):
         predict_close_for_week(
@@ -1661,6 +1663,7 @@ def test_opener_pick_evaluation_probability_rule_can_diverge_from_sign_rule(
         "regressor": "ridge",
         "ridge_alpha": 10.0,
         "target": "market_residual",
+        "probability_method": "ecdf",
     }
     scored = opener_pick_evaluation(root, features, active_model_config=config, min_train_games=50)
     by_game = scored.set_index("game_id")
@@ -1730,7 +1733,7 @@ def test_opener_pick_evaluation_requires_paired_games(
         )
 
 
-@pytest.mark.parametrize("method", ["gaussian", "ecdf"])
+@pytest.mark.parametrize("method", ["gaussian", "gaussian_median", "ecdf"])
 def test_opener_manifest_mapping_matches_production_and_ignores_future_outcomes(
     pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]], tmp_path: Path, method: str
 ) -> None:
@@ -2036,3 +2039,112 @@ def test_composition_arrest_flags_ignore_incidents_at_or_after_decision() -> Non
     pd.testing.assert_frame_equal(before, after)
     assert bool(after.iloc[0]["home_incident_flag"])
     assert not bool(after.iloc[0]["away_incident_flag"])
+
+
+@pytest.mark.parametrize("served_method", ["gaussian_median", "gaussian"])
+def test_opener_missing_mapping_uses_manifest(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+    tmp_path: Path,
+    served_method: str,
+) -> None:
+    root, features, config = pilot_setup
+    config = {key: value for key, value in config.items() if key != "probability_method"}
+    original = dict(config)
+    atomic_json(
+        {
+            "version": 1,
+            "status": "SYNCHRONIZED",
+            "method": "market_residual",
+            "probability_method": served_method,
+        },
+        tmp_path / "active_ats_model.json",
+    )
+    implicit = opener_pick_evaluation(
+        root, features, active_model_config=config, artifacts_root=tmp_path, min_train_games=50
+    )
+    explicit = opener_pick_evaluation(
+        root,
+        features,
+        active_model_config={**config, "probability_method": served_method},
+        artifacts_root=tmp_path / "absent",
+        min_train_games=50,
+    )
+    pd.testing.assert_frame_equal(implicit, explicit)
+    assert implicit["probability_method"].tolist() == [served_method] * len(implicit)
+    assert config == original
+    ecdf = opener_pick_evaluation(
+        root,
+        features,
+        active_model_config={**config, "probability_method": "ecdf"},
+        artifacts_root=tmp_path,
+        min_train_games=50,
+    )
+    ecdf_without_manifest = opener_pick_evaluation(
+        root,
+        features,
+        active_model_config={**config, "probability_method": "ecdf"},
+        artifacts_root=tmp_path / "absent",
+        min_train_games=50,
+    )
+    pd.testing.assert_frame_equal(ecdf, ecdf_without_manifest)
+    assert ecdf["probability_method"].eq("ecdf").all()
+    assert not np.allclose(
+        implicit["home_cover_probability_at_open"], ecdf["home_cover_probability_at_open"]
+    )
+
+
+@pytest.mark.parametrize("manifest_state", ["absent", "invalid", "missing_key"])
+def test_opener_missing_mapping_fails_closed(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+    tmp_path: Path,
+    manifest_state: str,
+) -> None:
+    root, features, config = pilot_setup
+    config = {key: value for key, value in config.items() if key != "probability_method"}
+    path = tmp_path / "active_ats_model.json"
+    if manifest_state == "invalid":
+        path.write_text("{", encoding="utf-8")
+    elif manifest_state == "missing_key":
+        atomic_json({"version": 1, "status": "SYNCHRONIZED", "method": "market_residual"}, path)
+    with pytest.raises(ValueError, match=r"Cannot resolve probability_method.*active_ats_model"):
+        opener_pick_evaluation(
+            root, features, active_model_config=config, artifacts_root=tmp_path, min_train_games=50
+        )
+
+
+def test_opener_default_mapping_uses_checkout_manifest(monkeypatch: pytest.MonkeyPatch) -> None:
+    import nfl_ats.clv as clv
+
+    roots: list[Path] = []
+
+    def load_config(root: Path) -> dict[str, Any]:
+        roots.append(root)
+        return {"probability_method": "gaussian_median"}
+
+    monkeypatch.setattr(clv, "resolve_active_model_config", load_config)
+    assert clv.resolve_active_probability_method() == "gaussian_median"
+    assert roots == [Path(clv.__file__).resolve().parents[2] / "artifacts"]
+
+
+def test_script_active_model_config_dicts_declare_probability_method() -> None:
+    import ast
+
+    scripts = Path(__file__).resolve().parents[1] / "scripts"
+    omissions: list[str] = []
+    for path in sorted(scripts.glob("*.py")):
+        source = path.read_text(encoding="utf-8-sig")
+        if "active_model_config" not in source:
+            continue
+        # Inspect helpers and inline configs alike; inherited **config overrides
+        # need no second declaration. Metadata containing the recipe is included.
+        for node in ast.walk(ast.parse(source)):
+            if not isinstance(node, ast.Dict):
+                continue
+            keys = {key.value for key in node.keys if isinstance(key, ast.Constant)}
+            if {
+                "feature_profile",
+                "regressor",
+                "ridge_alpha",
+            } <= keys and "probability_method" not in keys:
+                omissions.append(f"{path.name}:{node.lineno}")
+    assert not omissions, "Missing probability_method: " + ", ".join(omissions)

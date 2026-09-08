@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import math
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, Sequence
+from dataclasses import dataclass
 from typing import cast
 
 import numpy as np
@@ -61,6 +62,193 @@ def add_ats_outcomes(schedules: pd.DataFrame) -> pd.DataFrame:
         default=np.nan,
     )
     return result
+
+
+# ---------------------------------------------------------------------------
+# The decision line: the number the pool actually grades (docs/splash_lines.md)
+# ---------------------------------------------------------------------------
+#
+# ``spread_line`` enters the canonical table in ``add_ats_outcomes`` above and
+# is the number every downstream decision is expressed and graded against:
+# ``ats_margin`` is ``result - spread_line``, the served cover probability is
+# asked AT that line, and the pool settles each pick on it.  Until 2026-09-08
+# the column was always nflverse's ``schedules.spread_line`` -- a *closing*
+# proxy -- while the owner's pool grades on the spread printed on its own
+# contest board, frozen Tuesday at noon Eastern.  Measured 2026-09-08 on the
+# Week 1 board: the two disagreed on 8 of 16 games.
+#
+# :func:`apply_decision_lines` is the one seam that replaces the proxy with the
+# real graded number.  It runs on the *schedules* frame, before any feature is
+# derived from it, so every table built downstream -- ``game_features``,
+# ``game_features_pbp``, ``game_features_player``, ``game_features_weak_stack``
+# and every research table cut from them -- inherits the same line without a
+# change of its own.  The Splash-specific half (finding captures on disk,
+# validating them, recording their identity in the build manifest) lives in
+# ``nfl_ats.pool_decision_lines``; this module stays free of that import graph,
+# for the same "keep the foundational module shallow" reason recorded on
+# :func:`add_surface_switch_features` below.
+
+#: Version of the override/refusal rules in :func:`apply_decision_lines`.
+#: Recorded in the feature-table manifest, so a table can say which semantics
+#: produced its lines.  Bump it when the rules below change.
+DECISION_LINE_VERSION = "v1"
+
+
+@dataclass(frozen=True)
+class DecisionLineOverride:
+    """One ``(season, week)`` whose decision line comes from a captured board.
+
+    ``lines`` maps ``game_id`` to the home-signed spread the pool grades on
+    (positive = HOME favored, the repository-wide nflverse convention -- see
+    ``docs/bye_overvaluation_screen.md``), so the values drop straight into
+    ``spread_line`` with no sign work.  ``source``, ``capture_id`` and
+    ``captured_at_utc`` are provenance only: they never change a number, they
+    are what lets a reader of ``lineage.json`` tell which board the pick was
+    formed against.
+    """
+
+    season: int
+    week: int
+    lines: Mapping[str, float]
+    source: str
+    capture_id: str
+    captured_at_utc: str | None = None
+
+
+@dataclass(frozen=True)
+class AppliedDecisionLines:
+    """What one :class:`DecisionLineOverride` actually did to a schedules frame."""
+
+    override: DecisionLineOverride
+    #: Every scheduled game the override covered, in schedule order.
+    game_ids: tuple[str, ...]
+    #: The subset whose line actually moved off the incoming (nflverse) value.
+    changed_game_ids: tuple[str, ...]
+
+
+def _override_label(override: DecisionLineOverride) -> str:
+    return (
+        f"{override.source} capture '{override.capture_id}' "
+        f"({override.season} week {override.week})"
+    )
+
+
+def apply_decision_lines(
+    schedules: pd.DataFrame,
+    overrides: Sequence[DecisionLineOverride],
+) -> tuple[pd.DataFrame, tuple[AppliedDecisionLines, ...]]:
+    """Replace ``spread_line`` with the pool's graded line, week by week.
+
+    Returns the (copied) schedules frame and one :class:`AppliedDecisionLines`
+    per override that touched at least one scheduled game, so the caller can
+    record in its manifest exactly which weeks moved and by how many games.
+
+    **Only weeks with a capture are touched.**  A ``(season, week)`` with no
+    override keeps nflverse's number byte-for-byte, which is what keeps the
+    1,537-game opener archive and every registry cell -- all graded on the
+    archived lines -- from moving underneath a rebuild.  An empty ``overrides``
+    returns the frame unchanged (a copy), so a caller with no captures on disk
+    is bit-identical to this function not existing.
+
+    Three refusals, all :class:`~nfl_ats.data.DataContractError`:
+
+    1. **A partial capture.**  A capture that covers only some of a week's
+       games would leave that week half on the pool's line and half on
+       nflverse's -- the worst of both, and invisible on the card.  Missing
+       games, or lines for games that are not on the week's schedule, raise.
+    2. **A completed game.**  ``ats_margin`` is derived (``result -
+       spread_line``), so moving the line under a played game silently rewrites
+       the graded outcome that the archive and the weak-signal registry were
+       scored on.  Any covered row with a recorded ``result`` raises.
+    3. **A non-finite line.**  A NaN or infinite override is a broken capture,
+       not a number.
+
+    A week the schedules frame does not contain at all is skipped and not
+    reported: the schedule is the authority on which games exist, so a capture
+    for a week nobody has scheduled yet (or a research build cut to earlier
+    seasons) has nothing to apply.
+    """
+
+    result = schedules.copy()
+    if not overrides:
+        return result, ()
+
+    if "spread_line" not in result:
+        result["spread_line"] = np.nan
+    game_ids = result["game_id"].astype(str)
+    seasons = pd.to_numeric(result["season"], errors="coerce")
+    weeks = pd.to_numeric(result["week"], errors="coerce")
+    played = (
+        pd.to_numeric(result["result"], errors="coerce").notna()
+        if "result" in result
+        else pd.Series(False, index=result.index)
+    )
+
+    applied: list[AppliedDecisionLines] = []
+    for override in overrides:
+        label = _override_label(override)
+        lines: dict[str, float] = {}
+        for identifier, value in override.lines.items():
+            number = float(value)
+            if not math.isfinite(number):
+                raise DataContractError(
+                    f"{label}: {identifier} carries a non-finite line ({value!r}). "
+                    "A capture that cannot state a number is a defect to fix, not a line."
+                )
+            lines[str(identifier)] = number
+
+        mask = seasons.eq(override.season) & weeks.eq(override.week)
+        if not bool(mask.any()):
+            continue
+
+        scheduled = tuple(game_ids.loc[mask])
+        missing = sorted(set(scheduled).difference(lines))
+        if missing:
+            raise DataContractError(
+                f"{label} is PARTIAL: it carries lines for {len(scheduled) - len(missing)} of "
+                f"the {len(scheduled)} games scheduled that week and says nothing about "
+                f"{', '.join(missing)}. Refusing to apply a partial capture -- half the week "
+                "would be graded on the pool's line and half on the nflverse close, which is "
+                "worse than either source used alone and invisible once the card is built. "
+                "Re-capture the full board."
+            )
+        unscheduled = sorted(set(lines).difference(scheduled))
+        if unscheduled:
+            raise DataContractError(
+                f"{label} carries lines for games that are not on the {override.season} week "
+                f"{override.week} schedule: {', '.join(unscheduled)}. That is a mis-read board "
+                "or a team-abbreviation mismatch, and applying it would put a line on the wrong "
+                "game (or on none at all). Refusing."
+            )
+
+        completed = tuple(game_ids.loc[mask & played])
+        if completed:
+            raise DataContractError(
+                f"{label} covers {len(completed)} game(s) whose result is already recorded "
+                f"({', '.join(completed[:5])}"
+                f"{', ...' if len(completed) > 5 else ''}). ats_margin is derived from "
+                "spread_line, so moving the line under a played game rewrites the graded "
+                "outcome that the opener archive and every registry cell were scored on. "
+                "Refusing. Retire the capture from data/splash/, or rebuild with "
+                "--splash-decision-lines off, once a decision has been made about which "
+                "number the played week should be archived against."
+            )
+
+        replacement = game_ids.loc[mask].map(lines).astype("float64")
+        previous = pd.to_numeric(result.loc[mask, "spread_line"], errors="coerce")
+        moved = ~np.isclose(
+            previous.to_numpy(dtype="float64"), replacement.to_numpy(), equal_nan=True
+        )
+        result.loc[mask, "spread_line"] = replacement
+        applied.append(
+            AppliedDecisionLines(
+                override=override,
+                game_ids=scheduled,
+                changed_game_ids=tuple(pd.Series(scheduled)[moved]),
+            )
+        )
+
+    return result, tuple(applied)
 
 
 POSTSEASON_GAME_TYPES = ("WC", "DIV", "CON", "SB")
@@ -706,6 +894,14 @@ def build_game_features(
     WC/DIV/CON/SB games included in every rolling state, and only that pass's
     postseason rows are kept — so a Super Bowl row sees both teams'
     conference-round form, while using strictly earlier games only.
+
+    ``schedules`` is expected to already carry the DECISION line in
+    ``spread_line``. For any week the pool's own board was captured, that is
+    the board's number rather than nflverse's close: ``build-features`` calls
+    :func:`apply_decision_lines` on the snapshot's schedules before reaching
+    this function, so both passes, the bias family's own game log and the
+    team-state builder all read one line per game. See
+    :func:`apply_decision_lines` and ``docs/splash_lines.md``.
     """
 
     def build_pass(game_types: tuple[str, ...]) -> pd.DataFrame:

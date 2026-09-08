@@ -26,7 +26,12 @@ import numpy as np
 import pandas as pd
 import pytest
 from _overlay_test_kit import write_active_model_and_card, write_challenger_registry
-from test_discrete_push_read import integer_line_week, reader_for_2020_week_1, synthetic_pool
+from test_discrete_push_read import (
+    allow_whole_number_pool_lines,
+    integer_line_week,
+    reader_for_2020_week_1,
+    synthetic_pool,
+)
 from test_home_side_offset_promotion import _fitted_model
 
 from nfl_ats import board_content, board_terminal
@@ -43,14 +48,20 @@ from nfl_ats.key_line_pick_read import (
     KEY_LINE_ATOMS,
     KEY_LINE_PICK_READ_FILENAME,
     KEY_LINE_PICK_READ_POLICY,
+    KEY_LINE_STATUS_INAPPLICABLE,
+    KEY_LINE_STATUS_NOT_RUN,
+    KEY_LINE_STATUS_SERVED,
     KeyLinePickRead,
     ServedKeyLineRead,
     apply_key_line_pick_read,
     apply_pick_overrides,
+    is_half_point_line,
+    key_line_applicability,
     key_line_atom,
     key_line_decision_probability,
     key_line_mask,
     key_line_metadata_block,
+    key_line_read_applicable,
     key_line_sidecar,
     key_line_touched_games,
     load_pick_overrides,
@@ -116,6 +127,97 @@ def test_key_line_mask_selects_exactly_three_and_seven_either_sign() -> None:
     # An explicit atom set is honoured (lane T's KL1 shape), the default is KL1b.
     assert key_line_mask([10.0, 14.0], atoms=(3.0, 7.0, 10.0, 14.0)).tolist() == [True, True]
     assert key_line_mask([10.0], atoms=()).tolist() == [False]
+
+
+def test_applicability_predicate_is_the_vectorised_mask_and_names_half_points() -> None:
+    """The named scope predicate, and it agrees with lane T's mask exactly."""
+
+    lines = [3.0, -3.0, 7.0, -7.0, 3.5, -2.5, 6.5, 9.5, 6.75, 10.0, 0.0, float("nan")]
+    assert [key_line_read_applicable(line) for line in lines] == key_line_mask(lines).tolist()
+    assert key_line_read_applicable(None) is False
+    # Half points are the pool's own convention; a whole number off the atoms
+    # is a different reason for the same "not touched" outcome.
+    assert [is_half_point_line(line) for line in lines] == [
+        False, False, False, False, True, True, True, True, False, False, False, False
+    ]  # fmt: skip
+    assert is_half_point_line(None) is False and is_half_point_line(float("inf")) is False
+
+
+def test_pool_week_of_half_points_is_inapplicable_not_a_read_that_did_not_run() -> None:
+    """The observable difference the sidecar has to carry.
+
+    Measured 2026-09-08: every line the owner's pool posts is a half point
+    (``data/splash/2026_week01_20260908_noon.json``, all sixteen Week 1
+    games). The read then touches nothing -- but so does a week with no
+    lattice at all, and those are different facts.
+    """
+
+    splash = json.loads(
+        (REPO / "data" / "splash" / "2026_week01_20260908_noon.json").read_text(encoding="utf-8")
+    )
+    pool_lines = [float(game["home_spread"]) for game in splash["games"]]
+    assert pool_lines and all(is_half_point_line(line) for line in pool_lines)
+    assert not key_line_mask(pool_lines).any()
+
+    applicability = key_line_applicability(pool_lines)
+    assert applicability.applicable is False
+    assert applicability.games == len(pool_lines) == applicability.half_point_lines
+    assert applicability.lines_on_an_atom == 0 and applicability.whole_number_lines == 0
+    assert applicability.status == "inapplicable"
+    reason = applicability.reason
+    assert reason is not None and "half points" in reason and "3 or 7" in reason
+
+    # A week that DOES sit on an atom is applicable, with no reason to give.
+    on_atom = key_line_applicability([3.0, 3.5, -7.0])
+    assert on_atom.applicable is True and on_atom.reason is None
+    assert on_atom.lines_on_an_atom == 2 and on_atom.half_point_lines == 1
+    assert on_atom.status == "served"
+
+
+def test_scope_gate_is_never_recorded_as_retiring_the_discrete_read() -> None:
+    """The gate must not read, to a future session, as "discrete is off here".
+
+    The exact-match atom test cannot fire on a half-point line, but the
+    key-number mass is MORE decisive there: on a whole number the push
+    absorbs it, on a half point the whole block lands on one side. Measured
+    on 4,431 completed regular-season games (2009-2025), a fitted normal
+    misses the cover rate by -2.14 points at 2.5 and +2.95 at 3.5 --
+    opposite signs across the atom -- and understates the 7.81-point cliff
+    by 2.87x. The docs have to say so, and the open generalisation has to be
+    findable, or the next session concludes the idea was tried and dropped.
+    """
+
+    module = (REPO / "src" / "nfl_ats" / "key_line_pick_read.py").read_text(encoding="utf-8")
+    doc = (REPO / "docs" / "key_line_pick_read.md").read_text(encoding="utf-8")
+    push_doc = (REPO / "docs" / "discrete_push_read.md").read_text(encoding="utf-8")
+
+    # The measured half-point evidence is stated where the gate is stated.
+    for text in (module, doc):
+        assert "2.87x" in text and "14.58%" in text
+        assert "MOD-18 candidate C2" in text or "candidate C2" in text
+    assert "TODO, predeclared" in doc
+    assert "every half-point line" in doc.lower()
+
+    # Nothing anywhere frames the discrete read itself as switched off, and
+    # the three-way split really does still serve on every game.
+    for text in (module, doc, push_doc):
+        lowered = text.lower()
+        for banned in (
+            "discrete reads are off",
+            "the lattice is disabled",
+            "discrete read is disabled",
+            "no longer serves",
+        ):
+            assert banned not in lowered
+    from nfl_ats.mass_preserving_lattice import DISCRETE_PUSH_READ_SERVED
+
+    assert DISCRETE_PUSH_READ_SERVED is True
+    outcomes_source = (REPO / "src" / "nfl_ats" / "outcomes.py").read_text(encoding="utf-8")
+    assert "serve_discrete_three_way(" in outcomes_source
+
+    # Nothing in this lane closes anything; both docs say so in the taxonomy.
+    for text in (doc, push_doc):
+        assert "unresolved_below_power" in text
 
 
 def test_decision_number_is_lane_t_cover_plus_half_push() -> None:
@@ -388,6 +490,79 @@ def test_sidecar_and_metadata_carry_both_reads_and_rebuild_the_overrides(
     assert apply_pick_overrides(pd.Series([0.1]), ["a"], None).tolist() == [0.1]
 
 
+def test_sidecar_tells_did_not_apply_apart_from_did_not_run(model_frame: pd.DataFrame) -> None:
+    """Both weeks touch zero games. The sidecar must say WHY, differently.
+
+    "Did not apply" is the lattice fitted and recorded with no served line
+    on an atom -- the expected steady state on the owner's half-point pool.
+    "Did not run" is no lattice at all. Before this, both reported the same
+    empty ``touched`` list and nothing else.
+    """
+
+    predictions, log = _served_week(model_frame)
+    ats = predictions.loc[predictions["method"].eq("market_residual")]
+    ids = sorted(ats["game_id"].astype(str))
+    policy = _policy()
+
+    # (a) Served and applicable: at least one line on an atom.
+    served = key_line_sidecar(policy, log, ids)
+    assert served["served"] is True and served["status"] == KEY_LINE_STATUS_SERVED
+    assert served["applicability"]["applicable"] is True
+    assert served["applicability"]["reason"] is None
+    assert served["applicability"]["lines_on_an_atom"] > 0
+    assert any(game["touched"] for game in served["games"])
+
+    # (b) Served but INAPPLICABLE: the same fitted lattice, every line moved
+    # to the half point the pool actually posts. Zero touched, and a reason.
+    half_point_log = {
+        game_id: replace(
+            read,
+            line=read.line + (0.5 if float(read.line).is_integer() else 0.0),
+            atom=None,
+            touched=False,
+            served=read.smooth,
+        )
+        for game_id, read in log.items()
+    }
+    inapplicable = key_line_sidecar(policy, half_point_log, ids)
+    assert inapplicable["served"] is True, "the lattice was fitted; only the lines were not atoms"
+    assert inapplicable["status"] == KEY_LINE_STATUS_INAPPLICABLE
+    assert inapplicable["error"] is None and inapplicable["fit"] is not None
+    assert not any(game["touched"] for game in inapplicable["games"])
+    reason = inapplicable["applicability"]["reason"]
+    assert reason is not None and "half points" in reason
+    assert inapplicable["applicability"]["half_point_lines"] == len(ids)
+    for game in inapplicable["games"]:
+        assert game["inapplicable_reason"] is not None
+        assert "half-point line" in game["inapplicable_reason"]
+    # It still has nothing to override, exactly like a week that touched none.
+    assert _overrides(inapplicable) == {}
+
+    # (c) Did NOT run: no lattice. There is nothing to be applicable about.
+    not_run = key_line_sidecar(None, {}, ids, error="no lattice")
+    assert not_run["served"] is False and not_run["status"] == KEY_LINE_STATUS_NOT_RUN
+    assert not_run["applicability"] is None
+    assert not_run["error"] == "no lattice" and not_run["fit"] is None
+
+    # The metadata block carries the same distinction without the sidecar file.
+    assert key_line_metadata_block(served)["status"] == KEY_LINE_STATUS_SERVED
+    block = key_line_metadata_block(inapplicable)
+    assert block["status"] == KEY_LINE_STATUS_INAPPLICABLE and block["touched"] == []
+    assert block["applicability"]["reason"] == reason
+    assert key_line_metadata_block(not_run)["status"] == KEY_LINE_STATUS_NOT_RUN
+    assert key_line_metadata_block(not_run)["applicability"] is None
+    # A pre-status card (no such keys) degrades to None rather than lying.
+    assert key_line_metadata_block({"served": True})["status"] is None
+
+
+def _overrides(sidecar: dict[str, object]) -> dict[str, float]:
+    return {
+        str(game["game_id"]): float(game["home_cover_probability"])
+        for game in sidecar["games"]  # type: ignore[index,union-attr]
+        if game["touched"]
+    }
+
+
 def test_served_policy_needs_the_lattice_and_never_raises(monkeypatch: pytest.MonkeyPatch) -> None:
     reader = reader_for_2020_week_1(synthetic_pool())
     production = ProductionDiscretePushRead(
@@ -422,6 +597,7 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
     features_path = data_root / "processed" / "game_features.parquet"
     features_path.parent.mkdir(parents=True)
     integer_line_week(model_frame).to_parquet(features_path, index=False)
+    allow_whole_number_pool_lines(monkeypatch)
     # A real, non-zero served offset so "after the offset" is exercised end to end.
     monkeypatch.setattr(
         prediction_cli,
@@ -1551,6 +1727,51 @@ def test_explanation_says_the_line_sits_on_the_number_in_pool_player_words() -> 
         key_line_games={"2026_01_NO_DET"},
     )
     assert "read off how games" in routed[0].text and "read off how games" not in routed[1].text
+
+
+def test_half_point_game_says_there_is_no_tie_rather_than_a_zero_push_chance() -> None:
+    """The reader-facing half of the gate.
+
+    Every line the owner's pool posts is a half point, where a push is
+    impossible. The card used to say nothing about it while still carrying a
+    0.0% push chance beside the pick, which reads as a measured near-zero.
+    It now states the impossibility in pool-player words, and never quotes a
+    push number on such a game.
+    """
+
+    base = {
+        "game_id": "2026_01_CHI_CAR",
+        "home_team": "CAR",
+        "away_team": "CHI",
+        "spread_line": -2.5,
+        "home_cover_probability": 0.488,
+        "gameday": "2026-09-13",
+    }
+    text = explain_pick({**base, "push_probability": 0.0}).text
+    assert "The line is a half point, so the game cannot finish exactly on it" in text
+    assert "there are no ties here" in text
+    # No push arithmetic is offered on a game that cannot push.
+    assert "in 100" not in text and "0%" not in text and "0.0" not in text
+    assert "The line sits" not in text
+
+    # The whole-number sentence is unchanged, so the archive's real pushes
+    # still read as they did (this read is correct machinery on those lines).
+    whole = explain_pick(
+        {**base, "spread_line": 3.0, "push_probability": 0.091},
+    ).text
+    assert (
+        "The line sits right on 3" in whole and "a push, and that chance is counted here" in whole
+    )
+    assert "cannot finish exactly on it" not in whole
+
+    # A half point wins even when the key-line read is flagged for the game:
+    # it cannot have acted there, so the reader is never told it did.
+    flagged = explain_pick({**base, "push_probability": 0.0}, key_line_read=True).text
+    assert "read off how games" not in flagged
+    assert "there are no ties here" in flagged
+
+    for banned in ("lattice", "discrete", "policy", "atom", "smooth", "push chance", "sidecar"):
+        assert banned not in text.lower()
 
 
 def test_publish_and_rehearsal_wire_the_recorder() -> None:

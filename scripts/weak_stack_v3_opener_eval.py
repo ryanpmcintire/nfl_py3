@@ -64,7 +64,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.clv import opener_evaluation_metrics, opener_pick_evaluation, week_blocked_bootstrap
+from nfl_ats.clv import (
+    opener_evaluation_metrics,
+    opener_pick_evaluation,
+    resolve_active_probability_method,
+    week_blocked_bootstrap,
+)
 from nfl_ats.constants import (
     DEFAULT_MIN_TRAIN_GAMES,
     GAP_V3_BIAS_FEATURE_COLUMNS,
@@ -96,7 +101,12 @@ GAP_V3_ALL_COLUMNS: tuple[str, ...] = (
 
 
 def _config(profile: MarginFeatureProfile) -> dict[str, Any]:
-    return {"feature_profile": profile, "regressor": REGRESSOR, "ridge_alpha": RIDGE_ALPHA}
+    return {
+        "probability_method": resolve_active_probability_method(),
+        "feature_profile": profile,
+        "regressor": REGRESSOR,
+        "ridge_alpha": RIDGE_ALPHA,
+    }
 
 
 def paired_frame(baseline: pd.DataFrame, candidate: pd.DataFrame) -> pd.DataFrame:

@@ -97,6 +97,44 @@ def test_outcome_bootstrap_intervals_flags_a_degenerate_block_count(
         outcome_bootstrap_intervals(predictions, samples=20, seed=7, on_degenerate="raise")
 
 
+def test_one_block_week_one_of_a_season_is_flagged_not_raised(
+    model_frame: pd.DataFrame,
+) -> None:
+    """SEASON-BOUNDARY REGRESSION: week 1 of a season is ONE block.
+
+    Scoring the current season alone in its first week leaves a single
+    ``(season, week)`` group, the worst case the D4 guard names: exactly one
+    achievable resample, so ``lower == upper == estimate``. AGENTS.md is
+    explicit that an interval which cannot be computed is never grounds to
+    drop the signal, so the production default must WARN and FLAG -- the row
+    still carries its estimate, ``blocks`` and ``degenerate_blocks`` -- and
+    must never raise, which on a lock day would take the whole card down.
+    """
+
+    predictions = walk_forward_outcomes(
+        model_frame, start_season=2020, min_train_games=80, min_edge=0.0
+    ).predictions
+    first_week = predictions.loc[
+        predictions["season"].eq(2020) & predictions["week"].eq(predictions["week"].min())
+    ]
+    assert first_week.groupby(["season", "week"]).ngroups == 1
+
+    with pytest.warns(BootstrapDegeneracyWarning, match="collapses to a point"):
+        intervals = outcome_bootstrap_intervals(first_week, samples=20, seed=7)
+
+    assert intervals["blocks"].eq(1).all()
+    assert intervals["degenerate_blocks"].all(), (
+        "a 1-block 'interval' must be flagged; an unflagged one reads as real"
+    )
+    assert intervals["estimate"].notna().all(), (
+        "the point estimate survives a degenerate block count -- it is the "
+        "interval that is unavailable, never the signal"
+    )
+    assert (intervals["lower"] == intervals["upper"]).all(), (
+        "one achievable resample collapses the interval onto the estimate"
+    )
+
+
 def test_score_outcome_week_outputs_fair_spreads(model_frame: pd.DataFrame) -> None:
     scored = score_outcome_week(
         model_frame,

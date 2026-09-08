@@ -21,7 +21,7 @@ from nfl_ats.handoff import check_session_handoff, write_session_handoff
 from nfl_ats.lockday_package import capture_ledger_state, write_decision_package
 from nfl_ats.preflight import preflight_exit_code, run_preflight
 from nfl_ats.snapshots import describe_snapshot, latest_snapshot
-from nfl_ats.weekly import run_weekly
+from nfl_ats.weekly import WeeklyRunError, run_weekly
 
 
 def _cmd_doctor(_: argparse.Namespace) -> None:
@@ -153,6 +153,16 @@ def orchestrate_weekly_run(request: WeeklyRunRequest) -> dict[str, Any]:
             record_decisions=request.record_decisions,
             dry_run=request.dry_run,
         )
+    except WeeklyRunError as error:
+        # The package below is written from a finally, so on an abort it saw
+        # the empty `summary` initialised above and recorded
+        # `run_summary: null` -- measured on the 2026-09-08 lock, whose
+        # package therefore could not name the failing step. Hand it the
+        # partial summary instead: same fail-safe write, now with which step
+        # failed and why.
+        if isinstance(error.summary, dict):
+            summary = error.summary
+        raise
     finally:
         if write_package and not request.dry_run:
             try:

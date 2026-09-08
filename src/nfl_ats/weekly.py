@@ -157,7 +157,18 @@ class WeeklyRunError(ValueError):
 
     A ``ValueError`` subclass so the CLI reports it as a user-facing error
     rather than a traceback.
+
+    ``summary`` carries the PARTIAL run summary when the sequence aborts
+    part-way through: which step failed, with what error, and every step that
+    had already run. The lock-day decision package is written from a
+    ``finally`` block, so without this the one artifact that exists to explain
+    a lock day records ``run_summary: null`` -- measured on the 2026-09-08
+    abort, whose package could not name the failing step.
     """
+
+    def __init__(self, message: str, *, summary: dict[str, Any] | None = None) -> None:
+        super().__init__(message)
+        self.summary = summary
 
 
 @dataclass(frozen=True)
@@ -836,7 +847,10 @@ def run_weekly(
                 continue
             summary["failed_step"] = step.name
             summary["published"] = published
-            raise WeeklyRunError(f"weekly-run aborted at step {step.name!r}: {error}") from error
+            summary["total_seconds"] = perf_counter() - started
+            raise WeeklyRunError(
+                f"weekly-run aborted at step {step.name!r}: {error}", summary=summary
+            ) from error
         record["status"] = "ok"
         record["seconds"] = perf_counter() - step_started
 

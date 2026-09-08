@@ -18,8 +18,11 @@ import json
 from pathlib import Path
 
 from nfl_ats.feature_manifest import (
+    DECISION_LINES_KEY,
     SOURCE_SNAPSHOTS_KEY,
     UPSTREAM_ABSENT_REASON,
+    decision_line_week,
+    decision_lines_block,
     inherit_source_snapshots,
     manifest_path_for,
 )
@@ -135,3 +138,82 @@ def test_later_parent_wins_key_collisions(tmp_path: Path) -> None:
 
 def test_empty_input_returns_an_empty_block() -> None:
     assert inherit_source_snapshots([]) == {}
+
+
+# ---------------------------------------------------------------------------
+# The pool decision-line block rides the same inheritance chain
+# ---------------------------------------------------------------------------
+
+
+_DECISION_LINES = {
+    "policy": "pool_capture",
+    "builder_module": "nfl_ats.pool_decision_lines",
+    "builder_version": "v1",
+    "weeks": [
+        {
+            "season": 2026,
+            "week": 1,
+            "source": "splashsports.com",
+            "capture_id": "2026_week01_20260908_noon",
+            "captured_at_utc": "2026-09-08T12:45:00-04:00",
+            "games": 16,
+            "changed_games": 8,
+        }
+    ],
+}
+
+
+def test_decision_lines_block_travels_the_two_level_chain(tmp_path: Path) -> None:
+    """The card is built from a table two enrichment steps below the build
+    that applied the pool's board, so the block has to arrive there on its
+    own -- exactly like the base nflverse source_snapshot does."""
+
+    base = _write_manifest(
+        tmp_path / "game_features.manifest.json",
+        {"source_snapshot": "20260908T120000Z", DECISION_LINES_KEY: _DECISION_LINES},
+    )
+    pbp = _write_manifest(
+        tmp_path / "game_features_pbp.manifest.json",
+        {
+            "source_pbp_snapshot": "20260908T130000Z",
+            SOURCE_SNAPSHOTS_KEY: inherit_source_snapshots([base]),
+        },
+    )
+
+    weak_stack = inherit_source_snapshots([pbp])
+
+    assert weak_stack[DECISION_LINES_KEY] == _DECISION_LINES
+    assert weak_stack["source_snapshot"]["snapshot_id"] == "20260908T120000Z"
+
+
+def test_decision_lines_are_read_back_from_either_place_they_can_sit() -> None:
+    """Directly on the base manifest that applied them, and inside the
+    inherited block on every derived one."""
+
+    direct = {DECISION_LINES_KEY: _DECISION_LINES}
+    inherited = {SOURCE_SNAPSHOTS_KEY: {DECISION_LINES_KEY: _DECISION_LINES}}
+
+    assert decision_lines_block(direct) == _DECISION_LINES
+    assert decision_lines_block(inherited) == _DECISION_LINES
+    for manifest in (direct, inherited):
+        week = decision_line_week(manifest, 2026, 1)
+        assert week is not None
+        assert week["capture_id"] == "2026_week01_20260908_noon"
+        assert week["builder_module"] == "nfl_ats.pool_decision_lines"
+
+
+def test_a_week_with_no_capture_claims_nothing() -> None:
+    """The uncaptured weeks are the whole archive; none of them may claim the
+    pool's board as their source."""
+
+    manifest = {DECISION_LINES_KEY: _DECISION_LINES}
+    assert decision_line_week(manifest, 2026, 2) is None
+    assert decision_line_week(manifest, 2025, 1) is None
+    assert decision_line_week(manifest, None, 1) is None
+    assert decision_line_week(manifest, 2026, None) is None
+
+
+def test_manifests_written_before_this_key_existed_are_unaffected() -> None:
+    legacy = {"source_snapshot": "20260824T115346Z", "built_at_utc": "2026-08-24T12:00:00Z"}
+    assert decision_lines_block(legacy) is None
+    assert decision_line_week(legacy, 2026, 1) is None

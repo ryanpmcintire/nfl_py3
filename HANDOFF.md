@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T16:04:58.123253+00:00`
+Refreshed at: `2026-09-08T17:26:01.030542+00:00`
 
 ## Start here
 
@@ -20,14 +20,29 @@ Refreshed at: `2026-09-08T16:04:58.123253+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0d9345dc27cd` — Late-week refresh: discrete three-way split rebuilt at the frozen line before the key-line pick read; sidecar fallback restores both (lane AE) [skip ci]
-- Pending change set: 6 paths
+- Baseline commit: `fc522c84c224` — LEAD-59 lane AD: officials battery with the Wayback archive on -- the flag is a no-op until the crew traits stop inner-joining the 2015+ penalty table; rookie-crew rule +0.73 pts with the wiring fixed; 23 cells recorded [skip ci]
+- Pending change set: 77 paths
+  - `M  .gitignore`
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  docs/officials_archive_battery.md`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/officials_archive_battery_eval.py`
+  - `A  docs/audit_20260908.md`
+  - `M  docs/discrete_push_read.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/key_line_pick_read.md`
+  - `M  docs/model.html`
+  - `A  docs/splash_lines.md`
+  - `A  registry/experiments/margin-backtest/20260908T162837Z.json`
+  - `A  registry/experiments/margin-backtest/20260908T170903Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T162923Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T165428Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T170550Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T171006Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T171308Z.json`
+  - ...and 57 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -36,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `a4c757efd2525da6`
+- Model ID: `3ccf838f9a304dcd`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260908T115957Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260908T171211Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-08T12:45:14.161318+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-08T17:13:08.641243+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-08T12:51:22.388796+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3ccf838f9a304dcd`, published `2026-09-08T17:14:08.688605+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

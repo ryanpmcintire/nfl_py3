@@ -1476,7 +1476,12 @@ def execute_job(command: list[str]) -> tuple[str, str]:
             creationflags=no_window,
         )
         out = (proc.stdout or "").strip().splitlines()
-        tail = out[-1][:200] if out else ""
+        # 300 to match failure_detail's own budget. A child that fails by
+        # PRINTING a JSON failure line instead of raising (scheduled_weekly_lock
+        # .py) leaves stderr empty, so this line IS the record; trimming it to
+        # 200 first discarded a third of the budget before failure_detail ever
+        # saw it. On 2026-09-08 that cut landed mid-word.
+        tail = out[-1][:300] if out else ""
         status = "OK" if proc.returncode == 0 else f"FAIL({proc.returncode})"
         detail = tail if proc.returncode == 0 else failure_detail(proc.stderr, tail)
     except subprocess.TimeoutExpired:

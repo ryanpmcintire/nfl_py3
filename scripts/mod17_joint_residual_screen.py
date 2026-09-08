@@ -24,7 +24,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT / "src") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from nfl_ats.clv import opener_evaluation_metrics, opener_pick_evaluation  # noqa: E402
+from nfl_ats.clv import (  # noqa: E402
+    opener_evaluation_metrics,
+    opener_pick_evaluation,
+    resolve_active_probability_method,
+)
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES  # noqa: E402
 from nfl_ats.joint_residual_model import (  # noqa: E402
     JOINT_RIDGE_ALPHA,
@@ -63,6 +67,7 @@ STAGE2_MIN_TRAIN_GAMES = 200
 
 def margin_model_config() -> dict[str, Any]:
     return {
+        "probability_method": resolve_active_probability_method(),
         "feature_profile": MARGIN_BASELINE_PROFILE,
         "regressor": "ridge",
         "ridge_alpha": JOINT_RIDGE_ALPHA,

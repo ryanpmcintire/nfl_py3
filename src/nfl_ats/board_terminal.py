@@ -2232,12 +2232,18 @@ def _history_assessment_html(row: ChallengerAssessment) -> str:
     delta = (
         f"{row.delta_accuracy_points:+.2f} pts" if row.delta_accuracy_points is not None else "--"
     )
+    # Reader-facing wording only (AGENTS.md, "The board is for humans"): the
+    # research token for this quantity is banned from the page, and the
+    # render-contract test in tests/test_board_humanised.py enforces it. The
+    # same number, said the way the model ledger already says it.
     if row.probability_positive is not None:
-        uncertainty = f"probability_positive {row.probability_positive:.2f}"
+        uncertainty = f"{row.probability_positive:.0%} likely better"
     elif row.interval_low is not None and row.interval_high is not None:
-        uncertainty = f"uncertainty [{row.interval_low:+.2f}, {row.interval_high:+.2f}] pts"
+        uncertainty = (
+            f"somewhere between {row.interval_low:+.2f} and {row.interval_high:+.2f} points"
+        )
     else:
-        uncertainty = "uncertainty not recorded"
+        uncertainty = "not measured yet"
     return (
         '<tr class="game">'
         f'<td data-label="Challenger"><b class="mono-id">{escape(row.display_name)}</b></td>'

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import shutil
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
@@ -14,13 +17,21 @@ from nfl_ats.constants import (
     SURFACE_SWITCH_FEATURE_COLUMNS,
 )
 from nfl_ats.data import DataContractError
+from nfl_ats.feature_manifest import DECISION_LINES_KEY, decision_line_week
 from nfl_ats.features import (
+    DecisionLineOverride,
     add_ats_outcomes,
     add_bias_features,
     add_surface_switch_features,
+    apply_decision_lines,
     attach_team_states,
     build_game_features,
     build_team_game_metrics,
+)
+from nfl_ats.pool_decision_lines import (
+    captured_weeks,
+    decision_lines_manifest_block,
+    splash_decision_line_overrides,
 )
 
 
@@ -637,3 +648,217 @@ def test_surface_switch_features_land_in_build_game_features_and_leave_other_col
         without_surface[pre_existing],
         check_exact=True,
     )
+
+
+# ---------------------------------------------------------------------------
+# The pool's own graded line as the decision line (docs/splash_lines.md)
+# ---------------------------------------------------------------------------
+
+
+#: The board capture the tests below apply. Half-point, home-signed, and for a
+#: week that has not been played -- the only shape a real capture ever has.
+_POOL_CAPTURE = DecisionLineOverride(
+    season=2022,
+    week=6,
+    lines={"2022_06_B_A": -1.5},
+    source="splashsports.com",
+    capture_id="2022_week06_20221011_noon",
+    captured_at_utc="2022-10-11T12:45:00-04:00",
+)
+
+
+def _with_upcoming_week(schedules: pd.DataFrame) -> pd.DataFrame:
+    """The shared fixture plus one UNPLAYED week 6 -- what a capture covers."""
+
+    upcoming = schedules.iloc[[-1]].copy()
+    upcoming["game_id"] = "2022_06_B_A"
+    upcoming["week"] = 6
+    upcoming["gameday"] = pd.Timestamp("2022-10-16")
+    upcoming["away_score"] = float("nan")
+    upcoming["home_score"] = float("nan")
+    upcoming["result"] = float("nan")
+    upcoming["spread_line"] = 2.0
+    return pd.concat([schedules, upcoming], ignore_index=True)
+
+
+def test_pool_capture_becomes_the_decision_line_for_the_week_it_covers(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """The captured board's number reaches the built table as ``spread_line``.
+
+    nflverse says +2.0 for this game and the pool's board says -1.5; the pool
+    is what grades the pick, so -1.5 is what the model must see.
+    """
+
+    schedules, stats = schedules_and_stats
+    schedules = _with_upcoming_week(schedules)
+
+    overridden, applied = apply_decision_lines(schedules, (_POOL_CAPTURE,))
+    features = build_game_features(overridden, stats, span=3, min_periods=1)
+
+    row = features.loc[features["game_id"].eq("2022_06_B_A")].iloc[0]
+    assert row["spread_line"] == pytest.approx(-1.5)
+    assert len(applied) == 1
+    assert applied[0].game_ids == ("2022_06_B_A",)
+    assert applied[0].changed_game_ids == ("2022_06_B_A",)
+    assert applied[0].override.capture_id == "2022_week06_20221011_noon"
+
+
+def test_pool_capture_leaves_every_uncaptured_row_bit_identical(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """The history the archive and the registry are graded on must not move.
+
+    Only the captured ``(season, week)`` may change. Every other row -- the
+    seasons the 1,537-game opener archive and every weak-signal registry cell
+    were scored on -- has to come out of a rebuild exactly as it went in.
+    """
+
+    schedules, stats = schedules_and_stats
+    schedules = _with_upcoming_week(schedules)
+
+    baseline = build_game_features(schedules, stats, span=3, min_periods=1)
+    overridden, _ = apply_decision_lines(schedules, (_POOL_CAPTURE,))
+    rebuilt = build_game_features(overridden, stats, span=3, min_periods=1)
+
+    uncaptured = baseline["game_id"].ne("2022_06_B_A")
+    assert int(uncaptured.sum()) == 5
+    pd.testing.assert_frame_equal(
+        baseline.loc[uncaptured].reset_index(drop=True),
+        rebuilt.loc[uncaptured.to_numpy()].reset_index(drop=True),
+        check_exact=True,
+    )
+
+
+def test_pool_capture_refuses_a_game_whose_result_is_already_recorded(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """``ats_margin`` is derived, so a played row's line may never be moved."""
+
+    schedules, _ = schedules_and_stats
+    played = DecisionLineOverride(
+        season=2022,
+        week=5,
+        lines={"2022_05_B_A": -1.5},
+        source="splashsports.com",
+        capture_id="2022_week05_20221004_noon",
+    )
+
+    with pytest.raises(DataContractError, match="result is already recorded"):
+        apply_decision_lines(schedules, (played,))
+
+
+def test_pool_capture_refuses_a_week_it_only_half_covers(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """A half-Splash week would be the worst of both sources, so it raises."""
+
+    schedules, _ = schedules_and_stats
+    schedules = _with_upcoming_week(schedules)
+    second = schedules.iloc[[-1]].copy()
+    second["game_id"] = "2022_06_D_C"
+    second["home_team"] = "C"
+    second["away_team"] = "D"
+    schedules = pd.concat([schedules, second], ignore_index=True)
+
+    with pytest.raises(DataContractError, match="PARTIAL") as error:
+        apply_decision_lines(schedules, (_POOL_CAPTURE,))
+    assert "2022_06_D_C" in str(error.value)
+
+
+def test_pool_capture_refuses_a_line_for_a_game_that_is_not_scheduled(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """A line whose game_id is not on the slate is a mis-read board."""
+
+    schedules, _ = schedules_and_stats
+    schedules = _with_upcoming_week(schedules)
+    misread = DecisionLineOverride(
+        season=2022,
+        week=6,
+        lines={"2022_06_B_A": -1.5, "2022_06_D_C": 3.5},
+        source="splashsports.com",
+        capture_id="2022_week06_20221011_noon",
+    )
+
+    with pytest.raises(DataContractError, match="not on the 2022 week 6 schedule"):
+        apply_decision_lines(schedules, (misread,))
+
+
+def test_no_capture_at_all_leaves_the_feature_table_exactly_as_before(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+    tmp_path: Path,
+) -> None:
+    """The regression that protects every other test in this repository.
+
+    A clone with no ``data/splash/`` directory discovers no overrides, and a
+    build handed no overrides is bit-identical to one that never heard of the
+    decision-line seam.
+    """
+
+    schedules, stats = schedules_and_stats
+    assert splash_decision_line_overrides(tmp_path) == ()
+
+    untouched, applied = apply_decision_lines(schedules, ())
+    assert applied == ()
+    pd.testing.assert_frame_equal(untouched, schedules, check_exact=True)
+    pd.testing.assert_frame_equal(
+        build_game_features(untouched, stats, span=3, min_periods=1),
+        build_game_features(schedules, stats, span=3, min_periods=1),
+        check_exact=True,
+    )
+
+
+def test_captures_on_disk_become_validated_overrides(tmp_path: Path) -> None:
+    """The real Week 1 board capture, read through the discovery layer.
+
+    Copied out of ``tests/fixtures/splash/`` rather than read from ``data/``,
+    so the test passes in a clone with an empty data root.
+    """
+
+    fixture = (
+        Path(__file__).resolve().parent / "fixtures" / "splash" / "2026_week01_20260908_noon.json"
+    )
+    splash_root = tmp_path / "splash"
+    splash_root.mkdir()
+    shutil.copy(fixture, splash_root / fixture.name)
+
+    assert captured_weeks(tmp_path) == ((2026, 1),)
+    overrides = splash_decision_line_overrides(tmp_path)
+    assert len(overrides) == 1
+    override = overrides[0]
+    assert (override.season, override.week) == (2026, 1)
+    assert override.capture_id == "2026_week01_20260908_noon"
+    assert override.source == "splashsports.com"
+    assert len(override.lines) == 16
+    # Home-signed: Seattle favored by 3.5 at home over New England.
+    assert override.lines["2026_01_NE_SEA"] == pytest.approx(3.5)
+    assert all(abs(value * 2 - round(value * 2)) < 1e-9 for value in override.lines.values())
+
+
+def test_applied_captures_are_recorded_for_the_build_manifest(
+    schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
+) -> None:
+    """The provenance block a card later reads back to name its own line."""
+
+    schedules, _ = schedules_and_stats
+    _, applied = apply_decision_lines(_with_upcoming_week(schedules), (_POOL_CAPTURE,))
+    block = decision_lines_manifest_block(applied)
+
+    assert block["policy"] == "pool_capture"
+    assert block["builder_module"] == "nfl_ats.pool_decision_lines"
+    assert block["weeks"] == [
+        {
+            "season": 2022,
+            "week": 6,
+            "source": "splashsports.com",
+            "capture_id": "2022_week06_20221011_noon",
+            "captured_at_utc": "2022-10-11T12:45:00-04:00",
+            "games": 1,
+            "changed_games": 1,
+            "changed_game_ids": ["2022_06_B_A"],
+        }
+    ]
+    manifest = {DECISION_LINES_KEY: block}
+    assert decision_line_week(manifest, 2022, 6) is not None
+    assert decision_line_week(manifest, 2022, 7) is None

@@ -18,6 +18,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from nfl_ats import prediction_safety
 from nfl_ats.card_explanation import explain_pick
 from nfl_ats.cli_commands import prediction as prediction_cli
 from nfl_ats.margin import _three_way_probabilities
@@ -97,13 +98,33 @@ def reader_for_2020_week_1(pool: pd.DataFrame) -> DiscretePushReader:
 
 
 def integer_line_week(model_frame: pd.DataFrame) -> pd.DataFrame:
-    """The shared fixture with 2020 week 1 quoted on 3 / 3.5 alternately."""
+    """The shared fixture with 2020 week 1 quoted on 3 / 3.5 alternately.
+
+    Whole numbers on purpose: these are the lines the key-number machinery
+    exists FOR, and the archive it was measured on is quoted on them. The
+    owner's pool never posts one, so any orchestration test built on this
+    fixture pairs it with :func:`allow_whole_number_pool_lines`.
+    """
 
     frame = model_frame.copy()
     target = frame["season"].eq(2020) & frame["week"].eq(1)
     positions = np.flatnonzero(target.to_numpy())
     frame.loc[target, "spread_line"] = [3.0 if i % 2 == 0 else 3.5 for i in range(len(positions))]
     return frame
+
+
+def allow_whole_number_pool_lines(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Declare that this test's week is NOT the owner's pool.
+
+    ``prediction_safety.validate_pool_lines`` fails the served card closed
+    when a decision line is a whole number, because the pool posts only half
+    points and a whole number therefore proves the line came from the
+    schedule feed instead. A fixture that deliberately quotes 3.0 to
+    exercise the key-number read has to say so out loud; nothing in
+    production may take this path.
+    """
+
+    monkeypatch.setattr(prediction_safety, "POOL_QUOTES_HALF_POINT_LINES", False)
 
 
 # ---------------------------------------------------------------------------
@@ -548,6 +569,7 @@ def test_margin_predict_writes_the_sidecar_with_both_reads(
     features_path = data_root / "processed" / "game_features.parquet"
     features_path.parent.mkdir(parents=True)
     integer_line_week(model_frame).to_parquet(features_path, index=False)
+    allow_whole_number_pool_lines(monkeypatch)
     request = prediction_cli.MarginPredictRequest(
         features=features_path,
         season=2020,

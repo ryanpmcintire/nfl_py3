@@ -417,15 +417,73 @@ def pool_spread_lock_utc(day: date) -> pd.Timestamp:
     return pd.Timestamp(local).tz_convert(UTC)
 
 
-def _pool_lock_for_observations(observed_at_utc: pd.Series) -> pd.Series:
-    """Per-quote lock instant: the pool lock on each quote's own UTC calendar day.
+def pool_calendar_day(instants_utc: pd.Series) -> pd.Series:
+    """Each instant's calendar day in the pool's zone (:data:`POOL_TIMEZONE`),
+    as a tz-naive midnight timestamp.
 
-    "Tuesday" is keyed on the UTC day throughout this module, so a quote at
-    Tuesday 01:00Z (Monday 21:00 ET) belongs to that Tuesday and its lock is
-    that Tuesday's 12:00 ET -- fifteen hours later, so the quote is pre-lock.
+    This is the ONE definition of "which day a quote or a kickoff belongs to"
+    for the live opener rule: a Monday 21:00 ET capture is Monday (even
+    though it is already Tuesday 01:00Z), and a Tuesday 20:30 ET capture is
+    Tuesday (even though it is already Wednesday 00:30Z). Calendar days are
+    tz-naive on purpose: day arithmetic on a zone-aware series is absolute
+    time, so subtracting six days across a DST change would land an hour
+    into the wrong day.
     """
 
-    days = observed_at_utc.dt.tz_convert(UTC).dt.normalize()
+    wall_clock = pd.to_datetime(instants_utc, utc=True).dt.tz_convert(POOL_TIMEZONE)
+    days: pd.Series = wall_clock.dt.tz_localize(None).dt.normalize()
+    return days
+
+
+def own_week_tuesday(kickoff_utc: pd.Series) -> pd.Series:
+    """Each game's own-week Tuesday: the most recent Tuesday on or before the
+    kickoff's calendar day in the pool's zone (tz-naive midnight timestamps,
+    the same representation as :func:`pool_calendar_day`).
+
+    NFL games fall Thursday through Monday, so this is always the Tuesday the
+    game's week opened -- INCLUDING Monday night, which kicks off at 20:15 ET
+    (00:15Z Tuesday). Keying on the UTC day instead made a Monday-night
+    game's "own Tuesday" its kickoff day, so its real opener (quoted the
+    Tuesday before) was never found and every Monday-night game lost its
+    live opener (found on Week 1 2026 lock day: 15 of 16 games had one).
+    """
+
+    kickoff_day = pool_calendar_day(kickoff_utc)
+    days_since_tuesday = (kickoff_day.dt.weekday - 1) % 7
+    tuesday: pd.Series = kickoff_day - pd.to_timedelta(days_since_tuesday, unit="D")
+    return tuesday
+
+
+def own_week_tuesday_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
+    """The rows of ``quotes`` observed on their game's own-week Tuesday, pregame.
+
+    The shared filter behind :func:`tuesday_opener_quotes` and
+    :func:`nfl_ats.clv.live_tuesday_openers`: a quote is an own-week Tuesday
+    quote when its observation's pool-zone calendar day
+    (:func:`pool_calendar_day`) equals its game's :func:`own_week_tuesday`
+    and it was observed before kickoff. A quote from an earlier week's
+    Tuesday is never an opener, post-lock or not (Codex lane AC, 2026-09-08:
+    an August 18 quote had been standing in for a September 13 game).
+    ``observed_at_utc`` and ``commence_time_utc`` must already be UTC
+    datetimes.
+    """
+
+    observed = quotes["observed_at_utc"]
+    kickoff = quotes["commence_time_utc"]
+    mask = pool_calendar_day(observed).eq(own_week_tuesday(kickoff)) & observed.lt(kickoff)
+    return quotes.loc[mask]
+
+
+def _pool_lock_for_observations(observed_at_utc: pd.Series) -> pd.Series:
+    """Per-quote lock instant: the pool lock on each quote's own calendar day
+    in the pool's zone (:func:`pool_calendar_day`).
+
+    A Tuesday 20:30 ET quote (already Wednesday 00:30Z) therefore measures
+    against Tuesday's 12:00 ET lock and is post-lock; a Monday 21:00 ET quote
+    is Monday's, and never reaches the opener rule at all.
+    """
+
+    days = pool_calendar_day(observed_at_utc)
     lookup = {day: pool_spread_lock_utc(day.date()) for day in days.unique()}
     lock: pd.Series = days.map(lookup)
     return lock
@@ -436,11 +494,16 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
 
     Bookmakers conventionally release opening lines for the coming week's
     slate on Tuesday, and the pool fixes its spreads at
-    :data:`POOL_SPREAD_LOCK_ET` that day. "Tuesday" is the UTC calendar day
-    of ``observed_at_utc`` (so a Monday 21:00 ET capture already counts as
-    Tuesday, and a Tuesday 20:30 ET capture counts as Wednesday); the lock
-    for a Tuesday quote is that same calendar day's 12:00 ET
-    (:func:`pool_spread_lock_utc`).
+    :data:`POOL_SPREAD_LOCK_ET` that day. Days are calendar days in the
+    pool's zone (:func:`pool_calendar_day`, ``America/New_York``): a game's
+    own Tuesday is the most recent Tuesday on or before its kickoff's ET
+    date (:func:`own_week_tuesday` -- for Monday night's 20:15 ET kickoff,
+    00:15Z Tuesday, that is the Tuesday six days earlier), a quote belongs
+    to the game's opener when its observation's ET date is that Tuesday and
+    it is pregame (:func:`own_week_tuesday_quotes`), and the lock for it is
+    that Tuesday's 12:00 ET (:func:`pool_spread_lock_utc`). So a Monday
+    21:00 ET capture is Monday and never an opener, and a Tuesday 20:30 ET
+    capture is a (post-lock) Tuesday quote, whatever the UTC clock says.
 
     Rule (2026-09-08, after a legacy 09:00 ET task fired on lock day and
     silently became the opener): per game and bookmaker, the opener is the
@@ -507,18 +570,10 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
     history["observed_at_utc"] = pd.to_datetime(history["observed_at_utc"], utc=True)
     history["commence_time_utc"] = pd.to_datetime(history["commence_time_utc"], utc=True)
     spreads = history.loc[history["market"].eq("spreads") & history["outcome_side"].eq("HOME")]
-    # The game's OWN Tuesday (the most recent UTC Tuesday on or before its
-    # kickoff), pregame only: a quote from an earlier week's Tuesday is never
-    # an opener, post-lock or not (Codex lane AC, 2026-09-08: an August 18
-    # quote had been standing in for a September 13 game).
-    days_since_tuesday = (spreads["commence_time_utc"].dt.weekday - 1) % 7
-    own_week_tuesday = spreads["commence_time_utc"].dt.normalize() - pd.to_timedelta(
-        days_since_tuesday, unit="D"
-    )
-    tuesday = spreads.loc[
-        spreads["observed_at_utc"].dt.normalize().eq(own_week_tuesday)
-        & spreads["observed_at_utc"].lt(spreads["commence_time_utc"])
-    ].copy()
+    # The game's OWN Tuesday in the pool's zone, pregame only (the shared
+    # filter; see own_week_tuesday_quotes for why the ET date, not the UTC
+    # day, decides).
+    tuesday = own_week_tuesday_quotes(spreads).copy()
     if tuesday.empty:
         return pd.DataFrame(columns=columns)
     lock = _pool_lock_for_observations(tuesday["observed_at_utc"])

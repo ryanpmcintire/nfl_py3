@@ -112,6 +112,7 @@ from nfl_ats.pool import (
 )
 from nfl_ats.prediction_safety import (
     validate_outcome_prediction_card,
+    validate_pool_lines,
     validate_prediction_card,
     validate_prediction_lineage,
 )
@@ -275,6 +276,13 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
     predictions = attach_market_observed_at(
         predictions, market_raw_root=_data_root() / "market" / "raw"
     )
+    # The served decision line must be the POOL's line, and the pool quotes
+    # only half points (nfl_ats.prediction_safety.validate_pool_lines). A
+    # whole number here means the card was built against the schedule feed's
+    # spread_line instead -- a line nobody can play, on which the key-number
+    # pick read fires and a push probability is a live outcome. Fail closed
+    # before anything is written; historical evaluation never reaches here.
+    validate_pool_lines(predictions)
     safety = validate_outcome_prediction_card(
         predictions,
         min_edge=request.min_edge,

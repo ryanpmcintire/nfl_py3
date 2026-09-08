@@ -1,0 +1,147 @@
+{
+  "artifact_directory": "artifacts\\margin_predictions\\2026-week-01-20260908T171308Z",
+  "backfill_note": null,
+  "code_diff_sha256": "32241b9b39b1f9ceae7679591e521710759bc42ca8966710383515b146296a50",
+  "code_dirty": true,
+  "code_revision": "fc522c84c2244689bbfad16fd529837b90ae8aa8",
+  "command": "margin-predict",
+  "config_hash": "d5f1fa4ae195220bcb3aa406f176f8a697386dd5cca53641f794f4b27cc00b02",
+  "experiment_id": "margin-predict/2026-week-01-20260908T171308Z",
+  "feature_table_sha256": "8a2b19932ac562a928686d0096ccbecb338d3ec245ec016ebad31d899639bdc8",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "environment",
+      "key_line_pick_read",
+      "lineage",
+      "prediction_safety",
+      "provenance"
+    ],
+    "active_model_id": "3ccf838f9a304dcd",
+    "artifact_contract": {
+      "builder_module": "nfl_ats.cli",
+      "builder_version": "v1",
+      "kind": "forecast",
+      "schema_version": 1
+    },
+    "ats_method": "market_residual",
+    "calibration_method": "none",
+    "command": "margin-predict",
+    "created_at_utc": "2026-09-08T17:13:08.641243+00:00",
+    "discrete_push_read": {
+      "error": null,
+      "games": 16,
+      "mean_push_at_whole_number_lines": null,
+      "opener_lines_matched": 1537,
+      "path": "discrete_push_read.json",
+      "policy": "mass_preserving_lattice_mp1_v1",
+      "prior_rows": 1359,
+      "served": true,
+      "source_model_id": "3ccf838f9a304dcd",
+      "source_path": "opener_evaluation/20260908T171211Z",
+      "warnings": [],
+      "whole_number_lines": 0
+    },
+    "feature_profile": "weak_stack",
+    "game_type": "REG",
+    "games": 16,
+    "historical_evaluation": {
+      "accuracy": 0.5228915662650603,
+      "artifact": "margins/20260908T170903Z",
+      "correct": 1085,
+      "games": 2075,
+      "intervals": {
+        "season": {
+          "lower": 0.5099628311571234,
+          "upper": 0.5351398739164697
+        },
+        "week": {
+          "lower": 0.5016886695405114,
+          "upper": 0.5433557426489067
+        }
+      }
+    },
+    "home_side_offset": {
+      "error": null,
+      "offsets": {
+        "0-3": 0.0,
+        "10.5+": 1.9156630904599907,
+        "3.5-6.5": 0.0,
+        "7": -0.1706227543390291,
+        "7.5-10": 0.7842112030643906
+      },
+      "path": "home_side_offset.json",
+      "policy": "home_side_offset_big_spreads_v2",
+      "prior_games": {
+        "0-3": 504,
+        "10.5+": 113,
+        "3.5-6.5": 468,
+        "7": 65,
+        "7.5-10": 160
+      },
+      "sides_changed": [],
+      "source_model_id": "3ccf838f9a304dcd",
+      "source_path": "opener_evaluation/20260908T171211Z",
+      "warnings": []
+    },
+    "line_sweep": {
+      "methods": [
+        "fair_margin",
+        "market",
+        "market_residual"
+      ],
+      "offsets": [
+        -4.0,
+        -3.5,
+        -3.0,
+        -2.5,
+        -2.0,
+        -1.5,
+        -1.0,
+        -0.5,
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5,
+        3.0,
+        3.5,
+        4.0
+      ],
+      "path": "line_sweep.parquet",
+      "pick_read": "key_line_pick_read_v1",
+      "probability_method": "gaussian_median",
+      "push_read": "mass_preserving_lattice_mp1_v1",
+      "rows": 816
+    },
+    "methods": [
+      "direct_ats",
+      "fair_margin",
+      "market",
+      "market_residual",
+      "straight_up"
+    ],
+    "min_edge": 0.02,
+    "min_train_games": 500,
+    "probability_method": "gaussian_median",
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "season": 2026,
+    "straight_up_pool_methods": [
+      "market",
+      "fair_margin",
+      "market_residual",
+      "straight_up"
+    ],
+    "synchronization_status": "SYNCHRONIZED",
+    "week": 1
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-08T17:13:08.641243+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats margin-predict",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

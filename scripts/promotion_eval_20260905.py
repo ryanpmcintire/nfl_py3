@@ -48,7 +48,10 @@ if str(REPO_ROOT / "scripts") not in sys.path:
 
 import on_production_opener_confirmation as confirmation  # noqa: E402
 
-from nfl_ats.clv import opener_pick_evaluation  # noqa: E402
+from nfl_ats.clv import (  # noqa: E402
+    opener_pick_evaluation,
+    resolve_active_probability_method,
+)
 from nfl_ats.margin import fit_margin_model, margin_feature_columns  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 from nfl_ats.qb_identity_features import (  # noqa: E402
@@ -94,6 +97,7 @@ CANDIDATE_ARM_NAMES = ("qb_revenge", "deadline_drag", "both")
 
 def model_config(profile: str) -> dict[str, Any]:
     return {
+        "probability_method": resolve_active_probability_method(),
         "feature_profile": profile,
         "regressor": REGRESSOR,
         "ridge_alpha": RIDGE_ALPHA,

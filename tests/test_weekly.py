@@ -478,6 +478,47 @@ def test_step_failure_names_the_step_and_stops_the_run(tmp_path: Path) -> None:
     ]
 
 
+def test_an_aborted_run_carries_its_partial_summary_on_the_error(tmp_path: Path) -> None:
+    """The lock-day decision package is written from a ``finally`` and takes
+    whatever ``summary`` the caller holds, which on an abort was the empty
+    dict initialised before the run. The 2026-09-08 lock therefore left a
+    package with ``run_summary: null``: the one artifact that exists to
+    explain a lock day could not name the step that failed. The partial
+    summary now travels on the exception."""
+
+    data_root = _write_data_root(tmp_path)
+
+    def failing(command: Sequence[str]) -> dict[str, Any]:
+        if command[0] == "margin-backtest":
+            raise RuntimeError("evaluator blew up")
+        return {}
+
+    with pytest.raises(WeeklyRunError) as raised:
+        run_weekly(
+            season=2026,
+            week=1,
+            data_root=data_root,
+            artifacts_root=tmp_path / "artifacts",
+            skip_prospective=True,
+            runner=failing,
+            progress=False,
+        )
+
+    summary = raised.value.summary
+    assert isinstance(summary, dict)
+    assert summary["failed_step"] == "margin-backtest"
+    assert summary["published"] is False
+    failed = [step for step in summary["steps"] if step.get("status") == "failed"]
+    assert [step["name"] for step in failed] == ["margin-backtest"]
+    assert "evaluator blew up" in failed[0]["error"]
+    assert [step["name"] for step in summary["steps"] if step.get("status") == "ok"] == [
+        "ingest",
+        "build-features",
+        "build-pbp-features",
+        "build-player-features",
+    ]
+
+
 def test_the_card_path_follows_the_active_profile_instead_of_reverting_it(
     tmp_path: Path,
 ) -> None:

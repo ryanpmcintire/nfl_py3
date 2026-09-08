@@ -39,6 +39,79 @@ probability on touched games through the per-game override helpers below
 :func:`load_pick_overrides`), the same shape ``home_side_location``'s
 ``served_center_offsets`` / ``center_offsets_from_metadata`` use, so a
 pre-promotion card (no sidecar, no metadata block) behaves exactly as today.
+
+The atom-EQUALITY test cannot fire on the pool's lines. The key-number
+mass matters MORE there, not less (2026-09-08)
+-----------------------------------------------------------------------
+
+Read this whole section before concluding anything about scope. It is the
+one place a future session is most likely to draw the wrong conclusion.
+
+Measured 2026-09-08 on the owner's own pool
+(``data/splash/2026_week01_20260908_noon.json``, all sixteen Week 1 games of
+the Splash Sports contest the card is played into): **every line the pool
+quotes is a half point** -- 3.5, -2.5, 6.5, 8.5, 1.5, 9.5 and so on, with
+**nine of the sixteen within half a point of 3** (six at |3.5|, three at
+|2.5|). ``KEY_LINE_ATOMS`` is tested by exact equality, so it can never
+match one of those lines and this module's override never fires on the
+served card.
+
+**That is a limitation of this narrow TEST, not of the mechanism, and it is
+the opposite of a reason to stop reading the margin distribution
+discretely.** Measured this session on 4,431 completed regular-season games
+(``data/processed/game_features.parquet``, 2009-2025), the empirical
+home-cover rate at a neutral point against a normal fitted to the same
+games:
+
+===========  ===========  ==========  =========================
+Line         Empirical    Gaussian    Gaussian error
+===========  ===========  ==========  =========================
+2.5          50.85%       48.71%      2.14 points TOO LOW
+3.5          43.04%       45.99%      2.95 points too high
+6.5          35.32%       37.98%      2.66 points too high
+7.5          30.92%       35.40%      4.49 points too high
+10.5         24.42%       28.11%      3.69 points too high
+===========  ===========  ==========  =========================
+
+Crossing the 3 atom from 2.5 to 3.5 the empirical cover chance falls
+**7.81 points**; the smooth read says 2.72 -- it understates the cliff by
+**2.87x** and errs in OPPOSITE directions on the two sides of the atom. At
+2.5 the two reads straddle 0.5 outright, i.e. they pick opposite sides of a
+neutral game. The reason is mechanical: 14.58% of finals land exactly on
+|3|, and on a WHOLE-number line that mass is absorbed by the push, while on
+a half-point line the entire block falls on ONE side of the number. The
+discrete conditional distribution is therefore *more* decisive at the
+pool's lines than at the ones this module was measured on.
+
+So, precisely:
+
+* **The multimodal premise is untouched and still correct** (AGENTS.md,
+  "Football margins are multimodal, not Gaussian"). The numbers above are
+  additional evidence FOR it at half-point lines. Nothing here may be cited
+  as refuting it, and nothing here disables any discrete read: the served
+  three-way split (``docs/discrete_push_read.md``,
+  :func:`~nfl_ats.mass_preserving_lattice.serve_discrete_three_way`) keeps
+  serving on every game, which is exactly what a half-point line needs.
+* **Nothing here closes lane T.** Every lane T cell stays
+  ``unresolved_below_power`` at ``probability_positive`` 0.7426 through the
+  played card. The read remains correct machinery for a whole-number line,
+  a registered paired challenger, and the way the 1,537-game archive -- which
+  is graded on whole-number-capable lines, where the push is real -- is read.
+* **The generalisation is the open direction, not a dropped idea**: price
+  the served cover probability off the discrete conditional distribution at
+  EVERY half-point line, not only where the line equals an atom. Stated,
+  with these numbers, as a predeclared TODO in
+  ``docs/key_line_pick_read.md`` (MOD-18 candidate C2). It is not
+  implemented or measured here; another lane owns it.
+
+:func:`key_line_read_applicable` is the atom-equality predicate, named once
+and imported by every caller, and :func:`key_line_applicability` summarises
+it for a week so the sidecar, the metadata block and the log can say **"the
+atom test matched nothing, and why"** (:data:`KEY_LINE_STATUS_INAPPLICABLE`,
+with the lattice fitted and recorded) rather than reporting the same bare
+zero touched games as **"did not run"** (:data:`KEY_LINE_STATUS_NOT_RUN`,
+no lattice, an ``error``). A reader and a future session must be able to
+tell those apart.
 """
 
 from __future__ import annotations
@@ -78,6 +151,27 @@ KEY_LINE_ATOMS: tuple[float, ...] = (3.0, 7.0)
 #: line is never on an atom.
 KEY_LINE_TOLERANCE = 1e-9
 
+#: The three states the served policy can be in for one week, written into
+#: the sidecar and the metadata block as ``status``. They exist because two
+#: of them otherwise look identical from outside -- both report zero touched
+#: games -- and a reader has to be able to tell them apart:
+#:
+#: * ``served``      -- the lattice was fitted and at least one served line
+#:                      sat on an atom, so the read decided that game's side.
+#: * ``inapplicable`` -- the lattice was fitted and the atom-equality test
+#:                      matched NO served line. On the owner's pool, whose
+#:                      every quote is a half point, this is the expected
+#:                      steady state; ``applicability.reason`` says so in
+#:                      words. It says nothing about whether a discrete read
+#:                      belongs at those lines -- see the module docstring,
+#:                      where the measured answer is that it belongs more.
+#: * ``not_run``     -- the policy could not be built at all (flag off, or no
+#:                      lattice this week). ``error`` says why, ``fit`` is
+#:                      null, and there is nothing to be applicable ABOUT.
+KEY_LINE_STATUS_SERVED = "served"
+KEY_LINE_STATUS_INAPPLICABLE = "inapplicable"
+KEY_LINE_STATUS_NOT_RUN = "not_run"
+
 
 # ---------------------------------------------------------------------------
 # The atom selection and the decision number (lane T's definitions)
@@ -104,6 +198,10 @@ def key_line_mask(
     Lane T's ``key_line_mask`` (``scripts/key_line_lattice_opener_eval.py``),
     reproduced: ``abs(line)`` against each atom within 1e-9. Half-point and
     quarter-point lines never match; a missing line never matches.
+
+    The vectorised form of :func:`key_line_read_applicable`, and equal to it
+    element for element -- both go through :func:`key_line_atom`. Use this
+    over a frame, that one over a single line, and neither over a rewrite.
     """
 
     size = np.abs(pd.to_numeric(pd.Series(list(lines)), errors="coerce").to_numpy(dtype=float))
@@ -112,6 +210,140 @@ def key_line_mask(
         return np.zeros(size.shape, dtype=bool)
     hits = np.abs(size[:, None] - keys[None, :]) < KEY_LINE_TOLERANCE
     return np.asarray(np.any(hits, axis=1) & np.isfinite(size), dtype=bool)
+
+
+def is_half_point_line(line: float | None) -> bool:
+    """True when ``line`` is quoted at a half point (3.5, -2.5, 6.5 ...).
+
+    A real NFL final margin is a whole number of points, so a half-point
+    line can never be settled exactly and can never be a key number. The
+    owner's pool quotes only these (see the module docstring).
+    """
+
+    if line is None:
+        return False
+    value = float(line)
+    if not np.isfinite(value):
+        return False
+    return bool(abs((abs(value) % 1.0) - 0.5) < KEY_LINE_TOLERANCE)
+
+
+def key_line_read_applicable(line: float | None, atoms: Iterable[float] = KEY_LINE_ATOMS) -> bool:
+    """Whether THIS module's atom-equality test can fire on ``line``.
+
+    The named predicate the served path skips on, so "the read did not move
+    this game" is an answer with a reason rather than a silence. It is true
+    only when the quoted line sits exactly on an atom (3 or 7, either sign);
+    a half-point line -- every line the owner's pool quotes -- is false, and
+    so is a whole number off the atoms and a missing line.
+
+    Scope warning, and the module docstring has the numbers: false here
+    means only that THIS narrow test cannot match, never that a discrete
+    read of the margin distribution is inappropriate at that line. The
+    opposite holds at a half point -- the 14.58% of finals landing exactly
+    on |3| all fall on ONE side of a 2.5 or 3.5 line instead of being
+    absorbed by a push, and the smooth read misses the resulting cliff by
+    2.87x. The served three-way split stays discrete on every game, and
+    generalising the SIDE read to every half-point line is the predeclared
+    open direction (MOD-18 candidate C2, ``docs/key_line_pick_read.md``).
+    Nothing about this predicate closes or refutes lane T.
+    """
+
+    if line is None:
+        return False
+    return key_line_atom(float(line), atoms) is not None
+
+
+@dataclass(frozen=True)
+class KeyLineApplicability:
+    """Whether a week's SERVED lines could match the atom-equality test.
+
+    Recorded in the sidecar and the metadata block so that a week in which
+    the read touched nothing carries its reason. Counts are over the served
+    games only, in the order the card lists them.
+
+    ``applicable is False`` is a fact about this module's exact-match test,
+    never a finding about the margin distribution: at the half-point lines
+    that produce it the key-number mass is more decisive, not less (module
+    docstring, with the measured table).
+    """
+
+    games: int
+    lines_on_an_atom: int
+    half_point_lines: int
+    whole_number_lines: int
+    atoms: tuple[float, ...] = KEY_LINE_ATOMS
+
+    @property
+    def applicable(self) -> bool:
+        """True when at least one served line sat on an atom."""
+
+        return self.lines_on_an_atom > 0
+
+    @property
+    def status(self) -> str:
+        return KEY_LINE_STATUS_SERVED if self.applicable else KEY_LINE_STATUS_INAPPLICABLE
+
+    @property
+    def reason(self) -> str | None:
+        """Why the atom test matched nothing, or ``None`` when it matched.
+
+        Names the pool's own convention when every served line is a half
+        point, because that is the case the owner's contest produces every
+        week and the one a future session is most likely to misread as a
+        broken policy -- and points at the open generalisation so it is not
+        misread as a dropped idea either.
+        """
+
+        if self.applicable:
+            return None
+        numbers = " or ".join(f"{atom:g}" for atom in self.atoms) or "any key number"
+        if self.games == 0:
+            return f"no line was served this week, so no line could sit on {numbers}"
+        if self.half_point_lines == self.games:
+            return (
+                f"no served line sits exactly on {numbers}: all {self.games} are half points, "
+                "which the pool always quotes. The key-number mass still decides these games -- "
+                "it falls on one side instead of pushing -- so this is the exact-match test not "
+                "matching, not a reason to read them smoothly (MOD-18 candidate C2)"
+            )
+        return (
+            f"no served line sits exactly on {numbers}: of {self.games} lines, "
+            f"{self.half_point_lines} are half points and {self.whole_number_lines} are whole "
+            "numbers off those atoms (MOD-18 candidate C2 generalises the read to every line)"
+        )
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "applicable": self.applicable,
+            "reason": self.reason,
+            "atoms": list(self.atoms),
+            "games": self.games,
+            "lines_on_an_atom": self.lines_on_an_atom,
+            "half_point_lines": self.half_point_lines,
+            "whole_number_lines": self.whole_number_lines,
+        }
+
+
+def key_line_applicability(
+    lines: Iterable[float | None], atoms: Iterable[float] = KEY_LINE_ATOMS
+) -> KeyLineApplicability:
+    """Summarise :func:`key_line_read_applicable` over one week's served lines."""
+
+    declared = tuple(float(atom) for atom in atoms)
+    values = [None if line is None else float(line) for line in lines]
+    on_atom = sum(1 for line in values if key_line_read_applicable(line, declared))
+    half_point = sum(1 for line in values if is_half_point_line(line))
+    whole_number = sum(
+        1 for line in values if line is not None and np.isfinite(line) and float(line).is_integer()
+    )
+    return KeyLineApplicability(
+        games=len(values),
+        lines_on_an_atom=on_atom,
+        half_point_lines=half_point,
+        whole_number_lines=whole_number,
+        atoms=declared,
+    )
 
 
 def key_line_decision_probability(read: MassPreservingRead) -> float:
@@ -156,6 +388,25 @@ class ServedKeyLineRead:
     def side_changed(self) -> bool:
         return (self.served >= 0.5) != (self.smooth >= 0.5)
 
+    @property
+    def inapplicable_reason(self) -> str | None:
+        """Why this game's side was NOT read off the lattice, or ``None``.
+
+        Per-game counterpart of :attr:`KeyLineApplicability.reason`: an
+        untouched game says whether its line was a half point (the pool's
+        own convention, which no final margin can land on) or a whole number
+        that simply is not one of the declared atoms.
+        """
+
+        if self.touched:
+            return None
+        if is_half_point_line(self.line):
+            return (
+                "half-point line, so the exact-match test on 3 and 7 cannot fire; the key-number "
+                "mass lands wholly on one side here rather than pushing (MOD-18 candidate C2)"
+            )
+        return "whole-number line, but not one of the declared key numbers"
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "game_id": self.game_id,
@@ -163,6 +414,7 @@ class ServedKeyLineRead:
             "point": self.point,
             "atom": self.atom,
             "touched": self.touched,
+            "inapplicable_reason": self.inapplicable_reason,
             "home_cover_probability_smooth": self.smooth,
             "home_cover_probability_discrete": self.discrete,
             "home_cover_probability": self.served,
@@ -220,6 +472,19 @@ def apply_key_line_pick_read(
     column and every other game is returned untouched. ``log``, when given,
     receives one :class:`ServedKeyLineRead` per game (touched or not) with
     the smooth read it replaced or kept.
+
+    Where it applies: a game is touched only when
+    :func:`key_line_read_applicable` is true of its served line. On a
+    half-point line -- every line the owner's pool quotes -- it is false and
+    the smooth read is kept for the SIDE, with
+    :attr:`ServedKeyLineRead.inapplicable_reason` saying so per game and
+    :func:`key_line_applicability` saying so for the week. That records the
+    exact-match test not matching. It is NOT a finding that the smooth read
+    is right there: measured, it misses the cliff across the 3 atom by 2.87x
+    and picks the opposite side of a neutral game at 2.5 (module docstring).
+    The three-way split on those same games stays discrete throughout, and
+    generalising the side read to every half-point line is MOD-18 candidate
+    C2. The multimodal premise and every lane T cell are unaffected.
     """
 
     if len(forecasts) != len(games):
@@ -325,14 +590,30 @@ def key_line_sidecar(
     """The ``key_line_pick_read.json`` payload: both reads per served game.
 
     ``served`` is ``False`` (with ``error``) when the policy could not be
-    applied this week -- the smooth read was served on every game and the
+    built this week -- the smooth read was served on every game and the
     paired challenger has nothing paired to record.
+
+    ``status`` separates the two ways a week can show zero touched games
+    (see :data:`KEY_LINE_STATUS_SERVED` and friends): ``not_run`` means
+    there was no lattice to read, ``inapplicable`` means the lattice was
+    fitted and no served line sat on an atom -- the expected steady state on
+    the owner's half-point pool. ``applicability`` carries the counts and
+    the reason in the second case and is ``None`` in the first, because a
+    policy that never ran has nothing to be applicable about.
     """
 
     games = [log[game_id].to_dict() for game_id in game_ids if game_id in log]
+    served = policy is not None and error is None
+    applicability = (
+        key_line_applicability([row.get("spread_line") for row in games], policy.atoms)
+        if served and policy is not None
+        else None
+    )
     return {
         "schema": "key_line_pick_read/1",
-        "served": policy is not None and error is None,
+        "served": served,
+        "status": (applicability.status if applicability is not None else KEY_LINE_STATUS_NOT_RUN),
+        "applicability": applicability.to_dict() if applicability is not None else None,
         "policy": KEY_LINE_PICK_READ_POLICY,
         "atoms": list(policy.atoms if policy is not None else KEY_LINE_ATOMS),
         "challenger": "smooth_gaussian_median_every_line",
@@ -347,7 +628,12 @@ def key_line_metadata_block(sidecar: Mapping[str, Any]) -> dict[str, Any]:
     reader text): the policy, the atoms, the touched games with both reads
     (so the served probability is rebuildable from metadata alone, the way
     ``center_offsets_from_metadata`` rebuilds the offset), and the sides
-    that changed."""
+    that changed.
+
+    Carries ``status`` and ``applicability`` through from the sidecar so a
+    card whose metadata is read without its forecast directory can still
+    distinguish "the read did not apply to any line this week, and here is
+    why" from "the read did not run at all"."""
 
     games = sidecar.get("games")
     rows = [row for row in games if isinstance(row, Mapping)] if isinstance(games, list) else []
@@ -356,6 +642,8 @@ def key_line_metadata_block(sidecar: Mapping[str, Any]) -> dict[str, Any]:
         "path": KEY_LINE_PICK_READ_FILENAME,
         "policy": sidecar.get("policy"),
         "served": bool(sidecar.get("served")),
+        "status": sidecar.get("status"),
+        "applicability": sidecar.get("applicability"),
         "atoms": list(sidecar.get("atoms") or []),
         "error": sidecar.get("error"),
         "games": len(rows),
@@ -482,16 +770,23 @@ __all__ = [
     "KEY_LINE_PICK_READ_FILENAME",
     "KEY_LINE_PICK_READ_POLICY",
     "KEY_LINE_PICK_READ_SERVED",
+    "KEY_LINE_STATUS_INAPPLICABLE",
+    "KEY_LINE_STATUS_NOT_RUN",
+    "KEY_LINE_STATUS_SERVED",
     "KEY_LINE_TOLERANCE",
+    "KeyLineApplicability",
     "KeyLinePickRead",
     "ServedKeyLineRead",
     "apply_key_line_pick_read",
     "apply_key_line_pick_read_to_sweep",
     "apply_pick_overrides",
+    "is_half_point_line",
+    "key_line_applicability",
     "key_line_atom",
     "key_line_decision_probability",
     "key_line_mask",
     "key_line_metadata_block",
+    "key_line_read_applicable",
     "key_line_sidecar",
     "key_line_touched_games",
     "load_forecast_key_line_pick_read",

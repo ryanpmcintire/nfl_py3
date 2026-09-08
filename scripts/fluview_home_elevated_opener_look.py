@@ -70,6 +70,7 @@ if str(REPO_ROOT / "src") not in sys.path:
 from nfl_ats.clv import (  # noqa: E402
     opener_evaluation_metrics,
     opener_pick_evaluation,
+    resolve_active_probability_method,
     week_blocked_bootstrap,
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES  # noqa: E402
@@ -97,6 +98,7 @@ NULL_PERMUTATIONS = 200
 
 def _config(profile: str) -> dict[str, Any]:
     return {
+        "probability_method": resolve_active_probability_method(),
         "feature_profile": profile,
         "regressor": REGRESSOR,
         "ridge_alpha": RIDGE_ALPHA,

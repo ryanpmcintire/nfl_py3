@@ -74,6 +74,7 @@ from nfl_ats.four_overlay_composition import (
     SPREAD_GAP_ZONE_FADE,
     FourOverlayCompositionResult,
 )
+from nfl_ats.key_line_pick_read import is_half_point_line
 from nfl_ats.lineage import FIELD_MARKET_LINE, CardLineage
 from nfl_ats.market_decomposition import GameExplanation, explain_game_structured
 from nfl_ats.player_arrests_back_side_overlay import ArrestFlip
@@ -851,9 +852,19 @@ def _render_text(
     sentences = [
         _lead_sentence(market_line, model_probability, matchup),
         (
-            _key_line_sentence(market_line.home_spread_line, push_probability)
-            if key_line_read
-            else _push_sentence(market_line.home_spread_line, push_probability)
+            # A half point is what the owner's pool posts on every game, and
+            # nothing can land on it -- so the reader is told there is no tie
+            # here, rather than shown a 0% chance of one as if it had been
+            # measured. Only a whole-number line gets a push number at all.
+            # This routes the TIE sentence only; the cover chance beside it
+            # is still the discrete read (docs/key_line_pick_read.md).
+            _no_push_sentence(market_line.home_spread_line)
+            if is_half_point_line(market_line.home_spread_line)
+            else (
+                _key_line_sentence(market_line.home_spread_line, push_probability)
+                if key_line_read
+                else _push_sentence(market_line.home_spread_line, push_probability)
+            )
         ),
         _what_tips_it_sentence(game_explanation),
         _situational_adjustment_sentence(overlays),
@@ -865,6 +876,34 @@ def _render_text(
 
 #: Whole-number lines football finals pile up on (docs/discrete_push_read.md).
 _KEY_NUMBER_LINES: frozenset[int] = frozenset({3, 7, 10, 14})
+
+
+def _no_push_sentence(home_spread_line: float | None) -> str:
+    """One plain sentence for a half-point line: this game cannot tie the number.
+
+    The pool posts every line at a half point (measured 2026-09-08 on all
+    sixteen Week 1 games of the owner's contest), and a final score is a
+    whole number of points, so landing exactly on the line is impossible.
+    Before this, such a game simply said nothing about ties while the card
+    still carried a push chance of 0% beside it, which reads as a measured
+    near-zero rather than an impossibility. Saying it plainly is the honest
+    version, and it is the ONLY thing that changes for a reader here.
+
+    This is a statement about ties, and about nothing else. The cover
+    chance beside it is still read off the discrete margin distribution
+    conditional on the line -- which matters MORE at a half point, because
+    the roughly 14.6 in 100 games that finish exactly on 3 all land on one
+    side of a 2.5 or 3.5 number instead of tying it
+    (docs/key_line_pick_read.md). Never rewrite this into "the key numbers
+    do not apply here".
+    """
+
+    if home_spread_line is None or not is_half_point_line(home_spread_line):
+        return ""
+    return (
+        "The line is a half point, so the game cannot finish exactly on it: there are no ties "
+        "here, and one side or the other covers."
+    )
 
 
 def _push_sentence(home_spread_line: float | None, push_probability: float | None) -> str:

@@ -66,6 +66,39 @@ declared once in `src/nfl_ats/key_line_pick_read.py`; every caller imports
 them. With the flag `False`, `margin-predict` serves the smooth two-way read
 on every game again and writes no sidecar.
 
+Applicability, and telling "did not apply" from "did not run"
+(2026-09-08): `key_line_read_applicable(line)` is the named predicate the
+served path skips on (the single-line form of lane T's `key_line_mask`),
+`key_line_applicability(lines)` summarises it for a week, and the sidecar
+and metadata block both carry a `status` plus an `applicability` object:
+
+| `status` | Means | `applicability` | `error` | `fit` |
+|---|---|---|---|---|
+| `served` | the lattice was fitted and at least one served line sat on an atom | counts, `applicable: true`, `reason: null` | null | present |
+| `inapplicable` | the lattice was fitted and the exact-match test matched no served line -- **the steady state on the owner's half-point pool** | counts, `applicable: false`, `reason` in words | null | present |
+| `not_run` | the policy could not be built (flag off, or no lattice this week) | `null` -- there is nothing to be applicable about | why | null |
+
+Both of the last two touch zero games; before this they were
+indistinguishable from outside. Each game row also carries an
+`inapplicable_reason` (`"half-point line, so the exact-match test on 3 and
+7 cannot fire; the key-number mass lands wholly on one side here rather
+than pushing (MOD-18 candidate C2)"`, or `"whole-number line, but not one
+of the declared key numbers"`). `served` stays `true` in the
+`inapplicable` case, so every downstream reader -- the refresh, the paired
+challenger, the override helpers -- behaves exactly as it did.
+
+Served-line provenance (2026-09-08):
+`prediction_safety.validate_pool_lines` fails the served card **closed**
+when any decision line is a whole number, because the pool posts only half
+points and a whole number therefore proves the line came from the schedule
+feed. It is called from `orchestrate_margin_predict` only. It is
+deliberately NOT part of `validate_prediction_card` /
+`validate_outcome_prediction_card`: the opener archive, every backtest and
+every registry cell are graded on whole-number-capable lines and must keep
+passing untouched. A fixture that quotes whole numbers on purpose (the ones
+that exercise this module) opts out explicitly through
+`POOL_QUOTES_HALF_POINT_LINES`; production never takes that path.
+
 ## Where it is wired
 
 - `nfl_ats.key_line_pick_read`: `key_line_mask` (lane T's atom selection,
@@ -235,6 +268,109 @@ step 1 lands, which is the fail-closed behaviour every recorder shares.
   `publish-board` after the lock measures it.
 - Nothing else moves: not the push chance, not the three-way split, not
   any game off 3 or 7.
+
+## Scope: the atom-equality test cannot fire on the pool's lines, and the key-number mass matters MORE there (2026-09-08)
+
+**Read this whole section before concluding anything about scope.** It is
+the place a future session is most likely to draw the wrong conclusion.
+
+Measured 2026-09-08 on the owner's own pool
+(`data/splash/2026_week01_20260908_noon.json`, all sixteen Week 1 games of
+the Splash Sports contest this card is played into): **every line the pool
+posts is a half point** -- 3.5, 3.5, -2.5, 8.5, 6.5, 3.5, 1.5, 3.5, -3.5,
+-1.5, 1.5, 9.5, 3.5, 5.5, -2.5, 2.5 -- and **nine of the sixteen sit within
+half a point of 3** (six at |3.5|, three at |2.5|). `KEY_LINE_ATOMS` is
+tested by exact equality, so it can never match one of those lines and the
+override never fires on the served card.
+
+Until 2026-09-08 the served decision line came from nflverse
+`schedules.spread_line`, which does carry whole numbers, and the read
+therefore fired on lines the pool does not offer. Measured on the card
+regenerated that afternoon
+(`artifacts/margin_predictions/2026-week-01-20260908T162923Z/key_line_pick_read.json`):
+six games were treated as sitting on an atom (ATL_PIT 3.0, CHI_CAR -3.0,
+DAL_NYG -3.0, DEN_KC 3.0, NE_SEA 3.0, NO_DET 7.0) and **three of them
+changed sides** (CHI_CAR, DAL_NYG, NO_DET) -- while the pool quoted those
+same six at 3.5, -2.5, -2.5, 2.5, 3.5 and 6.5.
+
+### This is a limitation of the exact-match TEST, not of the mechanism
+
+Measured this session on 4,431 completed regular-season games
+(`data/processed/game_features.parquet`, 2009-2025): the empirical
+home-cover rate at a neutral point, against a normal fitted to the same
+games.
+
+| Line | Empirical cover | Gaussian | Gaussian error |
+|---:|---:|---:|---|
+| 2.5 | 50.85% | 48.71% | **2.14 points TOO LOW** |
+| 3.5 | 43.04% | 45.99% | 2.95 points too high |
+| 6.5 | 35.32% | 37.98% | 2.66 points too high |
+| 7.5 | 30.92% | 35.40% | 4.49 points too high |
+| 10.5 | 24.42% | 28.11% | 3.69 points too high |
+
+Crossing the 3 atom from 2.5 to 3.5 the empirical cover chance falls
+**7.81 points**; the smooth read says 2.72. It understates the cliff by
+**2.87x**, and it errs in **opposite directions** on the two sides of the
+atom -- at 2.5 the two reads straddle 0.5 outright, i.e. they pick opposite
+sides of a neutral game.
+
+The reason is mechanical: **14.58% of finals land exactly on |3|**. On a
+whole-number line that mass is absorbed by the push; on a half-point line
+the entire block falls on **one** side of the number. So the discrete
+conditional distribution is *more* decisive at the pool's lines than at the
+whole numbers this module was measured on, not less.
+
+Precisely, and none of it closes anything:
+
+- **The multimodal premise is untouched and still correct** (AGENTS.md,
+  "Football margins are multimodal, not Gaussian"). The table above is
+  additional evidence *for* it at half-point lines. Nothing in this
+  document may be cited as refuting it.
+- **No discrete read is switched off.** The served three-way split
+  (`docs/discrete_push_read.md`,
+  `mass_preserving_lattice.serve_discrete_three_way`) keeps serving on
+  every game and carries the correct conditional mass, which is exactly
+  what a half-point line needs.
+- **Nothing here closes lane T.** Every lane T cell stays
+  `unresolved_below_power` at `probability_positive` 0.7426 through the
+  played card. The read remains correct machinery for a whole-number line,
+  a registered paired challenger, and the way the 1,537-game archive --
+  graded on whole-number-capable lines, where the push is real -- is read.
+
+### TODO, predeclared: generalise the side read to every half-point line (MOD-18 candidate C2)
+
+**Not implemented, not measured, and owned by another lane.** Stated here
+with its numbers so the next session finds the direction rather than
+finding a gate and concluding the idea was tried and dropped.
+
+The direction: **price the served cover probability off the discrete
+conditional margin distribution at EVERY line the pool posts, not only
+where the line equals an atom.** The lattice
+(`mass_preserving_lattice.band_read`) already answers at any line -- the
+served three-way split calls it on every game today -- so the change is to
+the SIDE read, not to the construction. At a half-point line `push` is zero
+by construction and `cover` already carries the whole key-number block on
+its correct side; the candidate two-way number is that `cover` (there is no
+push to halve), against the smooth `gaussian_median` read as the paired
+incumbent.
+
+What the grading has to answer, declared before the signs are seen:
+
+1. Forced-pick ATS accuracy at the **opener** through the played card, on
+   the archive, paired per game against the smooth read -- the same
+   protocol lanes K and T used, with the same
+   `unresolved_below_power` default and `probability_positive` reported.
+2. Whether the gain concentrates in the |2.5| / |3.5| band the table above
+   predicts (nine of this week's sixteen games), or is spread across the
+   line range. The mechanism predicts the former; a gain that is flat
+   across lines is a different effect wearing this one's name.
+3. The post-hoc discount this module already pays (below) applies to the
+   generalisation as well: the 2.5/3.5 asymmetry was seen on the same
+   archive before the arm was declared.
+
+An interval that crosses zero is not a result here. Only a resolved wrong
+sign or a positive-control bound closes it; everything else is
+`unresolved_below_power`, recorded with `nfl-ats weak-signals record`.
 
 ## Known limitations, disclosed
 

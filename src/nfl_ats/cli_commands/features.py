@@ -32,8 +32,12 @@ from nfl_ats.cli_common import (
     _resolve_player_value_snapshot,
     _resolve_snapshot,
 )
-from nfl_ats.feature_manifest import inherit_source_snapshots, manifest_path_for
-from nfl_ats.features import build_game_features
+from nfl_ats.feature_manifest import (
+    DECISION_LINES_KEY,
+    inherit_source_snapshots,
+    manifest_path_for,
+)
+from nfl_ats.features import AppliedDecisionLines, apply_decision_lines, build_game_features
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet
 from nfl_ats.lineage import parse_snapshot_capture
 from nfl_ats.participation import (
@@ -59,6 +63,10 @@ from nfl_ats.players import (
     enrich_with_player_features,
     load_player_snapshot,
     load_player_value_snapshot,
+)
+from nfl_ats.pool_decision_lines import (
+    decision_lines_manifest_block,
+    splash_decision_line_overrides,
 )
 from nfl_ats.provenance import sha256_file
 from nfl_ats.quarterbacks import (
@@ -98,6 +106,17 @@ def _add_injury_timestamp_fallback_arg(parser: argparse.ArgumentParser) -> None:
 def _cmd_build_features(args: argparse.Namespace) -> None:
     snapshot = _resolve_snapshot(args.snapshot)
     schedules, team_stats = load_snapshot(snapshot)
+    # The pool grades on the spread printed on its own contest board, not on
+    # nflverse's close (docs/splash_lines.md). Applying it HERE -- to the
+    # schedules frame, before a single feature is derived -- is what makes
+    # every downstream table (game_features_pbp, _player, _weak_stack and the
+    # research tables cut from them) inherit the graded number without a
+    # change of its own. Weeks with no capture keep nflverse's line exactly.
+    applied: tuple[AppliedDecisionLines, ...] = ()
+    if args.splash_decision_lines == "auto":
+        schedules, applied = apply_decision_lines(
+            schedules, splash_decision_line_overrides(_data_root())
+        )
     features = build_game_features(
         schedules,
         team_stats,
@@ -129,6 +148,12 @@ def _cmd_build_features(args: argparse.Namespace) -> None:
         "last_season": int(features["season"].max()),
         "destination": str(destination),
     }
+    if applied:
+        # Rides the ENG-22 inheritance chain: inherit_source_snapshots copies
+        # this block into every derived table's source_snapshots block, so the
+        # card -- built several enrichment steps downstream -- can still say
+        # which board its line came from.
+        metadata[DECISION_LINES_KEY] = decision_lines_manifest_block(applied)
     # ENG-09: stamp the manifest with this contract layer's schema/builder
     # version so a later check_compatible() call has something to compare
     # against; additive, never changes an existing manifest key.
@@ -586,6 +611,17 @@ def register(
         help=(
             "add WC/DIV/CON/SB rows for weekly playoff serving; regular-season "
             "rows are bit-identical either way and training stays REG-only"
+        ),
+    )
+    feature_parser.add_argument(
+        "--splash-decision-lines",
+        choices=("auto", "off"),
+        default="auto",
+        help=(
+            "auto: use the pool's own captured board spread as the decision "
+            "line for any week under data/splash/, keeping nflverse's line "
+            "everywhere else; off: nflverse's line everywhere, the behaviour "
+            "before the board was ever captured"
         ),
     )
     feature_parser.set_defaults(handler=_cmd_build_features)

@@ -92,7 +92,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.clv import opener_evaluation_metrics, opener_pick_evaluation, week_blocked_bootstrap
+from nfl_ats.clv import (
+    opener_evaluation_metrics,
+    opener_pick_evaluation,
+    resolve_active_probability_method,
+    week_blocked_bootstrap,
+)
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.margin import MarginFeatureProfile
 from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
@@ -121,7 +126,12 @@ LINE_BUCKET_LABELS: tuple[str, ...] = ("[0,3)", "[3,7)", "[7,10)", "[10,inf)")
 
 
 def _config(profile: MarginFeatureProfile) -> dict[str, Any]:
-    return {"feature_profile": profile, "regressor": REGRESSOR, "ridge_alpha": RIDGE_ALPHA}
+    return {
+        "probability_method": resolve_active_probability_method(),
+        "feature_profile": profile,
+        "regressor": REGRESSOR,
+        "ridge_alpha": RIDGE_ALPHA,
+    }
 
 
 def paired_frame(baseline: pd.DataFrame, candidate: pd.DataFrame) -> pd.DataFrame:

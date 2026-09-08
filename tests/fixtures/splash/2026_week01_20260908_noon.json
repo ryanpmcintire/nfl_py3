@@ -1,0 +1,153 @@
+{
+  "source": "splashsports.com",
+  "capture_method": "browser_read_by_agent",
+  "captured_at_et": "2026-09-08T12:45:00-04:00",
+  "contest": {
+    "name": "Example Pick'Em league",
+    "channel": "EXAMPLE-0000",
+    "contest_id": "contest_EXAMPLE",
+    "slate_id": "slate_EXAMPLE",
+    "format": "NFL Pick'Em, Winner (ATS)",
+    "entries": 250
+  },
+  "season": 2026,
+  "week": 1,
+  "picks_lock_et": "2026-09-13T16:00:00-04:00",
+  "tiebreaker": {
+    "game_id": "2026_01_DEN_KC",
+    "prompt": "Predict the total combined score",
+    "submitted_value": 44
+  },
+  "convention": "home_spread positive = HOME favored (nflverse convention)",
+  "note": "Every quoted number is a half point. No push is possible in this pool. Fixture: contest identifiers are placeholders and the owner's entry is omitted; this repository is public.",
+  "games": [
+    {
+      "game_id": "2026_01_NE_SEA",
+      "away": "NE",
+      "home": "SEA",
+      "away_line": 3.5,
+      "home_spread": 3.5,
+      "kickoff_et": "2026-09-09T20:20:00-04:00"
+    },
+    {
+      "game_id": "2026_01_SF_LA",
+      "away": "SF",
+      "home": "LA",
+      "away_line": 3.5,
+      "home_spread": 3.5,
+      "kickoff_et": "2026-09-10T20:35:00-04:00"
+    },
+    {
+      "game_id": "2026_01_CHI_CAR",
+      "away": "CHI",
+      "home": "CAR",
+      "away_line": -2.5,
+      "home_spread": -2.5,
+      "kickoff_et": "2026-09-13T13:00:00-04:00"
+    },
+    {
+      "game_id": "2026_01_CLE_JAX",
+      "away": "CLE",
+      "home": "JAX",
+      "away_line": 8.5,
+      "home_spread": 8.5,
+      "kickoff_et": "2026-09-13T13:00:00-04:00"
+    },
+    {
+      "game_id": "2026_01_NO_DET",
+      "away": "NO",
+      "home": "DET",
+      "away_line": 6.5,
+      "home_spread": 6.5,
+      "kickoff_et": "2026-09-13T13:00:00-04:00"
+    },
+    {
+      "game_id": "2026_01_ATL_PIT",
+      "away": "ATL",
+      "home": "PIT",
+      "away_line": 3.5,
+      "home_spread": 3.5,
+      "kickoff_et": "2026-09-13T13:00:00-04:00"
+    },
+    {
+      "game_id": "2026_01_NYJ_TEN",
+      "away": "NYJ",
+      "home": "TEN",
+      "away_line": 1.5,
+      "home_spread": 1.5,
+      "kickoff_et": "2026-09-13T13:00:00-04:00"
+    },
+    {
+      "game_id": "2026_01_TB_CIN",
+      "away": "TB",
+      "home": "CIN",
+      "away_line": 3.5,
+      "home_spread": 3.5,
+      "kickoff_et": "2026-09-13T13:00:00-04:00"
+    },
+    {
+      "game_id": "2026_01_BAL_IND",
+      "away": "BAL",
+      "home": "IND",
+      "away_line": -3.5,
+      "home_spread": -3.5,
+      "kickoff_et": "2026-09-13T13:00:00-04:00"
+    },
+    {
+      "game_id": "2026_01_BUF_HOU",
+      "away": "BUF",
+      "home": "HOU",
+      "away_line": -1.5,
+      "home_spread": -1.5,
+      "kickoff_et": "2026-09-13T13:00:00-04:00"
+    },
+    {
+      "game_id": "2026_01_GB_MIN",
+      "away": "GB",
+      "home": "MIN",
+      "away_line": 1.5,
+      "home_spread": 1.5,
+      "kickoff_et": "2026-09-13T16:25:00-04:00"
+    },
+    {
+      "game_id": "2026_01_ARI_LAC",
+      "away": "ARI",
+      "home": "LAC",
+      "away_line": 9.5,
+      "home_spread": 9.5,
+      "kickoff_et": "2026-09-13T16:25:00-04:00"
+    },
+    {
+      "game_id": "2026_01_MIA_LV",
+      "away": "MIA",
+      "home": "LV",
+      "away_line": 3.5,
+      "home_spread": 3.5,
+      "kickoff_et": "2026-09-13T16:25:00-04:00"
+    },
+    {
+      "game_id": "2026_01_WAS_PHI",
+      "away": "WAS",
+      "home": "PHI",
+      "away_line": 5.5,
+      "home_spread": 5.5,
+      "kickoff_et": "2026-09-13T16:25:00-04:00"
+    },
+    {
+      "game_id": "2026_01_DAL_NYG",
+      "away": "DAL",
+      "home": "NYG",
+      "away_line": -2.5,
+      "home_spread": -2.5,
+      "kickoff_et": "2026-09-13T20:20:00-04:00"
+    },
+    {
+      "game_id": "2026_01_DEN_KC",
+      "away": "DEN",
+      "home": "KC",
+      "away_line": 2.5,
+      "home_spread": 2.5,
+      "kickoff_et": "2026-09-14T20:15:00-04:00"
+    }
+  ]
+}

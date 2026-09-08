@@ -59,6 +59,15 @@ SNAPSHOT_KEYS: tuple[str, ...] = (
 #: Key a derived manifest stores its merged upstream block under.
 SOURCE_SNAPSHOTS_KEY = "source_snapshots"
 
+#: Key the base ``build-features`` manifest records the pool decision-line
+#: captures under (``nfl_ats.pool_decision_lines.decision_lines_manifest_block``).
+#: It rides the same inheritance chain as :data:`SNAPSHOT_KEYS` -- copied into
+#: every derived manifest's :data:`SOURCE_SNAPSHOTS_KEY` block by
+#: :func:`inherit_source_snapshots` -- because the question it answers ("which
+#: number was this pick formed against") is asked of the card, which is built
+#: from a table several enrichment steps downstream of the base build.
+DECISION_LINES_KEY = "decision_lines"
+
 #: Reason recorded when a caller names a parent manifest path that could not
 #: be read (missing file, or not valid JSON).
 UPSTREAM_ABSENT_REASON = "upstream manifest absent"
@@ -165,14 +174,78 @@ def inherit_source_snapshots(parent_manifest_paths: Iterable[Path | str]) -> dic
                 "captured_at": _parse_capture(snapshot_id),
                 "manifest_path": str(path),
             }
+        own_decision_lines = manifest.get(DECISION_LINES_KEY)
+        if isinstance(own_decision_lines, Mapping):
+            parent_entries[DECISION_LINES_KEY] = dict(own_decision_lines)
         merged.update(parent_entries)
     return merged
 
 
+def decision_lines_block(manifest: Mapping[str, Any]) -> Mapping[str, Any] | None:
+    """The pool decision-line block a feature-table manifest carries, if any.
+
+    Looks in both places one can legitimately appear: directly on the manifest
+    (the base ``build-features`` table, which applied the captures) and inside
+    the :data:`SOURCE_SNAPSHOTS_KEY` block (every derived table, which
+    inherited it through :func:`inherit_source_snapshots`). Returns ``None``
+    for a table built with no captures on disk, and for every manifest written
+    before this key existed.
+    """
+
+    own = manifest.get(DECISION_LINES_KEY)
+    if isinstance(own, Mapping):
+        return own
+    upstream = manifest.get(SOURCE_SNAPSHOTS_KEY)
+    if isinstance(upstream, Mapping):
+        inherited = upstream.get(DECISION_LINES_KEY)
+        if isinstance(inherited, Mapping):
+            return inherited
+    return None
+
+
+def decision_line_week(
+    manifest: Mapping[str, Any], season: int | None, week: int | None
+) -> Mapping[str, Any] | None:
+    """The decision-line capture covering ``season``/``week``, or ``None``.
+
+    Returns the matching per-week record merged with the block-level policy and
+    builder fields, so one lookup answers both "was this week's line the pool's
+    own?" and "what built it?". ``None`` means the week's line came from
+    wherever it always did -- there is no capture for it, so nothing may claim
+    otherwise.
+    """
+
+    if season is None or week is None:
+        return None
+    block = decision_lines_block(manifest)
+    if block is None:
+        return None
+    weeks = block.get("weeks")
+    if not isinstance(weeks, Iterable) or isinstance(weeks, str | bytes | Mapping):
+        return None
+    shared = {
+        key: block[key] for key in ("policy", "builder_module", "builder_version") if key in block
+    }
+    for entry in weeks:
+        if not isinstance(entry, Mapping):
+            continue
+        try:
+            entry_season = int(entry["season"])
+            entry_week = int(entry["week"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        if entry_season == season and entry_week == week:
+            return {**shared, **entry}
+    return None
+
+
 __all__ = [
+    "DECISION_LINES_KEY",
     "SNAPSHOT_KEYS",
     "SOURCE_SNAPSHOTS_KEY",
     "UPSTREAM_ABSENT_REASON",
+    "decision_line_week",
+    "decision_lines_block",
     "inherit_source_snapshots",
     "manifest_path_for",
 ]

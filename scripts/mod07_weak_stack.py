@@ -29,7 +29,11 @@ from typing import Any
 
 import pandas as pd
 
-from nfl_ats.clv import opener_pick_evaluation, week_blocked_bootstrap
+from nfl_ats.clv import (
+    opener_pick_evaluation,
+    resolve_active_probability_method,
+    week_blocked_bootstrap,
+)
 from nfl_ats.rotation import confirmation_split, load_registry
 
 REPO = Path(__file__).resolve().parents[1]
@@ -44,6 +48,7 @@ CLOSE_NEGATIVE_AT = 0.10
 
 def _config(profile: str) -> dict[str, Any]:
     return {
+        "probability_method": resolve_active_probability_method(),
         "feature_profile": profile,
         "regressor": REGRESSOR,
         "ridge_alpha": RIDGE_ALPHA,

@@ -47,7 +47,11 @@ import pandas as pd
 
 from nfl_ats import constants
 from nfl_ats import margin as margin_module
-from nfl_ats.clv import opener_pick_evaluation, week_blocked_bootstrap
+from nfl_ats.clv import (
+    opener_pick_evaluation,
+    resolve_active_probability_method,
+    week_blocked_bootstrap,
+)
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
 from nfl_ats.rotation import confirmation_split, load_registry
 
@@ -306,6 +310,7 @@ def build_candidate_table(
 
 def _config(profile: str) -> dict[str, Any]:
     return {
+        "probability_method": resolve_active_probability_method(),
         "feature_profile": profile,
         "regressor": REGRESSOR,
         "ridge_alpha": RIDGE_ALPHA,
