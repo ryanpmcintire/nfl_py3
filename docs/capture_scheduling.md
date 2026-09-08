@@ -49,11 +49,12 @@ referee-assignments capture (WP22)").
 
 ### The Tuesday paper-forecast lock
 
-`weekly_lock` starts at **09:15 ET Tuesday**, after `odds_tue_open` has an `OK`
-or `ALREADY-CAPTURED` state record. Its 120-minute grace closes at 11:15. That
-leaves the runbook's 15-minute budget to finish by the 11:30 publication target,
-before the pool's Tuesday-noon line lock. The pool's picks remain editable until
-their game deadlines; this job freezes the auditable opener-time paper decision
+`weekly_lock` starts at **12:20 ET Tuesday**, after `odds_tue_open` (12:05, the
+first odds capture of the day, landing just after the pool locks its spreads at
+noon) has an `OK` or `ALREADY-CAPTURED` state record. Its 120-minute grace closes
+at 14:20. The pool's picks remain editable until their game deadlines (each
+game's kickoff, Sunday games by 4:00 PM ET), so a lock after noon costs nothing;
+this job freezes the auditable opener-time paper decision
 used by the research ledgers.
 
 The scheduler invokes `scripts/scheduled_weekly_lock.py` without season or week
@@ -68,7 +69,7 @@ occurrence one-shot; a complete existing paper-ledger week returns
 closed instead of trying to append or repair first-write-wins decisions. The job
 has no catch-up mode, so it cannot run after its declared safe window. Its JSON
 summary is retained under ignored `artifacts/scheduled_locks/` for audit.
-If the opener is missing or failed through 11:15, the sweep writes a durable
+If the opener is missing or failed through 14:20, the sweep writes a durable
 `MISSED weekly_lock` state row with `blocked_by: [odds_tue_open]`; it never keeps
 showing a harmless-looking `waiting` message and never runs the forecast late.
 
@@ -568,3 +569,16 @@ capture would silently become the opener -- the one-click refresh
 (Sunday 4 PM ET cap), so a lock after noon costs nothing. The historical
 `tue_open` archive stays as captured (09:00 ET); the 09:00-to-noon gap on
 those seasons is not measured, which is recorded on ROADMAP OPS-05.
+
+### Legacy Windows Task Scheduler entries (found 2026-09-08)
+
+The `NFLATS\Odds_*` and `PublicBetting_*` Task Scheduler entries this file
+describes as retired were still registered and still firing at their old
+times alongside the daemon (the daemon's snapshot-in-window dedupe hid the
+duplicates). `NFLATS\Odds_TueOpen` fired at 09:00 ET on 2026-09-08 and its
+snapshot was quarantined to `data/market/raw_early_tuesday/` so it could not
+become the week's opener; that task is now DISABLED. The remaining legacy
+tasks duplicate `odds_thu_tnf`, `odds_sat`, `odds_sun_close`, `odds_sun_late`,
+`odds_mon_mnf` and the public-betting captures at the same times; whether to
+retire them or keep them as a backup for the daemon is the owner's call
+(`Get-ScheduledTask -TaskPath '\NFLATS\'`).

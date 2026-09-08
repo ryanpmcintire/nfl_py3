@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T15:04:46.072636+00:00`
+Refreshed at: `2026-09-08T15:05:22.878314+00:00`
 
 ## Start here
 
@@ -20,10 +20,10 @@ Refreshed at: `2026-09-08T15:04:46.072636+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c52fd6c81d55` — Board review fixes (Codex lane Y): no literal percentages in the Findings prose, microsecond stamps stripped from fine print, honest weak-spots wording, no research identifiers in evidence pills or watching leads [skip ci]
+- Baseline commit: `d769822cbcb5` — Audit corrections (Codex lane AA): numbers fixed on the MOD-18 row; legacy Task Scheduler entry found firing the 09:00 opener capture, disabled and documented; scheduling doc says 12:20 [skip ci]
 - Pending change set: 2 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
+  - `M  docs/capture_scheduling.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
