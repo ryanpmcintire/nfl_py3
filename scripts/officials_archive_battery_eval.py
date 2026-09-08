@@ -1204,9 +1204,17 @@ def stage_record() -> dict[str, Any]:
     ]
 
     window = opener["windows"]["2020_2025"]
+    aliases = opener.get("arms_identical_to", {})
     for arm, plain in PLAIN_SUMMARY.items():
         metrics = window.get(f"{arm}_vs_production")
         if not metrics or not metrics.get("weeks"):
+            continue
+        if arm in aliases:
+            lines.append(
+                f"# SKIPPED {arm} vs production: this arm's candidate column is identical to "
+                f"{aliases[arm]}'s on every game, so its picks and its number are the same "
+                "measurement under a second name. Recorded once, under the twin."
+            )
             continue
         lines.append(
             _record_line(
@@ -1270,7 +1278,7 @@ def stage_record() -> dict[str, Any]:
                 continue
             lines.append(
                 _record_line(
-                    f"officials_archive_{arm}_era_{start}_{end}",
+                    f"officials_archive_{arm}_{start}_{end}",
                     f"Paired accuracy of the {arm} arm on production, {label}, "
                     f"graded at the {entry['grade']}",
                     PLAIN_SUMMARY[arm] + f" Measured on the {label} seasons.",
@@ -1282,6 +1290,41 @@ def stage_record() -> dict[str, Any]:
                     "stands in for an opener number.",
                 )
             )
+    proxy_path = OUT / "opener_proxy.json"
+    if proxy_path.is_file():
+        proxy = json.loads(proxy_path.read_text(encoding="utf-8"))["cells"]
+        for arm in PROXY_LINE_ARMS:
+            for suffix, description, notes in (
+                (
+                    "vs_production",
+                    "stacked on production weak_stack, served opener harness",
+                    "Lane AD; the archive-extended flag built on a close-proxy line before "
+                    "2020, scored through the same served harness the replay gate validated.",
+                ),
+                (
+                    "vs_openerline",
+                    "against the same rule built from the Tuesday-opener store alone",
+                    "Lane AD; this IS the archive-delta cell for this rule -- what the older "
+                    "seasons of crew history are worth once the flag is allowed to use them. "
+                    "Added after the predeclared arms measured as structurally empty, so it "
+                    "carries a second-look discount: descriptive, not confirmation.",
+                ),
+            ):
+                metrics = proxy.get(f"{arm}_proxyline_{suffix}")
+                if not metrics or not metrics.get("weeks"):
+                    continue
+                lines.append(
+                    _record_line(
+                        f"officials_archive_{arm}_proxyline_{suffix}_opener_2020_2025",
+                        f"Opener-graded paired accuracy of {arm} {description}",
+                        PLAIN_SUMMARY[arm],
+                        metrics,
+                        2020,
+                        2025,
+                        "artifacts/research/laneAD/opener_proxy.json",
+                        notes,
+                    )
+                )
     cell = composition["crew_scramble_backs_favorite"]
     if cell.get("weeks"):
         lines.append(
@@ -1299,6 +1342,30 @@ def stage_record() -> dict[str, Any]:
                 "pick rule on top of the served picks, not a feature inside the model.",
             )
         )
+    card_path = OUT / "card.json"
+    if card_path.is_file():
+        card = json.loads(card_path.read_text(encoding="utf-8"))
+        for key, description in (
+            ("through_played_card", "through the played three-member card"),
+            ("through_four_member_union", "through the four-member union (zone included)"),
+        ):
+            metrics = card.get(key)
+            if not metrics or not metrics.get("weeks"):
+                continue
+            lines.append(
+                _record_line(
+                    f"officials_archive_crew_scramble_{key}_2020_2025",
+                    f"Paired accuracy of the crew-scramble favourite rule {description}",
+                    "What the scrambled-crew rule is worth once the card's other rules have "
+                    "had their say, rather than on its own.",
+                    metrics,
+                    2020,
+                    2025,
+                    "artifacts/research/laneAD/card.json",
+                    "Lane AD, LEAD-33; composed read on the served opener archive; the "
+                    "three-member union is the card actually played.",
+                )
+            )
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "record_commands.ps1").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return {"commands": len(lines) - 4, "path": str(OUT / "record_commands.ps1")}

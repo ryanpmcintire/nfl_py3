@@ -106647,6 +106647,650 @@
       "source": "artifacts/odds_microstructure/20260818T225430Z/cells_summary.csv",
       "standard_error": null
     },
+    "officials_archive_crew_scramble_backs_favorite_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of backing the favourite when a majority of the seven officials normally work under other referees",
+      "effect": -0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.9156461123343116,
+        0.1959535610455806
+      ],
+      "league": "nfl",
+      "notes": "Lane AD, LEAD-33; one predeclared descriptive cell on a mined population; a pick rule on top of the served picks, not a feature inside the model.",
+      "plain_summary": "When most of the seven officials working a game normally work under different referees, this rule backs the favourite instead of the model's own pick.",
+      "probability_positive": 0.08125,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/composition.json",
+      "standard_error": null
+    },
+    "officials_archive_crew_scramble_through_four_member_union_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the crew-scramble favourite rule through the four-member union (zone included)",
+      "effect": 0.332667997338656,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.13021045399022801,
+        0.8130081300813008
+      ],
+      "league": "nfl",
+      "notes": "Lane AD, LEAD-33; composed read on the served opener archive; the three-member union is the card actually played.",
+      "plain_summary": "What the scrambled-crew rule is worth once the card's other rules have had their say, rather than on its own.",
+      "probability_positive": 0.904,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/card.json",
+      "standard_error": null
+    },
+    "officials_archive_crew_scramble_through_played_card_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the crew-scramble favourite rule through the played three-member card",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.2680965147453083,
+        0.6666777851901258
+      ],
+      "league": "nfl",
+      "notes": "Lane AD, LEAD-33; composed read on the served opener archive; the three-member union is the card actually played.",
+      "plain_summary": "What the scrambled-crew rule is worth once the card's other rules have had their say, rather than on its own.",
+      "probability_positive": 0.7592,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/card.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_archive_era_floor_2011_2014": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the rookie_archive_era_floor arm on production, 2011-2014, graded at the nflverse spread (close proxy)",
+      "effect": -0.2008032128514056,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.9081735620585267,
+        0.5964363075279652
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade nflverse spread (close proxy); a close-proxy number never stands in for an opener number.",
+      "plain_summary": "The first-or-second-year referee rule extended back to the older seasons, so a crew working in 2011 can be judged new or experienced instead of being skipped. Measured on the 2011-2014 seasons.",
+      "probability_positive": 0.25405,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 68,
+      "sample_games": 996,
+      "seasons": [
+        2011,
+        2014
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_archive_era_floor_2015_2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the rookie_archive_era_floor arm on production, 2015-2019, graded at the nflverse spread (close proxy)",
+      "effect": 0.08064516129032258,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.40064102564102566,
+        0.5658852061438965
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade nflverse spread (close proxy); a close-proxy number never stands in for an opener number.",
+      "plain_summary": "The first-or-second-year referee rule extended back to the older seasons, so a crew working in 2011 can be judged new or experienced instead of being skipped. Measured on the 2015-2019 seasons.",
+      "probability_positive": 0.56635,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 85,
+      "sample_games": 1240,
+      "seasons": [
+        2015,
+        2019
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_archive_era_floor_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the rookie_archive_era_floor arm on production, 2020-2025, graded at the Tuesday opener",
+      "effect": 0.18999366687777072,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.06349206349206349,
+        0.502828409805154
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade Tuesday opener; a close-proxy number never stands in for an opener number.",
+      "plain_summary": "The first-or-second-year referee rule extended back to the older seasons, so a crew working in 2011 can be judged new or experienced instead of being skipped. Measured on the 2020-2025 seasons.",
+      "probability_positive": 0.8776,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1579,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_archive_era_floor_proxyline_vs_openerline_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of rookie_archive_era_floor against the same rule built from the Tuesday-opener store alone",
+      "effect": 0.7318695941450433,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        0.0,
+        1.4834794335805799
+      ],
+      "league": "nfl",
+      "notes": "Lane AD; this IS the archive-delta cell for this rule -- what the older seasons of crew history are worth once the flag is allowed to use them. Added after the predeclared arms measured as structurally empty, so it carries a second-look discount: descriptive, not confirmation.",
+      "plain_summary": "The first-or-second-year referee rule extended back to the older seasons, so a crew working in 2011 can be judged new or experienced instead of being skipped.",
+      "probability_positive": 0.9716,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/opener_proxy.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_archive_era_floor_proxyline_vs_production_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of rookie_archive_era_floor stacked on production weak_stack, served opener harness",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.2032520325203252,
+        0.5284015852047557
+      ],
+      "league": "nfl",
+      "notes": "Lane AD; the archive-extended flag built on a close-proxy line before 2020, scored through the same served harness the replay gate validated.",
+      "plain_summary": "The first-or-second-year referee rule extended back to the older seasons, so a crew working in 2011 can be judged new or experienced instead of being skipped.",
+      "probability_positive": 0.70025,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/opener_proxy.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_archive_tenure_2015_2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the rookie_archive_tenure arm on production, 2015-2019, graded at the nflverse spread (close proxy)",
+      "effect": 0.4032258064516129,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.08163265306122448,
+        0.9016578356352275
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade nflverse spread (close proxy); a close-proxy number never stands in for an opener number.",
+      "plain_summary": "The same first-or-second-year referee rule, except a referee who already worked games before 2015 now counts as experienced instead of looking brand new. Measured on the 2015-2019 seasons.",
+      "probability_positive": 0.9191,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 85,
+      "sample_games": 1240,
+      "seasons": [
+        2015,
+        2019
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_archive_tenure_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the rookie_archive_tenure arm on production, 2020-2025, graded at the Tuesday opener",
+      "effect": -0.18999366687777072,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.7575877218170333,
+        0.31806615776081426
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade Tuesday opener; a close-proxy number never stands in for an opener number.",
+      "plain_summary": "The same first-or-second-year referee rule, except a referee who already worked games before 2015 now counts as experienced instead of looking brand new. Measured on the 2020-2025 seasons.",
+      "probability_positive": 0.2193,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1579,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_archive_tenure_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of the rookie_archive_tenure arm stacked on production weak_stack",
+      "effect": -0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -1.3395847287340925,
+        0.06770710211950452
+      ],
+      "league": "nfl",
+      "notes": "Lane AD; 2020-2025 opener window, correlated with the recorded 2020-2021 screen for the same rule; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The same first-or-second-year referee rule, except a referee who already worked games before 2015 now counts as experienced instead of looking brand new.",
+      "probability_positive": 0.0372,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/opener.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_feed_2015_2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the rookie_feed arm on production, 2015-2019, graded at the nflverse spread (close proxy)",
+      "effect": 0.16129032258064516,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -1.1173407464258303,
+        1.4492753623188406
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade nflverse spread (close proxy); a close-proxy number never stands in for an opener number.",
+      "plain_summary": "When the referee crew is in its first or second year on record, this rule backs the underdog. This version only knows officiating crews from 2015 onward. Measured on the 2015-2019 seasons.",
+      "probability_positive": 0.57175,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 85,
+      "sample_games": 1240,
+      "seasons": [
+        2015,
+        2019
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_feed_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the rookie_feed arm on production, 2020-2025, graded at the Tuesday opener",
+      "effect": -0.31665611146295125,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -1.0638297872340425,
+        0.4377736085053158
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade Tuesday opener; a close-proxy number never stands in for an opener number.",
+      "plain_summary": "When the referee crew is in its first or second year on record, this rule backs the underdog. This version only knows officiating crews from 2015 onward. Measured on the 2020-2025 seasons.",
+      "probability_positive": 0.18,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1579,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_rookie_feed_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of the rookie_feed arm stacked on production weak_stack",
+      "effect": -0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -1.3395847287340925,
+        0.06770710211950452
+      ],
+      "league": "nfl",
+      "notes": "Lane AD; 2020-2025 opener window, correlated with the recorded 2020-2021 screen for the same rule; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the referee crew is in its first or second year on record, this rule backs the underdog. This version only knows officiating crews from 2015 onward.",
+      "probability_positive": 0.0372,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/opener.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_archive_era_2011_2014": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the second_meeting_archive_era arm on production, 2011-2014, graded at the nflverse spread (close proxy)",
+      "effect": 0.1004016064257028,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.5994005994005994,
+        0.7106598984771574
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade nflverse spread (close proxy); a close-proxy number never stands in for an opener number.",
+      "plain_summary": "The repeat-crew rule extended back to the older seasons, so a 2011 game can be marked as a crew's second look at one of these teams. Measured on the 2011-2014 seasons.",
+      "probability_positive": 0.57775,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 68,
+      "sample_games": 996,
+      "seasons": [
+        2011,
+        2014
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_archive_era_2015_2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the second_meeting_archive_era arm on production, 2015-2019, graded at the nflverse spread (close proxy)",
+      "effect": -0.3225806451612903,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -1.1226944667201284,
+        0.41018069132549556
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade nflverse spread (close proxy); a close-proxy number never stands in for an opener number.",
+      "plain_summary": "The repeat-crew rule extended back to the older seasons, so a 2011 game can be marked as a crew's second look at one of these teams. Measured on the 2015-2019 seasons.",
+      "probability_positive": 0.1772,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 85,
+      "sample_games": 1240,
+      "seasons": [
+        2015,
+        2019
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_archive_era_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the second_meeting_archive_era arm on production, 2020-2025, graded at the Tuesday opener",
+      "effect": 0.1266624445851805,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.3775959723096287,
+        0.6329113924050633
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade Tuesday opener; a close-proxy number never stands in for an opener number.",
+      "plain_summary": "The repeat-crew rule extended back to the older seasons, so a 2011 game can be marked as a crew's second look at one of these teams. Measured on the 2020-2025 seasons.",
+      "probability_positive": 0.64065,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1579,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_archive_era_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of the second_meeting_archive_era arm stacked on production weak_stack",
+      "effect": -0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -2.302653865354443,
+        0.4726615964377605
+      ],
+      "league": "nfl",
+      "notes": "Lane AD; 2020-2025 opener window, correlated with the recorded 2020-2021 screen for the same rule; descriptive reuse, not independent confirmation.",
+      "plain_summary": "The repeat-crew rule extended back to the older seasons, so a 2011 game can be marked as a crew's second look at one of these teams.",
+      "probability_positive": 0.08665,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/opener.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_archive_era_proxyline_vs_openerline_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of second_meeting_archive_era against the same rule built from the Tuesday-opener store alone",
+      "effect": 0.7984031936127743,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.7304116865869854,
+        2.2397891963109355
+      ],
+      "league": "nfl",
+      "notes": "Lane AD; this IS the archive-delta cell for this rule -- what the older seasons of crew history are worth once the flag is allowed to use them. Added after the predeclared arms measured as structurally empty, so it carries a second-look discount: descriptive, not confirmation.",
+      "plain_summary": "The repeat-crew rule extended back to the older seasons, so a 2011 game can be marked as a crew's second look at one of these teams.",
+      "probability_positive": 0.8494,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/opener_proxy.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_archive_era_proxyline_vs_production_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of second_meeting_archive_era stacked on production weak_stack, served opener harness",
+      "effect": -0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.6648936170212766,
+        0.3965631196298744
+      ],
+      "league": "nfl",
+      "notes": "Lane AD; the archive-extended flag built on a close-proxy line before 2020, scored through the same served harness the replay gate validated.",
+      "plain_summary": "The repeat-crew rule extended back to the older seasons, so a 2011 game can be marked as a crew's second look at one of these teams.",
+      "probability_positive": 0.2672,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/opener_proxy.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_feed_2015_2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the second_meeting_feed arm on production, 2015-2019, graded at the nflverse spread (close proxy)",
+      "effect": 0.24193548387096775,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -1.2668501153769418,
+        1.7871649065800161
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade nflverse spread (close proxy); a close-proxy number never stands in for an opener number.",
+      "plain_summary": "When the officiating crew has already worked a game involving either of these two teams this season, this rule backs the favourite. Measured on the 2015-2019 seasons.",
+      "probability_positive": 0.5945,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 85,
+      "sample_games": 1240,
+      "seasons": [
+        2015,
+        2019
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_feed_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Paired accuracy of the second_meeting_feed arm on production, 2020-2025, graded at the Tuesday opener",
+      "effect": -0.18999366687777072,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -0.7006369426751592,
+        0.31645569620253167
+      ],
+      "league": "nfl",
+      "notes": "Lane AD era read; grade Tuesday opener; a close-proxy number never stands in for an opener number.",
+      "plain_summary": "When the officiating crew has already worked a game involving either of these two teams this season, this rule backs the favourite. Measured on the 2020-2025 seasons.",
+      "probability_positive": 0.196,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1579,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/era.json",
+      "standard_error": null
+    },
+    "officials_archive_second_meeting_feed_opener_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No refuted mechanism and no positive-control bound; retained unresolved per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Opener-graded paired accuracy of the second_meeting_feed arm stacked on production weak_stack",
+      "effect": -0.9314703925482368,
+      "effect_units": "accuracy_points",
+      "family": "officials_archive_battery",
+      "interval": [
+        -2.302653865354443,
+        0.4726615964377605
+      ],
+      "league": "nfl",
+      "notes": "Lane AD; 2020-2025 opener window, correlated with the recorded 2020-2021 screen for the same rule; descriptive reuse, not independent confirmation.",
+      "plain_summary": "When the officiating crew has already worked a game involving either of these two teams this season, this rule backs the favourite.",
+      "probability_positive": 0.08665,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/research/laneAD/opener.json",
+      "standard_error": null
+    },
     "officials_home_bias_reliability": {
       "category": "onfield",
       "classification": "unresolved_below_power",
