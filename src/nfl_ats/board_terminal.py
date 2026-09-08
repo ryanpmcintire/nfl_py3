@@ -176,6 +176,9 @@ _DIVE_SCRIPT = """
     var std = parseFloat(widget.dataset.std);
     var cardLine = parseFloat(widget.dataset.cardLine);
     var pickIsHome = widget.dataset.pickIsHome === '1';
+    // A line sitting exactly on 3 or 7 is read off how games like it really
+    // finished, not the curve: at the quoted line show that served number.
+    var pinnedP = widget.dataset.pinnedP === undefined ? NaN : parseFloat(widget.dataset.pinnedP);
     var xMin = parseFloat(widget.dataset.xMin);
     var xMax = parseFloat(widget.dataset.xMax);
     var yMin = parseFloat(widget.dataset.yMin);
@@ -190,6 +193,7 @@ _DIVE_SCRIPT = """
     function update() {
       var offset = parseFloat(slider.value);
       var homeP = homeCoverProbability(cardLine + offset, center, mean, std);
+      if (offset === 0 && !isNaN(pinnedP)) homeP = pinnedP;
       var pickP = pickIsHome ? homeP : 1 - homeP;
       var line = cardLine + offset;
       if (lineOut) lineOut.textContent = (line > 0 ? '+' : '') + line.toFixed(1);
@@ -994,10 +998,15 @@ def _adjuster_html(
             "build's active model has no closed-form probability read.</p>"
         )
     adjuster = dive.adjuster
+    pinned = (
+        f'data-pinned-p="{adjuster.pinned_home_cover_probability:.6f}" '
+        if adjuster.pinned_home_cover_probability is not None
+        else ""
+    )
     return (
         f'<div class="ats-adjuster" data-center="{adjuster.center:.6f}" '
         f'data-mean="{adjuster.residual_mean:.6f}" data-std="{adjuster.residual_std:.6f}" '
-        f'data-card-line="{adjuster.card_line:.3f}" '
+        f'data-card-line="{adjuster.card_line:.3f}" {pinned}'
         f'data-pick-is-home="{"1" if adjuster.pick_is_home else "0"}" '
         f'data-x-min="{x_min:g}" data-x-max="{x_max:g}" '
         f'data-y-min="{y_min:g}" data-y-max="{y_max:g}">'

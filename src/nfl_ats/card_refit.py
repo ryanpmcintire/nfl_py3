@@ -15,6 +15,7 @@ from nfl_ats.home_side_location import (
     center_offsets_from_metadata,
     served_center_offsets,
 )
+from nfl_ats.key_line_pick_read import apply_pick_overrides, load_pick_overrides
 from nfl_ats.margin import MarginModel
 
 
@@ -23,15 +24,27 @@ class CardRefit:
     center_offsets: Mapping[str, float] | None
     probability_method: ResidualSmoothingMethod
     warnings: tuple[str, ...] = ()
+    #: game_id -> the served two-way probability on the games the key-line
+    #: pick read touched (docs/key_line_pick_read.md); ``None`` for a card
+    #: produced without that promotion. Applied AFTER ``predict`` so the
+    #: refit reproduces the number the card actually played.
+    pick_overrides: Mapping[str, float] | None = None
 
     def predict(self, model: MarginModel, frame: pd.DataFrame) -> pd.DataFrame:
         if self.center_offsets is None:
-            return model.predict(frame, probability_method=self.probability_method)
-        return model.predict(
-            frame,
-            probability_method=self.probability_method,
-            center_offset=center_offset_for_frame(frame, self.center_offsets),
-        )
+            result = model.predict(frame, probability_method=self.probability_method)
+        else:
+            result = model.predict(
+                frame,
+                probability_method=self.probability_method,
+                center_offset=center_offset_for_frame(frame, self.center_offsets),
+            )
+        if self.pick_overrides:
+            result = result.copy()
+            result["home_cover_probability"] = apply_pick_overrides(
+                result["home_cover_probability"], frame["game_id"], self.pick_overrides
+            )
+        return result
 
 
 def load_card_refit(
@@ -44,9 +57,13 @@ def load_card_refit(
     """Prefer the card's metadata; fall back to its sidecar, never refit offsets.
 
     Old cards retain the caller's original mapping and uncorrected center.
-    Warnings are returned for inclusion in the recorder's result.
+    Warnings are returned for inclusion in the recorder's result. The
+    key-line pick read's served probabilities are loaded the same way
+    (metadata block first, then the ``key_line_pick_read.json`` sidecar) and
+    are ``None`` for a card produced without it.
     """
 
+    pick_overrides = load_pick_overrides(metadata, forecast_dir)
     offsets = center_offsets_from_metadata(metadata, card)
     if offsets is None:
         offsets = served_center_offsets(forecast_dir)
@@ -55,8 +72,11 @@ def load_card_refit(
             None,
             historical_method,
             ("No served home-side offset recorded; retaining historical refit behavior.",),
+            pick_overrides,
         )
     return CardRefit(
         offsets,
         cast(ResidualSmoothingMethod, metadata.get("probability_method", historical_method)),
+        (),
+        pick_overrides,
     )

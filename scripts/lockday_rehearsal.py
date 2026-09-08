@@ -128,6 +128,10 @@ def _load_full_replay_dependencies() -> None:
             "nfl_ats.home_side_offset_incumbent_overlay",
             "record_home_side_offset_incumbent_challenger_decisions",
         ),
+        "record_key_line_pick_read_incumbent_challenger_decisions": (
+            "nfl_ats.key_line_pick_read_incumbent_overlay",
+            "record_key_line_pick_read_incumbent_challenger_decisions",
+        ),
         "record_era_weighted_half_life_8_challenger_decisions": (
             "nfl_ats.era_weighted_half_life_8_overlay",
             "record_era_weighted_half_life_8_challenger_decisions",
@@ -604,6 +608,10 @@ def run_publish_recorders(
         (
             "home_side_offset_off_incumbent",
             record_home_side_offset_incumbent_challenger_decisions,
+        ),
+        (
+            "key_line_pick_read_off_incumbent",
+            record_key_line_pick_read_incumbent_challenger_decisions,
         ),
         ("era_weighted_half_life_8", record_era_weighted_half_life_8_challenger_decisions),
         ("bye_edge_fade_overlay", record_bye_edge_fade_challenger_decisions),

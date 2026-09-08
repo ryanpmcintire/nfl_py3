@@ -113,6 +113,14 @@ from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.home_side_location import load_forecast_home_side_offsets
 from nfl_ats.io import atomic_parquet, atomic_text, run_id
+from nfl_ats.key_line_pick_read import (
+    KEY_LINE_ATOMS,
+    KeyLinePickRead,
+    apply_key_line_pick_read,
+    apply_pick_overrides,
+    load_forecast_key_line_pick_read,
+    served_pick_overrides,
+)
 from nfl_ats.lines import apply_external_lines
 from nfl_ats.margin import MARGIN_FEATURE_PROFILES, MarginFeatureProfile
 from nfl_ats.market_data import load_quote_history, spread_consensus
@@ -853,6 +861,23 @@ def plan_refresh(
         forecasts = model.predict(
             overridden, probability_method=probability_method, center_offset=center_offset
         )
+        # Key-line pick read (docs/key_line_pick_read.md): the Tuesday card
+        # read the side off the key-number lattice where the frozen line sits
+        # exactly on 3 or 7; the refit applies the SAME policy at the same
+        # frozen line, so with nothing new the served probability reproduces
+        # bit-for-bit and a late switch can only come from new information.
+        # Pre-promotion cards (no sidecar) refit exactly as before.
+        forecasts = _served_key_line_pick_read(
+            artifacts_root,
+            active,
+            features,
+            overridden,
+            forecasts,
+            residuals=model.residuals,
+            probability_method=probability_method,
+            season=season,
+            week=week,
+        )
         identity_columns = [
             column
             for column in (
@@ -1436,3 +1461,64 @@ def _served_home_side_center_offset(
     }
     ids = frame["game_id"].astype(str)
     return np.asarray([by_game.get(game_id, 0.0) for game_id in ids], dtype=float)
+
+
+def _served_key_line_pick_read(
+    artifacts_root: Path,
+    active: Mapping[str, Any],
+    features: pd.DataFrame,
+    frame: pd.DataFrame,
+    forecasts: pd.DataFrame,
+    *,
+    residuals: np.ndarray,
+    probability_method: str,
+    season: int,
+    week: int,
+) -> pd.DataFrame:
+    """``forecasts`` with the served key-line pick read applied at the frozen lines.
+
+    ``forecasts`` unchanged when the linked forecast carries no served
+    ``key_line_pick_read.json`` (a card produced before the promotion), so
+    the refit reproduces the pre-promotion behaviour bit-for-bit. Otherwise
+    the week's walk-forward lattice is rebuilt exactly as ``margin-predict``
+    built it and the policy is re-applied at the refit's own point, so new
+    information moves a touched game's chance the same way it moves every
+    other game's. Should that rebuild fail, the served probability recorded
+    in the sidecar is substituted verbatim on the touched games (the policy
+    degrades to "keep Tuesday's number", never to "silently drop it").
+    """
+
+    forecast = active_artifact_path(artifacts_root, dict(active), "weekly_forecast")
+    if forecast is None:
+        return forecasts
+    sidecar = load_forecast_key_line_pick_read(forecast)
+    if sidecar is None or not sidecar.get("served"):
+        return forecasts
+    recorded_atoms = sidecar.get("atoms")
+    atoms = (
+        tuple(float(atom) for atom in recorded_atoms)
+        if isinstance(recorded_atoms, list) and recorded_atoms
+        else KEY_LINE_ATOMS
+    )
+    try:
+        from nfl_ats.mass_preserving_lattice import fit_production_discrete_push_reader
+
+        production = fit_production_discrete_push_reader(
+            features, artifacts_root, dict(active), season=season, week=week
+        )
+        if production.reader is None:
+            raise ValueError("no discrete lattice for the target week")
+        return apply_key_line_pick_read(
+            forecasts,
+            frame,
+            KeyLinePickRead(reader=production.reader, atoms=atoms),
+            residuals=residuals,
+            probability_method=probability_method,
+        )
+    except Exception:
+        overrides = served_pick_overrides(forecast)
+        result = forecasts.copy()
+        result["home_cover_probability"] = apply_pick_overrides(
+            result["home_cover_probability"], frame["game_id"], overrides
+        )
+        return result

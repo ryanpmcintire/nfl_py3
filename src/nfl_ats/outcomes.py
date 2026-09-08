@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Literal, cast
 
 import numpy as np
@@ -15,6 +15,12 @@ from nfl_ats.backtest import summarize_predictions
 from nfl_ats.calibration import ResidualSmoothingMethod
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.estimation_variance import MIN_BLOCKS_FOR_INTERVAL, OnDegenerate, guard_block_count
+from nfl_ats.key_line_pick_read import (
+    KeyLinePickRead,
+    ServedKeyLineRead,
+    apply_key_line_pick_read,
+    apply_key_line_pick_read_to_sweep,
+)
 from nfl_ats.key_numbers import DEFAULT_KEY_NUMBERS, implied_key_number_mass
 from nfl_ats.margin import (
     DEFAULT_LINE_SWEEP_OFFSETS,
@@ -200,6 +206,8 @@ def _score_methods(
     center_offsets: Mapping[str, float] | None = None,
     discrete_read: DiscretePushReader | None = None,
     discrete_read_log: dict[str, ServedPushRead] | None = None,
+    key_line_pick_read: KeyLinePickRead | None = None,
+    key_line_pick_read_log: dict[str, ServedKeyLineRead] | None = None,
 ) -> list[pd.DataFrame]:
     batches: list[pd.DataFrame] = []
     for method, model in margin_models.items():
@@ -228,6 +236,33 @@ def _score_methods(
                 probability_method=probability_method,
                 log=discrete_read_log,
             )
+        # Key-line pick read (docs/key_line_pick_read.md): on the served ATS
+        # method, and only where the quoted line sits exactly on 3 or 7,
+        # the pick-deciding two-way probability is read off the same
+        # lattice at the same served point (offset included) -- after the
+        # offset, after the push split, before the decision columns.
+        if key_line_pick_read is not None and method == "market_residual":
+            forecasts = apply_key_line_pick_read(
+                forecasts,
+                batch,
+                key_line_pick_read,
+                residuals=model.residuals,
+                probability_method=probability_method,
+                log=key_line_pick_read_log,
+            )
+            if discrete_read_log is not None:
+                # The push sidecar's two-way number is the SERVED one, so the
+                # two records beside the card never disagree on a touched game.
+                for game_id, served in zip(
+                    batch["game_id"].astype(str),
+                    forecasts["home_cover_probability"].to_numpy(dtype=float),
+                    strict=True,
+                ):
+                    record = discrete_read_log.get(game_id)
+                    if record is not None and record.home_cover_probability != served:
+                        discrete_read_log[game_id] = replace(
+                            record, home_cover_probability=float(served)
+                        )
         for column in forecasts:
             batch[column] = forecasts[column]
         batch["method"] = method
@@ -505,6 +540,8 @@ def score_outcome_week(
     center_offsets: Mapping[str, float] | None = None,
     discrete_read: DiscretePushReader | None = None,
     discrete_read_log: dict[str, ServedPushRead] | None = None,
+    key_line_pick_read: KeyLinePickRead | None = None,
+    key_line_pick_read_log: dict[str, ServedKeyLineRead] | None = None,
 ) -> pd.DataFrame:
     """Score one week. ``center_offsets`` (game_id -> points) is the promoted
     home-side location correction for the served ``market_residual`` method
@@ -518,7 +555,15 @@ def score_outcome_week(
     residual sample. Every other column -- the pick-deciding
     ``home_cover_probability`` above all -- is bit-for-bit what ``None``
     returns. ``discrete_read_log`` (game_id -> both reads) lets the caller
-    record the replaced smooth split without a second fit."""
+    record the replaced smooth split without a second fit.
+
+    ``key_line_pick_read`` (docs/key_line_pick_read.md) is the served
+    key-line policy: on ``market_residual`` rows whose quoted line sits
+    exactly on one of its atoms (3 or 7), ``home_cover_probability`` -- and
+    so the pick -- is read off the same lattice at the same served point.
+    Applied after the offset and the push split; ``None`` leaves every
+    caller's output bit-for-bit unchanged. ``key_line_pick_read_log``
+    receives both two-way reads per game."""
 
     target, margin_models, straight_up, direct_ats = _target_and_models_for_week(
         features,
@@ -541,6 +586,8 @@ def score_outcome_week(
             center_offsets,
             discrete_read,
             discrete_read_log,
+            key_line_pick_read,
+            key_line_pick_read_log,
         ),
         ignore_index=True,
     ).sort_values(["game_id", "method"])
@@ -623,6 +670,7 @@ def score_outcome_week_line_sweep(
     probability_method: ResidualSmoothingMethod = "gaussian_median",
     center_offsets: Mapping[str, float] | None = None,
     discrete_read: DiscretePushReader | None = None,
+    key_line_pick_read: KeyLinePickRead | None = None,
 ) -> pd.DataFrame:
     """Line-sweep confidence curves for one week's margin-distribution methods.
 
@@ -638,6 +686,12 @@ def score_outcome_week_line_sweep(
     ``home_cover_probability`` / ``pick_probability`` / ``confidence``
     columns stay on the smooth read, so the sweep's side never disagrees
     with the card's.
+
+    ``key_line_pick_read`` (docs/key_line_pick_read.md) then applies the
+    served key-line policy at every ALTERNATIVE line that sits on an atom:
+    the two-way read there is the lattice's, so the line-0 row equals the
+    card's served number on a touched game and the flip-line scan reads the
+    served policy at each hypothetical line.
 
     Returns a tidy table with one row per (method, game, alternative line).
     """
@@ -665,26 +719,37 @@ def score_outcome_week_line_sweep(
             probability_method=probability_method,
             center_offset=center_offset,
         )
-        if discrete_read is not None and method == "market_residual":
+        if (discrete_read is not None or key_line_pick_read is not None) and (
+            method == "market_residual"
+        ):
             centres = model.predict(
                 target, probability_method=probability_method, center_offset=center_offset
             )
             location = residual_location(model.residuals, probability_method)
             points = centres["predicted_margin"].to_numpy(dtype=float) + location
-            sweep = serve_discrete_sweep(
-                sweep,
-                discrete_read,
-                points_by_game=dict(
-                    zip(target["game_id"].astype(str), points.tolist(), strict=True)
-                ),
-                quoted_lines_by_game=dict(
-                    zip(
-                        target["game_id"].astype(str),
-                        pd.to_numeric(target["spread_line"], errors="raise").astype(float).tolist(),
-                        strict=True,
-                    )
-                ),
+            ids = target["game_id"].astype(str)
+            points_by_game = dict(zip(ids, points.tolist(), strict=True))
+            quoted_lines_by_game = dict(
+                zip(
+                    ids,
+                    pd.to_numeric(target["spread_line"], errors="raise").astype(float).tolist(),
+                    strict=True,
+                )
             )
+            if discrete_read is not None:
+                sweep = serve_discrete_sweep(
+                    sweep,
+                    discrete_read,
+                    points_by_game=points_by_game,
+                    quoted_lines_by_game=quoted_lines_by_game,
+                )
+            if key_line_pick_read is not None:
+                sweep = apply_key_line_pick_read_to_sweep(
+                    sweep,
+                    key_line_pick_read,
+                    points_by_game=points_by_game,
+                    quoted_lines_by_game=quoted_lines_by_game,
+                )
         sweep.insert(0, "method", method)
         frames.append(sweep)
     return (

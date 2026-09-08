@@ -59,7 +59,7 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from math import isfinite
@@ -838,6 +838,7 @@ def _render_text(
     refresh: RefreshComponent,
     game_explanation: GameExplanation | None,
     push_probability: float | None = None,
+    key_line_read: bool = False,
 ) -> str:
     """One short, human paragraph: the pick and the model's own read on it,
     the two or three biggest football-terms factors behind any gap from
@@ -849,7 +850,11 @@ def _render_text(
 
     sentences = [
         _lead_sentence(market_line, model_probability, matchup),
-        _push_sentence(market_line.home_spread_line, push_probability),
+        (
+            _key_line_sentence(market_line.home_spread_line, push_probability)
+            if key_line_read
+            else _push_sentence(market_line.home_spread_line, push_probability)
+        ),
         _what_tips_it_sentence(game_explanation),
         _situational_adjustment_sentence(overlays),
         _freshness_clause(freshness),
@@ -886,6 +891,31 @@ def _push_sentence(home_spread_line: float | None, push_probability: float | Non
         f"The line sits {where}: about {per_hundred} in 100 games like this finish exactly "
         "there, a push, and that chance is counted here."
     )
+
+
+def _key_line_sentence(home_spread_line: float | None, push_probability: float | None) -> str:
+    """The pool-player sentence for a game whose side was read off the
+    key-number lattice (docs/key_line_pick_read.md): the line sits right on
+    3 or 7, games land there a lot, and the pick is read off how games with
+    lines like this actually finished -- with the push chance folded in when
+    the card recorded one. Replaces :func:`_push_sentence` on such a game
+    so the reader hears one sentence about the number, not two. Empty when
+    no line is known."""
+
+    if home_spread_line is None or not float(home_spread_line).is_integer():
+        return ""
+    number = abs(int(home_spread_line))
+    lead = (
+        f"The line sits right on {number}, a number games land on a lot, so this pick is "
+        "read off how games with lines like this actually finished"
+    )
+    per_hundred = round(push_probability * 100.0) if push_probability else 0
+    if per_hundred >= 1:
+        return (
+            f"{lead}, and the roughly {per_hundred} in 100 that ended exactly there, a push, "
+            "are counted in that chance."
+        )
+    return f"{lead}."
 
 
 # ---------------------------------------------------------------------------
@@ -950,8 +980,14 @@ def explain_pick(
     overlays: Sequence[OverlayFiring] | None = None,
     refresh_changes: RefreshChangeInput | Mapping[str, Any] | None = None,
     waterfall_entry: Mapping[str, Any] | None = None,
+    key_line_read: bool = False,
 ) -> PickExplanation:
     """Build one pick's fixed-shape, descriptive explanation.
+
+    ``key_line_read`` (docs/key_line_pick_read.md) says this game's side was
+    read off the key-number lattice because its line sits exactly on 3 or 7;
+    the rendered text then says so in pool-player words in place of the
+    plain push sentence.
 
     See the module docstring for what ``row``/``lineage``/``source_report``/
     ``overlays``/``refresh_changes`` accept. ``waterfall_entry`` is one game's
@@ -1022,6 +1058,7 @@ def explain_pick(
         # The card's own served push chance (docs/discrete_push_read.md);
         # absent on a row without it, and never shown at a half-point line.
         _finite_float(row.get("push_probability")),
+        key_line_read=bool(key_line_read),
     )
     check_language(text)
 
@@ -1045,12 +1082,19 @@ def explain_card(
     overlays_by_game: Mapping[str, Sequence[OverlayFiring]] | None = None,
     refresh_changes_by_game: Mapping[str, RefreshChangeInput | Mapping[str, Any]] | None = None,
     waterfall_by_game: Mapping[str, Mapping[str, Any]] | None = None,
+    key_line_games: Iterable[str] | None = None,
 ) -> list[PickExplanation]:
-    """:func:`explain_pick` for every row of a card, keyed by ``game_id``."""
+    """:func:`explain_pick` for every row of a card, keyed by ``game_id``.
+
+    ``key_line_games`` names the games whose side the key-line lattice read
+    served (``nfl_ats.key_line_pick_read.key_line_touched_games`` off the
+    forecast's metadata); empty or ``None`` for a pre-promotion card.
+    """
 
     overlays_map = overlays_by_game or {}
     refresh_map = refresh_changes_by_game or {}
     waterfall_map = waterfall_by_game or {}
+    key_line_set = {str(game_id) for game_id in (key_line_games or ())}
     explanations = []
     for row in rows:
         game_id = str(row.get("game_id") or "")
@@ -1062,6 +1106,7 @@ def explain_card(
                 overlays=overlays_map.get(game_id),
                 refresh_changes=refresh_map.get(game_id),
                 waterfall_entry=waterfall_map.get(game_id),
+                key_line_read=game_id in key_line_set,
             )
         )
     return explanations

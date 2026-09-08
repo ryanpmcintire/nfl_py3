@@ -38,6 +38,15 @@ from nfl_ats.home_side_location import (
     fit_production_home_side_offsets,
 )
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
+from nfl_ats.key_line_pick_read import (
+    KEY_LINE_ATOMS,
+    KEY_LINE_PICK_READ_FILENAME,
+    KEY_LINE_PICK_READ_SERVED,
+    KeyLinePickRead,
+    ServedKeyLineRead,
+    key_line_metadata_block,
+    key_line_sidecar,
+)
 from nfl_ats.key_numbers import (
     DEFAULT_KEY_NUMBERS,
     cover_reliability_by_line_bucket,
@@ -211,8 +220,16 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
     # The smooth split it replaces is kept in a sidecar as the paired record.
     discrete = _served_discrete_push_read(features, request)
     discrete_read_log: dict[str, ServedPushRead] = {}
+    # Key-line pick read (docs/key_line_pick_read.md, 2026-09-08): on games
+    # quoted exactly on 3 or 7 the pick-deciding two-way probability is read
+    # off the same lattice at the same served point (offset included). Both
+    # reads per game are kept in a sidecar as the paired record. The policy
+    # follows the reader: when scoring falls back to the smooth split, the
+    # smooth two-way read serves every game and the sidecar says why.
+    key_line_log: dict[str, ServedKeyLineRead] = {}
 
     def _score(reader: DiscretePushReader | None) -> pd.DataFrame:
+        key_line_log.clear()
         return score_outcome_week(
             features,
             season=request.season,
@@ -226,9 +243,12 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             center_offsets=center_offsets,
             discrete_read=reader,
             discrete_read_log=discrete_read_log,
+            key_line_pick_read=_key_line_policy(reader),
+            key_line_pick_read_log=key_line_log,
         )
 
     predictions, discrete = _with_discrete_fallback(_score, discrete, discrete_read_log)
+    key_line, key_line_error = _served_key_line_pick_read(discrete)
     uncorrected = (
         score_outcome_week(
             features,
@@ -240,6 +260,12 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             feature_profile=request.feature_profile,
             ridge_alpha=request.ridge_alpha,
             probability_method=request.probability_method,
+            # The paired offset-off arm differs from the served card by the
+            # offset ALONE: it keeps the key-line pick read (at its own,
+            # uncorrected point) so the home_side_offset_off_incumbent
+            # ledger isolates one policy, never two at once.
+            discrete_read=discrete.reader if discrete is not None else None,
+            key_line_pick_read=key_line,
         )
         if home_side is not None
         else None
@@ -311,6 +337,15 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         )
     if discrete is not None:
         metadata["discrete_push_read"] = _discrete_push_read_summary(discrete, discrete_read_log)
+    key_line_payload: dict[str, Any] | None = None
+    if KEY_LINE_PICK_READ_SERVED:
+        key_line_payload = key_line_sidecar(
+            key_line,
+            key_line_log,
+            _served_rows(predictions).index,
+            error=key_line_error,
+        )
+        metadata["key_line_pick_read"] = key_line_metadata_block(key_line_payload)
     # ENG-16: every decision-bearing card field says where it came from, and
     # the lineage audit is release-blocking -- a card that cannot answer that
     # never reaches the artifact directory.
@@ -340,6 +375,8 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             _discrete_push_read_sidecar(discrete, discrete_read_log, predictions),
             output / DISCRETE_PUSH_READ_FILENAME,
         )
+    if key_line_payload is not None:
+        atomic_json(key_line_payload, output / KEY_LINE_PICK_READ_FILENAME)
     write_card_lineage(card_lineage, output)
     ats_predictions = predictions.loc[predictions["method"].eq(metadata["ats_method"])].copy()
     if ats_predictions.empty:
@@ -372,6 +409,7 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
                 probability_method=request.probability_method,
                 center_offsets=center_offsets,
                 discrete_read=reader,
+                key_line_pick_read=_key_line_policy(reader),
             )
 
         sweep, discrete = _with_discrete_fallback(_sweep, discrete, None)
@@ -379,6 +417,7 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             metadata["discrete_push_read"] = _discrete_push_read_summary(
                 discrete, discrete_read_log
             )
+        sweep_policy = _key_line_policy(discrete.reader if discrete is not None else None)
         atomic_parquet(sweep, output / "line_sweep.parquet")
         metadata["line_sweep"] = {
             "path": "line_sweep.parquet",
@@ -390,6 +429,11 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
                 DISCRETE_PUSH_READ_POLICY
                 if discrete is not None and discrete.served
                 else "smooth_rounded_residuals"
+            ),
+            "pick_read": (
+                sweep_policy.policy
+                if sweep_policy is not None and key_line is not None
+                else "smooth_gaussian_median_every_line"
             ),
         }
     active_model = activate_matching_ats_model(_artifacts_root(), output, metadata)
@@ -1168,6 +1212,40 @@ def _discrete_push_read_sidecar(
         "error": discrete.error,
         "games": games,
     }
+
+
+def _key_line_policy(reader: DiscretePushReader | None) -> KeyLinePickRead | None:
+    """The served key-line pick policy over ``reader``, or ``None`` with the
+    flag off or no lattice (docs/key_line_pick_read.md)."""
+
+    if not KEY_LINE_PICK_READ_SERVED or reader is None:
+        return None
+    return KeyLinePickRead(reader=reader, atoms=KEY_LINE_ATOMS)
+
+
+def _served_key_line_pick_read(
+    discrete: ProductionDiscretePushRead | None,
+) -> tuple[KeyLinePickRead | None, str | None]:
+    """The served key-line pick policy for this week, or ``(None, reason)``.
+
+    The policy reads the SAME walk-forward lattice the discrete push read
+    fitted (docs/key_line_pick_read.md), so it is served only when that
+    reader is: with the flag off, or with no reader (push read off, or its
+    fit or scoring failed and degraded to the smooth split), the smooth
+    two-way read serves every game and the sidecar says why. Never raises;
+    never blocks the lock.
+    """
+
+    if not KEY_LINE_PICK_READ_SERVED:
+        return None, None
+    if discrete is None:
+        return None, "discrete push read not served; the key-line pick read needs its lattice"
+    if discrete.reader is None:
+        return None, (
+            "discrete lattice unavailable this week; the smooth read serves every game"
+            + (f": {discrete.error}" if discrete.error else "")
+        )
+    return _key_line_policy(discrete.reader), None
 
 
 def _discrete_push_read_summary(

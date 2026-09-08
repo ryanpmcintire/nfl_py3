@@ -127,6 +127,7 @@ from nfl_ats.injury_value_tilt_overlay import (
 from nfl_ats.interim_hc_first_game_tilt_overlay import (
     apply_interim_hc_first_game_tilt_overlay,
 )
+from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
 from nfl_ats.model_explanation import load_model_explanation_html
 from nfl_ats.model_ledger import build_and_render
 from nfl_ats.player_arrests_back_side_overlay import (
@@ -994,8 +995,15 @@ def _assert_spread_explorer_matches_card(
         return
     lookup = predictions.set_index(predictions["game_id"].astype(str))
     for game_id, values in spread_explorer_payload(params).items():
-        widget_probability = widget_home_cover_probability(
-            values["line"], values["center"], values["mean"], values["std"]
+        # A key-line game (docs/key_line_pick_read.md) ships its served
+        # lattice number for the quoted line; that is what the widget shows
+        # at offset zero, so that is what must match the card.
+        widget_probability = (
+            float(values["pinned"])
+            if "pinned" in values
+            else widget_home_cover_probability(
+                values["line"], values["center"], values["mean"], values["std"]
+            )
         )
         published = _number(lookup.loc[game_id, "home_cover_probability"])
         if published is None:
@@ -4809,6 +4817,7 @@ def build_public_site(
             min_train_games=int(artifacts.metadata.get("min_train_games", 500)),
             probability_method=str(artifacts.metadata["probability_method"]),
             center_offsets=center_offsets_from_metadata(artifacts.metadata, artifacts.predictions),
+            pick_overrides=pick_overrides_from_metadata(artifacts.metadata),
         )
         # REQUIRED consistency check: the widget's own formula must reproduce
         # the published card at each game's own line before it ships.

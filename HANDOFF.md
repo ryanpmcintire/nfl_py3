@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T15:05:22.878314+00:00`
+Refreshed at: `2026-09-08T15:12:39.726191+00:00`
 
 ## Start here
 
@@ -20,10 +20,29 @@ Refreshed at: `2026-09-08T15:05:22.878314+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d769822cbcb5` — Audit corrections (Codex lane AA): numbers fixed on the MOD-18 row; legacy Task Scheduler entry found firing the 09:00 opener capture, disabled and documented; scheduling doc says 12:20 [skip ci]
-- Pending change set: 2 paths
+- Baseline commit: `e3437eeae217` — Scheduling doc: 12:20 lock timing; legacy Task Scheduler entries documented [skip ci]
+- Pending change set: 24 paths
   - `M  HANDOFF.md`
-  - `M  docs/capture_scheduling.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `A  docs/key_line_pick_read.md`
+  - `M  scripts/lockday_rehearsal.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/card_explanation.py`
+  - `M  src/nfl_ats/card_refit.py`
+  - `M  src/nfl_ats/cli_commands/prediction.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/ecdf_mapping_incumbent_overlay.py`
+  - `M  src/nfl_ats/gaussian_mean_mapping_incumbent_overlay.py`
+  - `A  src/nfl_ats/key_line_pick_read.py`
+  - `A  src/nfl_ats/key_line_pick_read_incumbent_overlay.py`
+  - `M  src/nfl_ats/outcomes.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  src/nfl_ats/public_board.py`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

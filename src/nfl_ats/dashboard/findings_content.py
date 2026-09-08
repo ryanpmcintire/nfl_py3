@@ -269,6 +269,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "ecdf_mapping_incumbent": "ECDF probability mapping",
     "gaussian_mean_mapping_incumbent": "Probability read centred on the trailing mean",
     "home_side_offset_off_incumbent": "Forecast without the home-team big-spread adjustment",
+    "key_line_pick_read_off_incumbent": "Forecast without the key-number read on lines set on 3 or 7",
     "overlay_four_member_union_retired_20260907": (
         "Former card: three rules plus the spread-gap flip"
     ),

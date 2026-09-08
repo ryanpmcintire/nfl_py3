@@ -2,16 +2,16 @@
   "challengers": [
     {
       "challenger_id": "best_pick_sunday_renomination",
-      "status": "ACTIVE_PROSPECTIVE",
-      "registered_at_utc": "2026-09-05T00:00:00+00:00",
       "prospective_protocol": "LEAD-53: docs/prospective_bestpick_tiebreaker.md; one Tuesday/Sunday nomination pair per REG week, 2026+; both arms graded at frozen Tuesday lines; separate best_pick_refresh_decisions.parquet ledger.",
+      "registered_at_utc": "2026-09-05T00:00:00+00:00",
+      "status": "ACTIVE_PROSPECTIVE",
       "weekly_recording_command": "nfl-ats refresh-picks --record-decisions (record_best_pick_refresh; Tuesday anchor captured by publish-predictions --record-decisions)"
     },
     {
       "challenger_id": "tiebreaker_low_side_shade",
-      "status": "ACTIVE_PROSPECTIVE",
-      "registered_at_utc": "2026-09-05T00:00:00+00:00",
       "prospective_protocol": "LEAD-54: docs/prospective_bestpick_tiebreaker.md; served integer score versus lattice centred one point under market total; paired absolute error; separate tiebreaker_shade_decisions.parquet ledger.",
+      "registered_at_utc": "2026-09-05T00:00:00+00:00",
+      "status": "ACTIVE_PROSPECTIVE",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_tiebreaker_shade_decisions)"
     },
     {
@@ -2104,114 +2104,114 @@
     },
     {
       "challenger_id": "crew_tilt_refresh_v1",
-      "registered_at_utc": "2026-09-01T20:05:00+00:00",
-      "registered_by": "WP47, session 2026-09-01. Turns docs/referee_assignments_capture.md section 5's 'what these two P+ ~0.9 cells would still need' list into a live, frozen rule, using WP22's Wednesday officiating-crew capture (referee_assignments_wed) as the missing point-in-time input ROADMAP PBP-10 named as its own precondition. NOT an owner decision to play this on the real card: nothing in nfl_ats.crew_tilt_refresh_overlay is wired into publishing.py, the four-overlay production policy, or the production pick path, and the module consumes every RefreshedGame read-only. This registration exists ONLY to accrue dual-tracked prospective evidence at zero rotation-registry cost.",
-      "status": "ACTIVE_PROSPECTIVE",
-      "rule_frozen_text": "Challenger: crew_tilt_refresh_v1\nStatus: PROSPECTIVE -- registers a 2026-season prospective test; nothing here is\n  claimed as confirmed. Both parent cells stay unresolved_below_power.\nPredeclared: docs/referee_assignments_capture.md, section 'Late-week crew-tilt\n  challenger predeclaration (2026-09-01, WP47)', written BEFORE the module\n  existed and before any 2026 or back-test number was computed.\nRule (frozen): At each nfl-ats refresh-picks pass, for each game, take the\n  NEWEST data/players/referee_assignments/*/assignments.parquet snapshot that\n  covers the pass's (season, week) AND whose captured_at_utc is strictly before\n  that game's own pick deadline min(own kickoff, Sunday 16:00 ET). No in-window\n  snapshot row -> zero tilt, keep the Tuesday pick, tag the row. Otherwise\n  compute the two predeclared cells' flags from the SEASON-LAGGED crew traits\n  exactly as the screen did (experiment_runner's own builders, imported):\n  cell C fires when the home team's prior-rolling pregame pass rate\n  (game_features_pbp.parquet home_pbp_off_pass_rate) is in the BOTTOM quartile\n  (run-heavy) AND the game's referee's PRIOR-season Offensive Holding rate is in\n  the TOP quartile; cell A fires when the referee's PRIOR-season mean_total\n  penalty rate is in the TOP quartile AND the home team is getting >= 7 points at\n  the FROZEN Tuesday line (decision_home_spread <= -7.0, nflverse convention).\n  Tilt the PRODUCTION home-cover probability by each fired cell's OWN measured\n  raw per-game gap -- cell C -0.05994893289010933, cell A +0.16772226131832042 --\n  composing ADDITIVELY, then clip to [0, 1]. The pick FLIPS only when that tilt\n  moves the probability across 0.5; otherwise the played pick stands unchanged.\nTiming: computed at late-week refresh passes only, never at the Tuesday publish\n  (Football Zebras never publishes a week's crew before Tuesday afternoon --\n  measured, docs/referee_assignments_capture.md section 2). SNF/MNF ARE playable:\n  a Wednesday capture precedes their Sunday 16:00 ET lock. Verified per game\n  against nfl_ats.pick_refresh.pick_deadline, never assumed.\nGrading: the FROZEN Tuesday line (POL-11); the pick is never re-formed at a\n  later line. decision_line grade primary, close_line secondary, paired per game\n  against the incumbent Tuesday card.\nProspective decision rule: track all season; evaluate after the season with the\n  predeclared taxonomy only -- an interval crossing zero never grounds rejection;\n  promotion claims require the owner's declared threshold; card play remains\n  expected value at the opener grade.\nFails open: no snapshot, a snapshot at or after a game's own deadline, a game\n  absent from the snapshot, a referee with no prior-season trait, or a game\n  absent from game_features_pbp.parquet all yield zero tilt and the incumbent\n  pick, tagged with the reason -- never an exception, never a flip.",
-      "status_reason": "NOT a retrained model and NOT a change to the published card. This challenger's picks ARE the played production-chain picks as they stand at the refresh pass (nfl_ats.pick_refresh.RefreshedGame.new_pick_side), transformed post-decision by nfl_ats.crew_tilt_refresh_overlay.build_crew_tilt_refresh_rows. The two tilt magnitudes are NOT chosen here: they are each parent cell's own measured raw per-game cover-rate gap, read from that experiment's own artifact (result.raw_gap_pct, signed by the construct's own sign, src/nfl_ats/experiment_runner.py:3629-3630) and pinned by test against both the artifact and registry/weak_signals.json's classification_evidence. The heavy-underdog cut is the screen's own _HEAVY_UNDERDOG_THRESHOLD_DEFAULT = 7.0, imported rather than retyped. The overlay is ASYMMETRIC in neither direction: it simply moves the home-cover probability and re-derives the side at 0.5, so an unflagged game is byte-identical to the incumbent by construction.",
+      "composition_correlation_warning": "Its rows derive from the same played chain as movement_rule_composed_v1's, nflcom_friday_refresh_out2_starters_v1's and every sibling tilt overlay's, and it is a correlated decomposition of its own two parent cells. Standalone attribution only -- never pooled as an independent arm.",
       "config_fingerprint": "b53f07cf61b09b4b",
-      "model": {
-        "method": "market_residual",
-        "target": "ats_classification",
-        "regressor": "ridge",
-        "ridge_alpha": 10.0,
-        "calibration_method": "none",
-        "probability_method": "gaussian",
-        "feature_profile": "weak_stack",
-        "feature_set": "full_weak_stack",
-        "min_edge": 0.02,
-        "min_train_games": 500,
-        "feature_table": "data/processed/game_features_weak_stack.parquet"
-      },
-      "model_note": "A SNAPSHOT of the active model's own configuration at registration time (artifacts/active_ats_model.json, model_id d1f07d773475dc58, activated_at_utc 2026-09-01T19:35:06.863863+00:00), identical in role to every sibling refresh challenger's. It is not consumed by an automated fingerprint gate for this challenger because none exists yet (see weekly_recording_command / known_gap); the equivalent guarantee is already enforced more strongly inside nfl_ats.pick_refresh.plan_refresh, which raises outright if the active model's identity no longer matches the week's recorded original card. Re-snapshot after any legitimate promotion for audit-trail accuracy; nothing breaks if it is left stale.",
       "evidence": {
+        "classification": "unresolved_below_power (all three cells; none is wrong_sign_resolved, none has zero split-half reliability, and no positive control was run so bounded_by_control is not available)",
+        "composition_never_measured": "The two cells' ADDITIVE composition has never been measured jointly. One game in the 1,537-game archive fired both flags. Additivity is an assumption frozen for auditability, and a both-flagged game is the population where this rule is least supported by evidence. Stated plainly, per AGENTS.md's 'composition is not the signal'.",
+        "ev_framing": "Per AGENTS.md 'a promotion bar is not a decision bar' and the owner standing order 'EV-positive plays execute': the pool is forced picks, so registering a dual-tracked (never production-applied) challenger whose stacked read sits at probability_positive 0.8825 is an EV-positive research play, not a claim the mechanism is resolved. Every cited cell stays unresolved_below_power.",
+        "grade_mismatch_disclosure": "Cell C was measured at the close grade and cell A at the opener grade; combining them into one rule is a composition ACROSS grades. This challenger is a separately-named, genuinely new construct measuring the same mechanism under a LATE-WEEK decision timestamp -- it does not claim to reproduce either historical number. Its own primary grade is decision_line, the frozen Tuesday opener the pool settles on.",
+        "parent_cell_high_flag_underdog": {
+          "artifact": "artifacts/experiment_runner/20260820T113443Z/metadata.json",
+          "effect_accuracy_points": 0.1055594651653765,
+          "grade": "opener",
+          "interval_points": [
+            -0.03507604489905374,
+            0.23198681760801584
+          ],
+          "n_flag": 18,
+          "name": "penalty_crew_high_flag_heavy_underdog_opener",
+          "probability_positive": 0.92035,
+          "raw_gap_points": 16.772226131832042,
+          "reliability_pairs": 158,
+          "sample_games": 2860,
+          "seasons": [
+            2016,
+            2025
+          ],
+          "sign": 1,
+          "split_half_reliability": 0.3701961715390849,
+          "thin_n_disclosure": "n_flag = 18 team-games over ten seasons, 0.63% of the slate. This is a POWER statement, not a defect, and it is why this cell's raw gap is large: a big per-game gap on a tiny population scales to a small full-slate effect."
+        },
+        "parent_cell_holding": {
+          "artifact": "artifacts/experiment_runner/20260820T113432Z/metadata.json",
+          "effect_accuracy_points": 0.13903743315508013,
+          "grade": "close",
+          "interval_points": [
+            -0.05946441538045875,
+            0.3414722897586899
+          ],
+          "n_flag": 111,
+          "name": "penalty_crew_holding_tilt_run_heavy",
+          "probability_positive": 0.9015,
+          "raw_gap_points": 5.994893289010933,
+          "reliability_pairs": 158,
+          "sample_games": 4786,
+          "seasons": [
+            2016,
+            2025
+          ],
+          "sign": -1,
+          "split_half_reliability": 0.32260090874115543
+        },
         "registry_source": [
           "registry/weak_signals.json:penalty_crew_holding_tilt_run_heavy",
           "registry/weak_signals.json:penalty_crew_high_flag_heavy_underdog_opener",
           "registry/weak_signals.json:crew_tilt_stacked_on_production"
         ],
-        "classification": "unresolved_below_power (all three cells; none is wrong_sign_resolved, none has zero split-half reliability, and no positive control was run so bounded_by_control is not available)",
-        "parent_cell_holding": {
-          "name": "penalty_crew_holding_tilt_run_heavy",
-          "effect_accuracy_points": 0.13903743315508013,
-          "interval_points": [
-            -0.05946441538045875,
-            0.3414722897586899
-          ],
-          "probability_positive": 0.9015,
-          "raw_gap_points": 5.994893289010933,
-          "sign": -1,
-          "split_half_reliability": 0.32260090874115543,
-          "reliability_pairs": 158,
-          "sample_games": 4786,
-          "n_flag": 111,
-          "seasons": [
-            2016,
-            2025
-          ],
-          "grade": "close",
-          "artifact": "artifacts/experiment_runner/20260820T113432Z/metadata.json"
-        },
-        "parent_cell_high_flag_underdog": {
-          "name": "penalty_crew_high_flag_heavy_underdog_opener",
-          "effect_accuracy_points": 0.1055594651653765,
-          "interval_points": [
-            -0.03507604489905374,
-            0.23198681760801584
-          ],
-          "probability_positive": 0.92035,
-          "raw_gap_points": 16.772226131832042,
-          "sign": 1,
-          "split_half_reliability": 0.3701961715390849,
-          "reliability_pairs": 158,
-          "sample_games": 2860,
-          "n_flag": 18,
-          "seasons": [
-            2016,
-            2025
-          ],
-          "grade": "opener",
-          "artifact": "artifacts/experiment_runner/20260820T113443Z/metadata.json",
-          "thin_n_disclosure": "n_flag = 18 team-games over ten seasons, 0.63% of the slate. This is a POWER statement, not a defect, and it is why this cell's raw gap is large: a big per-game gap on a tiny population scales to a small full-slate effect."
-        },
+        "solo_arm_disclosure": "The same tilt applied to the RAW model card rather than the played chain scored +0.0000 accuracy points, 95% [-0.5956, +0.5968], P+ 0.4561 week-blocked on 26 flips -- a coin flip standalone. The stacked +0.3327 is therefore COMPOSITION on the played chain, not a standalone signal, and this challenger must never be pooled with its two parent cells as an independent input: it is a correlated decomposition of them.",
         "stacked_on_production_context": {
-          "name": "crew_tilt_stacked_on_production",
+          "artifact": "artifacts/crew_tilt_refresh/20260901T195622Z/results.json",
+          "baseline_accuracy": 0.533599,
+          "candidate_accuracy": 0.557552,
           "effect_accuracy_points": 0.3327,
-          "interval_points_week_blocked": [
-            -0.135,
-            0.8525
-          ],
-          "probability_positive_week_blocked": 0.8825,
           "interval_points_season_blocked": [
             -0.1376,
             0.789
           ],
-          "probability_positive_season_blocked": 0.8858,
-          "candidate_accuracy": 0.557552,
-          "production_accuracy": 0.554225,
-          "baseline_accuracy": 0.533599,
-          "n_scored_games": 1503,
+          "interval_points_week_blocked": [
+            -0.135,
+            0.8525
+          ],
           "n_flipped": 15,
+          "n_scored_games": 1503,
+          "name": "crew_tilt_stacked_on_production",
+          "note": "CONTEXT, declared not a gate BEFORE it was run (docs/referee_assignments_capture.md, WP47 section 5). MINED seasons on an already-looked-at archive several incumbent-chain members were themselves screened against; no rotation-registry window spent.",
+          "probability_positive_season_blocked": 0.8858,
+          "probability_positive_week_blocked": 0.8825,
+          "production_accuracy": 0.554225,
           "seasons": [
             2020,
             2025
-          ],
-          "artifact": "artifacts/crew_tilt_refresh/20260901T195622Z/results.json",
-          "note": "CONTEXT, declared not a gate BEFORE it was run (docs/referee_assignments_capture.md, WP47 section 5). MINED seasons on an already-looked-at archive several incumbent-chain members were themselves screened against; no rotation-registry window spent."
+          ]
         },
-        "solo_arm_disclosure": "The same tilt applied to the RAW model card rather than the played chain scored +0.0000 accuracy points, 95% [-0.5956, +0.5968], P+ 0.4561 week-blocked on 26 flips -- a coin flip standalone. The stacked +0.3327 is therefore COMPOSITION on the played chain, not a standalone signal, and this challenger must never be pooled with its two parent cells as an independent input: it is a correlated decomposition of them.",
-        "composition_never_measured": "The two cells' ADDITIVE composition has never been measured jointly. One game in the 1,537-game archive fired both flags. Additivity is an assumption frozen for auditability, and a both-flagged game is the population where this rule is least supported by evidence. Stated plainly, per AGENTS.md's 'composition is not the signal'.",
-        "grade_mismatch_disclosure": "Cell C was measured at the close grade and cell A at the opener grade; combining them into one rule is a composition ACROSS grades. This challenger is a separately-named, genuinely new construct measuring the same mechanism under a LATE-WEEK decision timestamp -- it does not claim to reproduce either historical number. Its own primary grade is decision_line, the frozen Tuesday opener the pool settles on.",
-        "ev_framing": "Per AGENTS.md 'a promotion bar is not a decision bar' and the owner standing order 'EV-positive plays execute': the pool is forced picks, so registering a dual-tracked (never production-applied) challenger whose stacked read sits at probability_positive 0.8825 is an EV-positive research play, not a claim the mechanism is resolved. Every cited cell stays unresolved_below_power.",
         "write_up": "docs/referee_assignments_capture.md (WP47 section), docs/penalty_crew_tendencies.md (cells A and C), docs/referee_battery.md, docs/late_week_refresh.md"
       },
-      "timing_caveat": "The capture can NEVER feed the Tuesday-lock card: Football Zebras was measured to publish a week's crew no earlier than Tuesday afternoon, twice landing Wednesday midday (docs/referee_assignments_capture.md section 2, ten sampled 2025 posts). So this channel is late-week only, by construction. A capture that slips past a Thursday-night game's kickoff drops TNF from the channel that week -- tagged in the ledger, never silently. SNF and MNF remain playable because their deadline is the Sunday 16:00 ET lock, which a Wednesday capture precedes.",
+      "known_gap": "Automatic refresh wiring landed 2026-09-02. The recorder runs only with `nfl-ats refresh-picks --record-decisions`, never Tuesday publishing; no settlement command yet reads this separate prospective ledger.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "probability_method": "gaussian",
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "ats_classification"
+      },
+      "model_note": "A SNAPSHOT of the active model's own configuration at registration time (artifacts/active_ats_model.json, model_id d1f07d773475dc58, activated_at_utc 2026-09-01T19:35:06.863863+00:00), identical in role to every sibling refresh challenger's. It is not consumed by an automated fingerprint gate for this challenger because none exists yet (see weekly_recording_command / known_gap); the equivalent guarantee is already enforced more strongly inside nfl_ats.pick_refresh.plan_refresh, which raises outright if the active model's identity no longer matches the week's recorded original card. Re-snapshot after any legitimate promotion for audit-trail accuracy; nothing breaks if it is left stale.",
       "played_card_unchanged_note": "This registration changes NOTHING about the played card. MOVEMENT_POLICY_THRESHOLD, the four-overlay union policy overlay_union_coach_division_revenge_player_arrests_spread_gap_v1, publishing.py and the production pick path are untouched byte-for-byte. The module writes only its own separate append-only ledger, artifacts/prospective/crew_tilt_refresh_decisions.parquet; it never writes pick_revisions.parquet, never writes decisions.parquet, and never influences new_pick_side.",
       "prospective_protocol": "Score forced-pick ATS accuracy for the crew_would_be_pick_side arm against the played_pick_side arm on every recorded row of crew_tilt_refresh_decisions.parquet, paired per game at the FROZEN Tuesday grading line (decision_home_spread, identical across both arms by construction), via nfl-ats prospective-score -- decision_line primary, close_line secondary. Repeated refresh passes across a week append MULTIPLE rows per game by design; a settlement pass reads the LATEST pre-kickoff row per game, mirroring nfl_ats.pick_refresh.final_pick_per_game. No rotation-registry window is spent or implied.",
+      "registered_at_utc": "2026-09-01T20:05:00+00:00",
+      "registered_by": "WP47, session 2026-09-01. Turns docs/referee_assignments_capture.md section 5's 'what these two P+ ~0.9 cells would still need' list into a live, frozen rule, using WP22's Wednesday officiating-crew capture (referee_assignments_wed) as the missing point-in-time input ROADMAP PBP-10 named as its own precondition. NOT an owner decision to play this on the real card: nothing in nfl_ats.crew_tilt_refresh_overlay is wired into publishing.py, the four-overlay production policy, or the production pick path, and the module consumes every RefreshedGame read-only. This registration exists ONLY to accrue dual-tracked prospective evidence at zero rotation-registry cost.",
+      "rule_frozen_text": "Challenger: crew_tilt_refresh_v1\nStatus: PROSPECTIVE -- registers a 2026-season prospective test; nothing here is\n  claimed as confirmed. Both parent cells stay unresolved_below_power.\nPredeclared: docs/referee_assignments_capture.md, section 'Late-week crew-tilt\n  challenger predeclaration (2026-09-01, WP47)', written BEFORE the module\n  existed and before any 2026 or back-test number was computed.\nRule (frozen): At each nfl-ats refresh-picks pass, for each game, take the\n  NEWEST data/players/referee_assignments/*/assignments.parquet snapshot that\n  covers the pass's (season, week) AND whose captured_at_utc is strictly before\n  that game's own pick deadline min(own kickoff, Sunday 16:00 ET). No in-window\n  snapshot row -> zero tilt, keep the Tuesday pick, tag the row. Otherwise\n  compute the two predeclared cells' flags from the SEASON-LAGGED crew traits\n  exactly as the screen did (experiment_runner's own builders, imported):\n  cell C fires when the home team's prior-rolling pregame pass rate\n  (game_features_pbp.parquet home_pbp_off_pass_rate) is in the BOTTOM quartile\n  (run-heavy) AND the game's referee's PRIOR-season Offensive Holding rate is in\n  the TOP quartile; cell A fires when the referee's PRIOR-season mean_total\n  penalty rate is in the TOP quartile AND the home team is getting >= 7 points at\n  the FROZEN Tuesday line (decision_home_spread <= -7.0, nflverse convention).\n  Tilt the PRODUCTION home-cover probability by each fired cell's OWN measured\n  raw per-game gap -- cell C -0.05994893289010933, cell A +0.16772226131832042 --\n  composing ADDITIVELY, then clip to [0, 1]. The pick FLIPS only when that tilt\n  moves the probability across 0.5; otherwise the played pick stands unchanged.\nTiming: computed at late-week refresh passes only, never at the Tuesday publish\n  (Football Zebras never publishes a week's crew before Tuesday afternoon --\n  measured, docs/referee_assignments_capture.md section 2). SNF/MNF ARE playable:\n  a Wednesday capture precedes their Sunday 16:00 ET lock. Verified per game\n  against nfl_ats.pick_refresh.pick_deadline, never assumed.\nGrading: the FROZEN Tuesday line (POL-11); the pick is never re-formed at a\n  later line. decision_line grade primary, close_line secondary, paired per game\n  against the incumbent Tuesday card.\nProspective decision rule: track all season; evaluate after the season with the\n  predeclared taxonomy only -- an interval crossing zero never grounds rejection;\n  promotion claims require the owner's declared threshold; card play remains\n  expected value at the opener grade.\nFails open: no snapshot, a snapshot at or after a game's own deadline, a game\n  absent from the snapshot, a referee with no prior-season trait, or a game\n  absent from game_features_pbp.parquet all yield zero tilt and the incumbent\n  pick, tagged with the reason -- never an exception, never a flip.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model and NOT a change to the published card. This challenger's picks ARE the played production-chain picks as they stand at the refresh pass (nfl_ats.pick_refresh.RefreshedGame.new_pick_side), transformed post-decision by nfl_ats.crew_tilt_refresh_overlay.build_crew_tilt_refresh_rows. The two tilt magnitudes are NOT chosen here: they are each parent cell's own measured raw per-game cover-rate gap, read from that experiment's own artifact (result.raw_gap_pct, signed by the construct's own sign, src/nfl_ats/experiment_runner.py:3629-3630) and pinned by test against both the artifact and registry/weak_signals.json's classification_evidence. The heavy-underdog cut is the screen's own _HEAVY_UNDERDOG_THRESHOLD_DEFAULT = 7.0, imported rather than retyped. The overlay is ASYMMETRIC in neither direction: it simply moves the home-cover probability and re-derives the side at 0.5, so an unflagged game is byte-identical to the incumbent by construction.",
+      "timing_caveat": "The capture can NEVER feed the Tuesday-lock card: Football Zebras was measured to publish a week's crew no earlier than Tuesday afternoon, twice landing Wednesday midday (docs/referee_assignments_capture.md section 2, ten sampled 2025 posts). So this channel is late-week only, by construction. A capture that slips past a Thursday-night game's kickoff drops TNF from the channel that week -- tagged in the ledger, never silently. SNF and MNF remain playable because their deadline is the Sunday 16:00 ET lock, which a Wednesday capture precedes.",
       "weekly_generation_command": "N/A -- reuses the played production-chain picks as they stand at each nfl-ats refresh-picks pass plus the captured crew assignment; never a separate margin-predict card. The crew snapshot itself is produced by the scheduled referee_assignments_wed job (scripts/capture_referee_assignments.py, Wed 15:00 ET).",
-      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions",
-      "composition_correlation_warning": "Its rows derive from the same played chain as movement_rule_composed_v1's, nflcom_friday_refresh_out2_starters_v1's and every sibling tilt overlay's, and it is a correlated decomposition of its own two parent cells. Standalone attribution only -- never pooled as an independent arm.",
-      "known_gap": "Automatic refresh wiring landed 2026-09-02. The recorder runs only with `nfl-ats refresh-picks --record-decisions`, never Tuesday publishing; no settlement command yet reads this separate prospective ledger."
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
     },
     {
       "challenger_id": "weak_stack_qb_revenge_deadline_drag",
@@ -2295,30 +2295,30 @@
     {
       "challenger_id": "totals_served_method",
       "evidence": {
+        "artifact": "artifacts/mod17_joint_residual/20260905T160219Z/results.json",
         "classification": "unresolved_below_power",
         "effect_units": "mae_improvement",
-        "measured_estimate": 0.00491,
         "interval": [
           -0.00662,
           0.01646
         ],
+        "measured_estimate": 0.00491,
         "probability_positive": 0.791,
+        "registry_source": "registry/weak_signals.json:mod17_joint_residual_total_blend",
         "sample_games": 3919,
         "sample_week_blocks": 260,
-        "registry_source": "registry/weak_signals.json:mod17_joint_residual_total_blend",
-        "artifact": "artifacts/mod17_joint_residual/20260905T160219Z/results.json",
         "write_up": "docs/mod17_joint_residual_model.md, docs/tiebreaker.md, docs/totals_model.md"
       },
       "known_gap": "This challenger's 'model' block below documents the joint model's configuration for readability only -- unlike every other entry in this registry, the recorder (nfl_ats.served_total_challenger.record_totals_served_method_decisions) does NOT check a configuration fingerprint against it, because it does not read a separate margin-predict/challenger card at all: it calls nfl_ats.tiebreaker.tiebreaker_report directly, the same production entry point 'nfl-ats tiebreaker' uses, and records whichever total that call actually served plus the always-computed comparison arm. The ledger is its own bespoke shape (nfl_ats.served_total_challenger.LEDGER_COLUMNS), not the shared pick-side CHALLENGER_DECISION_COLUMNS every other entry here uses, because the two arms compared are numeric totals, not side picks -- there is no pick_side/decision_home_spread/edge for a total prediction. Exactly one row is recorded per week (the tiebreaker game only), and realised_total is backfilled on later calls once that game's score is final, never re-graded.",
       "model": {
-        "served_method_default": "joint_residual",
+        "blend_k01_weight": 0.1,
         "comparison_method": "blend_k01",
+        "joint_blend_weight": 0.1,
         "joint_feature_profile": "union (production weak_stack 90 cols + totals wave-2 24 drive cols)",
         "joint_feature_table": "data/processed/game_features_weak_stack.parquet",
         "joint_ridge_alpha": 10.0,
-        "joint_blend_weight": 0.1,
-        "blend_k01_weight": 0.1,
-        "min_train_games": 500
+        "min_train_games": 500,
+        "served_method_default": "joint_residual"
       },
       "prospective_protocol": "Every week, nfl_ats.served_total_challenger.record_totals_served_method_decisions records the tiebreaker game's market total, both served-total candidates (served_total_blend_k01 and, when the joint model can price the game, served_total_joint_residual), and which one nfl_ats.served_total.SERVED_TOTAL_METHOD actually served that week. A later call backfills realised_total (home_score + away_score) once the game is final. No promotion decision is implied by a partial season -- this accrues independent 2026 paired evidence for the EV-favoured total output the 2026-09-05 screen already promoted, at no rotation-registry cost (the screen it is based on already disclosed spending no window, docs/mod17_joint_residual_model.md 'Rotation / promotion disclosure').",
       "registered_at_utc": "2026-09-05T18:00:00+00:00",
@@ -2335,23 +2335,23 @@
         "classification": "unresolved_below_power",
         "on_production_screen": {
           "effect_accuracy_points": 0.877,
-          "interval_points_week_blocked": [
-            -0.436,
-            2.242
-          ],
           "interval_points_season_blocked": [
             0.455,
             1.271
           ],
+          "interval_points_week_blocked": [
+            -0.436,
+            2.242
+          ],
+          "n_flag_full_schedule": 111,
+          "positive_control_probability_positive": 1.0,
           "probability_positive": 0.87905,
           "sample_games": 456,
           "sample_weeks": 35,
           "window": [
             2020,
             2021
-          ],
-          "n_flag_full_schedule": 111,
-          "positive_control_probability_positive": 1.0
+          ]
         },
         "registry_source": "registry/weak_signals.json:specialist_absence_fade_on_production",
         "roadmap_row": "LEAD-17",
@@ -2390,15 +2390,15 @@
             -0.6608,
             1.7544
           ],
+          "n_flag_full_schedule": 57,
+          "positive_control_probability_positive": 1.0,
           "probability_positive": 0.68955,
           "sample_games": 456,
           "sample_weeks": 35,
           "window": [
             2020,
             2021
-          ],
-          "n_flag_full_schedule": 57,
-          "positive_control_probability_positive": 1.0
+          ]
         },
         "registry_source": "registry/weak_signals.json:low_total_div_home_dog_on_production",
         "roadmap_row": "LEAD-42",
@@ -2432,23 +2432,23 @@
         "classification": "unresolved_below_power",
         "on_production_screen": {
           "effect_accuracy_points": 0.6579,
-          "interval_points_week_blocked": [
-            -1.7058,
-            2.8446
-          ],
           "interval_points_season_blocked": [
             -0.4237,
             1.8182
           ],
+          "interval_points_week_blocked": [
+            -1.7058,
+            2.8446
+          ],
+          "n_flag_full_schedule": 154,
+          "positive_control_probability_positive": 1.0,
           "probability_positive": 0.69175,
           "sample_games": 456,
           "sample_weeks": 35,
           "window": [
             2020,
             2021
-          ],
-          "n_flag_full_schedule": 154,
-          "positive_control_probability_positive": 1.0
+          ]
         },
         "registry_source": "registry/weak_signals.json:rain_on_grass_dog_on_production",
         "roadmap_row": "LEAD-37",
@@ -2477,27 +2477,9 @@
     },
     {
       "challenger_id": "weak_stack_expected_lineup_loss",
-      "status": "ACTIVE_PROSPECTIVE",
       "config_fingerprint": "bc77638d47e2748c",
-      "model": {
-        "calibration_method": "none",
-        "feature_profile": "weak_stack",
-        "feature_set": "full_weak_stack",
-        "feature_table": "data/processed/game_features_weak_stack.parquet",
-        "method": "market_residual",
-        "min_edge": 0.02,
-        "min_train_games": 500,
-        "regressor": "ridge",
-        "ridge_alpha": 10.0,
-        "target": "market_residual"
-      },
-      "registered_at_utc": "2026-09-05T20:15:45+00:00",
-      "registered_by": "CX9: owner-authorized paired prospective play",
-      "model_note": "Pins the production recipe; the candidate refits that recipe plus the three frozen expected lineup loss columns without changing the active model.",
       "evidence": {
         "classification": "unresolved_below_power",
-        "roadmap_row": "LEAD-62",
-        "write_up": "docs/expected_lineup_loss.md",
         "on_production_screen": {
           "candidate_accuracy": 0.5394736842105263,
           "delta_accuracy": 0.006578947368421052,
@@ -2516,20 +2498,14 @@
           ],
           "week_blocked_probability_positive": 0.66505
         },
+        "roadmap_row": "LEAD-62",
         "split_half_reliability": {
           "n_team_seasons": 352,
           "reliability": 0.8262005125941361
-        }
+        },
+        "write_up": "docs/expected_lineup_loss.md"
       },
       "known_gap": "Historical week-labelled depth observations use the disclosed archive proxy. Missing current lineups skip recording.",
-      "prospective_protocol": "Freeze both baseline and challenger picks for each game at the same decision spread. Score the decision line first.",
-      "weekly_generation_command": "Runtime refit at publication using local training history and current predecision lineups.",
-      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via nfl_ats.expected_lineup_loss_challenger.record_expected_lineup_loss_challenger_decisions)"
-    },
-    {
-      "challenger_id": "weak_stack_deadline_drag",
-      "status": "ACTIVE_PROSPECTIVE",
-      "config_fingerprint": "bc77638d47e2748c",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -2542,33 +2518,20 @@
         "ridge_alpha": 10.0,
         "target": "market_residual"
       },
-      "registered_at_utc": "2026-09-05T20:29:12.141117+00:00",
-      "registered_by": "CX13: owner-authorized paired prospective play",
-      "model_note": "Pins the production recipe; the candidate refits production plus deadline_integration_drag_flag alone.",
+      "model_note": "Pins the production recipe; the candidate refits that recipe plus the three frozen expected lineup loss columns without changing the active model.",
+      "prospective_protocol": "Freeze both baseline and challenger picks for each game at the same decision spread. Score the decision line first.",
+      "registered_at_utc": "2026-09-05T20:15:45+00:00",
+      "registered_by": "CX9: owner-authorized paired prospective play",
+      "status": "ACTIVE_PROSPECTIVE",
+      "weekly_generation_command": "Runtime refit at publication using local training history and current predecision lineups.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via nfl_ats.expected_lineup_loss_challenger.record_expected_lineup_loss_challenger_decisions)"
+    },
+    {
+      "challenger_id": "weak_stack_deadline_drag",
+      "config_fingerprint": "bc77638d47e2748c",
       "evidence": {
         "classification": "unresolved_below_power",
-        "roadmap_row": "LEAD-23",
-        "write_up": "docs/schedule_flag_battery.md",
-        "source": "artifacts/vegasinsider/cx7_42d78f6_audit/transaction_comparison.json",
         "prior_screen_versions": {
-          "matched": {
-            "candidate_accuracy": 0.5416666666666666,
-            "delta_accuracy": 0.008771929824561403,
-            "n_games": 456,
-            "n_seasons": 2,
-            "n_weeks": 35,
-            "reference_accuracy": 0.5328947368421053,
-            "season_blocked_ci95": [
-              0.004545454545454545,
-              0.012711864406779662
-            ],
-            "season_blocked_probability_positive": 1.0,
-            "week_blocked_ci95": [
-              0.0021551724137931034,
-              0.017660044150110375
-            ],
-            "week_blocked_probability_positive": 0.986
-          },
           "active": {
             "candidate_accuracy": 0.5372807017543859,
             "delta_accuracy": 0.0043859649122807015,
@@ -2586,18 +2549,31 @@
               0.011013215859030838
             ],
             "week_blocked_probability_positive": 0.87645
+          },
+          "matched": {
+            "candidate_accuracy": 0.5416666666666666,
+            "delta_accuracy": 0.008771929824561403,
+            "n_games": 456,
+            "n_seasons": 2,
+            "n_weeks": 35,
+            "reference_accuracy": 0.5328947368421053,
+            "season_blocked_ci95": [
+              0.004545454545454545,
+              0.012711864406779662
+            ],
+            "season_blocked_probability_positive": 1.0,
+            "week_blocked_ci95": [
+              0.0021551724137931034,
+              0.017660044150110375
+            ],
+            "week_blocked_probability_positive": 0.986
           }
-        }
+        },
+        "roadmap_row": "LEAD-23",
+        "source": "artifacts/vegasinsider/cx7_42d78f6_audit/transaction_comparison.json",
+        "write_up": "docs/schedule_flag_battery.md"
       },
       "known_gap": "Historical untimestamped wire rows retain the month-end archive proxy; current-season rows require an observation time or predecision snapshot capture. Sitemap last-modified times are never treated as observations. Missing sources skip recording.",
-      "prospective_protocol": "Freeze both baseline and challenger picks for each game at the same decision spread. Score the decision line first.",
-      "weekly_generation_command": "Runtime chronological refit at publication using local transaction reports and prior snap history.",
-      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via nfl_ats.deadline_drag_challenger.record_deadline_drag_challenger_decisions)"
-    },
-    {
-      "challenger_id": "late_week_move_follow_refresh_v1",
-      "status": "ACTIVE_PROSPECTIVE",
-      "config_fingerprint": "bc77638d47e2748c",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -2610,14 +2586,19 @@
         "ridge_alpha": 10.0,
         "target": "market_residual"
       },
-      "registered_at_utc": "2026-09-05T21:07:00.142844+00:00",
-      "registered_by": "CX22: owner-authorized paired prospective refresh challenger",
-      "model_note": "Registration snapshots the active recipe; the refresh plan supplies live provenance. Both picks use the original Tuesday card and frozen line.",
+      "model_note": "Pins the production recipe; the candidate refits production plus deadline_integration_drag_flag alone.",
+      "prospective_protocol": "Freeze both baseline and challenger picks for each game at the same decision spread. Score the decision line first.",
+      "registered_at_utc": "2026-09-05T20:29:12.141117+00:00",
+      "registered_by": "CX13: owner-authorized paired prospective play",
+      "status": "ACTIVE_PROSPECTIVE",
+      "weekly_generation_command": "Runtime chronological refit at publication using local transaction reports and prior snap history.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via nfl_ats.deadline_drag_challenger.record_deadline_drag_challenger_decisions)"
+    },
+    {
+      "challenger_id": "late_week_move_follow_refresh_v1",
+      "config_fingerprint": "bc77638d47e2748c",
       "evidence": {
         "classification": "unresolved_below_power",
-        "roadmap_row": "MKT-15",
-        "source": "artifacts/experiments/sharp_book_movement/20260905T205038Z/metadata.json",
-        "registry_source": "registry/weak_signals.json:sharp_book_movement_equal_2023_2025",
         "on_production_screen": {
           "baseline_accuracy": 0.5281602002503129,
           "candidate_accuracy": 0.5456821026282853,
@@ -2642,17 +2623,12 @@
             "2025": 2.9962546816479403
           },
           "weeks": 54
-        }
+        },
+        "registry_source": "registry/weak_signals.json:sharp_book_movement_equal_2023_2025",
+        "roadmap_row": "MKT-15",
+        "source": "artifacts/experiments/sharp_book_movement/20260905T205038Z/metadata.json"
       },
-      "prospective_protocol": "Each Thursday, Saturday and Sunday-morning refresh records Tuesday and challenger picks together in prospective/late_week_move_follow_refresh_decisions.parquet. Follow Wednesday-Saturday net increments at >=0.5 point using the 12 CX18 books; frozen Tuesday grading, latest valid pass per game, no rotation window spent. Since 2026-09-06 (owner order 2026-09-05) the same decision additionally governs the served refresh pick with precedence over the 1.0-point consensus rule; this ledger is unchanged and stays the paired challenger record.",
       "known_gap": "Live snapshots only; absent archive skips with reason. Missing game exposure keeps Tuesday. Sunday moves excluded to preserve CX18. Same-game movement challengers are correlated. Historical baseline was production probability picks; live baseline is the actual Tuesday published pick.",
-      "weekly_generation_command": "Generated by refresh-picks from local live odds captures; no network fetch.",
-      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
-    },
-    {
-      "challenger_id": "gaussian_mean_mapping_incumbent",
-      "status": "ACTIVE_PROSPECTIVE",
-      "registered_at_utc": "2026-09-07T00:00:00+00:00",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -2665,18 +2641,42 @@
         "ridge_alpha": 10.0,
         "target": "market_residual"
       },
+      "model_note": "Registration snapshots the active recipe; the refresh plan supplies live provenance. Both picks use the original Tuesday card and frozen line.",
+      "prospective_protocol": "Each Thursday, Saturday and Sunday-morning refresh records Tuesday and challenger picks together in prospective/late_week_move_follow_refresh_decisions.parquet. Follow Wednesday-Saturday net increments at >=0.5 point using the 12 CX18 books; frozen Tuesday grading, latest valid pass per game, no rotation window spent. Since 2026-09-06 (owner order 2026-09-05) the same decision additionally governs the served refresh pick with precedence over the 1.0-point consensus rule; this ledger is unchanged and stays the paired challenger record.",
+      "registered_at_utc": "2026-09-05T21:07:00.142844+00:00",
+      "registered_by": "CX22: owner-authorized paired prospective refresh challenger",
+      "status": "ACTIVE_PROSPECTIVE",
+      "weekly_generation_command": "Generated by refresh-picks from local live odds captures; no network fetch.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
+    },
+    {
+      "challenger_id": "gaussian_mean_mapping_incumbent",
       "config_fingerprint": "bc77638d47e2748c",
-      "reader_summary": "Tracks the previous forecast alongside the new forecast to compare their picks on the same games.",
-      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
-      "known_gap": "Forced picks only; no paper bets. Historical evidence is selected and reused, not independent confirmation.",
-      "model_note": "Refits the registered active recipe, verifies the median probability against the forecast, then reads the mean of the same residual sample. Refuses recipe or card drift.",
-      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions",
-      "weekly_generation_command": "Uses the synchronized active forecast.",
       "evidence": {
         "classification": "unresolved_below_power",
         "registry_source": "registry/weak_signals.json:mod06_residual_offset_opener_v1_gaussian_median_composed_2020_2025",
         "write_up": "docs/gaussian_median_promotion.md"
-      }
+      },
+      "known_gap": "Forced picks only; no paper bets. Historical evidence is selected and reused, not independent confirmation.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "Refits the registered active recipe, verifies the median probability against the forecast, then reads the mean of the same residual sample. Refuses recipe or card drift.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "reader_summary": "Tracks the previous forecast alongside the new forecast to compare their picks on the same games.",
+      "registered_at_utc": "2026-09-07T00:00:00+00:00",
+      "status": "ACTIVE_PROSPECTIVE",
+      "weekly_generation_command": "Uses the synchronized active forecast.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
     },
     {
       "challenger_id": "overlay_four_member_union_retired_20260907",
@@ -2699,8 +2699,8 @@
       "control_policy_fingerprint_method": "nfl_ats.provenance.configuration_hash(control_policy); control_policy_fingerprint is the first 16 hexadecimal characters",
       "correlation_and_reuse_warning": "Paired with the three-member played card and overlapping standalone overlays; never pool these rows as independent.",
       "evidence": {
-        "write_up": "docs/spread_gap_zone_retired.md",
-        "retirement_reason": "Owner requires a mechanism for every played flip; the spread threshold has none."
+        "retirement_reason": "Owner requires a mechanism for every played flip; the spread threshold has none.",
+        "write_up": "docs/spread_gap_zone_retired.md"
       },
       "known_gap": "Dedicated recorder reconstructs the retired union from primary ledger model side, spread and composition flip; generic prospective-record is forbidden.",
       "model": {
@@ -2716,18 +2716,23 @@
         "target": "market_residual"
       },
       "prospective_protocol": "Track the retired four-member OR union against the three-member played card at the same frozen Tuesday spread. Reconstruct from primary ledger inputs; complement the model side once. No new historical selection. See docs/spread_gap_zone_retired.md.",
+      "reader_summary": "The former card: coach, division revenge and player-arrest adjustments plus the retired mid-spread fade, tracked against the current three-adjustment card on the same games.",
       "registered_at_utc": "2026-09-07T00:00:00+00:00",
       "registered_by": "Owner-directed retirement of unexplained threshold flips, 2026-09-07.",
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "Retired four-member union retained as a paired prospective challenger; the three mechanism-based adjustments are played.",
       "weekly_generation_command": "N/A -- reuses the synchronized active forecast, Tuesday-frozen arrest flags, and the former production composition.",
-      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_retired_four_member_union_decisions)",
-      "reader_summary": "The former card: coach, division revenge and player-arrest adjustments plus the retired mid-spread fade, tracked against the current three-adjustment card on the same games."
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_retired_four_member_union_decisions)"
     },
     {
       "challenger_id": "home_side_offset_off_incumbent",
-      "status": "ACTIVE_PROSPECTIVE",
-      "registered_at_utc": "2026-09-08T01:30:00+00:00",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "registry_source": "registry/weak_signals.json:mod18_home_side_location_v1_S2_three_member_card_2020_2025",
+        "write_up": "docs/home_side_offset_promotion.md"
+      },
+      "known_gap": "Forced picks only; no paper bets. Historical evidence is selected and reused, not independent confirmation.",
       "model": {
         "calibration_method": "none",
         "feature_profile": "weak_stack",
@@ -2740,18 +2745,42 @@
         "ridge_alpha": 10.0,
         "target": "market_residual"
       },
-      "config_fingerprint": "bc77638d47e2748c",
-      "reader_summary": "Tracks the forecast without the home-team adjustment on big spreads, so the adjusted and unadjusted picks can be compared on the same games.",
-      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
-      "known_gap": "Forced picks only; no paper bets. Historical evidence is selected and reused, not independent confirmation.",
       "model_note": "Reads the uncorrected point read the served forecast wrote beside its card (home_side_offset.json); never refits. Refuses a card without that sidecar or a recipe drift.",
-      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "reader_summary": "Tracks the forecast without the home-team adjustment on big spreads, so the adjusted and unadjusted picks can be compared on the same games.",
+      "registered_at_utc": "2026-09-08T01:30:00+00:00",
+      "status": "ACTIVE_PROSPECTIVE",
       "weekly_generation_command": "Uses the synchronized active forecast.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
+    },
+    {
+      "challenger_id": "key_line_pick_read_off_incumbent",
+      "config_fingerprint": "bc77638d47e2748c",
       "evidence": {
         "classification": "unresolved_below_power",
-        "registry_source": "registry/weak_signals.json:mod18_home_side_location_v1_S2_three_member_card_2020_2025",
-        "write_up": "docs/home_side_offset_promotion.md"
-      }
+        "registry_source": "registry/weak_signals.json:mod18_conditional_margin_v1_kl1_kl1b_overall_card_2020_2025",
+        "write_up": "docs/key_line_pick_read.md"
+      },
+      "known_gap": "Forced picks only; no paper bets. Historical evidence is a post-hoc restriction on a mined archive; the atom set was graded out of sample by lane V (+0.56 pts P+ 0.88 on 2024-25).",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "Reads the smooth two-way probability the served forecast wrote beside its card (key_line_pick_read.json) for every game; never refits. Refuses a card without that sidecar or a recipe drift.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "reader_summary": "Tracks the forecast that reads every game the usual smooth way, so the picks on spreads set exactly on 3 or 7 can be compared with and without the key-number read on the same games.",
+      "registered_at_utc": "2026-09-08T15:10:00+00:00",
+      "status": "ACTIVE_PROSPECTIVE",
+      "weekly_generation_command": "Uses the synchronized active forecast.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

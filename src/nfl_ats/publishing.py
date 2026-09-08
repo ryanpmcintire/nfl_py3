@@ -30,6 +30,7 @@ from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
 from nfl_ats.dashboard.findings_content import PLAYED_CARD_EXPECTATION_HERO
 from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
 from nfl_ats.io import atomic_json, atomic_text
+from nfl_ats.key_line_pick_read import key_line_touched_games
 from nfl_ats.lineage import (
     LINEAGE_FILENAME,
     PUBLISHED_DISPLAY_FIELDS,
@@ -736,6 +737,9 @@ def publish_active_predictions(
             overlays_by_game=overlays_by_game,
             refresh_changes_by_game=refresh_changes_by_game,
             waterfall_by_game=load_waterfall_feed(artifacts_root),
+            # docs/key_line_pick_read.md: the games whose side was read off
+            # the key-number lattice say so in the "Why this pick" text.
+            key_line_games=key_line_touched_games(metadata),
         )
         atomic_json(explanations_to_dict(explanations), forecast_dir / "explanations.json")
         if include_pick_explanation_lines:

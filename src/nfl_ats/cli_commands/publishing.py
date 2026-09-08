@@ -67,6 +67,9 @@ from nfl_ats.interim_hc_first_game_tilt_overlay import (
     record_interim_hc_first_game_tilt_challenger_decisions,
 )
 from nfl_ats.io import atomic_text
+from nfl_ats.key_line_pick_read_incumbent_overlay import (
+    record_key_line_pick_read_incumbent_challenger_decisions,
+)
 from nfl_ats.late_week_move_follow_refresh_overlay import (
     record_late_week_move_follow_refresh_overlay,
 )
@@ -127,6 +130,7 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "ecdf_mapping_incumbent": "ecdf_mapping_incumbent_challenger_ledger",
     "gaussian_mean_mapping_incumbent": "gaussian_mean_mapping_incumbent_challenger_ledger",
     "home_side_offset_off_incumbent": "home_side_offset_off_incumbent_challenger_ledger",
+    "key_line_pick_read_off_incumbent": "key_line_pick_read_off_incumbent_challenger_ledger",
     "era_weighted_half_life_8": "era_weighted_half_life_8_challenger_ledger",
     "forecast_cold_visitor_tilt": "forecast_cold_visitor_tilt_challenger_ledger",
     "interim_hc_first_game_tilt_overlay": "interim_hc_first_game_tilt_challenger_ledger",
@@ -595,6 +599,21 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        # Key-line pick read promotion (MOD-18 lane T, 2026-09-08,
+        # docs/key_line_pick_read.md): the smooth-everywhere two-way read is
+        # the paired challenger, read verbatim from the forecast's sidecar.
+        # A failure here must not un-publish the card either.
+        try:
+            result["key_line_pick_read_off_incumbent_challenger_ledger"] = (
+                record_key_line_pick_read_incumbent_challenger_decisions(
+                    _artifacts_root(), _data_root()
+                )
+            )
+        except (ValueError, FileNotFoundError, DataContractError) as error:
+            result["key_line_pick_read_off_incumbent_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         # Era-weighted (half-life 8) challenger (docs/era_weighting_screen.md,
         # MOD-14): refits the active recipe weekly with exponential
         # season-decay sample weights, dual-tracked against the active model
@@ -977,6 +996,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "recorded": 0,
             "skipped": True,
             "reason": "pass --record-decisions to append the uncorrected point read's "
+            "picks to the prospective challenger ledger",
+        }
+        result["key_line_pick_read_off_incumbent_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the smooth-everywhere read's "
             "picks to the prospective challenger ledger",
         }
         result["era_weighted_half_life_8_challenger_ledger"] = {

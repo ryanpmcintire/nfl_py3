@@ -84,6 +84,7 @@ from nfl_ats.four_overlay_composition import (
     SPREAD_GAP_ZONE_FADE,
 )
 from nfl_ats.home_side_location import center_offsets_from_metadata
+from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_refresh import (
@@ -540,6 +541,11 @@ class SpreadAdjusterParams:
     residual_std: float
     card_line: float  # home-oriented, published
     pick_is_home: bool
+    #: docs/key_line_pick_read.md: on a game whose line sits exactly on 3 or
+    #: 7 the card's own number at the quoted line is the served key-line
+    #: lattice read, shown verbatim at offset zero (home-oriented); the
+    #: Gaussian read describes every other line. ``None`` otherwise.
+    pinned_home_cover_probability: float | None = None
 
 
 @dataclass(frozen=True)
@@ -1866,6 +1872,10 @@ def _build_cover_curve(
             home_probability = widget_home_cover_probability(
                 params.card_line + offset, params.center, params.residual_mean, params.residual_std
             )
+            if offset == 0.0 and params.key_line_pinned:
+                # The served key-line read at the quoted line
+                # (docs/key_line_pick_read.md), never the smooth formula.
+                home_probability = params.card_home_cover_probability
             points.append(
                 CoverCurvePoint(
                     offset=offset,
@@ -2011,6 +2021,9 @@ def _build_adjuster(
         residual_std=params.residual_std,
         card_line=params.card_line,
         pick_is_home=game.pick_team == game.home,
+        pinned_home_cover_probability=(
+            params.card_home_cover_probability if params.key_line_pinned else None
+        ),
     )
 
 
@@ -2287,6 +2300,7 @@ def _load_spread_explorer_params(
         min_train_games=int(metadata.get("min_train_games", 500)),
         probability_method=str(metadata["probability_method"]),
         center_offsets=center_offsets_from_metadata(metadata, predictions),
+        pick_overrides=pick_overrides_from_metadata(metadata),
     )
     assert_spread_explorer_matches_card(params, predictions)
     return params

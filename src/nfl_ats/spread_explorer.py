@@ -60,6 +60,7 @@ import pandas as pd
 
 from nfl_ats.calibration import smoothed_home_cover_probability
 from nfl_ats.data import DataContractError
+from nfl_ats.key_line_pick_read import apply_pick_overrides
 from nfl_ats.margin import _three_way_probabilities
 from nfl_ats.mass_preserving_lattice import DiscretePushReader, residual_location
 from nfl_ats.outcomes import fit_margin_models_for_week
@@ -96,6 +97,12 @@ class SpreadExplorerGameParams:
     -- exactly ``nfl_ats.calibration.smoothed_home_cover_probability(...,
     method="gaussian")``'s formula, generalized from the card's one quoted
     line to an arbitrary hypothetical one.
+
+    ``key_line_pinned`` (docs/key_line_pick_read.md): the card's own number
+    at its quoted line is the served key-line lattice read, not the
+    Gaussian formula -- the line sits exactly on 3 or 7. The Gaussian
+    params still describe every OTHER line; at the quoted line the widget
+    shows ``card_home_cover_probability`` verbatim.
     """
 
     game_id: str
@@ -106,6 +113,7 @@ class SpreadExplorerGameParams:
     residual_std: float
     card_line: float
     card_home_cover_probability: float
+    key_line_pinned: bool = False
 
 
 def load_feature_table_for_forecast(metadata: Mapping[str, Any], data_root: Path) -> pd.DataFrame:
@@ -146,6 +154,7 @@ def compute_spread_explorer_params(
     min_train_games: int,
     probability_method: str = "gaussian",
     center_offsets: Mapping[str, float] | None = None,
+    pick_overrides: Mapping[str, float] | None = None,
 ) -> dict[str, SpreadExplorerGameParams]:
     """Refit each (season, week) group and return every game's widget params.
 
@@ -155,6 +164,13 @@ def compute_spread_explorer_params(
     a training cutoff strictly before that week's earliest kickoff, exactly
     as the real card was produced, via ``fit_margin_models_for_week``. See
     the module docstring for the proof-before-trust discipline this follows.
+
+    ``pick_overrides`` (docs/key_line_pick_read.md, game_id -> served
+    probability) names the games whose card number is the key-line lattice
+    read rather than the Gaussian formula; the reproduction check expects
+    the served number there and the game's params are marked
+    ``key_line_pinned``. ``None`` (a pre-promotion card) checks the Gaussian
+    read on every game exactly as before.
     """
 
     if probability_method not in ("gaussian", "gaussian_median"):
@@ -219,8 +235,12 @@ def compute_spread_explorer_params(
         gaussian_check = smoothed_home_cover_probability(
             model.residuals, centers, spread, method=probability_method
         )
+        # Served key-line pick read (docs/key_line_pick_read.md): on a touched
+        # game the card's number is the lattice read, reproduced from the
+        # card's own record rather than the Gaussian formula.
+        expected = apply_pick_overrides(gaussian_check, group_ids, pick_overrides)
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
-        if not np.allclose(gaussian_check, supplied, rtol=0.0, atol=1e-9):
+        if not np.allclose(expected, supplied, rtol=0.0, atol=1e-9):
             raise DataContractError(
                 f"Refit Gaussian probabilities for season {season} week {week} do not "
                 "reproduce the supplied card's home_cover_probability -- the feature "
@@ -250,6 +270,7 @@ def compute_spread_explorer_params(
                 residual_std=std,
                 card_line=float(line),
                 card_home_cover_probability=float(probability),
+                key_line_pinned=bool(pick_overrides and game_id in pick_overrides),
             )
     return params
 
@@ -313,8 +334,9 @@ def spread_explorer_payload(
     values are what actually ships to the browser).
     """
 
-    return {
-        game_id: {
+    payload: dict[str, dict[str, Any]] = {}
+    for game_id, p in params.items():
+        entry: dict[str, Any] = {
             "home": p.home_team,
             "away": p.away_team,
             "center": round(p.center, 6),
@@ -322,8 +344,13 @@ def spread_explorer_payload(
             "std": round(p.residual_std, 6),
             "line": round(p.card_line, 3),
         }
-        for game_id, p in params.items()
-    }
+        if p.key_line_pinned:
+            # The served number at the quoted line is the key-line lattice
+            # read (docs/key_line_pick_read.md); the widget shows it verbatim
+            # at offset zero and the Gaussian curve everywhere else.
+            entry["pinned"] = round(p.card_home_cover_probability, 6)
+        payload[game_id] = entry
+    return payload
 
 
 # ---------------------------------------------------------------------------
@@ -353,6 +380,9 @@ class SpreadExplorerGameDistribution:
     card_line: float
     card_home_cover_probability: float
     card_probability_method: str
+    #: docs/key_line_pick_read.md: the card's number at its quoted line is
+    #: the served key-line lattice read, not the smooth formula.
+    key_line_pinned: bool = False
 
 
 def compute_spread_explorer_distribution(
@@ -366,6 +396,7 @@ def compute_spread_explorer_distribution(
     min_train_games: int,
     probability_method: str = "gaussian",
     center_offsets: Mapping[str, float] | None = None,
+    pick_overrides: Mapping[str, float] | None = None,
 ) -> SpreadExplorerGameDistribution:
     """Refit ONE game's week (the exact production recipe) and return its
     centre plus full residual sample, verified against the published card's
@@ -429,6 +460,11 @@ def compute_spread_explorer_distribution(
             method=probability_method,  # type: ignore[arg-type]
         )[0]
     )
+    # Served key-line pick read (docs/key_line_pick_read.md): a touched
+    # game's card number is the lattice read, reproduced from the record.
+    pinned = bool(pick_overrides and str(game_id) in pick_overrides)
+    if pinned:
+        check = float(apply_pick_overrides([check], [str(game_id)], pick_overrides)[0])
     if not math.isclose(check, supplied, rel_tol=0.0, abs_tol=1e-9):
         raise DataContractError(
             f"Refit {probability_method!r} probability for season {season} week {week} game "
@@ -448,6 +484,7 @@ def compute_spread_explorer_distribution(
         card_line=line,
         card_home_cover_probability=supplied,
         card_probability_method=probability_method,
+        key_line_pinned=pinned,
     )
 
 

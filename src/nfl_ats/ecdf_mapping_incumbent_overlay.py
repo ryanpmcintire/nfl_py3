@@ -54,6 +54,7 @@ from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.io import atomic_parquet
+from nfl_ats.key_line_pick_read import apply_pick_overrides, pick_overrides_from_metadata
 from nfl_ats.outcomes import fit_margin_models_for_week
 from nfl_ats.prospective_scoring import (
     ACTIVE_CHALLENGER_STATUS,
@@ -117,6 +118,7 @@ def apply_ecdf_mapping_incumbent_overlay(
     enabled: bool = True,
     probability_method: ResidualSmoothingMethod = "gaussian",
     center_offsets: Mapping[str, float] | None = None,
+    pick_overrides: Mapping[str, float] | None = None,
 ) -> EcdfMappingIncumbentResult:
     """Replace ``home_cover_probability`` with the ECDF read of the same
     out-of-time residual sample the (post-promotion) production Gaussian read
@@ -193,6 +195,9 @@ def apply_ecdf_mapping_incumbent_overlay(
         gaussian_check = smoothed_home_cover_probability(
             model.residuals, centers, spread, method=probability_method
         )
+        # Served key-line pick read (docs/key_line_pick_read.md): a touched
+        # game's card number is the lattice read, reproduced from the record.
+        gaussian_check = apply_pick_overrides(gaussian_check, group_ids, pick_overrides)
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
         if not np.allclose(gaussian_check, supplied, rtol=0.0, atol=1e-9):
             raise DataContractError(
@@ -362,6 +367,7 @@ def record_ecdf_mapping_incumbent_challenger_decisions(
         card,
         features,
         center_offsets=center_offsets_from_metadata(metadata, card),
+        pick_overrides=pick_overrides_from_metadata(metadata),
         regressor=str(observed_config.get("regressor")),
         ridge_alpha=float(observed_config.get("ridge_alpha", 10.0)),
         feature_profile=str(observed_config.get("feature_profile")),
