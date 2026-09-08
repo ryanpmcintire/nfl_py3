@@ -257,3 +257,276 @@ def build_coordinator_history_features(games: pd.DataFrame, history: pd.DataFram
         for season, group in games.groupby("season", sort=True)
     ]
     return pd.concat(results, ignore_index=True)
+
+
+COORDINATOR_SEASON_COLUMNS = (
+    "coord_new_oc_diff",
+    "coord_new_dc_diff",
+    "coord_new_hc_diff",
+)
+
+
+def build_coordinator_season_features(games: pd.DataFrame, history: pd.DataFrame) -> pd.DataFrame:
+    """September-to-September turnover, strictly as observed before each decision.
+
+    A later revision, including an in-season correction, cannot rewrite a
+    preseason flag. Missing/ambiguous roles are unknown, never continuity.
+    """
+    prepared = _prepare_games(games)
+    _require_columns(
+        history,
+        {
+            "season",
+            "team",
+            "role",
+            "person",
+            "effective_observed_at",
+            "sampled_as_of",
+            "sample_mode",
+            "observed_at_basis",
+        },
+        label="history",
+    )
+    history = history.loc[
+        history.sample_mode.eq("preseason") & history.observed_at_basis.eq("wikipedia_revision")
+    ].copy()
+    history["team"] = history.team.map(_team)
+    history["observed"] = _utc_series(history.effective_observed_at, label="history observation")
+    history["cutoff"] = _utc_series(history.sampled_as_of, label="history cutoff")
+    if history.observed.gt(history.cutoff).any():
+        raise DataContractError("history observation after requested cutoff")
+    groups = {
+        (int(str(season)), str(team), str(role)): frame
+        for (season, team, role), frame in history.groupby(["season", "team", "role"])
+    }
+
+    def person_at(season: int, team: str, role: str, decision: pd.Timestamp) -> str | None:
+        group = groups.get((season, team, role))
+        if group is None:
+            return None
+        eligible = group.loc[group.observed.lt(decision) & group.cutoff.le(decision)]
+        names = eligible.person.dropna().astype(str).unique()
+        return str(names[0]) if len(names) == 1 and names[0] else None
+
+    records = []
+    for game in prepared.itertuples(index=False):
+        row: dict[str, Any] = {"game_id": game.game_id}
+        for role in ("OC", "DC", "HC"):
+            flags = []
+            for side in ("home", "away"):
+                team = str(getattr(game, f"{side}_team"))
+                current = person_at(
+                    int(str(game.season)), team, role, pd.Timestamp(str(game.decision_at))
+                )
+                prior = person_at(
+                    int(str(game.season)) - 1, team, role, pd.Timestamp(str(game.decision_at))
+                )
+                flags.append(None if current is None or prior is None else int(current != prior))
+            home, away = flags
+            row[f"coord_new_{role.lower()}_diff"] = (
+                float("nan") if home is None or away is None else float(home - away)
+            )
+        records.append(row)
+    return pd.DataFrame(records, columns=["game_id", *COORDINATOR_SEASON_COLUMNS])
+
+
+# ---------------------------------------------------------------------------
+# Screen helpers (docs/playcaller_change_leads.md): games after an in-season
+# change, and OC tenure at the season-start observation. Additive; neither
+# is wired into any feature table.
+# ---------------------------------------------------------------------------
+
+PLAYCALLER_EVENT_COLUMNS = {"event_id", "season", "team", "role", "revision_at"}
+_SCREEN_GAME_COLUMNS = {"game_id", "season", "kickoff", "home_team", "away_team"}
+GAMES_AFTER_CHANGE_COLUMNS = (
+    "game_id",
+    "team",
+    "season",
+    "event_id",
+    "role",
+    "revision_at",
+    "kickoff",
+    "game_number_after_change",
+)
+OC_TENURE_COLUMNS = ("season", "team", "oc_name", "oc_tenure_years", "observed_at", "cutoff")
+
+
+def _base_person_name(value: Any) -> str:
+    """Strip Wikipedia's parenthetical disambiguator and case-fold."""
+
+    text = str(value).strip()
+    if text.endswith(")") and "(" in text:
+        text = text[: text.rfind("(")].strip()
+    return text.casefold()
+
+
+def games_after_coordinator_change(games: pd.DataFrame, events: pd.DataFrame) -> pd.DataFrame:
+    """Number each team's games after an in-season coordinator change.
+
+    ``events`` rows carry ``event_id``, ``season``, ``team``, ``role`` and the
+    revision instant ``revision_at`` (the information boundary).  A game is
+    "after" an event only when its ``kickoff`` is STRICTLY later than the
+    revision instant; ``game_number_after_change`` counts that team's games
+    (kickoff order, same season) since the MOST RECENT event before the
+    game's kickoff, restarting at every event.  Games before any event, or
+    whose kickoff is at or before the revision instant, are not returned, so
+    a revision recorded after a game can never flag that game, and adding a
+    later event never changes an earlier game's number.  An event with no
+    later game in its season fails closed.
+    """
+
+    _require_columns(games, _SCREEN_GAME_COLUMNS, label="games")
+    _require_columns(events, PLAYCALLER_EVENT_COLUMNS, label="events")
+    if events.empty:
+        return pd.DataFrame(columns=GAMES_AFTER_CHANGE_COLUMNS)
+    if games["game_id"].isna().any() or games["game_id"].astype(str).duplicated().any():
+        raise DataContractError("games.game_id must be non-null and unique")
+    if events["event_id"].isna().any() or events["event_id"].astype(str).duplicated().any():
+        raise DataContractError("events.event_id must be non-null and unique")
+
+    prepared_events = events.copy()
+    prepared_events["team"] = prepared_events["team"].map(_team)
+    prepared_events["role"] = prepared_events["role"].astype(str).str.strip().str.upper()
+    invalid_roles = sorted(set(prepared_events["role"]).difference(ROLES))
+    if invalid_roles:
+        raise DataContractError(f"ambiguous or unsupported coordinator roles: {invalid_roles}")
+    prepared_events["season"] = pd.to_numeric(prepared_events["season"], errors="raise").astype(int)
+    prepared_events["revision_at"] = _utc_series(
+        prepared_events["revision_at"], label="events.revision_at"
+    )
+
+    sides = []
+    for side in ("home", "away"):
+        sides.append(
+            pd.DataFrame(
+                {
+                    "game_id": games["game_id"].astype(str),
+                    "season": pd.to_numeric(games["season"], errors="raise").astype(int),
+                    "team": games[f"{side}_team"].map(_team),
+                    "kickoff": _utc_series(games["kickoff"], label="games.kickoff"),
+                }
+            )
+        )
+    team_games = pd.concat(sides, ignore_index=True)
+
+    records: list[dict[str, Any]] = []
+    for (season, team), team_events in prepared_events.groupby(["season", "team"], sort=True):
+        team_events = team_events.sort_values(["revision_at", "event_id"], kind="stable")
+        schedule = team_games.loc[
+            team_games["season"].eq(int(str(season))) & team_games["team"].eq(str(team))
+        ].sort_values(["kickoff", "game_id"], kind="stable")
+        for event in team_events.itertuples(index=False):
+            if not schedule["kickoff"].gt(event.revision_at).any():
+                raise DataContractError(
+                    f"event {event.event_id} ({team} {season} {event.role}) has no game "
+                    "with a kickoff after its revision instant"
+                )
+        for game in schedule.itertuples(index=False):
+            before = team_events.loc[team_events["revision_at"].lt(game.kickoff)]
+            if before.empty:
+                continue
+            latest = before.iloc[-1]
+            number = int(
+                (
+                    schedule["kickoff"].gt(latest["revision_at"])
+                    & schedule["kickoff"].le(game.kickoff)
+                ).sum()
+            )
+            records.append(
+                {
+                    "game_id": str(game.game_id),
+                    "team": str(team),
+                    "season": int(str(season)),
+                    "event_id": latest["event_id"],
+                    "role": str(latest["role"]),
+                    "revision_at": latest["revision_at"],
+                    "kickoff": game.kickoff,
+                    "game_number_after_change": number,
+                }
+            )
+    if not records:
+        return pd.DataFrame(columns=GAMES_AFTER_CHANGE_COLUMNS)
+    return pd.DataFrame(records, columns=GAMES_AFTER_CHANGE_COLUMNS)
+
+
+def oc_tenure_at_season_start(history: pd.DataFrame) -> pd.DataFrame:
+    """Offensive-coordinator tenure (1, 2 or 3 meaning three-plus seasons)
+    per team-season, from preseason observations only.
+
+    Tenure is known only when every observation it needs exists: year 1
+    needs this season's and last season's OC; year 2 and 3+ also need the
+    season before that.  Unknown or ambiguous team-seasons are omitted, never
+    guessed.  In-season rows, undated rows and observations after their own
+    ``sampled_as_of`` cutoff are never read, so a later revision cannot
+    change a season-start tenure.  Names are compared after stripping the
+    parenthetical disambiguator, case-folded.
+    """
+
+    _require_columns(
+        history,
+        {
+            "season",
+            "team",
+            "role",
+            "person",
+            "effective_observed_at",
+            "sampled_as_of",
+            "sample_mode",
+            "observed_at_basis",
+        },
+        label="history",
+    )
+    rows = history.loc[
+        history["sample_mode"].eq("preseason")
+        & history["observed_at_basis"].eq("wikipedia_revision")
+        & history["role"].astype(str).str.upper().eq("OC")
+    ].copy()
+    if rows.empty:
+        return pd.DataFrame(columns=OC_TENURE_COLUMNS)
+    rows["team"] = rows["team"].map(_team)
+    rows["season"] = pd.to_numeric(rows["season"], errors="raise").astype(int)
+    rows["observed"] = _utc_series(rows["effective_observed_at"], label="history observation")
+    rows["cutoff"] = _utc_series(rows["sampled_as_of"], label="history cutoff")
+    if rows["observed"].gt(rows["cutoff"]).any():
+        raise DataContractError("history observation after requested cutoff")
+    rows = rows.loc[rows["person"].notna() & rows["person"].astype(str).str.strip().ne("")]
+
+    observed: dict[tuple[int, str], tuple[str, str, pd.Timestamp, pd.Timestamp]] = {}
+    for (season, team), group in rows.groupby(["season", "team"]):
+        names = group["person"].astype(str).map(_base_person_name).unique()
+        if len(names) != 1:
+            continue
+        observed[(int(str(season)), str(team))] = (
+            str(group["person"].iloc[0]).strip(),
+            str(names[0]),
+            pd.Timestamp(group["observed"].max()),
+            pd.Timestamp(group["cutoff"].max()),
+        )
+
+    records: list[dict[str, Any]] = []
+    for (season, team), (display, current, observed_at, cutoff) in sorted(observed.items()):
+        prior = observed.get((season - 1, team))
+        if prior is None:
+            continue
+        used: list[pd.Timestamp] = [observed_at, prior[2]]
+        if current != prior[1]:
+            tenure = 1
+        else:
+            earlier = observed.get((season - 2, team))
+            if earlier is None:
+                continue
+            tenure = 2 if prior[1] != earlier[1] else 3
+            used.append(earlier[2])
+        records.append(
+            {
+                "season": season,
+                "team": team,
+                "oc_name": display,
+                "oc_tenure_years": tenure,
+                "observed_at": max(used),
+                "cutoff": cutoff,
+            }
+        )
+    if not records:
+        return pd.DataFrame(columns=OC_TENURE_COLUMNS)
+    return pd.DataFrame(records, columns=OC_TENURE_COLUMNS)

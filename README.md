@@ -65,8 +65,8 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 865 results recorded -- 856 unresolved_below_power, 9 closed (9 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
-- **Rotation registry:** 431 declared research families -- 65 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
+- **Weak-signal registry:** 1,095 results recorded -- 1,086 unresolved_below_power, 9 closed (9 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Rotation registry:** 434 declared research families -- 68 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 41 of 47 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->
 

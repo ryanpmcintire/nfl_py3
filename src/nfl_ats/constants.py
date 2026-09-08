@@ -1693,3 +1693,38 @@ for _regime_prefix in ("football", "full"):
         *FEATURE_SETS[f"{_regime_prefix}_weak_stack"],
         *SPREAD_REGIME_COLUMNS,
     )
+
+# MOD-18 lane Q additive research profiles, frozen in docs/home_dog_location.md:
+# weak_stack plus the row-local home-underdog points (Q1) or the same plus its
+# above-seven hinge (Q2). Never used by the active model.
+from nfl_ats.home_dog_location import (  # noqa: E402
+    HOME_DOG_HINGE_COLUMNS,
+    HOME_DOG_POINTS_COLUMNS,
+)
+
+# Families must be disjoint: Q1's column and Q2's extra hinge column are two
+# families; the Q2 feature set carries both.
+FEATURE_FAMILIES["home_dog_location_points"] = HOME_DOG_POINTS_COLUMNS
+FEATURE_FAMILIES["home_dog_location_hinge"] = HOME_DOG_HINGE_COLUMNS[1:]
+for _home_dog_prefix in ("football", "full"):
+    FEATURE_SETS[f"{_home_dog_prefix}_weak_stack_home_dog_points"] = (
+        *FEATURE_SETS[f"{_home_dog_prefix}_weak_stack"],
+        *HOME_DOG_POINTS_COLUMNS,
+    )
+    FEATURE_SETS[f"{_home_dog_prefix}_weak_stack_home_dog_hinge_7"] = (
+        *FEATURE_SETS[f"{_home_dog_prefix}_weak_stack"],
+        *HOME_DOG_HINGE_COLUMNS,
+    )
+
+
+# PER-07: research-only September staff turnover; incumbent untouched.
+FEATURE_FAMILIES["per07_coord_change_on_production"] = (
+    "coord_new_oc_diff",
+    "coord_new_dc_diff",
+    "coord_new_hc_diff",
+)
+for _coord_prefix in ("football", "full"):
+    FEATURE_SETS[f"{_coord_prefix}_weak_stack_coord_change"] = (
+        *FEATURE_SETS[f"{_coord_prefix}_weak_stack"],
+        *FEATURE_FAMILIES["per07_coord_change_on_production"],
+    )

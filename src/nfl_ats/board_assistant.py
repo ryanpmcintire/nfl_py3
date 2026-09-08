@@ -372,6 +372,27 @@ _DOG_WORDS = frozenset({"underdog", "underdogs", "dog", "dogs", "upset", "upsets
 _FAVORITE_WORDS = frozenset(
     {"favorite", "favorites", "favourite", "favourites", "fav", "favs", "chalk"}
 )
+#: With "home" and a dog/favourite word, one of these routes to the
+#: weak-spots home split rather than the weekly underdog list.
+_HOME_SPLIT_CONTEXT_WORDS = frozenset(
+    {
+        "model",
+        "spread",
+        "spreads",
+        "big",
+        "large",
+        "cover",
+        "covers",
+        "covered",
+        "weak",
+        "record",
+        "history",
+        "historically",
+        "expect",
+        "expects",
+        "expected",
+    }
+)
 _RECORD_WORDS = frozenset(
     {
         "record",
@@ -768,6 +789,15 @@ def build_knowledge(
             anchor="model.html#weak-spots-h",
         )
     )
+    # Home favourite / home underdog split of the same opener evaluation
+    # (2026-09-07): "how does the model do with home underdogs".
+    entries.append(
+        _Entry(
+            entry_id="weak_spots_home_split",
+            body=(weak_spots or WeakSpots()).home_split_text,
+            anchor="model.html#weak-spots-home-h",
+        )
+    )
 
     # The refresh entry sits ahead of the games so a change-question
     # with a team name in it still routes to the refresh diff; pure
@@ -1002,6 +1032,7 @@ def build_knowledge(
             "anchors": ("index.html", "model.html", "findings.html"),
         },
         "weak_spots": [asdict(row) for row in (weak_spots or WeakSpots()).rows],
+        "weak_spots_home_split": [asdict(row) for row in (weak_spots or WeakSpots()).home_split],
         "entries": [
             {"id": entry.entry_id, "body": entry.body, "anchor": entry.anchor} for entry in entries
         ],
@@ -1438,6 +1469,17 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
             )
     parsed = _parse(question, knowledge)
     tokens = parsed.tokens
+    # "how does the model do with home underdogs" -- the home/away split of
+    # the weak-spots table. Needs a model/spread/record word alongside
+    # "home" + a side word so "which home dogs are we taking" still lists.
+    if (
+        "home" in tokens
+        and tokens & (_DOG_WORDS | _FAVORITE_WORDS)
+        and tokens & _HOME_SPLIT_CONTEXT_WORDS
+    ):
+        resolved = _entry_answer(knowledge, "weak_spots_home_split")
+        if resolved is not None:
+            return resolved
     if tokens & {"weak", "weakness", "weaknesses"} or (
         tokens & {"big", "large", "size"} and tokens & {"spread", "spreads"}
     ):
@@ -1693,6 +1735,7 @@ _INTENT_WORDS: dict[str, frozenset[str]] = {
     "rank": _RANK_WORDS,
     "dog": _DOG_WORDS,
     "favorite": _FAVORITE_WORDS,
+    "home_split_context": _HOME_SPLIT_CONTEXT_WORDS,
     "record": _RECORD_WORDS,
     "policy": _POLICY_WORDS,
     "findings": _FINDINGS_WORDS,
@@ -2209,6 +2252,12 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
     function entry(id) {
       var found = entryById(corpus, id);
       return found ? asAnswer(found.id, found.body, [found.anchor]) : null;
+    }
+    if (toks.indexOf("home") !== -1 &&
+        (hasAny(toks, INTENT.dog) || hasAny(toks, INTENT.favorite)) &&
+        hasAny(toks, INTENT.home_split_context)) {
+      var homeSplit = entry("weak_spots_home_split");
+      if (homeSplit) return homeSplit;
     }
     if (hasAny(toks, ["weak", "weakness", "weaknesses"]) ||
         (hasAny(toks, ["big", "large", "size"]) && hasAny(toks, ["spread", "spreads"]))) {

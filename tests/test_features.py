@@ -207,7 +207,12 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
     # weak_stack_v4 (docs/weak_stack_v4.md) is weak_stack plus the
     # forecast_weather family -- same inheritance again, for the same reason.
     inherited_suffixes = {
+        "weak_stack_coord_change",  # PER-07 adds dated September staff turnover only.
         "weak_stack_spread_regime",  # MOD-18 adds row-local spread columns to weak_stack.
+        # MOD-18 lane Q (docs/home_dog_location.md): weak_stack plus the
+        # row-local home-underdog points, and that plus its above-seven hinge.
+        "weak_stack_home_dog_points",
+        "weak_stack_home_dog_hinge_7",
         "weak_stack_apm_unit",  # PER-09 adds only the six unit ratings to weak_stack.
         "weak_stack",
         "weak_stack_surface",

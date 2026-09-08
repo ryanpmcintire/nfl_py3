@@ -174,3 +174,82 @@ def test_decision_at_or_after_kickoff_is_rejected() -> None:
 
     with pytest.raises(DataContractError, match="strictly before kickoff"):
         build_coordinator_change_features(games, _assignments())
+
+
+def test_september_turnover_strict_boundary_and_future_revisions():
+    from nfl_ats.coordinator_changes import build_coordinator_season_features
+
+    game = pd.DataFrame(
+        [
+            {
+                "game_id": "g",
+                "season": 2020,
+                "week": 1,
+                "home_team": "LA",
+                "away_team": "KC",
+                "decision_at": "2020-09-02T00:00:00Z",
+                "kickoff": "2020-09-03T00:00:00Z",
+            }
+        ]
+    )
+    rows = [
+        {
+            "season": season,
+            "team": team,
+            "role": role,
+            "person": "New" if team == "STL" and season == 2020 else "Old",
+            "effective_observed_at": f"{season}-08-01T00:00:00Z",
+            "sampled_as_of": f"{season}-09-01T00:00:00Z",
+            "sample_mode": "preseason",
+            "observed_at_basis": "wikipedia_revision",
+        }
+        for season in (2019, 2020)
+        for team in ("STL", "KC")
+        for role in ("OC", "DC", "HC")
+    ]
+    history = pd.DataFrame(rows)
+    expected = build_coordinator_season_features(game, history)
+    assert expected.loc[0, "coord_new_oc_diff"] == 1
+    late = history.copy()
+    late["effective_observed_at"] = "2020-09-02T00:00:00Z"
+    late["sampled_as_of"] = "2020-09-02T00:00:00Z"
+    late["person"] = "Correction"
+    actual = build_coordinator_season_features(game, pd.concat([history, late]))
+    pd.testing.assert_frame_equal(actual, expected)
+    history.loc[history.team.eq("KC") & history.role.eq("OC"), "sample_mode"] = "inseason"
+    assert pd.isna(build_coordinator_season_features(game, history).loc[0, "coord_new_oc_diff"])
+
+
+def test_september_turnover_ambiguous_name_is_unknown():
+    from nfl_ats.coordinator_changes import build_coordinator_season_features
+
+    game = pd.DataFrame(
+        [
+            {
+                "game_id": "g",
+                "season": 2020,
+                "week": 1,
+                "home_team": "LA",
+                "away_team": "KC",
+                "decision_at": "2020-09-02T00:00:00Z",
+                "kickoff": "2020-09-03T00:00:00Z",
+            }
+        ]
+    )
+    rows = [
+        {
+            "season": season,
+            "team": team,
+            "role": "OC",
+            "person": person,
+            "effective_observed_at": f"{season}-08-01T00:00:00Z",
+            "sampled_as_of": f"{season}-09-01T00:00:00Z",
+            "sample_mode": "preseason",
+            "observed_at_basis": "wikipedia_revision",
+        }
+        for season in (2019, 2020)
+        for team in ("LA", "KC")
+        for person in ("One", "Two")
+    ]
+    result = build_coordinator_season_features(game, pd.DataFrame(rows))
+    assert result.coord_new_oc_diff.isna().all()

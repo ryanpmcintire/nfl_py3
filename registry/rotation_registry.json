@@ -3414,6 +3414,172 @@
         }
       ]
     },
+    "mod18_home_dog_location_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-07",
+      "description": "Frozen Q1 home_dog_points and Q2 home_dog_hinge_7 row-local ridge features on weak_stack; docs/home_dog_location.md; inherited active-model, lane H/K/L diagnosis and overlay-subset mining discount; both arms recorded.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "When the home team is a big underdog, the model has been selling it short by a few points. This lets the model learn from past seasons how much to give back to a home underdog based on how big an underdog it is, so those picks lean toward the home side only when the record says they should.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2020_2021.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 0.21929824561403508,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.8771929824561403,
+            1.342281879194631
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected Q1. Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.57415,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2022_2023.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": -0.7782101167315175,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.584493041749503,
+            1.125756464331556
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected Q2. Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.17525,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneQ\\window_2024_2025.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 0.18761726078799248,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.9346231929714025,
+            1.308411214953271
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected Q1. Mined archive; inherited active-model, lane H/K/L spread diagnosis (which motivated this feature) and overlay-subset selection; two correlated arms; descriptive reuse, not independent confirmation.",
+          "probability_positive": 0.5631,
+          "sample_blocks": 36,
+          "seasons": [
+            2024,
+            2025
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "mod18_hybrid_margin_v1": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-07",
+      "description": "H1 and H2 prior-only Brier fitted key-distance hybrids; docs/hybrid_margin_mapping.md; inherited H/K and model and overlay selection, mined descriptive reuse",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "Near common winning margins such as three or seven points, let past games decide how much those scores should change our chances.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneL\\window_2020_2021.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 2.631578947368421,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.42828850024354154,
+            5.664488017429194
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected H2. Mined archive; inherited model, H/K spread diagnosis, lattice and overlay subset selection; two correlated hybrids; descriptive reused evidence, not independent confirmation.",
+          "probability_positive": 0.95075,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneL\\window_2022_2023.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": -2.140077821011673,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.296875,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected H1. Mined archive; inherited model, H/K spread diagnosis, lattice and overlay subset selection; two correlated hybrids; descriptive reused evidence, not independent confirmation.",
+          "probability_positive": 0.01635,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneL\\window_2024_2025.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": -1.125703564727955,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -3.8314176245210727,
+            1.4898273993162618
+          ],
+          "leg_effects": null,
+          "notes": "Two frozen arms; headline selected H1. Mined archive; inherited model, H/K spread diagnosis, lattice and overlay subset selection; two correlated hybrids; descriptive reused evidence, not independent confirmation.",
+          "probability_positive": 0.1943,
+          "sample_blocks": 36,
+          "seasons": [
+            2024,
+            2025
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "motivation_ladder_elim_visitor_alive_host": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -4817,6 +4983,41 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "per07_coord_change_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-07",
+      "description": "One frozen three-flag September staff turnover addition to active weak_stack; chronological opener evaluation; docs/coordinator_change_on_production.md; full archive descriptive with mined selection discount.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "A new coaching staff may change how a team performs. This compares picks that account for changes in the head coach and both coordinators with our existing picks.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\b05b3398-3142-4412-ab83-4ff679c1ad88\\scratchpad\\laneM_artifacts\\eval_final\\opener_summary.json",
+          "assigned_at": "2026-09-07",
+          "closing_ground": null,
+          "effect": 0.6578947368421052,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.8849557522123894,
+            2.178649237472767
+          ],
+          "leg_effects": null,
+          "notes": "Assigned 2020-2021 window: 466 games, 456 nonpush, baseline fallback outside complete coverage; no admissible closing ground. Full predeclared descriptive 2020-2025 decision look delta -0.332668 points, probability_positive 0.28905, separately weak-signals recorded. Mined-archive multiplicity discount applies; do not substitute assigned-window result for full-archive decision.",
+          "probability_positive": 0.7657,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-07",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "per13_durability_on_production": {
       "acknowledges_mined_2018_2025": false,
@@ -8244,12 +8445,12 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 48,
-    "2021": 48,
-    "2022": 5,
-    "2023": 5,
-    "2024": 3,
-    "2025": 4
+    "2020": 51,
+    "2021": 51,
+    "2022": 7,
+    "2023": 7,
+    "2024": 5,
+    "2025": 6
   },
   "version": 1
 }

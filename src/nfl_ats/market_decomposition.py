@@ -801,6 +801,9 @@ def opener_variant_decomposition(
 WEEKLY_CONTEXT_FAMILY = "weekly_context"
 
 FAMILY_PHRASES: dict[str, str] = {
+    "per07_coord_change_on_production": "changes in the coaching staff since last season",
+    "home_dog_location_points": "how many points the home team is getting as the underdog",
+    "home_dog_location_hinge": "how far past a touchdown the home team is getting as the underdog",
     "spread_regime": "Spread size and distance to common winning margins",
     "market": "the market line itself",
     "context": "rest and schedule spots",

@@ -114,3 +114,71 @@ cross-season isolation, immutable cache reuse, failure stops and request budgets
 record source terms and crawl conditions. **Measured** (this lane's commands):
 no ATS experiment, effect measurement, registry write, scheduler change,
 publication, commit or push ran.
+
+
+## League pull and bounded in-season census (lane M, 2026-09-07)
+
+**Measured** (`data/raw/coordinators/20260907T213814366437Z/coverage_audit.json`):
+544/544 preseason team-season queries completed (32 franchises, 2009-2025).
+HC 534/544, OC 512/544, DC 520/544 parsed dated assignments; all 1,566 assignments
+precede the team's first REG kickoff in `data/raw/20260905T211016Z/schedules.parquet`.
+481/544 team-seasons have all three roles; zero have no parsed dated assignment.
+The 66 missing role slots remain unknown downstream, not assumed unchanged.
+Observed lead times are 8.267-241.076 days. These are census counts, not estimates
+requiring sampling intervals. Per-team/season presence is in the audit artifact.
+
+**Measured** (`data/raw/coordinators/20260907T212401723239Z/manifest.json`):
+all 128 team-season revision ranges for 2022-2025 completed through the day of
+each team's last scheduled game (including postseason). Each range used one
+50-revision page; no continuation remained. The final acquisition run made
+670 new requests plus two cache hits, after an interrupted pagination defect
+had made 50 successful requests (48 unnecessary older revisions, two reused).
+A preceding sandbox attempt made no successful HTTP request. Total successful
+requests this lane: 720, below the cumulative 1,000 ceiling. No source-policy
+budget was raised. The older lane E URLs omit `redirects=1`, so those legacy
+pilot queries were not reused by the new redirect-aware query keys. No additional
+network pass was run to tune coverage. Current normalization reparses saved bytes
+only; the older source snapshots remain immutable.
+
+**Measured** (same manifest, `resolutions`): the historical Rams (STL), Chargers
+(SD), Raiders (OAK), Redskins and Washington Football Team titles all resolve
+through retained redirects to the current franchise staff template, whose own
+historical revision content was retrieved. All 544 titles resolved to pages;
+no missing-page/team-season remains. This proves content continuity at the
+requested cutoff, not the exact date on which each page title was renamed.
+The requested historical title, resolved current title and redirects are saved;
+exact title-at-cutoff move-log chronology was not independently reconstructed.
+
+**Read** (`scripts/ingest_coordinator_history.py`, `TEAM_NAMES`, `historical_title`,
+`league_capture`, `normalize_capture`): `--league --inseason --max-requests 1000
+--delay 1` schedules the whole pass. September sampling stops after its one
+revision even if the API advertises older continuation; in-season ranges follow
+continuation. `--normalize SOURCE` and `--audit NORMALIZED` need no network.
+Parsing now accepts interim titles, assistant-HC/coordinator dual titles, and
+wikilinked role labels. Vacancies, multiple names and ambiguous/unlinked values
+remain omitted. A missing role is not evidence that no coaching change occurred.
+
+**Measured** (`data/raw/coordinators/20260907T213814366437Z/change_validation.json`):
+the 128-season census produces 16 parsed OC/DC identity edits, of which independent
+team/league reports support ten coordinator staff changes and two additional
+playcaller changes whose formal coordinator title is not established by the
+source text. Two SF edits switch Ryans to Willis and back; **inferred:** these
+are a source correction, not evidence of two appointments. **Read**
+([Steelers account](https://www.steelers.com/news/steelers-mike-tomlin-moving-forward-eddie-faulkner-mike-sullivan-challenges)):
+Faulkner coordinated while Sullivan called plays, so the temporary Sullivan-as-OC
+entry is a role error. **Reported, unverified** (same validation artifact): the
+NYJ 2024 Manuel-as-DC identity edit lacks independent appointment confirmation.
+
+**Measured** (validation artifact): eleven supported staff/playcaller transitions
+have independently dated appointment announcements; all eleven appear in the
+staff template on the same local calendar day (calendar-day lag 0). Exact elapsed
+hours are unknown, and Carolina's precise promotion date is not independently
+pinned. This does not justify backdating an observation to midnight: features
+must still wait for the actual revision timestamp. The source is not exhaustive
+for removals to vacancy, and coordinator identity must not be equated with who
+calls plays. No in-season identity flag enters the ATS look.
+
+**Measured** (`scripts/coord_change_opener_eval.py`; recorded results in
+`docs/coordinator_change_on_production.md`): one completed production-profile
+look used the frozen three September turnover columns; no active-model or card
+change was made.

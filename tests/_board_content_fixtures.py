@@ -401,6 +401,12 @@ def build_fixture_content_with_degraded_states() -> BoardContent:
 
 def build_fixture_weak_spots():
     """Small diagnostic table, deliberately distinct from real archive measurements."""
-    from nfl_ats.model_weak_spots import WeakSpotRow, WeakSpots
+    from nfl_ats.model_weak_spots import HomeSplitRow, WeakSpotRow, WeakSpots
 
-    return WeakSpots((WeakSpotRow("7.5-10", 2, 0.5, 0.5, 1.0, 0.65, 1.0, 0.0),))
+    return WeakSpots(
+        (WeakSpotRow("7.5-10", 2, 0.5, 0.5, 1.0, 0.65, 1.0, 0.0),),
+        (
+            HomeSplitRow("7.5-10", "Home favourite", 1, 0.0, 0.7, 0.0),
+            HomeSplitRow("7.5-10", "Home underdog", 1, 1.0, 0.6, 1.0),
+        ),
+    )

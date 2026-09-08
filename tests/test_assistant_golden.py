@@ -230,8 +230,9 @@ def golden_report(golden_environment: SimpleNamespace) -> EvalReport:
 # ---------------------------------------------------------------------------
 
 
-def test_golden_fixture_has_60_to_112_rows_covering_every_category() -> None:
-    assert 60 <= len(GOLDEN_QUESTIONS) <= 112
+def test_golden_fixture_has_60_to_120_rows_covering_every_category() -> None:
+    # Cap raised 112 -> 120 on 2026-09-07 for the two weak-spots home-split rows.
+    assert 60 <= len(GOLDEN_QUESTIONS) <= 120
     assert {case.category for case in GOLDEN_QUESTIONS} == set(CATEGORIES)
 
 
@@ -270,6 +271,8 @@ def test_golden_fixture_covers_every_router_intent() -> None:
         "lineup:injuries",
         "lineup:availability",
         "lineup:backup_qb",
+        "weak_spots",
+        "weak_spots_home_split",
     }
     expected = deflect_ids | reachable_glossary_ids | fixed_topics
     observed = {case.expected_intent for case in GOLDEN_QUESTIONS}

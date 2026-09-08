@@ -156,3 +156,87 @@ def test_budget_and_polite_rate(tmp_path, monkeypatch):
     manifest = json.loads((destination / "manifest.json").read_bytes())
     assert manifest["stopped"] == "request_budget"
     assert manifest["network_requests"] == 1
+
+
+def test_league_map_and_relocated_titles():
+    assert len(ingest.TEAM_NAMES) == 32
+    assert ingest.historical_title("LA", 2015) == "Template:St. Louis Rams staff"
+    assert ingest.historical_title("LAC", 2016) == "Template:San Diego Chargers staff"
+    assert ingest.historical_title("LV", 2019) == "Template:Oakland Raiders staff"
+    assert ingest.historical_title("WAS", 2019) == "Template:Washington Redskins staff"
+    assert ingest.historical_title("WAS", 2021) == "Template:Washington Football Team staff"
+    assert ingest.historical_title("WAS", 2022) == "Template:Washington Commanders staff"
+
+
+def test_inseason_revision_enumeration_preserves_change_dates():
+    payload = json.loads(FIXTURE.read_bytes())
+    first = payload["query"]["pages"][0]["revisions"][0]
+    later = copy.deepcopy(first)
+    later.update(timestamp="2019-10-01T00:00:00Z", revid=124)
+    later["slots"]["main"]["content"] = "*Offensive coordinator - [[New OC]]"
+    payload["query"]["pages"][0]["revisions"].append(later)
+    parsed = rows(payload, cutoff="2020-02-01T00:00:00Z")
+    oc = [r for r in parsed if r["role"] == "OC"]
+    assert [r["person"] for r in oc] == ["Old OC", "New OC"]
+    assert oc[-1]["effective_observed_at"] == "2019-10-01T00:00:00+00:00"
+
+
+def test_preseason_does_not_follow_older_revision_continuation(tmp_path, monkeypatch):
+    monkeypatch.setattr(ingest, "ROOT", tmp_path / "raw")
+    monkeypatch.setattr(ingest, "TEAM_NAMES", {"KC": "Kansas City Chiefs"})
+    monkeypatch.setattr(ingest.time, "sleep", lambda _: None)
+    schedule = tmp_path / "schedules.parquet"
+    pd.DataFrame(
+        {"season": [2009], "home_team": ["KC"], "away_team": ["GB"], "gameday": ["2009-09-10"]}
+    ).to_parquet(schedule)
+    payload = json.loads(FIXTURE.read_bytes())
+    payload["query"]["pages"][0]["revisions"][0]["timestamp"] = "2009-08-01T00:00:00Z"
+    payload["continue"] = {"rvcontinue": "older", "continue": "||"}
+    calls = []
+
+    def fake_fetch(url):
+        calls.append(url)
+        return 200, json.dumps(payload).encode()
+
+    monkeypatch.setattr(ingest, "fetch", fake_fetch)
+    destination = ingest.league_capture(
+        max_requests=1, delay=1, inseason=False, schedules_path=schedule
+    )
+    manifest = json.loads((destination / "manifest.json").read_bytes())
+    assert len(calls) == 1
+    assert manifest["resolutions"][0]["complete"]
+    assert manifest["resolutions"][1]["season"] == 2010
+    assert manifest["assignments"] == 3
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "*Interim offensive coordinator - [[New OC]]",
+        "*Offensive coordinator (interim) - [[New OC]]",
+        "*Offensive coordinator - [[New OC]] (interim)",
+    ],
+)
+def test_interim_coordinator_labels_are_dated_assignments(line):
+    payload = json.loads(FIXTURE.read_bytes())
+    payload["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"] = line
+    assert rows(payload)[0]["person"] == "New OC"
+    assert rows(payload)[0]["role"] == "OC"
+
+
+def test_assistant_head_coach_dual_title_is_coordinator_not_head_coach():
+    payload = json.loads(FIXTURE.read_bytes())
+    payload["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"] = (
+        "*Assistant Head Coach/Defensive Coordinator - [[Leslie Frazier]]"
+    )
+    assert rows(payload)[0]["role"] == "DC"
+    assert len(rows(payload)) == 1
+
+
+def test_wikilinked_role_labels_are_not_missing_staff():
+    payload = json.loads(FIXTURE.read_bytes())
+    payload["query"]["pages"][0]["revisions"][0]["slots"]["main"]["content"] = (
+        "* [[List of coaches|Head coach]] - [[Dan Quinn]]\n"
+        "* [[Offensive coordinator]] - [[Kliff Kingsbury]]"
+    )
+    assert {row["role"] for row in rows(payload)} == {"HC", "OC"}

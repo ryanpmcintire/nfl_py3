@@ -14,6 +14,7 @@ from nfl_ats.calibration import (
     smoothed_home_cover_probability,
 )
 from nfl_ats.conditional_margin import CONDITIONAL_MARGIN_METHODS
+from nfl_ats.hybrid_margin import HYBRID_MARGIN_METHODS
 from nfl_ats.margin import fit_margin_model
 
 
@@ -70,7 +71,7 @@ def test_fit_residual_smoother_guards_small_and_degenerate_samples() -> None:
 
 @pytest.mark.parametrize("method", RESIDUAL_SMOOTHING_METHODS)
 def test_survival_is_monotone_and_bounded(method: str) -> None:
-    if method in CONDITIONAL_MARGIN_METHODS:
+    if method in (*CONDITIONAL_MARGIN_METHODS, *HYBRID_MARGIN_METHODS):
         pytest.skip(
             "conditional-margin methods need prior margin pairs, not a residual sample; "
             "covered by tests/test_conditional_margin.py"

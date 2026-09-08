@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-07T17:54:33.593635+00:00`
+Refreshed at: `2026-09-08T00:02:45.996015+00:00`
 
 ## Start here
 
@@ -20,9 +20,29 @@ Refreshed at: `2026-09-07T17:54:33.593635+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `321c56ec611a` — MOD-18 lane K: conditional integer-margin mapping measured (incumbent kept); plain summaries; property-test scope [skip ci]
-- Pending change set: 1 paths
+- Baseline commit: `883e5931e9f9` — LEAD-59: 2014 officials sweep complete (1,738 crew rows, 248 games); 2009-2013 launched [skip ci]
+- Pending change set: 49 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
   - `M  ROADMAP.md`
+  - `A  docs/coordinator_change_on_production.md`
+  - `M  docs/coordinator_history_source.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `A  docs/home_dog_location.md`
+  - `A  docs/hybrid_margin_mapping.md`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  docs/officials_archive_probe.md`
+  - `A  docs/playcaller_change_leads.md`
+  - `A  registry/experiments/margin-backtest/20260907T232637Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260907T232720Z.json`
+  - `M  registry/rotation_registry.json`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/coord_change_opener_eval.py`
+  - `A  scripts/home_dog_location_opener_eval.py`
+  - ...and 29 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -36,13 +56,13 @@ trust live Git output after checkout.
 - Raw-model baseline (opener-graded probability rule): **53.96%** on **1,537 games** (`opener_evaluation/20260907T152026Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-07T16:43:52.339481+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-07T23:27:20.851147+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-07T16:49:39.799929+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-07T23:33:19.730197+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

@@ -14,6 +14,7 @@ from sklearn.linear_model import LogisticRegression
 
 from nfl_ats.conditional_margin import CONDITIONAL_MARGIN_METHODS, fit_conditional_margin
 from nfl_ats.constants import DEFAULT_MIN_CALIBRATION_GAMES
+from nfl_ats.hybrid_margin import HYBRID_MARGIN_METHODS, fit_hybrid_weights
 from nfl_ats.odds import choose_bet
 
 CoverCalibrationMethod = Literal["none", "platt", "isotonic", "beta"]
@@ -252,6 +253,8 @@ ResidualSmoothingMethod = Literal[
     "conditional_margin_lattice",
     "conditional_margin_lattice_keyshift",
     "conditional_margin_lattice_keyside",
+    "hybrid_key_distance",
+    "hybrid_key_distance_by_size",
 ]
 RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "ecdf",
@@ -263,6 +266,8 @@ RESIDUAL_SMOOTHING_METHODS: tuple[ResidualSmoothingMethod, ...] = (
     "conditional_margin_lattice",
     "conditional_margin_lattice_keyshift",
     "conditional_margin_lattice_keyside",
+    "hybrid_key_distance",
+    "hybrid_key_distance_by_size",
 )
 _SURVIVAL_EPSILON = 1e-9
 
@@ -339,7 +344,7 @@ def fit_residual_smoother(
     """
 
     normalized = normalize_residual_smoothing_method(method)
-    if normalized in CONDITIONAL_MARGIN_METHODS:
+    if normalized in (*CONDITIONAL_MARGIN_METHODS, *HYBRID_MARGIN_METHODS):
         raise ValueError(
             "Conditional margin methods require prior predicted/actual margin pairs, not residuals"
         )
@@ -390,6 +395,22 @@ def smoothed_home_cover_probability(
     above for why that is a distinct lever from rescaling).
     """
 
+    if method in HYBRID_MARGIN_METHODS:
+        if conditional_history is None:
+            raise ValueError("Hybrid methods require prior completed prediction history")
+        fitted = fit_hybrid_weights(conditional_history, method=method)
+        weights = fitted.weights(lines)
+        smooth = smoothed_home_cover_probability(
+            residuals, centers, lines, method="gaussian_median"
+        )
+        lattice = smoothed_home_cover_probability(
+            residuals,
+            np.asarray(centers) + float(np.median(residuals)),
+            lines,
+            method="conditional_margin_lattice",
+            conditional_history=conditional_history,
+        )
+        return weights * lattice + (1 - weights) * smooth
     if method in CONDITIONAL_MARGIN_METHODS:
         if conditional_history is None:
             raise ValueError(

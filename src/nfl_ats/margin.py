@@ -65,7 +65,10 @@ MarginFeatureProfile = Literal[
     "weak_stack_v4",
     "weak_stack_v5",
     "weak_stack_apm_unit",
+    "weak_stack_coord_change",
     "weak_stack_spread_regime",
+    "weak_stack_home_dog_points",
+    "weak_stack_home_dog_hinge_7",
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
@@ -137,7 +140,10 @@ MARGIN_FEATURE_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "weak_stack_v4",
     "weak_stack_v5",
     "weak_stack_apm_unit",
+    "weak_stack_coord_change",
     "weak_stack_spread_regime",
+    "weak_stack_home_dog_points",
+    "weak_stack_home_dog_hinge_7",
     "weak_stack_oracle_weather",
     "weak_stack_graph_sack",
     "weak_stack_graph_def_ypp",
@@ -240,10 +246,21 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
     # the active model.
     "weak_stack_v4": ("football_weak_stack_v4", "full_weak_stack_v4"),
     "weak_stack_v5": ("football_weak_stack_v5", "full_weak_stack_v5"),
+    "weak_stack_coord_change": ("football_weak_stack_coord_change", "full_weak_stack_coord_change"),
     "weak_stack_apm_unit": ("football_weak_stack_apm_unit", "full_weak_stack_apm_unit"),
     "weak_stack_spread_regime": (
         "football_weak_stack_spread_regime",
         "full_weak_stack_spread_regime",
+    ),
+    # MOD-18 lane Q (docs/home_dog_location.md): weak_stack plus the row-local
+    # home-underdog points (Q1) or that plus its above-seven hinge (Q2).
+    "weak_stack_home_dog_points": (
+        "football_weak_stack_home_dog_points",
+        "full_weak_stack_home_dog_points",
+    ),
+    "weak_stack_home_dog_hinge_7": (
+        "football_weak_stack_home_dog_hinge_7",
+        "full_weak_stack_home_dog_hinge_7",
     ),
     # POSITIVE CONTROL ONLY (docs/weak_stack_v4.md): weak_stack plus OBSERVED
     # weather. Deliberately leaky, never promotable -- it bounds the weather

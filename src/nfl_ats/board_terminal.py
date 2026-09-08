@@ -1902,7 +1902,13 @@ def render_model_page(content: ModelPageContent) -> str:
             f"</tr></thead><tbody>{families_rows_html}</tbody></table></div></section>"
         )
 
-    from nfl_ats.model_weak_spots import BUCKET_NOTE, EXPLANATION, UNAVAILABLE
+    from nfl_ats.model_weak_spots import (
+        BUCKET_NOTE,
+        EXPLANATION,
+        HOME_SPLIT_LEAD,
+        HOME_SPLIT_NOTE,
+        UNAVAILABLE,
+    )
 
     weak_spots_html = (
         '<section aria-labelledby="weak-spots-h"><div class="section-head">'
@@ -1939,6 +1945,42 @@ def render_model_page(content: ModelPageContent) -> str:
                 f'<p class="policy-note">{escape(row.reliability)}</p>'
                 for row in content.weak_spots.rows
             )
+        )
+    else:
+        weak_spots_html += f'<p class="policy-note">{escape(UNAVAILABLE)}</p>'
+    # Home/away split of the SAME opener evaluation (2026-09-07): a second
+    # small table under the first, same section, same table CSS. It is a
+    # diagnosis for the reader, not a pick rule -- see model_weak_spots.
+    weak_spots_html += (
+        '<div class="section-head ledger-group-head">'
+        '<h3 id="weak-spots-home-h">Home favourite or home underdog</h3>'
+        f'<span class="sub">{len(content.weak_spots.home_split)} rows</span></div>'
+    )
+    if content.weak_spots.home_split:
+        split_headers = (
+            "Spread size",
+            "Home team was",
+            "Games",
+            "Home team covered",
+            "Model expected home to cover",
+            "Model right",
+        )
+        weak_spots_html += (
+            f'<p class="policy-note">{escape(HOME_SPLIT_LEAD)}</p>'
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            + "".join(f"<th>{escape(header)}</th>" for header in split_headers)
+            + "</tr></thead><tbody>"
+            + "".join(
+                '<tr class="game">'
+                + "".join(
+                    f'<td data-label="{escape(header)}">{escape(cell)}</td>'
+                    for header, cell in zip(split_headers, row.cells, strict=True)
+                )
+                + "</tr>"
+                for row in content.weak_spots.home_split
+            )
+            + "</tbody></table></div>"
+            + f'<p class="policy-note">{escape(HOME_SPLIT_NOTE)}</p>'
         )
     else:
         weak_spots_html += f'<p class="policy-note">{escape(UNAVAILABLE)}</p>'

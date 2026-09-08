@@ -40,12 +40,16 @@ content outcome, not a fetch failure, and does NOT count toward the
 consecutive-failure counter -- only throttle/error responses do.
 
 Resumable by construction: every fetched replay page is written to
-``<raw-root>/<run-id>/html/<pfr_id>.html`` and recorded in
+``<raw-root>/<run-id>/html/<pfr_id>__<capture_ts>.html`` (runs before
+2026-09-07 wrote ``html/<pfr_id>.html``; the manifest row's ``html_file``
+is authoritative either way) and recorded in
 ``<raw-root>/<run-id>/manifest.json`` as it happens (not buffered to the
 end), so a killed or `Ctrl+C`-interrupted run, or a fresh invocation given
-the same ``--run-id``, skips every game whose HTML file already exists on
-disk -- zero new network requests for already-fetched games. Passing a new
-``--run-id`` (or omitting it) starts a fresh snapshot directory instead.
+the same ``--run-id``, skips every game whose manifest row names an HTML
+file that exists on disk -- zero new network requests for already-fetched
+games (unless ``--retry-unparsed`` is passed and the page parses 0, see
+below). Passing a new ``--run-id`` (or omitting it) starts a fresh snapshot
+directory instead.
 
 Two directories, per this fleet's data-hygiene rule (raw captures never
 mutated in place, derived tables never live under ``data/raw``):
@@ -60,6 +64,32 @@ mutated in place, derived tables never live under ``data/raw``):
   derived tabular write, not an experiment, so ``write_experiment_artifact``
   would misrepresent it).
 
+Capture-selection policy (2026-09-07, lane N, after the 2009-2013 run
+``20260907T175420Z`` parsed 0 officials on 418 of 418 fetched pages): the
+EARLIEST post-game capture is the wrong one to take. PFR added the
+officials block to its boxscore layout years after the 2009-2011 games were
+played (the 2009-2010 pages captured 2009-2011 carry no ``game_info`` /
+``ref_info`` block at all; see ``docs/officials_archive_probe.md``), and even
+in 2014 a capture taken one or two days after kickoff can predate the
+block. The sweep therefore prefers the NEWEST capture after the game
+(CDX ``from=<day after game>`` keeps the pre-game placeholder pages out and
+the query carries no ``limit``, so the full post-game list is ranked
+client-side), and if the chosen capture parses zero
+officials it falls back through up to ``--fallback-captures`` (default 2)
+further post-game captures, newest first, before recording the game as
+parsed-0. Capture recency does not affect pregame safety: an officiating
+assignment is a fact fixed before kickoff, so a page archived in 2026 says
+exactly what a page archived in 2009 would have said about who officiated
+the game -- ``effective_time`` stays the game's own date regardless of
+which capture was read. ``--retry-unparsed`` makes a resumed run re-attempt
+games whose existing manifest row parsed 0 officials under the old policy
+(re-parsing the on-disk page first, then fetching newer captures only if
+that still yields nothing), so run ``20260907T175420Z`` can be re-swept
+without refetching pages that already parsed. Every fetched page is its own
+immutable file (``html/<pfr_id>__<capture_ts>.html``); the manifest row's
+``html_file`` names the capture the crew rows were read from and
+``attempted_captures`` lists every capture fetched for the game.
+
 Pregame-safety: an officiating-crew assignment is a fact fixed BEFORE
 kickoff (the same premise ``docs/referee_battery.md`` and
 ``src/nfl_ats/referee_assignments_capture.py`` already argue from for the
@@ -68,18 +98,16 @@ kickoff (the same premise ``docs/referee_battery.md`` and
 is safe to use in any pregame feature keyed to that date or later, never
 earlier.
 
-**Parser structure, honestly labelled**: Wayback stayed 429-throttled for
-every fetch attempted this session (see the run report), so the "Officials"
-block parser below was never checked against a real fetched PFR boxscore
-page -- it is built defensively against two structurally plausible PFR
-layouts (a dedicated ``<table id="officials">`` of position/name rows, and
-an inline "Officials: Referee: X, Umpire: Y, ..." line inside the page's
-``scorebox_meta`` block, the pattern several other sports-reference
-properties use), tries the table first and falls back to the inline line,
-and returns zero rows with a warning if neither matches. The very first
-successful live fetch must be spot-checked against the parser's output
-before any yield number from this script is trusted as a parse-rate
-measurement rather than a design guess.
+**Parser structure**: originally (2026-09-05) written blind against two
+plausible layouts while Wayback was 429-throttled; since checked against
+live captures (2026-09-07). Measured layouts: 2013-2015-era captures carry
+``<table id="ref_info">`` with bolded position labels; 2016+ captures
+(including 2026 captures of 2009 and 2011 games) carry
+``<table id="officials">`` inside an HTML comment (``setup_commented``),
+which the regex reads through. The inline "Officials: Referee: X, ..."
+fallback has not been seen on any live capture and stays as a defensive
+third path. Pre-2013 captures of 2009-2011 games carry NO officials block
+under any layout -- that is why capture selection prefers the newest.
 
 Usage::
 
@@ -89,6 +117,11 @@ Usage::
     # continue the same run later (skips every game already on disk):
     .\\.tools\\uv.exe run --no-sync python scripts/officials_wayback_sweep.py `
         --season-start 2009 --season-end 2013 --run-id 20260905T000000Z
+
+    # re-sweep a run whose pages parsed 0 officials under the old policy
+    # (re-parses on-disk pages first; fetches newer captures only if needed):
+    .\\.tools\\uv.exe run --no-sync python scripts/officials_wayback_sweep.py `
+        --season-start 2009 --season-end 2013 --run-id 20260907T175420Z --retry-unparsed
 """
 
 from __future__ import annotations
@@ -122,9 +155,15 @@ ORIGINAL_URL_TEMPLATE = "https://www.pro-football-reference.com/boxscores/{pfr_i
 # pages with no officials block -- measured on the first live fetch of
 # 2014_01_GB_SEA, whose earliest capture was 2014-05-30 for a 2014-09-04 game
 # and parsed 0 officials. Only captures from the day after the game qualify.
+# No ``limit`` (2026-09-07, lane N, measured): ``limit=5`` handed back the
+# five EARLIEST post-game captures, which for 2009-2011 games predate PFR's
+# officials block; ``limit=-3`` (the CDX "last N" form) drew an HTTP 504 --
+# a negative limit forces a full index scan -- while the unbounded query for
+# the same URLs returned 200 with 61-74 rows (a few KB). The selector ranks
+# the full list client-side, newest first.
 CDX_URL_TEMPLATE = (
     "https://web.archive.org/cdx/search/cdx"
-    "?url={original}&output=json&filter=statuscode:200&from={not_before}&limit=5"
+    "?url={original}&output=json&filter=statuscode:200&from={not_before}"
 )
 REPLAY_URL_TEMPLATE = "https://web.archive.org/web/{ts}id_/{original}"
 
@@ -132,6 +171,7 @@ MIN_DELAY_SECONDS = 8.0
 DEFAULT_INITIAL_BACKOFF_SECONDS = 60.0
 DEFAULT_MAX_REQUEST_RETRIES = 5
 DEFAULT_MAX_CONSECUTIVE_FAILURES = 5
+DEFAULT_FALLBACK_CAPTURES = 2
 RETRYABLE_STATUS_CODES = frozenset({429, 500, 502, 503, 504})
 
 DEFAULT_RAW_ROOT = REPO / "data" / "raw" / "officials_pfr_wayback"
@@ -415,6 +455,8 @@ class SweepConfig:
     max_request_retries: int = DEFAULT_MAX_REQUEST_RETRIES
     max_consecutive_failures: int = DEFAULT_MAX_CONSECUTIVE_FAILURES
     limit: int | None = None
+    fallback_captures: int = DEFAULT_FALLBACK_CAPTURES
+    retry_unparsed: bool = False
 
 
 def run_sweep(
@@ -453,31 +495,45 @@ def run_sweep(
     consecutive_failures = 0
     total_requests = 0
     new_fetch_count = 0
+    fallback_replay_fetches = 0
+    games_retried_unparsed = 0
+    games_retry_no_new_capture = 0
     stopped_early = False
     stop_reason: str | None = None
 
     for game in games.itertuples(index=False):
         pfr_id = str(game.pfr)
         season = int(game.season)
+        existing = _find_manifest_row(manifest_rows, pfr_id)
+        previous_attempts: list[dict[str, Any]] = []
 
-        if pfr_id in already_fetched:
-            html_path = html_dir / f"{pfr_id}.html"
+        if pfr_id in already_fetched and existing is not None:
+            html_path = snapshot_dir / str(existing["html_file"])
             html_text = html_path.read_text(encoding="utf-8", errors="replace")
             rows, warnings = parse_officials_block(html_text)
-            per_season_parsed_rows[season] = per_season_parsed_rows.get(season, 0) + len(rows)
-            per_season_html_on_disk[season] = per_season_html_on_disk.get(season, 0) + 1
-            for position, name in rows:
-                officials_rows.append(
-                    _officials_row(
-                        game, position, name, source_row=_find_manifest_row(manifest_rows, pfr_id)
-                    )
-                )
-            continue
+            # Keep the manifest honest about the CURRENT parser's read of the
+            # on-disk page (the 2014 run's first five rows stayed at 0 after
+            # the ref_info parser fix because this branch never wrote back).
+            existing["officials_parsed"] = len(rows)
+            existing["parse_warnings"] = warnings
+            if rows or not config.retry_unparsed:
+                per_season_parsed_rows[season] = per_season_parsed_rows.get(season, 0) + len(rows)
+                per_season_html_on_disk[season] = per_season_html_on_disk.get(season, 0) + 1
+                for position, name in rows:
+                    officials_rows.append(_officials_row(game, position, name, source_row=existing))
+                continue
+            # --retry-unparsed: the on-disk page still parses 0 under the
+            # current parser, so fall through and try NEWER captures. Every
+            # capture already fetched for this game is excluded below.
+            games_retried_unparsed += 1
+            previous_attempts = _previous_attempts(existing)
 
         if config.limit is not None and new_fetch_count >= config.limit:
+            # Cap NEW network work only: keep walking so every page already
+            # on disk is still re-parsed into the parquet (2026-09-07).
             stopped_early = True
             stop_reason = "limit_reached"
-            break
+            continue
 
         moment = now or datetime.now(UTC)
         fetch_instant = moment.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -523,12 +579,18 @@ def run_sweep(
             "outcome": None,
             "officials_parsed": 0,
             "parse_warnings": [],
+            "attempted_captures": list(previous_attempts),
+            "fallback_fetches": 0,
+            "retried_unparsed": bool(previous_attempts),
         }
 
         if cdx_outcome.content is None:
+            if existing is not None and existing.get("html_file"):
+                # A retry whose CDX lookup failed keeps the page it already has.
+                row = _keep_existing_page(existing, row)
             row["outcome"] = "cdx_fetch_failed"
             consecutive_failures += 1
-            manifest_rows.append(row)
+            _upsert_manifest_row(manifest_rows, row)
             _write_manifest(snapshot_dir, manifest_rows, config)
             if consecutive_failures >= config.max_consecutive_failures:
                 stopped_early = True
@@ -538,61 +600,110 @@ def run_sweep(
                 break
             continue
 
-        capture_ts = _select_capture_timestamp(cdx_outcome.content, not_before=not_before)
-        if capture_ts is None:
-            row["outcome"] = "no_capture_found"
-            manifest_rows.append(row)
-            _write_manifest(snapshot_dir, manifest_rows, config)
+        already_tried = {str(a.get("wayback_capture_timestamp")) for a in previous_attempts}
+        candidates = [
+            ts
+            for ts in _rank_capture_timestamps(cdx_outcome.content, not_before=not_before)
+            if ts not in already_tried
+        ]
+        if not candidates:
             consecutive_failures = 0  # a clean 200 with zero rows is not a throttle failure
-            continue
-
-        wayback_url = REPLAY_URL_TEMPLATE.format(ts=capture_ts, original=original_url)
-        row["wayback_capture_timestamp"] = capture_ts
-        row["wayback_url"] = wayback_url
-
-        replay_outcome = fetch_with_backoff(
-            wayback_url,
-            fetch,
-            limiter,
-            initial_backoff_seconds=config.initial_backoff_seconds,
-            max_attempts=config.max_request_retries,
-            sleep_fn=sleep_fn,
-        )
-        total_requests += replay_outcome.attempts
-        row["replay_status_code"] = replay_outcome.status_code
-        row["replay_attempts"] = replay_outcome.attempts
-        row["replay_backoff_schedule_seconds"] = list(replay_outcome.backoff_schedule_seconds)
-        row["replay_error"] = replay_outcome.error
-
-        if replay_outcome.content is None:
-            row["outcome"] = "replay_fetch_failed"
-            consecutive_failures += 1
-            manifest_rows.append(row)
+            if existing is not None and existing.get("html_file"):
+                # Nothing newer than the zero-parse page already on disk.
+                row = _keep_existing_page(existing, row)
+                row["outcome"] = "fetched"
+                row["retry_note"] = "no post-game capture beyond those already fetched"
+                games_retry_no_new_capture += 1
+                per_season_html_on_disk[season] = per_season_html_on_disk.get(season, 0) + 1
+            else:
+                row["outcome"] = "no_capture_found"
+            _upsert_manifest_row(manifest_rows, row)
             _write_manifest(snapshot_dir, manifest_rows, config)
-            if consecutive_failures >= config.max_consecutive_failures:
-                stopped_early = True
-                stop_reason = (
-                    f"hard_stop_after_{config.max_consecutive_failures}_consecutive_failures"
-                )
-                break
             continue
 
-        consecutive_failures = 0
-        html_text = replay_outcome.content.decode("utf-8", errors="replace")
-        html_path = html_dir / f"{pfr_id}.html"
-        html_path.write_text(html_text, encoding="utf-8")
-        row["html_file"] = f"html/{pfr_id}.html"
-        row["outcome"] = "fetched"
+        # Newest-first, then up to ``fallback_captures`` further captures if
+        # the page fetched parses zero officials.
+        chosen: dict[str, Any] | None = None
+        last_fetched: dict[str, Any] | None = None
+        parsed_rows: list[tuple[str, str]] = []
+        replay_failed = False
+        for index, capture_ts in enumerate(candidates[: 1 + config.fallback_captures]):
+            wayback_url = REPLAY_URL_TEMPLATE.format(ts=capture_ts, original=original_url)
+            replay_outcome = fetch_with_backoff(
+                wayback_url,
+                fetch,
+                limiter,
+                initial_backoff_seconds=config.initial_backoff_seconds,
+                max_attempts=config.max_request_retries,
+                sleep_fn=sleep_fn,
+            )
+            total_requests += replay_outcome.attempts
+            if index > 0:
+                fallback_replay_fetches += 1
+                row["fallback_fetches"] += 1
+            attempt: dict[str, Any] = {
+                "wayback_capture_timestamp": capture_ts,
+                "wayback_url": wayback_url,
+                "replay_status_code": replay_outcome.status_code,
+                "replay_attempts": replay_outcome.attempts,
+                "replay_backoff_schedule_seconds": list(replay_outcome.backoff_schedule_seconds),
+                "replay_error": replay_outcome.error,
+                "html_file": None,
+                "officials_parsed": 0,
+                "parse_warnings": [],
+                "fetch_instant_utc": fetch_instant,
+            }
+            row["attempted_captures"].append(attempt)
+            if replay_outcome.content is None:
+                replay_failed = True
+                break
+            html_text = replay_outcome.content.decode("utf-8", errors="replace")
+            html_path = html_dir / f"{pfr_id}__{capture_ts}.html"
+            html_path.write_text(html_text, encoding="utf-8")
+            attempt["html_file"] = f"html/{pfr_id}__{capture_ts}.html"
+            rows, warnings = parse_officials_block(html_text)
+            attempt["officials_parsed"] = len(rows)
+            attempt["parse_warnings"] = warnings
+            last_fetched = attempt
+            if rows:
+                chosen = attempt
+                parsed_rows = rows
+                break
 
-        parsed_rows, warnings = parse_officials_block(html_text)
-        row["officials_parsed"] = len(parsed_rows)
-        row["parse_warnings"] = warnings
-        per_season_fetched[season] = per_season_fetched.get(season, 0) + 1
-        per_season_parsed_rows[season] = per_season_parsed_rows.get(season, 0) + len(parsed_rows)
-        per_season_html_on_disk[season] = per_season_html_on_disk.get(season, 0) + 1
+        if replay_failed:
+            consecutive_failures += 1
+        else:
+            consecutive_failures = 0
 
-        manifest_rows.append(row)
+        page = chosen or last_fetched
+        if page is None:
+            if existing is not None and existing.get("html_file"):
+                row = _keep_existing_page(existing, row)
+                row["outcome"] = "fetched"
+                row["retry_note"] = "newer capture fetch failed; kept the page already on disk"
+                per_season_html_on_disk[season] = per_season_html_on_disk.get(season, 0) + 1
+            else:
+                failed = row["attempted_captures"][-1]
+                for key in _REPLAY_KEYS:
+                    row[key] = failed[key]
+                row["outcome"] = "replay_fetch_failed"
+        else:
+            for key in (*_REPLAY_KEYS, "html_file", "officials_parsed", "parse_warnings"):
+                row[key] = page[key]
+            row["outcome"] = "fetched"
+            per_season_fetched[season] = per_season_fetched.get(season, 0) + 1
+            per_season_parsed_rows[season] = per_season_parsed_rows.get(season, 0) + len(
+                parsed_rows
+            )
+            per_season_html_on_disk[season] = per_season_html_on_disk.get(season, 0) + 1
+
+        _upsert_manifest_row(manifest_rows, row)
         _write_manifest(snapshot_dir, manifest_rows, config)
+
+        if replay_failed and consecutive_failures >= config.max_consecutive_failures:
+            stopped_early = True
+            stop_reason = f"hard_stop_after_{config.max_consecutive_failures}_consecutive_failures"
+            break
 
         for position, name in parsed_rows:
             officials_rows.append(_officials_row(game, position, name, source_row=row))
@@ -631,6 +742,14 @@ def run_sweep(
             1 for r in manifest_rows if r.get("outcome") == "no_capture_found"
         ),
         "officials_rows_parsed": len(officials_frame),
+        "games_parsed_zero": sum(
+            1
+            for r in manifest_rows
+            if r.get("outcome") == "fetched" and not r.get("officials_parsed")
+        ),
+        "fallback_replay_fetches": fallback_replay_fetches,
+        "games_retried_unparsed": games_retried_unparsed,
+        "games_retry_no_new_capture": games_retry_no_new_capture,
         "per_season_attempted": per_season_attempted,
         "per_season_fetched": per_season_fetched,
         "per_season_parsed_rows": per_season_parsed_rows,
@@ -644,11 +763,69 @@ def run_sweep(
     return summary
 
 
+_REPLAY_KEYS = (
+    "wayback_capture_timestamp",
+    "wayback_url",
+    "replay_status_code",
+    "replay_attempts",
+    "replay_backoff_schedule_seconds",
+    "replay_error",
+)
+
+
 def _find_manifest_row(manifest_rows: list[dict[str, Any]], pfr_id: str) -> dict[str, Any] | None:
     for row in manifest_rows:
         if row.get("pfr_id") == pfr_id:
             return row
     return None
+
+
+def _upsert_manifest_row(manifest_rows: list[dict[str, Any]], row: dict[str, Any]) -> None:
+    """Replace the row for ``row['pfr_id']`` in place, or append if absent.
+
+    A resumed run that re-attempts a game (a failed CDX/replay row, or a
+    ``--retry-unparsed`` row) must not leave two rows for one game.
+    """
+
+    for index, existing in enumerate(manifest_rows):
+        if existing.get("pfr_id") == row.get("pfr_id"):
+            manifest_rows[index] = row
+            return
+    manifest_rows.append(row)
+
+
+def _previous_attempts(existing: dict[str, Any]) -> list[dict[str, Any]]:
+    """Every capture already fetched for this game, from an existing manifest row.
+
+    Rows written before the fallback policy carry a single capture in the
+    top-level replay fields; rows written after it carry ``attempted_captures``.
+    Each entry is tagged ``from_previous_run`` so the retry row keeps the
+    old page's provenance without re-fetching it.
+    """
+
+    attempts = list(existing.get("attempted_captures") or [])
+    if not attempts and existing.get("wayback_capture_timestamp"):
+        attempts = [
+            {
+                **{key: existing.get(key) for key in _REPLAY_KEYS},
+                "html_file": existing.get("html_file"),
+                "officials_parsed": existing.get("officials_parsed", 0),
+                "parse_warnings": list(existing.get("parse_warnings") or []),
+                "fetch_instant_utc": existing.get("fetch_instant_utc"),
+            }
+        ]
+    return [{**attempt, "from_previous_run": True} for attempt in attempts]
+
+
+def _keep_existing_page(existing: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
+    """Carry the previously fetched page's fields into a retry row that found nothing better."""
+
+    kept = dict(row)
+    for key in (*_REPLAY_KEYS, "html_file", "officials_parsed", "parse_warnings"):
+        kept[key] = existing.get(key)
+    kept["officials_parsed"] = int(existing.get("officials_parsed") or 0)
+    kept["parse_warnings"] = list(existing.get("parse_warnings") or [])
+    return kept
 
 
 def _officials_row(
@@ -685,24 +862,39 @@ def capture_not_before(gameday: Any) -> str:
     return day.strftime("%Y%m%d")
 
 
-def _select_capture_timestamp(
-    cdx_json_bytes: bytes, *, not_before: str | None = None
-) -> str | None:
+def _rank_capture_timestamps(cdx_json_bytes: bytes, *, not_before: str | None = None) -> list[str]:
+    """Post-game capture timestamps from a CDX JSON body, NEWEST first, deduplicated.
+
+    2026-09-07 (lane N): the earliest post-game capture used to be taken,
+    and it parsed 0 officials on 418 of 418 pages for 2009-2010 -- PFR added
+    the officials block to that era's boxscores years after the games, so
+    only later captures carry it. Newest-first is safe because an
+    officiating assignment is fixed before kickoff; the archive date of the
+    page that reports it changes nothing about when the fact was knowable.
+    ``not_before`` re-applies the CDX ``from=`` bound client-side so a
+    response that ignored it can never hand back a pre-game placeholder.
+    """
+
     try:
         rows = json.loads(cdx_json_bytes.decode("utf-8"))
     except (ValueError, UnicodeDecodeError):
-        return None
+        return []
+    if not isinstance(rows, list):
+        return []
     data_rows = rows[1:] if rows and rows[0] and rows[0][0] == "urlkey" else rows
-    if not data_rows:
-        return None
-    # CDX returns ascending-timestamp order by default; the earliest capture
-    # AFTER the game is preferred (the first snapshot of the final boxscore).
-    # ``not_before`` re-applies the ``from=`` bound client-side so a CDX
-    # response that ignored it can never hand back a pre-game placeholder.
-    candidates = [str(r[1]) for r in data_rows if len(r) > 1]
+    candidates = {str(r[1]) for r in data_rows if isinstance(r, list) and len(r) > 1}
     if not_before is not None:
-        candidates = [ts for ts in candidates if ts[:8] >= not_before]
-    return min(candidates) if candidates else None
+        candidates = {ts for ts in candidates if ts[:8] >= not_before}
+    return sorted(candidates, reverse=True)
+
+
+def _select_capture_timestamp(
+    cdx_json_bytes: bytes, *, not_before: str | None = None
+) -> str | None:
+    """The single preferred capture: the newest post-game one (see ``_rank_capture_timestamps``)."""
+
+    ranked = _rank_capture_timestamps(cdx_json_bytes, not_before=not_before)
+    return ranked[0] if ranked else None
 
 
 def _write_manifest(
@@ -721,6 +913,8 @@ def _write_manifest(
         "initial_backoff_seconds": config.initial_backoff_seconds,
         "max_request_retries": config.max_request_retries,
         "max_consecutive_failures": config.max_consecutive_failures,
+        "fallback_captures": config.fallback_captures,
+        "capture_policy": "newest_post_game_capture_with_fallback",
         "season_start": config.season_start,
         "season_end": config.season_end,
         "updated_at_utc": utc_now(),
@@ -761,7 +955,26 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--limit", type=int, default=None, help="cap NEW fetch attempts this invocation"
     )
+    parser.add_argument(
+        "--fallback-captures",
+        type=int,
+        default=DEFAULT_FALLBACK_CAPTURES,
+        help=(
+            "after the newest post-game capture parses 0 officials, try up to this many "
+            "further captures (newest first) before recording the game as parsed-0"
+        ),
+    )
+    parser.add_argument(
+        "--retry-unparsed",
+        action="store_true",
+        help=(
+            "on a resumed run, re-attempt games whose manifest row parsed 0 officials: "
+            "re-parse the on-disk page first, then fetch newer captures only if still 0"
+        ),
+    )
     args = parser.parse_args(argv)
+    if args.fallback_captures < 0:
+        parser.error("--fallback-captures must be >= 0")
 
     config = SweepConfig(
         season_start=args.season_start,
@@ -775,6 +988,8 @@ def main(argv: list[str] | None = None) -> int:
         max_request_retries=args.max_request_retries,
         max_consecutive_failures=args.max_consecutive_failures,
         limit=args.limit,
+        fallback_captures=args.fallback_captures,
+        retry_unparsed=args.retry_unparsed,
     )
     summary = run_sweep(config)
     print(
@@ -787,6 +1002,9 @@ def main(argv: list[str] | None = None) -> int:
         f"no_capture={summary['games_no_capture_found']} "
         f"total_http_requests={summary['total_http_requests']} "
         f"officials_rows={summary['officials_rows_parsed']} "
+        f"parsed_zero={summary['games_parsed_zero']} "
+        f"fallback_fetches={summary['fallback_replay_fetches']} "
+        f"retried_unparsed={summary['games_retried_unparsed']} "
         f"stopped_early={summary['stopped_early']} stop_reason={summary['stop_reason']}"
     )
     return (
