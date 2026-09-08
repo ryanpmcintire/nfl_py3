@@ -1613,7 +1613,7 @@ def _ledger_evidence_html(row: ModelLedgerRowView) -> str:
             else ""
         )
         return (
-            f'<span class="pill evidence-pill">{escape(humanize_identifier(item.registry_key))} '
+            '<span class="pill evidence-pill">Supporting comparison '
             f"&middot; {pp}{classification}</span>"
         )
 
@@ -1923,11 +1923,9 @@ def render_model_page(content: ModelPageContent) -> str:
 
     from nfl_ats.model_weak_spots import (
         BUCKET_NOTE,
-        EXPLANATION,
         HOME_CORRECTION_LEAD,
         HOME_CORRECTION_NOTE,
         HOME_CORRECTION_UNAVAILABLE,
-        HOME_SPLIT_LEAD,
         HOME_SPLIT_NOTE,
         UNAVAILABLE,
     )
@@ -1948,7 +1946,7 @@ def render_model_page(content: ModelPageContent) -> str:
             "Right: underdog picks",
         )
         weak_spots_html += (
-            f'<p class="policy-note">{escape(EXPLANATION)}</p>'
+            f'<p class="policy-note">{escape(content.weak_spots.explanation)}</p>'
             '<div class="board-scroll"><table class="board"><thead><tr>'
             + "".join(f"<th>{escape(header)}</th>" for header in headers)
             + "</tr></thead><tbody>"
@@ -1988,7 +1986,7 @@ def render_model_page(content: ModelPageContent) -> str:
             "Model right",
         )
         weak_spots_html += (
-            f'<p class="policy-note">{escape(HOME_SPLIT_LEAD)}</p>'
+            f'<p class="policy-note">{escape(content.weak_spots.home_split_lead)}</p>'
             '<div class="board-scroll"><table class="board"><thead><tr>'
             + "".join(f"<th>{escape(header)}</th>" for header in split_headers)
             + "</tr></thead><tbody>"
@@ -2382,7 +2380,7 @@ def _watching_lead_html(lead: WatchingLeadView) -> str:
     # opus autist").
     return (
         '<div class="attr-row"><div><span class="chan">'
-        f"{escape(humanize_identifier(lead.name))} &middot; {escape(lead.league)} &middot; "
+        f"Open question &middot; {escape(lead.league)} &middot; "
         f"{escape(lead.seasons_text)}"
         f'</span><div class="chan-sub">{escape(lead.description)}</div></div>'
         f'<div class="pts">{escape(lead.effect_text)}</div>'

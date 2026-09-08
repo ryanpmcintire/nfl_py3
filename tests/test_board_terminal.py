@@ -831,8 +831,8 @@ def test_home_side_push_finding_reaches_page_and_assistant(site_content: SiteCon
     for phrase in (
         "games already played",
         "10.5 points or more",
-        "55.9% right",
-        "55.2%",
+        "improved the opening-line record",
+        "the Model page shows the current model's measured record",
         "same games used to measure",
         "all did worse after the pick rules",
         "2026 weeks",

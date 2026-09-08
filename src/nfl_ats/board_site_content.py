@@ -126,14 +126,14 @@ def _generated_at_text(generated_at: datetime) -> str:
 #: 20260905T133429Z"``) off a provenance ``detail`` string -- the date
 #: column already renders that stamp as a plain date; the fine print never
 #: shows the raw stamp twice.
-_STAMP_SUFFIX_RE = re.compile(r"\s*\d{8}T\d{6}Z\s*$")
+_STAMP_SUFFIX_RE = re.compile(r"\s*\d{8}T\d{6}(?:\d{6})?Z\s*$")
 
 
 #: A UTC-stamped run's own date, ANYWHERE in an artifact directory name --
 #: most directories are bare stamps (``"20260905T133429Z"``), but a weekly
 #: forecast's is prefixed (``"2026-week-01-20260905T141453Z"``), so this
 #: searches rather than anchors at position 0.
-_EMBEDDED_STAMP_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T\d{6}Z")
+_EMBEDDED_STAMP_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T\d{6}(?:\d{6})?Z")
 
 
 def _artifact_directory_date_text(directory_name: str) -> str:

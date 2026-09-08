@@ -34,6 +34,12 @@ EXPLANATION = (
     "Since the 2026 opener the forecast includes a small push toward the home team, sized by "
     "the spread and learned from past seasons; the numbers here are the record with that push on."
 )
+EXPLANATION_UNALIGNED = (
+    "The model's confidence barely changes with the size of the spread. "
+    "Final margins pile up on 3, 7, 10 and 14 points, so lines just inside those "
+    "numbers can expose weaknesses that an average confidence hides. "
+    "These numbers are the saved opening-line record before the home-team push was measured."
+)
 BUCKET_NOTE = (
     "Opening lines, ties excluded; 7.5-point lines belong to 7.5-10, not 7-7.5. "
     "At level odds there is no favourite or underdog."
@@ -43,6 +49,12 @@ HOME_SPLIT_LEAD = (
     "with how often the home team covered against what the model expected. "
     "The honest takeaway: home underdogs on big spreads have covered more often than the "
     "model expected; the home-side push below is the fix, and this is the record with it on."
+)
+HOME_SPLIT_LEAD_UNALIGNED = (
+    "The same games, split by whether the home team opened as the favourite or the underdog, "
+    "with how often the home team covered against what the model expected. "
+    "The honest takeaway: home underdogs on big spreads have covered more often than the "
+    "model expected; this is the record before the home-side push was measured."
 )
 HOME_CORRECTION_LEAD = (
     "Since the 2026 opener the model's point forecast gets a small push toward the home team on "
@@ -172,7 +184,7 @@ class HomeCorrectionRow:
     @property
     def plain(self) -> str:
         push = (
-            "no push this week"
+            "this week's push is unavailable"
             if self.this_week_points is None
             else f"this week's push {points(self.this_week_points)} points"
         )
@@ -211,6 +223,17 @@ class WeakSpots:
     home_correction: HomeCorrection | None = None
 
     @property
+    def explanation(self) -> str:
+        """The lead sentence for the bucket table: says the push is in the
+        record only when the push was actually measured on it."""
+
+        return EXPLANATION if self.home_correction is not None else EXPLANATION_UNALIGNED
+
+    @property
+    def home_split_lead(self) -> str:
+        return HOME_SPLIT_LEAD if self.home_correction is not None else HOME_SPLIT_LEAD_UNALIGNED
+
+    @property
     def home_correction_text(self) -> str:
         if self.home_correction is None or not self.home_correction.rows:
             return HOME_CORRECTION_UNAVAILABLE
@@ -229,7 +252,7 @@ class WeakSpots:
         if not self.home_split:
             return UNAVAILABLE
         return (
-            HOME_SPLIT_LEAD
+            self.home_split_lead
             + " "
             + HOME_SPLIT_NOTE
             + " "
@@ -241,7 +264,7 @@ class WeakSpots:
         if not self.rows:
             return UNAVAILABLE
         return (
-            EXPLANATION
+            self.explanation
             + " "
             + BUCKET_NOTE
             + " "
