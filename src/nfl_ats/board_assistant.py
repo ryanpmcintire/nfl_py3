@@ -40,6 +40,7 @@ from nfl_ats.board_assistant_lineups import team_injuries_answer as _lineup_team
 from nfl_ats.board_content import (
     BoardContent,
     GameRow,
+    HeadlineStats,
     SourcePolicyView,
     TiebreakerView,
     human_update_time,
@@ -49,9 +50,11 @@ from nfl_ats.board_site_content import (
     FindingsPageContent,
     HistoryPageContent,
     ModelPageContent,
+    SeasonRecordHeadline,
+    headline_with_season_record,
 )
 from nfl_ats.market_data import NFL_TEAM_NAMES
-from nfl_ats.model_weak_spots import WeakSpots
+from nfl_ats.model_weak_spots import HomeCorrection, WeakSpots
 from nfl_ats.public_board import humanize_identifier
 
 #: Corpus schema version, stamped into every payload's provenance block.
@@ -771,6 +774,7 @@ def build_knowledge(
     watching_items: tuple[tuple[str, str, str, float], ...],
     refresh_lines: tuple[str, ...] = (),
     weak_spots: WeakSpots | None = None,
+    season_record_text: str | None = None,
 ) -> dict[str, Any]:
     """Build the deterministic retrieval corpus for one page.
 
@@ -781,6 +785,7 @@ def build_knowledge(
     """
 
     entries: list[_Entry] = list(_deflect_entries(int(season or 0), int(week or 0)))
+    home_correction = (weak_spots or WeakSpots()).home_correction or HomeCorrection()
 
     entries.append(
         _Entry(
@@ -796,6 +801,14 @@ def build_knowledge(
             entry_id="weak_spots_home_split",
             body=(weak_spots or WeakSpots()).home_split_text,
             anchor="model.html#weak-spots-home-h",
+        )
+    )
+
+    entries.append(
+        _Entry(
+            entry_id="weak_spots_home_push",
+            body=(weak_spots or WeakSpots()).home_correction_text,
+            anchor="model.html#weak-spots-push-h",
         )
     )
 
@@ -872,6 +885,15 @@ def build_knowledge(
                 entry_id="best_pick",
                 body=body,
                 anchor=f"index.html#{best_pick_game_id}",
+            )
+        )
+
+    if season_record_text is not None:
+        entries.append(
+            _Entry(
+                entry_id="season_record",
+                body=season_record_text,
+                anchor="history.html#history-picks-h",
             )
         )
 
@@ -1033,6 +1055,14 @@ def build_knowledge(
         },
         "weak_spots": [asdict(row) for row in (weak_spots or WeakSpots()).rows],
         "weak_spots_home_split": [asdict(row) for row in (weak_spots or WeakSpots()).home_split],
+        "weak_spots_home_push": [asdict(row) for row in home_correction.rows],
+        "weak_spots_home_push_summary": {
+            "archive_games": home_correction.archive_games,
+            "picks_changed": home_correction.picks_changed,
+            "accuracy_with": home_correction.accuracy_with,
+            "accuracy_without": home_correction.accuracy_without,
+            "this_week_available": home_correction.this_week_available,
+        },
         "entries": [
             {"id": entry.entry_id, "body": entry.body, "anchor": entry.anchor} for entry in entries
         ],
@@ -1130,6 +1160,7 @@ def build_knowledge_for_board(
         best_pick_note=board.best_pick_note,
         policy_text=policy_text,
         record_lines=record_lines,
+        season_record_text=_season_record_body(headline),
         finding_items=finding_items,
         watching_items=watching_items,
     )
@@ -1165,6 +1196,20 @@ def build_knowledge_for_board(
     return resorted
 
 
+def _season_record_body(headline: HeadlineStats | None) -> str:
+    live = (
+        headline.season_record_text
+        if isinstance(headline, SeasonRecordHeadline)
+        else "No settled season record is available here yet."
+    )
+    archive = (
+        f"The played card's archive score is {headline.played_card_value_text}"
+        if headline is not None and headline.played_card_pct is not None
+        else "The played card's archive score is unavailable"
+    )
+    return f"{live} {archive}; that is the archive, not this season."
+
+
 def _record_lines_for_headline(headline: Any) -> tuple[str, ...]:
     return (
         headline.played_card_value_text + ": " + headline.played_card_caption,
@@ -1192,16 +1237,20 @@ def build_knowledge_for_model(model: ModelPageContent) -> dict[str, Any]:
         best_pick_note=None,
         policy_text=None,
         record_lines=_record_lines_for_headline(model.headline),
+        season_record_text=_season_record_body(model.headline),
         finding_items=(),
         watching_items=(),
     )
 
 
 def build_knowledge_for_history(history: HistoryPageContent) -> dict[str, Any]:
-    """Corpus for the History page: games (via the ticker), timing, and
-    vocabulary. Settled rows already render on the page itself; the
-    assistant only routes to them."""
+    """Corpus for History, including its settled current-season record."""
 
+    headline = (
+        headline_with_season_record(history.headline, history)
+        if history.headline is not None
+        else None
+    )
     return build_knowledge(
         page="history.html",
         season=history.ticker_chrome.season,
@@ -1209,6 +1258,7 @@ def build_knowledge_for_history(history: HistoryPageContent) -> dict[str, Any]:
         generated_at_text=history.generated_at_text,
         model_id=None,
         method_label=history.ticker_chrome.model_method_label,
+        season_record_text=_season_record_body(headline),
         games=history.ticker_chrome.games,
         best_pick_game_id=history.ticker_chrome.best_pick_game_id,
         best_pick_note=None,
@@ -1469,6 +1519,29 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
             )
     parsed = _parse(question, knowledge)
     tokens = parsed.tokens
+    season_words = {"season", "year", str(knowledge.get("provenance", {}).get("season"))}
+    if (
+        not parsed.teams
+        and tokens & season_words
+        and not tokens & {"blocked", "archive", "historically"}
+        and tokens & (_RECORD_WORDS | {"doing", "right", "won", "wins", "losses"})
+    ):
+        resolved = _entry_answer(knowledge, "season_record")
+        if resolved is not None:
+            return AssistantAnswer(
+                topic=resolved.topic,
+                text=resolved.text,
+                anchors=(*resolved.anchors, "model.html"),
+            )
+    # "what is the home-side push" / "why does the model lean home on big
+    # spreads" -- the served home-side correction (2026-09-08). Ahead of the
+    # home/away split so a push question with a side word still lands here.
+    if ("home" in tokens and tokens & {"push", "adjustment", "correction", "lean", "leans"}) or (
+        {"forecast", "season"} <= tokens and tokens & _CHANGE_WORDS and not parsed.teams
+    ):
+        resolved = _entry_answer(knowledge, "weak_spots_home_push")
+        if resolved is not None:
+            return resolved
     # "how does the model do with home underdogs" -- the home/away split of
     # the weak-spots table. Needs a model/spread/record word alongside
     # "home" + a side word so "which home dogs are we taking" still lists.
@@ -2252,6 +2325,21 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
     function entry(id) {
       var found = entryById(corpus, id);
       return found ? asAnswer(found.id, found.body, [found.anchor]) : null;
+    }
+    var seasonWords = ["season", "year", String((corpus.provenance || {}).season)];
+    if (!parsed.teams.length && hasAny(toks, seasonWords) &&
+        !hasAny(toks, ["blocked", "archive", "historically"]) &&
+        hasAny(toks, INTENT.record.concat(["doing", "right", "won", "wins", "losses"]))) {
+      var seasonRecord = entry("season_record");
+      if (seasonRecord) return asAnswer(seasonRecord.topic, seasonRecord.text,
+        seasonRecord.anchors.concat(["model.html"]));
+    }
+    if ((toks.indexOf("home") !== -1 &&
+         hasAny(toks, ["push", "adjustment", "correction", "lean", "leans"])) ||
+        (toks.indexOf("forecast") !== -1 && toks.indexOf("season") !== -1 &&
+         hasAny(toks, INTENT.change) && !parsed.teams.length)) {
+      var homePush = entry("weak_spots_home_push");
+      if (homePush) return homePush;
     }
     if (toks.indexOf("home") !== -1 &&
         (hasAny(toks, INTENT.dog) || hasAny(toks, INTENT.favorite)) &&

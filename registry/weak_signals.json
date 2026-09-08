@@ -18829,6 +18829,370 @@
       "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneS\\composition.json",
       "standard_error": null
     },
+    "mod18_home_side_location_v1_s3_2020_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 0.4545,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.4354,
+        2.2831
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.587,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_2021_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": -0.4237,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -3.8298,
+        2.9536
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.364,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_2022_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 1.6129,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.8097,
+        4.4177
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.8567,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_2023_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 2.6316,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.3637,
+        5.364
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.9557,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_2024_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 0.7519,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.7435,
+        2.2222
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.7804,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_2025_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": -0.3745,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.9084,
+        1.1494
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.2433,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_all_vs_raw": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 0.5988,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.2676,
+        1.5082
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.8959,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_all_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 0.7984,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.1989,
+        1.8133
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.9335,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": 0.5155
+    },
+    "mod18_home_side_location_v1_s3_brier_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 0.0007247,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        4.81e-05,
+        0.0014421
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.9823,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_bucket_0_3_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 1.9928,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.1802,
+        4.2301
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.9587,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_bucket_3p5_6p5_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 0.1812,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.3487,
+        1.7452
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.5493,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 552,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_log_loss_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 0.0015552,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0001412,
+        0.0030618
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.9847,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": null
+    },
+    "mod18_home_side_location_v1_s3_through_card_vs_s2": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Post-hoc restriction on the mined 2020-2025 archive S2 was selected on; no admissible closing ground.",
+      "closing_ground": null,
+      "description": "Lane E S3: home-side push served only at spreads of seven points or more, versus the comparator named in the cell; positive favours S3.",
+      "effect": 0.3327,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.5996,
+        1.2873
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-08: Codex lane E read-only measurement, coordinator re-ran the standalone read and computed the through-card read; 20,000 week-blocked draws, seed 20260817, within-week correlation zero; predeclared restriction, mined archive disclosed.",
+      "plain_summary": "Apply the home-side push only on spreads of seven points or more; leave smaller spreads alone.",
+      "probability_positive": 0.7355,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/opener_evaluation/20260908T110201Z/per_game.parquet",
+      "standard_error": 0.4827
+    },
     "mod18_home_side_mapping_v1_T1_2020_2021": {
       "category": "modeling",
       "classification": "unresolved_below_power",

@@ -79,11 +79,12 @@ READ_ONLY_EXCEPTIONS: dict[int, str] = {
     # first recorded them; the destinations themselves are unchanged.
     # 2026-09-07: re-synced again (LEAD-61 half-line jobs shifted them 52
     # lines, this note two more); tests/test_experiment_registry.py pins these against the scanner.
-    1193: "STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
-    1195: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
-    1222: "HEARTBEAT_PATH == REPO / 'data' / 'scheduler_heartbeat.json'",
-    1235: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
-    1319: "LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+    # 2026-09-08: re-synced twice (noon-lock schedule change).
+    1201: "STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1203: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1230: "HEARTBEAT_PATH == REPO / 'data' / 'scheduler_heartbeat.json'",
+    1243: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1327: "LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
 }
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
@@ -237,7 +238,9 @@ SCHEDULE: tuple[Job, ...] = (
         Job(
             f"lineups_{day}",
             day,
-            "12:00",
+            # Tuesday: after the lock chain (opener 12:05, lock 12:20, about
+            # 35 minutes with the evaluation) so two weekly-runs never overlap.
+            "14:30" if day == "tue" else "12:00",
             180,
             LINEUP_CAPTURE,
             True,
@@ -252,12 +255,16 @@ SCHEDULE: tuple[Job, ...] = (
     Job(
         "odds_tue_open",
         "tue",
-        "09:00",
+        "12:05",
         180,
         _ps("odds_capture.ps1"),
         True,
-        "Tuesday opener: the grade the pool settles on. Wide grace -- the "
-        "opener moves slowly and a late capture is still an opener.",
+        "Tuesday opener: the grade the pool settles on. The pool's spreads lock "
+        "at 12:00 ET (owner, 2026-09-08: 'Spreads lock: Tue 12:00 PM'), so this "
+        "is the first capture of the day and lands just after that lock -- it IS "
+        "the line the pool grades on. Nothing captures odds earlier on a Tuesday: "
+        "the week's opener is the EARLIEST Tuesday quote per book. Wide grace -- "
+        "the locked line does not move, so a late capture is still the opener.",
         season_guarded=False,
         dedupe_dir="data/market/raw",
         dedupe_minutes=90,
@@ -265,7 +272,7 @@ SCHEDULE: tuple[Job, ...] = (
     Job(
         "weekly_lock",
         "tue",
-        "09:15",
+        "12:20",
         120,
         [
             str(UV),
@@ -275,9 +282,10 @@ SCHEDULE: tuple[Job, ...] = (
             str(REPO / "scripts" / "scheduled_weekly_lock.py"),
         ],
         True,
-        "Lock-day paper forecast. Runs only for an actual scheduled game week, "
-        "after the Tuesday opener succeeds, and closes at 11:15 so the documented "
-        "15-minute budget finishes before the 11:30 publication target.",
+        "Lock-day paper forecast, formed on the line the pool locked at noon. "
+        "Runs only for an actual scheduled game week, after the 12:05 opener "
+        "succeeds, and closes at 14:20; picks are due at each game's own "
+        "kickoff (Sunday 4 PM ET cap), so a lock after noon costs nothing.",
         added_on="2026-09-02",
         requires=("odds_tue_open",),
     ),
@@ -413,7 +421,7 @@ SCHEDULE: tuple[Job, ...] = (
     Job(
         "odds_tue_open_halves",
         "tue",
-        "09:00",
+        "12:05",
         180,
         _cli("odds-ingest-halves"),
         True,

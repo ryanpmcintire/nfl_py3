@@ -458,3 +458,40 @@ def test_record_challenger_refuses_a_missing_feature_table(
         record_era_weighted_half_life_8_challenger_decisions(
             artifacts, data_root, now=datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
         )
+
+
+@pytest.mark.parametrize("mode", ["legacy", "metadata", "sidecar"])
+def test_era_refit_replays_served_card(tmp_path, monkeypatch, model_frame, mode):
+    import json
+
+    from _card_refit_test_kit import corrected_card
+
+    import nfl_ats.era_weighted_half_life_8_overlay as era
+    from nfl_ats.card_refit import load_card_refit
+
+    forecast = tmp_path / "forecast"
+    forecast.mkdir()
+    (forecast / "metadata.json").write_text("{}", encoding="utf-8")
+    model, card = corrected_card(forecast, _week_card(model_frame), mode)
+    metadata = json.loads((forecast / "metadata.json").read_text(encoding="utf-8"))
+    card_refit = load_card_refit(metadata, card, forecast)
+    monkeypatch.setattr(era, "fit_weighted_ridge_margin", lambda *a, **k: model)
+    # Both fits are the incumbent: any disagreement is plumbing drift.
+    result = apply_era_weighted_half_life_8_overlay(
+        card.iloc[::-1],
+        model_frame.assign(
+            spread_line=model_frame.game_id.map(card.set_index("game_id").spread_line).fillna(
+                model_frame.spread_line
+            )
+        ),
+        feature_profile=_FEATURE_PROFILE,
+        min_train_games=_MIN_TRAIN_GAMES,
+        card_refit=card_refit,
+    )
+    np.testing.assert_allclose(
+        result.overlaid_predictions.home_cover_probability,
+        card.iloc[::-1].home_cover_probability,
+        rtol=0,
+        atol=1e-12,
+    )
+    assert bool(card_refit.warnings) == (mode == "legacy")

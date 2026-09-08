@@ -102,7 +102,10 @@ def test_handoff_captures_git_model_publication_and_priorities(tmp_path: Path) -
     assert "Baseline commit: `abc123def456`" in text
     assert "Pending change set: 2 paths" in text
     assert "Model ID: `active123`" in text
-    assert "Raw-model baseline (opener-graded probability rule): **53.36%**" in text
+    assert (
+        "Served-policy baseline (opener-graded probability rule, home-side push applied): "
+        "**53.36%**"
+    ) in text
     assert "Promoted player-arrest policy component (opener-graded): **53.76%**" in text
     assert "**53.36%** on **1,503 games**" in text
     assert "probability_positive=0.8562" in text

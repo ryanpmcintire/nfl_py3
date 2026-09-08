@@ -16,7 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import scripts.capture_scheduler as capture_scheduler
 
-NOW = datetime.fromisoformat("2026-09-08T09:15:00-04:00")
+NOW = datetime.fromisoformat("2026-09-08T12:20:00-04:00")
 
 
 def schedule() -> pd.DataFrame:
@@ -150,7 +150,7 @@ def test_failed_opener_becomes_durable_missed_alarm_after_grace(
     start = capture_scheduler.occurrence(job, NOW)
     state = {"runs": {f"odds_tue_open@{start.date().isoformat()}": {"status": "FAIL(1)"}}}
 
-    capture_scheduler.sweep_missed(datetime.fromisoformat("2026-09-08T11:16:00-04:00"), state)
+    capture_scheduler.sweep_missed(datetime.fromisoformat("2026-09-08T14:21:00-04:00"), state)
 
     record = state["runs"][f"weekly_lock@{start.date().isoformat()}"]
     assert record["status"] == "MISSED"
@@ -160,10 +160,10 @@ def test_failed_opener_becomes_durable_missed_alarm_after_grace(
     )
 
 
-def test_real_job_has_no_backdate_flags_and_closes_by_1115() -> None:
+def test_real_job_has_no_backdate_flags_and_closes_by_1420() -> None:
     job = {job.name: job for job in capture_scheduler.SCHEDULE}["weekly_lock"]
 
-    assert (job.day, job.at, job.grace_minutes) == ("tue", "09:15", 120)
+    assert (job.day, job.at, job.grace_minutes) == ("tue", "12:20", 120)
     assert job.requires == ("odds_tue_open",)
     assert not job.catch_up
     assert "--season" not in job.command

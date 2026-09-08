@@ -50,14 +50,15 @@ outright — see `docs/prospective_evidence.md`.
 
 | Time (ET) | What happens |
 |---|---|
-| ~06:00–09:00 | The scheduled live odds captures land; Splash posts its lines. |
-| any time after | Run `weekly-run`. Budget **15 minutes**; it measured 4m21s. |
-| by 11:30 | Card published, Pages redeployed, picks entered. |
-| **12:00** | **Pool line locks.** Later picks still settle against this opener line. |
+| **12:00** | **Pool spreads lock** (owner, 2026-09-08: "Spreads lock: Tue 12:00 PM"). This is the line every pick settles against. |
+| 12:05 | `odds_tue_open` captures that locked line (the first odds capture of the day; nothing captures earlier on a Tuesday). |
+| 12:20 | `weekly_lock` runs `weekly-run --record-decisions` on it. Budget **15 minutes** for the card, ~35 with the evaluation; closes 14:20. |
+| ~13:00 | Card published, Pages redeployed. Picks are due at each game's own kickoff (Sunday 4 PM ET cap), not at noon. |
+| 14:30 | Tuesday's daily lineup refresh, after the lock chain. |
 
 The in-repo capture scheduler normally owns the real paper run: `weekly_lock`
-opens at 09:15 only after the 09:00 opener capture succeeds and stops being
-eligible at 11:15. `scripts/scheduled_weekly_lock.py` resolves season/week from
+opens at 12:20 only after the 12:05 opener capture succeeds and stops being
+eligible at 14:20. `scripts/scheduled_weekly_lock.py` resolves season/week from
 the hash-verified schedule (it exposes no backdate flags), no-ops only when the
 complete scheduled game set is already in the append-only paper ledger, and
 fails closed on a partial week. After `weekly-run --record-decisions` it runs
@@ -211,3 +212,16 @@ conditions. **Do not run step 7 if that check fails.**
   Once any game of the week has kicked off, that week gets no Best Pick at all
   and the flag stays False forever. Another reason to run on Tuesday, not
   Thursday.
+
+## The one-click refresh (2026-09-08)
+
+`scripts
+efresh_now.cmd` (double-click, or pin a shortcut) runs
+`scripts
+efresh_now.py`: a spread capture (skipped on a Tuesday before
+09:00 ET so it can never become the week's opener), the depth-chart and
+player-snapshot refresh with a forecast rebuild (about fifteen minutes), the
+served late-week rule against the frozen Tuesday line with changed picks
+labelled on the card, and the board. `refresh_now.cmd --dry` prints the
+commands and runs nothing. Each step reports in plain words and the window
+stays open at the end.

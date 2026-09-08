@@ -295,3 +295,20 @@ def test_real_registry_entry_fingerprint_is_internally_consistent() -> None:
     assert entry["status"] == "ACTIVE_PROSPECTIVE"
     assert entry["config_fingerprint"] == config_fingerprint(entry["model"])
     assert "nfl-ats publish-predictions --record-decisions" in entry["weekly_recording_command"]
+
+
+@pytest.mark.parametrize("mode", ["legacy", "metadata", "sidecar"])
+def test_refit_replays_served_card(tmp_path, monkeypatch, mode):
+    from _card_refit_test_kit import assert_stack_refit
+
+    assert_stack_refit(
+        tmp_path,
+        monkeypatch,
+        mode,
+        challenger_module,
+        _write_registry,
+        _write_active_model_and_card,
+        _patch_fit,
+        record_qb_revenge_deadline_drag_stack_challenger_decisions,
+        KICKOFF - pd.Timedelta(days=3),
+    )

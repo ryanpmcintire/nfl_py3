@@ -253,7 +253,7 @@ def test_player_arrests_tue_window_closes_before_the_tuesday_opener() -> None:
     schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
     arrests = schedule["player_arrests_tue"]
     opener = schedule["odds_tue_open"]
-    tuesday = datetime(2026, 9, 1, 12, 0, tzinfo=ET)
+    tuesday = datetime(2026, 9, 1, 15, 0, tzinfo=ET)
 
     arrests_close = capture_scheduler.occurrence(arrests, tuesday) + timedelta(
         minutes=arrests.grace_minutes
@@ -876,3 +876,36 @@ def test_pid_is_alive_is_false_for_an_exited_process_whose_handle_is_still_open(
         assert capture_scheduler.pid_is_alive(__import__("os").getpid()) is True
     finally:
         del child
+
+
+def test_tuesday_opener_is_captured_after_the_pool_locks_at_noon() -> None:
+    """Owner, 2026-09-08: "Spreads lock: Tue, Sep 8, 2026, 12:00 PM". The line
+    the pool grades on is fixed at noon, so the opener capture -- the earliest
+    Tuesday quote per book, which the card is formed on -- lands at 12:05, the
+    lock follows at 12:20, and no scheduled job captures odds earlier on a
+    Tuesday (an earlier capture would silently become the opener). Tuesday's
+    daily lineup refresh runs after the lock chain so two weekly-runs never
+    overlap."""
+    schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
+    opener = schedule["odds_tue_open"]
+    halves = schedule["odds_tue_open_halves"]
+    lock = schedule["weekly_lock"]
+    lineups = schedule["lineups_tue"]
+    tuesday = datetime(2026, 9, 8, 15, 0, tzinfo=ET)
+    pool_lock = datetime(2026, 9, 8, 12, 0, tzinfo=ET)
+
+    opener_start = capture_scheduler.occurrence(opener, tuesday)
+    lock_start = capture_scheduler.occurrence(lock, tuesday)
+    lineups_start = capture_scheduler.occurrence(lineups, tuesday)
+
+    assert opener_start == datetime(2026, 9, 8, 12, 5, tzinfo=ET)
+    assert opener_start > pool_lock
+    assert lock_start == datetime(2026, 9, 8, 12, 20, tzinfo=ET)
+    assert lock.requires == ("odds_tue_open",)
+    assert (halves.day, halves.at) == ("tue", "12:05")
+    assert lineups_start >= lock_start + timedelta(minutes=lock.grace_minutes)
+    assert "odds_tue_noon" not in schedule
+    # No Tuesday odds capture before the pool lock.
+    for job in capture_scheduler.SCHEDULE:
+        if job.day == "tue" and "odds" in job.name:
+            assert capture_scheduler.occurrence(job, tuesday) > pool_lock, job.name

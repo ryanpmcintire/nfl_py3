@@ -176,3 +176,151 @@ def test_missing_matching_file_does_not_fall_back(tmp_path: Path, monkeypatch) -
     assert content.load_model_weak_spots(tmp_path, {}) == WeakSpots()
     pd.DataFrame({"wrong_schema": [1]}).to_parquet(tmp_path / "per_game.parquet")
     assert content.load_model_weak_spots(tmp_path, {}) == WeakSpots()
+
+
+def _aligned_frame() -> pd.DataFrame:
+    """A per-game table the aligned opener evaluation writes (2026-09-08):
+    served columns beside their ``_raw`` twins and the per-game push."""
+    source = frame()
+    source["home_side_offset_at_open"] = [0.0, 0.8, 1.9, -0.2, 0.4, 0.0, 1.9, 0.0]
+    source["pick_home_at_open_probability_rule_raw"] = [
+        True,
+        False,  # the push flipped this 7.5-10 pick to the home side
+        False,
+        False,
+        False,
+        True,
+        False,  # and this 10.5+ pick
+        True,
+    ]
+    source["correct_at_open_probability_rule_raw"] = [1, 1, 1, 0, 1, 1, 1, 1]
+    return source
+
+
+def test_home_correction_reads_both_sides_and_this_weeks_push() -> None:
+    from nfl_ats.model_weak_spots import build_home_correction
+
+    assert build_home_correction(frame()) is None  # a pre-alignment record
+    correction = build_home_correction(
+        _aligned_frame(),
+        {"0-3": 0.03, "3.5-6.5": 0.38, "7": -0.17, "7.5-10": 0.78, "10.5+": 1.92},
+        {"0-3": 504, "3.5-6.5": 468, "7": 65, "7.5-10": 160, "10.5+": 113},
+    )
+    assert correction is not None
+    assert [r.spread for r in correction.rows] == ["0-3", "3.5-6.5", "7", "7.5-10", "10.5+"]
+    by_bucket = {r.spread: r for r in correction.rows}
+    row = by_bucket["7.5-10"]
+    assert row.this_week_points == pytest.approx(0.78)
+    assert row.learned_from_games == 160
+    assert row.archive_games == 2  # the -10 push never counts
+    assert row.picks_changed == 1
+    assert row.accuracy_with == 0.5
+    assert row.accuracy_without == 1.0
+    assert row.cells == ("7.5-10", "+0.78", "160", "2", "1", "50.0%", "100.0%")
+    assert by_bucket["10.5+"].picks_changed == 1
+    assert by_bucket["10.5+"].accuracy_with == 1.0
+    assert by_bucket["10.5+"].accuracy_without == 1.0
+    assert correction.archive_games == 7
+    assert correction.picks_changed == 2
+    assert correction.accuracy_with == pytest.approx(5 / 7)
+    assert correction.accuracy_without == pytest.approx(6 / 7)
+    assert correction.this_week_available is True
+    # Without a served sidecar the archive record still renders, push blank.
+    no_week = build_home_correction(_aligned_frame())
+    assert no_week is not None
+    assert no_week.rows[0].this_week_points is None
+    assert no_week.rows[0].cells[1] == "--"
+    assert no_week.this_week_available is False
+
+
+def test_model_panel_renders_the_home_side_push(tmp_path: Path) -> None:
+    from html import escape
+
+    from nfl_ats.model_weak_spots import (
+        HOME_CORRECTION_UNAVAILABLE,
+        build_home_correction,
+    )
+
+    model = _load_model_page_content(
+        tmp_path,
+        registry_root=tmp_path,
+        board=build_fixture_content(),
+        opener=OpenerEvaluationArtifacts({}, pd.DataFrame()),
+        active={},
+        generated_at=datetime(2026, 9, 8, tzinfo=UTC),
+    )
+    unavailable = render_model_page(model)
+    assert 'id="weak-spots-push-h"' in unavailable
+    assert escape(HOME_CORRECTION_UNAVAILABLE) in unavailable.split("<script")[0]
+    spots = replace(
+        build_weak_spots(_aligned_frame()),
+        home_correction=build_home_correction(_aligned_frame(), {"7.5-10": 0.78}, {"7.5-10": 160}),
+    )
+    rendered = render_model_page(replace(model, weak_spots=spots))
+    assert "The home-side push" in rendered
+    assert escape(HOME_CORRECTION_UNAVAILABLE) not in rendered
+    assert (
+        '<td data-label="Spread size">7.5-10</td>'
+        '<td data-label="This week&#x27;s push (points)">+0.78</td>'
+        '<td data-label="Learned from games">160</td>'
+        '<td data-label="Archive games">2</td>'
+        '<td data-label="Picks it changed">1</td>'
+        '<td data-label="Right with the push">50.0%</td>'
+        '<td data-label="Right without it">100.0%</td>'
+    ) in rendered
+    assert "changed 2 of 7 picks" in rendered
+    assert "right 71.4% with it and 85.7% without" in rendered
+    assert "the record with that push on" in rendered
+
+
+def test_loader_attaches_this_weeks_push_from_the_linked_forecast(
+    tmp_path: Path, monkeypatch
+) -> None:
+    from nfl_ats import board_site_content
+
+    evaluation = tmp_path / "opener_evaluation" / "run"
+    evaluation.mkdir(parents=True)
+    _aligned_frame().to_parquet(evaluation / "per_game.parquet")
+    forecast = tmp_path / "margin_predictions" / "week"
+    forecast.mkdir(parents=True)
+    from nfl_ats.home_side_location import HOME_SIDE_OFFSET_POLICY
+
+    def write_sidecar(policy: str) -> None:
+        (forecast / "home_side_offset.json").write_text(
+            json.dumps(
+                {
+                    "served": True,
+                    "fit": {
+                        "policy": policy,
+                        "offsets": {"10.5+": 1.92},
+                        "prior_games": {"10.5+": 113},
+                    },
+                    "games": [],
+                }
+            )
+        )
+
+    write_sidecar(HOME_SIDE_OFFSET_POLICY)
+    monkeypatch.setattr(
+        board_site_content,
+        "find_matching_opener_evaluation",
+        lambda _root, _active: ({}, evaluation),
+    )
+    active = {"weekly_forecast": {"artifact": "margin_predictions/week"}}
+    spots = load_model_weak_spots(tmp_path, active)
+    assert spots.home_correction is not None
+    assert spots.home_correction.this_week_available is True
+    by_bucket = {r.spread: r for r in spots.home_correction.rows}
+    assert by_bucket["10.5+"].this_week_points == pytest.approx(1.92)
+    assert by_bucket["10.5+"].learned_from_games == 113
+    assert by_bucket["0-3"].this_week_points is None
+    # A card built under an earlier version of the push is not "this week's push".
+    write_sidecar("home_side_offset_by_bucket_v1")
+    spots = load_model_weak_spots(tmp_path, active)
+    assert spots.home_correction is not None
+    assert spots.home_correction.this_week_available is False
+    # A card built without the push shows the archive record only.
+    (forecast / "home_side_offset.json").write_text(json.dumps({"served": False}))
+    spots = load_model_weak_spots(tmp_path, active)
+    assert spots.home_correction is not None
+    assert spots.home_correction.this_week_available is False

@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from the synchronized weak stack model, 2026-09-08 01:21 UTC.
+Published from the synchronized weak stack model, 2026-09-08 12:33 UTC.
 
-<!-- publication: model_id=a4c757efd2525da6 published_at_utc=2026-09-08T01:21:04.956803+00:00 -->
+<!-- publication: model_id=a4c757efd2525da6 published_at_utc=2026-09-08T12:33:07.112616+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -14,22 +14,22 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Decision score   |
 |:------------|:-----------|:-----------------|:-----------------|
-| Wed, Sep 09 | NE at SEA  | SEA -3.5         | 51.0%            |
-| Thu, Sep 10 | SF at LA   | SF +3.5          | 54.4%            |
+| Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.2%            |
+| Thu, Sep 10 | SF at LA   | SF +3.5          | 55.6%            |
 | Sun, Sep 13 | ARI at LAC | ARI +10.5        | 61.0%            |
-| Sun, Sep 13 | ATL at PIT | ATL +3.5         | 54.7%            |
-| Sun, Sep 13 | BAL at IND | IND +3.5         | 54.3%            |
-| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 54.3%            |
-| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 51.7%            |
+| Sun, Sep 13 | ATL at PIT | ATL +3.5         | 55.9%            |
+| Sun, Sep 13 | BAL at IND | IND +3.5         | 55.5%            |
+| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 54.2%            |
+| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 51.6%            |
 | Sun, Sep 13 | CLE at JAX | JAX -7.5         | 53.5%            |
-| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 50.3%            |
-| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 54.2%            |
-| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 54.8%            |
+| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 50.2%            |
+| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 54.1%            |
+| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 56.0%            |
 | Sun, Sep 13 | NO at DET  | DET -7           | 51.6%            |
-| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 51.5%            |
-| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 52.1%            |
-| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 62.1%            |
-| Mon, Sep 14 | DEN at KC  | KC -3            | 51.9%            |
+| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 51.6%            |
+| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 50.9%            |
+| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 63.3%            |
+| Mon, Sep 14 | DEN at KC  | KC -3            | 51.8%            |
 
 **Tiebreaker (last game, DEN at KC):** KC 24 - DEN 20, total 44 (market total 43.5) -- consistent with the KC -3 pick.
 

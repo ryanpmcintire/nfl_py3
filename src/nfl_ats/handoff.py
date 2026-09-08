@@ -203,12 +203,15 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
         and forecast_path.is_dir()
     )
     opener = matching_opener_evaluation(artifacts_root, active)
+    baseline_label = (
+        "- Served-policy baseline (opener-graded probability rule, home-side push applied): "
+    )
     opener_text = (
-        "- Raw-model baseline (opener-graded probability rule): **unavailable in local artifacts**"
+        f"{baseline_label}**unavailable in local artifacts**"
         if opener is None
         else (
-            "- Raw-model baseline (opener-graded probability rule): "
-            f"**{opener[1]['metrics']['opener_accuracy_probability_rule']:.2%}** on "
+            baseline_label
+            + f"**{opener[1]['metrics']['opener_accuracy_probability_rule']:.2%}** on "
             f"**{opener[1]['games']:,} games** "
             f"(`opener_evaluation/{opener[0].name}`)"
         )
@@ -310,7 +313,9 @@ def check_session_handoff(
         if opener is not None:
             opener_accuracy = opener[1]["metrics"]["opener_accuracy_probability_rule"]
             if f"**{opener_accuracy:.2%}**" not in text:
-                failures.append("opener-grade raw-model baseline is not reflected in the handoff")
+                failures.append(
+                    "opener-grade served-policy baseline is not reflected in the handoff"
+                )
 
     priorities = _roadmap_priorities(repo_root / "ROADMAP.md")
     missing_priorities = [priority for priority in priorities if priority not in text]

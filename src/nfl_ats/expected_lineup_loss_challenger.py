@@ -15,6 +15,7 @@ import pandas as pd
 
 from nfl_ats import margin, outcomes
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.card_refit import load_card_refit
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_SETS
 from nfl_ats.data import DataContractError
@@ -262,10 +263,8 @@ def record_expected_lineup_loss_challenger_decisions(
             methods=("market_residual",),
         )
         model = margin_models["market_residual"]
-        # probability_method="gaussian" matches nfl_ats.outcomes.score_outcome_week
-        # -- production's own weekly-forecast entry point -- so the candidate's
-        # probability is computed the same way the active card's own would be.
-        predicted = model.predict(target, probability_method="gaussian")
+        card_refit = load_card_refit(metadata, card, forecast)
+        predicted = card_refit.predict(model, target)
     candidate = pd.DataFrame(
         {
             "game_id": target["game_id"].astype(str).to_numpy(),
@@ -343,6 +342,7 @@ def record_expected_lineup_loss_challenger_decisions(
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
         "ledger_rows": int(ledger_rows),
         "picks_differing_from_active": picks_differing_from_active,
+        "warnings": list(card_refit.warnings),
     }
 
 

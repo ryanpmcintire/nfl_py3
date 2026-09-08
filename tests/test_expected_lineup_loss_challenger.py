@@ -488,3 +488,20 @@ def test_build_reads_only_visible_current_lineup(tmp_path, monkeypatch):
     monkeypatch.setattr(challenger_module, "attach_expected_lineup_loss_features", attach)
     got = challenger_module.build_stacked_features(card, tmp_path, TUESDAY, card)
     assert len(got) == 1
+
+
+@pytest.mark.parametrize("mode", ["legacy", "metadata", "sidecar"])
+def test_refit_replays_served_card(tmp_path, monkeypatch, mode):
+    from _card_refit_test_kit import assert_stack_refit
+
+    assert_stack_refit(
+        tmp_path,
+        monkeypatch,
+        mode,
+        challenger_module,
+        _write_registry,
+        _write_active_model_and_card,
+        _patch_fit,
+        record_expected_lineup_loss_challenger_decisions,
+        KICKOFF - pd.Timedelta(days=3),
+    )

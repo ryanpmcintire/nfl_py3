@@ -33,6 +33,7 @@ from nfl_ats.clv import (
     clv_summary,
     live_close_reference,
     load_paper_decisions,
+    opener_evaluation_home_side_offset_summary,
     opener_evaluation_metrics,
     opener_pick_evaluation,
     predict_close_for_week,
@@ -47,6 +48,7 @@ from nfl_ats.clv import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.drift import build_drift_report, write_drift_artifacts
+from nfl_ats.home_side_location import HOME_SIDE_OFFSET_SERVED
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
 from nfl_ats.odds_backfill import HISTORICAL_CAPTURE_KIND
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
@@ -402,11 +404,18 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         **active_model_config,
         "feature_table_sha256": feature_sha,
     }
+    without_offset = bool(getattr(args, "no_home_side_offset", False))
+    serve_offset = HOME_SIDE_OFFSET_SERVED and not without_offset
+    if without_offset and HOME_SIDE_OFFSET_SERVED and "model_id" in active_model_config:
+        # A raw-model comparison must not identify itself as the served policy.
+        active_model_config = dict(active_model_config)
+        active_model_config["comparison_baseline_model_id"] = active_model_config.pop("model_id")
     scored = opener_pick_evaluation(
         market_root,
         features,
         active_model_config=active_model_config,
         min_train_games=args.min_train_games,
+        home_side_offset=serve_offset,
     )
     metrics = opener_evaluation_metrics(scored)
     uncertainty = pd.concat(
@@ -466,6 +475,7 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         },
         "games": len(scored),
         "mean_absolute_open_to_close_move": float(scored["open_move"].abs().mean()),
+        "home_side_offset": opener_evaluation_home_side_offset_summary(scored, served=serve_offset),
         "metrics": metrics,
         "uncertainty": uncertainty.to_dict(orient="records"),
         "timing": {"total_seconds": perf_counter() - command_started},
@@ -704,6 +714,12 @@ def register_diagnostics(
         choices=RESIDUAL_SMOOTHING_METHODS,
         default=None,
         help="override the active model probability mapping for this evaluation only",
+    )
+    opener_evaluation_parser.add_argument(
+        "--no-home-side-offset",
+        action="store_true",
+        help="score the raw model without the served walk-forward home-side offset "
+        "(a comparison run; it never identifies itself as the active model)",
     )
     _add_bootstrap_args(opener_evaluation_parser, seed=20260817)
     opener_evaluation_parser.set_defaults(handler=_cmd_opener_evaluation)

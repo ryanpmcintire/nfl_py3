@@ -467,3 +467,20 @@ def test_future_forecast_refused(tmp_path, monkeypatch):
     with pytest.raises(DataContractError, match="future-dated"):
         record_deadline_drag_challenger_decisions(artifacts, tmp_path, now=TUESDAY)
     assert load_challenger_decisions(artifacts).empty
+
+
+@pytest.mark.parametrize("mode", ["legacy", "metadata", "sidecar"])
+def test_refit_replays_served_card(tmp_path, monkeypatch, mode):
+    from _card_refit_test_kit import assert_stack_refit
+
+    assert_stack_refit(
+        tmp_path,
+        monkeypatch,
+        mode,
+        challenger_module,
+        _write_registry,
+        _write_active_model_and_card,
+        _patch_fit,
+        record_deadline_drag_challenger_decisions,
+        KICKOFF - pd.Timedelta(days=3),
+    )

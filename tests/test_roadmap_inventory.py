@@ -66,8 +66,9 @@ def test_live_roadmap_has_unique_assignable_items() -> None:
     root = Path(__file__).resolve().parents[1]
     items = roadmap_inventory.parse_roadmap((root / "ROADMAP.md").read_text(encoding="utf-8"))
 
-    # 266 since 2026-09-07: MOD-18 (spread-size regime) was opened.
-    assert len(items) == 266
+    # 266 since 2026-09-07: MOD-18 (spread-size regime) was opened;
+    # 267 since 2026-09-08: OPS-05 (Tuesday-noon line capture, lock-time question).
+    assert len(items) == 267
     assert all(item.phase != "Unassigned" for item in items)
 
 

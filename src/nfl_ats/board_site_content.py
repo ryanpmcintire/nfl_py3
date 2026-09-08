@@ -36,7 +36,7 @@ from __future__ import annotations
 import html
 import re
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field, fields, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -75,7 +75,12 @@ from nfl_ats.model_ledger import (
     build_model_ledger,
     validate_ledger,
 )
-from nfl_ats.model_weak_spots import WeakSpots, build_weak_spots
+from nfl_ats.model_weak_spots import (
+    HomeCorrection,
+    WeakSpots,
+    build_home_correction,
+    build_weak_spots,
+)
 from nfl_ats.prospective_scoring import (
     CLOSE_GRADE,
     DECISION_GRADE,
@@ -534,6 +539,52 @@ class HistoryPageContent:
     season_grades: tuple[SeasonGradeRow, ...] = ()
     week_grades: tuple[HistoryWeekGrade, ...] = ()
     grade_caption: str = ""
+    headline: HeadlineStats | None = None
+
+
+@dataclass(frozen=True)
+class SeasonRecordHeadline(HeadlineStats):
+    """Shared headline with the current History record, assembled without new I/O."""
+
+    season_record_text: str = ""
+
+
+def headline_with_season_record(
+    headline: HeadlineStats, history: HistoryPageContent
+) -> SeasonRecordHeadline:
+    """Summarize History's decision-line rows; pushes never enter the win rate."""
+
+    season = history.ticker_chrome.season
+    rows = tuple(row for row in history.picks if row.season == season)
+    resolved = tuple(
+        row
+        for row in rows
+        if row.status == "push" or (row.status == "settled" and row.correct is not None)
+    )
+    if history.primary_error:
+        text = "This season's settled record is unavailable right now."
+    elif not resolved:
+        text = f"No picks have settled in {season} yet."
+    else:
+        wins = sum(row.status == "settled" and row.correct is True for row in resolved)
+        losses = sum(row.status == "settled" and row.correct is False for row in resolved)
+        pushes = sum(row.status == "push" for row in resolved)
+        weeks = {row.week for row in rows if row.week is not None}
+        complete = sum(all(row in resolved for row in rows if row.week == week) for week in weeks)
+        text = (
+            f"In {season}, the played card is {wins}-{losses}-{pushes} (wins-losses-pushes). "
+            f"{complete} {'week' if complete == 1 else 'weeks'} fully settled. "
+        )
+        if wins + losses:
+            text += f"The played card's rate is {wins / (wins + losses):.1%}, excluding pushes."
+        else:
+            text += "There is no win rate yet because every settled pick was a push."
+        if len(resolved) < len(rows):
+            text += " Unfinished picks are not counted."
+    return SeasonRecordHeadline(
+        **{item.name: getattr(headline, item.name) for item in fields(HeadlineStats)},
+        season_record_text=text,
+    )
 
 
 def _ledger_row_view(row: LedgerRow) -> ModelLedgerRowView:
@@ -660,9 +711,52 @@ def load_model_weak_spots(artifacts_root: Path, active: Mapping[str, Any]) -> We
     if match is None:
         return WeakSpots()
     try:
-        return build_weak_spots(pd.read_parquet(match[1] / "per_game.parquet"))
+        per_game = pd.read_parquet(match[1] / "per_game.parquet")
+        spots = build_weak_spots(per_game)
     except (OSError, ValueError, KeyError):
         return WeakSpots()
+    return replace(spots, home_correction=_load_home_correction(artifacts_root, active, per_game))
+
+
+def _load_home_correction(
+    artifacts_root: Path, active: Mapping[str, Any], per_game: pd.DataFrame
+) -> HomeCorrection | None:
+    """This week's served push (from the linked forecast's sidecar, when the
+    card was built with it) beside the push's record on the matching opener
+    evaluation. ``None`` when that evaluation predates the alignment."""
+
+    from nfl_ats.active_model import active_artifact_path
+    from nfl_ats.home_side_location import (
+        HOME_SIDE_OFFSET_POLICY,
+        load_forecast_home_side_offsets,
+    )
+
+    offsets: dict[str, float] | None = None
+    prior_games: dict[str, int] | None = None
+    try:
+        forecast_dir = active_artifact_path(artifacts_root, dict(active), "weekly_forecast")
+        sidecar = load_forecast_home_side_offsets(forecast_dir) if forecast_dir else None
+    except (OSError, ValueError):
+        sidecar = None
+    if sidecar and sidecar.get("served"):
+        fit = sidecar.get("fit")
+        # A card built under an earlier version of the push (a policy id that
+        # is not the served one) must not be shown as "this week's push" next
+        # to the served rule's archive record; the archive columns stand alone
+        # until the card is regenerated (Codex lane F, 2026-09-08).
+        if isinstance(fit, Mapping) and fit.get("policy") != HOME_SIDE_OFFSET_POLICY:
+            fit = None
+        if isinstance(fit, Mapping):
+            raw_offsets = fit.get("offsets")
+            raw_prior = fit.get("prior_games")
+            if isinstance(raw_offsets, Mapping):
+                offsets = {str(k): float(v) for k, v in raw_offsets.items()}
+            if isinstance(raw_prior, Mapping):
+                prior_games = {str(k): int(v) for k, v in raw_prior.items()}
+    try:
+        return build_home_correction(per_game, offsets, prior_games)
+    except (ValueError, KeyError, TypeError):
+        return None
 
 
 def _load_model_page_content(
@@ -1515,6 +1609,7 @@ def _load_history_page_content(
         season_grades=season_grades,
         week_grades=week_grades,
         grade_caption=HISTORY_GRADE_CAPTION if (season_grades or week_grades) else "",
+        headline=board.headline,
     )
 
 
@@ -1772,6 +1867,10 @@ def load_site_content(
         challengers, registry_root=registry_root, generated_at=generated, board=board
     )
 
+    headline = headline_with_season_record(board.headline, history)
+    board = replace(board, headline=headline)
+    model = replace(model, headline=headline)
+    history = replace(history, headline=headline)
     return SiteContent(board=board, model=model, history=history, findings=findings)
 
 

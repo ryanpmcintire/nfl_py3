@@ -120,7 +120,8 @@ import numpy.typing as npt
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.calibration import smoothed_home_cover_probability
+from nfl_ats.calibration import ResidualSmoothingMethod, smoothed_home_cover_probability
+from nfl_ats.card_refit import CardRefit, load_card_refit
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
@@ -337,6 +338,7 @@ def apply_era_weighted_half_life_8_overlay(
     feature_profile: MarginFeatureProfile = "weak_stack",
     min_train_games: int = 500,
     half_life: float = HALF_LIFE_SEASONS,
+    card_refit: CardRefit | None = None,
     enabled: bool = True,
 ) -> EraWeightedResult:
     """Refit the active recipe with half-life-8 season-decay sample weights.
@@ -413,10 +415,17 @@ def apply_era_weighted_half_life_8_overlay(
             ridge_alpha=ridge_alpha,
             model_name=regressor,
         )
-        uniform_predicted = uniform_model.predict(aligned)
+        uniform_predicted = (
+            card_refit.predict(uniform_model, aligned)
+            if card_refit is not None
+            else uniform_model.predict(aligned)
+        )
+        probability_method: ResidualSmoothingMethod = (
+            card_refit.probability_method if card_refit is not None else "gaussian"
+        )
         uniform_centers = uniform_predicted["predicted_margin"].to_numpy(dtype=float)
         uniform_check = smoothed_home_cover_probability(
-            uniform_model.residuals, uniform_centers, spread, method="gaussian"
+            uniform_model.residuals, uniform_centers, spread, method=probability_method
         )
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
         if not np.allclose(uniform_check, supplied, rtol=0.0, atol=1e-9):
@@ -438,10 +447,14 @@ def apply_era_weighted_half_life_8_overlay(
             ridge_alpha=ridge_alpha,
             model_name=regressor,
         )
-        weighted_predicted = weighted_model.predict(aligned)
+        weighted_predicted = (
+            card_refit.predict(weighted_model, aligned)
+            if card_refit is not None
+            else weighted_model.predict(aligned)
+        )
         weighted_centers = weighted_predicted["predicted_margin"].to_numpy(dtype=float)
         weighted_probability = smoothed_home_cover_probability(
-            weighted_model.residuals, weighted_centers, spread, method="gaussian"
+            weighted_model.residuals, weighted_centers, spread, method=probability_method
         )
         for game_id, probability in zip(group_ids, weighted_probability, strict=True):
             era_weighted_probability_by_game[game_id] = float(probability)
@@ -594,6 +607,7 @@ def record_era_weighted_half_life_8_challenger_decisions(
         raise ValueError(f"Feature table for the active model is not built yet: {feature_path}")
     features = pd.read_parquet(feature_path)
 
+    card_refit = load_card_refit(metadata, card, forecast)
     result = apply_era_weighted_half_life_8_overlay(
         card,
         features,
@@ -601,6 +615,7 @@ def record_era_weighted_half_life_8_challenger_decisions(
         ridge_alpha=float(observed_config.get("ridge_alpha", 10.0)),
         feature_profile=str(observed_config.get("feature_profile")),  # type: ignore[arg-type]
         min_train_games=int(observed_config.get("min_train_games", 500)),
+        card_refit=card_refit,
     )
     reweighted_card = result.overlaid_predictions
 
@@ -663,5 +678,6 @@ def record_era_weighted_half_life_8_challenger_decisions(
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
         "ledger_rows": int(ledger_rows),
         "flip_count": result.flip_count,
+        "warnings": list(card_refit.warnings),
         "flipped_game_ids": [flip.game_id for flip in result.flips],
     }

@@ -54,6 +54,14 @@ from sklearn.pipeline import Pipeline
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
+from nfl_ats.home_side_location import (
+    HOME_SIDE_OFFSET_POLICY,
+    HOME_SIDE_OFFSET_SERVED,
+    PRIOR_WEIGHT_GAMES,
+    TRAILING_SEASONS,
+    fit_home_side_offsets,
+    prior_rows_before,
+)
 from nfl_ats.io import atomic_parquet
 from nfl_ats.margin import (
     MarginFeatureProfile,
@@ -2028,6 +2036,7 @@ def opener_pick_evaluation(
     capture_kind: str = HISTORICAL_CAPTURE_KIND,
     active_model_config: dict[str, Any] | None = None,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
+    home_side_offset: bool | None = None,
 ) -> pd.DataFrame:
     """Per-game opener/close picks and settlements for the frozen active model.
 
@@ -2043,8 +2052,26 @@ def opener_pick_evaluation(
     The inherited approximation from :func:`active_model_residual_at_opener`
     applies: only ``spread_line`` is swapped to the opener; every other
     feature (including ``total_line``) is close-era. Declared, not fixed.
+
+    ``home_side_offset`` (MOD-18 lane S, served 2026-09-07; aligned here
+    2026-09-08, docs/home_side_offset_promotion.md) applies the SAME
+    walk-forward home-side offset the card serves: for each week the
+    per-spread-bucket offsets are fitted with :func:`fit_home_side_offsets`
+    on the RAW out-of-time points of the weeks already scored
+    (:func:`prior_rows_before`, five trailing seasons, whole target week
+    excluded) and added to the point through ``MarginModel.predict``'s
+    ``center_offset`` before the cover probability is formed. ``None`` follows
+    the served policy flag. The ``residual_at_open`` / ``residual_at_close``
+    columns stay the RAW model residual -- they are the archive stream the
+    served offsets are fitted from on lock day, so correcting them in place
+    would compound the correction -- while ``home_cover_probability_at_*``
+    and the ``*_probability_rule`` pick columns (what production plays, and
+    what the board headline composes) carry the served read, with ``_raw``
+    twins alongside. ``home_side_offset_at_open`` is the per-game shift
+    (all zero when the policy is off, in which case served equals raw).
     """
 
+    apply_offset = HOME_SIDE_OFFSET_SERVED if home_side_offset is None else bool(home_side_offset)
     config = active_model_config or dict(_ACTIVE_MODEL_FALLBACK_CONFIG)
     if config.get("calibration_method", "none") != "none":
         raise ValueError("Opener evaluation supports only uncalibrated margin probabilities")
@@ -2092,6 +2119,13 @@ def opener_pick_evaluation(
     completed = frame.loc[frame["result"].notna()].copy()
 
     scored_weeks: list[pd.DataFrame] = []
+    # The RAW out-of-time opener points of every week scored so far: exactly
+    # the archive stream ``fit_production_home_side_offsets`` reads on lock
+    # day, so the offsets applied to week W here are the ones the card would
+    # have served for week W.
+    stream_columns = ["game_id", "season", "week", "spread_line", "point_incumbent", "result"]
+    archive_stream = pd.DataFrame(columns=stream_columns)
+    probability_method = config.get("probability_method", "ecdf")
     for (season, week), group in paired.groupby(["season", "week"], sort=True):
         week_rows = frame.loc[frame["game_id"].isin(set(group["game_id"]))]
         if week_rows.empty:
@@ -2119,12 +2153,8 @@ def opener_pick_evaluation(
         scored = scoring[["game_id"]].copy()
         scored["season"] = int(str(season))
         scored["week"] = int(str(week))
-        predicted_at_open = model.predict(
-            at_open, probability_method=config.get("probability_method", "ecdf")
-        )
-        predicted_at_close = model.predict(
-            at_close, probability_method=config.get("probability_method", "ecdf")
-        )
+        predicted_at_open = model.predict(at_open, probability_method=probability_method)
+        predicted_at_close = model.predict(at_close, probability_method=probability_method)
         scored["residual_at_open"] = predicted_at_open["predicted_market_residual"].to_numpy()
         scored["residual_at_close"] = predicted_at_close["predicted_market_residual"].to_numpy()
         # Production (``pool.py``/``backtest.py``) grades picks with the
@@ -2138,13 +2168,65 @@ def opener_pick_evaluation(
         # the residual distribution is symmetric. Captured here purely as an
         # additional, non-destructive read; the sign-rule columns above are
         # unchanged (see docs/opener_evaluation.md, dated addendum).
-        scored["home_cover_probability_at_open"] = predicted_at_open[
+        scored["home_cover_probability_at_open_raw"] = predicted_at_open[
             "home_cover_probability"
         ].to_numpy()
-        scored["home_cover_probability_at_close"] = predicted_at_close[
+        scored["home_cover_probability_at_close_raw"] = predicted_at_close[
             "home_cover_probability"
         ].to_numpy()
+        # Served read: the walk-forward home-side offset by the OPENER's
+        # spread bucket, fitted on prior scored weeks only, applied at both
+        # lines exactly as the card (opener) and the late-week refresh (the
+        # frozen Tuesday line) apply the same per-game shift.
+        if apply_offset and not archive_stream.empty:
+            fitted = fit_home_side_offsets(
+                prior_rows_before(archive_stream, int(str(season)), int(str(week)))
+            )
+            offsets = fitted.offset_for(at_open["spread_line"]).fillna(0.0).to_numpy(dtype=float)
+        else:
+            offsets = np.zeros(len(at_open), dtype=float)
+        scored["home_side_offset_at_open"] = offsets
+        if apply_offset and np.any(offsets != 0.0):
+            served_at_open = model.predict(
+                at_open, probability_method=probability_method, center_offset=offsets
+            )
+            served_at_close = model.predict(
+                at_close, probability_method=probability_method, center_offset=offsets
+            )
+            scored["home_cover_probability_at_open"] = served_at_open[
+                "home_cover_probability"
+            ].to_numpy()
+            scored["home_cover_probability_at_close"] = served_at_close[
+                "home_cover_probability"
+            ].to_numpy()
+        else:
+            scored["home_cover_probability_at_open"] = scored["home_cover_probability_at_open_raw"]
+            scored["home_cover_probability_at_close"] = scored[
+                "home_cover_probability_at_close_raw"
+            ]
+        scored["residual_at_open_served"] = scored["residual_at_open"] + offsets
+        scored["residual_at_close_served"] = scored["residual_at_close"] + offsets
         scored_weeks.append(scored)
+        week_stream = pd.DataFrame(
+            {
+                "game_id": scoring["game_id"].astype(str).to_numpy(),
+                "season": int(str(season)),
+                "week": int(str(week)),
+                "spread_line": pd.to_numeric(
+                    scoring["tue_open_home_spread"], errors="coerce"
+                ).to_numpy(),
+                "point_incumbent": (
+                    pd.to_numeric(scoring["tue_open_home_spread"], errors="coerce").to_numpy()
+                    + scored["residual_at_open"].to_numpy()
+                ),
+                "result": pd.to_numeric(scoring["result"], errors="coerce").to_numpy(),
+            }
+        )
+        archive_stream = (
+            week_stream
+            if archive_stream.empty
+            else pd.concat([archive_stream, week_stream], ignore_index=True)
+        )
     if not scored_weeks:
         raise ValueError("No paired week had at least min_train_games completed training rows")
     residuals = pd.concat(scored_weeks, ignore_index=True)
@@ -2174,6 +2256,20 @@ def opener_pick_evaluation(
     )
     result["correct_at_close_probability_rule"] = pick_correct(
         result["pick_home_at_close_probability_rule"], result["margin_vs_close"]
+    )
+    # The uncorrected model's own probability-rule picks, kept beside the
+    # served read so the offset's contribution stays visible in every artifact.
+    result["pick_home_at_open_probability_rule_raw"] = result[
+        "home_cover_probability_at_open_raw"
+    ].ge(0.5)
+    result["pick_home_at_close_probability_rule_raw"] = result[
+        "home_cover_probability_at_close_raw"
+    ].ge(0.5)
+    result["correct_at_open_probability_rule_raw"] = pick_correct(
+        result["pick_home_at_open_probability_rule_raw"], result["margin_vs_open"]
+    )
+    result["correct_at_close_probability_rule_raw"] = pick_correct(
+        result["pick_home_at_close_probability_rule_raw"], result["margin_vs_close"]
     )
     oracle_correct = pick_correct(result["open_move"].gt(0.0), result["margin_vs_open"])
     result["oracle_correct_at_open"] = oracle_correct.where(result["open_move"].ne(0.0))
@@ -2244,4 +2340,61 @@ def opener_evaluation_metrics(scored: pd.DataFrame) -> dict[str, float]:
                 ),
             }
         )
+    raw_columns = {
+        "correct_at_open_probability_rule_raw",
+        "correct_at_close_probability_rule_raw",
+    }
+    if raw_columns.issubset(scored.columns):
+        at_open_raw = pd.to_numeric(
+            scored["correct_at_open_probability_rule_raw"], errors="coerce"
+        ).dropna()
+        at_close_raw = pd.to_numeric(
+            scored["correct_at_close_probability_rule_raw"], errors="coerce"
+        ).dropna()
+        metrics.update(
+            {
+                "opener_accuracy_probability_rule_raw": (
+                    float(at_open_raw.mean()) if len(at_open_raw) else float("nan")
+                ),
+                "close_accuracy_probability_rule_raw": (
+                    float(at_close_raw.mean()) if len(at_close_raw) else float("nan")
+                ),
+            }
+        )
     return metrics
+
+
+def opener_evaluation_home_side_offset_summary(
+    scored: pd.DataFrame, *, served: bool
+) -> dict[str, Any]:
+    """Provenance block for an opener evaluation's ``metadata.json``.
+
+    Records which policy the served columns follow, how many scored games
+    carried a non-zero shift, and how many opener picks the shift changed
+    against the raw read, so a reader of the artifact can tell the served and
+    the raw headline apart without recomputing either.
+    """
+
+    offsets = pd.to_numeric(
+        scored.get("home_side_offset_at_open", pd.Series(dtype=float)), errors="coerce"
+    ).fillna(0.0)
+    changed = 0
+    if {"pick_home_at_open_probability_rule", "pick_home_at_open_probability_rule_raw"}.issubset(
+        scored.columns
+    ):
+        changed = int(
+            scored["pick_home_at_open_probability_rule"]
+            .astype(bool)
+            .ne(scored["pick_home_at_open_probability_rule_raw"].astype(bool))
+            .sum()
+        )
+    return {
+        "policy": HOME_SIDE_OFFSET_POLICY,
+        "served": bool(served),
+        "prior_weight_games": PRIOR_WEIGHT_GAMES,
+        "trailing_seasons": TRAILING_SEASONS,
+        "fitted_from": "walk-forward on this evaluation's own raw out-of-time opener points",
+        "games_with_nonzero_offset": int(offsets.ne(0.0).sum()),
+        "mean_absolute_offset": float(offsets.abs().mean()) if len(offsets) else 0.0,
+        "opener_picks_changed_by_offset": changed,
+    }

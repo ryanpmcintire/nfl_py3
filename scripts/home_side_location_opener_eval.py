@@ -310,7 +310,9 @@ def attach_s2(stream: pd.DataFrame, archive: pd.DataFrame) -> pd.DataFrame:
     frame["point_incumbent"] = np.where(
         opener, frame.spread_line + frame.residual_archive, frame.point_base
     )
-    offsets = walk_forward_home_offsets(frame.set_index("game_id")).reset_index()
+    # S2 is the ALL-bucket research definition; the served policy (S3, 2026-09-08)
+    # zeroes the small buckets, so the replay asks for every bucket explicitly.
+    offsets = walk_forward_home_offsets(frame.set_index("game_id"), all_buckets=True).reset_index()
     frame = frame.merge(offsets, on="game_id", validate="one_to_one")
     frame["p_S2"] = gaussian_median_cover_probability(
         frame.spread_line, frame.point_corrected, frame.gm_median_base, frame.gm_std_base
@@ -610,7 +612,8 @@ def week1(out: Path, archive: pd.DataFrame, stream: pd.DataFrame) -> None:
         trailing.assign(
             spread_line=trailing.tue_open_home_spread,
             point_incumbent=trailing.tue_open_home_spread + trailing.residual_at_open,
-        )
+        ),
+        all_buckets=True,
     )
     forecast_point = week.spread_line_forecast + week.predicted_market_residual
     week["p_S2_from_forecast"] = gaussian_median_cover_probability(

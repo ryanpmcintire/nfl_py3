@@ -1905,6 +1905,9 @@ def render_model_page(content: ModelPageContent) -> str:
     from nfl_ats.model_weak_spots import (
         BUCKET_NOTE,
         EXPLANATION,
+        HOME_CORRECTION_LEAD,
+        HOME_CORRECTION_NOTE,
+        HOME_CORRECTION_UNAVAILABLE,
         HOME_SPLIT_LEAD,
         HOME_SPLIT_NOTE,
         UNAVAILABLE,
@@ -1984,6 +1987,45 @@ def render_model_page(content: ModelPageContent) -> str:
         )
     else:
         weak_spots_html += f'<p class="policy-note">{escape(UNAVAILABLE)}</p>'
+    # The served home-side push (2026-09-08): this week's values by spread
+    # size from the card's own sidecar, beside what the same rule did on the
+    # opener archive. Both reads are shown, never just the flattering one.
+    correction = content.weak_spots.home_correction
+    weak_spots_html += (
+        '<div class="section-head ledger-group-head">'
+        '<h3 id="weak-spots-push-h">The home-side push</h3>'
+        f'<span class="sub">{len(correction.rows) if correction else 0} rows</span></div>'
+    )
+    if correction is not None and correction.rows:
+        push_headers = (
+            "Spread size",
+            "This week's push (points)",
+            "Learned from games",
+            "Archive games",
+            "Picks it changed",
+            "Right with the push",
+            "Right without it",
+        )
+        weak_spots_html += (
+            f'<p class="policy-note">{escape(HOME_CORRECTION_LEAD)}</p>'
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            + "".join(f"<th>{escape(header)}</th>" for header in push_headers)
+            + "</tr></thead><tbody>"
+            + "".join(
+                '<tr class="game">'
+                + "".join(
+                    f'<td data-label="{escape(header)}">{escape(cell)}</td>'
+                    for header, cell in zip(push_headers, row.cells, strict=True)
+                )
+                + "</tr>"
+                for row in correction.rows
+            )
+            + "</tbody></table></div>"
+            + '<p class="policy-note">'
+            + f"{escape(correction.summary)} {escape(HOME_CORRECTION_NOTE)}</p>"
+        )
+    else:
+        weak_spots_html += f'<p class="policy-note">{escape(HOME_CORRECTION_UNAVAILABLE)}</p>'
     weak_spots_html += "</section>"
 
     season_chart_html = _season_dot_chart_svg(content)

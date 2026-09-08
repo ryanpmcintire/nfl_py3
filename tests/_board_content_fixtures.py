@@ -379,6 +379,48 @@ def build_fixture_content() -> BoardContent:
     )
 
 
+def build_fixture_history_content(*, settled: bool = False):
+    """Current-season results, a pending week, and a prior-season distractor."""
+    from nfl_ats.board_site_content import HistoryPageContent, HistoryPickRow
+
+    board = build_fixture_content()
+    base = HistoryPickRow(
+        game_id="2026_01_NE_SEA",
+        season=2026,
+        week=1,
+        away_team="NE",
+        home_team="SEA",
+        pick_side="home",
+        decision_home_spread=3.5,
+        confidence=None,
+        model_id=None,
+        best_pick=False,
+        status="settled" if settled else "pending",
+        correct=True if settled else None,
+        score_text=None,
+    )
+    picks = (
+        base,
+        replace(base, game_id="2026_01_SF_LA"),
+        replace(base, game_id="2026_01_ARI_LAC", correct=False if settled else None),
+        replace(
+            base, game_id="2026_01_ATL_PIT", status="push" if settled else "pending", correct=None
+        ),
+        replace(base, game_id="2026_02_NE_SEA", week=2, status="pending", correct=None),
+        replace(base, game_id="2025_01_NE_SEA", season=2025, status="settled", correct=False),
+    )
+    return HistoryPageContent(
+        generated_at_text=board.generated_at_text,
+        picks=picks,
+        primary_available=True,
+        primary_error=None,
+        challenger_assessments=(),
+        ticker_chrome=board.ticker_chrome,
+        link_preview=board.link_preview,
+        headline=board.headline,
+    )
+
+
 def build_fixture_content_with_degraded_states() -> BoardContent:
     """Same fixture, but with EVERY game's dive in its designed
     "unavailable" state -- exercises the degraded paths the renderer must

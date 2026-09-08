@@ -263,3 +263,27 @@ challenger that now tracks the retired ECDF read forward.
 [Measured: fixture tests in `tests/test_findings_headline.py`, `tests/test_board_content.py` and `tests/test_clv.py`] The site headline and findings hero now consume the same validated baseline loader as README/handoff state, including the interval from that run. Gaussian and ECDF fixtures match the production mapper; changing future outcomes leaves earlier probabilities unchanged. [Read: `src/nfl_ats/clv.py:opener_pick_evaluation`] This is a weekly-refit opener reconstruction: the spread is swapped to the archived opener, while other archived market features retain their values; it is not a reconstruction of every Tuesday information snapshot.
 
 [Measured: temporary `publish-board` attempt on 2026-09-05] The new opener baseline passes identity matching; publication remains blocked until a newly scored overlay composition is installed for this run. The previous composition is correctly rejected. Site deployment is not claimed here.
+
+## Addendum, 2026-09-08: the instrument grades the SERVED point (home-side offset applied)
+
+Since the 2026-09-07 promotion (docs/home_side_offset_promotion.md) the card
+adds a walk-forward home-side offset by spread bucket to the ridge point.
+This evaluation now applies the identical offset week by week -- fitted only
+on the raw out-of-time points of weeks already scored -- so the headline and
+the card share one policy. What changed in the artifact:
+
+- `residual_at_open` / `residual_at_close`: UNCHANGED, still the raw model
+  residual (the stream the served offsets are fitted from on lock day).
+- `home_cover_probability_at_open` / `_at_close`, `pick_home_at_*_probability_rule`,
+  `correct_at_*_probability_rule`: now the SERVED read; `*_raw` twins hold
+  the pre-offset read, and `home_side_offset_at_open` the per-game shift.
+- The sign-rule columns (`pick_home_at_open`, `correct_at_open`,
+  `opener_accuracy`) stay on the raw residual: the predeclared historical
+  record is untouched.
+- `metrics` gains `opener_accuracy_probability_rule_raw` and
+  `close_accuracy_probability_rule_raw`; `metadata.json` gains a
+  `home_side_offset` block. `--no-home-side-offset` runs the raw comparison.
+
+First measured run: `artifacts/opener_evaluation/20260908T110201Z` --
+served 53.76% vs raw 53.96% at the opener (1,537 games); through the played
+card 55.56% (see the promotion doc's closing section for the full table).

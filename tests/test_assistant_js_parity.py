@@ -34,11 +34,18 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from _board_content_fixtures import build_fixture_content, build_fixture_weak_spots
-from test_assistant_golden import GOLDEN_QUESTIONS, _write_lineups_artifact
+from _board_content_fixtures import build_fixture_content, build_fixture_history_content
+from test_assistant_golden import (
+    GOLDEN_QUESTIONS,
+    HOME_PUSH_QUESTIONS,
+    SEASON_RECORD_QUESTIONS,
+    _build_home_push_weak_spots,
+    _write_lineups_artifact,
+)
 
 from nfl_ats import board_assistant
 from nfl_ats.board_assistant import answer, assistant_script, build_knowledge_for_board
+from nfl_ats.board_site_content import headline_with_season_record
 from nfl_ats.lineup_view import load_lineups
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -110,7 +117,7 @@ def parity_knowledge(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]
         for dive in content.dives
     )
     content = replace(content, dives=dives)
-    knowledge = build_knowledge_for_board(content, weak_spots=build_fixture_weak_spots())
+    knowledge = build_knowledge_for_board(content, weak_spots=_build_home_push_weak_spots())
     teams = [
         {"code": code, "aliases": list(aliases)}
         for code, aliases in sorted(board_assistant._TEAM_SYNONYMS.items())
@@ -129,7 +136,7 @@ def all_questions() -> tuple[str, ...]:
     for case in GOLDEN_QUESTIONS:
         if case.question not in seen:
             seen.append(case.question)
-    for question in LINEUP_REGRESSION_QUESTIONS:
+    for question in (*LINEUP_REGRESSION_QUESTIONS, *HOME_PUSH_QUESTIONS, *SEASON_RECORD_QUESTIONS):
         if question not in seen:
             seen.append(question)
     return tuple(seen)
@@ -139,11 +146,22 @@ def test_harness_file_is_present() -> None:
     assert _HARNESS_PATH.exists(), f"missing Node parity harness: {_HARNESS_PATH}"
 
 
+@pytest.mark.parametrize("settled", [False, True])
 def test_python_and_js_engines_agree_on_every_question(
     tmp_path: Path,
     parity_knowledge: dict[str, Any],
     all_questions: tuple[str, ...],
+    settled: bool,
 ) -> None:
+    history = build_fixture_history_content(settled=settled)
+    board = build_fixture_content()
+    board = replace(board, headline=headline_with_season_record(board.headline, history))
+    season_knowledge = build_knowledge_for_board(board, weak_spots=_build_home_push_weak_spots())
+    season_entry = next(row for row in season_knowledge["entries"] if row["id"] == "season_record")
+    parity_knowledge = dict(parity_knowledge)
+    parity_knowledge["entries"] = [
+        season_entry if row["id"] == "season_record" else row for row in parity_knowledge["entries"]
+    ]
     node = _node_executable()
     if node is None:
         pytest.skip("node is not installed on this machine; JS parity check skipped")

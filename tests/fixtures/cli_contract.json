@@ -5211,6 +5211,21 @@
               "metavar": null
             },
             {
+              "action_class": "_StoreTrueAction",
+              "option_strings": [
+                "--no-home-side-offset"
+              ],
+              "dest": "no_home_side_offset",
+              "nargs": 0,
+              "const": true,
+              "default": false,
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "score the raw model without the served walk-forward home-side offset (a comparison run; it never identifies itself as the active model)",
+              "metavar": null
+            },
+            {
               "action_class": "_StoreAction",
               "option_strings": [
                 "--bootstrap-samples"

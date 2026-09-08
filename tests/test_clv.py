@@ -32,6 +32,7 @@ from nfl_ats.clv import (
     load_decision_quotes,
     load_paper_decisions,
     load_snapshot_manifest_index,
+    opener_evaluation_home_side_offset_summary,
     opener_evaluation_metrics,
     opener_pick_evaluation,
     pick_correct,
@@ -1776,6 +1777,178 @@ def test_opener_manifest_mapping_matches_production_and_ignores_future_outcomes(
     after = rescored.set_index("game_id").loc[first["game_id"]]
     assert after["home_cover_probability_at_open"] == first["home_cover_probability_at_open"]
     assert after["home_cover_probability_at_close"] == first["home_cover_probability_at_close"]
+
+
+def test_opener_pick_evaluation_serves_the_walk_forward_home_side_offset(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]], tmp_path: Path
+) -> None:
+    """The headline evaluation applies the SAME offset the card serves.
+
+    docs/home_side_offset_promotion.md "Known gap": after the 2026-09-07
+    promotion the board headline was the raw model's evaluation. Now the
+    served columns carry the walk-forward offset, the raw residual stays the
+    archive stream production fits from (so ``fit_production_home_side_offsets``
+    reproduces this evaluation's own per-week offsets from its artifact), and
+    the raw twins remain beside them.
+    """
+
+    from nfl_ats.home_side_location import (
+        archive_prior_stream,
+        fit_home_side_offsets,
+        prior_rows_before,
+    )
+
+    _, _, config = pilot_setup
+    # Two big-spread games (both in the 7.5-10 bucket, where the push is
+    # served) in different weeks, so the second week's shift is fitted from
+    # the first week's raw point.
+    features = _pilot_features_frame()
+    root = tmp_path / "raw_big_spreads"
+    for idx, (tue_open, close) in zip((55, 65), ((8.0, 8.5), (-8.5, -9.0)), strict=True):
+        _store_tue_and_close_for_game(
+            root, features, features.iloc[idx], tue_open=tue_open, close=close
+        )
+    scored = opener_pick_evaluation(
+        root, features, active_model_config=config, min_train_games=50, home_side_offset=True
+    )
+    by_game = scored.set_index("game_id")
+    first, second = by_game.loc["G055"], by_game.loc["G065"]
+    assert int(first["week"]) < int(second["week"])
+    # The first scored week has no prior archive rows: zero shift, served == raw.
+    assert first["home_side_offset_at_open"] == 0.0
+    assert first["home_cover_probability_at_open"] == first["home_cover_probability_at_open_raw"]
+    # The second week's shift is exactly what production would fit from the
+    # artifact's RAW opener points strictly before that week.
+    stream = archive_prior_stream(scored)
+    expected = fit_home_side_offsets(
+        prior_rows_before(stream, int(second["season"]), int(second["week"]))
+    ).offset_for(pd.Series([second["tue_open_home_spread"]]))
+    assert expected.iloc[0] != 0.0
+    assert second["home_side_offset_at_open"] == pytest.approx(expected.iloc[0])
+    assert second["residual_at_open_served"] == pytest.approx(
+        second["residual_at_open"] + second["home_side_offset_at_open"]
+    )
+    assert second["residual_at_close_served"] == pytest.approx(
+        second["residual_at_close"] + second["home_side_offset_at_open"]
+    )
+    # A shift toward the home side can only move the served probability that way.
+    direction = np.sign(second["home_side_offset_at_open"])
+    served_minus_raw = (
+        second["home_cover_probability_at_open"] - second["home_cover_probability_at_open_raw"]
+    )
+    assert direction * served_minus_raw >= 0.0
+    # The raw read is kept as its own pick record, and the metrics carry both.
+    assert bool(second["pick_home_at_open_probability_rule_raw"]) == bool(
+        second["home_cover_probability_at_open_raw"] >= 0.5
+    )
+    metrics = opener_evaluation_metrics(scored)
+    assert "opener_accuracy_probability_rule_raw" in metrics
+    assert "close_accuracy_probability_rule_raw" in metrics
+
+    summary = opener_evaluation_home_side_offset_summary(scored, served=True)
+    assert summary["served"] is True
+    assert summary["policy"] == "home_side_offset_big_spreads_v2"
+    assert summary["games_with_nonzero_offset"] == 1
+    assert summary["opener_picks_changed_by_offset"] in (0, 1)
+
+
+def test_opener_pick_evaluation_without_the_offset_is_the_raw_model(
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+) -> None:
+    root, features, config = pilot_setup
+    scored = opener_pick_evaluation(
+        root, features, active_model_config=config, min_train_games=50, home_side_offset=False
+    )
+    assert scored["home_side_offset_at_open"].eq(0.0).all()
+    for column in (
+        "home_cover_probability_at_open",
+        "home_cover_probability_at_close",
+        "pick_home_at_open_probability_rule",
+        "correct_at_open_probability_rule",
+    ):
+        pd.testing.assert_series_equal(scored[column], scored[f"{column}_raw"], check_names=False)
+    pd.testing.assert_series_equal(
+        scored["residual_at_open_served"], scored["residual_at_open"], check_names=False
+    )
+    metrics = opener_evaluation_metrics(scored)
+    assert metrics["opener_accuracy_probability_rule"] == pytest.approx(
+        metrics["opener_accuracy_probability_rule_raw"]
+    )
+    summary = opener_evaluation_home_side_offset_summary(scored, served=False)
+    assert summary["served"] is False
+    assert summary["games_with_nonzero_offset"] == 0
+    assert summary["opener_picks_changed_by_offset"] == 0
+
+
+def test_opener_command_flag_scores_the_raw_model_as_a_comparison(
+    capsys: pytest.CaptureFixture[str],
+    pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``--no-home-side-offset`` records served=False and never claims the
+    active model id, exactly like a probability-method comparison run."""
+
+    from types import SimpleNamespace
+
+    from nfl_ats.cli import build_parser
+    from nfl_ats.cli_commands import clv as commands
+    from nfl_ats.provenance import sha256_file
+
+    parsed = build_parser().parse_args(
+        ["opener-evaluation", "--features", "x.parquet", "--no-home-side-offset"]
+    )
+    assert parsed.no_home_side_offset is True
+    assert build_parser().parse_args(["opener-evaluation"]).no_home_side_offset is False
+
+    root, features, config = pilot_setup
+    path = tmp_path / "features.parquet"
+    features.to_parquet(path)
+    artifacts = tmp_path / "artifacts"
+    manifest = {
+        "version": 1,
+        "status": "SYNCHRONIZED",
+        "method": "market_residual",
+        **config,
+        "model_id": "fixture-served",
+        "probability_method": "gaussian_median",
+        "calibration_method": "none",
+        "feature_table_sha256": sha256_file(path),
+    }
+    atomic_json(manifest, artifacts / "active_ats_model.json")
+    monkeypatch.setattr(commands, "_artifacts_root", lambda: artifacts)
+    monkeypatch.setattr(commands, "_registry_root", lambda: tmp_path / "registry")
+    original = commands.opener_pick_evaluation
+    monkeypatch.setattr(
+        commands,
+        "opener_pick_evaluation",
+        lambda _root, frame, **kwargs: original(root, frame, **kwargs),
+    )
+    base = {
+        "features": path,
+        "feature_profile": None,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "min_train_games": 50,
+        "bootstrap_samples": 10,
+        "bootstrap_seed": 3,
+    }
+    monkeypatch.setattr(commands, "run_id", lambda: "served-run")
+    commands._cmd_opener_evaluation(SimpleNamespace(**base, no_home_side_offset=False))
+    capsys.readouterr()
+    served = json.loads((artifacts / "opener_evaluation/served-run/metadata.json").read_text())
+    assert served["active_model_id"] == "fixture-served"
+    assert served["home_side_offset"]["served"] is True
+    assert served["home_side_offset"]["policy"] == "home_side_offset_big_spreads_v2"
+    assert "opener_accuracy_probability_rule_raw" in served["metrics"]
+
+    monkeypatch.setattr(commands, "run_id", lambda: "raw-run")
+    commands._cmd_opener_evaluation(SimpleNamespace(**base, no_home_side_offset=True))
+    capsys.readouterr()
+    raw = json.loads((artifacts / "opener_evaluation/raw-run/metadata.json").read_text())
+    assert raw["home_side_offset"]["served"] is False
+    assert raw["active_model_id"] is None
+    assert raw["active_model_config"]["comparison_baseline_model_id"] == "fixture-served"
 
 
 def test_opener_command_records_actual_active_identity(

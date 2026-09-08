@@ -20,12 +20,18 @@ from __future__ import annotations
 
 import json
 import re
-from dataclasses import replace
+from dataclasses import asdict, replace
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 
+import pandas as pd
 import pytest
-from _board_content_fixtures import build_fixture_content, build_fixture_weak_spots
+from _board_content_fixtures import (
+    build_fixture_content,
+    build_fixture_history_content,
+    build_fixture_weak_spots,
+)
 
 from nfl_ats import board_assistant, board_terminal
 from nfl_ats.assistant_eval import (
@@ -38,7 +44,39 @@ from nfl_ats.assistant_eval import (
     render_report,
 )
 from nfl_ats.board_assistant import build_knowledge_for_board
+from nfl_ats.board_site_content import _load_model_page_content, headline_with_season_record
 from nfl_ats.lineup_view import STABLE_LINEUP_PATH, load_lineups
+from nfl_ats.model_weak_spots import HomeCorrection, HomeCorrectionRow, WeakSpots
+from nfl_ats.public_board import OpenerEvaluationArtifacts
+
+SEASON_RECORD_QUESTIONS = (
+    "how is the model doing this season",
+    "what is the record this year",
+    "how many picks has it got right in 2026",
+)
+
+
+HOME_PUSH_QUESTIONS = (
+    "what is the home-side push",
+    "why does the model lean home on big spreads",
+    "what changed in the forecast this season",
+    "how big is the home adjustment",
+)
+
+
+def _build_home_push_weak_spots() -> WeakSpots:
+    return replace(
+        build_fixture_weak_spots(),
+        home_correction=HomeCorrection(
+            rows=(HomeCorrectionRow("7.5-10", 0.75, 40, 20, 3, 0.6, 0.55),),
+            archive_games=20,
+            picks_changed=3,
+            accuracy_with=0.6,
+            accuracy_without=0.55,
+            this_week_available=True,
+        ),
+    )
+
 
 _QUESTIONS_PATH = (
     Path(__file__).resolve().parent / "fixtures" / "assistant_golden" / "questions.json"
@@ -207,7 +245,7 @@ def golden_environment(tmp_path_factory: pytest.TempPathFactory) -> SimpleNamesp
         for dive in content.dives
     )
     content = replace(content, dives=dives)
-    knowledge = build_knowledge_for_board(content, weak_spots=build_fixture_weak_spots())
+    knowledge = build_knowledge_for_board(content, weak_spots=_build_home_push_weak_spots())
     stale_knowledge = make_stale_lineup_knowledge(knowledge)
     return SimpleNamespace(
         content=content,
@@ -260,6 +298,7 @@ def test_golden_fixture_covers_every_router_intent() -> None:
         "slots",
         "best_pick",
         "record",
+        "season_record",
         "policy",
         "findings",
         "timing",
@@ -273,6 +312,7 @@ def test_golden_fixture_covers_every_router_intent() -> None:
         "lineup:backup_qb",
         "weak_spots",
         "weak_spots_home_split",
+        "weak_spots_home_push",
     }
     expected = deflect_ids | reachable_glossary_ids | fixed_topics
     observed = {case.expected_intent for case in GOLDEN_QUESTIONS}
@@ -420,3 +460,160 @@ def test_picks_table_renders_unconditionally_outside_any_noscript_gate(
     html = board_terminal.render(golden_environment.content)
     without_noscript = re.sub(r"<noscript>.*?</noscript>", "", html, flags=re.S)
     assert '<table class="board' in without_noscript
+
+
+@pytest.mark.parametrize("question", HOME_PUSH_QUESTIONS)
+@pytest.mark.parametrize("state", ("available", "archive_only", "empty", "missing"))
+def test_home_push_matches_model_reader_text(tmp_path: Path, question: str, state: str) -> None:
+    weak_spots = _build_home_push_weak_spots()
+    correction = weak_spots.home_correction
+    assert correction is not None
+    if state == "archive_only":
+        correction = replace(
+            correction,
+            rows=tuple(
+                replace(row, this_week_points=None, learned_from_games=None)
+                for row in correction.rows
+            ),
+            this_week_available=False,
+        )
+    elif state == "empty":
+        correction = HomeCorrection()
+    elif state == "missing":
+        correction = None
+    weak_spots = replace(weak_spots, home_correction=correction)
+    model = _load_model_page_content(
+        tmp_path,
+        registry_root=tmp_path,
+        board=build_fixture_content(),
+        opener=OpenerEvaluationArtifacts({}, pd.DataFrame()),
+        active={},
+        generated_at=datetime(2026, 9, 8, tzinfo=UTC),
+    )
+    model = replace(model, weak_spots=weak_spots)
+    knowledge = board_assistant.build_knowledge_for_model(model)
+    response = board_assistant.answer(question, knowledge)
+    assert response.topic == "weak_spots_home_push"
+    assert response.text == model.weak_spots.home_correction_text
+    assert response.anchors == ("model.html#weak-spots-push-h",)
+    expected = correction or HomeCorrection()
+    assert knowledge["weak_spots_home_push"] == [asdict(row) for row in expected.rows]
+    assert knowledge["weak_spots_home_push_summary"] == {
+        key: value for key, value in asdict(expected).items() if key != "rows"
+    }
+    for forbidden in ("raw model", "p+", "policy"):
+        assert forbidden not in response.text.lower()
+
+
+@pytest.mark.parametrize("settled", [False, True])
+@pytest.mark.parametrize("question", SEASON_RECORD_QUESTIONS)
+def test_season_record_across_pages(tmp_path: Path, settled: bool, question: str) -> None:
+    history = build_fixture_history_content(settled=settled)
+    board = build_fixture_content()
+    headline = headline_with_season_record(board.headline, history)
+    board = replace(board, headline=headline)
+    model = _load_model_page_content(
+        tmp_path,
+        registry_root=tmp_path,
+        board=board,
+        opener=OpenerEvaluationArtifacts({}, pd.DataFrame()),
+        active={},
+        generated_at=datetime(2026, 9, 8, tzinfo=UTC),
+    )
+    answers = [
+        board_assistant.answer(question, knowledge)
+        for knowledge in (
+            build_knowledge_for_board(board, weak_spots=WeakSpots()),
+            board_assistant.build_knowledge_for_model(model),
+            board_assistant.build_knowledge_for_history(history),
+        )
+    ]
+    assert answers[0] == answers[1] == answers[2]
+    response = answers[0]
+    assert response.topic == "season_record"
+    assert response.anchors == ("history.html#history-picks-h", "model.html")
+    live = (
+        "In 2026, the played card is 2-1-1 (wins-losses-pushes). "
+        "1 week fully settled. The played card's rate is 66.7%, excluding pushes. "
+        "Unfinished picks are not counted."
+        if settled
+        else "No picks have settled in 2026 yet."
+    )
+    assert response.text == (
+        f"{live} The played card's archive score is 55.4%; that is the archive, not this season."
+    )
+    for forbidden in ("raw model", "p+", "policy", "nan", "none"):
+        assert forbidden not in response.text.lower()
+
+
+@pytest.mark.parametrize("state", ["pushes", "partial", "unavailable", "no_archive"])
+def test_season_record_edge_cases(state: str) -> None:
+    history = build_fixture_history_content(settled=True)
+    if state == "pushes":
+        history = replace(
+            history,
+            picks=tuple(replace(row, status="push", correct=None) for row in history.picks),
+        )
+    elif state == "partial":
+        history = replace(
+            history,
+            picks=(
+                *history.picks,
+                replace(history.picks[-2], game_id="pending"),
+            ),
+        )
+        history = replace(
+            history,
+            picks=tuple(
+                replace(row, status="settled", correct=True)
+                if row.game_id == "2026_02_NE_SEA"
+                else row
+                for row in history.picks
+            ),
+        )
+    elif state == "unavailable":
+        history = replace(history, primary_error="private path and error details")
+    else:
+        history = replace(
+            history, headline=replace(build_fixture_content().headline, played_card_pct=None)
+        )
+    response = board_assistant.answer(
+        SEASON_RECORD_QUESTIONS[0], board_assistant.build_knowledge_for_history(history)
+    )
+    if state == "pushes":
+        assert "0-0-5 (wins-losses-pushes)" in response.text
+        assert "2 weeks fully settled" in response.text
+        assert "no win rate yet" in response.text
+    elif state == "partial":
+        assert "3-1-1 (wins-losses-pushes)" in response.text
+        assert "1 week fully settled" in response.text
+        assert "75.0%" in response.text
+    elif state == "unavailable":
+        assert "record is unavailable" in response.text
+        assert "private" not in response.text
+        assert "No picks have settled" not in response.text
+    else:
+        assert "archive score is unavailable" in response.text
+        assert "55.4%" not in response.text
+
+
+def test_home_push_golden_questions_are_pinned() -> None:
+    cases = {
+        case.question: case
+        for case in GOLDEN_QUESTIONS
+        if case.expected_intent == "weak_spots_home_push"
+    }
+    assert set(cases) == {
+        "what is the home-side push",
+        "why does the model lean home on big spreads",
+    }
+
+
+@pytest.mark.parametrize("question", HOME_PUSH_QUESTIONS)
+def test_home_push_board_answer_uses_shared_reader_text(
+    golden_environment: SimpleNamespace, question: str
+) -> None:
+    response = board_assistant.answer(question, golden_environment.knowledge)
+    assert response.topic == "weak_spots_home_push"
+    assert response.text == _build_home_push_weak_spots().home_correction_text
+    assert response.anchors == ("model.html#weak-spots-push-h",)

@@ -10,10 +10,13 @@ as a pick flip (AGENTS.md, "No unexplained threshold flips").
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Literal
 
 import pandas as pd
+
+from nfl_ats.spread_regime import BUCKETS, spread_bucket
 
 # Disjoint half-point ranges: 7.5 belongs to the fourth bucket.
 SPREAD_BUCKETS: tuple[tuple[str, float, float, Literal["both", "right", "neither"]], ...] = (
@@ -28,8 +31,8 @@ EXPLANATION = (
     "The model's confidence barely changes with the size of the spread. "
     "Final margins pile up on 3, 7, 10 and 14 points, so lines just inside those "
     "numbers can expose weaknesses that an average confidence hides. "
-    "Since the 2026 opener the forecast includes an adjustment for how home teams do on big "
-    "spreads, learned from past seasons; the numbers here are the record before that change."
+    "Since the 2026 opener the forecast includes a small push toward the home team, sized by "
+    "the spread and learned from past seasons; the numbers here are the record with that push on."
 )
 BUCKET_NOTE = (
     "Opening lines, ties excluded; 7.5-point lines belong to 7.5-10, not 7-7.5. "
@@ -39,7 +42,21 @@ HOME_SPLIT_LEAD = (
     "The same games, split by whether the home team opened as the favourite or the underdog, "
     "with how often the home team covered against what the model expected. "
     "The honest takeaway: home underdogs on big spreads have covered more often than the "
-    "model expected; a fix is being built, and until then this is the record."
+    "model expected; the home-side push below is the fix, and this is the record with it on."
+)
+HOME_CORRECTION_LEAD = (
+    "Since the 2026 opener the model's point forecast gets a small push toward the home team on "
+    "spreads of seven points or more, sized by the spread and learned only from games already "
+    "played; smaller spreads are left alone, because that is where the error was found. The push "
+    "for this week's card is listed by spread size, with what the same rule did on the 2020-2025 "
+    "archive."
+)
+HOME_CORRECTION_NOTE = (
+    "A positive push moves the forecast toward the home team. On its own the push is a small "
+    "change either way; the published score above is measured with it on."
+)
+HOME_CORRECTION_UNAVAILABLE = (
+    "The home-side push has not been measured on the current model's opener record yet."
 )
 HOME_SPLIT_NOTE = "Level-odds lines have no home favourite or underdog and are left out."
 HOME_FAVOURITE = "Home favourite"
@@ -48,6 +65,10 @@ HOME_UNDERDOG = "Home underdog"
 
 def percent(value: float | None) -> str:
     return "--" if value is None else f"{value:.1%}"
+
+
+def points(value: float | None) -> str:
+    return "--" if value is None else f"{value:+.2f}"
 
 
 @dataclass(frozen=True)
@@ -125,9 +146,83 @@ class HomeSplitRow:
 
 
 @dataclass(frozen=True)
+class HomeCorrectionRow:
+    """One spread bucket of the served home-side push (MOD-18 lane S)."""
+
+    spread: str
+    this_week_points: float | None
+    learned_from_games: int | None
+    archive_games: int
+    picks_changed: int
+    accuracy_with: float | None
+    accuracy_without: float | None
+
+    @property
+    def cells(self) -> tuple[str, ...]:
+        return (
+            self.spread,
+            points(self.this_week_points),
+            "--" if self.learned_from_games is None else str(self.learned_from_games),
+            str(self.archive_games),
+            str(self.picks_changed),
+            percent(self.accuracy_with),
+            percent(self.accuracy_without),
+        )
+
+    @property
+    def plain(self) -> str:
+        push = (
+            "no push this week"
+            if self.this_week_points is None
+            else f"this week's push {points(self.this_week_points)} points"
+        )
+        return (
+            f"On {self.spread} point spreads: {push}; on the archive it changed "
+            f"{self.picks_changed} of {self.archive_games} picks, right "
+            f"{percent(self.accuracy_with)} with the push and "
+            f"{percent(self.accuracy_without)} without."
+        )
+
+
+@dataclass(frozen=True)
+class HomeCorrection:
+    """The served home-side push: this week's values plus its archive record."""
+
+    rows: tuple[HomeCorrectionRow, ...] = ()
+    archive_games: int = 0
+    picks_changed: int = 0
+    accuracy_with: float | None = None
+    accuracy_without: float | None = None
+    this_week_available: bool = False
+
+    @property
+    def summary(self) -> str:
+        return (
+            f"Across the archive the push changed {self.picks_changed} of {self.archive_games} "
+            f"picks; the model alone was right {percent(self.accuracy_with)} with it and "
+            f"{percent(self.accuracy_without)} without."
+        )
+
+
+@dataclass(frozen=True)
 class WeakSpots:
     rows: tuple[WeakSpotRow, ...] = ()
     home_split: tuple[HomeSplitRow, ...] = ()
+    home_correction: HomeCorrection | None = None
+
+    @property
+    def home_correction_text(self) -> str:
+        if self.home_correction is None or not self.home_correction.rows:
+            return HOME_CORRECTION_UNAVAILABLE
+        return (
+            HOME_CORRECTION_LEAD
+            + " "
+            + self.home_correction.summary
+            + " "
+            + " ".join(row.plain for row in self.home_correction.rows)
+            + " "
+            + HOME_CORRECTION_NOTE
+        )
 
     @property
     def home_split_text(self) -> str:
@@ -224,3 +319,66 @@ def build_weak_spots(frame: pd.DataFrame) -> WeakSpots:
             )
         )
     return WeakSpots(tuple(rows), tuple(home_split))
+
+
+def build_home_correction(
+    frame: pd.DataFrame,
+    this_week_offsets: Mapping[str, float] | None = None,
+    this_week_prior_games: Mapping[str, int] | None = None,
+) -> HomeCorrection | None:
+    """The served home-side push by spread bucket, from a saved opener evaluation.
+
+    ``frame`` is the evaluation's ``per_game`` table; it must carry the raw
+    twins the aligned evaluation writes (``*_probability_rule_raw``) or the
+    push was not measured on this record and ``None`` is returned. This
+    week's values come from the served forecast's sidecar when given.
+    """
+
+    needed = {
+        "tue_open_home_spread",
+        "margin_vs_open",
+        "home_side_offset_at_open",
+        "pick_home_at_open_probability_rule",
+        "pick_home_at_open_probability_rule_raw",
+        "correct_at_open_probability_rule",
+        "correct_at_open_probability_rule_raw",
+    }
+    if not needed.issubset(frame.columns):
+        return None
+    spread = pd.to_numeric(frame["tue_open_home_spread"], errors="coerce")
+    margin = pd.to_numeric(frame["margin_vs_open"], errors="coerce")
+    with_push = pd.to_numeric(frame["correct_at_open_probability_rule"], errors="coerce")
+    without = pd.to_numeric(frame["correct_at_open_probability_rule_raw"], errors="coerce")
+    changed = frame["pick_home_at_open_probability_rule"].astype(bool) != frame[
+        "pick_home_at_open_probability_rule_raw"
+    ].astype(bool)
+    valid = spread.notna() & margin.notna() & margin.ne(0) & with_push.isin([0, 1])
+    buckets = spread_bucket(spread.fillna(0.0)).where(spread.notna())
+
+    def mean(series: pd.Series, mask: pd.Series) -> float | None:
+        return float(series[mask].mean()) if mask.any() else None
+
+    rows = []
+    for bucket in BUCKETS:
+        mask = valid & buckets.eq(bucket)
+        offset = None if this_week_offsets is None else this_week_offsets.get(bucket)
+        prior = None if this_week_prior_games is None else this_week_prior_games.get(bucket)
+        rows.append(
+            HomeCorrectionRow(
+                spread=bucket,
+                this_week_points=None if offset is None else float(offset),
+                learned_from_games=None if prior is None else int(prior),
+                archive_games=int(mask.sum()),
+                picks_changed=int((changed & mask).sum()),
+                accuracy_with=mean(with_push, mask),
+                accuracy_without=mean(without, mask),
+            )
+        )
+    return HomeCorrection(
+        rows=tuple(rows),
+        archive_games=int(valid.sum()),
+        picks_changed=int((changed & valid).sum()),
+        accuracy_with=mean(with_push, valid),
+        accuracy_without=mean(without, valid),
+        this_week_available=this_week_offsets is not None,
+    )

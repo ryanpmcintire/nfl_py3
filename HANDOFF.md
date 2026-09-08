@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T01:35:07.667364+00:00`
+Refreshed at: `2026-09-08T12:35:01.679420+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-08T01:35:07.667364+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ae5b84b27428` — MOD-18 lanes L+Q (hybrid mapping, home-dog location: incumbent kept, diagnosis on the Model page); PER-07 league pull + look; LEAD-28/29 screened; LEAD-59 capture fix [skip ci]
-- Pending change set: 49 paths
+- Baseline commit: `38bf0828a0f1` — MOD-18: serve the home-side point offset (lane S S2, +0.33 pts P+ 0.695 through the card); lanes T/U recorded; Week 1 NE -> SEA [skip ci]
+- Pending change set: 53 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `A  docs/best_pick_composed_rule.md`
+  - `M  docs/capture_scheduling.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
-  - `A  docs/home_side_location.md`
-  - `A  docs/home_side_mapping.md`
-  - `A  docs/home_side_offset_promotion.md`
+  - `M  docs/home_side_offset_promotion.md`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260908T011655Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T011739Z.json`
-  - `M  registry/rotation_registry.json`
+  - `M  docs/opener_evaluation.md`
+  - `M  docs/ops_runbook.md`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T120939Z.json`
+  - `A  registry/experiments/opener-evaluation/20260908T110201Z.json`
+  - `A  registry/experiments/opener-evaluation/20260908T115957Z.json`
   - `M  registry/weak_signals.json`
-  - `A  scripts/best_pick_composed_rule_eval.py`
-  - `A  scripts/home_side_location_opener_eval.py`
-  - `A  scripts/home_side_mapping_opener_eval.py`
-  - ...and 29 more
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/home_side_location_opener_eval.py`
+  - `A  scripts/refresh_now.cmd`
+  - `A  scripts/refresh_now.py`
+  - ...and 33 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -53,16 +53,16 @@ trust live Git output after checkout.
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
 - Model ID: `a4c757efd2525da6`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Raw-model baseline (opener-graded probability rule): **53.96%** on **1,537 games** (`opener_evaluation/20260907T152026Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260908T115957Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-08T01:17:39.490959+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-08T12:09:39.008770+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-08T01:21:04.956803+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `a4c757efd2525da6`, published `2026-09-08T12:33:07.112616+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

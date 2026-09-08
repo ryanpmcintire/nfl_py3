@@ -88,7 +88,13 @@ def test_offsets_are_shrunken_bucket_means_of_prior_home_error() -> None:
     # 10.5+ errors: +6, +8, -3 -> sum 11 over (3 + 100).
     assert fitted.prior_games["10.5+"] == 3
     assert fitted.offsets["10.5+"] == pytest.approx(11.0 / (3 + PRIOR_WEIGHT_GAMES))
-    assert fitted.offsets["0-3"] == pytest.approx(-3.0 / (1 + PRIOR_WEIGHT_GAMES))
+    # S3 (2026-09-08): the small buckets are fitted (counts kept) but never served.
+    assert fitted.prior_games["0-3"] == 1
+    assert fitted.offsets["0-3"] == 0.0
+    # The research replay of S2 keeps every bucket.
+    replay = fit_home_side_offsets(prior, all_buckets=True)
+    assert replay.offsets["0-3"] == pytest.approx(-3.0 / (1 + PRIOR_WEIGHT_GAMES))
+    assert replay.offsets["10.5+"] == fitted.offsets["10.5+"]
     assert fitted.offsets["7.5-10"] == 0.0 and fitted.prior_games["7.5-10"] == 0
     applied = fitted.offset_for(pd.Series([-13.0, 9.0, np.nan]))
     assert applied.iloc[0] == pytest.approx(fitted.offsets["10.5+"])

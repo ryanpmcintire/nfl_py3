@@ -143,3 +143,109 @@ their OWN arm without a reproduce-the-card check (`expected_lineup_loss`,
 keep recording, paired against a base that differs from the served card by
 the offset. And `opener-evaluation` still scores the raw model, so the board
 headline is the pre-correction archive number.
+
+### Known gap closed: the headline evaluation applies the served offset (measured, 2026-09-08 07:02 ET)
+
+`opener-evaluation` now applies the SAME walk-forward home-side offset the
+card serves (`nfl_ats.clv.opener_pick_evaluation`, `home_side_offset`
+argument, default = `HOME_SIDE_OFFSET_SERVED`): for each scored week the
+per-bucket offsets are fitted with `fit_home_side_offsets` on the RAW
+out-of-time opener points of the weeks already scored (`prior_rows_before`,
+five trailing seasons, whole target week excluded) and added to the point
+through `MarginModel.predict(center_offset=...)`. `residual_at_open` /
+`residual_at_close` stay the RAW residual -- they are the archive stream
+`fit_production_home_side_offsets` reads on lock day, so correcting them in
+place would compound the correction (pinned:
+`test_opener_pick_evaluation_serves_the_walk_forward_home_side_offset`
+reproduces the evaluation's own per-week offset from its artifact with
+production's fit function). The served read lives in
+`home_cover_probability_at_*` and the `*_probability_rule` pick columns
+(what the board composes); `*_raw` twins and `home_side_offset_at_open`
+sit beside them; `metadata.json` carries a `home_side_offset` block
+(policy, served, games with a non-zero shift, picks changed).
+`--no-home-side-offset` scores the raw model as a comparison run that never
+identifies itself as the active model.
+
+Measured on the active model `a4c757efd2525da6`, feature table
+`457aafb7...`, artifact `artifacts/opener_evaluation/20260908T110201Z`
+(1,537 games 2020-2025; 1,521 carried a non-zero shift, mean |shift| 0.47
+points, 109 opener picks changed):
+
+| read | with the offset | without (raw twin) |
+|---|---|---|
+| model alone, opener, probability rule | **53.76%** | 53.96% |
+| model alone, close, probability rule | 53.15% | 53.09% |
+| through the played three-member card (`overlay_subset_composition/20260908T110450468551Z`) | **55.56%** (+1.80 pts over its own baseline, week-blocked [-0.20, +3.81], P+ 0.958, 269 flips) | 55.22% on the previous evaluation (+1.26, [-0.79, +3.34], P+ 0.880) |
+
+Per season, model alone with / without: 2020 51.8 / 51.8; 2021 54.7 / 53.8;
+2022 53.6 / 54.4; 2023 53.8 / 55.6; 2024 52.3 / 54.5; 2025 56.2 / 53.2.
+These are lane S's numbers reproduced by the production path (standalone
+-0.20 pts, +0.33 through the card); the board headline now reads 55.6% and
+the Model page carries "The home-side push" (this week's offsets by spread
+size beside the archive record, both reads shown). Every cell remains
+`unresolved_below_power`; the 2026 paired rows settle it.
+
+### Own-arm refit challengers aligned (2026-09-08, Codex lane B; measured 111 tests)
+
+`nfl_ats.card_refit.load_card_refit(metadata, card, forecast_dir)` replays the
+served correction for any recorder that refits the active recipe on top of the
+card: the per-game offsets come from the card's `metadata.json`
+(`center_offsets_from_metadata`), else its sidecar (`served_center_offsets`),
+never from a new fit, and the probability mapping is the card's recorded one.
+A pre-promotion card (no block, no sidecar) keeps the caller's historical
+mapping and the uncorrected centre, with the warning carried in the recorder
+result. Wired into `expected_lineup_loss_challenger`, `deadline_drag_challenger`,
+`qb_revenge_deadline_drag_stack_challenger` and
+`era_weighted_half_life_8_overlay` (its reproduction check no longer hard-codes
+the Gaussian read). Not wired, on purpose: `best_pick_nomination` (the alpha-2000
+nomination refit is a served decision of its own and stays as measured) and
+`pool-card-at-lines` (a standalone command with explicit configuration).
+Tests: `tests/_card_refit_test_kit.py` replays the served card in legacy /
+metadata / sidecar modes for each recorder.
+
+### S3 played: the push is served only on spreads of seven points or more (measured, 2026-09-08 08:20 ET)
+
+Predeclared by Codex lane E (read-only, gpt-6-astra low effort) before computing:
+S3 = S2 with the offset served ONLY in the "7", "7.5-10" and "10.5+" buckets
+(zero in "0-3" and "3.5-6.5"), everything else unchanged. Mechanism: the
+home-side location error was diagnosed on big spreads (lanes L/P/Q/S); the
+small buckets showed none, and S2's correction there ran negative through
+2023 and cost -1.99 pts (P+ 0.028). Disclosed plainly: a post-hoc restriction
+on the same mined 1,537-game archive S2 was selected on.
+
+Measured on `artifacts/opener_evaluation/20260908T110201Z` (1,503 non-push
+games 2020-2025, week-blocked bootstrap 20,000 draws, seed 20260817,
+within-week correlation zero; lane E's standalone read re-run by the
+coordinator, the through-card read computed by the coordinator with lane S's
+`composed_picks`/`comparison` helpers):
+
+| read | S3 | S2 | delta | 95% | P+ |
+|---|---|---|---|---|---|
+| model alone, opener | 54.56% (820/1503) | 53.76% | +0.80 pts | [-0.20, +1.81] | 0.934 |
+| model alone vs raw | 54.56% | 53.96% (raw) | +0.60 | [-0.27, +1.51] | 0.896 |
+| THROUGH the played three-member card | **55.89%** (840/1503) | 55.56% | **+0.33** | [-0.60, +1.29] | **0.736** |
+| Brier (improvement) | | | +0.00072 | [+0.00005, +0.00144] | 0.982 |
+| log loss (improvement) | | | +0.00156 | [+0.00014, +0.00306] | 0.985 |
+
+Per season through the card, S3 minus S2: 2020 +0.45, 2021 -0.42, 2022 +0.40,
+2023 +1.50, 2024 0.00, 2025 0.00 (S3 and S2 pick identically in the small
+buckets' flips there). Per bucket standalone: 0-3 +1.99 (P+ 0.959), 3.5-6.5
++0.18 (P+ 0.549), the big buckets identical to S2 by construction. Week 1:
+exactly one served side changes back, NE +3.5 at SEA (S2 had flipped it to
+SEA -3.5; S3 leaves the 3.5-6.5 bucket uncorrected, home cover 0.498).
+
+Decision (coordinator, EV rule, AGENTS.md "A promotion bar is not a decision
+bar"): S3 is PLAYED from the 2026-09-08 Week 1 lock (12:20 ET, after the pool's noon spread lock). Served as
+`HOME_SIDE_OFFSET_BUCKETS` in `home_side_location.fit_home_side_offsets`
+(fitted values and prior counts are still reported for every bucket; the
+served value is zero outside the three big buckets, so the sidecar, the
+card's metadata block, the late-week refresh and every refit recorder carry
+the same zeros), policy id `home_side_offset_big_spreads_v2`. The headline
+evaluation `artifacts/opener_evaluation/20260908T115957Z` (401 games with a
+non-zero shift, 43 picks changed vs raw; model alone 54.56% vs 53.96% raw)
+composes to **55.89%** through the played card
+(`overlay_subset_composition/20260908T120013552183Z`, +1.33 over its own
+baseline, [-0.73, +3.40], P+ 0.890). Every cell recorded under
+`mod18_home_side_location_v1_s3_*` as `unresolved_below_power`; the paired
+challenger `home_side_offset_off_incumbent` keeps recording the uncorrected
+read, so the 2026 rows settle S3 the same way they settle S2.

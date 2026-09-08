@@ -1,4 +1,7 @@
 [
+  {"question": "how is the model doing this season", "expected_intent": "season_record", "must_contain": ["settled", "55.4%", "archive, not this season"], "must_not_contain": ["raw model", "P+", "policy"], "category": "routing"},
+  {"question": "what is the record this year", "expected_intent": "season_record", "must_contain": ["settled", "55.4%", "archive, not this season"], "must_not_contain": ["raw model", "P+", "policy"], "category": "routing"},
+  {"question": "how many picks has it got right in 2026", "expected_intent": "season_record", "must_contain": ["settled", "55.4%", "archive, not this season"], "must_not_contain": ["raw model", "P+", "policy"], "category": "routing"},
   {"question": "why MIA", "expected_intent": "team_pick", "must_contain": ["MIA +3.5"], "must_not_contain": [], "category": "routing"},
   {"question": "Miami Dolphins pick", "expected_intent": "team_pick", "must_contain": ["MIA +3.5"], "must_not_contain": [], "category": "routing"},
   {"question": "Patriots and Seahawks", "expected_intent": "team_pick", "must_contain": ["SEA -3.5"], "must_not_contain": [], "category": "routing"},
@@ -116,5 +119,7 @@
   {"question": "where is the model weak", "expected_intent": "weak_spots", "must_contain": ["7.5-10", "65%", "50%", "2 games", "on underdog picks 0.0%"], "must_not_contain": ["NaN"], "category": "routing"},
   {"question": "how does the model do on big spreads", "expected_intent": "weak_spots", "must_contain": ["7.5-10", "65%", "50%", "2 games", "on underdog picks 0.0%"], "must_not_contain": ["NaN"], "category": "routing"},
   {"question": "how does the model do with home underdogs", "expected_intent": "weak_spots_home_split", "must_contain": ["home underdog (1 game)", "covered 100%", "expected 60%", "right 100%"], "must_not_contain": ["NaN", "Underdog picks ("], "category": "routing"},
-  {"question": "does the model like home dogs on big spreads", "expected_intent": "weak_spots_home_split", "must_contain": ["home favourite (1 game)", "covered 0%", "expected 70%", "right 0%"], "must_not_contain": ["NaN", "Underdog picks ("], "category": "routing"}
+  {"question": "does the model like home dogs on big spreads", "expected_intent": "weak_spots_home_split", "must_contain": ["home favourite (1 game)", "covered 0%", "expected 70%", "right 0%"], "must_not_contain": ["NaN", "Underdog picks ("], "category": "routing"},
+  {"question": "what is the home-side push", "expected_intent": "weak_spots_home_push", "must_contain": ["+0.75 points", "3 of 20 picks", "60.0%", "55.0%"], "must_not_contain": ["NaN", "raw model", "P+", "policy"], "category": "routing"},
+  {"question": "why does the model lean home on big spreads", "expected_intent": "weak_spots_home_push", "must_contain": ["+0.75 points", "3 of 20 picks", "60.0%", "55.0%"], "must_not_contain": ["NaN", "raw model", "P+", "policy"], "category": "routing"}
 ]

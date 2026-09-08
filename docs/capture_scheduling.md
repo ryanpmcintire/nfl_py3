@@ -12,8 +12,8 @@ the authoritative complete inventory.
 
 | Job | When (ET) | Grace | Season-guarded | Catch-up |
 |---|---|---|---|---|
-| `odds_tue_open` | Tue 09:00 | 180m | no | no |
-| `weekly_lock` | Tue 09:15 | 120m | yes | no |
+| `odds_tue_open` | Tue 12:05 (just after the pool's noon spread lock) | 180m | no | no |
+| `weekly_lock` | Tue 12:20 | 120m | yes | no |
 | `odds_thu_tnf` | Thu 18:00 | 90m | no | no |
 | `odds_sat` | Sat 12:00 | 180m | no | no |
 | `odds_sun_close` | Sun 12:30 | **25m** | no | no |
@@ -549,3 +549,22 @@ Unregister-ScheduledTask -TaskName PublicBetting_Sat,PublicBetting_Sun -Confirm:
 
 Until that runs, both mechanisms are live and the captures are, if anything,
 more redundant than before.
+
+## The lock moved to noon (2026-09-08)
+
+Owner, 2026-09-08, quoting the pool: "Spreads lock: Tue, Sep 8, 2026,
+12:00 PM". The line the pool grades on is fixed at noon, so forming the card
+at a 09:00 capture graded it against a line that could still move for three
+hours. From 2026-09-08 the schedule is: `odds_tue_open` at **12:05 ET** (the
+first odds capture of the day, landing just after the pool lock -- it IS the
+pool's line), `odds_tue_open_halves` alongside it, `weekly_lock` at **12:20**
+(closes 14:20), and Tuesday's daily lineup refresh at 14:30 so two
+`weekly-run`s never overlap. No scheduled job captures odds earlier on a
+Tuesday: the week's opener is the EARLIEST Tuesday quote per book
+(`nfl_ats.market_data.tuesday_opener_quotes`, UTC day), so an earlier
+capture would silently become the opener -- the one-click refresh
+(`scripts/refresh_now.py`) refuses a spread capture on a Tuesday (UTC) before
+12:05 ET for the same reason. Picks are due at each game's own kickoff
+(Sunday 4 PM ET cap), so a lock after noon costs nothing. The historical
+`tue_open` archive stays as captured (09:00 ET); the 09:00-to-noon gap on
+those seasons is not measured, which is recorded on ROADMAP OPS-05.

@@ -34,6 +34,16 @@ HINGE_POINTS = 7.0
 PRIOR_WEIGHT_GAMES = 100.0
 TRAILING_SEASONS = 5
 COMPLETION_ALLOWANCE_DAYS = 1
+#: S3 (2026-09-08, lane E): the offset is SERVED only where the home-side
+#: location error was diagnosed -- spreads of seven points or more (lanes
+#: L/P/Q/S: 10.5+ home favourites +2.41 pts, 10.5+ home underdogs +4.50, the
+#: 7.5-10 home-underdog gap). The 0-3 and 3.5-6.5 buckets showed no such error
+#: and S2's correction there ran negative through 2023 and cost -1.99 pts
+#: (P+ 0.028); with the small buckets left uncorrected the read is +0.80 pts
+#: standalone (P+ 0.93) and +0.33 through the played card (P+ 0.74), with
+#: better Brier and log loss (P+ 0.98). Fitted counts are still reported for
+#: every bucket; only the served value is zero outside these.
+HOME_SIDE_OFFSET_BUCKETS = ("7", "7.5-10", "10.5+")
 
 
 def attach_home_side_location(frame: pd.DataFrame) -> pd.DataFrame:
@@ -57,12 +67,16 @@ class HomeSideOffsets:
         return buckets.map(self.offsets).astype(float).where(buckets.notna())
 
 
-def fit_home_side_offsets(prior: pd.DataFrame) -> HomeSideOffsets:
+def fit_home_side_offsets(prior: pd.DataFrame, *, all_buckets: bool = False) -> HomeSideOffsets:
     """Shrunken mean of ``result - point_incumbent`` per spread bucket.
 
     ``prior`` carries ``spread_line`` (the line each row was scored at),
     ``point_incumbent`` and ``result`` (actual home margin); rows without a
     result are ignored. The prior weight is a fixed 100 games toward zero.
+
+    The SERVED policy (S3) zeroes the offset outside ``HOME_SIDE_OFFSET_BUCKETS``;
+    ``all_buckets=True`` is the research replay of lane S's S2 (every bucket
+    served), kept so the frozen experiment still reproduces its definition.
     """
 
     completed = prior.loc[prior["result"].notna() & prior["point_incumbent"].notna()]
@@ -74,7 +88,8 @@ def fit_home_side_offsets(prior: pd.DataFrame) -> HomeSideOffsets:
         mask = buckets.eq(bucket)
         n = int(mask.sum())
         counts[bucket] = n
-        offsets[bucket] = float(error.loc[mask].sum() / (n + PRIOR_WEIGHT_GAMES)) if n else 0.0
+        fitted = float(error.loc[mask].sum() / (n + PRIOR_WEIGHT_GAMES)) if n else 0.0
+        offsets[bucket] = fitted if all_buckets or bucket in HOME_SIDE_OFFSET_BUCKETS else 0.0
     return HomeSideOffsets(offsets=offsets, prior_games=counts)
 
 
@@ -99,7 +114,7 @@ def prior_games_for_week(frame: pd.DataFrame, season: int, week: int) -> pd.Data
     return frame.loc[eligible]
 
 
-def walk_forward_home_offsets(frame: pd.DataFrame) -> pd.DataFrame:
+def walk_forward_home_offsets(frame: pd.DataFrame, *, all_buckets: bool = False) -> pd.DataFrame:
     """Per-row offset for every (season, week) in ``frame`` from prior rows only.
 
     Returns a frame indexed like ``frame`` with ``bucket``, ``home_side_offset``,
@@ -112,7 +127,9 @@ def walk_forward_home_offsets(frame: pd.DataFrame) -> pd.DataFrame:
     out["prior_games_in_bucket"] = np.nan
     for _, group in frame.groupby(["season", "week"], sort=True):
         season, week = int(group["season"].iloc[0]), int(group["week"].iloc[0])
-        fitted = fit_home_side_offsets(prior_games_for_week(frame, season, week))
+        fitted = fit_home_side_offsets(
+            prior_games_for_week(frame, season, week), all_buckets=all_buckets
+        )
         out.loc[group.index, "home_side_offset"] = fitted.offset_for(group["spread_line"])
         out.loc[group.index, "prior_games_in_bucket"] = (
             out.loc[group.index, "bucket"].map(fitted.prior_games).astype(float)
@@ -153,7 +170,7 @@ def gaussian_median_cover_probability(
 
 #: Named served policy, so the served forecast and the paired challenger
 #: (``home_side_offset_off_incumbent``) stay correct by construction.
-HOME_SIDE_OFFSET_POLICY = "home_side_offset_by_bucket_v1"
+HOME_SIDE_OFFSET_POLICY = "home_side_offset_big_spreads_v2"
 #: Flip to ``False`` to serve the uncorrected read again; the challenger
 #: recorder keeps working either way because the forecast carries both reads.
 HOME_SIDE_OFFSET_SERVED = True
