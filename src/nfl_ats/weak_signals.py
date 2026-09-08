@@ -229,8 +229,24 @@ _SIGNAL_FIELDS = frozenset(
         "status",
         "invalidated_reason",
         "superseded_by",
+        # Append-only audit trail for a value corrected in place after
+        # recording. A correction is only ever admissible when the stored
+        # SUMMARY was wrong while the underlying measurement was not -- e.g.
+        # the 2026-09-08 zero-atom fix, where a candidate that made identical
+        # picks on every game had been recorded at probability_positive 0.0
+        # instead of 0.5. It is never a route to revise an effect, an
+        # interval, or a classification: those require re-measurement, and a
+        # correction must never read as a closure.
+        "corrections",
     }
 )
+
+#: Fields a :data:`corrections` entry must carry, and the only fields it may.
+_CORRECTION_FIELDS = frozenset({"at", "field", "from", "to", "reason"})
+
+#: The only fields a recorded correction may rewrite. Deliberately narrow:
+#: everything else is a measurement, not a summary of one.
+_CORRECTABLE_FIELDS = frozenset({"probability_positive"})
 
 
 class WeakSignalError(ValueError):
@@ -474,11 +490,51 @@ def coherence_problems(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
     return problems
 
 
+def _validate_corrections(name: str, corrections: Any) -> None:
+    """A correction may fix a wrong SUMMARY; it may never revise a measurement.
+
+    Keeping this narrow is the point. ``probability_positive`` is a summary of
+    a bootstrap that is not itself stored, so a demonstrably wrong summary can
+    be restated without re-running anything. An effect, an interval or a
+    classification cannot: changing one of those silently rewrites what was
+    measured, and a classification change would additionally let a correction
+    stand in for a closure -- which needs an admissible closing ground, never
+    an edit (``AGENTS.md``, the interval-crossing-zero invariant).
+    """
+
+    if corrections is None:
+        return
+    _require(
+        isinstance(corrections, list),
+        f"Signal {name!r}: corrections must be a list, got {type(corrections).__name__}",
+    )
+    for index, entry in enumerate(corrections):
+        where = f"Signal {name!r} correction {index}"
+        _require(isinstance(entry, dict), f"{where}: must be an object")
+        missing = sorted(_CORRECTION_FIELDS.difference(entry))
+        _require(not missing, f"{where}: missing {', '.join(missing)}")
+        extra = sorted(set(entry).difference(_CORRECTION_FIELDS))
+        _require(not extra, f"{where}: unknown fields: {', '.join(extra)}")
+        field = entry["field"]
+        _require(
+            field in _CORRECTABLE_FIELDS,
+            f"{where}: {field!r} is not correctable in place. Only "
+            f"{', '.join(sorted(_CORRECTABLE_FIELDS))} may be restated; everything else "
+            "is a measurement and needs re-measurement, not an edit.",
+        )
+        reason = entry["reason"]
+        _require(
+            isinstance(reason, str) and bool(reason.strip()),
+            f"{where}: reason must say why the stored summary was wrong",
+        )
+
+
 def signal_from_payload(name: str, payload: dict[str, Any]) -> WeakSignal:
     unknown = sorted(set(payload).difference(_SIGNAL_FIELDS))
     _require(not unknown, f"Signal {name!r} has unknown fields: {', '.join(unknown)}")
     for field in ("recorded_at", "description", "source", "effect", "effect_units"):
         _require(field in payload, f"Signal {name!r} is missing {field!r}")
+    _validate_corrections(name, payload.get("corrections"))
     classification = payload.get("classification")
     status = payload.get("status", "active")
     validate_invalidation(

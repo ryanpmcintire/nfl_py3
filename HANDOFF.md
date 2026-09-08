@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T18:22:55.382844+00:00`
+Refreshed at: `2026-09-08T18:41:37.385114+00:00`
 
 ## Start here
 
@@ -20,29 +20,16 @@ Refreshed at: `2026-09-08T18:22:55.382844+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `013e99b1d7c1` — Serve the pool's own spreads: the card now runs on the Splash Sports board
-- Pending change set: 103 paths
-  - `M  AGENTS.md`
+- Baseline commit: `3fb2e7045d74` — Fix the evidence scoreboard: four defects that made weak results look refuted
+- Pending change set: 8 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  docs/audit_20260908.md`
-  - `M  docs/pool_edge_plan.md`
-  - `M  docs/splash_lines.md`
-  - `A  docs/weak_signal_pooling.md`
-  - `M  docs/weak_signal_registry.md`
-  - `M  scripts/_common.py`
-  - `M  scripts/apm_unit_opener_eval.py`
-  - `M  scripts/arctic_shift_battery_screen.py`
-  - `M  scripts/attention_battery_screen.py`
-  - `M  scripts/attention_followup_screen.py`
-  - `M  scripts/best_pick_ranker_tiebreak_audit.py`
-  - `M  scripts/big_spread_diagnosis.py`
-  - `M  scripts/bye_overvaluation_screen.py`
-  - `M  scripts/cfb_home_side_replication.py`
-  - `M  scripts/cfb_james_stein_unit_screen.py`
-  - `M  scripts/cfb_role_continuity_remeasurement.py`
-  - `M  scripts/cfb_special_teams_screen.py`
-  - ...and 83 more
+  - `M  README.md`
+  - `A  registry/experiments/margin-backtest/20260908T183858Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T183020Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260908T183944Z.json`
+  - `M  registry/weak_signals.json`
+  - `M  src/nfl_ats/weak_signals.py`
+  - `M  tests/test_weak_signals.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,18 +38,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `3ccf838f9a304dcd`
+- Model ID: `c526cf6636cef6f8`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260908T171211Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **unavailable in local artifacts**
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-08T17:13:08.641243+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-08T18:39:44.231283+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3ccf838f9a304dcd`, published `2026-09-08T17:14:08.688605+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `3ccf838f9a304dcd`, published `2026-09-08T17:14:08.688605+00:00`. It is an early, mutable research preview. **Warning:** the tracked publication does not match the local active model; run `nfl-ats publish-predictions` before publishing model claims.
 
 ## Local reproducibility inventory
 

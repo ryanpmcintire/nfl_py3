@@ -956,3 +956,41 @@ def test_retag_effect_units_round_trips_through_save_and_load(tmp_path: Path) ->
     assert reloaded.signals["xlg06_rookie_prior_stage1_qb"].effect_units == "correlation"
     assert reloaded.signals["xlg06_rookie_prior_stage1_qb"].effect == pytest.approx(-0.0018)
     assert "numeric container only" in reloaded.signals["xlg06_rookie_prior_stage1_qb"].notes
+
+
+def test_a_correction_may_restate_a_summary_but_never_a_measurement() -> None:
+    """`corrections` exists for the 2026-09-08 zero-atom fix and nothing wider.
+
+    A stored `probability_positive` can be demonstrably wrong while the
+    measurement behind it is fine, so it may be restated in place with a
+    reason. An effect, an interval or a classification cannot: rewriting one
+    of those silently changes what was measured, and a classification edit
+    would let a correction stand in for a closure, which needs an admissible
+    closing ground (AGENTS.md's interval-crossing-zero invariant).
+    """
+
+    base = _signal(
+        description="identical picks on every game",
+        effect=0.0,
+        effect_units="accuracy_points",
+        interval=[0.0, 0.0],
+        probability_positive=0.5,
+    )
+    entry = {
+        "at": "2026-09-08T18:00:00+00:00",
+        "field": "probability_positive",
+        "from": 0.0,
+        "to": 0.5,
+        "reason": "every resample was an exact tie; the old convention charged the zero atom",
+    }
+
+    signal_from_payload("noop", {**base, "corrections": [entry]})
+
+    with pytest.raises(WeakSignalError, match="not correctable in place"):
+        signal_from_payload("bad", {**base, "corrections": [{**entry, "field": "effect"}]})
+    with pytest.raises(WeakSignalError, match="not correctable in place"):
+        signal_from_payload("bad", {**base, "corrections": [{**entry, "field": "classification"}]})
+    with pytest.raises(WeakSignalError, match="reason must say why"):
+        signal_from_payload("bad", {**base, "corrections": [{**entry, "reason": "  "}]})
+    with pytest.raises(WeakSignalError, match="missing"):
+        signal_from_payload("bad", {**base, "corrections": [{"field": "probability_positive"}]})
