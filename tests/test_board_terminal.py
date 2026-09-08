@@ -12,9 +12,11 @@ level coverage against real repo artifacts via
 
 from __future__ import annotations
 
+import ast
 import json
 import re
 from dataclasses import replace
+from datetime import UTC, datetime
 from html import escape
 from pathlib import Path
 
@@ -22,11 +24,13 @@ import pytest
 from _board_content_fixtures import (
     build_fixture_content,
     build_fixture_content_with_degraded_states,
+    build_fixture_timeline,
 )
 
 from nfl_ats import board_terminal
 from nfl_ats.board_content import (
     BANNED_BOILERPLATE,
+    WEEK_REFRESH_PASSES,
     SourcePolicyRow,
     SourcePolicyView,
 )
@@ -804,6 +808,61 @@ def test_findings_page_renders_real_findings(site_content: SiteContent) -> None:
     assert escape(finding.question) in html
 
 
+def test_home_side_push_finding_reaches_page_and_assistant(site_content: SiteContent) -> None:
+    from nfl_ats.board_assistant import build_knowledge_for_findings
+    from nfl_ats.dashboard.findings_content import FINDINGS
+
+    question = "Why does the model lean toward home teams on big spreads now?"
+    curated = next(f for f in FINDINGS if f.question == question)
+    matches = [
+        item
+        for group in site_content.findings.groups
+        for item in group.findings
+        if item.question == question
+    ]
+    assert len(matches) == 1
+    finding = matches[0]
+    assert finding.verdict == "unproven"
+    assert finding.plain_answer == curated.plain_answer
+    assert finding.detail == curated.detail
+    html = board_terminal.render_findings_page(site_content.findings)
+    assert escape(finding.plain_answer) in html
+    assert escape(finding.detail) in html
+    for phrase in (
+        "games already played",
+        "10.5 points or more",
+        "55.9% right",
+        "55.2%",
+        "same games used to measure",
+        "all did worse after the pick rules",
+        "2026 weeks",
+        "without the addition",
+    ):
+        assert phrase in finding.plain_answer + finding.detail
+    knowledge = build_knowledge_for_findings(site_content.findings)
+    entry = next(e for e in knowledge["entries"] if question in e["id"])
+    assert entry["body"] == f"{finding.plain_answer} {finding.detail}"
+    assert entry["anchor"] == "findings.html"
+
+
+def test_home_side_push_trace_uses_registry_probability() -> None:
+    from nfl_ats.board_site_content import FindingItemView
+
+    finding = FindingItemView(
+        question="Home-side push",
+        verdict="unproven",
+        plain_answer="",
+        detail="",
+        trace_signal_name="mod18_home_side_location_v1_s3_through_card_vs_s2",
+        trace_probability_positive=0.1234,
+    )
+    chip = board_terminal._trace_chip_html(finding)
+    assert "Big-spread push versus all-spread push" in chip
+    assert "12% likely real" in chip
+    assert finding.trace_signal_name not in chip
+    assert board_terminal._trace_chip_html(replace(finding, trace_probability_positive=None)) == ""
+
+
 def test_findings_page_real_content_carries_no_banned_boilerplate(
     site_content: SiteContent,
 ) -> None:
@@ -1169,3 +1228,90 @@ def test_board_lock_window_orders_clock_times_and_handles_single_lock() -> None:
     assert "between Sun 11:00 AM ET and Sun 1:00 PM ET" in content.pick_lock_note
     content = replace(content, games=(games[0],))
     assert "lock at Sun 1:00 PM ET;" in content.pick_lock_note
+
+
+def test_week_refresh_schedule_matches_enabled_pick_refresh_commands() -> None:
+    tree = ast.parse((_REPO_ROOT / "scripts" / "capture_scheduler.py").read_text("utf-8"))
+    schedule = next(
+        node.value
+        for node in tree.body
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.target, ast.Name)
+        and node.target.id == "SCHEDULE"
+    )
+    assert isinstance(schedule, (ast.List, ast.Tuple))
+    actual = []
+    for call in schedule.elts:
+        if not isinstance(call, ast.Call) or len(call.args) < 6:
+            continue
+        command = call.args[4]
+        if (
+            ast.literal_eval(call.args[5])
+            and isinstance(command, ast.Call)
+            and command.args
+            and isinstance(command.args[0], ast.Constant)
+            and command.args[0].value == "refresh-picks"
+        ):
+            args = [arg.value for arg in command.args if isinstance(arg, ast.Constant)]
+            actual.append(
+                (
+                    ast.literal_eval(call.args[1]),
+                    ast.literal_eval(call.args[2]),
+                    "--publish-card" in args,
+                )
+            )
+    assert sorted(WEEK_REFRESH_PASSES) == sorted(actual)
+
+
+@pytest.mark.parametrize(
+    ("now", "expected", "absent"),
+    [
+        ("2026-09-08T17:00:00+00:00", "Wednesday 6:15 PM ET refresh", "deadline passed"),
+        ("2026-09-09T22:15:00+00:00", "Thursday 11:55 AM ET refresh", "Wednesday 6:15"),
+        ("2026-09-15T12:00:00+00:00", "No scheduled refresh passes remain", "ET refresh"),
+    ],
+)
+def test_week_timeline_renders_remaining_passes(now: str, expected: str, absent: str) -> None:
+    content = build_fixture_content()
+    timeline = build_fixture_timeline(content.games, datetime.fromisoformat(now))
+    html = board_terminal._week_timeline_panel(replace(content, week_timeline=timeline))
+    assert expected in html
+    assert absent not in html
+    assert "Pool lines locked Tuesday 12:00 PM ET" in html
+    assert "Monday 7:00 AM ET, August 31, 2026" in html
+    assert "Wednesday, September 09" in html
+    assert "Thursday, September 10" in html
+    assert "Sunday, September 13" in html
+    assert "DEN at KC (Monday game)" in html
+    assert "Sunday 4:00 PM ET, before kickoff" in html
+    assert "Monday, September 14" not in html
+    for token in (*BANNED_BOILERPLATE, "refresh_wed", "2026-09-08T"):
+        assert token not in html
+
+
+def test_week_timeline_empty_and_missing_times() -> None:
+    import pandas as pd
+
+    from nfl_ats.board_content import build_week_timeline
+
+    content = build_fixture_content()
+    now = datetime(2026, 9, 8, 17, tzinfo=UTC)
+    for games, expected in (
+        ((), "No forecast is available."),
+        (content.games, "Game times are missing"),
+    ):
+        timeline = build_week_timeline(pd.DataFrame(), games, now)
+        html = board_terminal._week_timeline_panel(replace(content, week_timeline=timeline))
+        assert expected in html
+        assert "Tuesday at 12:00 PM ET" in html
+        assert "Sunday 4:00 PM ET" in html
+        assert not timeline.groups
+
+
+def test_week_timeline_is_on_this_week_page_and_escapes_content() -> None:
+    content = build_fixture_content()
+    timeline = replace(content.week_timeline, publication="<unsafe>&")
+    html = board_terminal.render(replace(content, week_timeline=timeline))
+    assert '<h2 id="week-timeline-h">This week</h2>' in html
+    assert "&lt;unsafe&gt;&amp;" in html
+    assert "<unsafe>" not in html

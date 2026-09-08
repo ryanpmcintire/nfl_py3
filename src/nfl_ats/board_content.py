@@ -999,6 +999,165 @@ def _default_tiebreaker_view() -> TiebreakerView:
     )
 
 
+# Package code does not import scripts. A fixture test pins this table to
+# the enabled refresh-picks commands in capture_scheduler.SCHEDULE.
+# (weekday, Eastern time, publishes the card)
+WEEK_REFRESH_PASSES: tuple[tuple[str, str, bool], ...] = (
+    ("wed", "18:15", False),
+    ("thu", "11:55", False),
+    ("thu", "15:00", False),
+    ("thu", "15:25", False),
+    ("thu", "19:15", False),
+    ("sat", "10:30", False),
+    ("sat", "15:50", False),
+    ("sat", "19:15", False),
+    ("sun", "10:00", True),
+    ("sun", "11:55", False),
+    ("sun", "15:00", False),
+)
+
+
+@dataclass(frozen=True)
+class WeekTimeline:
+    title: str = "This week"
+    rule: str = (
+        "Pool lines lock Tuesday at 12:00 PM ET. Each pick is due at its game's "
+        "kickoff or Sunday 4:00 PM ET, whichever comes first."
+    )
+    publication: str = "The card's publication time is not recorded."
+    refresh_note: str = (
+        "Scheduled refresh checks may leave picks unchanged. "
+        "The Sunday morning pass also publishes the card."
+    )
+    remaining: str = "The week's remaining refresh times are not available."
+    groups: tuple[tuple[str, tuple[str, ...]], ...] = ()
+    deadlines: tuple[tuple[str, str], ...] = ()
+
+    @property
+    def text(self) -> str:
+        events = " ".join(f"{day}: " + " ".join(lines) for day, lines in self.groups)
+        return " ".join(
+            (self.rule, self.publication, self.refresh_note, self.remaining, events)
+        ).strip()
+
+
+def _timeline_time(instant: pd.Timestamp) -> str:
+    local = instant.tz_convert(PICK_LOCK_TIMEZONE)
+    return (
+        f"{local:%A} {local.hour % 12 or 12}:{local.minute:02d} "
+        f"{'AM' if local.hour < 12 else 'PM'} ET"
+    )
+
+
+def _card_publication_time(forecast_dir: Path | None) -> Any:
+    """Only the saved publication report; never the live freshness report."""
+    if forecast_dir is None:
+        return None
+    try:
+        report = read_json(forecast_dir / "source_policy.json")
+    except (OSError, ValueError):
+        return None
+    return report.get("evaluated_at_utc") if isinstance(report, dict) else None
+
+
+def build_week_timeline(
+    frame: pd.DataFrame,
+    games: tuple[GameRow, ...],
+    generated_at: datetime,
+    publication_at: Any = None,
+) -> WeekTimeline:
+    """Anchor the Tue..Mon cycle on kickoffs, never on the build date."""
+    now = pd.Timestamp(generated_at).tz_convert(PICK_LOCK_TIMEZONE)
+    published = pd.to_datetime(publication_at, utc=True, errors="coerce")
+    publication = (
+        f"These picks were formed for publication {_timeline_time(published)}, "
+        f"{published.tz_convert(PICK_LOCK_TIMEZONE):%B %d, %Y}."
+        if not pd.isna(published)
+        else "The card's publication time is not recorded."
+    )
+    sunday = _week_sunday_lock(frame)
+    if not games:
+        return WeekTimeline(
+            publication="No forecast is available.",
+            remaining="Refresh dates and game deadlines will appear with the forecast.",
+        )
+    if sunday is None:
+        return WeekTimeline(
+            publication=publication,
+            remaining="Game times are missing, so this week's dates cannot be listed.",
+        )
+
+    tuesday = sunday.tz_convert(PICK_LOCK_TIMEZONE).date() - timedelta(days=5)
+    line_lock = pd.Timestamp(
+        datetime.combine(tuesday, datetime.min.time(), tzinfo=PICK_LOCK_TIMEZONE)
+    ) + pd.Timedelta(hours=12)
+    events: list[tuple[pd.Timestamp, str]] = [
+        (
+            line_lock,
+            f"Pool lines {'locked' if line_lock <= now else 'lock'} {_timeline_time(line_lock)}.",
+        )
+    ]
+    future = 0
+    offsets = {"tue": 0, "wed": 1, "thu": 2, "fri": 3, "sat": 4, "sun": 5, "mon": 6}
+    for day, at, publishes in WEEK_REFRESH_PASSES:
+        local_date = tuesday + timedelta(days=offsets[day])
+        hour, minute = map(int, at.split(":"))
+        instant = pd.Timestamp(
+            datetime.combine(local_date, datetime.min.time(), tzinfo=PICK_LOCK_TIMEZONE).replace(
+                hour=hour, minute=minute
+            )
+        )
+        if instant > now:
+            future += 1
+            suffix = " and card publication" if publishes else ""
+            events.append((instant, f"{_timeline_time(instant)} refresh{suffix}."))
+
+    kickoffs = (
+        frame.set_index("game_id")["kickoff"].to_dict()
+        if {"game_id", "kickoff"} <= set(frame.columns)
+        else {}
+    )
+    deadlines: list[tuple[str, str]] = []
+    missing: list[str] = []
+    for game in games:
+        raw_kickoff = kickoffs.get(game.game_id)
+        kickoff = (
+            pd.NaT
+            if raw_kickoff is None
+            else pd.to_datetime(raw_kickoff, utc=True, errors="coerce")
+        )
+        if pd.isna(kickoff):
+            sentence = f"{game.away} at {game.home}: pick deadline not recorded."
+            missing.append(sentence)
+        else:
+            deadline = pick_deadline(kickoff, sunday)
+            state = "Pick deadline passed" if deadline <= now else "Pick due"
+            early = ", before kickoff" if deadline < kickoff else ""
+            sentence = (
+                f"{game.away} at {game.home} ({game.weekday_name} game): "
+                f"{state} {_timeline_time(deadline)}{early}."
+            )
+            events.append((deadline, sentence))
+        deadlines.append((game.game_id, sentence))
+
+    grouped: dict[str, list[str]] = {}
+    for instant, sentence in sorted(events, key=lambda event: event[0]):
+        day_label = instant.tz_convert(PICK_LOCK_TIMEZONE).strftime("%A, %B %d")
+        grouped.setdefault(day_label, []).append(sentence)
+    if missing:
+        grouped["Game times not recorded"] = missing
+    return WeekTimeline(
+        publication=publication,
+        remaining=(
+            "Refresh passes still to come:"
+            if future
+            else "No scheduled refresh passes remain for this week."
+        ),
+        groups=tuple((day, tuple(lines)) for day, lines in grouped.items()),
+        deadlines=tuple(deadlines),
+    )
+
+
 @dataclass(frozen=True)
 class BoardContent:
     """Everything the This Week page renders. Built once by
@@ -1035,6 +1194,7 @@ class BoardContent:
     #: until at least one game this season has a real result.
     season_record: SeasonRecordStrip | None = None
     injury_note: str = "Whether injury reports informed these picks was not recorded."
+    week_timeline: WeekTimeline = field(default_factory=WeekTimeline)
     #: Late-week refresh diff lines (UI-17) -- one plain sentence per
     #: refreshed game from the append-only pick-revision ledger, empty
     #: until a refresh pass records (nothing exists pre-lock). The
@@ -2710,6 +2870,9 @@ def load_board_content(
         generated_at=generated,
         generated_at_text=generated.strftime("%Y-%m-%d %H:%M:%S UTC"),
         games=tuple(games),
+        week_timeline=build_week_timeline(
+            ordered, tuple(games), generated, _card_publication_time(forecast_dir)
+        ),
         best_pick_game_id=best_pick_id,
         best_pick_note=best_pick_note,
         flip_count=flip_count,

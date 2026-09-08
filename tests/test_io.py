@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
+from pathlib import Path
 
 import pandas as pd
 import pytest
@@ -73,3 +74,124 @@ def test_json_default_serialises_summary_value_types(tmp_path) -> None:
     assert json.loads(destination.read_text(encoding="utf-8"))["dt"].startswith("2026-09-08")
     with pytest.raises(TypeError):
         json.dumps({"o": object()}, default=json_default)
+
+
+# ---------------------------------------------------------------------------
+# 2026-09-08: concurrent writers (two research lanes recording into the same
+# registry at once) corrupted registry/weak_signals.json because every writer
+# shared ONE temp name. Per-writer temp names keep bytes apart; the lock keeps
+# read-modify-write sequences from losing each other's rows.
+# ---------------------------------------------------------------------------
+
+
+def test_atomic_json_survives_concurrent_writers(tmp_path: Path) -> None:
+    import threading
+
+    from nfl_ats.io import atomic_json
+
+    destination = tmp_path / "registry.json"
+    errors: list[BaseException] = []
+
+    def writer(index: int) -> None:
+        try:
+            for _ in range(25):
+                atomic_json({"writer": index, "rows": list(range(4000 + index * 500))}, destination)
+        except BaseException as error:
+            errors.append(error)
+
+    threads = [threading.Thread(target=writer, args=(i,)) for i in range(4)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert not errors
+    payload = json.loads(destination.read_text(encoding="utf-8"))
+    assert payload["writer"] in range(4)
+    assert len(payload["rows"]) == 4000 + payload["writer"] * 500
+    assert not list(tmp_path.glob("*.tmp"))
+
+
+def test_file_lock_is_exclusive_and_breaks_stale_locks(tmp_path: Path) -> None:
+    import os
+    import time
+
+    from nfl_ats import io as io_module
+    from nfl_ats.io import file_lock
+
+    target = tmp_path / "registry.json"
+    lock_path = tmp_path / "registry.json.lock"
+    with file_lock(target):
+        assert lock_path.exists()
+        with pytest.raises(TimeoutError), file_lock(target, timeout=0.2, poll=0.02):
+            pass
+    assert not lock_path.exists()
+
+    # An abandoned lock (a crashed writer) is broken once it is stale.
+    lock_path.write_text("", encoding="utf-8")
+    stale = time.time() - io_module.STALE_LOCK_SECONDS - 5
+    os.utime(lock_path, (stale, stale))
+    with file_lock(target, timeout=1.0, poll=0.02):
+        assert lock_path.exists()
+    assert not lock_path.exists()
+
+
+def test_weak_signal_record_command_serialises_under_the_lock(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Two record commands started together both land: no lost update."""
+
+    import threading
+    from types import SimpleNamespace
+
+    from nfl_ats.cli_commands import registry as commands
+    from nfl_ats.weak_signals import load_registry
+
+    path = tmp_path / "weak_signals.json"
+    monkeypatch.setattr(commands, "weak_signal_registry_path", lambda: path)
+    monkeypatch.setattr(commands, "_print_json", lambda payload: None)
+
+    def args(name: str) -> SimpleNamespace:
+        return SimpleNamespace(
+            name=name,
+            recorded_at="2026-09-08",
+            description="lock test",
+            source="tests",
+            effect=0.1,
+            effect_units="accuracy_points",
+            classification="unresolved_below_power",
+            league="nfl",
+            season_start=2020,
+            season_end=2025,
+            standard_error=None,
+            interval_low=-0.5,
+            interval_high=0.7,
+            probability_positive=0.6,
+            sample_games=100,
+            sample_blocks=10,
+            reliability=None,
+            family="lock_test_family",
+            classification_evidence="test",
+            closing_ground=None,
+            notes="",
+            plain_summary="Lock test row.",
+            category="modeling",
+            replace=False,
+        )
+
+    errors: list[BaseException] = []
+
+    def run(index: int) -> None:
+        try:
+            commands._cmd_weak_signals_record(args(f"lock_test_{index}"))
+        except BaseException as error:
+            errors.append(error)
+
+    threads = [threading.Thread(target=run, args=(i,)) for i in range(6)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join()
+    assert not errors
+    registry = load_registry(path)
+    assert sorted(registry.signals) == [f"lock_test_{i}" for i in range(6)]
+    assert not (tmp_path / "weak_signals.json.lock").exists()

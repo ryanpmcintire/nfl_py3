@@ -39,6 +39,7 @@ from test_assistant_golden import (
     GOLDEN_QUESTIONS,
     HOME_PUSH_QUESTIONS,
     SEASON_RECORD_QUESTIONS,
+    WEEK_TIMELINE_QUESTIONS,
     _build_home_push_weak_spots,
     _write_lineups_artifact,
 )
@@ -136,7 +137,12 @@ def all_questions() -> tuple[str, ...]:
     for case in GOLDEN_QUESTIONS:
         if case.question not in seen:
             seen.append(case.question)
-    for question in (*LINEUP_REGRESSION_QUESTIONS, *HOME_PUSH_QUESTIONS, *SEASON_RECORD_QUESTIONS):
+    for question in (
+        *LINEUP_REGRESSION_QUESTIONS,
+        *HOME_PUSH_QUESTIONS,
+        *SEASON_RECORD_QUESTIONS,
+        *WEEK_TIMELINE_QUESTIONS,
+    ):
         if question not in seen:
             seen.append(question)
     return tuple(seen)

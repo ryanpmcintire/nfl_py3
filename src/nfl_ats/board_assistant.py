@@ -1164,6 +1164,8 @@ def build_knowledge_for_board(
         finding_items=finding_items,
         watching_items=watching_items,
     )
+    knowledge["week_timeline"] = board.week_timeline.text
+    knowledge["week_timeline_deadlines"] = dict(board.week_timeline.deadlines)
     # ENG-04/UI-18: the lineups.json-derived block feeding the QB-starter,
     # availability, team-injury, and backup-QB intents in answer(). Built
     # from the SAME per-game TeamLineup objects board_content.py already
@@ -1583,6 +1585,31 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
                     text=str(entry["body"]),
                     anchors=(str(entry["anchor"]),),
                 )
+
+    if knowledge.get("week_timeline") and (
+        "timeline" in tokens
+        or ("when" in tokens and bool(tokens & {"due", "lines", "spreads"}))
+        or ("when" in tokens and "card" in tokens and bool(tokens & {"update", "updates"}))
+        or ("deadline" in tokens and "game" in tokens)
+    ):
+        selected = [
+            game
+            for game in knowledge.get("games", ())
+            if (
+                parsed.teams
+                and any(code.upper() in (game["away"], game["home"]) for code in parsed.teams)
+            )
+            or (not parsed.teams and parsed.days and game["day"] in parsed.days)
+        ]
+        deadlines = knowledge.get("week_timeline_deadlines", {})
+        text = str(knowledge["week_timeline"])
+        if selected:
+            text = " ".join(
+                str(deadlines.get(game["game_id"], game["timing"])) for game in selected
+            )
+        return AssistantAnswer(
+            topic="week_timeline", text=text, anchors=("index.html#week-timeline-h",)
+        )
 
     # A deadline request takes precedence over team schedule/refresh answers.
     if (
@@ -2362,6 +2389,23 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
         }
       });
       if (glossaryHit) return glossaryHit;
+    }
+    if (corpus.week_timeline && (
+        toks.indexOf("timeline") !== -1 ||
+        (toks.indexOf("when") !== -1 && hasAny(toks, ["due", "lines", "spreads"])) ||
+        (toks.indexOf("when") !== -1 && toks.indexOf("card") !== -1 &&
+         hasAny(toks, ["update", "updates"])) ||
+        (toks.indexOf("deadline") !== -1 && toks.indexOf("game") !== -1))) {
+      var timelineGames = (corpus.games || []).filter(function (g) {
+        return (parsed.teams.length && parsed.teams.some(function (code) {
+          return code.toUpperCase() === g.away || code.toUpperCase() === g.home;
+        })) || (!parsed.teams.length && parsed.days.length && parsed.days.indexOf(g.day) !== -1);
+      });
+      var timelineText = corpus.week_timeline;
+      if (timelineGames.length) timelineText = timelineGames.map(function (g) {
+        return (corpus.week_timeline_deadlines || {})[g.game_id] || g.timing;
+      }).join(" ");
+      return asAnswer("week_timeline", timelineText, ["index.html#week-timeline-h"]);
     }
     if (toks.indexOf("deadline") !== -1 ||
         (hasAny(toks, ["lock", "locked", "locks"]) &&

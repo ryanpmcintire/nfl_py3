@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T13:14:35.114837+00:00`
+Refreshed at: `2026-09-08T14:17:04.555780+00:00`
 
 ## Start here
 
@@ -20,15 +20,29 @@ Refreshed at: `2026-09-08T13:14:35.114837+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7d746985436a` — MOD-18 lane H: key-number lattice read on big spreads only (M1/M1b) measured through the played card, smooth read kept [skip ci]
-- Pending change set: 7 paths
+- Baseline commit: `3130c55b16c8` — MOD-18 lane I: home push shrinkage prior sensitivity (50/25/200) measured through the played card, 100 kept [skip ci]
+- Pending change set: 45 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  docs/home_side_prior.md`
+  - `A  docs/big_spread_diagnosis.md`
+  - `A  docs/cfb_home_side_replication.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/key_line_lattice.md`
+  - `A  docs/mass_preserving_lattice.md`
+  - `M  docs/model.html`
+  - `A  docs/officials_coverage.md`
+  - `A  docs/plain_summary_backfill.md`
+  - `A  docs/residual_slope.md`
+  - `A  docs/residual_slope_shrunk.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/home_side_prior_opener_eval.py`
-  - `A  tests/test_home_side_prior.py`
+  - `M  scripts/backfill_plain_summaries.py`
+  - `A  scripts/big_spread_diagnosis.py`
+  - `A  scripts/cfb_home_side_replication.py`
+  - `A  scripts/key_line_lattice_opener_eval.py`
+  - ...and 25 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

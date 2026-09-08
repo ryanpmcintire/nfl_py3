@@ -1495,6 +1495,24 @@ def _season_record_strip_html(content: BoardContent) -> str:
     )
 
 
+def _week_timeline_panel(content: BoardContent) -> str:
+    timeline = content.week_timeline
+    groups = "".join(
+        f"<h3>{escape(day)}</h3><ul>"
+        + "".join(f"<li>{escape(line)}</li>" for line in lines)
+        + "</ul>"
+        for day, lines in timeline.groups
+    )
+    return (
+        '<section class="policy-note" aria-labelledby="week-timeline-h">'
+        f'<h2 id="week-timeline-h">{escape(timeline.title)}</h2>'
+        f"<p>{escape(timeline.rule)}</p>"
+        f"<p>{escape(timeline.publication)}</p>"
+        f"<p>{escape(timeline.refresh_note)}</p>"
+        f"<p>{escape(timeline.remaining)}</p>" + groups + "</section>"
+    )
+
+
 def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
     """Render the full This Week page for ``content``.
 
@@ -1520,6 +1538,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         + '<main class="week-page">'
         + _season_record_strip_html(content)
         + _headline_section(content.headline)
+        + _week_timeline_panel(content)
         + '<div class="week-grid">'
         + _board_section(content)
         + _inspector_section(content)
@@ -2321,9 +2340,12 @@ def _trace_chip_html(finding: FindingItemView) -> str:
 
     if finding.trace_signal_name is None or finding.trace_probability_positive is None:
         return ""
+    label = humanize_identifier(finding.trace_signal_name)
+    if finding.trace_signal_name == "mod18_home_side_location_v1_s3_through_card_vs_s2":
+        label = "Big-spread push versus all-spread push"
     return (
         '<span class="trace-chip">'
-        f"{escape(humanize_identifier(finding.trace_signal_name))} &middot; "
+        f"{escape(label)} &middot; "
         f"{_humanize_probability_positive(finding.trace_probability_positive)}</span>"
     )
 

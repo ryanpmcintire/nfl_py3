@@ -1649,6 +1649,23 @@ table.board tr.game.is-selected td:first-child { box-shadow: inset 3px 0 #f4b655
       });
       if (glossaryHit) return glossaryHit;
     }
+    if (corpus.week_timeline && (
+        toks.indexOf("timeline") !== -1 ||
+        (toks.indexOf("when") !== -1 && hasAny(toks, ["due", "lines", "spreads"])) ||
+        (toks.indexOf("when") !== -1 && toks.indexOf("card") !== -1 &&
+         hasAny(toks, ["update", "updates"])) ||
+        (toks.indexOf("deadline") !== -1 && toks.indexOf("game") !== -1))) {
+      var timelineGames = (corpus.games || []).filter(function (g) {
+        return (parsed.teams.length && parsed.teams.some(function (code) {
+          return code.toUpperCase() === g.away || code.toUpperCase() === g.home;
+        })) || (!parsed.teams.length && parsed.days.length && parsed.days.indexOf(g.day) !== -1);
+      });
+      var timelineText = corpus.week_timeline;
+      if (timelineGames.length) timelineText = timelineGames.map(function (g) {
+        return (corpus.week_timeline_deadlines || {})[g.game_id] || g.timing;
+      }).join(" ");
+      return asAnswer("week_timeline", timelineText, ["index.html#week-timeline-h"]);
+    }
     if (toks.indexOf("deadline") !== -1 ||
         (hasAny(toks, ["lock", "locked", "locks"]) &&
          (parsed.teams.length || parsed.days.length || hasAny(toks, ["when", "pick", "picks"]))) ||

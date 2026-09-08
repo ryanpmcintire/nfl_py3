@@ -1,0 +1,336 @@
+# CFB home-side location replication
+
+## Predeclaration (written before fitting or scoring, 2026-09-08)
+
+This lane will test family `mod18_home_side_location_cfb_v1`, with S3 primary
+and all-bucket S2 its predeclared sibling. No NFL rule or forecast will change.
+
+Read (`src/nfl_ats/cfb_benchmark.py:89-158,183-210`): reuse
+`fit_cfb_residual_model` exactly: market-residual Ridge alpha 10, frozen CFB
+feature contract, no calibration, trailing 20% chronological distribution
+holdout followed by refitting all prior training rows, minimum 500 games,
+weekly cutoff at the earliest target gameday. Use 2006-2025 eligible weeks.
+Read (`docs/cfb_data.md:117-123`): grade at `spread_line`, the median-book
+close-proxy spread, positive for a home favourite; actual home margin minus
+this line is ATS margin. The existing features are close-conditioned, so
+grading them at an opener would not recreate an opener-time prediction.
+Keep the benchmark ECDF probability mapping unchanged in all research arms;
+this experiment is not a served probability-mapping promotion.
+
+Diagnosis: actual home margin minus the uncorrected out-of-time point.
+Report all five exact `spread_bucket` buckets (0-3, 3.5-6.5, 7, 7.5-10,
+10.5+), overall and by home favourite (positive line) / home underdog
+(negative line); zero lines enter overall only. Also diagnose |line| >14
+through 21 (label 14.5-21, including quarter-point consensus values) and
+|line| >21. Headline clean core is 2012-2019 plus 2021-2025; report separately
+2006-2011, 2012-2019, 2020, 2021-2025, full archive and every season.
+
+Candidate: reuse `prior_rows_before` and `fit_home_side_offsets`, 100-game
+zero prior, five trailing seasons, prior out-of-time completed CFB games only;
+add a one-day completion exclusion before earliest target kickoff when dates
+are available. S3 serves only 7 / 7.5-10 / 10.5+; S2 serves every bucket.
+Offsets are pooled across home sides exactly as in S3, not fitted per side.
+No warm-start fitted residuals enter the offset stream. Keep the market
+baseline as a descriptive comparator alongside uncorrected / S3 / S2.
+
+Report paired non-push forced-pick accuracy-point improvements (probability
+>=0.5 selects home), Brier and log-loss improvements (baseline minus
+candidate, probabilities clipped at 1e-15 for logs), per season, per bucket,
+per era and headline. Diagnosis includes pushes. Each reported effect cell
+gets a week-blocked percentile 95% interval, 20,000 draws, seed 20260817.
+Resample whole season-week blocks; within-week correlation parameter is ZERO,
+never estimated or padded. `probability_positive` is fraction of draws >0.
+Record every nonempty diagnosis and paired-metric cell through the real
+`weak-signals record` CLI parser, league cfb, names prefixed by the family.
+All cells default to `unresolved_below_power`; shared/nested cells are
+correlated decompositions, not independent votes. Do not pool ATS-margin
+points with accuracy points or probability-score improvements.
+
+Reported (user's task, unverified independently): this CFB archive was not
+used to select the NFL rule. Accordingly this is an independent cross-league
+replication of the home-side location mechanism and frozen correction shape,
+not an independent reproduction of NFL opener accuracy or the NFL composed
+card. Infer the expected-value decision from signed measured effects first;
+report per-era magnitudes and probability_positive, never an absence claim.
+
+An interval or CI that contains zero is NEVER grounds to reject, fail, or
+close an experiment. At this evaluator's ~2-point resolution, "contains zero"
+is the EXPECTED outcome for a real small signal. Only two grounds ever close a
+line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval on
+the wrong side of zero) or zero split-half reliability; (2) bounded by a
+positive control proven able to detect an effect that size. Everything else
+is `unresolved_below_power`: record it with `nfl-ats weak-signals record`,
+report `probability_positive`, never the binary "contains zero". The registry
+code hard-rejects inadmissible closures; if a record command errors, the
+verdict is wrong, not the validator. Never state that anything "needs more
+games"; decide on expected value and state what the numbers imply for the
+NFL rule (does college confirm the mechanism?) before what is wrong with them.
+
+
+## Decision and interpretation
+
+Inferred: I think college provides partial, era-dependent support for the
+home-side mechanism, strongest for recent big home underdogs; it does not
+confirm an equally sized home-side error on both sides across eras. I would
+prefer S3 to the uncorrected CFB read on its measured expected accuracy, and
+prefer the predeclared S2 sibling for a CFB forced-pick decision. This is not
+a reason to replace NFL S3 with S2: the CFB grading line, model feature
+contract and composed-card context differ. No NFL rule was changed.
+
+Measured (`artifacts/research/laneO/cells.json`, generated by
+`.\.tools\uv.exe run --no-sync python scripts/cfb_home_side_replication.py --record`):
+clean-core S3 gains +0.111944 accuracy points, 95% [-0.279676, +0.499537],
+probability_positive 0.699950; S2 gains +0.313445, [-0.275013, +0.907107],
+probability_positive 0.845100. The S3 Brier/log-loss improvements are
++0.000008084 / +0.000006319; S2 improves Brier +0.000003342 and worsens
+log loss by 0.000015003. Accuracy chooses the card under the declared
+forced-pick objective; the probability-score differences are reported below.
+
+Measured (same artifact): clean-core 10.5+ home favourites have a +0.248149
+point error, probability_positive 0.796250; home underdogs +0.320433,
+probability_positive 0.745400. In 2021-2025 those are -0.063559 and +1.650246
+(probability_positive 0.436800 / 0.988150). The tables give the intervals and
+earlier-era magnitudes. All cells remain unresolved_below_power; no family
+closure is inferred from one era/side, and no positive-control bound or
+split-half reliability was measured in this lane.
+
+Reported (user instruction, unverified independently): CFB outcomes were not
+used to select NFL S3. Inferred: this makes the frozen shape's CFB evaluation
+independent of NFL selection, but the two sibling arms and overlapping
+reporting cells are not independent replications of one another. Read
+(`src/nfl_ats/cfb_benchmark.py:89-158`): the reused benchmark uses its own CFB
+feature contract and pooled empirical residual mapping. This lane tests
+location transfer, not the discrete-margin probability-shape hypothesis.
+
+## Measured tables
+
+Every numeric cell below is measured from `artifacts/research/laneO/cells.json`
+by the command above. Effects are actual-minus-predicted home-margin points
+for diagnosis, candidate-minus-baseline accuracy points, and
+baseline-minus-candidate Brier/log loss. Every interval uses 20,000
+season-week block draws, seed 20260817, with zero added within-week
+correlation. `market` is the unchanged benchmark market-only comparator.
+
+Measured (`artifacts/research/laneO/predictions.parquet`): 11,989 out-of-time games, 2007-2025, 280 weeks. The 500-game training floor leaves 2006 unscored. Clean core has 9,093 diagnosis games and 8,933 non-push decisions.
+
+### Clean-core diagnosis, including the two larger CFB bands
+
+| bucket | side | sample_games | effect | interval_low | interval_high | probability_positive |
+| --- | --- | --- | --- | --- | --- | --- |
+| all | all | 9093 | 0.148937 | -0.148817 | 0.444173 | 0.835350 |
+| all | home_favourite | 5617 | 0.121599 | -0.265638 | 0.502080 | 0.735150 |
+| all | home_underdog | 3439 | 0.225508 | -0.285560 | 0.747331 | 0.803900 |
+| 0-3 | all | 1667 | -0.317920 | -1.102944 | 0.441020 | 0.215250 |
+| 0-3 | home_favourite | 868 | -1.239550 | -2.299479 | -0.177922 | 0.010900 |
+| 0-3 | home_underdog | 762 | 0.853305 | -0.200356 | 1.907171 | 0.944750 |
+| 3.5-6.5 | all | 1828 | 0.491463 | -0.153350 | 1.137283 | 0.931450 |
+| 3.5-6.5 | home_favourite | 1003 | 0.665305 | -0.188368 | 1.532662 | 0.934700 |
+| 3.5-6.5 | home_underdog | 825 | 0.280113 | -0.798805 | 1.349447 | 0.694800 |
+| 7 | all | 433 | 1.386394 | 0.005739 | 2.810190 | 0.975550 |
+| 7 | home_favourite | 250 | 1.198406 | -0.662188 | 3.152720 | 0.891200 |
+| 7 | home_underdog | 183 | 1.643208 | -0.288921 | 3.582826 | 0.950250 |
+| 7.5-10 | all | 1091 | -0.653078 | -1.648514 | 0.323716 | 0.093700 |
+| 7.5-10 | home_favourite | 627 | 0.127771 | -1.184868 | 1.413925 | 0.571800 |
+| 7.5-10 | home_underdog | 464 | -1.708233 | -3.181589 | -0.234467 | 0.011600 |
+| 10.5+ | all | 4074 | 0.269529 | -0.202616 | 0.729654 | 0.872350 |
+| 10.5+ | home_favourite | 2869 | 0.248149 | -0.336056 | 0.815117 | 0.796250 |
+| 10.5+ | home_underdog | 1205 | 0.320433 | -0.621669 | 1.248384 | 0.745400 |
+| 14.5-21 | all | 1447 | 0.083739 | -0.684930 | 0.868307 | 0.584700 |
+| 14.5-21 | home_favourite | 985 | 0.474117 | -0.489792 | 1.437563 | 0.835000 |
+| 14.5-21 | home_underdog | 462 | -0.748558 | -2.103795 | 0.626097 | 0.140100 |
+| 21+ | all | 1380 | 0.020517 | -0.852570 | 0.848972 | 0.519150 |
+| 21+ | home_favourite | 1114 | -0.612259 | -1.633947 | 0.345113 | 0.109150 |
+| 21+ | home_underdog | 266 | 2.670561 | 0.673287 | 4.653694 | 0.995800 |
+
+### Big-spread diagnosis by era (10.5+)
+
+| window | side | sample_games | effect | interval_low | interval_high | probability_positive |
+| --- | --- | --- | --- | --- | --- | --- |
+| era_2006_2011 | all | 1057 | 0.006593 | -0.934972 | 0.965305 | 0.508300 |
+| era_2006_2011 | home_favourite | 789 | 0.912953 | -0.156135 | 2.023445 | 0.952400 |
+| era_2006_2011 | home_underdog | 268 | -2.661757 | -4.444607 | -0.862964 | 0.001550 |
+| era_2012_2019 | all | 2551 | 0.162041 | -0.483340 | 0.796367 | 0.688950 |
+| era_2012_2019 | home_favourite | 1802 | 0.432717 | -0.391585 | 1.215451 | 0.851950 |
+| era_2012_2019 | home_underdog | 749 | -0.489172 | -1.658866 | 0.714374 | 0.214900 |
+| era_2020_2020 | all | 250 | -1.770047 | -3.741578 | 0.079846 | 0.031300 |
+| era_2020_2020 | home_favourite | 164 | -2.649530 | -5.371134 | -0.033185 | 0.023650 |
+| era_2020_2020 | home_underdog | 86 | -0.092892 | -2.058846 | 1.993457 | 0.469150 |
+| era_2021_2025 | all | 1523 | 0.449569 | -0.207212 | 1.095744 | 0.908150 |
+| era_2021_2025 | home_favourite | 1067 | -0.063559 | -0.864241 | 0.717108 | 0.436800 |
+| era_2021_2025 | home_underdog | 456 | 1.650246 | 0.218621 | 3.131378 | 0.988150 |
+
+### Clean-core decision and probability scores
+
+| kind | bucket | units | sample_games | baseline | candidate | market | effect | interval_low | interval_high | probability_positive |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| s3 | all | accuracy_points | 8933 | 51.595209 | 51.707153 | 49.546625 | 0.111944 | -0.279676 | 0.499537 | 0.699950 |
+| s3 | all | brier_improvement | 8933 | 0.249969 | 0.249961 | 0.250287 | 0.000008 | -0.000190 | 0.000201 | 0.536650 |
+| s3 | all | log_loss_improvement | 8933 | 0.693026 | 0.693020 | 0.694268 | 0.000006 | -0.000393 | 0.000397 | 0.516050 |
+| s2 | all | accuracy_points | 8933 | 51.595209 | 51.908653 | 49.546625 | 0.313445 | -0.275013 | 0.907107 | 0.845100 |
+| s2 | all | brier_improvement | 8933 | 0.249969 | 0.249966 | 0.250287 | 0.000003 | -0.000311 | 0.000321 | 0.503500 |
+| s2 | all | log_loss_improvement | 8933 | 0.693026 | 0.693041 | 0.694268 | -0.000015 | -0.000648 | 0.000623 | 0.476200 |
+| s3 | 0-3 | accuracy_points | 1620 | 51.913580 | 51.913580 | 48.086420 | 0.000000 | 0.000000 | 0.000000 | 0.000000 |
+| s3 | 0-3 | brier_improvement | 1620 | 0.251278 | 0.251278 | 0.250372 | 0.000000 | 0.000000 | 0.000000 | 0.000000 |
+| s3 | 0-3 | log_loss_improvement | 1620 | 0.695728 | 0.695728 | 0.694477 | 0.000000 | 0.000000 | 0.000000 | 0.000000 |
+| s2 | 0-3 | accuracy_points | 1620 | 51.913580 | 51.913580 | 48.086420 | 0.000000 | -1.582288 | 1.617922 | 0.477100 |
+| s2 | 0-3 | brier_improvement | 1620 | 0.251278 | 0.251123 | 0.250372 | 0.000155 | -0.000861 | 0.001162 | 0.612600 |
+| s2 | 0-3 | log_loss_improvement | 1620 | 0.695728 | 0.695470 | 0.694477 | 0.000258 | -0.001803 | 0.002296 | 0.593700 |
+| s3 | 3.5-6.5 | accuracy_points | 1820 | 51.043956 | 51.043956 | 49.450549 | 0.000000 | 0.000000 | 0.000000 | 0.000000 |
+| s3 | 3.5-6.5 | brier_improvement | 1820 | 0.250432 | 0.250432 | 0.250726 | 0.000000 | 0.000000 | 0.000000 | 0.000000 |
+| s3 | 3.5-6.5 | log_loss_improvement | 1820 | 0.693962 | 0.693962 | 0.695915 | 0.000000 | 0.000000 | 0.000000 | 0.000000 |
+| s2 | 3.5-6.5 | accuracy_points | 1820 | 51.043956 | 52.032967 | 49.450549 | 0.989011 | -0.865801 | 2.843854 | 0.842400 |
+| s2 | 3.5-6.5 | brier_improvement | 1820 | 0.250432 | 0.250593 | 0.250726 | -0.000161 | -0.001081 | 0.000760 | 0.365850 |
+| s2 | 3.5-6.5 | log_loss_improvement | 1820 | 0.693962 | 0.694297 | 0.695915 | -0.000334 | -0.002183 | 0.001516 | 0.361650 |
+| s3 | 7 | accuracy_points | 398 | 46.231156 | 48.994975 | 52.763819 | 2.763819 | -1.927711 | 7.398789 | 0.860250 |
+| s3 | 7 | brier_improvement | 398 | 0.253790 | 0.252644 | 0.251723 | 0.001146 | -0.001861 | 0.004106 | 0.778250 |
+| s3 | 7 | log_loss_improvement | 398 | 0.700620 | 0.698404 | 0.700443 | 0.002215 | -0.003862 | 0.008201 | 0.769350 |
+| s2 | 7 | accuracy_points | 398 | 46.231156 | 48.994975 | 52.763819 | 2.763819 | -1.927711 | 7.398789 | 0.860250 |
+| s2 | 7 | brier_improvement | 398 | 0.253790 | 0.252644 | 0.251723 | 0.001146 | -0.001861 | 0.004106 | 0.778250 |
+| s2 | 7 | log_loss_improvement | 398 | 0.700620 | 0.698404 | 0.700443 | 0.002215 | -0.003862 | 0.008201 | 0.769350 |
+| s3 | 7.5-10 | accuracy_points | 1075 | 52.279070 | 52.093023 | 47.906977 | -0.186047 | -2.250512 | 1.856770 | 0.416400 |
+| s3 | 7.5-10 | brier_improvement | 1075 | 0.250382 | 0.250591 | 0.249942 | -0.000209 | -0.001217 | 0.000798 | 0.346400 |
+| s3 | 7.5-10 | log_loss_improvement | 1075 | 0.693977 | 0.694443 | 0.693031 | -0.000466 | -0.002510 | 0.001573 | 0.330600 |
+| s2 | 7.5-10 | accuracy_points | 1075 | 52.279070 | 52.093023 | 47.906977 | -0.186047 | -2.250512 | 1.856770 | 0.416400 |
+| s2 | 7.5-10 | brier_improvement | 1075 | 0.250382 | 0.250591 | 0.249942 | -0.000209 | -0.001217 | 0.000798 | 0.346400 |
+| s2 | 7.5-10 | log_loss_improvement | 1075 | 0.693977 | 0.694443 | 0.693031 | -0.000466 | -0.002510 | 0.001573 | 0.330600 |
+| s3 | 10.5+ | accuracy_points | 4020 | 52.064677 | 52.089552 | 50.298507 | 0.024876 | -0.547128 | 0.581403 | 0.523300 |
+| s3 | 10.5+ | brier_improvement | 4020 | 0.248743 | 0.248783 | 0.250005 | -0.000040 | -0.000179 | 0.000101 | 0.289400 |
+| s3 | 10.5+ | log_loss_improvement | 4020 | 0.690507 | 0.690587 | 0.693157 | -0.000081 | -0.000360 | 0.000202 | 0.286750 |
+| s2 | 10.5+ | accuracy_points | 4020 | 52.064677 | 52.089552 | 50.298507 | 0.024876 | -0.547128 | 0.581403 | 0.523300 |
+| s2 | 10.5+ | brier_improvement | 4020 | 0.248743 | 0.248783 | 0.250005 | -0.000040 | -0.000179 | 0.000101 | 0.289400 |
+| s2 | 10.5+ | log_loss_improvement | 4020 | 0.690507 | 0.690587 | 0.693157 | -0.000081 | -0.000360 | 0.000202 | 0.286750 |
+| s3 | 14.5-21 | accuracy_points | 1424 | 52.247191 | 52.528090 | 48.455056 | 0.280899 | -0.704238 | 1.292175 | 0.687450 |
+| s3 | 14.5-21 | brier_improvement | 1424 | 0.248556 | 0.248692 | 0.250024 | -0.000136 | -0.000347 | 0.000077 | 0.105900 |
+| s3 | 14.5-21 | log_loss_improvement | 1424 | 0.690130 | 0.690404 | 0.693195 | -0.000275 | -0.000700 | 0.000157 | 0.106700 |
+| s2 | 14.5-21 | accuracy_points | 1424 | 52.247191 | 52.528090 | 48.455056 | 0.280899 | -0.704238 | 1.292175 | 0.687450 |
+| s2 | 14.5-21 | brier_improvement | 1424 | 0.248556 | 0.248692 | 0.250024 | -0.000136 | -0.000347 | 0.000077 | 0.105900 |
+| s2 | 14.5-21 | log_loss_improvement | 1424 | 0.690130 | 0.690404 | 0.693195 | -0.000275 | -0.000700 | 0.000157 | 0.106700 |
+| s3 | 21+ | accuracy_points | 1362 | 51.027900 | 50.881057 | 50.146843 | -0.146843 | -1.139601 | 0.854716 | 0.354750 |
+| s3 | 21+ | brier_improvement | 1362 | 0.250135 | 0.250101 | 0.250024 | 0.000034 | -0.000223 | 0.000287 | 0.600400 |
+| s3 | 21+ | log_loss_improvement | 1362 | 0.693227 | 0.693160 | 0.693195 | 0.000067 | -0.000449 | 0.000578 | 0.598600 |
+| s2 | 21+ | accuracy_points | 1362 | 51.027900 | 50.881057 | 50.146843 | -0.146843 | -1.139601 | 0.854716 | 0.354750 |
+| s2 | 21+ | brier_improvement | 1362 | 0.250135 | 0.250101 | 0.250024 | 0.000034 | -0.000223 | 0.000287 | 0.600400 |
+| s2 | 21+ | log_loss_improvement | 1362 | 0.693227 | 0.693160 | 0.693195 | 0.000067 | -0.000449 | 0.000578 | 0.598600 |
+
+### Per-era and per-season paired accuracy
+
+| kind | window | sample_games | baseline | candidate | effect | interval_low | interval_high | probability_positive |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| s3 | all | 11780 | 51.655348 | 51.663837 | 0.008489 | -0.330287 | 0.344886 | 0.510100 |
+| s2 | all | 11780 | 51.655348 | 51.714771 | 0.059423 | -0.438569 | 0.554884 | 0.585300 |
+| s3 | era_2006_2011 | 2354 | 51.741716 | 51.231946 | -0.509771 | -1.213177 | 0.205692 | 0.073100 |
+| s2 | era_2006_2011 | 2354 | 51.741716 | 50.849618 | -0.892099 | -1.930518 | 0.136129 | 0.040350 |
+| s3 | era_2012_2019 | 5349 | 51.654515 | 51.804076 | 0.149561 | -0.294011 | 0.592264 | 0.739350 |
+| s2 | era_2012_2019 | 5349 | 51.654515 | 51.766685 | 0.112170 | -0.537445 | 0.793226 | 0.618100 |
+| s3 | era_2020_2020 | 493 | 52.332657 | 52.941176 | 0.608519 | -0.719424 | 2.234665 | 0.756600 |
+| s2 | era_2020_2020 | 493 | 52.332657 | 52.332657 | 0.000000 | -1.949318 | 2.500000 | 0.456600 |
+| s3 | era_2021_2025 | 3584 | 51.506696 | 51.562500 | 0.055804 | -0.674888 | 0.786345 | 0.536400 |
+| s2 | era_2021_2025 | 3584 | 51.506696 | 52.120536 | 0.613839 | -0.454162 | 1.712614 | 0.865950 |
+| s3 | season_2007 | 314 | 54.140127 | 54.140127 | 0.000000 | -1.197605 | 1.244846 | 0.396900 |
+| s2 | season_2007 | 314 | 54.140127 | 53.184713 | -0.955414 | -2.054795 | 0.330033 | 0.039150 |
+| s3 | season_2008 | 290 | 51.379310 | 49.655172 | -1.724138 | -4.034582 | 0.675676 | 0.059350 |
+| s2 | season_2008 | 290 | 51.379310 | 48.965517 | -2.413793 | -4.743083 | 0.413223 | 0.035850 |
+| s3 | season_2009 | 570 | 52.105263 | 51.754386 | -0.350877 | -1.688571 | 0.919146 | 0.244800 |
+| s2 | season_2009 | 570 | 52.105263 | 52.807018 | 0.701754 | -1.253167 | 2.500000 | 0.740400 |
+| s3 | season_2010 | 560 | 48.928571 | 47.857143 | -1.071429 | -2.321731 | 0.357782 | 0.051250 |
+| s2 | season_2010 | 560 | 48.928571 | 45.892857 | -3.035714 | -5.178571 | -0.851789 | 0.001950 |
+| s3 | season_2011 | 620 | 52.903226 | 53.064516 | 0.161290 | -1.359231 | 1.674277 | 0.528700 |
+| s2 | season_2011 | 620 | 52.903226 | 53.225806 | 0.322581 | -1.615509 | 2.291326 | 0.581650 |
+| s3 | season_2012 | 631 | 51.980983 | 52.614897 | 0.633914 | -0.881077 | 2.218706 | 0.755250 |
+| s2 | season_2012 | 631 | 51.980983 | 53.090333 | 1.109350 | -1.648372 | 4.420758 | 0.743800 |
+| s3 | season_2013 | 642 | 51.869159 | 50.934579 | -0.934579 | -2.366891 | 0.597030 | 0.095000 |
+| s2 | season_2013 | 642 | 51.869159 | 51.713396 | -0.155763 | -2.761672 | 2.678603 | 0.424550 |
+| s3 | season_2014 | 653 | 49.617152 | 49.617152 | 0.000000 | -1.550388 | 1.646707 | 0.461750 |
+| s2 | season_2014 | 653 | 49.617152 | 49.617152 | 0.000000 | -1.910872 | 1.938000 | 0.472450 |
+| s3 | season_2015 | 670 | 53.134328 | 53.731343 | 0.597015 | -0.167504 | 1.306241 | 0.909850 |
+| s2 | season_2015 | 670 | 53.134328 | 53.582090 | 0.447761 | -0.715314 | 1.468189 | 0.751500 |
+| s3 | season_2016 | 666 | 53.003003 | 53.903904 | 0.900901 | -0.136430 | 1.902758 | 0.947250 |
+| s2 | season_2016 | 666 | 53.003003 | 52.852853 | -0.150150 | -1.571429 | 1.285778 | 0.378300 |
+| s3 | season_2017 | 687 | 52.983988 | 52.692868 | -0.291121 | -1.146167 | 0.614439 | 0.212300 |
+| s2 | season_2017 | 687 | 52.983988 | 52.692868 | -0.291121 | -1.783066 | 1.111111 | 0.337150 |
+| s3 | season_2018 | 703 | 52.062589 | 52.489331 | 0.426743 | -0.590842 | 1.363636 | 0.763750 |
+| s2 | season_2018 | 703 | 52.062589 | 52.204836 | 0.142248 | -1.137805 | 1.445096 | 0.547000 |
+| s3 | season_2019 | 697 | 48.637016 | 48.493544 | -0.143472 | -1.412873 | 1.116427 | 0.384200 |
+| s2 | season_2019 | 697 | 48.637016 | 48.493544 | -0.143472 | -1.675258 | 1.401869 | 0.404500 |
+| s3 | season_2020 | 493 | 52.332657 | 52.941176 | 0.608519 | -0.719424 | 2.234665 | 0.756600 |
+| s2 | season_2020 | 493 | 52.332657 | 52.332657 | 0.000000 | -1.949318 | 2.500000 | 0.456600 |
+| s3 | season_2021 | 694 | 52.881844 | 53.314121 | 0.432277 | -1.071975 | 1.933702 | 0.673600 |
+| s2 | season_2021 | 694 | 52.881844 | 53.602305 | 0.720461 | -1.198649 | 2.404526 | 0.768300 |
+| s3 | season_2022 | 693 | 49.783550 | 49.783550 | 0.000000 | -1.025660 | 1.092044 | 0.438250 |
+| s2 | season_2022 | 693 | 49.783550 | 49.639250 | -0.144300 | -2.145251 | 1.675978 | 0.421050 |
+| s3 | season_2023 | 730 | 53.424658 | 53.972603 | 0.547945 | -1.333378 | 2.376281 | 0.679200 |
+| s2 | season_2023 | 730 | 53.424658 | 56.027397 | 2.602740 | -0.127065 | 5.718670 | 0.966200 |
+| s3 | season_2024 | 721 | 51.733703 | 50.901526 | -0.832178 | -2.356021 | 0.508922 | 0.103650 |
+| s2 | season_2024 | 721 | 51.733703 | 51.733703 | 0.000000 | -1.837699 | 1.809971 | 0.466800 |
+| s3 | season_2025 | 746 | 49.731903 | 49.865952 | 0.134048 | -1.825323 | 2.069858 | 0.525100 |
+| s2 | season_2025 | 746 | 49.731903 | 49.597855 | -0.134048 | -2.760745 | 2.526660 | 0.452200 |
+
+Measured (`artifacts/research/laneO/all_cells.csv`): the complete machine-readable
+report carries all 1,800 nonempty diagnosis and paired-score cells, including
+per-season/per-era/per-bucket Brier and log loss and extended-band diagnoses;
+`cells.json` carries the same cells and every exact registry name. The
+prediction-level parquet preserves raw and corrected probabilities, offsets,
+prior counts and training cutoffs. Each artifact has a provenance stamp;
+the prediction sidecar records the input and predeclaration SHA-256.
+
+
+## Verification and recording status
+
+Measured (`artifacts/research/laneO/benchmark_reproduction.json`): an independent
+call to the unchanged `cfb_walk_forward_benchmark` matches all 11,989 Lane O
+raw points and probabilities exactly (maximum absolute differences both 0).
+This verifies the fitter, weekly training cutoff and ECDF convention against
+the actual benchmark entry point, not only against a copied formula.
+
+Measured (`ruff format --check` and `ruff check` on the two Lane O Python
+files): formatting and lint pass. Measured (`pytest` command below): 14 tests
+pass, including the synthetic bucket/side arithmetic, pooled shrinkage,
+completion/future/stale-row exclusions, tie convention, deterministic blocked
+interval and repository artifact-provenance scanner.
+
+```powershell
+.\.tools\uv.exe run --no-sync ruff format --check scripts/cfb_home_side_replication.py tests/test_cfb_home_side_replication.py
+.\.tools\uv.exe run --no-sync ruff check scripts/cfb_home_side_replication.py tests/test_cfb_home_side_replication.py
+.\.tools\uv.exe run --no-sync pytest tests/test_cfb_home_side_replication.py tests/test_experiment_registry.py -n 2 --basetemp C:/Users/Ryan/AppData/Local/Temp/claude/F--Repos-nfl-py3/fedb09af-a2ec-4d29-af01-540025768002/scratchpad/laneO
+```
+
+Measured (`artifacts/research/laneO/shared_registry_audit.json`): the shared
+registry's complete JSON object contains 1,007 Lane O rows, but has a further
+528 non-whitespace characters after that object and cannot be loaded by the
+CLI. The initial write failed with a Windows replacement error; the resume
+later stopped on this JSON parse error. Inferred: concurrent writers may have
+collided on `atomic_json`'s common `.tmp` path (read, `src/nfl_ats/io.py:48-54`).
+No raw repair of the shared file was performed: the user's hard rule allows
+shared registry writes only via the record CLI, and a repair exception was
+requested. The recovery command uses an isolated registry under Lane O:
+
+```powershell
+$env:NFL_ATS_REGISTRY_DIR='artifacts/research/laneO/registry'
+.\.tools\uv.exe run --no-sync python scripts/cfb_home_side_replication.py --record-only
+```
+
+The CLI is invoked via `nfl_ats.cli.main` with its real parser and record
+handler. `record_commands.json` preserves exact argv and command responses;
+`registry_verified.json` lists every exact name. The common prefix is
+`mod18_home_side_location_cfb_v1_`, family `mod18_home_side_location_cfb_v1`,
+league `cfb`, classification `unresolved_below_power`. Completing the shared
+registry replay remains separate from isolated recording.
+
+Read (Lane O user hard rules): scheduler capture, dashboard publishing,
+handoff/roadmap edits, source edits, commit and push were outside this lane's
+write/command authorization, so none were performed.
+
+
+Measured (`artifacts/research/laneO/registry_verified.json`): all **1,800**
+exact names are now recorded and value-checked in the isolated CFB registry,
+all league cfb and classification unresolved_below_power. Measured
+(`record_commands.json`): all 1,800 real CLI parser/handler calls succeeded.
+Shared replay remains blocked by the malformed shared file; this isolated
+success does not claim that the shared registry is complete. A stamped
+read-only recovery copy of the complete shared object and trailing fragment
+is saved in `shared_registry_recovery_evidence.json` for the coordinator.
+
+Measured (`git status --short`): Lane O adds the three authorized new files
+and CFB CLI rows in `registry/weak_signals.json`; its generated artifacts are
+under `artifacts/research/laneO/`. Other source/dashboard/test changes and
+other new research scripts appeared concurrently; Lane O did not edit them.

@@ -15,6 +15,8 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import UTC, date, datetime
 
+import pandas as pd
+
 from nfl_ats.board_content import (
     AttributionPanel,
     AttributionRow,
@@ -30,6 +32,8 @@ from nfl_ats.board_content import (
     ProspectiveScoreboard,
     SpreadAdjusterParams,
     TickerChrome,
+    WeekTimeline,
+    build_week_timeline,
 )
 
 #: 16 (away, home, spread_line, home_cover_probability) tuples -- enough
@@ -253,6 +257,26 @@ def build_fixture_dives(games: tuple[GameRow, ...]) -> tuple[GameDive, ...]:
     return tuple(dives)
 
 
+def build_fixture_timeline(
+    games: tuple[GameRow, ...],
+    generated_at: datetime = datetime(2026, 8, 31, 12, tzinfo=UTC),
+) -> WeekTimeline:
+    times = {"Wednesday": "20:20", "Thursday": "20:35", "Monday": "20:15"}
+    frame = pd.DataFrame(
+        [
+            {
+                "game_id": game.game_id,
+                "kickoff": pd.Timestamp(
+                    f"{game.gameday} {times.get(game.weekday_name, '13:00')}",
+                    tz="America/New_York",
+                ),
+            }
+            for game in games
+        ]
+    )
+    return build_week_timeline(frame, games, generated_at, "2026-08-31T11:00:00Z")
+
+
 def build_fixture_content() -> BoardContent:
     """A complete, deterministic 16-game ``BoardContent`` fixture."""
 
@@ -352,6 +376,7 @@ def build_fixture_content() -> BoardContent:
         week_label="Week 1",
         generated_at=datetime(2026, 8, 31, 12, 0, 0, tzinfo=UTC),
         generated_at_text="2026-08-31 12:00:00 UTC",
+        week_timeline=build_fixture_timeline(games),
         games=games,
         best_pick_game_id=BEST_PICK_GAME_ID,
         best_pick_note=(

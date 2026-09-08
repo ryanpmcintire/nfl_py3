@@ -10,6 +10,7 @@ from typing import Any
 
 from nfl_ats import registry_explorer
 from nfl_ats.cli_common import _print_json
+from nfl_ats.io import file_lock
 from nfl_ats.rotation import (
     GRADE_POOLS,
     MAX_WINDOW_SIZE,
@@ -147,7 +148,6 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
     """
 
     path = weak_signal_registry_path()
-    registry = load_weak_signals(path)
     interval = None
     if args.interval_low is not None and args.interval_high is not None:
         interval = (float(args.interval_low), float(args.interval_high))
@@ -174,8 +174,13 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
         plain_summary=args.plain_summary,
         category=args.category,
     )
-    registry = record_signal(registry, signal, replace=args.replace)
-    save_weak_signals(registry, path)
+    # Load -> record -> save under the registry lock: concurrent lanes
+    # recording at once must queue, never overwrite each other's rows
+    # (2026-09-08: two lanes racing this block lost and corrupted rows).
+    with file_lock(path):
+        registry = load_weak_signals(path)
+        registry = record_signal(registry, signal, replace=args.replace)
+        save_weak_signals(registry, path)
     # Both fields are optional (475 pre-existing rows carry neither), but a
     # NEW record that skips them is the ledger's raw-description/Uncategorised
     # fallback silently choosing itself -- warn out loud on stderr so this
@@ -304,16 +309,17 @@ def _cmd_weak_signals_set_reliability(args: argparse.Namespace) -> None:
 def _cmd_rotation_declare(args: argparse.Namespace) -> None:
     path = default_registry_path()
     inherits = tuple(part.strip() for part in str(args.inherits or "").split(",") if part.strip())
-    registry = declare_family(
-        load_registry(path),
-        args.name,
-        description=args.description,
-        grade=args.grade,
-        inherits=inherits,
-        acknowledges_mined_2018_2025=args.acknowledge_mined,
-        plain_summary=args.plain_summary,
-    )
-    save_registry(registry, path)
+    with file_lock(path):
+        registry = declare_family(
+            load_registry(path),
+            args.name,
+            description=args.description,
+            grade=args.grade,
+            inherits=inherits,
+            acknowledges_mined_2018_2025=args.acknowledge_mined,
+            plain_summary=args.plain_summary,
+        )
+        save_registry(registry, path)
     _print_json({"declared": args.name, **_rotation_family_payload(registry, args.name)})
 
 
@@ -327,8 +333,11 @@ def _cmd_rotation_set_plain_summary(args: argparse.Namespace) -> None:
     """
 
     path = default_registry_path()
-    registry = set_plain_summary(load_registry(path), args.name, plain_summary=args.plain_summary)
-    save_registry(registry, path)
+    with file_lock(path):
+        registry = set_plain_summary(
+            load_registry(path), args.name, plain_summary=args.plain_summary
+        )
+        save_registry(registry, path)
     _print_json({"updated": args.name, **_rotation_family_payload(registry, args.name)})
 
 
@@ -340,10 +349,13 @@ def _cmd_rotation_assign(args: argparse.Namespace) -> None:
                 "--size does not apply to --stratified windows; a stratified "
                 "window is always a two-leg pair (docs/era_stratified_windows_proposal.md)"
             )
-        registry = assign_stratified_window(load_registry(path), args.name)
+        with file_lock(path):
+            registry = assign_stratified_window(load_registry(path), args.name)
+            save_registry(registry, path)
     else:
-        registry = assign_window(load_registry(path), args.name, size=args.size)
-    save_registry(registry, path)
+        with file_lock(path):
+            registry = assign_window(load_registry(path), args.name, size=args.size)
+            save_registry(registry, path)
     _print_json({"assigned": args.name, **_rotation_family_payload(registry, args.name)})
 
 
@@ -353,23 +365,24 @@ def _cmd_rotation_record(args: argparse.Namespace) -> None:
     if args.interval_low is not None and args.interval_high is not None:
         interval = (float(args.interval_low), float(args.interval_high))
     leg_effects = None if args.leg_effects is None else json.loads(args.leg_effects)
-    registry = record_look(
-        load_registry(path),
-        args.name,
-        artifact=args.artifact,
-        verdict=args.verdict,
-        probability_positive=args.probability_positive,
-        closing_ground=args.closing_ground,
-        effect=args.effect,
-        effect_units=args.effect_units,
-        interval=interval,
-        standard_error=args.standard_error,
-        sample_blocks=args.sample_blocks,
-        leg_effects=leg_effects,
-        notes=args.notes,
-        replace_existing=args.replace,
-    )
-    save_registry(registry, path)
+    with file_lock(path):
+        registry = record_look(
+            load_registry(path),
+            args.name,
+            artifact=args.artifact,
+            verdict=args.verdict,
+            probability_positive=args.probability_positive,
+            closing_ground=args.closing_ground,
+            effect=args.effect,
+            effect_units=args.effect_units,
+            interval=interval,
+            standard_error=args.standard_error,
+            sample_blocks=args.sample_blocks,
+            leg_effects=leg_effects,
+            notes=args.notes,
+            replace_existing=args.replace,
+        )
+        save_registry(registry, path)
     _print_json({"recorded": args.name, **_rotation_family_payload(registry, args.name)})
 
 

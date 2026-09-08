@@ -56,6 +56,14 @@ SEASON_RECORD_QUESTIONS = (
 )
 
 
+WEEK_TIMELINE_QUESTIONS = (
+    "when do the lines lock",
+    "when does the card update",
+    "when are picks due",
+    "when is the deadline for the Monday game",
+)
+
+
 HOME_PUSH_QUESTIONS = (
     "what is the home-side push",
     "why does the model lean home on big spreads",
@@ -302,6 +310,7 @@ def test_golden_fixture_covers_every_router_intent() -> None:
         "policy",
         "findings",
         "timing",
+        "week_timeline",
         "scope:winners",
         "scope:injury",
         "scope:weather",
@@ -617,3 +626,23 @@ def test_home_push_board_answer_uses_shared_reader_text(
     assert response.topic == "weak_spots_home_push"
     assert response.text == _build_home_push_weak_spots().home_correction_text
     assert response.anchors == ("model.html#weak-spots-push-h",)
+
+
+def test_week_timeline_golden_questions_are_pinned() -> None:
+    pinned = {case.question: case.expected_intent for case in GOLDEN_QUESTIONS}
+    for question in WEEK_TIMELINE_QUESTIONS[:2]:
+        assert pinned[question] == "week_timeline"
+
+
+@pytest.mark.parametrize("question", WEEK_TIMELINE_QUESTIONS)
+def test_week_timeline_answer_uses_page_content(question: str) -> None:
+    content = build_fixture_content()
+    result = board_assistant.answer(question, build_knowledge_for_board(content))
+    assert result.topic == "week_timeline"
+    assert result.anchors == ("index.html#week-timeline-h",)
+    if "Monday game" in question:
+        assert result.text == dict(content.week_timeline.deadlines)["2026_01_DEN_KC"]
+        assert "Sunday 4:00 PM ET, before kickoff" in result.text
+        assert "NE at SEA" not in result.text
+    else:
+        assert result.text == content.week_timeline.text

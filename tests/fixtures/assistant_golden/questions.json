@@ -121,5 +121,7 @@
   {"question": "how does the model do with home underdogs", "expected_intent": "weak_spots_home_split", "must_contain": ["home underdog (1 game)", "covered 100%", "expected 60%", "right 100%"], "must_not_contain": ["NaN", "Underdog picks ("], "category": "routing"},
   {"question": "does the model like home dogs on big spreads", "expected_intent": "weak_spots_home_split", "must_contain": ["home favourite (1 game)", "covered 0%", "expected 70%", "right 0%"], "must_not_contain": ["NaN", "Underdog picks ("], "category": "routing"},
   {"question": "what is the home-side push", "expected_intent": "weak_spots_home_push", "must_contain": ["+0.75 points", "3 of 20 picks", "60.0%", "55.0%"], "must_not_contain": ["NaN", "raw model", "P+", "policy"], "category": "routing"},
-  {"question": "why does the model lean home on big spreads", "expected_intent": "weak_spots_home_push", "must_contain": ["+0.75 points", "3 of 20 picks", "60.0%", "55.0%"], "must_not_contain": ["NaN", "raw model", "P+", "policy"], "category": "routing"}
+  {"question": "why does the model lean home on big spreads", "expected_intent": "weak_spots_home_push", "must_contain": ["+0.75 points", "3 of 20 picks", "60.0%", "55.0%"], "must_not_contain": ["NaN", "raw model", "P+", "policy"], "category": "routing"},
+  {"question": "when do the lines lock", "expected_intent": "week_timeline", "must_contain": ["Tuesday at 12:00 PM ET", "Sunday 4:00 PM ET"], "must_not_contain": ["refresh_wed", "NaN"], "category": "routing"},
+  {"question": "when does the card update", "expected_intent": "week_timeline", "must_contain": ["Wednesday 6:15 PM ET refresh", "Sunday 10:00 AM ET refresh and card publication"], "must_not_contain": ["refresh_sun", "NaN"], "category": "routing"}
 ]

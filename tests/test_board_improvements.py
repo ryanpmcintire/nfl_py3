@@ -103,6 +103,8 @@ def test_findings_trace_chip_renders_signal_name_and_probability_positive(
         # confidence figure, not "P+ x.xx" (owner mandate, 2026-09-05: "this
         # is for humans not the opus autist").
         name_words = escape(finding.trace_signal_name.replace("_", " "))
+        if finding.trace_signal_name == "mod18_home_side_location_v1_s3_through_card_vs_s2":
+            name_words = "Big-spread push versus all-spread push"
         assert name_words in html
         pp_text = f"{finding.trace_probability_positive:.0%} likely real"
         chip = f"{name_words} &middot; {pp_text}"

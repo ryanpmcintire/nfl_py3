@@ -641,6 +641,45 @@ SOURCE_LABEL = "Source"
 _CURATED_AS_OF = "2026-09-02"
 
 FINDINGS: tuple[Finding, ...] = (
+    Finding(
+        question="Why does the model lean toward home teams on big spreads now?",
+        verdict="unproven",
+        plain_answer=(
+            "We now make a small addition to the forecast, generally toward the home team, "
+            "on spreads of seven points or more. Each week's amount is learned only from "
+            "games already played. It can move the other way when those games call for it; "
+            "it is not an automatic home-team pick."
+        ),
+        detail=(
+            "In the 2020-2025 archive, the forecast underestimated home teams on spreads "
+            "of 10.5 points or more: by about 2.4 points for home favourites and 4.5 for "
+            "home underdogs. In the September 8 comparison, after all the pick rules, "
+            "the big-spread push got 55.9% right against the opening line, versus 55.2% "
+            "without any push. We chose and tried it on the same games used to measure "
+            "the problem, so that improvement may flatter what comes next. Three nearby "
+            "approaches tried that day all did worse after the pick rules: separate "
+            "amounts for home favourites and underdogs; calculating big-spread cover "
+            "chances from the exact winning margins football often lands on, such as "
+            "three and seven; and pulling the addition toward zero more or less strongly. "
+            "Those comparisons do not settle the broader ideas. The 2026 weeks will "
+            "test this choice against the same picks made without the addition. "
+            "The evidence chip compares the big-spread-only addition with the earlier "
+            "version that also adjusted smaller spreads."
+        ),
+        # Fixed historical comparison, not the live headline. Static Finding prose
+        # uses source + checked registry fingerprints (Finding's curation contract).
+        # Sources name active model a4c757efd2525da6 and family
+        # mod18_home_side_location_v1; the chip's comparator is S2, not no push.
+        source=(
+            "docs/home_side_location.md:9-20; "
+            "docs/home_side_offset_promotion.md:147-250; "
+            "docs/home_side_side_aware.md:38-54; "
+            "docs/big_spread_lattice.md:40-54; docs/home_side_prior.md:38-51"
+        ),
+        registry_keys=("weak_signal:mod18_home_side_location_v1_s3_through_card_vs_s2",),
+        registry_fingerprints=("c885ac154499d883",),
+        curated_as_of="2026-09-08",
+    ),
     # -- helps ---------------------------------------------------------------
     Finding(
         question="Do our picks beat a coin flip against the line the pool actually uses?",
