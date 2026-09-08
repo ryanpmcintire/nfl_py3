@@ -22021,6 +22021,1238 @@
       "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneK\\cells.json",
       "standard_error": 2.055020857343
     },
+    "mod18_conditional_margin_v1_oos1_w1_both_overall_brier_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, overall brier; positive favours the candidate",
+      "effect": -0.00038502529,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.001478990123,
+        0.000724072744
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row scores how close the stated chances were to what happened, not how many picks were right, and a positive number means the new way was closer.",
+      "probability_positive": 0.2437,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.000560516756
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_overall_card_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, overall card; positive favours the candidate",
+      "effect": 0.375234521576,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.557620817844,
+        1.303538175047
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.72715,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.452261739488
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_overall_log_loss_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, overall log_loss; positive favours the candidate",
+      "effect": -0.000791193166,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.003020255445,
+        0.001460202331
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row scores how well the stated chances held up, not how many picks were right, and a positive number means the new way scored better.",
+      "probability_positive": 0.24195,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.001141893911
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_overall_standalone_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, overall standalone; positive favours the candidate",
+      "effect": 0.375234521576,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.922509225092,
+        1.679104477612
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.66485,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.643015182059
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, season_2024 card; positive favours the candidate",
+      "effect": 1.127819548872,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        2.281368821293
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.9618,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.588099071498
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, season_2024 standalone; positive favours the candidate",
+      "effect": 1.127819548872,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.398406374502,
+        3.030303030303
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.8398,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.949721611764
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, season_2025 card; positive favours the candidate",
+      "effect": -0.374531835206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.520912547529,
+        0.760456273764
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2025 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.18395,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.63898629422
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, season_2025 standalone; positive favours the candidate",
+      "effect": -0.374531835206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.893939393939,
+        1.145038167939
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2025 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.2476,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.827760205345
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_touched_card_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, touched card; positive favours the candidate",
+      "effect": 3.125,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.347826086957,
+        11.268173557474
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.7348,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 26,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 3.879431570423
+    },
+    "mod18_conditional_margin_v1_oos1_w1_both_touched_standalone_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W1 versus the served S3, touched standalone; positive favours the candidate",
+      "effect": 3.125,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -6.946271929825,
+        14.285714285714
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.66445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 26,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 5.444536166611
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_overall_brier_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, overall brier; positive favours the candidate",
+      "effect": -1.9561362e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.000806984978,
+        0.000756041558
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row scores how close the stated chances were to what happened, not how many picks were right, and a positive number means the new way was closer.",
+      "probability_positive": 0.48005,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.000398599139
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_overall_card_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, overall card; positive favours the candidate",
+      "effect": 0.562851782364,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.188679245283,
+        1.330798479087
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.8798,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.405362005468
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_overall_log_loss_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, overall log_loss; positive favours the candidate",
+      "effect": -4.9342965e-05,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.001644602874,
+        0.001532038579
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row scores how well the stated chances held up, not how many picks were right, and a positive number means the new way scored better.",
+      "probability_positive": 0.4735,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.000810378211
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_overall_standalone_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, overall standalone; positive favours the candidate",
+      "effect": 0.562851782364,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.378071833648,
+        1.498127340824
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.83525,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.48442770276
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, season_2024 card; positive favours the candidate",
+      "effect": 0.751879699248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.743494423792,
+        2.238805970149
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.77795,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.730179009891
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, season_2024 standalone; positive favours the candidate",
+      "effect": 0.751879699248,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.754716981132,
+        2.214022140221
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.78395,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.721283736159
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, season_2025 card; positive favours the candidate",
+      "effect": 0.374531835206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.0,
+        1.136363636364
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2025 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.6425,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.361039657059
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, season_2025 standalone; positive favours the candidate",
+      "effect": 0.374531835206,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.757575757576,
+        1.538461538462
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2025 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.60815,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.643760655299
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_touched_card_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, touched card; positive favours the candidate",
+      "effect": 11.111111111111,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -4.0,
+        28.0
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.88345,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 27,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 8.148880120927
+    },
+    "mod18_conditional_margin_v1_oos1_w1_kl_touched_standalone_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W1 versus the served S3, touched standalone; positive favours the candidate",
+      "effect": 11.111111111111,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -7.407407407407,
+        31.818181818182
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.83625,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 27,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 9.950922325308
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_overall_brier_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, overall brier; positive favours the candidate",
+      "effect": 0.00025066929,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00084568642,
+        0.001439159617
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row scores how close the stated chances were to what happened, not how many picks were right, and a positive number means the new way was closer.",
+      "probability_positive": 0.6585,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.000581981708
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_overall_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, overall card; positive favours the candidate",
+      "effect": 0.375469336671,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.628140703518,
+        1.376720901126
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.7305,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.514619165805
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_overall_log_loss_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, overall log_loss; positive favours the candidate",
+      "effect": 0.000525098987,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.001713435864,
+        0.002950189438
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row scores how well the stated chances held up, not how many picks were right, and a positive number means the new way scored better.",
+      "probability_positive": 0.66305,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.001184993729
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_overall_standalone_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, overall standalone; positive favours the candidate",
+      "effect": 0.250312891114,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.256281407035,
+        1.838235294118
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.59285,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.779851467376
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, season_2023 card; positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.88679245283,
+        1.852023957043
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.4214,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.918921853236
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, season_2023 standalone; positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.661596958175,
+        3.717472118959
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.5285,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 1.628253805594
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, season_2024 card; positive favours the candidate",
+      "effect": 2.631578947368,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        1.136363636364,
+        4.135338345865
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2024 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.9998,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.762326503819
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, season_2024 standalone; positive favours the candidate",
+      "effect": 1.87969924812,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.746268656716,
+        4.379562043796
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2024 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.9074,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 1.267123762282
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, season_2025 card; positive favours the candidate",
+      "effect": -1.498127340824,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.952029520295,
+        -0.371747211896
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2025 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.658826742286
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, season_2025 standalone; positive favours the candidate",
+      "effect": -1.498127340824,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.053435114504,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2025 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.0192,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.838447533249
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_touched_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, touched card; positive favours the candidate",
+      "effect": 1.587301587302,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.673796791444,
+        5.913978494624
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.73085,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 189,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 2.196260793367
+    },
+    "mod18_conditional_margin_v1_oos1_w2_both_touched_standalone_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm BOTH on window W2 versus the served S3, touched standalone; positive favours the candidate",
+      "effect": 1.058201058201,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -5.181347150259,
+        7.61421319797
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Both changes at once. Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.5933,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 189,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 3.252485483149
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_overall_brier_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, overall brier; positive favours the candidate",
+      "effect": -8.1265434e-05,
+      "effect_units": "brier_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.000766409066,
+        0.000564504452
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row scores how close the stated chances were to what happened, not how many picks were right, and a positive number means the new way was closer.",
+      "probability_positive": 0.40445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.000338722543
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_overall_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, overall card; positive favours the candidate",
+      "effect": 0.375469336671,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.501253132832,
+        1.25313283208
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.7612,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.446647176752
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_overall_log_loss_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, overall log_loss; positive favours the candidate",
+      "effect": -0.000165644646,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.00155926949,
+        0.001145669445
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row scores how well the stated chances held up, not how many picks were right, and a positive number means the new way scored better.",
+      "probability_positive": 0.40415,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.000688073023
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_overall_standalone_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, overall standalone; positive favours the candidate",
+      "effect": -0.125156445557,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.261034047919,
+        1.002506265664
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.3717,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.58001947473
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, season_2023 card; positive favours the candidate",
+      "effect": -0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.56862745098,
+        0.760528836386
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.18555,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.646394362897
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, season_2023 standalone; positive favours the candidate",
+      "effect": -1.127819548872,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.030303030303,
+        0.746268656716
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.0832,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.96145969164
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, season_2024 card; positive favours the candidate",
+      "effect": 2.255639097744,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        0.377358490566,
+        4.044117647059
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2024 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.9867,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.915721721996
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, season_2024 standalone; positive favours the candidate",
+      "effect": 1.503759398496,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -0.763358778626,
+        3.649635036496
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2024 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.87505,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 1.121231924174
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, season_2025 card; positive favours the candidate",
+      "effect": -0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -1.87969924812,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2025 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.502318962328
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, season_2025 standalone; positive favours the candidate",
+      "effect": -0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -2.238805970149,
+        0.740740740741
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2025 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.092,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.726952958289
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_touched_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, touched card; positive favours the candidate",
+      "effect": 2.290076335878,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -3.076923076923,
+        7.758620689655
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.75825,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 131,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 2.747029842739
+    },
+    "mod18_conditional_margin_v1_oos1_w2_kl_touched_standalone_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm KL on window W2 versus the served S3, touched standalone; positive favours the candidate",
+      "effect": -0.763358778626,
+      "effect_units": "accuracy_points",
+      "family": "mod18_conditional_margin_v1",
+      "interval": [
+        -7.692307692308,
+        6.201550387597
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Football scores bunch up on a few numbers, so when the spread is set on exactly 3 or 7 points, this version reads the chance of covering from how often past games at a similar spread really finished on each score, and leaves every other game alone. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.36645,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 51,
+      "sample_games": 131,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 3.542227155773
+    },
     "mod18_home_dog_location_v1_Q1_2020_2021": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -77348,6 +78580,622 @@
       ],
       "source": "C:\\Users\\Ryan\\AppData\\Local\\Temp\\claude\\F--Repos-nfl-py3\\dcbb74c0-77a9-470f-8e6e-713bc3331924\\scratchpad\\laneS\\composition.json",
       "standard_error": null
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_overall_brier_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, overall brier; positive favours the candidate",
+      "effect": -0.000365463928,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001359469822,
+        0.000605988287
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row scores how close the stated chances were to what happened, not how many picks were right, and a positive number means the new way was closer.",
+      "probability_positive": 0.23615,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.000499692089
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_overall_card_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, overall card; positive favours the candidate",
+      "effect": -0.187617260788,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.77075010601,
+        0.379506641366
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.18245,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.323434113157
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_overall_log_loss_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, overall log_loss; positive favours the candidate",
+      "effect": -0.000741850202,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.00278372853,
+        0.001252449474
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row scores how well the stated chances held up, not how many picks were right, and a positive number means the new way scored better.",
+      "probability_positive": 0.23905,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.001025162639
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_overall_standalone_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, overall standalone; positive favours the candidate",
+      "effect": -0.187617260788,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.77075010601,
+        0.379506641366
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 to 2025 seasons, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.18245,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.323434113157
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, season_2024 card; positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        1.136363636364
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.6445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.365891997649
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, season_2024 standalone; positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        1.136363636364
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2024 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.6445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.365891997649
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, season_2025 card; positive favours the candidate",
+      "effect": -0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.85873605948,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2025 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.493991125397
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, season_2025 standalone; positive favours the candidate",
+      "effect": -0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.85873605948,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured on the 2025 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.493991125397
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_touched_card_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, touched card; positive favours the candidate",
+      "effect": -2.702702702703,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -12.903225806452,
+        5.714285714286
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.17845,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 22,
+      "sample_games": 37,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 4.771832552589
+    },
+    "mod18_home_side_location_v1_oos1_w1_rs_touched_standalone_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W1 versus the served S3, touched standalone; positive favours the candidate",
+      "effect": -2.702702702703,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -12.903225806452,
+        5.714285714286
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2023 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.17845,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 22,
+      "sample_games": 37,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 4.771832552589
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_overall_brier_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, overall brier; positive favours the candidate",
+      "effect": 0.000331934725,
+      "effect_units": "brier_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.000639879948,
+        0.001433011322
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row scores how close the stated chances were to what happened, not how many picks were right, and a positive number means the new way was closer.",
+      "probability_positive": 0.73045,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.00052960473
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_overall_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, overall card; positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.625,
+        0.621890547264
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.4192,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.308823494304
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_overall_log_loss_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, overall log_loss; positive favours the candidate",
+      "effect": 0.000690743633,
+      "effect_units": "log_loss_improvement",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.001303014387,
+        0.00294037658
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row scores how well the stated chances held up, not how many picks were right, and a positive number means the new way scored better.",
+      "probability_positive": 0.73275,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.001084151722
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_overall_standalone_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, overall standalone; positive favours the candidate",
+      "effect": 0.375469336671,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.378310214376,
+        1.243781094527
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 to 2025 seasons, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.77645,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.413675242696
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_season_2023_card_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, season_2023 card; positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.769230769231,
+        1.544401544402
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.61525,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.640095559448
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_season_2023_standalone_2023_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, season_2023 standalone; positive favours the candidate",
+      "effect": 1.503759398496,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -0.374531835206,
+        3.636695421367
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2023 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.9146,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.994375215139
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_season_2024_card_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, season_2024 card; positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        1.136363636364
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2024 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.6445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.365891997649
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_season_2024_standalone_2024_2024": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, season_2024 standalone; positive favours the candidate",
+      "effect": 0.375939849624,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        0.0,
+        1.136363636364
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2024 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.6445,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.365891997649
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_season_2025_card_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, season_2025 card; positive favours the candidate",
+      "effect": -0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.85873605948,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2025 season only, which the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.493991125397
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_season_2025_standalone_2025_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, season_2025 standalone; positive favours the candidate",
+      "effect": -0.749063670412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -1.85873605948,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured on the 2025 season only, which the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 0.493991125397
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_touched_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, touched card; positive favours the candidate",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -8.620689655172,
+        8.333333333333
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts the same thing after the usual weekly adjustments are applied to both.",
+      "probability_positive": 0.41545,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 58,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 4.257397439022
+    },
+    "mod18_home_side_location_v1_oos1_w2_rs_touched_standalone_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign, split-half reliability or positive-control closing ground established; retained unresolved.",
+      "closing_ground": null,
+      "description": "Out-of-sample declared arm RS on window W2 versus the served S3, touched standalone; positive favours the candidate",
+      "effect": 5.172413793103,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_side_location_v1",
+      "interval": [
+        -5.555555555556,
+        16.129032258065
+      ],
+      "league": "nfl",
+      "notes": "Out-of-sample declaration of two post-hoc MOD-18 candidates: the atom set and the bucket set are chosen by a mechanical rule fixed in advance on the declaration seasons and graded only on later seasons the choice never saw. The declaration removes the discount on THAT CHOICE ONLY: the archive was mined by lanes H, K, L, R, S, T and U, the S3 baseline is itself a restriction fitted on it, the two cuts overlap in their declaration seasons and in 2023, and the three arms within a cut are nested and correlated. The combination arm is correlated with both mod18_conditional_margin_v1 and mod18_home_side_location_v1.",
+      "plain_summary": "Where the opening line is 10.5 points or more, the model's own disagreement with the betting number has been worth less than face value, so this version keeps only the share of it earlier seasons say is worth keeping, and leaves every other size of line exactly as it is played today. The choice was made by a fixed rule written down in advance, using only the 2020 to 2022 seasons. Measured only on the games this version actually changes, in seasons the choice never saw. This row counts how many more games in a hundred the model on its own got right than the version in use.",
+      "probability_positive": 0.7746,
+      "recorded_at": "2026-09-08",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 58,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "F:\\Repos\\nfl_py3\\artifacts\\research\\laneV\\cells.json",
+      "standard_error": 5.534850229005
     },
     "mod18_home_side_location_v1_r1_r1_bucket_0-3_brier_2020_2025": {
       "category": "modeling",
