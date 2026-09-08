@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from time import perf_counter
@@ -78,6 +79,7 @@ from nfl_ats.mass_preserving_lattice import (
     DISCRETE_PUSH_READ_FILENAME,
     DISCRETE_PUSH_READ_POLICY,
     DISCRETE_PUSH_READ_SERVED,
+    DiscretePushReader,
     ProductionDiscretePushRead,
     ServedPushRead,
     fit_production_discrete_push_reader,
@@ -209,20 +211,24 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
     # The smooth split it replaces is kept in a sidecar as the paired record.
     discrete = _served_discrete_push_read(features, request)
     discrete_read_log: dict[str, ServedPushRead] = {}
-    predictions = score_outcome_week(
-        features,
-        season=request.season,
-        week=request.week,
-        regressor=request.regressor,
-        min_edge=request.min_edge,
-        min_train_games=request.min_train_games,
-        feature_profile=request.feature_profile,
-        ridge_alpha=request.ridge_alpha,
-        probability_method=request.probability_method,
-        center_offsets=center_offsets,
-        discrete_read=discrete.reader if discrete is not None else None,
-        discrete_read_log=discrete_read_log,
-    )
+
+    def _score(reader: DiscretePushReader | None) -> pd.DataFrame:
+        return score_outcome_week(
+            features,
+            season=request.season,
+            week=request.week,
+            regressor=request.regressor,
+            min_edge=request.min_edge,
+            min_train_games=request.min_train_games,
+            feature_profile=request.feature_profile,
+            ridge_alpha=request.ridge_alpha,
+            probability_method=request.probability_method,
+            center_offsets=center_offsets,
+            discrete_read=reader,
+            discrete_read_log=discrete_read_log,
+        )
+
+    predictions, discrete = _with_discrete_fallback(_score, discrete, discrete_read_log)
     uncorrected = (
         score_outcome_week(
             features,
@@ -353,18 +359,26 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         pool_methods.append(method)
     metadata["straight_up_pool_methods"] = pool_methods
     if request.line_sweep:
-        sweep = score_outcome_week_line_sweep(
-            features,
-            season=request.season,
-            week=request.week,
-            regressor=request.regressor,
-            min_train_games=request.min_train_games,
-            feature_profile=request.feature_profile,
-            ridge_alpha=request.ridge_alpha,
-            probability_method=request.probability_method,
-            center_offsets=center_offsets,
-            discrete_read=discrete.reader if discrete is not None else None,
-        )
+
+        def _sweep(reader: DiscretePushReader | None) -> pd.DataFrame:
+            return score_outcome_week_line_sweep(
+                features,
+                season=request.season,
+                week=request.week,
+                regressor=request.regressor,
+                min_train_games=request.min_train_games,
+                feature_profile=request.feature_profile,
+                ridge_alpha=request.ridge_alpha,
+                probability_method=request.probability_method,
+                center_offsets=center_offsets,
+                discrete_read=reader,
+            )
+
+        sweep, discrete = _with_discrete_fallback(_sweep, discrete, None)
+        if discrete is not None and "discrete_push_read" in metadata:
+            metadata["discrete_push_read"] = _discrete_push_read_summary(
+                discrete, discrete_read_log
+            )
         atomic_parquet(sweep, output / "line_sweep.parquet")
         metadata["line_sweep"] = {
             "path": "line_sweep.parquet",
@@ -1076,6 +1090,32 @@ def _home_side_offset_summary(
         "error": sidecar["error"],
         "sides_changed": [g["game_id"] for g in sidecar["games"] if g["side_changed"]],
     }
+
+
+def _with_discrete_fallback(
+    scorer: Callable[[DiscretePushReader | None], pd.DataFrame],
+    discrete: ProductionDiscretePushRead | None,
+    log: dict[str, ServedPushRead] | None,
+) -> tuple[pd.DataFrame, ProductionDiscretePushRead | None]:
+    """Score with the discrete reader; on ANY failure score again with the
+    smooth read and record why, so a per-game read failure (an exceptional
+    line, an empty band) can never abort the lock (lane X review, 2026-09-08).
+    Fitting was already protected; this protects scoring and the sweep."""
+
+    reader = discrete.reader if discrete is not None else None
+    try:
+        return scorer(reader), discrete
+    except Exception as error:
+        if reader is None or discrete is None:
+            raise
+        if log is not None:
+            log.clear()
+        fallback = replace(
+            discrete,
+            reader=None,
+            error=f"Discrete read failed during scoring; the smooth read was served: {error}",
+        )
+        return scorer(None), fallback
 
 
 def _served_discrete_push_read(

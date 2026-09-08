@@ -24,6 +24,14 @@ saw.**
 
 ## 1. Predeclaration (frozen before any number in section 6 existed)
 
+Sections 5 to 7 were appended to this file after the measurement, so this
+file's own digest no longer certifies the predeclaration. The byte copy taken
+by the `declare` stage before any candidate was scored is
+`artifacts/research/laneV/predeclaration.md`, sha256
+`743a79d4045f92ebef3dd6d3d949641e196c037564c33cd95a7c207effd2655c`, and that
+same digest is stamped into `artifacts/research/laneV/declarations.json` as
+`predeclaration_sha256`. That copy is the predeclaration of record.
+
 ### 1.1 The two declaration rules, stated exactly
 
 Both rules are mechanical. Neither admits a judgement call, an eyeballed
@@ -239,10 +247,149 @@ written by this lane.
 
 ## 5. What each declaration rule selected
 
-Filled in by the `declare` stage. See `artifacts/research/laneV/declarations.json`.
+Measured, `artifacts/research/laneV/declarations.json`. Archive
+`artifacts/opener_evaluation/20260908T115957Z`, active model `a4c757efd2525da6`,
+feature digest `457aafb7...`. Both reconstruction gates returned **exactly 0.0**.
+
+### 5.1 Rule A, the atom set
+
+| Cut | Declared on | 3 | 7 | 10 | 14 | **Rule A selects** | Post-hoc choice |
+|---|---|---:|---:|---:|---:|---|---|
+| W1 | 2020-2023 | -0.206 | **+0.309** | -0.103 | 0.000 | **{7}** | {3, 7} |
+| W2 | 2020-2022 | **+0.142** | **+0.426** | 0.000 | 0.000 | **{3, 7}** | {3, 7} |
+
+Per-atom standalone paired deltas in accuracy points on the declaration
+seasons. On the four-season declaration the mechanical rule does **not**
+reproduce lane T's post-hoc atom set: the 3 atom is negative there (six picks
+moved, all of them on balance for the worse) and only the 7 atom survives. On
+the three-season declaration the 3 atom is positive by one pick in ninety games
+and the rule reproduces `{3, 7}` exactly. The 10 and 14 atoms are never
+selected on either cut -- on W2 neither moves a single graded pick, so both
+score exactly zero, and zero is not positive.
+
+### 5.2 Rule B, the bucket set
+
+| Cut | Bucket | n | weeks | slope | 95% | Top below +0.5? |
+|---|---|---:|---:|---:|---|---|
+| W1 (2020-2023) | 0-3 | 367 | 71 | +0.581 | [+0.049, +1.119] | no |
+| | 3.5-6.5 | 353 | 71 | +0.560 | [-0.073, +1.160] | no |
+| | 7 | 47 | 37 | +0.520 | [-1.255, +2.382] | no |
+| | 7.5-10 | 130 | 59 | -0.050 | [-1.045, +0.885] | no |
+| | **10.5+** | 96 | 55 | **-0.932** | [-2.015, +0.137] | **yes** |
+| W2 (2020-2022) | 0-3 | 245 | 53 | +0.425 | [-0.239, +1.054] | no |
+| | 3.5-6.5 | 264 | 53 | +0.410 | [-0.286, +1.035] | no |
+| | 7 | 40 | 30 | -0.084 | [-1.975, +1.789] | no |
+| | 7.5-10 | 97 | 44 | -0.024 | [-1.112, +1.034] | no |
+| | **10.5+** | 75 | 43 | **-0.942** | [-2.268, +0.399] | **yes** |
+
+**Rule B selects `{10.5+}` on both cuts, which is exactly lane U's post-hoc
+choice.** Two buckets have a negative point estimate on both cuts -- `7.5-10`
+and `10.5+` -- and the rule takes only the one whose whole interval clears the
+ceiling. That is the mechanism's own boundary doing the work: `7.5-10`'s slope
+is not resolved away from face value, and lane U measured that serving it there
+is where R2's loss came from.
 
 ---
 
 ## 6. Held-out results
 
-Filled in by the `score` stage. See `artifacts/research/laneV/cells.json`.
+Measured, `artifacts/research/laneV/cells.json`. Paired against the served S3
+read on held-out-season games with a decided opener grade; week-blocked
+bootstrap, 20,000 draws, seed 20260817, within-week correlation ZERO.
+
+### 6.1 W1 -- declared on 2020-2023, graded on 2024-2025 (533 graded games, 36 weeks)
+
+| Arm | Declared set | Touched | Standalone % | Card % | Card delta [95%] | P+ | Standalone delta [95%] | P+ | Brier | P+ | Log loss | P+ |
+|---|---|---:|---:|---:|---|---:|---|---:|---:|---:|---:|---:|
+| S3 | -- | -- | 54.409 | 54.784 | reference | -- | reference | -- | reference | -- | reference | -- |
+| **KL** | atoms {7} | 27 | 54.972 | **55.347** | **+0.563 [-0.189, +1.331]** | **0.880** | +0.563 [-0.378, +1.498] | 0.835 | -0.00002 | 0.480 | -0.00005 | 0.474 |
+| **RS** | buckets {10.5+} | 38 | 54.221 | 54.597 | -0.188 [-0.771, +0.380] | 0.183 | -0.188 [-0.771, +0.380] | 0.183 | -0.00037 | 0.236 | -0.00074 | 0.239 |
+| **Both** | {7} + {10.5+} | 65 | 54.784 | **55.160** | **+0.375 [-0.558, +1.304]** | **0.727** | +0.375 [-0.923, +1.679] | 0.665 | -0.00039 | 0.244 | -0.00079 | 0.242 |
+
+### 6.2 W2 -- declared on 2020-2022, graded on 2023-2025 (799 graded games, 54 weeks)
+
+| Arm | Declared set | Touched | Standalone % | Card % | Card delta [95%] | P+ | Standalone delta [95%] | P+ | Brier | P+ | Log loss | P+ |
+|---|---|---:|---:|---:|---|---:|---|---:|---:|---:|---:|---:|
+| S3 | -- | -- | 55.069 | 55.820 | reference | -- | reference | -- | reference | -- | reference | -- |
+| **KL** | atoms {3, 7} | 142 | 54.944 | **56.195** | **+0.375 [-0.501, +1.253]** | **0.761** | -0.125 [-1.261, +1.003] | 0.372 | -0.00008 | 0.404 | -0.00017 | 0.404 |
+| **RS** | buckets {10.5+} | 59 | 55.444 | 55.820 | +0.000 [-0.625, +0.622] | 0.419 | **+0.375 [-0.378, +1.244]** | **0.776** | +0.00033 | 0.731 | +0.00069 | 0.733 |
+| **Both** | {3, 7} + {10.5+} | 201 | 55.319 | **56.195** | **+0.375 [-0.628, +1.377]** | **0.731** | +0.250 [-1.256, +1.838] | 0.593 | +0.00025 | 0.659 | +0.00053 | 0.663 |
+
+### 6.3 Per held-out season, accuracy points through the card
+
+| Season | W1 KL | W1 RS | W1 Both | W2 KL | W2 RS | W2 Both |
+|---|---|---|---|---|---|---|
+| 2023 | -- | -- | -- | -0.376 (0.186) | +0.376 (0.615) | +0.000 |
+| 2024 | +0.752 (0.778) | +0.376 (0.645) | +1.128 (0.962) | +2.256 (0.987) | +0.376 (0.645) | +2.256 (0.987) |
+| 2025 | +0.375 (0.643) | -0.749 (0.000) | -0.375 (0.184) | -0.749 (0.000) | -0.749 (0.000) | -1.498 (0.000) |
+
+`probability_positive` in brackets. 2024 favours every arm on both cuts; 2025
+goes against every arm on both cuts. Nothing here is closed: the 2025 cells
+whose upper bound is exactly 0.000 are one or two flipped picks in a season,
+recorded `unresolved_below_power` with no closing ground.
+
+### 6.4 On the games each arm actually changes
+
+| Cut | Arm | n | Card delta [95%] | P+ |
+|---|---|---:|---|---:|
+| W1 | KL | 27 | **+11.111 [-4.000, +28.000]** | **0.883** |
+| W1 | RS | 37 | -2.703 [-12.903, +5.714] | 0.178 |
+| W2 | KL | 131 | +2.290 [-3.077, +7.759] | 0.758 |
+| W2 | RS | 58 | +0.000 [-8.621, +8.333] | 0.415 |
+
+### 6.5 Gates, measured
+
+| Gate | Value |
+|---|---|
+| Feature digest vs active manifest | equal |
+| Archive named by lanes T, R, U | all `20260908T115957Z`, the archive the active model matches |
+| S3 replay, lane T frame / lane R frame | passed lane K's `verify_replay` (stop above 1e-9) |
+| Lane T `p_S3` vs lane R `p_S3` | exactly equal |
+| Archive served pick vs served S3 probability | exactly equal |
+| Reconstruction, atoms `{3, 7}` vs lane T's `p_KL1b` | **0.0** |
+| Reconstruction, buckets `{10.5+}` vs lane U's `p_R2b` | **0.0** |
+| Untouched-game probability gap, all six arms | **0.0** |
+| Composition on the held-out-restricted artifact vs the full archive composition | **0 disagreements**, all six arms and the incumbent |
+| Degenerate cells skipped | none: every cell moved at least one graded pick |
+
+---
+
+## 7. What the held-out reads mean for the decision
+
+**Serve KL1b. The key-line restriction survives the discount; the re-scale does
+not, but it is not refuted either.**
+
+- The key-line arm is the better card on BOTH held-out blocks, at
+  `probability_positive` **0.880** (W1) and **0.761** (W2). Declining it is
+  taking the other side of a 88/12 and a 76/24 bet on a pool that submits a
+  card either way.
+- The bucket rule reproduced lane U's post-hoc `{10.5+}` choice exactly on both
+  cuts, so R2b's structure carries no selection discount at all -- but its
+  held-out card reading is -0.188 (P+ 0.183) on W1 and +0.000 (P+ 0.419) on W2.
+  On expected value that is a bet against playing it, so **R2b stays off the
+  card**. It is not closed: no wrong sign is resolved, no positive control
+  bounds it, and its stated chances are the better ones on W2 (Brier P+ 0.731,
+  log loss P+ 0.733) -- which is the same coherent split lanes R and U measured,
+  better probabilities and worse forced picks.
+- The combination is positive through the card on both cuts (+0.375, P+ 0.727
+  and 0.731) but it is worse than the key-line arm alone on W1 and identical to
+  it on W2. Adding the re-scale buys nothing on top.
+- The atom rule did **not** reproduce `{3, 7}` on the four-season declaration --
+  it picked `{7}` alone, and that narrower arm is the strongest held-out card
+  reading in the lane (+0.563, P+ 0.880, on 27 touched games). On the
+  three-season declaration it reproduced `{3, 7}` exactly. So the part of
+  KL1b that survives out of sample cleanly is the 7 atom; the 3 atom's evidence
+  is one pick in ninety declaration games on the cut that kept it.
+
+**Then the caveats, in order of size.** The held-out blocks are two and three
+seasons -- 533 and 799 graded games -- and the two cuts share their declaration
+seasons and overlap in 2023, so they are two readings of nearly the same
+football, not two replications. Every held-out interval crosses zero, which at
+this evaluator's resolution is the expected outcome for an effect this size and
+is never grounds to reject anything. The arms move few games: 27 to 201 of 533
+to 799. And the declaration removes the discount on the ATOM SET and the BUCKET
+SET only -- the archive, the S3 baseline and the mass-preserving construction
+were all chosen on these same seasons.
+
+**Nothing is closed.** All 66 recorded cells are `unresolved_below_power` with
+no closing ground, including the negative ones.

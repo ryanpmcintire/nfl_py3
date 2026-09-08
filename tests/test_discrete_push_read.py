@@ -702,3 +702,116 @@ def test_lane_k_research_numbers_replay_bit_for_bit_through_the_module() -> None
             assert np.array_equal(
                 mapped[column].to_numpy(dtype=float), frame[recorded].to_numpy(dtype=float)
             ), f"{arm} {column} does not replay bit-for-bit"
+
+
+# ---------------------------------------------------------------------------
+# Lane X review (2026-09-08): alternative-line answers must keep the game's
+# own distribution (conditioned on the quoted line) so cover never rises as
+# the line gets harder; and a per-game read failure must fall back to the
+# smooth read instead of aborting margin-predict.
+# ---------------------------------------------------------------------------
+
+
+def _synthetic_reader() -> DiscretePushReader:
+    rng = np.random.default_rng(20260908)
+    n = 3000
+    lines = rng.choice([-7.0, -3.0, -2.5, 0.0, 2.5, 3.0, 6.5, 7.0, 10.0], size=n)
+    margins = np.round(lines + rng.normal(0.0, 13.0, size=n))
+    on_three = rng.random(n) < 0.12  # extra mass on the key number 3
+    margins[on_three] = 3.0
+    return DiscretePushReader(lines=lines.astype(float), margins=margins.astype(float))
+
+
+def test_alternative_lines_keep_the_games_own_distribution() -> None:
+    reader = _synthetic_reader()
+    point = 3.6
+    quoted = 3.0
+    covers = [
+        reader.three_way(alt, point, conditioning_line=quoted)[0]
+        for alt in np.arange(-6.0, 12.5, 0.5)
+    ]
+    assert (np.diff(np.asarray(covers)) <= 1e-12).all()
+    # Conditioning on the quoted line reproduces the plain read at that line.
+    assert reader.three_way(quoted, point, conditioning_line=quoted) == reader.three_way(
+        quoted, point
+    )
+    # The band and tilt come from the quoted line, not the alternative line.
+    conditioned = reader.read(9.0, point, conditioning_line=quoted)
+    unconditioned = reader.read(9.0, point)
+    assert conditioned.band_games == reader.read(quoted, point).band_games
+    assert conditioned.theta == reader.read(quoted, point).theta
+    assert conditioned.band_games != unconditioned.band_games or conditioned.theta != (
+        unconditioned.theta
+    )
+
+
+def test_discrete_sweep_conditions_on_the_quoted_line() -> None:
+    from nfl_ats.mass_preserving_lattice import serve_discrete_sweep
+
+    reader = _synthetic_reader()
+    sweep = pd.DataFrame(
+        {
+            "game_id": ["g"] * 5,
+            "alternative_line": [1.0, 2.0, 3.0, 4.0, 5.0],
+            "home_cover_probability_excluding_push": 0.0,
+            "push_probability": 0.0,
+            "home_loss_probability": 0.0,
+        }
+    )
+    served = serve_discrete_sweep(
+        sweep, reader, points_by_game={"g": 3.6}, quoted_lines_by_game={"g": 3.0}
+    )
+    covers = served["home_cover_probability_excluding_push"].to_numpy()
+    assert (np.diff(covers) <= 1e-12).all()
+    expected = [
+        reader.three_way(line, 3.6, conditioning_line=3.0) for line in sweep.alternative_line
+    ]
+    assert np.allclose(covers, [e[0] for e in expected])
+
+
+def test_scoring_failure_falls_back_to_the_smooth_read() -> None:
+    from nfl_ats.cli_commands.prediction import _with_discrete_fallback
+    from nfl_ats.mass_preserving_lattice import ProductionDiscretePushRead
+
+    reader = _synthetic_reader()
+    discrete = ProductionDiscretePushRead(
+        policy="test",
+        reader=reader,
+        source_path=None,
+        source_model_id=None,
+        active_model_id=None,
+        opener_lines_matched=0,
+        warnings=(),
+    )
+    log: dict[str, object] = {"stale": object()}
+    calls: list[object] = []
+
+    def scorer(active: DiscretePushReader | None) -> pd.DataFrame:
+        calls.append(active)
+        if active is not None:
+            raise ValueError("No prior games within 20.0 points of line 100.0")
+        return pd.DataFrame({"ok": [1]})
+
+    frame, served = _with_discrete_fallback(scorer, discrete, log)
+    assert frame["ok"].tolist() == [1]
+    assert calls == [reader, None]
+    assert served is not None and served.reader is None and served.served is False
+    assert "smooth read was served" in (served.error or "")
+    assert log == {}
+
+    # No reader: the failure is the caller's, never swallowed.
+    smooth_only = ProductionDiscretePushRead(
+        policy="test",
+        reader=None,
+        source_path=None,
+        source_model_id=None,
+        active_model_id=None,
+        opener_lines_matched=0,
+        warnings=(),
+    )
+
+    def broken(active: DiscretePushReader | None) -> pd.DataFrame:
+        raise RuntimeError("model failure")
+
+    with pytest.raises(RuntimeError):
+        _with_discrete_fallback(broken, smooth_only, None)

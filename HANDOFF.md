@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T14:27:36.356445+00:00`
+Refreshed at: `2026-09-08T14:40:51.207863+00:00`
 
 ## Start here
 
@@ -20,23 +20,18 @@ Refreshed at: `2026-09-08T14:27:36.356445+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d9d08c9a7000` — Fleet: registry race fix (per-writer temp names, file_lock in every registry command); week timeline panel + Findings home-push entry; lanes K/L/N/O/Q/R/T recorded [skip ci]
-- Pending change set: 15 paths
+- Baseline commit: `9142044d09b1` — Serve the discrete push read (lane S): push and alternative-line answers from the mass-preserving key-number lattice, pick unchanged; lanes U/V recorded [skip ci]
+- Pending change set: 10 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  docs/discrete_push_read.md`
-  - `M  docs/findings.html`
-  - `A  docs/out_of_sample_declaration.md`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/cover_odds.py`
-  - `M  scripts/mass_preserving_lattice_opener_eval.py`
-  - `M  src/nfl_ats/card_explanation.py`
+  - `M  docs/out_of_sample_declaration.md`
+  - `A  scripts/out_of_sample_declaration_opener_eval.py`
   - `M  src/nfl_ats/cli_commands/prediction.py`
-  - `A  src/nfl_ats/mass_preserving_lattice.py`
+  - `M  src/nfl_ats/mass_preserving_lattice.py`
   - `M  src/nfl_ats/outcomes.py`
   - `M  src/nfl_ats/spread_explorer.py`
-  - `A  tests/test_discrete_push_read.py`
+  - `M  tests/test_discrete_push_read.py`
+  - `A  tests/test_out_of_sample_declaration.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

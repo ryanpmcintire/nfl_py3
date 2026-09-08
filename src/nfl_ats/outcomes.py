@@ -677,6 +677,13 @@ def score_outcome_week_line_sweep(
                 points_by_game=dict(
                     zip(target["game_id"].astype(str), points.tolist(), strict=True)
                 ),
+                quoted_lines_by_game=dict(
+                    zip(
+                        target["game_id"].astype(str),
+                        pd.to_numeric(target["spread_line"], errors="raise").astype(float).tolist(),
+                        strict=True,
+                    )
+                ),
             )
         sweep.insert(0, "method", method)
         frames.append(sweep)

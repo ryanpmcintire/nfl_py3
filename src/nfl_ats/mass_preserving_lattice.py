@@ -192,8 +192,17 @@ def band_read(
     point: float,
     half_width: float = BAND_HALF_WIDTH,
     min_band_games: int = MIN_BAND_GAMES,
+    *,
+    conditioning_line: float | None = None,
 ) -> MassPreservingRead:
     """The mass-preserving read for one game at one declared band width.
+
+    ``conditioning_line`` (2026-09-08, lane X review): the line the game's
+    DISTRIBUTION is conditioned on -- the quoted line that selects the prior
+    band and anchors the tilt -- when ``line`` is an alternative line being
+    asked about. Without it, every alternative line re-selected its own
+    band, so a harder line could show a higher cover chance; with it only
+    the settlement threshold moves, and cover is non-increasing in the line.
 
     ``pool_line`` / ``pool_margin`` are the prior pool's home lines and
     integer final home margins (already walk-forward filtered); ``line`` is
@@ -205,17 +214,20 @@ def band_read(
 
     if not np.isfinite([line, point]).all():
         raise ValueError("The discrete read needs a finite line and point")
+    anchor = line if conditioning_line is None else float(conditioning_line)
+    if not np.isfinite(anchor):
+        raise ValueError("The discrete read needs a finite conditioning line")
     band = half_width
     while True:
-        selected = np.abs(pool_line - line) <= band
+        selected = np.abs(pool_line - anchor) <= band
         if int(selected.sum()) >= min_band_games or band >= MAX_BAND:
             break
         band = min(band + BAND_STEP, MAX_BAND)
     margins = pool_margin[selected]
     if margins.size == 0:
-        raise ValueError(f"No prior games within {band} points of line {line}")
+        raise ValueError(f"No prior games within {band} points of line {anchor}")
     values, counts = np.unique(margins, return_counts=True)
-    mass, theta = tilted_atoms(values, counts.astype(float), line, point)
+    mass, theta = tilted_atoms(values, counts.astype(float), anchor, point)
     is_push = np.abs(values - line) < _ATOM_TOLERANCE
     return MassPreservingRead(
         cover=float(mass[values > line + _ATOM_TOLERANCE].sum()),
@@ -342,7 +354,9 @@ class DiscretePushReader:
             max_gameday=None if pd.isna(newest) else str(pd.Timestamp(newest).date()),
         )
 
-    def read(self, line: float, point: float) -> MassPreservingRead:
+    def read(
+        self, line: float, point: float, *, conditioning_line: float | None = None
+    ) -> MassPreservingRead:
         return band_read(
             self.lines,
             self.margins,
@@ -350,12 +364,17 @@ class DiscretePushReader:
             float(point),
             self.half_width,
             self.min_band_games,
+            conditioning_line=conditioning_line,
         )
 
-    def three_way(self, line: float, point: float) -> tuple[float, float, float]:
-        """``(home_covers, push, home_does_not_cover)`` at ``line``."""
+    def three_way(
+        self, line: float, point: float, *, conditioning_line: float | None = None
+    ) -> tuple[float, float, float]:
+        """``(home_covers, push, home_does_not_cover)`` at ``line``; pass the
+        game's quoted line as ``conditioning_line`` when ``line`` is an
+        alternative line, so the distribution stays the game's own."""
 
-        return self.read(line, point).three_way()
+        return self.read(line, point, conditioning_line=conditioning_line).three_way()
 
 
 #: The coordinator-facing name for one game's read (cover, push, loss, atoms,
@@ -586,11 +605,15 @@ def serve_discrete_sweep(
     reader: DiscretePushReader,
     *,
     points_by_game: Mapping[str, float],
+    quoted_lines_by_game: Mapping[str, float] | None = None,
 ) -> pd.DataFrame:
     """A ``MarginModel.line_sweep`` frame with its three-way split at every
     alternative line read off the discrete lattice; the two-way
     ``home_cover_probability`` / ``pick_probability`` / ``confidence`` stay
-    on the smooth read. ``points_by_game`` is game_id -> served point."""
+    on the smooth read. ``points_by_game`` is game_id -> served point;
+    ``quoted_lines_by_game`` is game_id -> the game's own quoted line, which
+    conditions the distribution at every alternative line (lane X review:
+    without it each alternative line re-selected its own prior band)."""
 
     result = sweep.copy()
     cover = np.empty(len(result), dtype=float)
@@ -601,7 +624,10 @@ def serve_discrete_sweep(
     for index, (game_id, line) in enumerate(zip(ids, lines, strict=True)):
         if game_id not in points_by_game:
             raise ValueError(f"No served point for game {game_id!r} in the line sweep")
-        cover[index], push[index], loss[index] = reader.three_way(line, points_by_game[game_id])
+        quoted = None if quoted_lines_by_game is None else quoted_lines_by_game.get(game_id)
+        cover[index], push[index], loss[index] = reader.three_way(
+            line, points_by_game[game_id], conditioning_line=quoted
+        )
     result["home_cover_probability_excluding_push"] = cover
     result["push_probability"] = push
     result["home_loss_probability"] = loss

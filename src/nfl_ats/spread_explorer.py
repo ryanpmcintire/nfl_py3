@@ -474,7 +474,11 @@ def spread_explorer_three_way(
         point = distribution.center + residual_location(
             distribution.residuals, distribution.card_probability_method
         )
-        return discrete_read.three_way(float(line), point)
+        # The distribution is the game's own (conditioned on the quoted line);
+        # only the settlement threshold moves with the hypothetical line.
+        return discrete_read.three_way(
+            float(line), point, conditioning_line=float(distribution.card_line)
+        )
     sample = np.asarray(distribution.center + distribution.residuals, dtype=np.float64)
     return _three_way_probabilities(sample, float(line))
 
