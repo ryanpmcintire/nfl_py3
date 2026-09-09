@@ -566,6 +566,118 @@
       "source": "artifacts/backup_tenure_flag_on_production/20260905T163658Z/results.json",
       "standard_error": null
     },
+    "best_pick_bucket_confidence_b1_bucket_reliability_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_bucket_confidence.md, written before any number was computed). Neither admissible closing ground applies: no interval sits wholly on the wrong side of zero, and the positive control resolves only a ~42-accuracy-point renomination effect on 103 weeks, so it was never shown able to detect a 1-3 point one and bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination weighted by the model's own walk-forward realised accuracy in the candidate's opener spread bucket (0-6.5 / 7 / 7.5-10 / 10.5+, expanding, 20 pseudo-observations shrunk to 0.5), score = (bucket reliability - 0.5) + (probability - 0.5), inside the served v2 eligibility pool, vs the served v2 nominator (nfl_ats.best_pick_nomination.nominate_v2), Best-Pick top-1 accuracy per week at the opener",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_bucket_confidence",
+      "interval": [
+        -5.9405940594,
+        5.9405940594
+      ],
+      "league": "nfl",
+      "notes": "Best Pick nomination arms scored on the frozen 2020-2025 opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z, 1,537 games / 107 REG weeks), nominees produced by production's own nfl_ats.best_pick_nomination.select_nominee on the production below-median cross-book opener spread_std pool, graded at the frozen Tuesday opener on the SERVED stream (artifacts/opener_evaluation/20260909T183120Z/per_game.parquet, active model c657058903f3232b, S3 home-side offset included). Bootstrap: week-blocked, 20,000 draws, seed 20260821, within-week correlation zero by owner mandate. B0 replay is exact: its nominee equals the deadline lane's A0 nominee in all 54 weeks that lane covers (artifacts/best_pick_deadline_renomination/20260909T214500Z/weekly.csv, where A0 scores 33/51 on the served late-week grade and 32/51 at the frozen Tuesday side). Fifth reuse of the ~107-week opener population for the Best Pick family, and the per-bucket accuracies that motivated these arms were measured on this same archive (docs/spread_hole_diagnosis.md) -- compounding look-reuse discount, stated. No rotation window assigned or spent. This lane changes a RANKING (which single game carries the week's Best Pick), never a side. Arm 58/101 (57.43%) vs the served v2 nominator's 58/101 (57.43%); the two name a different game in 19 weeks and the outcome differs in 10. Secondary ARCHIVE grade (the alpha=10 arm without the S3 home-side offset, artifacts/ridge_alpha_promotion/20260818T221459Z): -0.9901 accuracy points, 95% [-6.9307, +4.9505], probability_positive 0.3830 on 101 paired weeks.",
+      "plain_summary": "Which single game gets the week's star pick. This version leans away from big spreads, where the model has been weakest, instead of always taking the game it sounds surest about. Over six seasons it picked a different game in 19 of 101 weeks and finished dead level -- 58 weeks right either way.",
+      "probability_positive": 0.4997,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_bucket_confidence_eval.py; artifacts/best_pick_bucket_confidence/20260909T233823Z/summary.json; docs/best_pick_bucket_confidence.md",
+      "standard_error": null
+    },
+    "best_pick_bucket_confidence_b2_small_spread_only_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_bucket_confidence.md, written before any number was computed). Neither admissible closing ground applies: no interval sits wholly on the wrong side of zero, and the positive control resolves only a ~42-accuracy-point renomination effect on 103 weeks, so it was never shown able to detect a 1-3 point one and bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination restricted to games with an opener line of 6.5 or less (fallback to the unrestricted nominee when no eligible game exists) vs the served v2 nominator (nfl_ats.best_pick_nomination.nominate_v2), Best-Pick top-1 accuracy per week at the opener",
+      "effect": 1.9607843137,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_bucket_confidence",
+      "interval": [
+        -5.8823529412,
+        9.8039215686
+      ],
+      "league": "nfl",
+      "notes": "Best Pick nomination arms scored on the frozen 2020-2025 opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z, 1,537 games / 107 REG weeks), nominees produced by production's own nfl_ats.best_pick_nomination.select_nominee on the production below-median cross-book opener spread_std pool, graded at the frozen Tuesday opener on the SERVED stream (artifacts/opener_evaluation/20260909T183120Z/per_game.parquet, active model c657058903f3232b, S3 home-side offset included). Bootstrap: week-blocked, 20,000 draws, seed 20260821, within-week correlation zero by owner mandate. B0 replay is exact: its nominee equals the deadline lane's A0 nominee in all 54 weeks that lane covers (artifacts/best_pick_deadline_renomination/20260909T214500Z/weekly.csv, where A0 scores 33/51 on the served late-week grade and 32/51 at the frozen Tuesday side). Fifth reuse of the ~107-week opener population for the Best Pick family, and the per-bucket accuracies that motivated these arms were measured on this same archive (docs/spread_hole_diagnosis.md) -- compounding look-reuse discount, stated. No rotation window assigned or spent. This lane changes a RANKING (which single game carries the week's Best Pick), never a side. Arm 60/102 (58.82%) vs the served v2 nominator's 58/102 (56.86%); the two name a different game in 26 weeks and the outcome differs in 16. Secondary ARCHIVE grade (the alpha=10 arm without the S3 home-side offset, artifacts/ridge_alpha_promotion/20260818T221459Z): +1.9608 accuracy points, 95% [-5.8824, +9.8039], probability_positive 0.6885 on 102 paired weeks.",
+      "plain_summary": "Which single game gets the week's star pick. This version never stars a game with a spread bigger than a touchdown, because that is where the model misses most. It picked a different game in 26 of 102 weeks and won 60 of them against 58, about two points a week better and 69% likely to be the better rule.",
+      "probability_positive": 0.688475,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_bucket_confidence_eval.py; artifacts/best_pick_bucket_confidence/20260909T233823Z/summary.json; docs/best_pick_bucket_confidence.md",
+      "standard_error": null
+    },
+    "best_pick_bucket_confidence_b3_pick_side_reliability_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_bucket_confidence.md, written before any number was computed). Neither admissible closing ground applies: no interval sits wholly on the wrong side of zero, and the positive control resolves only a ~42-accuracy-point renomination effect on 103 weeks, so it was never shown able to detect a 1-3 point one and bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "Best Pick nomination weighted by the model's own walk-forward realised accuracy in the candidate's (opener spread bucket, favourite/underdog/pickem) cell, same 20 pseudo-observation shrinkage to 0.5, inside the served v2 eligibility pool, vs the served v2 nominator, Best-Pick top-1 accuracy per week at the opener",
+      "effect": -4.9019607843,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_bucket_confidence",
+      "interval": [
+        -15.6862745098,
+        4.9019607843
+      ],
+      "league": "nfl",
+      "notes": "Best Pick nomination arms scored on the frozen 2020-2025 opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z, 1,537 games / 107 REG weeks), nominees produced by production's own nfl_ats.best_pick_nomination.select_nominee on the production below-median cross-book opener spread_std pool, graded at the frozen Tuesday opener on the SERVED stream (artifacts/opener_evaluation/20260909T183120Z/per_game.parquet, active model c657058903f3232b, S3 home-side offset included). Bootstrap: week-blocked, 20,000 draws, seed 20260821, within-week correlation zero by owner mandate. B0 replay is exact: its nominee equals the deadline lane's A0 nominee in all 54 weeks that lane covers (artifacts/best_pick_deadline_renomination/20260909T214500Z/weekly.csv, where A0 scores 33/51 on the served late-week grade and 32/51 at the frozen Tuesday side). Fifth reuse of the ~107-week opener population for the Best Pick family, and the per-bucket accuracies that motivated these arms were measured on this same archive (docs/spread_hole_diagnosis.md) -- compounding look-reuse discount, stated. No rotation window assigned or spent. This lane changes a RANKING (which single game carries the week's Best Pick), never a side. Arm 53/102 (51.96%) vs the served v2 nominator's 58/102 (56.86%); the two name a different game in 52 weeks and the outcome differs in 29. Secondary ARCHIVE grade (the alpha=10 arm without the S3 home-side offset, artifacts/ridge_alpha_promotion/20260818T221459Z): -4.9020 accuracy points, 95% [-15.6863, +4.9020], probability_positive 0.1792 on 102 paired weeks.",
+      "plain_summary": "Which single game gets the week's star pick. This version also asks whether the model has been better backing favourites or underdogs at that line size. Splitting the record that finely moved the star in half the weeks and cost about five points a week; it is 18% likely to be the better rule.",
+      "probability_positive": 0.17925,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_bucket_confidence_eval.py; artifacts/best_pick_bucket_confidence/20260909T233823Z/summary.json; docs/best_pick_bucket_confidence.md",
+      "standard_error": null
+    },
+    "best_pick_bucket_confidence_control_perfect_foresight_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Predeclared cell (docs/best_pick_bucket_confidence.md, written before any number was computed). Neither admissible closing ground applies: no interval sits wholly on the wrong side of zero, and the positive control resolves only a ~42-accuracy-point renomination effect on 103 weeks, so it was never shown able to detect a 1-3 point one and bounds nothing at the scale these arms live at. unresolved_below_power is the only admissible classification. An interval containing zero is the EXPECTED shape for a real-but-small signal at this evaluator's resolution, never a rejection.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL: perfect-foresight Best Pick nomination within the served v2 eligibility pool (any game whose graded pick is correct) vs the served v2 nominator, Best-Pick top-1 accuracy per week at the opener -- the instrument's ceiling on this population, not a playable rule",
+      "effect": 41.7475728155,
+      "effect_units": "accuracy_points",
+      "family": "best_pick_bucket_confidence",
+      "interval": [
+        32.0388349515,
+        51.4563106796
+      ],
+      "league": "nfl",
+      "notes": "Best Pick nomination arms scored on the frozen 2020-2025 opener archive (artifacts/ridge_alpha_promotion/20260818T221459Z, 1,537 games / 107 REG weeks), nominees produced by production's own nfl_ats.best_pick_nomination.select_nominee on the production below-median cross-book opener spread_std pool, graded at the frozen Tuesday opener on the SERVED stream (artifacts/opener_evaluation/20260909T183120Z/per_game.parquet, active model c657058903f3232b, S3 home-side offset included). Bootstrap: week-blocked, 20,000 draws, seed 20260821, within-week correlation zero by owner mandate. B0 replay is exact: its nominee equals the deadline lane's A0 nominee in all 54 weeks that lane covers (artifacts/best_pick_deadline_renomination/20260909T214500Z/weekly.csv, where A0 scores 33/51 on the served late-week grade and 32/51 at the frozen Tuesday side). Fifth reuse of the ~107-week opener population for the Best Pick family, and the per-bucket accuracies that motivated these arms were measured on this same archive (docs/spread_hole_diagnosis.md) -- compounding look-reuse discount, stated. No rotation window assigned or spent. This lane changes a RANKING (which single game carries the week's Best Pick), never a side. Arm 101/103 (98.06%) vs the served v2 nominator's 58/103 (56.31%); the two name a different game in 43 weeks and the outcome differs in 43. Secondary ARCHIVE grade (the alpha=10 arm without the S3 home-side offset, artifacts/ridge_alpha_promotion/20260818T221459Z): +41.7476 accuracy points, 95% [+32.0388, +51.4563], probability_positive 1.0000 on 103 paired weeks.",
+      "plain_summary": "A cheating check: if we could see the results first and star any game we already knew was right, we would be right 98% of the time instead of 56%. It is there to prove the measurement can see a big change in which game gets starred -- roughly 42 points a week -- so we know what it cannot see is genuinely small.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/best_pick_bucket_confidence_eval.py; artifacts/best_pick_bucket_confidence/20260909T233823Z/summary.json; docs/best_pick_bucket_confidence.md",
+      "standard_error": null
+    },
     "best_pick_calibrated_probability_top1": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -120915,6 +121027,342 @@
       "source": "artifacts\\cx8_posthoc_assignments\\20260905\\sept_heat.json",
       "standard_error": null
     },
+    "served_card_harness_late_week_follow_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.2704, 2.5317] accuracy points reaches or crosses zero (season-blocked [-3.0075, 1.1278]); probability_positive 0.399725. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MKT-15 late-week move-follow rule (twelve-book Wednesday-to-deadline equal-weighted net spread move, follow the market when the move is at least half a point) applied on top of the SERVED NINE-MEMBER card and graded at the frozen Tuesday opener; replayed from the stored intraday_hourly HISTORICAL-BACKFILL quotes, which the served overlay itself refuses (it reads live captures only), on 2023-2025.",
+      "effect": -0.3754693367,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -3.2704402516,
+        2.5317257865
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-3.0075, 1.1278], season probability_positive 0.300800. Picks changed: 145. Baseline card accuracy 56.070%, candidate 55.695%.",
+      "plain_summary": "Switching to whichever side the sportsbooks moved toward later in the week moved the played card from 56.1% to 55.7% right against the opening line over 2023-25, changing 145 picks; about 40% likely to help.",
+      "probability_positive": 0.399725,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 1.4909328575
+    },
+    "served_card_harness_late_week_follow_new_member_overlap_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-9.1743, 6.3065] accuracy points reaches or crosses zero (season-blocked [-6.2500, 2.4390]); probability_positive 0.325525. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "The same MKT-15 late-week move-follow rule, restricted to the 118 games in 2023-2025 that ONLY the six tilts added to the card on 2026-09-09 flip (bye edge, cold visitor, protection mismatch, interim coach, tank zone, precipitation on a high total); the follow rule reverses 20 of those flips and endorses 14, with 84 seeing no qualifying late-week move.",
+      "effect": -1.7543859649,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -9.1743119266,
+        6.3065433855
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-6.2500, 2.4390], season probability_positive 0.203425. Picks changed: 20. Baseline card accuracy 50.877%, candidate 49.123%.",
+      "plain_summary": "On the games only the six newest card rules move, following the late-week line move took the card from 50.9% to 49.1% right against the opening line over 2023-25, changing 20 picks; about 33% likely to help.",
+      "probability_positive": 0.325525,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 46,
+      "sample_games": 114,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 3.9196999828
+    },
+    "served_card_harness_rookie_crew_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 0.6667] accuracy points reaches or crosses zero (season-blocked [0.0000, 0.4237]); probability_positive 0.819725. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "Reconciled rookie-crew rule (archive-extended referee identity 2009-2025, season floor 2010, signed by the underdog side, close-proxy line before 2020) entering the served ridge as one extra feature column (profile weak_stack_rookie_crew_underdog); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, 2020-2021.",
+      "effect": 0.2192982456,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        0.0,
+        0.6666666667
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [0.0000, 0.4237], season probability_positive 0.875825. Picks changed: 1. Baseline card accuracy 57.237%, candidate 57.456%.",
+      "plain_summary": "In 2020-21 the crew-experience rule moved the played card from 57.2% to 57.5% right against the opening line, changing 1 pick; about 82% likely to help.",
+      "probability_positive": 0.819725,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0756,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 0.215298849
+    },
+    "served_card_harness_rookie_crew_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.1971, 0.4657] accuracy points reaches or crosses zero (season-blocked [-0.1345, 0.4557]); probability_positive 0.790450. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "Reconciled rookie-crew rule (archive-extended referee identity 2009-2025, season floor 2010, signed by the underdog side, close-proxy line before 2020) entering the served ridge as one extra feature column (profile weak_stack_rookie_crew_underdog); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, 2020-2025.",
+      "effect": 0.1330671989,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -0.197109067,
+        0.4657351963
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-0.1345, 0.4557], season probability_positive 0.796975. Picks changed: 6. Baseline card accuracy 56.886%, candidate 57.019%.",
+      "plain_summary": "Adding what the officiating crew's experience level says about the underdog moved the played card from 56.9% to 57.0% right against the opening line over 2020-25, changing 6 picks; about 79% likely to help.",
+      "probability_positive": 0.79045,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0756,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 0.1632013474
+    },
+    "served_card_harness_rookie_crew_2022_2023": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.8114, 0.3922] accuracy points reaches or crosses zero (season-blocked [-0.3759, 0.0000]); probability_positive 0.286275. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "Reconciled rookie-crew rule (archive-extended referee identity 2009-2025, season floor 2010, signed by the underdog side, close-proxy line before 2020) entering the served ridge as one extra feature column (profile weak_stack_rookie_crew_underdog); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, 2022-2023.",
+      "effect": -0.1945525292,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -0.8113590264,
+        0.3921568627
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-0.3759, 0.0000], season probability_positive 0.124175. Picks changed: 3. Baseline card accuracy 59.144%, candidate 58.949%.",
+      "plain_summary": "In 2022-23 the crew-experience rule moved the played card from 59.1% to 58.9% right against the opening line, changing 3 picks; about 29% likely to help.",
+      "probability_positive": 0.286275,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0756,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 0.333436747
+    },
+    "served_card_harness_rookie_crew_2024_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 0.9434] accuracy points reaches or crosses zero (season-blocked [0.0000, 0.7519]); probability_positive 0.935150. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "Reconciled rookie-crew rule (archive-extended referee identity 2009-2025, season floor 2010, signed by the underdog side, close-proxy line before 2020) entering the served ridge as one extra feature column (profile weak_stack_rookie_crew_underdog); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, 2024-2025.",
+      "effect": 0.3752345216,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        0.0,
+        0.9433962264
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [0.0000, 0.7519], season probability_positive 0.874500. Picks changed: 2. Baseline card accuracy 54.409%, candidate 54.784%.",
+      "plain_summary": "In 2024-25 the crew-experience rule moved the played card from 54.4% to 54.8% right against the opening line, changing 2 picks; about 94% likely to help.",
+      "probability_positive": 0.93515,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0756,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 0.2584815273
+    },
+    "served_card_harness_served_vs_three_card_2023_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.1411, 2.6055] accuracy points reaches or crosses zero (season-blocked [-1.8727, 1.5038]); probability_positive 0.587325. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "The SERVED nine-member card versus the retired three-member card at the OPENER on the 2023-2025 slice of the opener archive that the late-week quote replay covers, so the follow-rule cells above have their own like-for-like card baseline.",
+      "effect": 0.2503128911,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -2.1410579345,
+        2.6054590571
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-1.8727, 1.5038], season probability_positive 0.740550. Picks changed: 114. Baseline card accuracy 55.820%, candidate 56.070%.",
+      "plain_summary": "The six rules added to the card on 2026-09-09 moved it from 55.8% to 56.1% right against the opening line over 2023-25, changing 114 picks; about 59% likely to help.",
+      "probability_positive": 0.587325,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 1.2019739345
+    },
+    "served_card_harness_t2_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.0018, 1.1295] accuracy points reaches or crosses zero (season-blocked [-0.9516, 0.9381]); probability_positive 0.575550. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane N arm T2 (47 team-quality columns orthogonalised to the line, spread_line deleted from the feature matrix, market_residual target winsorised at plus/minus 21 points); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, on lines from 0 to 6.5.",
+      "effect": 0.0905797101,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -1.0018443246,
+        1.1295017992
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-0.9516, 0.9381], season probability_positive 0.599900. Picks changed: 33. Baseline card accuracy 58.786%, candidate 58.877%.",
+      "plain_summary": "On spreads under a touchdown the spread-blind rebuild moved the played card from 58.8% to 58.9% right against the opening line over 2020-25, changing 33 picks; about 58% likely to help.",
+      "probability_positive": 0.57555,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 0.5432939974
+    },
+    "served_card_harness_t2_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.0303, 3.0769] accuracy points reaches or crosses zero (season-blocked [-3.1746, 2.9762]); probability_positive 0.500125. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane N arm T2 (47 team-quality columns orthogonalised to the line, spread_line deleted from the feature matrix, market_residual target winsorised at plus/minus 21 points); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, on lines of 10.5 or more.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -3.0303030303,
+        3.0769230769
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-3.1746, 2.9762], season probability_positive 0.497350. Picks changed: 4. Baseline card accuracy 51.145%, candidate 51.145%.",
+      "plain_summary": "On spreads of 10.5 or more the spread-blind rebuild left the played card at 51.1% right against the opening line over 2020-25, changing 4 picks that cancelled out; a dead heat.",
+      "probability_positive": 0.500125,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 1.5320598784
+    },
+    "served_card_harness_t2_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.2105, 1.0526] accuracy points reaches or crosses zero (season-blocked [-4.9505, 1.0753]); probability_positive 0.127350. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane N arm T2 (47 team-quality columns orthogonalised to the line, spread_line deleted from the feature matrix, market_residual target winsorised at plus/minus 21 points); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, on lines from 7.5 to 10.",
+      "effect": -1.5463917526,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -4.2105263158,
+        1.0526315789
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-4.9505, 1.0753], season probability_positive 0.178050. Picks changed: 7. Baseline card accuracy 52.577%, candidate 51.031%.",
+      "plain_summary": "On spreads of 7.5 to 10 the spread-blind rebuild moved the played card from 52.6% to 51.0% right against the opening line over 2020-25, changing 7 picks; about 13% likely to help.",
+      "probability_positive": 0.12735,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 1.3419906516
+    },
+    "served_card_harness_t2_line7_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Both the week-blocked interval [-11.1111, -1.2658] and the season-blocked interval [-9.0909, -1.4286] sit entirely below zero on this cell, which is the one admissible closing ground (wrong_sign_resolved). What is closed is ONLY this cell: arm T2's marginal on the SERVED nine-member card at lines of exactly 7. T2's standalone read at exactly 7 is +8.108 accuracy points, probability_positive 0.9893, and is NOT closed; nor is arm T2 overall, nor the mechanism behind it. n is 74 games and 4 changed picks, so the resolution comes from a small cell.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-18 lane N arm T2 (47 team-quality columns orthogonalised to the line, spread_line deleted from the feature matrix, market_residual target winsorised at plus/minus 21 points); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, on lines of exactly 7.",
+      "effect": -5.4054054054,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -11.1111111111,
+        -1.2658227848
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-9.0909, -1.4286], season probability_positive 0.008025. Picks changed: 4. Baseline card accuracy 50.000%, candidate 44.595%.",
+      "plain_summary": "In games with a spread of exactly 7, the spread-blind rebuild moved the played card from 50.0% to 44.6% right against the opening line over 2020-25, changing 4 picks; about 1% likely to help.",
+      "probability_positive": 0.008,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 2.6476284517
+    },
+    "served_card_harness_t2_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.3298, 0.5256] accuracy points reaches or crosses zero (season-blocked [-1.6297, 0.8832]); probability_positive 0.195825. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane N arm T2 (47 team-quality columns orthogonalised to the line, spread_line deleted from the feature matrix, market_residual target winsorised at plus/minus 21 points); paired forced-pick accuracy at the OPENER through the SERVED NINE-MEMBER card versus the active model c657058903f3232b through the same nine-member card, overall.",
+      "effect": -0.3992015968,
+      "effect_units": "accuracy_points",
+      "family": "served_card_harness_nine_member",
+      "interval": [
+        -1.329787234,
+        0.5256241787
+      ],
+      "league": "nfl",
+      "notes": "Baseline is the SERVED nine-member joint-OR card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3, 487 union flips on the 2020-2025 opener archive, 56.886% on 1,503 non-push games), not the three-member card every earlier through-the-card measurement used (279 flips, 55.888%). Replay of both cards from each member module's own apply_* function reproduces those two published numbers exactly (artifacts/served_card_harness/20260909T233923Z/replay_proof.txt). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate. Recorded interval is the week-blocked one. Reused 2020-2025 opener archive already mined by MOD-18 lanes F/M/N and by the unserved-tilt marginals study; descriptive reused-window measurement with a stated discount, not independent confirmation. Season-blocked interval [-1.6297, 0.8832], season probability_positive 0.270275. Picks changed: 48. Baseline card accuracy 56.886%, candidate 56.487%.",
+      "plain_summary": "Rebuilding the model so it cannot see the spread, and capping blowouts at three touchdowns, moved the played card from 56.9% to 56.5% right against the opening line over 2020-25, changing 48 picks; about 20% likely to help.",
+      "probability_positive": 0.195825,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
+      "standard_error": 0.4663753391
+    },
     "sharp_book_movement_closing_control_2023_2025": {
       "category": "control",
       "classification": "unresolved_below_power",
@@ -121025,6 +121473,622 @@
         2025
       ],
       "source": "artifacts\\experiments\\sharp_book_movement\\20260905T205038Z\\metadata.json",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_pc_oracle_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "positive control: perfect-foresight switch on every game the archive can reach, bounding what any follow rule on this archive could buy; paired against the raw production opener card.",
+      "effect": 47.18397997496871,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        43.47826086956522,
+        50.80356087186849
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 816 of 816 archive games, switches 388 picks, 373 served sides differ from the served equal-book rule. Season-blocked [46.2406, 48.3146] probability_positive 1.0000. Per-season {'2023': 46.2406015037594, '2024': 46.99248120300752, '2025': 48.31460674157304}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "A cheating benchmark that already knows the result, included only to prove the measuring stick can see a real difference when one exists.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_pc_oracle_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "positive control: perfect-foresight switch on every game the archive can reach, bounding what any follow rule on this archive could buy; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 44.93116395494368,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        41.417910447761194,
+        48.4472049689441
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 816, switches 369, 361 served sides differ from the served equal-book rule. Season-blocked [43.6090, 46.9925] probability_positive 1.0000.",
+      "plain_summary": "A cheating benchmark that already knows the result, included only to prove the measuring stick can see a real difference when one exists.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_pc_oracle_minus_s4_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: pc_oracle minus the served equal-book follow, same games, same blocks. Positive favours the challenger aggregation.",
+      "effect": 45.431789737171464,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        42.15809284818068,
+        48.6284289276808
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. 373 of 816 served sides differ. Season-blocked [45.1128, 45.8647] probability_positive 1.0000. Per-season {'2023': 45.11278195488722, '2024': 45.86466165413534, '2025': 45.3183520599251}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on the same games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_pc_oracle_minus_s4_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head on the currently active card: pc_oracle minus the served equal-book follow, same games, same blocks.",
+      "effect": 44.05506883604506,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        41.25,
+        46.918238993710695
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Season-blocked [43.8202, 44.3609] probability_positive 1.0000. Per-season {'2023': 44.3609022556391, '2024': 43.984962406015036, '2025': 43.82022471910113}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on today's model.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_gate_matched_minus_s4_served_equal_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Post-hoc gate-matched diagnostic (not predeclared): s1_gate_matched at threshold 0.55 fires 228 times against its peer's 329, isolating leadership content from gate looseness.",
+      "effect": 0.5006257822277848,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.2610340479192939,
+        2.357320099255583
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Threshold 0.55 chosen post hoc to match the peer's fire count; season-blocked [-0.7519, 1.8727] probability_positive 0.7992.",
+      "plain_summary": "A fairness check: the two ways of reading the line move are compared after being tuned to change the same number of picks, so any difference is about which books are listened to rather than how often the rule fires.",
+      "probability_positive": 0.708025,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_gate_matched_minus_s4_served_equal_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Post-hoc gate-matched diagnostic on the currently active card: s1_gate_matched at threshold 0.55 against its peer at matched fire count.",
+      "effect": 0.8760951188986232,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.8816120906801007,
+        2.675271728589484
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Threshold 0.55 chosen post hoc; season-blocked [-0.7519, 2.9963] probability_positive 0.7992.",
+      "plain_summary": "The same fairness check on today's model: both ways of reading the line move tuned to change the same number of picks.",
+      "probability_positive": 0.83605,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_leader_only_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-only follow: median Wednesday-to-deadline net spread move across Bovada, William Hill (US) and MyBookie, followed at 0.5 points against the Tuesday pick; paired against the raw production opener card.",
+      "effect": 3.0037546933667083,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.9925866559807653,
+        6.95322376738306
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 523 of 816 archive games, switches 223 picks, 84 served sides differ from the served equal-book rule. Season-blocked [2.6316, 3.3835] probability_positive 1.0000. Per-season {'2023': 2.6315789473684212, '2024': 3.3834586466165413, '2025': 2.9962546816479403}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "Three sportsbooks move their number first and the rest copy them. This rule watches only those three between Wednesday and the pick deadline, and switches the pick to whichever side they moved toward when they moved at least half a point.",
+      "probability_positive": 0.9304,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.06951883282101043,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_leader_only_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-only follow: median Wednesday-to-deadline net spread move across Bovada, William Hill (US) and MyBookie, followed at 0.5 points against the Tuesday pick; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 1.2515644555694618,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -2.846622836075429,
+        5.415617128463476
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 523, switches 227, 91 served sides differ from the served equal-book rule. Season-blocked [-0.7491, 4.5113] probability_positive 0.7215.",
+      "plain_summary": "Three sportsbooks move their number first and the rest copy them. This rule watches only those three between Wednesday and the pick deadline, and switches the pick to whichever side they moved toward when they moved at least half a point.",
+      "probability_positive": 0.7243,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.06951883282101043,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_leader_only_minus_s4_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: s1_leader_only minus the served equal-book follow, same games, same blocks. Positive favours the challenger aggregation.",
+      "effect": 1.2515644555694618,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.9901296821131927,
+        3.5220125786163523
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. 84 of 816 served sides differ. Season-blocked [0.0000, 2.2556] probability_positive 0.9817. Per-season {'2023': 1.5037593984962405, '2024': 2.255639097744361, '2025': 0.0}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on the same games.",
+      "probability_positive": 0.86425,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.06951883282101043,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s1_leader_only_minus_s4_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head on the currently active card: s1_leader_only minus the served equal-book follow, same games, same blocks.",
+      "effect": 0.37546933667083854,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.8726591760299625,
+        2.695850424544016
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Season-blocked [-1.1236, 1.5038] probability_positive 0.7406. Per-season {'2023': 0.7518796992481203, '2024': 1.5037593984962405, '2025': -1.1235955056179776}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on today's model.",
+      "probability_positive": 0.62775,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.06951883282101043,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s2_leader_weighted_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-weighted follow: the twelve-book Wednesday-to-deadline net move with the three leading books weighted 2 and the other nine weighted 1, followed at 0.5 points; paired against the raw production opener card.",
+      "effect": 1.8773466833541927,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.7471980074719801,
+        4.458657921530551
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 328 of 816 archive games, switches 142 picks, 3 served sides differ from the served equal-book rule. Season-blocked [1.1278, 2.9963] probability_positive 1.0000. Per-season {'2023': 1.1278195488721805, '2024': 1.5037593984962405, '2025': 2.9962546816479403}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "Same late-week line-move rule the picks already use, but the three books that move first count double and the other nine count once.",
+      "probability_positive": 0.920625,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07990099453704012,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s2_leader_weighted_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-weighted follow: the twelve-book Wednesday-to-deadline net move with the three leading books weighted 2 and the other nine weighted 1, followed at 0.5 points; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 1.0012515644555695,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.7587939698492463,
+        3.7879985059188495
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 328, switches 139, 3 served sides differ from the served equal-book rule. Season-blocked [-0.7519, 3.3835] probability_positive 0.7964.",
+      "plain_summary": "Same late-week line-move rule the picks already use, but the three books that move first count double and the other nine count once.",
+      "probability_positive": 0.759075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07990099453704012,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s2_leader_weighted_minus_s4_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: s2_leader_weighted minus the served equal-book follow, same games, same blocks. Positive favours the challenger aggregation.",
+      "effect": 0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.25252525252525254,
+        0.6112843976221263
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. 3 of 816 served sides differ. Season-blocked [0.0000, 0.3759] probability_positive 0.8519. Per-season {'2023': 0.0, '2024': 0.37593984962406013, '2025': 0.0}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on the same games.",
+      "probability_positive": 0.7094,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07990099453704012,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s2_leader_weighted_minus_s4_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head on the currently active card: s2_leader_weighted minus the served equal-book follow, same games, same blocks.",
+      "effect": 0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.25252525252525254,
+        0.6112843976221263
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Season-blocked [0.0000, 0.3759] probability_positive 0.8519. Per-season {'2023': 0.0, '2024': 0.37593984962406013, '2025': 0.0}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on today's model.",
+      "probability_positive": 0.7094,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07990099453704012,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s3_leader_first_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-first follow: follow the three leading books when they have moved 0.5 or more, otherwise follow the equal-book move at 0.5; paired against the raw production opener card.",
+      "effect": 2.753441802252816,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.2285390052917726,
+        6.734467479969185
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 527 of 816 archive games, switches 225 picks, 82 served sides differ from the served equal-book rule. Season-blocked [2.6316, 2.9963] probability_positive 1.0000. Per-season {'2023': 2.6315789473684212, '2024': 2.6315789473684212, '2025': 2.9962546816479403}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "Listen to the three books that move first; if they have not moved enough, fall back to what all twelve books did on average.",
+      "probability_positive": 0.9147,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0738314292823449,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s3_leader_first_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "leader-first follow: follow the three leading books when they have moved 0.5 or more, otherwise follow the equal-book move at 0.5; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 1.0012515644555695,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -3.1133250311332503,
+        5.183312262958281
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 527, switches 229, 89 served sides differ from the served equal-book rule. Season-blocked [-0.7491, 3.7594] probability_positive 0.7215.",
+      "plain_summary": "Listen to the three books that move first; if they have not moved enough, fall back to what all twelve books did on average.",
+      "probability_positive": 0.68415,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0738314292823449,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s3_leader_first_minus_s4_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: s3_leader_first minus the served equal-book follow, same games, same blocks. Positive favours the challenger aggregation.",
+      "effect": 1.0012515644555695,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.2240277077783377,
+        3.262233375156838
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. 82 of 816 served sides differ. Season-blocked [0.0000, 1.5038] probability_positive 0.9817. Per-season {'2023': 1.5037593984962405, '2024': 1.5037593984962405, '2025': 0.0}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on the same games.",
+      "probability_positive": 0.812575,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0738314292823449,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s3_leader_first_minus_s4_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head on the currently active card: s3_leader_first minus the served equal-book follow, same games, same blocks.",
+      "effect": 0.1251564455569462,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -2.125066489361702,
+        2.493765586034913
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Season-blocked [-1.1236, 0.7519] probability_positive 0.7406. Per-season {'2023': 0.7518796992481203, '2024': 0.7518796992481203, '2025': -1.1235955056179776}.",
+      "plain_summary": "Head-to-head between this way of reading the late-week line move and the one the picks already use, on today's model.",
+      "probability_positive": 0.544075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.0738314292823449,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s4_gate_matched_minus_s1_leader_only_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Post-hoc gate-matched diagnostic (not predeclared): s4_gate_matched at threshold 0.25 fires 514 times against its peer's 523, isolating leadership content from gate looseness.",
+      "effect": -1.376720901126408,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -2.907711757269279,
+        0.125
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Threshold 0.25 chosen post hoc to match the peer's fire count; season-blocked [-2.9963, 0.0000] probability_positive 0.0178.",
+      "plain_summary": "A fairness check: the two ways of reading the line move are compared after being tuned to change the same number of picks, so any difference is about which books are listened to rather than how often the rule fires.",
+      "probability_positive": 0.038525,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s4_gate_matched_minus_s1_leader_only_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Post-hoc gate-matched diagnostic on the currently active card: s4_gate_matched at threshold 0.25 against its peer at matched fire count.",
+      "effect": -1.1264080100125156,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -2.8395061728395063,
+        0.5037942195723906
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Threshold 0.25 chosen post hoc; season-blocked [-2.2472, 0.3759] probability_positive 0.0355.",
+      "plain_summary": "The same fairness check on today's model: both ways of reading the line move tuned to change the same number of picks.",
+      "probability_positive": 0.09435,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s4_served_equal_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "served rule replay: equal-book mean Wednesday-to-deadline net move followed at 0.5 points, the rule production has served since 2026-09-06; paired against the raw production opener card.",
+      "effect": 1.7521902377972465,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -0.8695652173913043,
+        4.326450835741213
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Fires 329 of 816 archive games, switches 143 picks, 0 served sides differ from the served equal-book rule. Season-blocked [1.1278, 2.9963] probability_positive 1.0000. Per-season {'2023': 1.1278195488721805, '2024': 1.1278195488721805, '2025': 2.9962546816479403}. Baseline card is the frozen 2026-09-05 opener evaluation (model ab29832a4e099766).",
+      "plain_summary": "The rule the picks already use: average what all twelve sportsbooks did to the line between Wednesday and the deadline, and switch the pick when that average moved at least half a point.",
+      "probability_positive": 0.906675,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.1008828675834187,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233606Z/metadata.json (docs/sharp_weighted_follow.md)",
+      "standard_error": null
+    },
+    "sharp_weighted_follow_s4_served_equal_current_model_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); the fire-flag split-half reliability is non-zero, so no_split_half_reliability is inadmissible; no interval sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; and the perfect-foresight positive control resolves a ~45-47 point effect, which does not prove the instrument can detect a 0.1-3 point one, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "served rule replay: equal-book mean Wednesday-to-deadline net move followed at 0.5 points, the rule production has served since 2026-09-06; replicated against the currently active card (model c657058903f3232b, gaussian_median, served home-side offset).",
+      "effect": 0.8760951188986232,
+      "effect_units": "accuracy_points",
+      "family": "sharp_weighted_follow",
+      "interval": [
+        -1.879758209828209,
+        3.670886075949367
+      ],
+      "league": "nfl",
+      "notes": "Week-blocked, 20000 samples, seed 20260821. Same 816-game archive population, baseline is artifacts/opener_evaluation/20260909T183120Z. Fires 329, switches 140, 0 served sides differ from the served equal-book rule. Season-blocked [-0.7519, 3.0075] probability_positive 0.7964.",
+      "plain_summary": "The rule the picks already use: average what all twelve sportsbooks did to the line between Wednesday and the deadline, and switch the pick when that average moved at least half a point.",
+      "probability_positive": 0.730525,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.1008828675834187,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/sharp_weighted_follow/20260909T233611Z/metadata.json (docs/sharp_weighted_follow.md)",
       "standard_error": null
     },
     "shrunk_overlay_policy_walkforward": {

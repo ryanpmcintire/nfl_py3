@@ -11,9 +11,13 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
-from nfl_ats.clv import load_paper_decisions, refuse_if_outside_recording_lock_window
+from nfl_ats.clv import (
+    COMPOSITION_POLICY_IDS,
+    load_paper_decisions,
+    refuse_if_outside_recording_lock_window,
+)
 from nfl_ats.data import DataContractError
-from nfl_ats.four_overlay_composition import INCUMBENT_CHALLENGER_ID, POLICY_ID
+from nfl_ats.four_overlay_composition import INCUMBENT_CHALLENGER_ID
 from nfl_ats.io import atomic_parquet
 from nfl_ats.prospective_scoring import (
     ACTIVE_CHALLENGER_STATUS,
@@ -89,7 +93,7 @@ def record_former_production_incumbent_decisions(
     primary = primary.loc[
         primary["season"].astype(int).eq(season)
         & primary["week"].astype(int).eq(week)
-        & primary["decision_policy_id"].astype(str).eq(POLICY_ID)
+        & primary["decision_policy_id"].astype(str).isin(COMPOSITION_POLICY_IDS)
     ].copy()
     if set(primary["game_id"].astype(str)) != set(card["game_id"].astype(str)):
         raise DataContractError(

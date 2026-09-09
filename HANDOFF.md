@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T23:30:17.472249+00:00`
+Refreshed at: `2026-09-09T23:49:55.602151+00:00`
 
 ## Start here
 
@@ -20,29 +20,20 @@ Refreshed at: `2026-09-09T23:30:17.472249+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b5f60b79c471` — Serve six more tilts on the card (+1.0 pts through the played card, P+ 0.88): bye-edge fade, cold visitor, protection mismatch, interim HC, tank zone, precip; Week 1 changes ATL->PIT, DET->NO, KC->DEN. Rookie crew reconciled (+0.13 on the card, P+ 0.79, not wired). Afternoon injury captures and horizon-aware refits. CLI JSON printer tolerates Timestamps.
-- Pending change set: 36 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `A  docs/era_weighted_on_card.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `A  docs/public_split_on_card.md`
-  - `A  docs/spread_hole_group_penalty.md`
-  - `A  docs/spread_hole_target.md`
+- Baseline commit: `284f6723445c` — Ledger integrity: one command re-records every Tuesday ledger from a named forecast (scoped to pre-kickoff rows); the crash that silenced 23 arms at the lock is fixed and every recorder is fail-open with failures named in the result; 37 of 44 arms now hold Week 1 rows. Spread hole: group penalty, line-constrained and target-changed arms all lose through the card (T1 removes the lean and costs 0.67 pts); the 7.5-10 ceiling is +0.33 on the card at most. Era-weighted refit -1.73 through the card (resolved). Fade-the-public -1.15 P+ 0.23; heavy-handle side is the live direction.
+- Pending change set: 12 paths
+  - `A  docs/handle_follow_on_card.md`
+  - `A  docs/injury_signal_on_refresh_card.md`
+  - `A  docs/sharp_weighted_follow.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/era_weighted_on_card.py`
-  - `M  scripts/lockday_contract.py`
-  - `M  scripts/lockday_rehearsal.py`
   - `M  scripts/lockday_verify.py`
-  - `A  scripts/spread_hole_group_penalty.py`
-  - `A  scripts/spread_hole_target.py`
-  - `M  src/nfl_ats/best_pick_big_spread_challenger.py`
-  - `M  src/nfl_ats/best_pick_nomination.py`
-  - `M  src/nfl_ats/best_pick_refresh_prospective.py`
-  - ...and 16 more
+  - `A  scripts/sharp_weighted_follow.py`
+  - `A  scripts/sharp_weighted_follow_record.py`
+  - `A  scripts/sharp_weighted_follow_run_records.py`
+  - `M  src/nfl_ats/clv.py`
+  - `M  src/nfl_ats/four_overlay_incumbent.py`
+  - `M  src/nfl_ats/retired_four_member_union.py`
+  - `M  src/nfl_ats/retired_three_member_union.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

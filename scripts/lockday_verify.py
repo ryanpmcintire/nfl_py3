@@ -349,6 +349,10 @@ def verify(
                 if registry_command
                 else challenger_id in STANDALONE_PENDING_WIRING
             )
+            standalone_cli_recorder = bool(
+                registry_command
+                and f"prospective-record --challenger {challenger_id} --season" in registry_command
+            )
             recording_path = "standalone_pending_wiring" if standalone_pending else "publish"
             if count:
                 status, note = "recorded", ""
@@ -359,6 +363,13 @@ def verify(
                 status, note = "MISSING", f"recorder failed: {failure}"
             elif gate:
                 status, note = "skipped", gate
+            elif standalone_cli_recorder:
+                status, note = (
+                    "skipped",
+                    "records via its own `prospective-record --challenger "
+                    f"{challenger_id}` command, not the publish-predictions/refresh-picks "
+                    "chain -- run it explicitly before this week's kickoffs",
+                )
             elif standalone_pending:
                 status, note = (
                     "PENDING_WIRING",

@@ -1473,6 +1473,10 @@ _PARTIAL_COMPOSITION_POLICY_MEMBER_FLIPS: dict[str, tuple[str, ...]] = {
     ),
 }
 
+COMPOSITION_POLICY_IDS: frozenset[str] = frozenset(_COMPOSITION_POLICY_MEMBER_FLIPS) | frozenset(
+    _PARTIAL_COMPOSITION_POLICY_MEMBER_FLIPS
+)
+
 _CLOSE_REFERENCE_COLUMNS: tuple[str, ...] = (
     "game_id",
     "close_home_spread",
