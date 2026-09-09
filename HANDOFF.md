@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T21:06:19.927891+00:00`
+Refreshed at: `2026-09-09T21:42:14.960722+00:00`
 
 ## Start here
 
@@ -20,29 +20,12 @@ Refreshed at: `2026-09-09T21:06:19.927891+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `76737fcb9b16` — capture_scheduler --rehearse-all: execute every enabled job's real argv once, verdicts from the run itself
-- Pending change set: 784 paths
-  - `M  .githooks/pre-commit`
-  - `M  AGENTS.md`
-  - `M  HANDOFF.md`
-  - `M  scripts/absence_dependence_screen.py`
-  - `M  scripts/absence_pairwise_screen.py`
-  - `M  scripts/anytime_validate.py`
-  - `M  scripts/anytime_weekly_monitor.py`
-  - `M  scripts/apm_unit_opener_eval.py`
-  - `M  scripts/arctic_shift_battery_fetch.py`
-  - `M  scripts/arctic_shift_battery_screen.py`
-  - `M  scripts/artifact_retention.py`
-  - `M  scripts/assistant_eval.py`
-  - `M  scripts/attention_battery_screen.py`
-  - `M  scripts/attention_followup_screen.py`
-  - `M  scripts/audit_terminal_verdicts.py`
-  - `M  scripts/availability_ablation.py`
-  - `M  scripts/availability_mechanism_screen.py`
-  - `M  scripts/availability_overlap_audit.py`
-  - `M  scripts/b1g_parse.py`
-  - `M  scripts/backfill_experiment_registry.py`
-  - ...and 764 more
+- Baseline commit: `9f84d0997606` — Ban code comments (owner, 2026-09-09): strip 24,821 comment lines from 780 files, deny hook on Edit/Write, pre-commit check
+- Pending change set: 4 paths
+  - ` M artifacts/prospective/challengers.json`
+  - `A  docs/best_pick_deadline_renomination.md`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/best_pick_deadline_renomination_eval.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
