@@ -75,6 +75,7 @@ from nfl_ats.market_data import own_week_tuesday_quotes, tuesday_opener_quotes
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds_backfill import DECISION_LABELS, HISTORICAL_CAPTURE_KIND
 from nfl_ats.provenance import sha256_file
+from nfl_ats.recorder_override import replace_week_rows
 from nfl_ats.snapshots import latest_snapshot
 
 LIVE_CAPTURE_KIND = "live"
@@ -1602,13 +1603,17 @@ def record_paper_decisions(
     **Operator override (owner, 2026-09-09).** ``forecast_artifact`` records
     from a named ``margin_predictions/...`` directory instead of the active
     manifest's linked forecast, and ``replace_week`` first drops the week's
-    existing rows (the previous ledger is copied to a timestamped ``.bak``
-    beside it) so a lock that was missed, or recorded on the wrong lines, can
-    be re-recorded from the card that was actually played. Every other
-    guard (synchronized forecast, pre-kickoff only, recording window) still
-    applies. The Tuesday 2026 Week 1 rows were the motivating case: recorded
-    at 12:33 ET on nflverse whole-number lines, fifty minutes before the
-    card moved to the pool's own board.
+    existing rows for games that are STILL BEFORE KICKOFF (the previous ledger
+    is copied to a timestamped ``.bak`` beside it) so a lock that was missed,
+    or recorded on the wrong lines, can be re-recorded from the card that was
+    actually played. A row for a game already under way is left exactly as it
+    is and counted as ``left_post_kickoff``: the append step only writes
+    pre-kickoff games, so dropping such a row would delete evidence that
+    cannot be re-created. Every other guard (synchronized forecast,
+    pre-kickoff only, recording window) still applies. The Tuesday 2026 Week 1
+    rows were the motivating case: recorded at 12:33 ET on nflverse
+    whole-number lines, fifty minutes before the card moved to the pool's own
+    board.
 
     Reads the same synchronized weekly forecast that ``publish-predictions``
     publishes (the active manifest's linked artifact), takes its forced ATS
@@ -1634,7 +1639,10 @@ def record_paper_decisions(
 
     Rule 1 is why the flag may land on a row appended by an EARLIER run: the
     decision rows are append-only, but the Best Pick is a separate, one-time,
-    still-pre-kickoff write about that week.
+    still-pre-kickoff write about that week. A ``replace_week`` pass carries
+    the week's existing nomination across the rewrite rather than re-choosing
+    it, so correcting a line after the first kickoff cannot silently erase a
+    Best Pick that was nominated while the whole week was still ahead.
     """
 
     active = load_active_ats_model(artifacts_root)
@@ -1765,28 +1773,24 @@ def record_paper_decisions(
     season = int(card["season"].iloc[0])
     week = int(card["week"].iloc[0])
     replaced_rows = 0
+    left_post_kickoff = 0
+    dropped_best_pick_id: str | None = None
     if replace_week and not existing.empty:
-        dropping = existing["season"].astype(int).eq(season) & existing["week"].astype(int).eq(week)
-        replaced_rows = int(dropping.sum())
-        started = (
-            existing.loc[dropping, "game_id"]
-            .astype(str)
-            .isin(set(card.loc[~pre_kickoff, "game_id"].astype(str)))
+        flagged = existing.loc[
+            existing["season"].astype(int).eq(season)
+            & existing["week"].astype(int).eq(week)
+            & existing["is_best_pick"].fillna(False).astype(bool),
+            "game_id",
+        ]
+        dropped_best_pick_id = str(flagged.iloc[0]) if len(flagged) else None
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            paper_decision_ledger_path(artifacts_root),
+            season=season,
+            week=week,
+            recorded_at=recorded_at,
+            columns=PAPER_DECISION_COLUMNS,
         )
-        if bool(started.any()):
-            raise ValueError(
-                "Refusing --replace-week: "
-                f"{int(started.sum())} recorded game(s) for {season} week {week} have already "
-                "kicked off, and a replaced row cannot be re-recorded after kickoff. Replace "
-                "only while every recorded game is still in the future."
-            )
-        if replaced_rows:
-            ledger_path = paper_decision_ledger_path(artifacts_root)
-            backup = ledger_path.with_name(
-                f"{ledger_path.stem}.{recorded_at.strftime('%Y%m%dT%H%M%SZ')}.bak.parquet"
-            )
-            atomic_parquet(existing[list(PAPER_DECISION_COLUMNS)], backup)
-            existing = existing.loc[~dropping].reset_index(drop=True)
     already = card["game_id"].isin(set(existing["game_id"].astype(str)))
     fresh = card.loc[pre_kickoff & ~already]
     week_already_flagged = bool(
@@ -1799,6 +1803,8 @@ def record_paper_decisions(
     best_pick_id: str | None = None
     if not week_already_flagged and bool(pre_kickoff.all()):
         best_pick_id = view.nomination.active_game_id
+    elif not week_already_flagged and dropped_best_pick_id is not None:
+        best_pick_id = dropped_best_pick_id
 
     decisions = pd.DataFrame(
         {
@@ -1877,6 +1883,7 @@ def record_paper_decisions(
         "week": week,
         "recorded": len(decisions),
         "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "forecast_artifact": recorded_artifact,
         "already_recorded": int(already.sum()),
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),

@@ -21,6 +21,7 @@ def _repo(tmp_path: Path, challengers: list[dict[str, str]]) -> Path:
     )
     (tmp_path / "src" / "nfl_ats" / "cli.py").write_text(
         'PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {"arm": "arm_ledger"}\n'
+        "REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {}\n"
         'result["arm_ledger"] = recorder()\n'
         'result["prospective_record"] = recorder()\n'
         "def _cmd_prospective_record(): pass\n"

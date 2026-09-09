@@ -14,6 +14,7 @@ import pandas as pd
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.io import atomic_parquet
 from nfl_ats.pick_refresh import pick_deadline, sunday_pick_lock
+from nfl_ats.recorder_override import replace_week_rows
 from nfl_ats.score_lattice import pick_consistent_top_score, score_lattice
 from nfl_ats.served_total_challenger import _schedule_kickoff_utc
 from nfl_ats.tiebreaker import last_game_of_week, lined_finals, newest_schedules_path
@@ -99,6 +100,8 @@ def record_tiebreaker_shade_decisions(
     *,
     published_path: Path | None = None,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Publication recorder; every pass settles prior rows before checking new inputs."""
     try:
@@ -110,16 +113,26 @@ def record_tiebreaker_shade_decisions(
         settled = settle_decisions(existing, schedules)
         if not settled.equals(existing):
             atomic_parquet(settled, ledger_path(artifacts_root))
-        if published_path is None:
+        if forecast_artifact is not None:
+            named = (artifacts_root / forecast_artifact).resolve()
+            if not named.is_dir() or artifacts_root.resolve() not in named.parents:
+                return skip("named forecast artifact is not a directory under artifacts")
+            published_path = named / "tiebreaker.json"
+        if published_path is None or not published_path.is_file():
             return skip("no published tiebreaker artifact")
         payload = json.loads(published_path.read_text(encoding="utf-8"))
         season, week = int(payload["season"]), int(payload["week"])
         if season < 2026:
             return skip("prospective seasons start in 2026")
-        if not settled.empty and (settled["season"].eq(season) & settled["week"].eq(week)).any():
+        recorded_week = (
+            settled["season"].eq(season) & settled["week"].eq(week)
+            if not settled.empty
+            else pd.Series(dtype=bool)
+        )
+        if bool(recorded_week.any()) and not replace_week:
             return {"recorded": 0, "already_recorded": 1, "ledger_rows": len(settled)}
         generated = pd.Timestamp(payload["generated_at_utc"])
-        if generated.tzinfo is None or generated != instant:
+        if generated.tzinfo is None or (forecast_artifact is None and generated != instant):
             return skip("tiebreaker artifact is not from this publication")
         games = schedules.loc[
             schedules["season"].eq(season)
@@ -171,8 +184,20 @@ def record_tiebreaker_shade_decisions(
                 }
             ]
         )
+        replaced_rows = 0
+        if replace_week and bool(recorded_week.any()):
+            settled, replaced_rows, left_post_kickoff = replace_week_rows(
+                settled,
+                ledger_path(artifacts_root),
+                season=season,
+                week=week,
+                recorded_at=instant,
+                columns=tuple(settled.columns),
+            )
+            if left_post_kickoff:
+                return skip("the recorded tiebreaker game has already kicked off")
         combined = pd.concat([settled, row], ignore_index=True) if not settled.empty else row
         atomic_parquet(combined, ledger_path(artifacts_root))
-        return {"recorded": 1, "ledger_rows": len(combined)}
+        return {"recorded": 1, "ledger_rows": len(combined), "replaced_rows": replaced_rows}
     except (OSError, ValueError, KeyError, TypeError) as error:
         return skip(f"{CHALLENGER_ID}: {error}")

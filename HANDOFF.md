@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T22:34:34.941660+00:00`
+Refreshed at: `2026-09-09T23:30:17.472249+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-09T22:34:34.941660+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cf3375f2a0e1` — Registry: the twenty spread-hole cells from the diagnosis lane
-- Pending change set: 32 paths
+- Baseline commit: `b5f60b79c471` — Serve six more tilts on the card (+1.0 pts through the played card, P+ 0.88): bye-edge fade, cold visitor, protection mismatch, interim HC, tank zone, precip; Week 1 changes ATL->PIT, DET->NO, KC->DEN. Rookie crew reconciled (+0.13 on the card, P+ 0.79, not wired). Afternoon injury captures and horizon-aware refits. CLI JSON printer tolerates Timestamps.
+- Pending change set: 36 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
+  - `A  docs/era_weighted_on_card.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `A  docs/rookie_crew_reconciliation.md`
-  - `A  docs/unserved_tilt_marginals.md`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260909T220047Z.json`
+  - `A  docs/public_split_on_card.md`
+  - `A  docs/spread_hole_group_penalty.md`
+  - `A  docs/spread_hole_target.md`
   - `M  registry/weak_signals.json`
-  - `M  scripts/best_pick_deadline_renomination_eval.py`
-  - `M  scripts/capture_scheduler.py`
-  - `A  scripts/rookie_crew_reconciliation_eval.py`
-  - `A  scripts/rookie_crew_wiring_isolation.py`
-  - `A  scripts/unserved_tilt_marginals.py`
-  - `M  src/nfl_ats/card_view.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - ...and 12 more
+  - `A  scripts/era_weighted_on_card.py`
+  - `M  scripts/lockday_contract.py`
+  - `M  scripts/lockday_rehearsal.py`
+  - `M  scripts/lockday_verify.py`
+  - `A  scripts/spread_hole_group_penalty.py`
+  - `A  scripts/spread_hole_target.py`
+  - `M  src/nfl_ats/best_pick_big_spread_challenger.py`
+  - `M  src/nfl_ats/best_pick_nomination.py`
+  - `M  src/nfl_ats/best_pick_refresh_prospective.py`
+  - ...and 16 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -62,7 +62,7 @@ The 52.29% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T22:23:20.587786+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T23:13:48.616141+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

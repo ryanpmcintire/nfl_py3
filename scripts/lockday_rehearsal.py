@@ -1073,10 +1073,8 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if not args.full_replay:
-        from lockday_contract import REFRESH_RESULT_KEYS as contract_refresh_keys
         from lockday_contract import main as contract_main
 
-        contract_refresh_keys.update(REFRESH_RESULT_KEYS)
         return contract_main([])
 
     _load_full_replay_dependencies()

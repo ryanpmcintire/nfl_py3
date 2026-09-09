@@ -15,14 +15,6 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-REFRESH_RESULT_KEYS: dict[str, str] = {
-    "model_only_refresh_incumbent": "ledger",
-    "injury_signal_refresh_tilt": "injury_signal_refresh_tilt",
-    "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_overlay",
-    "inactives_refresh_v1": "inactives_refresh_overlay",
-    "crew_tilt_refresh_v1": "crew_tilt_refresh_overlay",
-}
-
 WEEKLY_RESULT_KEYS: dict[str, str] = {
     "mod07_weak_signal_stack": "prospective_record",
 }
@@ -67,6 +59,7 @@ def audit(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     cli_source = "\n".join(path.read_text(encoding="utf-8") for path in cli_paths)
     verifier_source = verifier_path.read_text(encoding="utf-8")
     publish_keys = _literal_assignment(cli_source, "PUBLISH_CHALLENGER_RESULT_KEYS")
+    refresh_keys = _literal_assignment(cli_source, "REFRESH_CHALLENGER_RESULT_KEYS")
 
     active = [
         entry
@@ -78,9 +71,9 @@ def audit(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     for entry in active:
         challenger_id = str(entry.get("challenger_id", ""))
         command = str(entry.get("weekly_recording_command", ""))
-        if challenger_id in REFRESH_RESULT_KEYS:
+        if challenger_id in refresh_keys and challenger_id not in publish_keys:
             path = "refresh"
-            result_key = REFRESH_RESULT_KEYS[challenger_id]
+            result_key = refresh_keys[challenger_id]
         elif challenger_id in WEEKLY_RESULT_KEYS:
             path = "weekly-run"
             result_key = WEEKLY_RESULT_KEYS[challenger_id]

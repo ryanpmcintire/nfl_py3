@@ -746,7 +746,7 @@
               "type": null,
               "choices": null,
               "required": false,
-              "help": "operator override (owner, 2026-09-09): record the paper-decision ledger from this margin_predictions/... artifact instead of the active model's linked forecast -- the card that was actually played, when the linked forecast has since moved on. Only meaningful with --record-decisions.",
+              "help": "operator override (owner, 2026-09-09): record every ledger this run writes -- the paper-decision ledger, each overlay and Best Pick challenger arm, and the tiebreaker shade ledger -- from this margin_predictions/... artifact instead of the active model's linked forecast, so they all record the card that was actually played when the linked forecast has since moved on. Only meaningful with --record-decisions.",
               "metavar": "ARTIFACT"
             },
             {
@@ -761,7 +761,7 @@
               "type": null,
               "choices": null,
               "required": false,
-              "help": "operator override (owner, 2026-09-09): drop the recorded week's existing paper-decision rows first (the prior ledger is kept as a timestamped .bak beside it) so a missed lock, or one recorded on the wrong lines, can be re-recorded. Pre-kickoff and recording-window guards still apply. Only meaningful with --record-decisions.",
+              "help": "operator override (owner, 2026-09-09): drop the recorded week's existing rows first in every ledger this run writes -- paper decisions, each overlay and Best Pick challenger arm, the Best Pick Tuesday ledger and the tiebreaker shade ledger (each prior ledger is kept as a timestamped .bak beside it) -- so a missed lock, or one recorded on the wrong lines, can be re-recorded everywhere rather than only in the paper ledger. Only rows for games that are still before kickoff are replaced; a row for a game already under way is left exactly as it is, because the append step would not re-create it. Pre-kickoff and recording-window guards still apply. Only meaningful with --record-decisions.",
               "metavar": null
             }
           ],

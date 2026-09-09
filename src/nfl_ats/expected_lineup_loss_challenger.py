@@ -106,6 +106,8 @@ def build_stacked_features(
     snapshot = latest_player_snapshot(data_root / "players/raw")
     injuries, rosters, snaps = load_player_snapshot(snapshot, include_postseason=False)
     depth = load_depth_snapshot(latest_depth_snapshot(data_root / "quarterbacks/depth/raw"))
+    if "dt" not in depth.columns and "observed_at_utc" in depth.columns:
+        depth = depth.assign(dt=depth["observed_at_utc"])
     depth = depth.loc[pd.to_datetime(depth["dt"], utc=True).le(now)].copy()
     if depth.empty:
         raise FileNotFoundError("No lineup observations are available before publication")

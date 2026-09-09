@@ -33,7 +33,6 @@ from nfl_ats.clv import record_paper_decisions
 from nfl_ats.coach_fade_overlay import record_overlay_challenger_decisions
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.crew_tilt_refresh_overlay import record_crew_tilt_refresh_overlay
-from nfl_ats.data import DataContractError
 from nfl_ats.deadline_drag_challenger import record_deadline_drag_challenger_decisions
 from nfl_ats.division_revenge_tilt_overlay import record_division_revenge_tilt_challenger_decisions
 from nfl_ats.ecdf_mapping_incumbent_overlay import (
@@ -156,6 +155,36 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "rain_on_grass_dog_challenger": "rain_on_grass_dog_challenger_ledger",
 }
 
+REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
+    "best_pick_sunday_renomination": "best_pick_refresh_ledger",
+    "model_only_refresh_incumbent": "ledger",
+    "injury_signal_refresh_tilt": "injury_signal_refresh_tilt",
+    "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_overlay",
+    "inactives_refresh_v1": "inactives_refresh_overlay",
+    "crew_tilt_refresh_v1": "crew_tilt_refresh_overlay",
+    "specialist_absence_fade_refresh_v1": "specialist_absence_fade_refresh_overlay",
+    "late_week_move_follow_refresh_v1": "late_week_move_follow_refresh_overlay",
+}
+
+
+def collect_failed_recorders(
+    result: dict[str, Any], result_keys: dict[str, str]
+) -> list[dict[str, str]]:
+    """Name every recorder in ``result`` that errored, so zero rows are never silent."""
+
+    failures: list[dict[str, str]] = []
+    for challenger_id, result_key in result_keys.items():
+        entry = result.get(result_key)
+        if not isinstance(entry, dict):
+            continue
+        error = entry.get("error")
+        if not error:
+            continue
+        failures.append(
+            {"challenger_id": challenger_id, "result_key": result_key, "error": str(error)}
+        )
+    return sorted(failures, key=lambda failure: failure["challenger_id"])
+
 
 def _site_directory(destination: Path) -> Path:
     """The directory a public-site flag points at.
@@ -272,57 +301,95 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 forecast_artifact=request.record_from_forecast,
                 replace_week=request.replace_week,
             )
-        except (ValueError, FileNotFoundError) as error:
+        except Exception as error:
             result["clv_ledger"] = {"recorded": 0, "error": str(error)}
-        result["best_pick_tuesday_ledger"] = record_best_pick_tuesday(
-            _artifacts_root(), _data_root(), result, now=publish_instant
-        )
-        result["tiebreaker_shade_ledger"] = record_tiebreaker_shade_decisions(
-            _artifacts_root(),
-            _data_root(),
-            published_path=(
-                Path(result["tiebreaker_json_path"]) if result.get("tiebreaker_json_path") else None
-            ),
-            now=publish_instant,
-        )
+        try:
+            result["best_pick_tuesday_ledger"] = record_best_pick_tuesday(
+                _artifacts_root(),
+                _data_root(),
+                result,
+                now=publish_instant,
+                replace_week=request.replace_week,
+            )
+        except Exception as error:
+            result["best_pick_tuesday_ledger"] = {"recorded": 0, "error": str(error)}
+        try:
+            result["tiebreaker_shade_ledger"] = record_tiebreaker_shade_decisions(
+                _artifacts_root(),
+                _data_root(),
+                published_path=(
+                    Path(result["tiebreaker_json_path"])
+                    if result.get("tiebreaker_json_path")
+                    else None
+                ),
+                now=publish_instant,
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
+            )
+        except Exception as error:
+            result["tiebreaker_shade_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["overlay_challenger_ledger"] = record_overlay_challenger_decisions(
-                _artifacts_root(), _data_root()
+                _artifacts_root(),
+                _data_root(),
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["overlay_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["nomination_challenger_ledger"] = record_nomination_challenger_decisions(
-                _artifacts_root(), _data_root()
+                _artifacts_root(),
+                _data_root(),
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["nomination_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["nomination_v3_challenger_ledger"] = record_nomination_v3_challenger_decisions(
-                _artifacts_root(), _data_root()
+                _artifacts_root(),
+                _data_root(),
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["nomination_v3_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["big_spread_nomination_challenger_ledger"] = (
-                record_big_spread_nomination_challenger_decisions(_artifacts_root(), _data_root())
+                record_big_spread_nomination_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["big_spread_nomination_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
             }
         try:
             result["injury_value_tilt_challenger_ledger"] = (
-                record_injury_value_tilt_challenger_decisions(_artifacts_root(), _data_root())
+                record_injury_value_tilt_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["injury_value_tilt_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["division_revenge_tilt_challenger_ledger"] = (
-                record_division_revenge_tilt_challenger_decisions(_artifacts_root(), _data_root())
+                record_division_revenge_tilt_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["division_revenge_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -331,19 +398,29 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             result["backup_qb_fade_challenger_ledger"] = record_backup_qb_fade_challenger_decisions(
                 _artifacts_root(), _data_root()
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["backup_qb_fade_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["surface_switch_tilt_challenger_ledger"] = (
-                record_surface_switch_tilt_challenger_decisions(_artifacts_root(), _data_root())
+                record_surface_switch_tilt_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["surface_switch_tilt_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["spread_gap_zone_fade_challenger_ledger"] = (
-                record_spread_gap_zone_fade_challenger_decisions(_artifacts_root(), _data_root())
+                record_spread_gap_zone_fade_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["spread_gap_zone_fade_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -352,19 +429,19 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             result["expected_lineup_loss_challenger_ledger"] = (
                 record_expected_lineup_loss_challenger_decisions(_artifacts_root(), _data_root())
             )
-        except (ValueError, FileNotFoundError) as error:
+        except Exception as error:
             result["expected_lineup_loss_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["deadline_drag_challenger_ledger"] = record_deadline_drag_challenger_decisions(
                 _artifacts_root(), _data_root()
             )
-        except (ValueError, FileNotFoundError) as error:
+        except Exception as error:
             result["deadline_drag_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["low_total_div_home_dog_challenger_ledger"] = (
                 record_low_total_div_home_dog_challenger_decisions(_artifacts_root(), _data_root())
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["low_total_div_home_dog_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -373,13 +450,13 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             result["bye_edge_fade_challenger_ledger"] = record_bye_edge_fade_challenger_decisions(
                 _artifacts_root(), _data_root()
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["bye_edge_fade_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["tank_zone_fade_tilt_challenger_ledger"] = (
                 record_tank_zone_fade_tilt_challenger_decisions(_artifacts_root(), _data_root())
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["tank_zone_fade_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -390,7 +467,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["third_down_reversion_fade_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -401,7 +478,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["turnover_luck_rebound_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -412,7 +489,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["special_teams_return_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -421,7 +498,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             result["pace_mismatch_dog_tilt_challenger_ledger"] = (
                 record_pace_mismatch_dog_tilt_challenger_decisions(_artifacts_root(), _data_root())
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["pace_mismatch_dog_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -432,7 +509,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["pbp08_protection_mismatch_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -443,7 +520,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["four_overlay_incumbent_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -454,7 +531,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["retired_four_member_union_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -465,7 +542,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["retired_three_member_union_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -474,7 +551,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             result["ecdf_mapping_incumbent_challenger_ledger"] = (
                 record_ecdf_mapping_incumbent_challenger_decisions(_artifacts_root(), _data_root())
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["ecdf_mapping_incumbent_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -485,7 +562,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["gaussian_mean_mapping_incumbent_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -496,7 +573,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["home_side_offset_off_incumbent_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -507,7 +584,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["key_line_pick_read_off_incumbent_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -518,7 +595,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["era_weighted_half_life_8_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -529,7 +606,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), _registry_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["forecast_cold_visitor_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -540,7 +617,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root()
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["interim_hc_first_game_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -557,7 +634,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     forecasts=shared_kn_forecasts,
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["forecast_weather_kn_warm_team_cold_late_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -571,7 +648,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     forecasts=shared_kn_forecasts,
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["forecast_weather_kn_precip_high_total_tilt_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -585,7 +662,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     forecasts=shared_kn_forecasts,
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["rain_on_grass_dog_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -596,7 +673,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["movement_rule_composed_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -607,7 +684,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["nflcom_refresh_out2_starters_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -618,7 +695,7 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["qb_revenge_deadline_drag_stack_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
@@ -629,11 +706,14 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _artifacts_root(), _data_root(), now=publish_instant
                 )
             )
-        except (ValueError, FileNotFoundError, DataContractError) as error:
+        except Exception as error:
             result["totals_served_method_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
             }
+        result["failed_recorders"] = collect_failed_recorders(
+            result, PUBLISH_CHALLENGER_RESULT_KEYS
+        )
     else:
         result["best_pick_tuesday_ledger"] = {
             "recorded": 0,
@@ -886,25 +966,34 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         min_train_games=args.min_train_games,
     )
     result = refresh_summary(plan, record_decisions=args.record_decisions)
-    result["best_pick_refresh_ledger"] = record_best_pick_refresh(
-        _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
-    )
-    result["ledger"] = record_plan(
-        _artifacts_root(),
-        plan,
-        note=args.note,
-        record_decisions=args.record_decisions,
-        trigger_type=getattr(args, "trigger_type", "clock_dispatch"),
-        trigger_source=getattr(args, "trigger_source", ""),
-    )
-    result["injury_signal_refresh_tilt"] = record_injury_signal_refresh_tilt(
-        _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
-    )
+    try:
+        result["best_pick_refresh_ledger"] = record_best_pick_refresh(
+            _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
+        )
+    except Exception as error:
+        result["best_pick_refresh_ledger"] = {"recorded": 0, "error": str(error)}
+    try:
+        result["ledger"] = record_plan(
+            _artifacts_root(),
+            plan,
+            note=args.note,
+            record_decisions=args.record_decisions,
+            trigger_type=getattr(args, "trigger_type", "clock_dispatch"),
+            trigger_source=getattr(args, "trigger_source", ""),
+        )
+    except Exception as error:
+        result["ledger"] = {"recorded": 0, "error": str(error)}
+    try:
+        result["injury_signal_refresh_tilt"] = record_injury_signal_refresh_tilt(
+            _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
+        )
+    except Exception as error:
+        result["injury_signal_refresh_tilt"] = {"recorded": 0, "error": str(error)}
     try:
         result["nflcom_refresh_out2_starters_overlay"] = record_nflcom_refresh_overlay(
             _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
         )
-    except (ValueError, FileNotFoundError, DataContractError) as error:
+    except Exception as error:
         result["nflcom_refresh_out2_starters_overlay"] = {
             "recorded": 0,
             "error": str(error),
@@ -913,7 +1002,7 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         result["inactives_refresh_overlay"] = record_inactives_refresh_overlay(
             _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
         )
-    except (ValueError, FileNotFoundError, DataContractError) as error:
+    except Exception as error:
         result["inactives_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     try:
         result["crew_tilt_refresh_overlay"] = record_crew_tilt_refresh_overlay(
@@ -923,7 +1012,7 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
             repo_root=Path.cwd(),
             record_decisions=args.record_decisions,
         )
-    except (ValueError, FileNotFoundError, DataContractError) as error:
+    except Exception as error:
         result["crew_tilt_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     try:
         result["specialist_absence_fade_refresh_overlay"] = (
@@ -934,7 +1023,7 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
                 record_decisions=args.record_decisions,
             )
         )
-    except (ValueError, FileNotFoundError, DataContractError) as error:
+    except Exception as error:
         result["specialist_absence_fade_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     try:
         result["late_week_move_follow_refresh_overlay"] = (
@@ -942,8 +1031,9 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
                 _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
             )
         )
-    except (ValueError, FileNotFoundError, DataContractError) as error:
+    except Exception as error:
         result["late_week_move_follow_refresh_overlay"] = {"recorded": 0, "error": str(error)}
+    result["failed_recorders"] = collect_failed_recorders(result, REFRESH_CHALLENGER_RESULT_KEYS)
     if args.publish_card:
         if not plan.changed_games:
             result["card"] = {
@@ -1006,10 +1096,12 @@ def register(
         default=None,
         metavar="ARTIFACT",
         help=(
-            "operator override (owner, 2026-09-09): record the paper-decision ledger from "
-            "this margin_predictions/... artifact instead of the active model's linked "
-            "forecast -- the card that was actually played, when the linked forecast has "
-            "since moved on. Only meaningful with --record-decisions."
+            "operator override (owner, 2026-09-09): record every ledger this run writes "
+            "-- the paper-decision ledger, each overlay and Best Pick challenger arm, and "
+            "the tiebreaker shade ledger -- from this margin_predictions/... artifact "
+            "instead of the active model's linked forecast, so they all record the card "
+            "that was actually played when the linked forecast has since moved on. Only "
+            "meaningful with --record-decisions."
         ),
     )
     publish.add_argument(
@@ -1017,9 +1109,14 @@ def register(
         action="store_true",
         help=(
             "operator override (owner, 2026-09-09): drop the recorded week's existing "
-            "paper-decision rows first (the prior ledger is kept as a timestamped .bak "
-            "beside it) so a missed lock, or one recorded on the wrong lines, can be "
-            "re-recorded. Pre-kickoff and recording-window guards still apply. Only "
+            "rows first in every ledger this run writes -- paper decisions, each overlay "
+            "and Best Pick challenger arm, the Best Pick Tuesday ledger and the "
+            "tiebreaker shade ledger (each prior ledger is kept as a timestamped .bak "
+            "beside it) -- so a missed lock, or one recorded on the wrong lines, can be "
+            "re-recorded everywhere rather than only in the paper ledger. Only rows for "
+            "games that are still before kickoff are replaced; a row for a game already "
+            "under way is left exactly as it is, because the append step would not "
+            "re-create it. Pre-kickoff and recording-window guards still apply. Only "
             "meaningful with --record-decisions."
         ),
     )

@@ -47,6 +47,13 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 import pandas as pd  # noqa: E402
 
+from nfl_ats.best_pick_refresh_prospective import (  # noqa: E402
+    load_decisions as load_best_pick_refresh,
+)
+from nfl_ats.cli_commands.publishing import (  # noqa: E402
+    PUBLISH_CHALLENGER_RESULT_KEYS,
+    REFRESH_CHALLENGER_RESULT_KEYS,
+)
 from nfl_ats.clv import load_paper_decisions  # noqa: E402
 from nfl_ats.crew_tilt_refresh_overlay import (  # noqa: E402
     load_crew_tilt_refresh_decisions,
@@ -55,6 +62,9 @@ from nfl_ats.inactives_refresh_overlay import (  # noqa: E402
     load_inactives_refresh_overlay_decisions,
 )
 from nfl_ats.injury_signal_refresh_tilt import load_injury_signal_decisions  # noqa: E402
+from nfl_ats.late_week_move_follow_refresh_overlay import (  # noqa: E402
+    LEDGER_NAME as LATE_WEEK_LEDGER,
+)
 from nfl_ats.nflcom_refresh_overlay import load_nflcom_refresh_overlay_decisions  # noqa: E402
 from nfl_ats.pick_refresh import load_pick_revisions  # noqa: E402
 from nfl_ats.prospective_scoring import (  # noqa: E402
@@ -62,8 +72,70 @@ from nfl_ats.prospective_scoring import (  # noqa: E402
     load_challenger_decisions,
     load_challenger_registry,
 )
+from nfl_ats.served_total_challenger import load_decisions as load_totals_served  # noqa: E402
+from nfl_ats.specialist_absence_fade_refresh_overlay import (  # noqa: E402
+    load_specialist_absence_fade_refresh_decisions,
+)
+from nfl_ats.tiebreaker_shade_prospective import (  # noqa: E402
+    load_decisions as load_tiebreaker_shade,
+)
+
+
+def _parquet_ledger(relative: str) -> Any:
+    """A loader for a dedicated ledger that has no module-level load helper."""
+
+    def load(artifacts_root: Path) -> pd.DataFrame:
+        path = artifacts_root / relative
+        return pd.read_parquet(path) if path.is_file() else pd.DataFrame()
+
+    return load
+
 
 DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
+    "tiebreaker_low_side_shade": {
+        "ledger": "prospective/tiebreaker_shade_decisions.parquet",
+        "loader": load_tiebreaker_shade,
+        "written_by": "publish-predictions --record-decisions",
+        "recording_path": "publish/dedicated",
+        "wired": True,
+    },
+    "totals_served_method": {
+        "ledger": "prospective/totals_served_method_decisions.parquet",
+        "loader": load_totals_served,
+        "written_by": "publish-predictions --record-decisions",
+        "recording_path": "publish/dedicated",
+        "wired": True,
+    },
+    "best_pick_sunday_renomination": {
+        "ledger": "prospective/best_pick_refresh_decisions.parquet",
+        "loader": load_best_pick_refresh,
+        "written_by": (
+            "publish-predictions --record-decisions (Tuesday anchor) and "
+            "refresh-picks --record-decisions (Sunday renomination)"
+        ),
+        "recording_path": "publish+refresh/dedicated",
+        "wired": True,
+    },
+    "specialist_absence_fade_refresh_v1": {
+        "ledger": "prospective/specialist_absence_fade_refresh_decisions.parquet",
+        "loader": load_specialist_absence_fade_refresh_decisions,
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
+        ),
+    },
+    "late_week_move_follow_refresh_v1": {
+        "ledger": f"prospective/{LATE_WEEK_LEDGER}",
+        "loader": _parquet_ledger(f"prospective/{LATE_WEEK_LEDGER}"),
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
+        ),
+    },
     "injury_signal_refresh_tilt": {
         "ledger": "prospective/injury_signal_refresh_decisions.parquet",
         "loader": load_injury_signal_decisions,
@@ -113,18 +185,24 @@ PENDING_REFRESH_LEDGERS: dict[str, dict[str, Any]] = {
     "inactives_refresh_v1": {
         "ledger": "prospective/inactives_refresh_decisions.parquet",
         "loader": load_inactives_refresh_overlay_decisions,
-        "written_by": "refresh-picks --record-decisions (pending CLI hook)",
+        "written_by": "refresh-picks --record-decisions",
         "recording_path": "refresh/dedicated",
         "wired": False,
         "note": "dedicated recorder exists but is not wired into refresh-picks yet",
+        "legitimately_empty": (
+            "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
+        ),
     },
     "crew_tilt_refresh_v1": {
         "ledger": "prospective/crew_tilt_refresh_decisions.parquet",
         "loader": load_crew_tilt_refresh_decisions,
-        "written_by": "refresh-picks --record-decisions (pending CLI hook)",
+        "written_by": "refresh-picks --record-decisions",
         "recording_path": "refresh/dedicated",
         "wired": False,
         "note": "dedicated recorder exists but is not wired into refresh-picks yet",
+        "legitimately_empty": (
+            "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
+        ),
     },
 }
 
@@ -162,7 +240,7 @@ def gated_skips(run_summary: dict[str, Any] | None) -> dict[str, str]:
         if not isinstance(node, dict):
             return
         challenger_id = node.get("challenger_id")
-        reason = node.get("reason") or node.get("error")
+        reason = node.get("reason")
         if isinstance(challenger_id, str) and isinstance(reason, str) and not node.get("recorded"):
             reasons.setdefault(challenger_id, reason)
         for value in node.values():
@@ -170,6 +248,59 @@ def gated_skips(run_summary: dict[str, Any] | None) -> dict[str, str]:
 
     walk(run_summary)
     return reasons
+
+
+def broken_recorders(run_summary: dict[str, Any] | None) -> dict[str, str]:
+    """Challenger -> the error its recorder raised, from a run summary.
+
+    An exception is not a gate. ``publish-predictions``/``refresh-picks`` now
+    emit a named ``failed_recorders`` list alongside each fail-open ledger
+    result, so a recorder that threw is reported as MISSING with the error
+    rather than passed off as a documented skip.
+    """
+
+    errors: dict[str, str] = {}
+    if not run_summary:
+        return errors
+
+    def walk(node: Any) -> None:
+        if isinstance(node, list):
+            for item in node:
+                walk(item)
+            return
+        if not isinstance(node, dict):
+            return
+        challenger_id = node.get("challenger_id")
+        error = node.get("error")
+        if isinstance(challenger_id, str) and isinstance(error, str) and not node.get("recorded"):
+            errors.setdefault(challenger_id, error)
+        for value in node.values():
+            walk(value)
+
+    walk(run_summary)
+    return errors
+
+
+def unwired_recorders(registry_entries: dict[str, Any], active: list[str]) -> dict[str, str]:
+    """Active challengers whose declared command has no recorder behind it."""
+
+    unwired: dict[str, str] = {}
+    for challenger_id in active:
+        command = str(registry_entries.get(challenger_id, {}).get("weekly_recording_command", ""))
+        if "publish-predictions --record-decisions" in command:
+            if challenger_id not in PUBLISH_CHALLENGER_RESULT_KEYS:
+                unwired[challenger_id] = (
+                    "registered against publish-predictions --record-decisions but absent "
+                    "from PUBLISH_CHALLENGER_RESULT_KEYS: no recorder runs for it"
+                )
+        elif "refresh-picks --record-decisions" in command and (
+            challenger_id not in REFRESH_CHALLENGER_RESULT_KEYS
+        ):
+            unwired[challenger_id] = (
+                "registered against refresh-picks --record-decisions but absent from "
+                "REFRESH_CHALLENGER_RESULT_KEYS: no recorder runs for it"
+            )
+    return unwired
 
 
 def verify(
@@ -181,12 +312,14 @@ def verify(
 ) -> dict[str, Any]:
     active = active_challenger_ids(artifacts_root)
     reported_gates = gated_skips(run_summary)
+    reported_errors = broken_recorders(run_summary)
 
     registry_entries = {
         str(entry.get("challenger_id")): entry
         for entry in load_challenger_registry(artifacts_root).get("challengers", [])
         if isinstance(entry, dict) and entry.get("challenger_id") is not None
     }
+    unwired = unwired_recorders(registry_entries, list(active))
 
     shared = _week_rows(load_challenger_decisions(artifacts_root), season=season, week=week)
     shared_counts: dict[str, int] = {}
@@ -210,6 +343,7 @@ def verify(
         if dedicated is None:
             count = int(shared_counts.get(challenger_id, 0))
             gate = reported_gates.get(challenger_id, "")
+            failure = reported_errors.get(challenger_id, "")
             standalone_pending = (
                 "scripts/record_" in registry_command
                 if registry_command
@@ -218,6 +352,11 @@ def verify(
             recording_path = "standalone_pending_wiring" if standalone_pending else "publish"
             if count:
                 status, note = "recorded", ""
+            elif challenger_id in unwired:
+                status, note = "PENDING_WIRING", unwired[challenger_id]
+                pending_wiring.append(challenger_id)
+            elif failure:
+                status, note = "MISSING", f"recorder failed: {failure}"
             elif gate:
                 status, note = "skipped", gate
             elif standalone_pending:
@@ -254,6 +393,18 @@ def verify(
             )
         if not wired:
             pending_wiring.append(challenger_id)
+        failure = reported_errors.get(challenger_id, "")
+        if count:
+            status, note = "recorded", ""
+        elif not wired:
+            status = "PENDING_WIRING"
+            note = dedicated.get("note", "recorder is not wired into refresh-picks yet")
+        elif failure:
+            status, note = "MISSING", f"recorder failed: {failure}"
+        elif dedicated.get("legitimately_empty"):
+            status, note = "skipped", str(dedicated["legitimately_empty"])
+        else:
+            status, note = "MISSING", "no rows and no gate explaining why"
         rows.append(
             {
                 "challenger_id": challenger_id,
@@ -261,14 +412,8 @@ def verify(
                 "ledger": dedicated["ledger"],
                 "written_by": dedicated["written_by"],
                 "recording_path": dedicated.get("recording_path", "refresh/dedicated"),
-                "status": ("recorded" if count else ("PENDING_WIRING" if not wired else "skipped")),
-                "note": ""
-                if count
-                else (
-                    dedicated.get("legitimately_empty", "")
-                    if wired
-                    else dedicated.get("note", "recorder is not wired into refresh-picks yet")
-                ),
+                "status": status,
+                "note": note,
             }
         )
 
@@ -290,6 +435,10 @@ def verify(
         "recorded": sum(1 for row in rows if row["status"] == "recorded"),
         "skipped": sum(1 for row in rows if row["status"] == "skipped"),
         "missing": missing,
+        "failed_recorders": [
+            {"challenger_id": challenger_id, "error": reported_errors[challenger_id]}
+            for challenger_id in sorted(reported_errors)
+        ],
         "pending_wiring": sorted(pending_wiring),
         "challengers": sorted(
             rows,
@@ -324,6 +473,14 @@ def render(report: dict[str, Any]) -> str:
         if row["note"]:
             line += f"   ({row['note']})"
         lines.append(line)
+    failures = report.get("failed_recorders") or []
+    if failures:
+        lines += ["", "  recorders that RAISED (named by the run summary, not silent zeroes):"]
+        lines += [
+            f"    {failure['challenger_id']}: {failure['error']}"
+            for failure in failures
+            if isinstance(failure, dict)
+        ]
     if report["missing"]:
         lines += [
             "",

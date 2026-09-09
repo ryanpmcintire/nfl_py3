@@ -71,7 +71,6 @@ Three things live here:
 
 from __future__ import annotations
 
-import json
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -81,7 +80,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
@@ -99,6 +98,7 @@ from nfl_ats.prospective_scoring import (
     load_challenger_decisions,
 )
 from nfl_ats.provenance import sha256_file
+from nfl_ats.recorder_override import replace_week_rows, resolve_recording_forecast
 
 NOMINATION_RIDGE_ALPHA = 2_000.0
 
@@ -608,6 +608,8 @@ def _record_nomination_for_challenger(
     nominate_fn: Callable[..., NominationV2Result | NominationV3Result | None],
     tie_note_fn: Callable[[Any], str],
     now: datetime | None,
+    forecast_artifact: str | None,
+    replace_week: bool,
 ) -> dict[str, Any]:
     """Shared recording body behind :func:`record_nomination_challenger_decisions`
     (v2) and :func:`record_nomination_v3_challenger_decisions` -- ONE
@@ -632,18 +634,10 @@ def _record_nomination_for_challenger(
         raise ValueError(
             "No synchronized active ATS model is available to record nomination decisions from"
         )
-    forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
-    if forecast is None:
-        raise ValueError("Active ATS model has no linked weekly forecast")
-    metadata_path = forecast / "metadata.json"
+    forecast, metadata = resolve_recording_forecast(
+        artifacts_root, active, forecast_artifact=forecast_artifact
+    )
     card_path = forecast / "recommendations.csv"
-    if not metadata_path.is_file() or not card_path.is_file():
-        raise ValueError(f"Linked weekly forecast is incomplete: {forecast}")
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    if metadata.get("active_model_id") != active.get("model_id"):
-        raise ValueError("Weekly forecast model ID does not match the active model")
-    if metadata.get("synchronization_status") != "SYNCHRONIZED":
-        raise ValueError("Weekly forecast is not synchronized with an evaluation")
 
     observed_config = artifact_model_config(metadata)
     declared_fingerprint = config_fingerprint(entry.get("model", {}))
@@ -705,6 +699,18 @@ def _record_nomination_for_challenger(
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
     whole_week_pre_kickoff = bool(kickoffs.gt(recorded_at).all())
     existing = load_challenger_decisions(artifacts_root)
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and nominee_id is not None and whole_week_pre_kickoff:
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            challenger_ledger_path(artifacts_root),
+            season=season,
+            week=week,
+            recorded_at=recorded_at,
+            columns=CHALLENGER_DECISION_COLUMNS,
+            challenger_id=challenger_id,
+        )
     mine = existing.loc[existing["challenger_id"].astype(str).eq(challenger_id)]
     already_ids = set(mine["game_id"].astype(str))
 
@@ -763,6 +769,8 @@ def _record_nomination_for_challenger(
         "nominated_game_id": nominee_id,
         "nomination_tie_note": tie_note_fn(result) if result is not None else "",
         "recorded": len(decisions),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "already_recorded": int(already),
         "post_kickoff_skipped": int(post_kickoff_skipped),
         "ledger_rows": int(ledger_rows),
@@ -774,6 +782,8 @@ def record_nomination_challenger_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append the v2 rule's weekly nominee to the prospective challenger
     ledger under :data:`CHALLENGER_ID`, so the season scores v1 against v2.
@@ -813,6 +823,8 @@ def record_nomination_challenger_decisions(
         nominate_fn=nominate_v2,
         tie_note_fn=nomination_v2_tie_note,
         now=now,
+        forecast_artifact=forecast_artifact,
+        replace_week=replace_week,
     )
 
 
@@ -821,6 +833,8 @@ def record_nomination_v3_challenger_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append v3's weekly nominee to the prospective challenger ledger under
     :data:`CHALLENGER_ID_V3`, mirroring
@@ -852,4 +866,6 @@ def record_nomination_v3_challenger_decisions(
         nominate_fn=nominate_v3,
         tie_note_fn=nomination_v3_tie_note,
         now=now,
+        forecast_artifact=forecast_artifact,
+        replace_week=replace_week,
     )

@@ -56,6 +56,9 @@ def test_verify_separates_missing_publish_from_unwired_paths(monkeypatch, tmp_pa
     )
     monkeypatch.setattr(lockday_verify, "load_challenger_decisions", lambda _root: _week_rows())
     monkeypatch.setattr(lockday_verify, "load_paper_decisions", lambda _root: pd.DataFrame())
+    monkeypatch.setitem(
+        lockday_verify.PUBLISH_CHALLENGER_RESULT_KEYS, "wired_publish", "wired_publish_ledger"
+    )
 
     def refresh_rows(_root: Path) -> pd.DataFrame:
         return pd.DataFrame({"season": [2026], "week": [1]})

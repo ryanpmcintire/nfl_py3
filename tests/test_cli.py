@@ -488,31 +488,35 @@ def test_publish_predictions_does_not_record_by_default(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_overlay_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_overlay_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_nomination_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_nomination_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_tilt_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_tilt_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_division_revenge_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_division_revenge_record(
+        artifacts_root: Path, data_root: Path, **kwargs: object
+    ) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_backup_qb_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_backup_qb_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_surface_switch_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_surface_switch_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_spread_gap_zone_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_spread_gap_zone_record(
+        artifacts_root: Path, data_root: Path, **kwargs: object
+    ) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
@@ -956,31 +960,35 @@ def test_publish_predictions_records_with_the_explicit_flag(
 
     overlay_calls: list[Path] = []
 
-    def fake_overlay_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_overlay_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         overlay_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
     nomination_calls: list[Path] = []
 
-    def fake_nomination_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_nomination_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         nomination_calls.append(artifacts_root)
         return {"recorded": 1, "nominated_game_id": "2026_01_AAA_BBB"}
 
     big_spread_nomination_calls: list[Path] = []
 
-    def fake_big_spread_nomination_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_big_spread_nomination_record(
+        artifacts_root: Path, data_root: Path, **kwargs: object
+    ) -> dict:
         big_spread_nomination_calls.append(artifacts_root)
         return {"recorded": 1, "nominated_game_id": "2026_01_CCC_DDD"}
 
     tilt_calls: list[Path] = []
 
-    def fake_tilt_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_tilt_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         tilt_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
     division_revenge_calls: list[Path] = []
 
-    def fake_division_revenge_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_division_revenge_record(
+        artifacts_root: Path, data_root: Path, **kwargs: object
+    ) -> dict:
         division_revenge_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
@@ -992,13 +1000,15 @@ def test_publish_predictions_records_with_the_explicit_flag(
 
     surface_switch_calls: list[Path] = []
 
-    def fake_surface_switch_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_surface_switch_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         surface_switch_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
     spread_gap_zone_calls: list[Path] = []
 
-    def fake_spread_gap_zone_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_spread_gap_zone_record(
+        artifacts_root: Path, data_root: Path, **kwargs: object
+    ) -> dict:
         spread_gap_zone_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 

@@ -22,7 +22,6 @@ published prediction, side, probability, or ``is_best_pick`` flag is changed.
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -31,7 +30,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.best_pick_nomination import NominationV2Result, nominate_v2, select_nominee
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
@@ -48,6 +47,7 @@ from nfl_ats.prospective_scoring import (
     load_challenger_decisions,
 )
 from nfl_ats.provenance import sha256_file
+from nfl_ats.recorder_override import replace_week_rows, resolve_recording_forecast
 
 CHALLENGER_ID = "best_pick_big_spread_eligibility"
 BIG_SPREAD_THRESHOLD = 10.0
@@ -173,6 +173,8 @@ def record_big_spread_nomination_challenger_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append exactly one prospective-only challenger nominee for the week.
 
@@ -193,18 +195,10 @@ def record_big_spread_nomination_challenger_decisions(
     active = load_active_ats_model(artifacts_root)
     if active is None:
         raise ValueError("No synchronized active ATS model is available to record from")
-    forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
-    if forecast is None:
-        raise ValueError("Active ATS model has no linked weekly forecast")
-    metadata_path = forecast / "metadata.json"
+    forecast, metadata = resolve_recording_forecast(
+        artifacts_root, active, forecast_artifact=forecast_artifact
+    )
     card_path = forecast / "recommendations.csv"
-    if not metadata_path.is_file() or not card_path.is_file():
-        raise ValueError(f"Linked weekly forecast is incomplete: {forecast}")
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    if metadata.get("active_model_id") != active.get("model_id"):
-        raise ValueError("Weekly forecast model ID does not match the active model")
-    if metadata.get("synchronization_status") != "SYNCHRONIZED":
-        raise ValueError("Weekly forecast is not synchronized with an evaluation")
 
     observed_config = artifact_model_config(metadata)
     declared_fingerprint = config_fingerprint(entry.get("model", {}))
@@ -263,6 +257,18 @@ def record_big_spread_nomination_challenger_decisions(
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
     whole_week_pre_kickoff = bool(kickoffs.gt(recorded_at).all())
     existing = load_challenger_decisions(artifacts_root)
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and nominee_id is not None and whole_week_pre_kickoff:
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            challenger_ledger_path(artifacts_root),
+            season=season,
+            week=week,
+            recorded_at=recorded_at,
+            columns=CHALLENGER_DECISION_COLUMNS,
+            challenger_id=CHALLENGER_ID,
+        )
     mine = existing.loc[existing["challenger_id"].astype(str).eq(CHALLENGER_ID)]
     already_ids = set(mine["game_id"].astype(str))
     already = nominee_id is not None and nominee_id in already_ids
@@ -322,6 +328,8 @@ def record_big_spread_nomination_challenger_decisions(
         "excluded_game_ids": list(nomination.excluded_game_ids) if nomination is not None else [],
         "fallback_to_v2": nomination.fallback_to_v2 if nomination is not None else False,
         "recorded": len(decisions),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "already_recorded": int(already),
         "post_kickoff_skipped": int(post_kickoff_skipped),
         "ledger_rows": int(ledger_rows),

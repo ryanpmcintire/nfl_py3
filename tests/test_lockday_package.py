@@ -542,7 +542,8 @@ def test_real_lockday_verify_runs_in_process_against_a_synthetic_root(
     assert manifest["errors"] == []
     report = manifest["lockday_verify"]
     assert report["active_registered"] == 2
-    assert set(report["missing"]) == {"example_publish_arm", "mod07_weak_signal_stack"}
+    assert set(report["missing"]) == {"mod07_weak_signal_stack"}
+    assert report["pending_wiring"] == ["example_publish_arm"]
     assert report["exit_code"] == 1
     assert "lock-day verification" in report["rendered"]
 
@@ -562,9 +563,7 @@ def test_cx17_static_audit_checks_both_result_channels(tmp_path: Path, monkeypat
     spec.loader.exec_module(rehearsal)
     import lockday_contract
 
-    monkeypatch.setattr(
-        lockday_contract, "REFRESH_RESULT_KEYS", dict(rehearsal.REFRESH_RESULT_KEYS)
-    )
+    assert set(rehearsal.REFRESH_RESULT_KEYS) >= {"best_pick_sunday_renomination"}
     report = lockday_contract.audit()
     rows = {row["challenger_id"]: row for row in report["dispatch"]}
     assert rows["best_pick_sunday_renomination"]["path"] == "refresh"

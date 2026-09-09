@@ -15,6 +15,7 @@ from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.io import atomic_parquet
 from nfl_ats.pick_refresh import RefreshResult, original_card, pick_deadline, sunday_pick_lock
 from nfl_ats.prospective_scoring import settle_prospective_picks
+from nfl_ats.recorder_override import replace_week_rows
 from nfl_ats.tiebreaker import newest_schedules_path
 from nfl_ats.tiebreaker_shade_prospective import skip
 
@@ -83,6 +84,7 @@ def record_best_pick_tuesday(
     publication: dict[str, Any],
     *,
     now: datetime | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Freeze publication probabilities and eligibility only after paper recording."""
     try:
@@ -90,7 +92,12 @@ def record_best_pick_tuesday(
         season, week = int(publication["season"]), int(publication["week"])
         if season < 2026:
             return skip("prospective seasons start in 2026")
-        if not existing.empty and (existing["season"].eq(season) & existing["week"].eq(week)).any():
+        recorded_week = (
+            existing["season"].eq(season) & existing["week"].eq(week)
+            if not existing.empty
+            else pd.Series(dtype=bool)
+        )
+        if bool(recorded_week.any()) and not replace_week:
             return {"recorded": 0, "already_recorded": 1}
         instant = pd.Timestamp(now or datetime.now(UTC))
         original = original_card(artifacts_root, season=season, week=week)
@@ -136,11 +143,24 @@ def record_best_pick_tuesday(
             home_probability if selected["pick_side"] == "HOME" else 1 - home_probability
         )
         rows = pd.DataFrame([row])
+        replaced_rows = 0
+        if replace_week and bool(recorded_week.any()):
+            existing, replaced_rows, left_post_kickoff = replace_week_rows(
+                existing,
+                ledger_path(artifacts_root),
+                season=season,
+                week=week,
+                recorded_at=instant,
+                columns=tuple(existing.columns),
+                kickoff_column="tuesday_kickoff",
+            )
+            if left_post_kickoff:
+                return skip("the recorded Tuesday nomination's game has already kicked off")
         atomic_parquet(
             pd.concat([existing, rows], ignore_index=True) if not existing.empty else rows,
             ledger_path(artifacts_root),
         )
-        return {"recorded": 1, "paired": False}
+        return {"recorded": 1, "paired": False, "replaced_rows": replaced_rows}
     except (OSError, ValueError, KeyError, TypeError) as error:
         return skip(f"{CHALLENGER_ID}: {error}")
 
