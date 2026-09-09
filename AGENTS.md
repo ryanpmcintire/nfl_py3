@@ -307,6 +307,31 @@ invisible until someone regenerates and deploys the pages.
   legal or compliance boilerplate; provenance lives in `lineage.json` and
   `explanations.json`. The render-contract tests ban these tokens.
 
+## Test moratorium (binding, owner, 2026-09-09)
+
+Owner, verbatim: "we need a moratorium on tests." Measured the same day: 6,471
+test functions across 367 files, 143,236 lines of test against 161,865 lines
+of source; 303 assertions pin an exact number literal that is edited to match
+on every legitimate change; 38 files test one-off research scripts that will
+never run again. The three failures that actually hurt that day (a refusal on
+a model id, a heartbeat that froze during a long job, a job that could only run
+on a Tuesday) had no test and were interactions no pin would have caught.
+
+- **No new test files and no new test functions**, by any session, model tier
+  or subagent, until the owner lifts this. That includes "one small pin",
+  fixture regeneration for a new flag beyond what an existing contract test
+  forces, and tests for operator tooling.
+- A fix ships as the fix. Verification is running the real command once and
+  reporting its output (the scheduler rule above already says this for jobs).
+- Existing tests that break on a legitimate change are edited to match or
+  deleted, never expanded.
+- The "leakage regression test for every new feature family" line under
+  Research invariants is suspended by this section until the owner says
+  otherwise; a leakage guard belongs in the feature builder as a runtime
+  assertion, not in a test.
+- The cut itself (which of the 367 files survive) is a separate owner
+  decision; propose the list, do not delete unasked.
+
 ## Repository hygiene
 
 - Use Python 3.12 and the locked uv environment.
