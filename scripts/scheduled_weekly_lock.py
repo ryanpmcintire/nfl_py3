@@ -17,6 +17,7 @@ says where the whole story lives.
 
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import subprocess
@@ -108,7 +109,7 @@ def _error_summary(stderr: str | None, *, limit: int = 240) -> str:
     return "(no stderr captured)"
 
 
-def _run_weekly(season: int, week: int) -> dict[str, Any]:
+def _run_weekly(season: int, week: int, *, replace: bool = False) -> dict[str, Any]:
     command = [
         str(UV),
         "run",
@@ -120,6 +121,7 @@ def _run_weekly(season: int, week: int) -> dict[str, Any]:
         "--week",
         str(week),
         "--record-decisions",
+        *(["--replace-week"] if replace else []),
     ]
     proc = subprocess.run(
         command,
@@ -147,7 +149,20 @@ def _run_weekly(season: int, week: int) -> dict[str, Any]:
     return json.loads(proc.stdout)
 
 
-def main() -> int:
+def _parse_args(argv: list[str] | None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run the guarded Tuesday paper-forecast lock.")
+    parser.add_argument("--season", type=int, default=None, help="lock this week on any day")
+    parser.add_argument("--week", type=int, default=None, help="lock this week on any day")
+    parser.add_argument(
+        "--replace",
+        action="store_true",
+        help="re-record a week that already has rows (previous ledger kept as a .bak)",
+    )
+    return parser.parse_args(argv)
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = _parse_args(argv)
     try:
         schedules, _ = load_verified_snapshot(latest_snapshot(REPO / "data" / "raw"))
         result = execute_scheduled_lock(
@@ -155,6 +170,9 @@ def main() -> int:
             artifacts_root=REPO / "artifacts",
             now=datetime.now(tz=ET),
             weekly_runner=_run_weekly,
+            season=args.season,
+            week=args.week,
+            replace=args.replace,
             verifier=lambda season, week, summary: verify(
                 REPO / "artifacts", season=season, week=week, run_summary=summary
             ),

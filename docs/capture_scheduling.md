@@ -583,6 +583,13 @@ duplicates). `NFLATS\Odds_TueOpen` fired at 09:00 ET on 2026-09-08 and its
 snapshot was quarantined to `data/market/raw_early_tuesday/` so it could not
 become the week's opener; that task is now DISABLED. The remaining legacy
 tasks duplicate `odds_thu_tnf`, `odds_sat`, `odds_sun_close`, `odds_sun_late`,
-`odds_mon_mnf` and the public-betting captures at the same times; whether to
-retire them or keep them as a backup for the daemon is the owner's call
-(`Get-ScheduledTask -TaskPath '\NFLATS\'`).
+`odds_mon_mnf` and the public-betting captures at the same times.
+
+**2026-09-09: all eight are DISABLED** (`Disable-ScheduledTask`, not
+unregistered, so `Enable-ScheduledTask` restores any of them in one line).
+The owner's rule that day was that the agent owns the scheduler and runs its
+jobs, and two schedulers firing the same capture at the same minute is a
+second writer, not a backup: the daemon already retries with backoff, and a
+duplicate that lands outside the dedupe window would become a spurious
+snapshot. Check: `Get-ScheduledTask | Where-Object { $_.TaskName -match
+'PublicBetting|Odds_' }` should show every row `Disabled`.

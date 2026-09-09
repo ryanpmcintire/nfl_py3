@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -1195,6 +1196,63 @@ def test_record_paper_decisions_records_dedupes_and_skips_started(tmp_path: Path
     record_paper_decisions(moved, now=now)
     anchored = load_paper_decisions(artifacts)
     assert anchored["decision_home_spread"].iloc[0] == pytest.approx(2.5)
+
+
+def test_record_paper_decisions_replace_week_rerecords_from_a_named_forecast(
+    tmp_path: Path,
+) -> None:
+    """Owner, 2026-09-09: a week recorded on the wrong lines is re-recorded from
+    the card that was actually played; the prior ledger survives as a .bak."""
+    now = datetime(2026, 9, 10, 0, 0, tzinfo=UTC)
+    artifacts = _published_card_artifacts(
+        tmp_path,
+        kickoffs=["2026-09-13T17:00:00+00:00", "2026-09-13T20:00:00+00:00"],
+        spread_lines=[3.0, -7.0],
+        probabilities=[0.6, 0.4],
+        bet_sides=["HOME", "AWAY"],
+    )
+    first = record_paper_decisions(artifacts, now=now)
+    assert first["recorded"] == 2
+    ledger = load_paper_decisions(artifacts)
+    assert sorted(ledger["decision_home_spread"]) == [-7.0, 3.0]
+    wrong_artifact = str(ledger["forecast_artifact"].iloc[0])
+
+    # The pool's own board arrives: half-point lines, one pick flipped.
+    corrected = _published_card_artifacts(
+        tmp_path / "corrected",
+        kickoffs=["2026-09-13T17:00:00+00:00", "2026-09-13T20:00:00+00:00"],
+        spread_lines=[3.5, -6.5],
+        probabilities=[0.6, 0.6],
+        bet_sides=["HOME", "HOME"],
+    )
+    corrected_dir = (
+        corrected
+        / json.loads((corrected / "active_ats_model.json").read_text(encoding="utf-8"))[
+            "weekly_forecast"
+        ]["artifact"]
+    )
+    target_dir = artifacts / "margin_predictions" / "pool_board"
+    shutil.copytree(corrected_dir, target_dir)
+
+    result = _record_paper_decisions(
+        artifacts,
+        now=now,
+        require_fresh_arrest_overlay=False,
+        forecast_artifact="margin_predictions/pool_board",
+        replace_week=True,
+    )
+    assert result["replaced_rows"] == 2
+    assert result["recorded"] == 2
+    assert result["forecast_artifact"] == "margin_predictions/pool_board"
+    ledger = load_paper_decisions(artifacts)
+    assert len(ledger) == 2
+    assert sorted(ledger["decision_home_spread"]) == [-6.5, 3.5]
+    assert set(ledger["pick_side"]) == {"HOME"}
+    assert set(ledger["forecast_artifact"]) == {"margin_predictions/pool_board"}
+    assert wrong_artifact != "margin_predictions/pool_board"
+    backups = list((artifacts / "clv_ledger").glob("decisions.*.bak.parquet"))
+    assert len(backups) == 1
+    assert sorted(pd.read_parquet(backups[0])["decision_home_spread"]) == [-7.0, 3.0]
 
 
 def test_record_paper_decisions_refuses_a_recording_weeks_before_kickoff(

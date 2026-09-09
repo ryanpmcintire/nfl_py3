@@ -221,6 +221,8 @@ class PublishPredictionsRequest:
     site_destination: Path | None
     board_destination: Path | None
     record_decisions: bool
+    record_from_forecast: str | None = None
+    replace_week: bool = False
 
 
 def parse_publish_predictions_request(args: argparse.Namespace) -> PublishPredictionsRequest:
@@ -236,6 +238,8 @@ def parse_publish_predictions_request(args: argparse.Namespace) -> PublishPredic
         site_destination=args.site_destination,
         board_destination=args.board_destination,
         record_decisions=bool(args.record_decisions),
+        record_from_forecast=getattr(args, "record_from_forecast", None),
+        replace_week=bool(getattr(args, "replace_week", False)),
     )
 
 
@@ -290,6 +294,8 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 data_root=_data_root(),
                 now=publish_instant,
                 require_fresh_arrest_overlay=True,
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
             )
         except (ValueError, FileNotFoundError) as error:
             result["clv_ledger"] = {"recorded": 0, "error": str(error)}
@@ -1221,6 +1227,28 @@ def register(
             "also refuses to write when this week's earliest kickoff is more than "
             "RECORDING_LOCK_WINDOW away, so passing this flag outside the real lock "
             "week still does not reach the ledger."
+        ),
+    )
+    publish.add_argument(
+        "--record-from-forecast",
+        default=None,
+        metavar="ARTIFACT",
+        help=(
+            "operator override (owner, 2026-09-09): record the paper-decision ledger from "
+            "this margin_predictions/... artifact instead of the active model's linked "
+            "forecast -- the card that was actually played, when the linked forecast has "
+            "since moved on. Only meaningful with --record-decisions."
+        ),
+    )
+    publish.add_argument(
+        "--replace-week",
+        action="store_true",
+        help=(
+            "operator override (owner, 2026-09-09): drop the recorded week's existing "
+            "paper-decision rows first (the prior ledger is kept as a timestamped .bak "
+            "beside it) so a missed lock, or one recorded on the wrong lines, can be "
+            "re-recorded. Pre-kickoff and recording-window guards still apply. Only "
+            "meaningful with --record-decisions."
         ),
     )
     publish.set_defaults(handler=_cmd_publish_predictions)

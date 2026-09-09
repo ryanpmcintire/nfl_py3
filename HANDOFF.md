@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T18:53:52.495571+00:00`
+Refreshed at: `2026-09-09T20:40:24.610934+00:00`
 
 ## Start here
 
@@ -20,27 +20,23 @@ Refreshed at: `2026-09-09T18:53:52.495571+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ff2486cca744` — Reach the current season's data before nflreadpy admits it exists
-- Pending change set: 20 paths
+- Baseline commit: `2f3cce51af68` — Keep the late-week refresh alive on opener day: configuration identity, a Wednesday inactives pair, a heartbeat that survives long jobs
+- Pending change set: 16 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
+  - `A  data/lock_failures/20260909T200217Z-scheduled-lock.log`
+  - `M  docs/capture_scheduling.md`
   - `M  docs/index.html`
-  - `M  docs/late_week_refresh.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260909T182523Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260909T182645Z.json`
-  - `A  registry/experiments/opener-evaluation/20260909T183120Z.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/inactives_capture.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `M  tests/test_board_terminal.py`
-  - `M  tests/test_capture_scheduler.py`
-  - `M  tests/test_pick_refresh.py`
+  - `M  scripts/scheduled_weekly_lock.py`
+  - `M  src/nfl_ats/cli_commands/operations.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/clv.py`
+  - `M  src/nfl_ats/scheduled_lock.py`
+  - `M  src/nfl_ats/weekly.py`
+  - `M  tests/fixtures/cli_contract.json`
+  - `M  tests/test_clv.py`
+  - `M  tests/test_scheduled_lock.py`
   - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
@@ -61,7 +57,7 @@ The 52.29% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T18:34:44.004916+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T20:28:14.938666+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

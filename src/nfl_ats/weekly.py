@@ -384,6 +384,7 @@ def plan_weekly_run(
     skip_prospective: bool = False,
     skip_drift: bool = False,
     record_decisions: bool = False,
+    replace_week: bool = False,
 ) -> list[WeeklyStep]:
     """The Tuesday sequence, in order, resolved against local manifests.
 
@@ -556,6 +557,8 @@ def plan_weekly_run(
     publish_command = ["publish-predictions", "--with-board"]
     if record_decisions:
         publish_command.append("--record-decisions")
+        if replace_week:
+            publish_command.append("--replace-week")
     steps.append(
         WeeklyStep(
             number=8,
@@ -730,6 +733,7 @@ def run_weekly(
     skip_drift: bool = False,
     record_decisions: bool = False,
     dry_run: bool = False,
+    replace_week: bool = False,
     runner: StepRunner | None = None,
     progress: bool = True,
 ) -> dict[str, Any]:
@@ -751,6 +755,7 @@ def run_weekly(
         skip_prospective=skip_prospective,
         skip_drift=skip_drift,
         record_decisions=record_decisions,
+        replace_week=replace_week,
     )
     summary: dict[str, Any] = {
         "command": "weekly-run",

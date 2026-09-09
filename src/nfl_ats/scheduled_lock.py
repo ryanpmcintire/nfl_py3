@@ -24,8 +24,20 @@ class LockTarget:
     game_ids: frozenset[str]
 
 
-def resolve_lock_target(schedules: pd.DataFrame, *, now: datetime) -> LockTarget:
-    """Resolve the one game week whose declared line-lock Tuesday is today."""
+def resolve_lock_target(
+    schedules: pd.DataFrame,
+    *,
+    now: datetime,
+    season: int | None = None,
+    week: int | None = None,
+) -> LockTarget:
+    """Resolve the one game week whose declared line-lock Tuesday is today.
+
+    ``season``/``week`` (owner override, 2026-09-09) name the week directly
+    for a lock that was missed or must be re-recorded on another day; the
+    only remaining refusal is a week whose games have ALL already begun,
+    because nothing pre-kickoff would be left to record.
+    """
 
     required = {"game_id", "season", "week", "game_type", "gameday"}
     missing = sorted(required.difference(schedules.columns))
@@ -40,12 +52,25 @@ def resolve_lock_target(schedules: pd.DataFrame, *, now: datetime) -> LockTarget
     games["_lock_date"] = games["_gameday"].map(
         lambda value: value.date() - timedelta(days=(value.weekday() - 1) % 7)
     )
+    if (season is None) != (week is None):
+        raise DataContractError("A lock override needs both season and week")
+    if season is not None and week is not None:
+        target = games.loc[
+            games["season"].astype(int).eq(int(season)) & games["week"].astype(int).eq(int(week))
+        ].copy()
+        if target.empty:
+            raise DataContractError(f"No in-contract games scheduled for {season} week {week}")
+        if (target["_gameday"].dt.date <= now.date()).all():
+            raise DataContractError(
+                f"Refusing to lock {season} week {week}: every game day has already begun"
+            )
+        return LockTarget(int(season), int(week), frozenset(target["game_id"].astype(str)))
     target = games.loc[games["_lock_date"].eq(now.date())].copy()
     keys = target[["season", "week"]].drop_duplicates()
     if len(keys) != 1:
         raise DataContractError(
             f"Expected exactly one scheduled game week for lock date {now.date()}, "
-            f"found {len(keys)}"
+            f"found {len(keys)}. Pass --season/--week to lock a named week on another day."
         )
     if (target["_gameday"].dt.date <= now.date()).any():
         raise DataContractError("Refusing scheduled paper forecast after a target game date began")
@@ -61,15 +86,24 @@ def execute_scheduled_lock(
     *,
     artifacts_root: Path,
     now: datetime,
-    weekly_runner: Callable[[int, int], dict[str, Any]],
+    weekly_runner: Callable[..., dict[str, Any]],
     verifier: Callable[[int, int, dict[str, Any]], dict[str, Any]],
+    season: int | None = None,
+    week: int | None = None,
+    replace: bool = False,
 ) -> dict[str, Any]:
-    """Record one paper forecast, or prove that the complete week already exists."""
+    """Record one paper forecast, or prove that the complete week already exists.
 
-    target = resolve_lock_target(schedules, now=now)
+    ``season``/``week`` lock a named week on any day; ``replace`` re-records a
+    week that already has rows (the runner is called with ``replace=True`` so
+    the recorder drops them first). Both are operator overrides, owner
+    2026-09-09: a missed or wrongly recorded lock is corrected, not preserved.
+    """
+
+    target = resolve_lock_target(schedules, now=now, season=season, week=week)
     ledger = load_paper_decisions(artifacts_root)
     existing = ledger.loc[ledger["season"].eq(target.season) & ledger["week"].eq(target.week)]
-    if not existing.empty:
+    if not existing.empty and not replace:
         existing_ids = frozenset(existing["game_id"].astype(str))
         if existing_ids != target.game_ids:
             raise DataContractError(
@@ -83,7 +117,11 @@ def execute_scheduled_lock(
             "games": len(target.game_ids),
         }
 
-    summary = weekly_runner(target.season, target.week)
+    summary = (
+        weekly_runner(target.season, target.week, replace=True)
+        if replace
+        else weekly_runner(target.season, target.week)
+    )
     expected = {
         "command": "weekly-run",
         "season": target.season,
@@ -117,6 +155,7 @@ def execute_scheduled_lock(
         raise DataContractError("Lock-day verification paper row count does not match the schedule")
     return {
         "status": "recorded_and_verified",
+        "replaced": bool(replace and not existing.empty),
         "season": target.season,
         "week": target.week,
         "games": len(target.game_ids),

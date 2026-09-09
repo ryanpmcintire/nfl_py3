@@ -733,6 +733,36 @@
               "required": false,
               "help": "append this card's pre-kickoff picks to the paper-decision CLV ledger. Off by default -- recording is a deliberate act for the real weekly lock, not something an ordinary/rehearsal publish should do. record_paper_decisions also refuses to write when this week's earliest kickoff is more than RECORDING_LOCK_WINDOW away, so passing this flag outside the real lock week still does not reach the ledger.",
               "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--record-from-forecast"
+              ],
+              "dest": "record_from_forecast",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "operator override (owner, 2026-09-09): record the paper-decision ledger from this margin_predictions/... artifact instead of the active model's linked forecast -- the card that was actually played, when the linked forecast has since moved on. Only meaningful with --record-decisions.",
+              "metavar": "ARTIFACT"
+            },
+            {
+              "action_class": "_StoreTrueAction",
+              "option_strings": [
+                "--replace-week"
+              ],
+              "dest": "replace_week",
+              "nargs": 0,
+              "const": true,
+              "default": false,
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "operator override (owner, 2026-09-09): drop the recorded week's existing paper-decision rows first (the prior ledger is kept as a timestamped .bak beside it) so a missed lock, or one recorded on the wrong lines, can be re-recorded. Pre-kickoff and recording-window guards still apply. Only meaningful with --record-decisions.",
+              "metavar": null
             }
           ],
           "subcommands": null
@@ -13539,6 +13569,21 @@
               "choices": null,
               "required": false,
               "help": "the real weekly lock: append this card's picks to the paper-decision ledger (step 7) and the challenger's picks to the prospective ledger (step 10). Off by default so an ordinary/rehearsal weekly-run does not touch either ledger; pass this only for the actual Tuesday lock. Both underlying recorders also refuse to write when this week's earliest kickoff is more than RECORDING_LOCK_WINDOW away, so this flag alone cannot reach the ledger outside the real lock week either.",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreTrueAction",
+              "option_strings": [
+                "--replace-week"
+              ],
+              "dest": "replace_week",
+              "nargs": 0,
+              "const": true,
+              "default": false,
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "operator override (owner, 2026-09-09), only with --record-decisions: drop the week's existing paper-decision rows before recording (kept as a .bak) so a missed or wrongly recorded lock can be re-run for a named --season/--week",
               "metavar": null
             },
             {

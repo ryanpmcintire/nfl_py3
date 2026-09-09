@@ -99,6 +99,7 @@ class WeeklyRunRequest:
     record_decisions: bool
     dry_run: bool
     no_package: bool
+    replace_week: bool = False
 
 
 def parse_weekly_run_request(args: argparse.Namespace) -> WeeklyRunRequest:
@@ -117,6 +118,7 @@ def parse_weekly_run_request(args: argparse.Namespace) -> WeeklyRunRequest:
         record_decisions=bool(args.record_decisions),
         dry_run=bool(args.dry_run),
         no_package=bool(getattr(args, "no_package", False)),
+        replace_week=bool(getattr(args, "replace_week", False)),
     )
 
 
@@ -152,6 +154,7 @@ def orchestrate_weekly_run(request: WeeklyRunRequest) -> dict[str, Any]:
             skip_drift=request.skip_drift,
             record_decisions=request.record_decisions,
             dry_run=request.dry_run,
+            replace_week=request.replace_week,
         )
     except WeeklyRunError as error:
         # The package below is written from a finally, so on an abort it saw
@@ -293,6 +296,15 @@ def register_weekly(
             "refuse to write when this week's earliest kickoff is more than "
             "RECORDING_LOCK_WINDOW away, so this flag alone cannot reach the ledger outside "
             "the real lock week either."
+        ),
+    )
+    weekly.add_argument(
+        "--replace-week",
+        action="store_true",
+        help=(
+            "operator override (owner, 2026-09-09), only with --record-decisions: drop the "
+            "week's existing paper-decision rows before recording (kept as a .bak) so a "
+            "missed or wrongly recorded lock can be re-run for a named --season/--week"
         ),
     )
     weekly.add_argument(

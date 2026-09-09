@@ -1675,8 +1675,21 @@ def record_paper_decisions(
     data_root: Path | None = None,
     now: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append the active published card's pre-kickoff picks to the decision ledger.
+
+    **Operator override (owner, 2026-09-09).** ``forecast_artifact`` records
+    from a named ``margin_predictions/...`` directory instead of the active
+    manifest's linked forecast, and ``replace_week`` first drops the week's
+    existing rows (the previous ledger is copied to a timestamped ``.bak``
+    beside it) so a lock that was missed, or recorded on the wrong lines, can
+    be re-recorded from the card that was actually played. Every other
+    guard (synchronized forecast, pre-kickoff only, recording window) still
+    applies. The Tuesday 2026 Week 1 rows were the motivating case: recorded
+    at 12:33 ET on nflverse whole-number lines, fifty minutes before the
+    card moved to the pool's own board.
 
     Reads the same synchronized weekly forecast that ``publish-predictions``
     publishes (the active manifest's linked artifact), takes its forced ATS
@@ -1708,16 +1721,27 @@ def record_paper_decisions(
     active = load_active_ats_model(artifacts_root)
     if active is None:
         raise ValueError("No synchronized active ATS model is available to record decisions from")
-    forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
-    if forecast is None:
-        raise ValueError("Active ATS model has no linked weekly forecast")
+    if forecast_artifact is not None:
+        forecast = (artifacts_root / forecast_artifact).resolve()
+        if not forecast.is_dir() or artifacts_root.resolve() not in forecast.parents:
+            raise ValueError(f"Forecast artifact is not a directory under artifacts: {forecast}")
+        recorded_artifact = forecast.relative_to(artifacts_root.resolve()).as_posix()
+    else:
+        linked = active_artifact_path(artifacts_root, active, "weekly_forecast")
+        if linked is None:
+            raise ValueError("Active ATS model has no linked weekly forecast")
+        forecast = linked
+        recorded_artifact = str(active["weekly_forecast"]["artifact"])
     recommendations_path = forecast / "recommendations.csv"
     metadata_path = forecast / "metadata.json"
     if not recommendations_path.is_file() or not metadata_path.is_file():
         raise ValueError(f"Linked weekly forecast is incomplete: {forecast}")
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    if metadata.get("active_model_id") != active.get("model_id"):
+    if forecast_artifact is None and metadata.get("active_model_id") != active.get("model_id"):
         raise ValueError("Weekly forecast model ID does not match the active model")
+    if not metadata.get("active_model_id"):
+        raise ValueError("Weekly forecast metadata names no model id")
+    recorded_model_id = str(metadata.get("active_model_id"))
     if metadata.get("synchronization_status") != "SYNCHRONIZED":
         raise ValueError("Weekly forecast is not synchronized with an evaluation")
 
@@ -1738,7 +1762,7 @@ def record_paper_decisions(
     missing = sorted(required.difference(card.columns))
     if missing:
         raise DataContractError(f"Weekly forecast card is missing columns: {', '.join(missing)}")
-    method = str(active.get("method"))
+    method = str(metadata.get("ats_method") or active.get("method"))
     if not card["method"].eq(method).all():
         raise DataContractError("Weekly forecast card contains a method other than the active one")
     if card["game_id"].duplicated().any():
@@ -1820,11 +1844,21 @@ def record_paper_decisions(
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="paper-decision")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_paper_decisions(artifacts_root)
-    already = card["game_id"].isin(set(existing["game_id"].astype(str)))
-    fresh = card.loc[pre_kickoff & ~already]
-
     season = int(card["season"].iloc[0])
     week = int(card["week"].iloc[0])
+    replaced_rows = 0
+    if replace_week and not existing.empty:
+        dropping = existing["season"].astype(int).eq(season) & existing["week"].astype(int).eq(week)
+        replaced_rows = int(dropping.sum())
+        if replaced_rows:
+            ledger_path = paper_decision_ledger_path(artifacts_root)
+            backup = ledger_path.with_name(
+                f"{ledger_path.stem}.{recorded_at.strftime('%Y%m%dT%H%M%SZ')}.bak.parquet"
+            )
+            atomic_parquet(existing[list(PAPER_DECISION_COLUMNS)], backup)
+            existing = existing.loc[~dropping].reset_index(drop=True)
+    already = card["game_id"].isin(set(existing["game_id"].astype(str)))
+    fresh = card.loc[pre_kickoff & ~already]
     week_already_flagged = bool(
         existing.loc[
             existing["season"].astype(int).eq(season)
@@ -1839,11 +1873,11 @@ def record_paper_decisions(
     decisions = pd.DataFrame(
         {
             "recorded_at_utc": recorded_at,
-            "forecast_artifact": str(active["weekly_forecast"]["artifact"]),
+            "forecast_artifact": recorded_artifact,
             "forecast_created_at_utc": pd.to_datetime(
                 metadata.get("created_at_utc"), utc=True, errors="coerce"
             ),
-            "model_id": str(active.get("model_id")),
+            "model_id": recorded_model_id,
             "method": method,
             "decision_policy_id": decision_policy_id,
             "decision_policy_fingerprint": decision_policy_fingerprint,
@@ -1915,6 +1949,8 @@ def record_paper_decisions(
         "season": season,
         "week": week,
         "recorded": len(decisions),
+        "replaced_rows": replaced_rows,
+        "forecast_artifact": recorded_artifact,
         "already_recorded": int(already.sum()),
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
         "ledger_rows": int(ledger_rows),

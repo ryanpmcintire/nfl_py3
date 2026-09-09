@@ -289,3 +289,62 @@ def test_failed_lock_reports_the_log_path_inside_the_scheduler_200_char_cut(
         "the path must precede the message: capture_scheduler keeps only the "
         "first 200 characters of this line"
     )
+
+
+def test_override_locks_a_named_week_on_any_day() -> None:
+    """Owner, 2026-09-09: a missed lock is recorded late, not preserved."""
+    wednesday = datetime.fromisoformat("2026-09-09T16:30:00-04:00")
+    with pytest.raises(DataContractError, match="Pass --season/--week"):
+        resolve_lock_target(schedule(), now=wednesday)
+    target = resolve_lock_target(schedule(), now=wednesday, season=2026, week=1)
+    assert (target.season, target.week) == (2026, 1)
+    assert target.game_ids == frozenset({"2026_01_DAL_PHI", "2026_01_BUF_NYJ"})
+    with pytest.raises(DataContractError, match="needs both"):
+        resolve_lock_target(schedule(), now=wednesday, season=2026)
+    # Only a week whose every game day has begun is refused.
+    after_week = datetime.fromisoformat("2026-09-14T09:00:00-04:00")
+    with pytest.raises(DataContractError, match="already begun"):
+        resolve_lock_target(schedule(), now=after_week, season=2026, week=1)
+
+
+def test_replace_reruns_a_recorded_week_and_tells_the_runner(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setattr(
+        scheduled_lock,
+        "load_paper_decisions",
+        lambda _: pd.DataFrame(
+            {
+                "season": [2026, 2026],
+                "week": [1, 1],
+                "game_id": ["2026_01_DAL_PHI", "2026_01_BUF_NYJ"],
+            }
+        ),
+    )
+    monkeypatch.setattr(scheduled_lock, "write_stamped_artifact", lambda summary, path: None)
+    calls: list[tuple[int, int, bool]] = []
+
+    def runner(season: int, week: int, *, replace: bool = False) -> dict[str, Any]:
+        calls.append((season, week, replace))
+        return {
+            "command": "weekly-run",
+            "season": season,
+            "week": week,
+            "record_decisions": True,
+            "dry_run": False,
+            "published": True,
+        }
+
+    result = execute_scheduled_lock(
+        schedule(),
+        artifacts_root=tmp_path,
+        now=datetime.fromisoformat("2026-09-09T16:30:00-04:00"),
+        weekly_runner=runner,
+        verifier=lambda season, week, summary: {"paper_ledger_rows": 2},
+        season=2026,
+        week=1,
+        replace=True,
+    )
+    assert result["status"] == "recorded_and_verified"
+    assert result["replaced"] is True
+    assert calls == [(2026, 1, True)]
