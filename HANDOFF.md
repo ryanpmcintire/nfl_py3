@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T21:57:27.404493+00:00`
+Refreshed at: `2026-09-09T21:57:51.372156+00:00`
 
 ## Start here
 
@@ -20,13 +20,10 @@ Refreshed at: `2026-09-09T21:57:27.404493+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `40080254b190` — Best Pick re-nomination at the deadline: no arm beats the Tuesday nominee (A1 -5.88 P+ 0.18, A2 0.00, A3 -9.80 P+ 0.08; control +25.5 P+ 1.0); eight cells recorded unresolved_below_power
-- Pending change set: 5 paths
+- Baseline commit: `eae9fb449f50` — The big-spread hole, explained: the results family leans favourite-ward +0.5 to +4.2 pts as the line grows and the rest nearly cancels it; the mapping cannot move a forced pick; C1 spread-regime refit -1.53 pts through the card (resolved wrong sign), R1 orthogonalised form -0.20 P+ 0.21; 20 cells recorded
+- Pending change set: 2 paths
   - ` M artifacts/prospective/challengers.json`
-  - `A  docs/spread_hole_diagnosis.md`
   - `M  registry/weak_signals.json`
-  - `A  scripts/spread_hole_arms.py`
-  - `A  scripts/spread_hole_diagnosis.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
