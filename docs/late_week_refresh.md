@@ -148,12 +148,25 @@ every refresh pass that follows it**, exactly as before this feature existed.
 `refresh-picks` reads the SAME active-model manifest
 (`artifacts/active_ats_model.json`) the Tuesday card was built from --
 method, feature profile, regressor, ridge alpha, probability method -- and
-refuses to run if the recorded original card's `model_id` no longer matches
-the currently active one (`plan_refresh` raises
+refuses to run if that CONFIGURATION no longer matches the one the recorded
+original card's forecast (`forecast_artifact/metadata.json`) was produced
+under (`plan_refresh` raises
 `"...refuses to recompute picks under a different model identity..."`).
 This mirrors `nfl_ats.weekly.assert_synchronized`'s spirit for the Tuesday
 card: a refresh must never silently recompute this week's picks under a
 model the pool's frozen line was never actually locked against.
+
+**Why the configuration and not the `model_id` (2026-09-09).** The id hashes
+the feature table's digest, so every daily player-data refresh (`lineups_*`
+-> `weekly-run --refresh-player-data`) mints a new id. Until 2026-09-09 the
+check compared ids, which meant the first daily refresh after the Tuesday
+lock left every refresh pass for the rest of the week refusing -- measured
+on the first in-season Wednesday (`--run-job refresh_wed_inactives_primetime
+--dry`: recorded `9ef62ef158338785`, active `c657058903f3232b`), hours
+before the Week 1 opener, with the late-week follow rule still unfired.
+Recomputing under current data is this command's stated purpose; the
+identity that must not drift is the configuration. A missing forecast
+artifact or a genuine configuration change still fails closed.
 
 ## Overlays
 

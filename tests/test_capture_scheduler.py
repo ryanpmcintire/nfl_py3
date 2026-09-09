@@ -286,6 +286,7 @@ _INACTIVES_JOB_NAMES = (
     "inactives_thu_afternoon_early",
     "inactives_thu_afternoon_late",
     "inactives_thu_primetime",
+    "inactives_wed_primetime",
     "inactives_sat_early",
     "inactives_sat_late",
 )
@@ -301,7 +302,7 @@ def test_inactives_jobs_are_point_in_time_and_added_this_session() -> None:
     for name in _INACTIVES_JOB_NAMES:
         job = schedule[name]
         assert job.catch_up is False
-        assert job.added_on == "2026-09-01"
+        assert job.added_on == ("2026-09-09" if name == "inactives_wed_primetime" else "2026-09-01")
         assert job.season_guarded is True
         # Actual write location is data/players/inactives (WP17 task spec),
         # NOT docs/inactives_channel.md Section 6's originally proposed
@@ -406,6 +407,7 @@ _INACTIVES_REFRESH_WINDOWS = {
     "refresh_thu_inactives_early": ("inactives_thu_afternoon_early", "11:55", 55),
     "refresh_thu_inactives_late": ("inactives_thu_afternoon_late", "15:25", 55),
     "refresh_thu_inactives_primetime": ("inactives_thu_primetime", "19:15", 50),
+    "refresh_wed_inactives_primetime": ("inactives_wed_primetime", "19:15", 50),
     "refresh_sat_inactives_early": ("inactives_sat_early", "15:50", 60),
     "refresh_sat_inactives_late": ("inactives_sat_late", "19:15", 55),
     "refresh_sun_inactives_early": ("inactives_sun_early", "11:55", 55),
@@ -424,8 +426,10 @@ def test_inactives_refreshes_begin_after_capture_and_stay_before_their_deadline(
         "thu": datetime(2026, 11, 26, 23, 0, tzinfo=ET),
         "sat": datetime(2026, 12, 19, 23, 0, tzinfo=ET),
         "sun": datetime(2026, 9, 20, 23, 0, tzinfo=ET),
+        "wed": datetime(2026, 9, 9, 23, 0, tzinfo=ET),
     }
     deadline_by_refresh = {
+        "refresh_wed_inactives_primetime": datetime(2026, 9, 9, 20, 15, tzinfo=ET),
         "refresh_thu_inactives_early": datetime(2026, 11, 26, 13, 0, tzinfo=ET),
         "refresh_thu_inactives_late": datetime(2026, 11, 26, 16, 30, tzinfo=ET),
         "refresh_thu_inactives_primetime": datetime(2026, 11, 26, 20, 15, tzinfo=ET),
@@ -450,7 +454,9 @@ def test_inactives_refreshes_begin_after_capture_and_stay_before_their_deadline(
         assert refresh_close == deadline_by_refresh[refresh_name] - timedelta(minutes=10)
         assert refresh.season_guarded is True
         assert refresh.catch_up is False
-        assert refresh.added_on == "2026-09-02"
+        assert refresh.added_on == (
+            "2026-09-09" if refresh_name == "refresh_wed_inactives_primetime" else "2026-09-02"
+        )
         assert refresh.command[-4:] == [
             "refresh-picks",
             "--record-decisions",

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-08T20:21:46.386554+00:00`
+Refreshed at: `2026-09-09T18:53:52.495571+00:00`
 
 ## Start here
 
@@ -20,8 +20,8 @@ Refreshed at: `2026-09-08T20:21:46.386554+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `7bf8134645d3` — Collapse session-added multi-line comments to one line each
-- Pending change set: 54 paths
+- Baseline commit: `ff2486cca744` — Reach the current season's data before nflreadpy admits it exists
+- Pending change set: 20 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
@@ -29,20 +29,19 @@ Refreshed at: `2026-09-08T20:21:46.386554+00:00`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `A  docs/mod18_discrete_margin_mapping.md`
+  - `M  docs/late_week_refresh.md`
   - `M  docs/model.html`
-  - `A  docs/nflverse_season_rollover.md`
-  - `M  docs/site_content_pipeline.md`
-  - `M  docs/weak_signal_pooling.md`
-  - `A  registry/experiments/margin-backtest/20260908T190735Z.json`
-  - `A  registry/experiments/margin-backtest/20260908T192425Z.json`
-  - `A  registry/experiments/margin-backtest/20260908T194146Z.json`
-  - `A  registry/experiments/margin-backtest/20260908T195212Z.json`
-  - `A  registry/experiments/margin-backtest/20260908T200240Z.json`
-  - `A  registry/experiments/margin-backtest/20260908T200538Z.json`
-  - `A  registry/experiments/margin-backtest/20260908T201934Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260908T190829Z.json`
-  - ...and 34 more
+  - `A  registry/experiments/margin-backtest/20260909T182523Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260909T182645Z.json`
+  - `A  registry/experiments/opener-evaluation/20260909T183120Z.json`
+  - `M  scripts/capture_scheduler.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/inactives_capture.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  tests/test_board_terminal.py`
+  - `M  tests/test_capture_scheduler.py`
+  - `M  tests/test_pick_refresh.py`
+  - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,18 +50,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `c526cf6636cef6f8`
+- Model ID: `c657058903f3232b`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260908T184350Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260909T183120Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-08T19:25:11.755815+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-09T18:26:45.306207+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c526cf6636cef6f8`, published `2026-09-08T19:31:32.460599+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T18:34:44.004916+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

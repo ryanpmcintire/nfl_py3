@@ -649,6 +649,57 @@ def test_plan_refresh_fails_closed_on_a_game_missing_its_original_line(
     assert len(plan.games) == 3
 
 
+def test_plan_refresh_accepts_a_new_model_id_with_the_same_configuration(
+    refresh_env: tuple[Path, Path, pd.DataFrame],
+) -> None:
+    """A daily player-data refresh mints a new model_id (the id hashes the
+    feature-table digest) without touching the configuration the pool's
+    lines were locked against; measured 2026-09-09, that alone had left
+    refresh-picks refusing for the rest of Week 1."""
+    artifacts_root, data_root, model_frame = refresh_env
+    reference = _reference_probability(model_frame, GAMES, ORIGINAL_LINES, season=SEASON, week=WEEK)
+    rows = _original_rows(reference, flip=True)
+    for row in rows:
+        row["model_id"] = "tuesday-model"
+    _write_original_card(artifacts_root, rows)
+    atomic_json(
+        {
+            "ats_method": "market_residual",
+            "feature_profile": "base",
+            "regressor": "ridge",
+            "ridge_alpha": 10.0,
+            "calibration_method": "none",
+            "probability_method": "ecdf",
+        },
+        artifacts_root / "margin_predictions" / "test" / "metadata.json",
+    )
+    features_path = data_root / "processed" / "game_features.parquet"
+    atomic_parquet(_target_frame(model_frame, GAMES), features_path)
+
+    plan = plan_refresh(
+        artifacts_root,
+        data_root,
+        season=SEASON,
+        week=WEEK,
+        features_path=features_path,
+        min_train_games=MIN_TRAIN_GAMES,
+    )
+    assert plan.model_id == "model-1"
+    assert len(plan.games) == len(GAMES)
+
+    # The same new id with a changed configuration still fails closed.
+    _write_active_manifest(artifacts_root, ridge_alpha=20.0)
+    with pytest.raises(ValueError, match="different model identity"):
+        plan_refresh(
+            artifacts_root,
+            data_root,
+            season=SEASON,
+            week=WEEK,
+            features_path=features_path,
+            min_train_games=MIN_TRAIN_GAMES,
+        )
+
+
 def test_plan_refresh_rejects_a_model_identity_that_has_since_changed(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:

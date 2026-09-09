@@ -131,6 +131,7 @@ SLOTS = (
     "thu_afternoon_early",
     "thu_afternoon_late",
     "thu_primetime",
+    "wed_primetime",
     "sat_early",
     "sat_late",
 )

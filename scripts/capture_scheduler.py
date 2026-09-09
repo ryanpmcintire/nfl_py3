@@ -46,6 +46,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
@@ -82,11 +83,12 @@ READ_ONLY_EXCEPTIONS: dict[int, str] = {
     # 2026-09-08: re-synced three times today (noon-lock schedule change,
     # then the retry-with-backoff addition, then the injury/player-snapshot
     # jobs -- both of the latter two add lines ABOVE these sites).
-    1339: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
-    1341: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
-    1368: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
-    1381: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
-    1465: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+    # 2026-09-09: re-synced (Wednesday inactives pair + heartbeat keep-alive).
+    1373: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1375: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1402: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
+    1416: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1540: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
 }
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
@@ -925,6 +927,26 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-01",
         catch_up=False,
     ),
+    # 2026-09-09: 2026 Week 1 opens on a WEDNESDAY (NE at SEA, 20:20 ET) and
+    # no inactives capture existed that day. Same T-90 window and grace as the
+    # Thursday primetime row; the per-game pick deadline is the game's own
+    # kickoff (docs/late_week_refresh.md), so the post-inactives refresh below
+    # is playable for a Wednesday game. A no-op in weeks with no Wednesday
+    # kickoff: the capture records "no upcoming kickoff".
+    Job(
+        "inactives_wed_primetime",
+        "wed",
+        "18:50",
+        20,
+        _inactives_capture("wed_primetime"),
+        True,
+        "Wednesday primetime opener (2026 Week 1: 20:20 ET, T-90=18:50 ET); "
+        "the inactives_thu_primetime window, one day earlier.",
+        dedupe_dir="data/players/inactives",
+        dedupe_minutes=60,
+        added_on="2026-09-09",
+        catch_up=False,
+    ),
     Job(
         "inactives_sat_early",
         "sat",
@@ -1000,6 +1022,18 @@ SCHEDULE: tuple[Job, ...] = (
         "After inactives_thu_primetime closes at 19:10; its 50m grace ends at "
         "20:05, ten minutes before the earliest 20:15 ET primetime kickoff.",
         added_on="2026-09-02",
+        catch_up=False,
+    ),
+    Job(
+        "refresh_wed_inactives_primetime",
+        "wed",
+        "19:15",
+        50,
+        _cli("refresh-picks", "--record-decisions", "--note", "wed_inactives_primetime"),
+        True,
+        "After inactives_wed_primetime closes at 19:10; its 50m grace ends at "
+        "20:05, fifteen minutes before the 20:20 ET Wednesday opener kickoff.",
+        added_on="2026-09-09",
         catch_up=False,
     ),
     Job(
@@ -1378,8 +1412,49 @@ def write_heartbeat(
         ),
     }
     tmp = HEARTBEAT_PATH.with_suffix(".tmp")
-    tmp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
-    tmp.replace(HEARTBEAT_PATH)
+    with _HEARTBEAT_WRITE_LOCK:
+        tmp.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+        tmp.replace(HEARTBEAT_PATH)
+
+
+# The daemon runs each job synchronously inside its poll loop, so before
+# 2026-09-09 the heartbeat froze for the whole duration of a long job
+# (lineups_* is a full weekly-run, 15-35 minutes). After 3 polls without a
+# write, --is-running and --health both reported the daemon dead, the start
+# script's double-start guard waved a second daemon through, and the
+# stop-then-start "restart it" reflex killed the in-flight run: lineups_wed
+# was killed mid-run three times on 2026-09-09 (13:37, 14:11, 14:17 ET) with
+# no OK/FAIL line ever logged. The keep-alive thread rewrites the heartbeat
+# every poll interval while a job runs, under the same lock the poll loop's
+# own write takes (two writers sharing one .tmp name is the exact race that
+# corrupted the registry on 2026-09-08).
+_HEARTBEAT_WRITE_LOCK = threading.Lock()
+
+
+def start_heartbeat_keepalive(
+    *,
+    started_at: datetime,
+    code_sha256: str,
+    schedule_digest: str,
+    stop: threading.Event,
+) -> threading.Thread:
+    """Rewrite the heartbeat every ``POLL_SECONDS`` until ``stop`` is set."""
+
+    def _beat() -> None:
+        while not stop.wait(POLL_SECONDS):
+            try:
+                write_heartbeat(
+                    started_at=started_at,
+                    now=datetime.now(tz=ET),
+                    code_sha256=code_sha256,
+                    schedule_digest=schedule_digest,
+                )
+            except Exception as exc:  # pragma: no cover - the beat must never kill the loop
+                log(f"HEARTBEAT-ERROR {type(exc).__name__}: {exc}")
+
+    thread = threading.Thread(target=_beat, name="heartbeat-keepalive", daemon=True)
+    thread.start()
+    return thread
 
 
 def read_heartbeat() -> dict[str, Any] | None:
@@ -1936,10 +2011,32 @@ def render_health(report: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def describe_daemon(now: datetime) -> str:
+    """One line a session can act on without guessing: alive (pid, last poll
+    age) or not. Added 2026-09-09 after --status showed nothing about the
+    daemon itself and sessions "restarted" a live one mid-job."""
+    heartbeat = read_heartbeat()
+    if heartbeat is None:
+        return "NOT RUNNING (no heartbeat file) -- start scripts/start_capture_scheduler.cmd"
+    try:
+        last_poll = datetime.fromisoformat(str(heartbeat.get("last_poll_at", "")))
+    except ValueError:
+        return "NOT RUNNING (unreadable heartbeat) -- start scripts/start_capture_scheduler.cmd"
+    age = int((now - last_poll).total_seconds())
+    pid = heartbeat.get("pid")
+    if age > HEARTBEAT_STALE_AFTER_SECONDS:
+        return (
+            f"NOT RUNNING (pid {pid}, last poll {age}s ago, stale after "
+            f"{HEARTBEAT_STALE_AFTER_SECONDS}s) -- start scripts/start_capture_scheduler.cmd"
+        )
+    return f"RUNNING (pid {pid}, last poll {age}s ago, started {heartbeat.get('started_at')})"
+
+
 def show_status(now: datetime, state: dict[str, Any]) -> None:
     print(f"capture scheduler status  ({now.isoformat(timespec='seconds')})")
     print(f"state: {STATE_PATH}")
     print(f"log:   {LOG_PATH}")
+    print(f"daemon: {describe_daemon(now)}")
     print()
     print(f"{'job':<22} {'when':<14} {'grace':>6}  {'enabled':<8} last occurrence")
     for job in SCHEDULE:
@@ -2196,24 +2293,37 @@ def main(argv: list[str] | None = None) -> int:
     # startup. `--health` recomputes both fresh from disk for comparison.
     code_sha256 = compute_code_sha256()
     schedule_digest = compute_schedule_digest()
-    while True:
-        try:
-            now = datetime.now(tz=ET)
-            write_heartbeat(
-                started_at=started_at,
-                now=now,
-                code_sha256=code_sha256,
-                schedule_digest=schedule_digest,
-            )
-            state = load_state()
-            for job, start in due_jobs(now, state):
-                run_job(job, start, state)
-            sweep_missed(now, state)
-            prune(state)
-            save_state(state)
-        except Exception as exc:
-            log(f"TICK-ERROR {type(exc).__name__}: {exc}")
-        time.sleep(POLL_SECONDS)
+    keepalive_stop = threading.Event()
+    start_heartbeat_keepalive(
+        started_at=started_at,
+        code_sha256=code_sha256,
+        schedule_digest=schedule_digest,
+        stop=keepalive_stop,
+    )
+    try:
+        while True:
+            try:
+                now = datetime.now(tz=ET)
+                write_heartbeat(
+                    started_at=started_at,
+                    now=now,
+                    code_sha256=code_sha256,
+                    schedule_digest=schedule_digest,
+                )
+                state = load_state()
+                for job, start in due_jobs(now, state):
+                    run_job(job, start, state)
+                sweep_missed(now, state)
+                prune(state)
+                save_state(state)
+            except Exception as exc:
+                log(f"TICK-ERROR {type(exc).__name__}: {exc}")
+            time.sleep(POLL_SECONDS)
+    finally:
+        # Stops the keep-alive thread on ANY exit (a test raising SystemExit
+        # out of the loop included) so it can never outlive the loop and
+        # keep rewriting the heartbeat from a process that is not the daemon.
+        keepalive_stop.set()
 
 
 if __name__ == "__main__":

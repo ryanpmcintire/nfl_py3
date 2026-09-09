@@ -118,6 +118,7 @@ counterfactual. See ``docs/late_week_refresh.md``'s promotion section.
 
 from __future__ import annotations
 
+import json
 from collections import Counter
 from collections.abc import Mapping
 from dataclasses import dataclass, field
@@ -534,6 +535,65 @@ def original_card(artifacts_root: Path, *, season: int, week: int) -> pd.DataFra
     return rows.reset_index(drop=True)
 
 
+MODEL_CONFIGURATION_KEYS = (
+    "method",
+    "feature_profile",
+    "regressor",
+    "ridge_alpha",
+    "calibration_method",
+    "probability_method",
+)
+
+
+def model_configuration(manifest: Mapping[str, Any]) -> dict[str, Any]:
+    """The configuration half of a model identity: everything in
+    ``activate_matching_ats_model``'s ``model_identity`` except the feature
+    table digest and the evaluation configuration, which change whenever the
+    data is refreshed. Accepts both the active manifest (``method``) and a
+    forecast's ``metadata.json`` (``ats_method``)."""
+    method = manifest.get("method", manifest.get("ats_method"))
+    ridge_alpha = manifest.get("ridge_alpha")
+    return {
+        "method": None if method is None else str(method),
+        "feature_profile": (
+            None if manifest.get("feature_profile") is None else str(manifest["feature_profile"])
+        ),
+        "regressor": None if manifest.get("regressor") is None else str(manifest["regressor"]),
+        "ridge_alpha": None if ridge_alpha is None else float(ridge_alpha),
+        "calibration_method": str(manifest.get("calibration_method") or "none"),
+        "probability_method": (
+            None
+            if manifest.get("probability_method") is None
+            else str(manifest["probability_method"])
+        ),
+    }
+
+
+def recorded_card_configuration(
+    artifacts_root: Path, original: pd.DataFrame
+) -> dict[str, Any] | None:
+    """The model configuration the recorded Tuesday card was produced under,
+    read from each recorded row's ``forecast_artifact`` metadata. ``None``
+    (fail closed) when any artifact is missing or the rows disagree."""
+    if "forecast_artifact" not in original.columns:
+        return None
+    configurations: list[dict[str, Any]] = []
+    for artifact in sorted(set(original["forecast_artifact"].astype(str))):
+        metadata_path = artifacts_root / artifact / "metadata.json"
+        if not metadata_path.is_file():
+            return None
+        try:
+            metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return None
+        configuration = model_configuration(metadata)
+        if configuration not in configurations:
+            configurations.append(configuration)
+    if len(configurations) != 1:
+        return None
+    return configurations[0]
+
+
 def _utc(instant: datetime | None) -> pd.Timestamp:
     value = pd.Timestamp(instant if instant is not None else datetime.now(UTC))
     return value.tz_localize("UTC") if value.tzinfo is None else value.tz_convert("UTC")
@@ -830,12 +890,28 @@ def plan_refresh(
         )
     mismatched_model = sorted(set(original["model_id"].astype(str)) - {model_id})
     if mismatched_model:
-        raise ValueError(
-            "The active model has changed since this week's original card was recorded "
-            f"(recorded model_id(s) {mismatched_model}, active model_id {model_id!r}); "
-            "refresh-picks refuses to recompute picks under a different model identity "
-            "than the one the pool's grading lines were locked against."
-        )
+        # 2026-09-09: `model_id` hashes the feature table's digest, so every
+        # daily player-data refresh (lineups_* -> weekly-run
+        # --refresh-player-data) mints a new id and, before this change,
+        # left refresh-picks refusing for the rest of the week -- measured
+        # on the first in-season Wednesday, hours before the Week 1 opener,
+        # with the late-week follow rule still unfired. Recomputing under
+        # CURRENT data is this command's stated purpose, so the identity
+        # that must not drift is the model CONFIGURATION the pool's lines
+        # were locked against, read from the recorded card's own forecast
+        # metadata; a missing artifact or a real configuration change still
+        # fails closed with the same error.
+        recorded_configuration = recorded_card_configuration(artifacts_root, original)
+        active_configuration = model_configuration(active)
+        if recorded_configuration is None or recorded_configuration != active_configuration:
+            raise ValueError(
+                "The active model has changed since this week's original card was recorded "
+                f"(recorded model_id(s) {mismatched_model}, active model_id {model_id!r}; "
+                f"recorded configuration {recorded_configuration}, active configuration "
+                f"{active_configuration}); refresh-picks refuses to recompute picks under a "
+                "different model identity than the one the pool's grading lines were "
+                "locked against."
+            )
 
     if features_path is not None:
         resolved_features_path = features_path

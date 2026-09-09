@@ -1056,6 +1056,7 @@ def _default_tiebreaker_view() -> TiebreakerView:
 # (weekday, Eastern time, publishes the card)
 WEEK_REFRESH_PASSES: tuple[tuple[str, str, bool], ...] = (
     ("wed", "18:15", False),
+    ("wed", "19:15", False),
     ("thu", "11:55", False),
     ("thu", "15:00", False),
     ("thu", "15:25", False),

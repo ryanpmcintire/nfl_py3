@@ -1275,8 +1275,13 @@ def test_week_refresh_schedule_matches_enabled_pick_refresh_commands() -> None:
         ),
         (
             "2026-09-09T22:15:00+00:00",
-            "the next check is Thursday 11:55 AM ET",
+            "the next check is Wednesday 7:15 PM ET",
             "Wednesday 6:15",
+        ),
+        (
+            "2026-09-09T23:30:00+00:00",
+            "the next check is Thursday 11:55 AM ET",
+            "Wednesday 7:15",
         ),
         (
             "2026-09-15T12:00:00+00:00",
