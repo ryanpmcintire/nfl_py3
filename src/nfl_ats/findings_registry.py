@@ -67,12 +67,6 @@ class CurationError(ValueError):
     """
 
 
-# ---------------------------------------------------------------------------
-# Fingerprinting: a stable digest of "everything about this entry that a
-# curated sentence could have been quoting."
-# ---------------------------------------------------------------------------
-
-
 def fingerprint(payload: Mapping[str, Any]) -> str:
     """A short, stable content hash. Deliberately over-inclusive: it hashes
     every field the registry stores for the entry, not just the ones today's
@@ -161,11 +155,6 @@ def _rotation_window_payload(window: rotation.Window) -> dict[str, Any]:
 
 
 def _rotation_entry(family: rotation.Family) -> RegistryEntry:
-    # The family's most recent window is its current, citable measurement --
-    # rotation windows are never re-scored, so "most recent" and "current
-    # verdict" are the same thing. A family with no window yet (declared but
-    # unscreened, e.g. `cfb_role_continuity`) has no effect to cite, only a
-    # status.
     window = family.windows[-1] if family.windows else None
     payload: dict[str, Any] = {
         "status": family.status,
@@ -223,10 +212,6 @@ def _challenger_entry(entry: Mapping[str, Any]) -> RegistryEntry:
     challenger_id = str(entry.get("challenger_id", "unknown"))
     evidence_raw = entry.get("evidence")
     evidence = evidence_raw if isinstance(evidence_raw, dict) else {}
-    # Hash the WHOLE record, not just the evidence block: a status change
-    # (e.g. ACTIVE_PROSPECTIVE -> CLOSED_BEFORE_ACTIVATION) is exactly the
-    # kind of move a curated sentence about "what we're tracking" must not
-    # silently survive.
     return RegistryEntry(
         key=f"{STORE_CHALLENGER}:{challenger_id}",
         store=STORE_CHALLENGER,
@@ -364,11 +349,6 @@ def load_all_entries(
     return entries
 
 
-# ---------------------------------------------------------------------------
-# Curation validation
-# ---------------------------------------------------------------------------
-
-
 def validate_curation(findings: Sequence[Any], entries: Mapping[str, RegistryEntry]) -> None:
     """Raise :class:`CurationError` the instant a curated finding drifts.
 
@@ -433,11 +413,6 @@ def validate_curation(findings: Sequence[Any], entries: Mapping[str, RegistryEnt
                 )
 
 
-# ---------------------------------------------------------------------------
-# Auto-rendered leads: "What we're watching"
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class WatchingLead:
     """One open, below-power lead, ready to render with no hand-typed prose.
@@ -464,28 +439,6 @@ class WatchingLead:
     league: str
 
 
-# Two duplication patterns dominate the registry, and this function collapses
-# both in two passes -- everything else stays distinct, because two
-# differently-worded constructs from the same research family (e.g.
-# "division revenge" vs "backup QB start", both bias-battery cells) are
-# independently informative, not duplicates of each other.
-#
-# Pass 1 -- same construct, two grades. A construct measured twice -- once
-# close-graded (the larger, older archive) and once re-screened at the
-# opener (the line the pool actually uses) -- is recorded under the same
-# name with an "_opener" suffix. The pair collapses to its opener-graded
-# member (the pool-relevant grade) REGARDLESS of which grade happens to be
-# statistically louder -- this is a provenance rule, not a ranking one.
-#
-# Pass 2 -- one slot per screening battery. A predeclared multi-cell
-# screening battery (``bias_battery_*``, ``cfb_bias_battery_*``,
-# ``attention_battery_*``, ``weather_battery_*``, ``odds_microstructure_*``)
-# records EVERY cell -- 6 to 19 of them per battery -- as its own entry.
-# Ranking by raw statistical extremity lets one battery's dozen mined cells
-# crowd out every other family's single best lead, which is a sampling
-# artifact of how many cells that battery happened to predeclare, not a sign
-# the battery's leads are more real. Each battery collapses to its single
-# most striking surviving cell.
 _OPENER_SUFFIX = re.compile(r"_opener$")
 _BATTERY_MARKERS = ("battery", "microstructure")
 
@@ -542,11 +495,6 @@ def top_open_leads(
         and signal.league in leagues
         and signal.probability_positive is not None
         and "oracle" not in signal.description.lower()
-        # Instrument checks are not leads: a split-half reliability
-        # (``correlation`` units) or a ``control`` cell answers "can the
-        # instrument see?", not "is there an edge here?". Added 2026-09-05
-        # after four P+ 1.0 reliability rows pushed every ATS lead off the
-        # public "watching" list.
         and signal.effect_units != "correlation"
         and signal.category != "control"
     ]
@@ -585,14 +533,6 @@ def top_open_leads(
         for signal in ranked[:limit]
         if signal.probability_positive is not None
     ]
-
-
-# ---------------------------------------------------------------------------
-# "Research this week": everything recorded or closed in the last N days,
-# straight from the two live registries -- no curation, matching
-# top_open_leads's own "nobody has to update this" contract (dashboard
-# improvement queue, ROADMAP.md UI-20 item (b), 2026-09-05).
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -650,13 +590,6 @@ class RecentRegistryActivity:
         return self.screened_count == 0
 
 
-#: Closing grounds this section badges -- AGENTS.md's two admissible closures
-#: for a weak signal (``weak_signals.TERMINAL_CLASSIFICATIONS``) and a
-#: rotation window's ``closed_negative`` verdict. Every other classification/
-#: verdict, including every ``unresolved_below_power`` entry (the
-#: overwhelming majority), renders no badge at all -- and the badge text is
-#: never "failed" (binding render-semantics contract, AGENTS.md: "An
-#: interval crossing zero is NOT grounds for rejection").
 CLOSED_ACTIVITY_BADGE_TEXT = "Resolved the other way"
 
 
@@ -785,12 +718,6 @@ def recent_registry_activity(
                     key=f"{STORE_ROTATION}:{family.name}",
                     store=STORE_ROTATION,
                     category=STORE_ROTATION,
-                    # rotation.Family now carries its own optional
-                    # plain_summary field (2026-09-05, lane AT), mirroring
-                    # weak_signals.WeakSignal.plain_summary exactly -- this is
-                    # None only for a family nobody has written one for yet,
-                    # never a silent fallback to the raw research-prose
-                    # ``description``; see the class docstring.
                     plain_summary=family.plain_summary,
                     effect=window.effect,
                     effect_units=window.effect_units,

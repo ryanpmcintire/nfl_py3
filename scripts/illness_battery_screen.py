@@ -107,11 +107,6 @@ def default_injuries() -> Path:
     return _latest_nflverse_injuries()
 
 
-# ---------------------------------------------------------------------------
-# 1. Decision cutoff (docs/illness_battery.md section 3)
-# ---------------------------------------------------------------------------
-
-
 def _kickoff_utc(games: pd.DataFrame) -> pd.Series:
     """Duplicated (not imported) from ``nfl_ats.features._kickoff_utc`` -- an
     internal, underscore-prefixed helper this repo's own convention is to
@@ -143,11 +138,6 @@ def attach_cutoffs(games: pd.DataFrame) -> pd.DataFrame:
         )
     games["cutoff_date"] = pd.concat(cutoff_parts).reindex(games.index)
     return games
-
-
-# ---------------------------------------------------------------------------
-# 2. Illness flag + as-of team-week resolution (docs/illness_battery.md sec 3)
-# ---------------------------------------------------------------------------
 
 
 def add_is_illness(frame: pd.DataFrame) -> pd.DataFrame:
@@ -209,11 +199,6 @@ def resolve_asof_team_week(injuries: pd.DataFrame, team_week_cutoffs: pd.DataFra
     """
 
     merged = injuries.merge(team_week_cutoffs, on=["season", "week", "team"], how="inner")
-    # Defensive re-coercion to a common tz-aware dtype: a naive-vs-aware
-    # dtype mismatch on either side (e.g. an all-NaT column with no explicit
-    # utc=True upstream) raises TypeError on comparison rather than the
-    # intended "never visible" False -- fail safe by normalizing, not by
-    # letting a dtype quirk silently change which rows are visible.
     merged["date_modified"] = pd.to_datetime(merged["date_modified"], utc=True, errors="coerce")
     merged["cutoff_date"] = pd.to_datetime(merged["cutoff_date"], utc=True, errors="coerce")
     visible = merged.loc[merged["date_modified"] <= merged["cutoff_date"]].copy()
@@ -231,11 +216,6 @@ def resolve_asof_team_week(injuries: pd.DataFrame, team_week_cutoffs: pd.DataFra
         active_illness_count=("is_active_illness", "sum"),
     )
     return agg[columns]
-
-
-# ---------------------------------------------------------------------------
-# 3. Population + feature construction
-# ---------------------------------------------------------------------------
 
 
 def load_schedules(path: Path, *, season_start: int, season_end: int) -> pd.DataFrame:
@@ -302,11 +282,6 @@ def attach_team_week_features(df: pd.DataFrame, team_week_agg: pd.DataFrame) -> 
     return df
 
 
-# ---------------------------------------------------------------------------
-# 4. Cells (docs/illness_battery.md section 5)
-# ---------------------------------------------------------------------------
-
-
 def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     cells: dict[str, dict[str, Any]] = {}
 
@@ -362,11 +337,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     expected = 5
     assert len(cells) == expected, f"expected {expected} predeclared cells, got {len(cells)}"
     return cells
-
-
-# ---------------------------------------------------------------------------
-# 5. Bootstrap (algorithm-identical to fluview_battery_screen.py)
-# ---------------------------------------------------------------------------
 
 
 def summarize(
@@ -466,11 +436,6 @@ def score_all_cells(
     return cells, results
 
 
-# ---------------------------------------------------------------------------
-# 6. Reliability check (docs/illness_battery.md section 6)
-# ---------------------------------------------------------------------------
-
-
 def build_team_week_panel(df: pd.DataFrame, team_week_agg: pd.DataFrame) -> pd.DataFrame:
     """One row per (team, season, week): a genuinely team-specific panel
     (unlike FluView's shared-by-state panel) -- every REG team-week in the
@@ -488,11 +453,6 @@ def compute_reliability(panel: pd.DataFrame) -> dict[str, Any]:
     long = panel.dropna(subset=["illness_count"]).copy()
     long["illness_count"] = long["illness_count"].astype(float)
     return split_half_reliability(long, "illness_count", seed=BOOTSTRAP_SEED)
-
-
-# ---------------------------------------------------------------------------
-# 7. Main
-# ---------------------------------------------------------------------------
 
 
 def _print_cell(cell: dict[str, Any]) -> None:
@@ -542,10 +502,7 @@ def main() -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"=== loading {args.schedules} ===")
-    # Full 2010-2024 range loaded once (primary population excludes 2020
-    # below; the 2020 stratum is scored separately from this same load).
     df_all = load_schedules(args.schedules, season_start=SEASON_START, season_end=SEASON_END)
-    # .attrs does not survive the .merge() calls below, so capture these now.
     n_before_push_drop = df_all.attrs["n_before_push_drop"]
     pushes_or_missing = df_all.attrs["pushes_or_missing"]
     print(
@@ -576,7 +533,6 @@ def main() -> None:
     for season, cov in sorted(coverage_by_season.items()):
         print(f"  {season}: {cov:.1%}")
 
-    # Primary population: excludes the COVID-era 2020 stratum.
     df_primary = df_all.loc[df_all["season"] != COVID_SEASON].reset_index(drop=True)
 
     panel = build_team_week_panel(df_primary, team_week_agg)

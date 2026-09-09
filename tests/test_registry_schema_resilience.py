@@ -102,11 +102,6 @@ def _write_registry(path: Path, payload: dict[str, Any]) -> Path:
     return destination
 
 
-# ---------------------------------------------------------------------------
-# 1. The exact shape of the outage: an unrecognised field on a signal entry.
-# ---------------------------------------------------------------------------
-
-
 def test_strict_default_still_raises_on_an_unrecognised_signal_field(tmp_path: Path) -> None:
     """Unchanged behaviour: the CLI's read path (``weak-signals status`` /
     ``pool`` / ``record``, via ``cli_commands/registry.py``, and every
@@ -174,11 +169,6 @@ def test_correction_entry_unknown_field_is_tolerated_only_in_warn_mode() -> None
     assert signal.probability_positive == pytest.approx(0.5)
 
 
-# ---------------------------------------------------------------------------
-# 2. The actual regression pin: the public site's own entry point.
-# ---------------------------------------------------------------------------
-
-
 def test_publish_board_registry_reader_survives_a_schema_addition(tmp_path: Path) -> None:
     """Pins the fix at the traced choke point (``findings_registry.
     load_weak_signal_registry``), not merely at the low-level parser.
@@ -198,9 +188,6 @@ def test_publish_board_registry_reader_survives_a_schema_addition(tmp_path: Path
         tmp_path,
         _payload(
             holdout_slow_start_on_production=_signal(
-                # A field shaped exactly like the real incident, but under a
-                # name this build has never heard of -- the next one of these,
-                # not the one already fixed.
                 reviewer_notes="pending re-measurement",
             )
         ),
@@ -236,12 +223,6 @@ def test_missing_registry_file_still_loads_as_empty_through_the_site_reader(
 
     registry = load_weak_signal_registry(registry_root=tmp_path)
     assert registry.signals == {}
-
-
-# ---------------------------------------------------------------------------
-# 3. The rotation registry: the same failure shape, traced and fixed the
-#    same session, after the coordinator authorised editing rotation.py.
-# ---------------------------------------------------------------------------
 
 
 def _rotation_window(**overrides: Any) -> dict[str, Any]:
@@ -386,26 +367,6 @@ def test_rotation_missing_registry_file_still_loads_as_empty_through_the_site_re
     assert registry.families == {}
 
 
-# ---------------------------------------------------------------------------
-# 4. The repair path: a single invalid registry entry must not block its
-#    own repair. Coordinator-reported incident, 2026-09-08: a lane recorded
-#    ``mod18_discrete_side_read_v1_ds_pcsmall_vs_s3_touched_standalone_2020_2025``
-#    with ``standard_error: 0.0`` (a genuinely degenerate 15-game block
-#    bootstrap: the leaked arm was right on all 15 games, the baseline wrong
-#    on all 15, so every resample returned exactly 100.0). Consequence 2 of
-#    that incident: ``nfl-ats weak-signals record --replace`` -- the one
-#    sanctioned repair tool -- could not fix it, because the record command
-#    loads and validates the WHOLE registry before writing, and the invalid
-#    entry made that load fail. The coordinator had to hand-delete the key
-#    with a throwaway script and re-record it -- exactly the hand-editing
-#    AGENTS.md exists to prevent. This section pins the fix: a tolerant load
-#    that quarantines an individually-invalid entry instead of refusing the
-#    whole file, paired with a save that never silently drops an untouched
-#    quarantined entry -- while the WRITE side stays exactly as strict as
-#    before (unchanged validators, only reachable again).
-# ---------------------------------------------------------------------------
-
-
 def _record_args(name: str, *, replace: bool = False, **extra: str) -> list[str]:
     args = [
         "weak-signals",
@@ -460,28 +421,19 @@ def test_record_replace_repairs_an_entry_that_currently_fails_validation(
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(registry_dir))
     registry_path = registry_dir / "weak_signals.json"
 
-    # The strict load a read-only command (status/pool) uses is refused, as
-    # before -- pins that the incident's own failure mode still fires.
     with pytest.raises(WeakSignalError, match="non-positive standard_error"):
         load_registry(registry_path)
 
-    # Without --replace, the CLI still refuses: a repair is a deliberate
-    # act, not an accident triggered by recording under the same name.
     with pytest.raises(SystemExit):
         cli.main(_record_args("broken", standard_error="1.2"))
-    # Nothing was written by the refused attempt.
     with pytest.raises(WeakSignalError, match="non-positive standard_error"):
         load_registry(registry_path)
 
-    # `record --replace` -- the one sanctioned repair tool -- now works.
     assert cli.main(_record_args("broken", standard_error="1.2", replace=True)) == 0
 
-    # The repaired registry loads strictly clean.
     repaired = load_registry(registry_path)
     assert set(repaired.signals) == {"broken", "healthy"}
     assert repaired.signals["broken"].standard_error == pytest.approx(1.2)
-    # The untouched entry survived byte-for-byte, not silently dropped while
-    # the load had to quarantine its way past the broken one.
     assert repaired.signals["healthy"].effect == pytest.approx(0.1)
 
 
@@ -503,8 +455,6 @@ def test_record_replace_still_rejects_a_non_positive_standard_error(
     with pytest.raises(SystemExit):
         cli.main(_record_args("broken", standard_error="0.0", replace=True))
 
-    # The broken entry is exactly as it was -- the rejected write changed
-    # nothing.
     with pytest.raises(WeakSignalError, match="non-positive standard_error"):
         load_registry(registry_path)
 
@@ -575,14 +525,11 @@ def test_load_registry_permissive_reads_from_disk_and_save_preserves_untouched_r
     assert set(registry.signals) == {"healthy"}
     assert set(quarantined) == {"broken"}
 
-    # A write that touches neither name (a no-op save here) must still keep
-    # the untouched-but-broken row in the file rather than dropping it.
     save_registry_preserving_quarantine(registry, quarantined, destination)
     on_disk = json.loads(destination.read_text(encoding="utf-8"))
     assert set(on_disk["signals"]) == {"broken", "healthy"}
     assert on_disk["signals"]["broken"]["standard_error"] == 0.0
 
-    # And it round-trips through the SAME permissive reader.
     reloaded, still_quarantined = load_registry_permissive(destination)
     assert set(reloaded.signals) == {"healthy"}
     assert set(still_quarantined) == {"broken"}
@@ -636,9 +583,8 @@ def test_record_signal_warns_and_widens_a_standard_error_narrower_than_the_pool_
 
     stored = registry.signals["degenerate_cell"]
     assert stored.standard_error is not None
-    assert stored.standard_error > 0.5  # offered value was widened, never narrowed
+    assert stored.standard_error > 0.5
     assert stored.standard_error == pytest.approx(3.2176, rel=1e-3)
-    # The measurement itself -- the effect -- is untouched by the widening.
     assert stored.effect == pytest.approx(100.0)
 
 

@@ -15,9 +15,6 @@ from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-# Refresh-time arms do not share the Tuesday publish result-key map.  Keeping
-# this tiny contract next to the audit makes additions fail loudly until both
-# the production CLI and this readiness check are updated together.
 REFRESH_RESULT_KEYS: dict[str, str] = {
     "model_only_refresh_incumbent": "ledger",
     "injury_signal_refresh_tilt": "injury_signal_refresh_tilt",
@@ -60,11 +57,6 @@ def _literal_assignment(source: str, name: str) -> dict[str, str]:
 def audit(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     started_ns = time.perf_counter_ns()
     registry_path = repo_root / "artifacts" / "prospective" / "challengers.json"
-    # ENG-10 split the 6k-line cli.py into nfl_ats.cli_commands.*; the command
-    # surface this audit reads (the publish result map, the result["..."]
-    # assignments, the prospective dispatch) now lives in those modules. Read
-    # the package first, then cli.py, so `_literal_assignment` finds the real
-    # definition rather than cli.py's re-export list.
     cli_paths = [
         *sorted((repo_root / "src" / "nfl_ats" / "cli_commands").glob("*.py")),
         repo_root / "src" / "nfl_ats" / "cli.py",

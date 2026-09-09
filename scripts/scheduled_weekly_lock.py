@@ -39,17 +39,10 @@ from scripts.lockday_verify import verify  # noqa: E402
 ET = ZoneInfo("America/New_York")
 UV = REPO / ".tools" / "uv.exe"
 
-#: Where the complete output of a failed lock lands. Under ``data/`` (never
-#: committed) beside the scheduler's own log, so the scheduler's one-line
-#: record and the full story sit in the same tree.
 FAILURE_LOG_DIR = REPO / "data" / "lock_failures"
 
-#: A ``file.py:123: SomeWarning: ...`` header line. Its continuation line (the
-#: echoed source) is indented, which ``_error_summary`` skips on its own.
 _WARNING_HEADER = re.compile(r":\d+: \w*Warning: ")
 
-#: Progress chatter ``run_weekly`` and the decision-package writer print to
-#: stderr. Never the reason a run failed.
 _PROGRESS_PREFIXES = ("weekly-run step ", "lock-day decision package: ")
 
 
@@ -181,9 +174,6 @@ def main(argv: list[str] | None = None) -> int:
         log_path = getattr(error, "log_path", None)
         if not isinstance(log_path, Path):
             log_path = write_failure_log("scheduled-lock", {"traceback": traceback.format_exc()})
-        # ``error_log`` before ``error`` on purpose: capture_scheduler records
-        # only the first 200 characters of this line, and the path is the one
-        # field that must survive that cut.
         print(
             json.dumps(
                 {

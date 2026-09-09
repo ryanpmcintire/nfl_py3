@@ -145,14 +145,6 @@ SNAPSHOT_DIR_RE = re.compile(r"^\d{8}T\d{6}Z$")
 ACTIONNETWORK_URL = "https://www.actionnetwork.com/nfl/public-betting"
 COVERS_URL = "https://www.covers.com/picks/nfl"
 
-# nflverse abbreviation is the join target (data/processed/game_features.parquet
-# uses these). Site abbreviations vary by era/relocation; map every alternate
-# spelling seen this session onto the nflverse code. Extends (does not
-# duplicate) src/nfl_ats/constants.py's TEAM_ABBREVIATION_ALIASES, which maps
-# OAK->LV, SD->LAC, STL->LA but does not cover JAC/JAX or WAS/WSH -- this
-# script is intentionally standalone (no src/nfl_ats import, matching
-# ingest_injury_news.py / ingest_transaction_news.py), so the mapping is
-# reproduced and extended locally rather than imported.
 TEAM_ALIASES = {
     "OAK": "LV",
     "SD": "LAC",
@@ -256,9 +248,6 @@ def fetch_cdx(
     try:
         rows = json.loads(text)
     except json.JSONDecodeError:
-        # archive.org occasionally serves a transient HTML error page (a
-        # measured 504 "Temporarily Offline" was hit this session) even with
-        # a 200-looking curl exit; retry once after a longer pause.
         time.sleep(5.0)
         raw = _fetch_bytes(query, limiter, timeout=60)
         rows = json.loads(raw.decode("utf-8", errors="ignore"))
@@ -269,10 +258,6 @@ def fetch_cdx(
     frame["capture_ts"] = pd.to_datetime(frame["timestamp"], format="%Y%m%d%H%M%S", utc=True)
     return frame.sort_values("capture_ts").reset_index(drop=True)
 
-
-# ---------------------------------------------------------------------------
-# actionnetwork.com parsing
-# ---------------------------------------------------------------------------
 
 _NEXT_DATA_SCRIPT_START_RE = re.compile(r'<script id="__NEXT_DATA__"[^>]*>\s*')
 _NEXT_DATA_INLINE_START_RE = re.compile(r"__NEXT_DATA__\s*=\s*")
@@ -361,7 +346,6 @@ def parse_actionnetwork_era1(next_data: dict[str, Any], capture_ts: pd.Timestamp
         teams = game.get("teams", [])
         if len(teams) != 2:
             continue
-        # Action Network lists away team first, home team second in `teams`.
         away_raw, home_raw = teams[0].get("abbr"), teams[1].get("abbr")
         odds = game.get("odds", {}).get(book_id, {}).get("game", {})
         row = {
@@ -533,11 +517,6 @@ def parse_actionnetwork_snapshot(
     return "unrecognized_shape", [], "neither known pageProps shape matched"
 
 
-# ---------------------------------------------------------------------------
-# actionnetwork.com ingestion driver
-# ---------------------------------------------------------------------------
-
-
 def ingest_actionnetwork(
     out_dir: Path,
     start_year: int,
@@ -638,10 +617,6 @@ def ingest_actionnetwork(
     return manifest
 
 
-# ---------------------------------------------------------------------------
-# covers.com verification-only sampling (measured dead end, see module docstring)
-# ---------------------------------------------------------------------------
-
 _PERCENT_RE = re.compile(r"[0-9]{1,3}(?:\.[0-9])?%")
 
 
@@ -727,11 +702,6 @@ def sample_covers(out_dir: Path, sample_n: int, limiter: RateLimiter) -> dict[st
     return summary
 
 
-# ---------------------------------------------------------------------------
-# Coverage report: join parsed actionnetwork rows against the local schedule
-# ---------------------------------------------------------------------------
-
-
 def build_coverage_report(out_dir: Path, schedule_path: Path) -> dict[str, Any]:
     index_path = out_dir / "index.parquet"
     if not index_path.exists():
@@ -742,21 +712,11 @@ def build_coverage_report(out_dir: Path, schedule_path: Path) -> dict[str, Any]:
         ["game_id", "season", "week", "game_type", "away_team", "home_team", "kickoff"]
     ].copy()
     schedule_full["kickoff"] = pd.to_datetime(schedule_full["kickoff"], utc=True)
-    # Regular season only: this project's forced-pick pool is a REG-season
-    # product, and actionnetwork's page also carries preseason (August
-    # "scheduled" rows, kickoff before Week 1) and stale playoff reruns
-    # (the same Wild Card matchup re-served as "complete" for weeks after it
-    # ended, measured this session in 2019 Jan-Apr captures) that would
-    # otherwise inflate/deflate REG-season coverage stats if merged in.
     schedule = schedule_full.loc[schedule_full["game_type"] == "REG"].copy()
 
     merged = parsed.merge(
         schedule, on=["away_team", "home_team"], how="left", suffixes=("", "_sched")
     )
-    # A team pair can recur across seasons; keep only the schedule row whose
-    # kickoff is within 3 days of the game's own start_time_utc as parsed
-    # from the site (handles pregame moves/postponements loosely without
-    # needing an exact-timestamp match).
     merged["start_time_utc"] = pd.to_datetime(merged["start_time_utc"], utc=True, errors="coerce")
     merged["kickoff_delta_hours"] = (
         merged["kickoff"] - merged["start_time_utc"]
@@ -766,10 +726,6 @@ def build_coverage_report(out_dir: Path, schedule_path: Path) -> dict[str, Any]:
         subset=["capture_ts", "site_game_id", "game_id"]
     )
 
-    # Own-week Tuesday noon ET cutoff, mirroring
-    # scripts/injury_tuesday_cutoff_experiment.py's team_week_tuesday_noon
-    # convention exactly: (weekday - 1) % 7 days back from kickoff (in
-    # US/Eastern), then +12h, converted back to UTC.
     kickoff_et = matched["kickoff"].dt.tz_convert("US/Eastern")
     days_since_tuesday = (kickoff_et.dt.weekday - 1) % 7
     tuesday_date_et = kickoff_et.dt.normalize() - pd.to_timedelta(days_since_tuesday, unit="D")

@@ -77,11 +77,6 @@ def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None)
     )
 
 
-# ---------------------------------------------------------------------------
-# Fixture helpers: synthetic historical-backfill snapshot directories
-# ---------------------------------------------------------------------------
-
-
 def _spread_book(key: str, standardized_home_spread: float, *, price: int = -110) -> dict[str, Any]:
     home_raw = -standardized_home_spread
     return {
@@ -214,8 +209,8 @@ def two_game_schedule() -> pd.DataFrame:
             "home_team": ["KC", "SEA"],
             "away_team": ["CIN", "NE"],
             "kickoff": [
-                pd.Timestamp("2024-09-13T00:20:00Z"),  # Thursday night game
-                pd.Timestamp("2024-09-15T17:00:00Z"),  # Sunday early game
+                pd.Timestamp("2024-09-13T00:20:00Z"),
+                pd.Timestamp("2024-09-15T17:00:00Z"),
             ],
         }
     )
@@ -225,7 +220,6 @@ def two_game_schedule() -> pd.DataFrame:
 def two_game_store(tmp_path: Path, two_game_schedule: pd.DataFrame) -> Path:
     root = tmp_path / "raw"
 
-    # tue_open: both games, 3 books each.
     tue_events = [
         _event(
             "kc-cin",
@@ -252,7 +246,6 @@ def two_game_store(tmp_path: Path, two_game_schedule: pd.DataFrame) -> Path:
         events=tue_events,
     )
 
-    # thu_pre_tnf: both games still upcoming.
     thu_events = [
         _event(
             "kc-cin",
@@ -279,7 +272,6 @@ def two_game_store(tmp_path: Path, two_game_schedule: pd.DataFrame) -> Path:
         events=thu_events,
     )
 
-    # sun_early_close: KC-CIN has already kicked off (excluded per-game); SEA-NE still upcoming.
     sun_early_events = [
         _event(
             "kc-cin",
@@ -306,7 +298,6 @@ def two_game_store(tmp_path: Path, two_game_schedule: pd.DataFrame) -> Path:
         events=sun_early_events,
     )
 
-    # sun_late_close: captured after SEA-NE has already kicked off; must be excluded entirely.
     sun_late_events = [
         _event(
             "sea-ne",
@@ -326,11 +317,6 @@ def two_game_store(tmp_path: Path, two_game_schedule: pd.DataFrame) -> Path:
         events=sun_late_events,
     )
     return root
-
-
-# ---------------------------------------------------------------------------
-# 1. Snapshot pairing contracts
-# ---------------------------------------------------------------------------
 
 
 def test_manifest_index_skips_in_progress_directory(
@@ -354,7 +340,6 @@ def test_manifest_index_skips_in_progress_directory(
             )
         ],
     )
-    # An in-progress directory: files present, manifest not yet written.
     partial = root / "20990101T000000Z"
     partial.mkdir(parents=True)
     (partial / "response.json").write_text("{}", encoding="utf-8")
@@ -380,12 +365,9 @@ def test_pairing_table_consensus_dispersion_and_post_kickoff_exclusion(
     assert sea_ne_tue["spread_max"] == pytest.approx(3.0)
     assert sea_ne_tue["spread_std"] == pytest.approx(0.5)
 
-    # A snapshot captured after a game's own kickoff must never appear as one
-    # of that game's pregame rows, even though it is pregame for the week.
     assert pairing.loc[
         pairing["game_id"].eq("2024_02_NE_SEA") & pairing["decision_label"].eq("sun_late_close")
     ].empty
-    # The Thursday game has no pregame Sunday rows at all.
     assert pairing.loc[
         pairing["game_id"].eq("2024_02_CIN_KC")
         & pairing["decision_label"].isin(["sun_early_close", "sun_late_close"])
@@ -400,22 +382,13 @@ def test_close_reference_prefers_store_then_falls_back_to_schedule(two_game_stor
     close = close_reference_table(pairing, schedule)
     by_game = close.set_index("game_id")
 
-    # SEA-NE has a pregame sun_early_close row (sun_late_close was excluded as
-    # post-kickoff), so the store close is used, not the schedule fallback.
     assert by_game.loc["2024_02_NE_SEA", "close_source"] == "sun_early_close"
     assert by_game.loc["2024_02_NE_SEA", "close_home_spread"] == pytest.approx(3.5)
     assert by_game.loc["2024_02_NE_SEA", "close_books"] == 2
 
-    # KC-CIN (Thursday game) has no store close label at all -> schedule fallback.
     assert by_game.loc["2024_02_CIN_KC", "close_source"] == "schedule_close"
     assert by_game.loc["2024_02_CIN_KC", "close_home_spread"] == pytest.approx(1.0)
     assert by_game.loc["2024_02_CIN_KC", "close_books"] == 0
-
-
-# ---------------------------------------------------------------------------
-# 1b. spread_price_consensus_table -- MKT-03 sibling extraction (additive,
-#     build_pairing_table itself is untouched; see docs/novig_diagnostics.md)
-# ---------------------------------------------------------------------------
 
 
 def test_build_pairing_table_columns_unchanged_by_price_sibling(two_game_store: Path) -> None:
@@ -474,14 +447,12 @@ def test_spread_price_consensus_table_surfaces_dropped_price(
         "away_spread_price_books",
     ]
 
-    # Asymmetric juice: median(-120, -115) home, median(100, -105) away.
     row = table.loc[table["game_id"].eq("2024_02_CIN_KC")].iloc[0]
     assert row["home_spread_price"] == pytest.approx(-117.5)
     assert row["away_spread_price"] == pytest.approx(-2.5)
     assert row["home_spread_price_books"] == 2
     assert row["away_spread_price_books"] == 2
 
-    # Both books used the default -110/-110 for the other game.
     other = table.loc[table["game_id"].eq("2024_02_NE_SEA")].iloc[0]
     assert other["home_spread_price"] == pytest.approx(-110.0)
     assert other["away_spread_price"] == pytest.approx(-110.0)
@@ -495,7 +466,6 @@ def test_spread_price_consensus_table_joins_with_pairing_table(two_game_store: P
         on=["game_id", "season", "week", "decision_label", "capture_kind"],
         how="inner",
     )
-    # Every pairing row in this fixture has a matching spread-price row.
     assert len(merged) == len(pairing)
     assert merged["home_spread_price"].notna().all()
 
@@ -561,7 +531,7 @@ def test_load_decision_quotes_tags_live_capture_kind(
     payload = json.dumps(payload_events, separators=(",", ":")).encode()
     observed_at = datetime(2024, 9, 10, 13, 0, tzinfo=UTC)
     quotes = parse_odds_api_response(payload, observed_at=observed_at)
-    assert "capture_kind" not in quotes.columns  # live schema predates this column
+    assert "capture_kind" not in quotes.columns
     quotes = attach_nflverse_game_ids(quotes, two_game_schedule)
     write_market_snapshot(
         payload, quotes, root, observed_at=observed_at, request_metadata={"regions": "us"}
@@ -569,11 +539,6 @@ def test_load_decision_quotes_tags_live_capture_kind(
     loaded = load_decision_quotes(root, capture_kind="live")
     assert not loaded.empty
     assert set(loaded["capture_kind"]) == {"live"}
-
-
-# ---------------------------------------------------------------------------
-# 2. CLV metric math (hand-computed, including a key-number crossing)
-# ---------------------------------------------------------------------------
 
 
 def test_key_number_distance_folds_by_magnitude() -> None:
@@ -593,7 +558,6 @@ def test_score_clv_hand_computed_including_key_number_crossing() -> None:
     close_reference = pd.DataFrame(
         {
             "game_id": ["G1", "G2"],
-            # G1's line crosses the key number 3 between open (2.5) and close (3.5).
             "close_home_spread": [3.5, -2.0],
             "close_source": ["sun_late_close", "sun_late_close"],
             "close_books": [6, 6],
@@ -609,12 +573,7 @@ def test_score_clv_hand_computed_including_key_number_crossing() -> None:
         }
     )
     scored = score_clv(picks, pairing, close_reference)
-    # G1: HOME at 2.5, close 3.5 -> line moved toward home favor after the bet: +1.0 CLV.
     assert scored.loc[scored["game_id"].eq("G1"), "clv_points"].iloc[0] == pytest.approx(1.0)
-    # G2: AWAY at home_spread -1.0 (home a 1-point underdog), close -2.0 (home
-    # a bigger, 2-point underdog): the market moved further away from home, which
-    # is favorable to an AWAY bettor who is already locked in at the smaller
-    # number -- by hand: clv = -1 * (close - decision) = -1 * (-2.0 - (-1.0)) = +1.0.
     assert scored.loc[scored["game_id"].eq("G2"), "clv_points"].iloc[0] == pytest.approx(1.0)
 
 
@@ -650,7 +609,6 @@ def test_clv_summary_and_week_blocked_bootstrap_deterministic() -> None:
     }
     bootstrap = week_blocked_bootstrap(frame, clv_summary, block="week", samples=50, seed=1)
     row = bootstrap.set_index("metric").loc["mean_clv_points"]
-    # Every block has an identical value, so every resample gives the same estimate.
     assert row["estimate"] == pytest.approx(1.0)
     assert row["lower"] == pytest.approx(1.0)
     assert row["upper"] == pytest.approx(1.0)
@@ -664,11 +622,6 @@ def test_week_blocked_bootstrap_guards() -> None:
         week_blocked_bootstrap(frame, clv_summary, block="day")  # type: ignore[arg-type]
     with pytest.raises(DataContractError, match="missing columns"):
         week_blocked_bootstrap(frame.drop(columns=["week"]), clv_summary, block="week")
-
-
-# ---------------------------------------------------------------------------
-# 3. Frozen feature construction (MKT-06 pilot)
-# ---------------------------------------------------------------------------
 
 
 def _pilot_features_frame(n_games: int = 70) -> pd.DataFrame:
@@ -748,8 +701,6 @@ def _store_tue_and_close_for_game(
 def pilot_setup(tmp_path: Path) -> tuple[Path, pd.DataFrame, dict[str, Any]]:
     features = _pilot_features_frame()
     root = tmp_path / "raw"
-    # Two target games late enough to have >= 50 prior completed training rows
-    # (fit_margin_model requires at least 50 completed games).
     for idx, (tue_open, close) in zip((55, 65), ((2.5, 3.5), (-1.0, -2.5)), strict=True):
         _store_tue_and_close_for_game(
             root, features, features.iloc[idx], tue_open=tue_open, close=close
@@ -821,7 +772,7 @@ def test_fit_evaluate_and_threshold_policy() -> None:
     n = 60
     tue_open = rng.uniform(-7, 7, size=n)
     noise = rng.normal(0, 0.25, size=n)
-    target = 0.4 * tue_open + noise  # movement correlated with opener level
+    target = 0.4 * tue_open + noise
     frame = pd.DataFrame(
         {
             "game_id": [f"P{i:03d}" for i in range(n)],
@@ -859,11 +810,6 @@ def test_run_predeclared_pilot_reports_blocker_for_missing_seasons(
     assert str(FROZEN_PILOT_PROTOCOL.test_season) in str(excinfo.value)
 
 
-# ---------------------------------------------------------------------------
-# 4. The sign test (report Pilot B)
-# ---------------------------------------------------------------------------
-
-
 def test_sign_test_pilot_b_reports_binomial_intervals(
     pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]],
 ) -> None:
@@ -879,11 +825,6 @@ def test_sign_test_requires_data() -> None:
     features = _pilot_features_frame()
     with pytest.raises(ValueError, match="No paired games"):
         sign_test_pilot_b(Path("does-not-exist"), features)
-
-
-# ---------------------------------------------------------------------------
-# 4b. Production wiring: predicted close for an upcoming week (MKT-06)
-# ---------------------------------------------------------------------------
 
 
 def _live_features_frame() -> pd.DataFrame:
@@ -990,8 +931,6 @@ def test_predict_close_unavailable_without_live_opener(
 def test_predict_close_blocked_without_training_archive(tmp_path: Path) -> None:
     features = _live_features_frame()
     target_row = features.iloc[-1]
-    # A live opener exists, so the (cheaper, checked-first) target step passes
-    # and the missing historical training archive is what blocks.
     _store_live_tuesday_snapshot(tmp_path / "raw", features, target_row, home_spread=3.0)
     config = {
         "feature_profile": "base",
@@ -1038,11 +977,6 @@ def test_close_prediction_output_contract_rejects_bad_frames() -> None:
         _validate_close_predictions(implausible)
 
 
-# ---------------------------------------------------------------------------
-# 5. Active-model configuration resolution
-# ---------------------------------------------------------------------------
-
-
 def test_resolve_active_model_config_falls_back_when_manifest_absent(tmp_path: Path) -> None:
     config = resolve_active_model_config(tmp_path)
     assert config == {
@@ -1066,11 +1000,6 @@ def test_resolve_active_model_config_reads_manifest_when_present(tmp_path: Path)
     config = resolve_active_model_config(tmp_path)
     assert config["feature_profile"] == "base"
     assert config["ridge_alpha"] == 10.0
-
-
-# ---------------------------------------------------------------------------
-# 6. Routine paper-decision CLV ledger (MKT-04)
-# ---------------------------------------------------------------------------
 
 
 def _published_card_artifacts(
@@ -1122,8 +1051,6 @@ def _published_card_artifacts(
         for index, width in enumerate(sweep_widths):
             holds = np.abs(offsets) <= width
             home = probabilities[index] >= 0.5
-            # The sweep always reports the HOME probability; an AWAY pick's
-            # support is its complement, so flip the curve for away picks.
             probability = np.where(holds, 0.6, 0.4) if home else np.where(holds, 0.4, 0.6)
             frames.append(
                 pd.DataFrame(
@@ -1179,13 +1106,11 @@ def test_record_paper_decisions_records_dedupes_and_skips_started(tmp_path: Path
     assert row["decision_home_spread"] == pytest.approx(2.5)
     assert row["model_id"] == "model-1"
 
-    # A second run records nothing new.
     again = record_paper_decisions(artifacts, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 1
     assert again["ledger_rows"] == 1
 
-    # A republished card with a moved line must never rewrite the CLV anchor.
     moved = _published_card_artifacts(
         tmp_path,
         kickoffs=["2026-09-13T17:00:00+00:00", "2026-09-09T00:15:00+00:00"],
@@ -1217,7 +1142,6 @@ def test_record_paper_decisions_replace_week_rerecords_from_a_named_forecast(
     assert sorted(ledger["decision_home_spread"]) == [-7.0, 3.0]
     wrong_artifact = str(ledger["forecast_artifact"].iloc[0])
 
-    # The pool's own board arrives: half-point lines, one pick flipped.
     corrected = _published_card_artifacts(
         tmp_path / "corrected",
         kickoffs=["2026-09-13T17:00:00+00:00", "2026-09-13T20:00:00+00:00"],
@@ -1350,7 +1274,6 @@ def test_live_close_reference_uses_live_store_then_schedule_fallback(tmp_path: P
             "result": [np.nan, 7.0],
         }
     )
-    # A live pre-kickoff capture exists only for the KC game.
     _store_live_capture(
         root,
         schedule,
@@ -1359,15 +1282,12 @@ def test_live_close_reference_uses_live_store_then_schedule_fallback(tmp_path: P
         observed_at=datetime(2024, 9, 12, 22, 0, tzinfo=UTC),
     )
 
-    # Before KC's kickoff its live quote is a current line, not a close.
     early = live_close_reference(root, schedule, as_of=datetime(2024, 9, 12, 23, 0, tzinfo=UTC))
     assert "2024_02_CIN_KC" not in set(early["game_id"])
-    # SEA has a result, so the schedule fallback close is available already.
     sea_early = early.set_index("game_id").loc["2024_02_NE_SEA"]
     assert sea_early["close_source"] == "schedule_close"
     assert sea_early["close_home_spread"] == pytest.approx(3.75)
 
-    # After kickoff the KC live consensus becomes the close.
     late = live_close_reference(root, schedule, as_of=datetime(2024, 9, 13, 4, 0, tzinfo=UTC))
     kc = late.set_index("game_id").loc["2024_02_CIN_KC"]
     assert kc["close_source"] == "live_store_close"
@@ -1396,13 +1316,10 @@ def test_score_paper_ledger_hand_computed_and_pending() -> None:
         }
     )
     scored = score_paper_ledger(decisions, close_reference).set_index("game_id")
-    # G1: HOME picked at 2.5, close 3.5 -> +1.0 for both the pick and the bet.
     assert scored.loc["G1", "clv_points"] == pytest.approx(1.0)
     assert scored.loc["G1", "bet_clv_points"] == pytest.approx(1.0)
-    # G2: AWAY picked at -1.0, close -2.0 -> +1.0 pick CLV; PASS has no bet CLV.
     assert scored.loc["G2", "clv_points"] == pytest.approx(1.0)
     assert pd.isna(scored.loc["G2", "bet_clv_points"])
-    # G3 has no close yet.
     assert scored.loc["G3", "clv_status"] == "pending"
     assert pd.isna(scored.loc["G3", "clv_points"])
     assert set(scored["clv_status"]) == {"scored", "pending"}
@@ -1443,10 +1360,6 @@ def test_load_paper_decisions_empty_and_contract(tmp_path: Path) -> None:
         load_paper_decisions(tmp_path)
 
 
-# ---------------------------------------------------------------------------
-# 6b. The weekly Best Pick, persisted at publication (POL-10)
-# ---------------------------------------------------------------------------
-
 _ALL_PRE_KICKOFF = ["2026-09-13T17:00:00+00:00", "2026-09-13T20:25:00+00:00"]
 
 
@@ -1464,7 +1377,6 @@ def test_best_pick_is_persisted_with_the_week_and_matches_the_ranker(tmp_path: P
 
     assert result["recorded"] == 2
     assert result["best_pick_recorded"] is True
-    # Game 1 holds its edge across the wider run, so it is the Best Pick.
     assert result["best_pick_game_id"] == "2026_01_A1_H1"
 
     ledger = load_paper_decisions(artifacts)
@@ -1491,7 +1403,6 @@ def test_best_pick_is_never_nominated_once_any_game_of_the_week_has_started(
         bet_sides=["HOME", "PASS"],
         sweep_widths=[1.0, 3.0],
     )
-    # One game has already kicked off.
     now = datetime(2026, 9, 12, 0, 0, tzinfo=UTC)
     result = record_paper_decisions(artifacts, now=now)
 
@@ -1501,7 +1412,6 @@ def test_best_pick_is_never_nominated_once_any_game_of_the_week_has_started(
     assert result["best_pick_game_id"] is None
     assert not load_paper_decisions(artifacts)["is_best_pick"].any()
 
-    # And a later run cannot rescue it: the week's first game is now long gone.
     record_paper_decisions(artifacts, now=datetime(2026, 9, 20, tzinfo=UTC))
     assert not load_paper_decisions(artifacts)["is_best_pick"].any()
 
@@ -1518,7 +1428,6 @@ def test_best_pick_is_first_write_wins_across_republications(tmp_path: Path) -> 
     now = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
     record_paper_decisions(artifacts, now=now)
 
-    # Republish with the robustness ordering reversed; the nomination must not move.
     _published_card_artifacts(
         tmp_path,
         kickoffs=_ALL_PRE_KICKOFF,
@@ -1606,11 +1515,6 @@ def test_legacy_ledger_without_the_flag_loads_and_two_flags_a_week_is_rejected(
         load_paper_decisions(tmp_path)
 
 
-# ---------------------------------------------------------------------------
-# 7. Opener-graded evaluation of the frozen active model
-# ---------------------------------------------------------------------------
-
-
 def test_pick_correct_handles_pushes() -> None:
     picks = pd.Series([True, True, False, False])
     margins = pd.Series([3.0, -2.0, -1.0, 0.0])
@@ -1624,25 +1528,18 @@ def test_opener_pick_evaluation_settles_each_pick_at_its_own_line(
 ) -> None:
     root, features, config = pilot_setup
     scored = opener_pick_evaluation(root, features, active_model_config=config, min_train_games=50)
-    # The fixture stores paired tue_open+close for exactly two games.
     assert len(scored) == 2
     by_game = scored.set_index("game_id")
     g55 = by_game.loc["G055"]
     assert g55["tue_open_home_spread"] == pytest.approx(2.5)
     assert g55["close_home_spread"] == pytest.approx(3.5)
     assert g55["open_move"] == pytest.approx(1.0)
-    # Settlement margins follow the repo convention (result minus line).
     assert g55["margin_vs_open"] == pytest.approx(float(g55["result"]) - 2.5)
     assert g55["margin_vs_close"] == pytest.approx(float(g55["result"]) - 3.5)
-    # Each pick is settled against its own line, hand-recomputed.
     expected_open = 1.0 if bool(g55["pick_home_at_open"]) == (g55["margin_vs_open"] > 0) else 0.0
     assert g55["correct_at_open"] == pytest.approx(expected_open)
-    # The movement oracle picked HOME here (line moved toward home).
     assert g55["oracle_correct_at_open"] == pytest.approx(1.0 if g55["margin_vs_open"] > 0 else 0.0)
 
-    # Production's actual pick rule (``home_cover_probability >= 0.5``) is
-    # computed alongside the sign rule, additively -- the sign-rule columns
-    # asserted above are untouched by its presence.
     for column in (
         "home_cover_probability_at_open",
         "home_cover_probability_at_close",
@@ -1706,11 +1603,6 @@ def test_opener_pick_evaluation_probability_rule_can_diverge_from_sign_rule(
 
     features = _pilot_features_frame(n_games=120)
     root = tmp_path / "raw"
-    # Indices 50, 67, 84 all land on (season=2021, week=1) under this
-    # fixture's ``(index - 50) % 17`` week formula, so all three share one
-    # weekly-refit model trained on completed games strictly before the
-    # earliest (G050's) kickoff -- a thin training slice that is what makes
-    # the divergence below reproducible.
     game_lines = {50: (1.0, 2.0), 67: (-2.0, -1.0), 84: (0.5, 1.5)}
     for idx, (tue_open, close) in game_lines.items():
         _store_tue_and_close_for_game(
@@ -1740,9 +1632,6 @@ def test_opener_pick_evaluation_probability_rule_can_diverge_from_sign_rule(
     )
 
     metrics = opener_evaluation_metrics(scored)
-    # The two rules pick different sides for at least one game here, so the
-    # two accuracy reads are not required to (and, pinned by this fixture,
-    # do not) come out identical.
     assert metrics["opener_accuracy"] != pytest.approx(metrics["opener_accuracy_probability_rule"])
 
 
@@ -1860,9 +1749,6 @@ def test_opener_pick_evaluation_serves_the_walk_forward_home_side_offset(
     )
 
     _, _, config = pilot_setup
-    # Two big-spread games (both in the 7.5-10 bucket, where the push is
-    # served) in different weeks, so the second week's shift is fitted from
-    # the first week's raw point.
     features = _pilot_features_frame()
     root = tmp_path / "raw_big_spreads"
     for idx, (tue_open, close) in zip((55, 65), ((8.0, 8.5), (-8.5, -9.0)), strict=True):
@@ -1875,11 +1761,8 @@ def test_opener_pick_evaluation_serves_the_walk_forward_home_side_offset(
     by_game = scored.set_index("game_id")
     first, second = by_game.loc["G055"], by_game.loc["G065"]
     assert int(first["week"]) < int(second["week"])
-    # The first scored week has no prior archive rows: zero shift, served == raw.
     assert first["home_side_offset_at_open"] == 0.0
     assert first["home_cover_probability_at_open"] == first["home_cover_probability_at_open_raw"]
-    # The second week's shift is exactly what production would fit from the
-    # artifact's RAW opener points strictly before that week.
     stream = archive_prior_stream(scored)
     expected = fit_home_side_offsets(
         prior_rows_before(stream, int(second["season"]), int(second["week"]))
@@ -1892,13 +1775,11 @@ def test_opener_pick_evaluation_serves_the_walk_forward_home_side_offset(
     assert second["residual_at_close_served"] == pytest.approx(
         second["residual_at_close"] + second["home_side_offset_at_open"]
     )
-    # A shift toward the home side can only move the served probability that way.
     direction = np.sign(second["home_side_offset_at_open"])
     served_minus_raw = (
         second["home_cover_probability_at_open"] - second["home_cover_probability_at_open_raw"]
     )
     assert direction * served_minus_raw >= 0.0
-    # The raw read is kept as its own pick record, and the metrics carry both.
     assert bool(second["pick_home_at_open_probability_rule_raw"]) == bool(
         second["home_cover_probability_at_open_raw"] >= 0.5
     )
@@ -2193,8 +2074,6 @@ def test_script_active_model_config_dicts_declare_probability_method() -> None:
         source = path.read_text(encoding="utf-8-sig")
         if "active_model_config" not in source:
             continue
-        # Inspect helpers and inline configs alike; inherited **config overrides
-        # need no second declaration. Metadata containing the recipe is included.
         for node in ast.walk(ast.parse(source)):
             if not isinstance(node, ast.Dict):
                 continue

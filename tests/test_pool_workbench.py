@@ -25,21 +25,14 @@ from nfl_ats.public_board import (
     render_pool_workbench_page,
 )
 
-# Same calendar week and kickoff times as tests/test_pick_refresh.py's
-# TNF_KICKOFF/SUN_EARLY_KICKOFF/SNF_KICKOFF/MNF_KICKOFF/SUNDAY_LOCK
-# (2026 week of Sep 17-21), duplicated as literals here rather than imported
-# so this test file does not depend on another test module's private
-# fixtures. A Sunday 4:25pm ET (late-afternoon "doubleheader window") game
-# is added because it is NOT SNF/MNF but still kicks off after the pool's
-# 4:00pm ET lock, so its deadline must also be capped early.
 _WEEK_KICKOFFS_UTC = {
-    "thursday": pd.Timestamp("2026-09-18T00:15:00+00:00"),  # Thu 8:15pm ET
-    "sunday_1pm": pd.Timestamp("2026-09-20T17:00:00+00:00"),  # Sun 1:00pm ET
-    "sunday_425pm": pd.Timestamp("2026-09-20T20:25:00+00:00"),  # Sun 4:25pm ET
-    "snf": pd.Timestamp("2026-09-21T00:20:00+00:00"),  # Sun 8:20pm ET
-    "mnf": pd.Timestamp("2026-09-22T00:15:00+00:00"),  # Mon 8:15pm ET
+    "thursday": pd.Timestamp("2026-09-18T00:15:00+00:00"),
+    "sunday_1pm": pd.Timestamp("2026-09-20T17:00:00+00:00"),
+    "sunday_425pm": pd.Timestamp("2026-09-20T20:25:00+00:00"),
+    "snf": pd.Timestamp("2026-09-21T00:20:00+00:00"),
+    "mnf": pd.Timestamp("2026-09-22T00:15:00+00:00"),
 }
-_SUNDAY_LOCK_UTC = pd.Timestamp("2026-09-20T20:00:00+00:00")  # Sun 4:00pm ET
+_SUNDAY_LOCK_UTC = pd.Timestamp("2026-09-20T20:00:00+00:00")
 
 
 def _forecast_fixture() -> pd.DataFrame:
@@ -61,7 +54,6 @@ def test_pool_rules_defaults_match_the_confirmed_format() -> None:
     rules = PoolRules.from_defaults()
     assert rules.regular_season_games == REGULAR_SEASON_GAMES
     assert rules.playoff_games == PLAYOFF_GAMES
-    # 272 + 13 = 285 forced picks (measured, docs/pool_edge_plan.md).
     assert rules.total_games == REGULAR_SEASON_GAMES + PLAYOFF_GAMES == 285
     assert rules.best_pick_per_regular_season_week == 1
     assert rules.forced_picks is True
@@ -79,9 +71,7 @@ def test_pool_rules_from_dict_accepts_partial_overrides() -> None:
     )
     assert rules.best_pick_per_regular_season_week == 2
     assert rules.passes_allowed is True
-    # Untouched fields keep their defaults.
     assert rules.total_games == 285
-    # Unknown keys are ignored, not erroring.
     assert PoolRules.from_dict({"not_a_field": 99}).total_games == 285
 
 
@@ -92,18 +82,9 @@ def test_pool_rules_composed_fields_match_cited_sources() -> None:
     not re-derived or reimplemented."""
 
     rules = PoolRules.from_defaults()
-    # docs/pool_edge_plan.md:76-77 / AGENTS.md "285 cards must be submitted
-    # either way" -- cards_per_season is a derived alias of total_games, not
-    # a second hardcoded literal.
     assert rules.cards_per_season == rules.total_games == 285
-    # docs/pool_edge_plan.md:5, "beat the OPENING line the user's Splash
-    # Sports pool grades against".
     assert rules.grading_line == "opener"
-    # src/nfl_ats/tiebreaker.py module docstring: "The pool breaks ties on
-    # the final score of the week's LAST game".
     assert rules.tiebreak == "final_score_last_game"
-    # deadline_rule is the SAME function object as
-    # nfl_ats.pick_refresh.pick_deadline -- imported, never reimplemented.
     assert PoolRules.deadline_rule is pick_deadline
     assert rules.deadline_rule is pick_deadline
 
@@ -125,8 +106,6 @@ def test_pool_rules_deadline_for_agrees_with_pick_refresh_on_every_slot() -> Non
         expected = pick_deadline(kickoff, reference_lock)
         assert got == expected, label
 
-    # Thursday and the Sunday 1:00pm ET game lock at their own kickoff --
-    # nothing constrains them to 4:00pm ET.
     assert (
         rules.deadline_for(_WEEK_KICKOFFS_UTC["thursday"], all_kickoffs)
         == (_WEEK_KICKOFFS_UTC["thursday"])
@@ -136,9 +115,6 @@ def test_pool_rules_deadline_for_agrees_with_pick_refresh_on_every_slot() -> Non
         == (_WEEK_KICKOFFS_UTC["sunday_1pm"])
     )
 
-    # The Sunday 4:25pm ET window, SNF, and MNF all lock EARLY at the
-    # week's Sunday 16:00 ET cap, even though only SNF/MNF's own kickoff
-    # falls on a later calendar day than the cap.
     for label in ("sunday_425pm", "snf", "mnf"):
         assert rules.deadline_for(_WEEK_KICKOFFS_UTC[label], all_kickoffs) == _SUNDAY_LOCK_UTC
 
@@ -159,7 +135,6 @@ def test_build_entry_list_ranks_by_confidence() -> None:
     card = build_entry_list(_forecast_fixture())
     assert len(card) == 2
     assert list(card["confidence_rank"]) == [1, 2]
-    # Every game gets a forced side; probabilities are calibrated covers.
     assert set(card["pool_side"]) == {"HOME", "AWAY"}
     assert card["pick_probability"].between(0.5, 1.0).all()
 
@@ -199,8 +174,6 @@ def test_ownership_scenarios_are_disclosed_assumptions_not_observations() -> Non
     ]
     summaries = build_ownership_scenarios(pd.DataFrame({"pick_line": [-3.5, 3.5, 0.0]}))
     assert list(summaries["observed"]) == [False, False, False]
-    # One favorite pick, one underdog pick, and one pick'em always average
-    # to 50% overlap. No crowd-ownership observation is being invented.
     assert list(summaries["entry_side_share"]) == pytest.approx([0.5, 0.5, 0.5])
     assert list(summaries["disagreements_per_100"]) == pytest.approx([50.0, 50.0, 50.0])
 
@@ -229,21 +202,13 @@ def test_build_pool_workbench_body_contains_every_section() -> None:
     assert "Pool rules input" in body
     assert "Entry list" in body
     assert "Ownership scenarios" in body
-    # The confirmed total of forced picks is shown.
     assert "285" in body
-    # Best Pick is editable in the entry list.
     assert "&#9733;" in body
-    # Entry list and confidence ranks were merged into ONE table (owner,
-    # 2026-08-26: they showed "identical/duplicated data"): only one heading
-    # survives, cover probability renders via the probability meter (taken
-    # from the former confidence-ranks table), and its residual-magnitude
-    # caveat is preserved in the merged footnote.
     assert body.count("Forced picks, editable entry") == 1
     assert "Confidence ranks" not in body
     assert "Model cover probability" in body
     assert 'aria-label="cover:' in body
     assert "has not proven to rank pick quality" in body
-    # UI-09 entry persistence is explicitly browser-local and week-scoped.
     assert f'data-storage-key="nfl-ats:pool-entry:v{ENTRY_STORAGE_VERSION}:2026:1"' in body
     assert body.count('class="entry-pick"') == 4
     assert body.count('class="entry-best"') == 2
@@ -251,7 +216,6 @@ def test_build_pool_workbench_body_contains_every_section() -> None:
     assert "window.localStorage.getItem" in body
     assert "window.localStorage.removeItem" in body
     assert "does not change or publish the model forecast" in body
-    # Ownership output is a live sensitivity table, never a fabricated feed.
     assert body.count("data-ownership-scenario=") == 3
     assert "Sensitivity only — no ownership feed" in body
     assert "not measured popularity" in body
@@ -298,8 +262,6 @@ def test_render_pool_workbench_page_is_public_safe() -> None:
     assert DISCLAIMER_FULL in page
     assert 'aria-current="page"' in page
     assert f'href="{PICKS_PAGE}"' in page
-    # The page marks itself current and therefore does not link to itself.
-    # No leaked market-feed fields or book names.
     for forbidden in ("home_spread_odds", "total_line", "DraftKings", "-110"):
         assert forbidden not in page
 

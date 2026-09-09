@@ -100,10 +100,6 @@ from nfl_ats.pick_refresh import (
 from nfl_ats.refresh_triggers import evidence_log_path, mkt08_trigger_type
 from nfl_ats.source_freshness_policy import report_for_publication
 
-# ---------------------------------------------------------------------------
-# small vocab
-# ---------------------------------------------------------------------------
-
 STATE_CHANGED = "changed"
 STATE_UNCHANGED = "unchanged"
 STATE_NO_DATA = "no_data"
@@ -111,21 +107,12 @@ STATE_NO_DATA = "no_data"
 PASS_ORIGIN_PICK_REVISION = "pick_revision_ledger"
 PASS_ORIGIN_FORECAST_ARTIFACT = "forecast_artifact"
 
-#: Individual overlay flip flags recorded on the paper-decision ledger
-#: (``nfl_ats.clv.PAPER_DECISION_COLUMNS``). ``composed_overlay_flip`` is the
-#: union of these four and is deliberately not listed as a fifth "overlay
-#: name" here -- it would double-count.
 OVERLAY_FLIP_COLUMNS: dict[str, str] = {
     "coach_fade": "coach_fade_flip",
     "division_revenge": "division_revenge_flip",
     "player_arrests": "player_arrests_flip",
     "spread_gap_zone": "spread_gap_zone_flip",
 }
-
-
-# ---------------------------------------------------------------------------
-# small, pure helpers
-# ---------------------------------------------------------------------------
 
 
 def _utc(now: datetime | None) -> pd.Timestamp:
@@ -191,11 +178,6 @@ def _pick_state(a: str | None, b: str | None) -> str:
     return "same" if a == b else f"flipped_{a.lower()}_to_{b.lower()}"
 
 
-# ---------------------------------------------------------------------------
-# data model
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class GameSnapshot:
     """One game's state at one instant (Tuesday lock, or one refresh pass)."""
@@ -210,8 +192,6 @@ class GameSnapshot:
     model_probability_basis: str
     pick_side: str | None
     pick_basis: str
-    #: ``None`` means "unknown whether any overlay fired" (no_data), never
-    #: "no overlay fired" -- an empty, non-``None`` tuple means that instead.
     overlays_fired: tuple[str, ...] | None
     overlays_basis: str
 
@@ -223,8 +203,6 @@ class TuesdayLock:
     season: int
     week: int
     resolved: bool
-    #: ``"lockday_package"`` / ``"paper_decision_ledger"`` /
-    #: ``"forecast_artifact_earliest"`` / ``"unresolved"``.
     basis: str
     forecast_artifact: str | None
     forecast_directory: str | None
@@ -280,7 +258,6 @@ class RefreshPassDiff:
     trigger_type: str
     trigger_source: str
     trigger_observed_at_utc: str | None
-    #: ``"ledger_recorded"`` / ``"evidence_log_nearest"`` / ``"unknown"``.
     trigger_basis: str
     games: tuple[GameDiffRow, ...]
     sources: tuple[SourceTimestampCell, ...]
@@ -293,9 +270,6 @@ class SnapshotDiff:
     generated_at_utc: str
     tuesday: TuesdayLock
     refresh_passes: tuple[RefreshPassDiff, ...]
-    #: A PRESENT-TENSE (evaluated at ``generated_at_utc``, never historical)
-    #: ``nfl_ats.source_freshness_policy.SourcePolicyReport.to_metadata()``
-    #: snapshot, for context only -- never a per-pass historical read.
     current_source_freshness: dict[str, Any] = field(default_factory=dict)
 
 
@@ -303,7 +277,6 @@ class SnapshotDiff:
 class _ArtifactRead:
     directory: Path
     metadata: dict[str, Any]
-    #: Indexed by ``game_id``, restricted to the artifact's own ``ats_method`` rows.
     predictions: pd.DataFrame
     lineage: CardLineage | None
 
@@ -314,11 +287,6 @@ class _TriggerInfo:
     trigger_source: str
     trigger_observed_at_utc: str | None
     basis: str
-
-
-# ---------------------------------------------------------------------------
-# reading margin_predictions artifacts
-# ---------------------------------------------------------------------------
 
 
 def _list_margin_prediction_dirs(artifacts_root: Path, *, season: int, week: int) -> list[Path]:
@@ -383,14 +351,9 @@ def _artifact_row(artifact: _ArtifactRead, game_id: str) -> pd.Series | None:
     if game_id not in artifact.predictions.index:
         return None
     row = artifact.predictions.loc[game_id]
-    if isinstance(row, pd.DataFrame):  # duplicate game_id guard
+    if isinstance(row, pd.DataFrame):
         row = row.iloc[0]
     return row
-
-
-# ---------------------------------------------------------------------------
-# resolving the Tuesday lock
-# ---------------------------------------------------------------------------
 
 
 def _earliest_lockday_package(
@@ -607,11 +570,6 @@ def resolve_tuesday_lock(artifacts_root: Path, *, season: int, week: int) -> Tue
     )
 
 
-# ---------------------------------------------------------------------------
-# ENG-08 evidence-log lookups
-# ---------------------------------------------------------------------------
-
-
 def _load_evidence_log_rows(path: Path) -> list[dict[str, Any]]:
     if not path.is_file():
         return []
@@ -704,11 +662,6 @@ def _resolve_trigger(
     )
 
 
-# ---------------------------------------------------------------------------
-# per-source lineage diff (pass-level, not per-game -- see module docstring)
-# ---------------------------------------------------------------------------
-
-
 def _source_cells(
     *,
     tuesday_lineage: CardLineage | None,
@@ -784,11 +737,6 @@ def _source_cells(
     return tuple(cells)
 
 
-# ---------------------------------------------------------------------------
-# combining a Tuesday snapshot and a refresh snapshot into one row
-# ---------------------------------------------------------------------------
-
-
 def _diff_game(tue: GameSnapshot, refresh: GameSnapshot) -> GameDiffRow:
     market_state = _numeric_state(tue.market_line, refresh.market_line)
     probability_state = _numeric_state(tue.model_probability, refresh.model_probability)
@@ -839,11 +787,6 @@ def _diff_game(tue: GameSnapshot, refresh: GameSnapshot) -> GameDiffRow:
         overlay_state=overlay_state,
         overlay_basis=overlay_basis,
     )
-
-
-# ---------------------------------------------------------------------------
-# refresh-pass sources: pick-revision ledger
-# ---------------------------------------------------------------------------
 
 
 def _pick_revision_passes(
@@ -985,11 +928,6 @@ def _pick_revision_passes(
     return passes
 
 
-# ---------------------------------------------------------------------------
-# refresh-pass sources: later margin_predictions forecast artifacts
-# ---------------------------------------------------------------------------
-
-
 def _forecast_artifact_passes(
     artifacts_root: Path,
     *,
@@ -1108,11 +1046,6 @@ def _forecast_artifact_passes(
     return passes
 
 
-# ---------------------------------------------------------------------------
-# orchestration
-# ---------------------------------------------------------------------------
-
-
 def build_snapshot_diff(
     season: int,
     week: int,
@@ -1180,7 +1113,7 @@ def build_snapshot_diff(
                 data_root=data_root, artifacts_root=artifacts_root, now=generated_at.to_pydatetime()
             )
             current_source_freshness = report.to_metadata()
-        except Exception:  # deliberately broad: an optional context block must never abort the diff
+        except Exception:
             current_source_freshness = {}
 
     return SnapshotDiff(
@@ -1191,11 +1124,6 @@ def build_snapshot_diff(
         refresh_passes=tuple(refresh_passes),
         current_source_freshness=current_source_freshness,
     )
-
-
-# ---------------------------------------------------------------------------
-# rendering
-# ---------------------------------------------------------------------------
 
 
 def to_dict(diff: SnapshotDiff) -> dict[str, Any]:

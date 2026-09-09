@@ -114,9 +114,6 @@ def apply_hierarchical_shrinkage(
             unit_members.setdefault(unit, []).append(player_id)
     shrunk = dict(flat_coefficients)
     for members in unit_members.values():
-        # Offense and defense coefficients pool separately: a two-way
-        # player's tackle-avoidance and coverage effects must never average
-        # into one number.
         for prefix in ("offense_player", "defense_player"):
             keys = [f"{prefix}::{player_id}" for player_id in members]
             present = [key for key in keys if key in flat_coefficients]

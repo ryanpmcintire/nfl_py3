@@ -43,9 +43,6 @@ DEFAULT_PLAYER_PROFILE_SETS = (
     "player_value",
 )
 
-# Promotion-gate budget declared before the 2026-08-13 evaluation. Changing
-# these values creates a new research question and must not be folded into the
-# same nested-test claim.
 FROZEN_PLAYER_MODEL_PROFILES: tuple[MarginFeatureProfile, ...] = (
     "base",
     "player",
@@ -59,23 +56,14 @@ FROZEN_PLAYER_EVALUATION_START_SEASON = 2018
 FROZEN_PLAYER_FIRST_TEST_SEASON = 2020
 FROZEN_PLAYER_VALIDATION_SEASONS = 2
 FROZEN_PLAYER_MIN_CALIBRATION_GAMES = 400
-# Pinned copies of the walk-forward training floor. These deliberately do NOT
-# follow constants.DEFAULT_MIN_TRAIN_GAMES: the value was 500 when each of these
-# predeclared runs was scored, and a later derivation of the live default must
-# not silently change what a recorded artifact would reproduce.
 FROZEN_PLAYER_MIN_TRAIN_GAMES = 500
 
-# Single-candidate participation hypothesis declared on 2026-08-13 before its
-# ATS outcomes were generated. This is intentionally not another search grid.
 FROZEN_PARTICIPATION_BASELINE_PROFILE: MarginFeatureProfile = "player_value"
 FROZEN_PARTICIPATION_CANDIDATE_PROFILE: MarginFeatureProfile = "player_participation"
 FROZEN_PARTICIPATION_START_SEASON = 2018
 FROZEN_PARTICIPATION_RIDGE_ALPHA = 10.0
 FROZEN_PARTICIPATION_MIN_TRAIN_GAMES = 500
 
-# Single learned-availability replacement declared on 2026-08-13 before its
-# ATS outcomes were generated. The probability model is fit on player-game
-# participation outcomes, never on ATS labels.
 FROZEN_AVAILABILITY_PROFILE: MarginFeatureProfile = "player_value"
 FROZEN_AVAILABILITY_START_SEASON = 2018
 FROZEN_AVAILABILITY_RIDGE_ALPHA = 10.0
@@ -143,22 +131,10 @@ def paired_feature_comparisons(
     predictions: pd.DataFrame,
     *,
     baseline_feature_set: str,
-    # 20,000 rather than 2,000: at 2,000 the bootstrap's OWN Monte-Carlo error
-    # is ~6-7% of the real sampling SE, enough to move a reported interval edge
-    # by 0.03 points between seeds. This project gates decisions on hard
-    # thresholds (0.75 screen, 0.90 promotion), so a seed-dependent verdict near
-    # a gate is a defect, not a rounding detail. 20,000 cuts that jitter ~5x and
-    # costs under three seconds. The MDE80 formula this samples count protects
-    # lives in docs/estimation_variance.md (~line 255), not evaluator_power.md,
-    # which does not exist (`git log --all` has no history for that path).
     samples: int = 20_000,
     confidence: float = 0.95,
     block: PairedBlock = "week",
     seed: int = 20260812,
-    # D4 guard. Default 'warn' + a flagged output column, never 'raise':
-    # refusing would change what existing call sites return, and the point is
-    # that the flag TRAVELS with the number into the CSV a registry entry cites.
-    # A caller that is about to record a verdict should pass 'raise'.
     on_degenerate: OnDegenerate = "warn",
     min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
@@ -262,10 +238,6 @@ def paired_feature_comparisons(
                     "estimate": float(improvements[metric].mean()),
                     "lower": float(np.quantile(draws[:, metric_index], tail)),
                     "upper": float(np.quantile(draws[:, metric_index], 1.0 - tail)),
-                    # Continuous evidence, not a binary verdict: the fraction
-                    # of blocked resamples in which the candidate beats the
-                    # baseline. 0.61 means roughly 3:2 odds the improvement
-                    # is real; interval endpoints are convention, this isn't.
                     "probability_positive": float(
                         probability_positive_from_draws(draws[:, metric_index])
                     ),
@@ -274,8 +246,6 @@ def paired_feature_comparisons(
                     "samples": samples,
                     "paired_games": len(paired),
                     "blocks": block_verdict.block_count,
-                    # True => lower/upper are NOT a valid interval at this
-                    # block count. See the docstring; do not render as one.
                     "degenerate_blocks": block_verdict.degenerate,
                 }
             )

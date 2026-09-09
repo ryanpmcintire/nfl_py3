@@ -78,10 +78,6 @@ from nfl_ats.margin import fit_market_baseline  # noqa: E402
 from nfl_ats.modeling import regular_season_rows  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
-# Frozen in docs/graph_ratings_v2_screen.md section 5, before scoring, and not
-# retuned on NFL. These are the module defaults, which are also the only
-# structural setting the CFB grid actually resolved (+0.531 coherence on the
-# raw-margin control; every residual-arm reading sat within +-0.006 of zero).
 FROZEN_STRUCTURE: dict[str, Any] = {
     "alpha": 0.85,
     "half_life_weeks": 8.0,
@@ -95,11 +91,6 @@ FROZEN_STRUCTURE: dict[str, Any] = {
 SCREEN_ARTIFACT = REPO_ROOT / "artifacts/graph_input_screen/20260826T163208Z/results.json"
 CONTROL_PREFIX = "gts_control_"
 TREATMENT_PREFIX = "gts_treatment_"
-
-
-# ---------------------------------------------------------------------------
-# Inputs
-# ---------------------------------------------------------------------------
 
 
 def load_representatives(path: Path = SCREEN_ARTIFACT) -> list[str]:
@@ -172,11 +163,6 @@ def build_arm_columns(
 
     widened = pd.concat([features, pd.DataFrame(additions, index=features.index)], axis=1)
     return widened, arms, skipped
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_window(
@@ -408,11 +394,6 @@ def summarize_pair(paired: pd.DataFrame, reference: str, candidate: str) -> dict
         "n_weeks": int(paired[["season", "week"]].drop_duplicates().shape[0]),
         "n_seasons": int(paired["season"].nunique()),
     }
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

@@ -44,8 +44,6 @@ least one row.
 
 from __future__ import annotations
 
-# Full replay dependencies are deliberately bound dynamically only after the
-# fast default exits; static analysis therefore cannot see those names.
 # ruff: noqa: F821
 import argparse
 import hashlib
@@ -235,17 +233,10 @@ def _load_full_replay_dependencies() -> None:
         globals()[name] = module if attribute is None else getattr(module, attribute)
 
 
-#: Tuesday 2026-09-08, noon ET -- the instant the pool locks Week 1.
 DEFAULT_LOCK_INSTANT = datetime(2026, 9, 8, 16, 0, tzinfo=UTC)
 
-#: A Thursday-afternoon late-week refresh pass, after Wednesday's NE@SEA
-#: opener has already kicked off (so the per-game deadline guard is exercised
-#: on a real started game, not only on future ones).
 DEFAULT_REFRESH_INSTANT = datetime(2026, 9, 10, 19, 0, tzinfo=UTC)
 
-#: Artifacts a recorder resolves by path rather than by scanning. Copied into
-#: the isolated root; anything else a recorder needs shows up as a named
-#: error in the report rather than as a silent zero.
 ALWAYS_COPY = ("active_ats_model.json",)
 ALWAYS_COPY_DIRS = ("prospective", "clv_ledger", "player_arrests_policy_eval")
 
@@ -288,9 +279,6 @@ def build_isolated_root(real_artifacts: Path, destination: Path) -> dict[str, An
         shutil.copytree(linked, target, dirs_exist_ok=True)
         copied.append(str(relative))
 
-    # The paper-decision ledger must start empty: this rehearsal is about
-    # proving a FIRST write lands, and a copied-in row would mask a recorder
-    # that never wrote anything.
     for ledger in (
         destination / "clv_ledger" / "decisions.parquet",
         destination / "prospective" / "challenger_decisions.parquet",
@@ -311,12 +299,8 @@ def build_isolated_root(real_artifacts: Path, destination: Path) -> dict[str, An
     }
 
 
-#: Trees the NFL lock-day recorders never read. Skipped when shadowing the
-#: data root purely to keep the shadow cheap.
 SHADOW_SKIP_TOP_LEVEL = ("cfb",)
 
-#: Real-copied rather than hard-linked, because the rehearsal restamps a
-#: snapshot inside it. Editing a hard link would edit the production file.
 ARRESTS_RELATIVE = Path("raw") / "player_arrests"
 
 
@@ -359,7 +343,7 @@ def build_shadow_data_root(
         if parts and parts[0] in SHADOW_SKIP_TOP_LEVEL:
             continue
         if parts[: len(ARRESTS_RELATIVE.parts)] == ARRESTS_RELATIVE.parts:
-            continue  # real-copied wholesale below
+            continue
         target_dir = destination / relative
         target_dir.mkdir(parents=True, exist_ok=True)
         for filename in filenames:
@@ -451,9 +435,6 @@ def probe_command_surface(repo_root: Path) -> dict[str, Any]:
             "stderr_tail": completed.stderr.strip()[-400:],
         }
 
-    # The import that actually broke is lazy, so --help cannot reach it. Run it
-    # in a subprocess whose sys.path is the console script's, and confirm the
-    # module resolves.
     lazy = subprocess.run(
         [
             str(repo_root / ".venv" / "Scripts" / "python.exe")
@@ -561,16 +542,6 @@ def run_publish_recorders(
 
     results: dict[str, dict[str, Any]] = {}
 
-    # The player-arrests overlay refuses any snapshot older than 36 hours
-    # (nfl_ats.player_arrests_back_side_overlay.MAX_SNAPSHOT_AGE). On the real
-    # lock day that guard always passes, because weekly-run step 7
-    # (``ingest-player-arrests``, fatal) fetches a fresh snapshot minutes
-    # before step 8 publishes. In a rehearsal the two guards are mutually
-    # unsatisfiable: the recording-lock window needs a simulated ``now``
-    # inside the real lock week, and no snapshot fetched today is 36 hours
-    # from that instant. ``--assume-fresh-arrests`` resolves that the
-    # supported way rather than by restamping a snapshot, which would put a
-    # fabricated future-dated fetch into the production data root.
     results["clv_ledger"] = _call(
         "clv_ledger",
         lambda: record_paper_decisions(
@@ -981,7 +952,6 @@ def _build_contract_fixture(root: Path) -> tuple[Path, str]:
             }
         ]
     ).to_csv(card_dir / "recommendations.csv", index=False)
-    # Assert the fixture really matches what the recorder will fingerprint.
     if config_fingerprint(model) != config_fingerprint(artifact_model_config(metadata)):
         raise AssertionError("contract fixture configuration fingerprint does not match")
     return card_dir, challenger_id
@@ -1075,12 +1045,6 @@ def main(argv: list[str] | None = None) -> int:
         default=DEFAULT_REFRESH_INSTANT.isoformat(),
         help="simulated late-week refresh instant (ISO-8601, UTC)",
     )
-    # The simulated tree mirrors the repo's own layout -- ``<sim>/artifacts``
-    # beside ``<sim>/data`` -- because several overlays resolve sibling paths
-    # from ``artifacts_root.parent`` (the interim-coach join reads
-    # ``<repo>/data/raw/interim_coaches``). A rehearsal root parked anywhere
-    # else silently fails those joins open to zero flags, so the recorder
-    # writes rows that never exercise its own signal.
     parser.add_argument(
         "--rehearsal-root",
         type=Path,
@@ -1112,8 +1076,6 @@ def main(argv: list[str] | None = None) -> int:
         from lockday_contract import REFRESH_RESULT_KEYS as contract_refresh_keys
         from lockday_contract import main as contract_main
 
-        # Use the rehearsal's complete refresh dispatch contract in the
-        # static audit too; the CLI result assignment is still checked.
         contract_refresh_keys.update(REFRESH_RESULT_KEYS)
         return contract_main([])
 
@@ -1129,9 +1091,6 @@ def main(argv: list[str] | None = None) -> int:
         "refresh_instant": refresh_instant.isoformat(),
         "rehearsed_at_utc": datetime.now(UTC).isoformat(),
     }
-    # Stage 0 FIRST: if the console script cannot even dispatch, every
-    # downstream "recorded" below is measuring a path production will never
-    # reach on lock day.
     print("stage 0: console-script command surface", file=sys.stderr)
     report["command_surface"] = probe_command_surface(REPO_ROOT)
     if not report["command_surface"]["ok"]:
@@ -1140,10 +1099,6 @@ def main(argv: list[str] | None = None) -> int:
     report["isolated_root"] = build_isolated_root(args.artifacts, args.rehearsal_root)
     print(f"isolated root built: {args.rehearsal_root}", file=sys.stderr)
 
-    # ENG-01 (docs/lockday_package.md): the isolated root's ledger state BEFORE
-    # any recorder runs, so the rehearsal can also rehearse the decision
-    # package. Read-only, and only against the isolated copy -- the real
-    # artifacts tree is never touched here.
     from nfl_ats.lockday_package import (
         capture_ledger_state,
         package_directory,
@@ -1200,8 +1155,6 @@ def main(argv: list[str] | None = None) -> int:
     )
     report["coverage"] = coverage
 
-    # ENG-01: rehearse the decision package too, tagged ``rehearsal: true``.
-    # write_decision_package never raises, so this cannot break the rehearsal.
     report["decision_package"] = write_decision_package(
         season=args.season,
         week=args.week,
@@ -1212,11 +1165,6 @@ def main(argv: list[str] | None = None) -> int:
         ledger_state_before=rehearsal_ledgers_before,
         rehearsal=True,
         command="scripts/lockday_rehearsal.py --full-replay",
-        # A DIFFERENT directory name from the real artifacts/lockday_packages/,
-        # so a rehearsal package can never be mistaken for a real lock's even if
-        # somebody points --rehearsal-root at an unusual place. Beside the
-        # isolated root rather than inside it, because the next rehearsal
-        # rmtree's that tree and a read-only manifest would make removal fail.
         destination=package_directory(
             args.rehearsal_root.parent / "lockday_packages_rehearsal",
             args.season,
@@ -1226,7 +1174,7 @@ def main(argv: list[str] | None = None) -> int:
 
     destination = args.report or (args.rehearsal_root.parent / "rehearsal_report.json")
     destination.parent.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(report, destination)  # ENG-38
+    write_stamped_artifact(report, destination)
 
     print(lockday_verify.render(coverage))
     print(f"full report: {destination}", file=sys.stderr)

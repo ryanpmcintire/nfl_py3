@@ -41,7 +41,6 @@ def test_canonicalize_keeps_and_renames_sacks_suffered() -> None:
     frame = _raw_frame("sacks_suffered")
     result = canonicalize_role_actions(frame)
     assert list(result.columns) == list(ROLE_ACTIONS_REQUIRED_COLUMNS)
-    # POST row dropped by the REG filter.
     assert set(result["season_type"]) == {"REG"}
     qb_row = result.loc[result["player_id"].eq("QB-A")].iloc[0]
     assert qb_row["sacks_taken"] == 3
@@ -95,7 +94,6 @@ def test_canonicalize_rejects_unknown_season_codes_when_widened() -> None:
     frame.loc[3, "season_type"] = "POSTSEASON"
     with pytest.raises(DataContractError, match="unrecognized season codes"):
         canonicalize_role_actions(frame, include_postseason=True)
-    # The default path keeps its historical, silent "== REG" comparison.
     assert len(canonicalize_role_actions(frame)) == 3
 
 
@@ -124,9 +122,6 @@ def test_snapshot_without_the_scope_key_still_loads(tmp_path: Path) -> None:
 
 def test_canonicalize_raises_on_duplicate_game_team_player_rows() -> None:
     frame = _raw_frame()
-    # Same (game_id, team, player_id) key but a differing count so it is not
-    # collapsed by the initial exact-row de-duplication (mirrors
-    # canonicalize_player_stats in nfl_ats.players).
     duplicate = frame.iloc[[0]].copy()
     duplicate["attempts"] = duplicate["attempts"] + 1
     frame = pd.concat([frame, duplicate], ignore_index=True)

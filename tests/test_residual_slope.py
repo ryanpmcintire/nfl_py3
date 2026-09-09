@@ -48,7 +48,6 @@ def test_least_squares_slope_recovers_a_planted_slope_with_an_intercept():
     x = np.array([-3.0, -1.5, 0.0, 2.0, 4.5, 6.0])
     assert ols_slope(x, 4.0 + 2.5 * x) == pytest.approx(2.5)
     assert ols_slope(x, -7.0 - 0.75 * x) == pytest.approx(-0.75)
-    # Nothing to estimate from serves the incumbent, never a fabricated slope.
     assert ols_slope(np.array([1.0, 2.0]), np.array([5.0, 9.0])) == INCUMBENT_SLOPE
     assert ols_slope(np.full(20, 2.0), np.arange(20.0)) == INCUMBENT_SLOPE
 
@@ -60,7 +59,6 @@ def test_shrinkage_is_the_declared_hundred_game_prior_toward_one():
     assert shrink(3.0, 0) == pytest.approx(INCUMBENT_SLOPE)
     for slope, games in ((0.53, 468), (-1.17, 113), (0.91, 160)):
         assert shrink(slope, games) == pytest.approx((games * slope + 100.0) / (games + 100.0))
-    # Monotone in the sample: more prior games move further off the incumbent.
     assert shrink(0.2, 400) < shrink(0.2, 100) < shrink(0.2, 10) < INCUMBENT_SLOPE
 
 
@@ -74,7 +72,6 @@ def test_slopes_are_fitted_per_bucket_and_shrunk():
     assert fit.raw["10.5+"] == pytest.approx(-1.5)
     assert fit.betas["0-3"] == pytest.approx((5 * 0.25 + 100.0) / 105.0)
     assert fit.betas["10.5+"] == pytest.approx((6 * -1.5 + 100.0) / 106.0)
-    # An empty bucket keeps the incumbent exactly, so S3 is served there.
     assert fit.raw["7"] == INCUMBENT_SLOPE
     assert fit.betas["7"] == INCUMBENT_SLOPE
     assert fit.games["7"] == 0
@@ -90,7 +87,6 @@ def test_r1b_pools_one_slope_across_the_three_big_buckets():
         assert fit.raw[bucket] == pytest.approx(pooled)
         assert fit.betas[bucket] == pytest.approx(shrink(pooled, len(big)))
         assert fit.games[bucket] == len(big)
-    # The small buckets keep their own R1 slope; only 7+ is pooled.
     assert fit.raw["0-3"] == pytest.approx(0.25)
     assert fit.games["0-3"] == 5
 
@@ -106,8 +102,6 @@ def test_future_and_out_of_window_rows_cannot_reach_the_slope():
         }
     )
     fitted = fit_slopes(prior_rows_before(stream, 2025, 2), pooled=False)
-    # Only the 2020 and 2025 week-1 rows are eligible; two rows cannot be
-    # fitted (n < 3), so the incumbent is served rather than a leaked slope.
     assert fitted.games["10.5+"] == 2
     assert fitted.betas["10.5+"] == INCUMBENT_SLOPE
     poisoned = stream.copy()
@@ -123,13 +117,11 @@ def test_center_shift_algebra_and_beta_one_reproduces_s3():
     shift = center_shift(betas, lines, residual, offset)
     beta = np.array([betas[b] for b in ("0-3", "3.5-6.5", "7", "7.5-10", "10.5+")])
     np.testing.assert_allclose(shift, (beta - 1.0) * residual + offset)
-    # The served point is line + beta * residual + offset.
     np.testing.assert_allclose(
         lines.to_numpy() + residual + shift, lines.to_numpy() + beta * residual + offset
     )
     incumbent = center_shift(dict.fromkeys(betas, INCUMBENT_SLOPE), lines, residual, offset)
     np.testing.assert_array_equal(incumbent, offset)
-    # A line with no resolvable bucket keeps the incumbent weight.
     missing = center_shift(betas, pd.Series([np.nan]), np.array([4.0]), np.array([0.5]))
     np.testing.assert_allclose(missing, [0.5])
 
@@ -171,7 +163,6 @@ def test_predict_serves_line_plus_beta_residual_plus_offset():
         scoring.spread_line.to_numpy() + beta * residual + offset,
         atol=1e-12,
     )
-    # beta = 1 everywhere IS the served S3 read, not an approximation of it.
     incumbent = model.predict(
         scoring,
         probability_method="gaussian_median",

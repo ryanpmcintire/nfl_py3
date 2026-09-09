@@ -95,13 +95,7 @@ except ImportError:  # pragma: no cover - defensive fallback if the module ever 
 
 REPO = Path(__file__).resolve().parents[1]
 
-#: signal name -> the new, hand-written plain-English replacement. Each is
-#: one or two sentences a football fan with no statistics background can
-#: read on its own, naming the situation and what the rule found -- and
-#: none contain "P+", "week-blocked", a raw identifier, or any other token
-#: ``tests/test_board_humanised.py`` bans from reader-visible text.
 PLAIN_SUMMARIES: dict[str, str] = {
-    # 2026-09-07 lane K (MOD-18): conditional integer-margin mapping, 21 cells.
     "mod18_conditional_margin_v1_K1_2020_2021": (
         "Reading the cover chance off whole-number final margins near the model's predicted "
         "margin did not beat the current model against the opening line in 2020-21: about 29% "
@@ -211,8 +205,6 @@ PLAIN_SUMMARIES: dict[str, str] = {
         "2020-25: about 9% likely to help, and the range crosses zero, so nothing changes on "
         "the card."
     ),
-    # 2026-09-07 lane F (PER-09): season-lagged play-level unit ratings on top
-    # of the played model, opener-graded, three sequential windows.
     "apm_unit_on_production_2020_2021": (
         "Adding each side's offensive and defensive unit strength from play-level ratings "
         "to the model, checked against the opening line in 2020-21: it leaned against the "
@@ -302,7 +294,6 @@ def _record_args(signal: WeakSignal, *, plain_summary: str) -> list[str]:
         signal.description,
         "--source",
         signal.source,
-        # ``--flag=value`` form: argparse treats a bare "-1e-05" as an option.
         f"--effect={signal.effect!r}",
         "--effect-units",
         signal.effect_units,
@@ -362,10 +353,6 @@ def _diff_keys(before: dict, after: dict, *, path: str = "") -> set[str]:
     return changed
 
 
-# ---------------------------------------------------------------------------
-# Render-contract safety net (mirrors tests/test_board_humanised.py's scan)
-# ---------------------------------------------------------------------------
-
 _HEX_RE = re.compile(r"(?<![a-z0-9])[0-9a-f]{8,}(?![a-z0-9])", re.IGNORECASE)
 _VERSIONED_SLUG_RE = re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+)*_v\d\b")
 _SNAKE_CASE_RE = re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b")
@@ -412,11 +399,6 @@ def banned_tokens_in(text: str) -> list[str]:
     if snake_hit is not None:
         violations.append(f"bare snake_case identifier {snake_hit.group(0)!r}")
     return violations
-
-
-# ---------------------------------------------------------------------------
-# Small formatting helpers shared by both template sets
-# ---------------------------------------------------------------------------
 
 
 def _format_points(value: float) -> str:
@@ -475,11 +457,6 @@ def _rate_clause(effect: float, effect_units: str) -> str:
         )
     raise ValueError(f"effect_units {effect_units!r} has no rate-clause phrasing")
 
-
-# ---------------------------------------------------------------------------
-# Template set 1: the CFB home-side-location replication
-# (mod18_home_side_location_cfb_v1_{arm}_{era}_{spread}_{home}_{units})
-# ---------------------------------------------------------------------------
 
 _CFB_DESCRIPTION_RE = re.compile(r"^CFB (?P<arm>\S+) (?P<era>\S+) (?P<spread>\S+) (?P<home>\S+)$")
 
@@ -572,12 +549,6 @@ def describe_cfb_home_side_location_cell(signal: WeakSignal) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
-# Template set 2: the NFL home-side-location / conditional-margin cell
-# grammar shared by mod18_home_side_location_v1_{s3,s4,s5}_* and
-# mod18_conditional_margin_v1_{m1,mp1}_*
-# ---------------------------------------------------------------------------
-
 _NFL_CELL_FAMILIES = ("mod18_home_side_location_v1", "mod18_conditional_margin_v1")
 
 _NFL_BUCKET_DISPLAY = {
@@ -613,10 +584,6 @@ _NFL_PUSH_AT_3_RE = re.compile(
 )
 _NFL_S3_VS_S2_RE = re.compile(r"^s3_(?P<year>\d{4})_vs_s2$")
 
-#: (family, sub-arm GROUP) -> what the arm does, in plain English. Read from
-#: docs/home_side_offset_promotion.md ("S3 played" section), docs/home_side_side_aware.md
-#: (lane G, S4), docs/home_side_prior.md (lane I, S5a/b/c), docs/big_spread_lattice.md
-#: (lane H, M1/M1b/MP1).
 _NFL_LEAD = {
     ("mod18_home_side_location_v1", "s3"): (
         "the home-team push in the NFL, applied only on spreads of seven points or more"
@@ -638,12 +605,6 @@ _NFL_LEAD = {
     ),
 }
 
-#: (GROUP, VARIANT) -> an extra clause for a lettered sensitivity variant of
-#: the base arm; a variant with no entry here (including every arm's own
-#: base case, VARIANT == GROUP) gets no extra clause. Not exhaustive of every
-#: possible future variant letter -- an unlisted variant still gets the base
-#: arm's sentence, just without its own distinguishing note; see the
-#: docstring below.
 _NFL_VARIANT_NOTE = {
     ("s4", "s4b"): "using a smaller, 50-game sample to fit it",
     ("s5", "s5a"): "using a 50-game sample to fit it",
@@ -776,10 +737,6 @@ def describe_nfl_home_side_cell(signal: WeakSignal) -> str:
     return f"{lead}: {population}, {year_phrase}, {reads_clause}."
 
 
-#: Every template set this script knows, by the ``--template-set`` name a
-#: caller passes on the command line. Add a new entry here (and a new
-#: ``describe_*`` function above) rather than growing either function to
-#: cover a second, unrelated cell grammar.
 TEMPLATE_SETS: dict[str, Callable[[WeakSignal], str]] = {
     "cfb_home_side_location_v1": describe_cfb_home_side_location_cell,
     "nfl_home_side_cell_v1": describe_nfl_home_side_cell,
@@ -917,10 +874,10 @@ def run_template_backfill(
                 "writing to the wrong file (see _forced_registry_dir's docstring)"
             )
         for name, summary in sorted(generated.items()):
-            live_registry = load_registry(registry_path)  # previous writes land here
+            live_registry = load_registry(registry_path)
             signal = live_registry.signals[name]
             argv = _record_args(signal, plain_summary=summary)
-            nfl_ats_cli.main(argv)  # runs record_signal -> validate_closure/validate_coherence
+            nfl_ats_cli.main(argv)
             recorded.append(name)
 
     after_payload = json.loads(registry_path.read_text(encoding="utf-8"))
@@ -984,7 +941,7 @@ def find_missing_plain_summaries(*, days: int = 7) -> dict[str, object]:
 
     rows = build_ledger_rows(registry)
     rows.sort(key=lambda r: r.get("pp") if r.get("pp") is not None else -1, reverse=True)
-    _notable_signal_limit = 8  # mirrors board_site_content._NOTABLE_SIGNAL_LIMIT
+    _notable_signal_limit = 8
     notable_missing = sorted(
         str(r["name"]) for r in rows[:_notable_signal_limit] if r.get("fallback")
     )
@@ -1094,13 +1051,13 @@ def main() -> None:
 
     recorded: list[str] = []
     for name, plain_summary in sorted(PLAIN_SUMMARIES.items()):
-        registry = load_registry(registry_path)  # re-read each time: previous writes land here
+        registry = load_registry(registry_path)
         signal = registry.signals[name]
         argv = _record_args(signal, plain_summary=plain_summary)
         if args.dry_run:
             print(f"[dry-run] nfl-ats {' '.join(argv)}")
             continue
-        nfl_ats_cli.main(argv)  # runs record_signal -> validate_closure/validate_coherence
+        nfl_ats_cli.main(argv)
         recorded.append(name)
 
     if args.dry_run:

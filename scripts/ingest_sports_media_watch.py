@@ -350,9 +350,6 @@ def parse_archive_html(
                 "viewers_yoy_text": viewers_yoy,
                 "source_page_url": page_url,
                 "source_observed_at": observed_at,
-                # A current living-page revision does not reveal when this
-                # row first became available.  Null is deliberate and is
-                # enforced by point_in_time_view below.
                 "source_published_at": None,
                 "point_in_time_usable": False,
             }

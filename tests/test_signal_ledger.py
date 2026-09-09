@@ -49,11 +49,6 @@ def _registry(**signals: dict[str, Any]) -> Registry:
     )
 
 
-# ---------------------------------------------------------------------------
-# Row construction: the honest-gaps contract
-# ---------------------------------------------------------------------------
-
-
 def test_row_falls_back_to_description_when_no_plain_summary_is_recorded() -> None:
     registry = _registry(alpha=_signal_payload())
     rows = build_ledger_rows(registry)
@@ -81,8 +76,6 @@ def test_null_reliability_renders_as_none_never_zero() -> None:
     registry = _registry(alpha=_signal_payload(reliability=None))
     row = build_ledger_rows(registry)[0]
     assert row["rel"] is None
-    # The page must never render a null reliability as a numeric zero -- the
-    # client-side script special-cases None into "not measured" (see _JS).
 
 
 def test_null_interval_is_preserved_as_none_not_a_zero_width_pair() -> None:
@@ -109,11 +102,6 @@ def test_every_non_accuracy_unit_is_flagged(units: str) -> None:
     assert row["flags"]
 
 
-# ---------------------------------------------------------------------------
-# Status derivation: only classification and category ever decide it
-# ---------------------------------------------------------------------------
-
-
 def test_status_recorded_is_the_default() -> None:
     registry = _registry(alpha=_signal_payload())
     assert build_ledger_rows(registry)[0]["status"] == STATUS_RECORDED
@@ -137,11 +125,6 @@ def test_status_closed_comes_only_from_a_terminal_classification() -> None:
     assert build_ledger_rows(registry)[0]["status"] == STATUS_CLOSED
 
 
-# ---------------------------------------------------------------------------
-# Evidence buckets (owner spec, 2026-08-26)
-# ---------------------------------------------------------------------------
-
-
 def test_evidence_buckets_reliability_bands() -> None:
     registry = _registry(
         strong=_signal_payload(reliability=0.75),
@@ -153,7 +136,6 @@ def test_evidence_buckets_reliability_bands() -> None:
     assert rows["strong"]["evidence"] == ["repeats_well"]
     assert rows["weak"]["evidence"] == ["doesnt_repeat"]
     assert rows["never"]["evidence"] == ["never_checked"]
-    # Between the two bands: neither chip claims this row.
     assert rows["middling"]["evidence"] == []
 
 
@@ -175,11 +157,6 @@ def test_evidence_axes_are_independent_a_row_can_carry_both() -> None:
     )
     row = build_ledger_rows(registry)[0]
     assert set(row["evidence"]) == {"never_checked", "found_by_sweeping"}
-
-
-# ---------------------------------------------------------------------------
-# Duplicate fingerprint (owner spec, 2026-08-26): flag, never merge or drop
-# ---------------------------------------------------------------------------
 
 
 def test_exact_duplicate_signals_are_flagged_but_both_still_render() -> None:
@@ -208,9 +185,6 @@ def test_exact_duplicate_signals_are_flagged_but_both_still_render() -> None:
 
 
 def test_sparse_rows_missing_the_same_fields_are_not_false_positive_duplicates() -> None:
-    # Two rows that both happen to lack interval/probability_positive/games
-    # must never be flagged as duplicates of each other merely for sharing
-    # an absence of data.
     registry = _registry(
         alpha=_signal_payload(
             interval=None,
@@ -230,11 +204,6 @@ def test_sparse_rows_missing_the_same_fields_are_not_false_positive_duplicates()
     rows = build_ledger_rows(registry)
     for row in rows:
         assert not any("appears twice" in f for f in row["flags"])
-
-
-# ---------------------------------------------------------------------------
-# Page rendering: crashes never happen on edge-case data
-# ---------------------------------------------------------------------------
 
 
 def _edge_case_registry() -> Registry:
@@ -272,9 +241,6 @@ def test_render_signal_ledger_page_end_to_end_with_edge_case_registry() -> None:
     assert html.rstrip().endswith("</html>")
     assert 'aria-current="page"' in html
     assert "Signal ledger" in html
-    # A registry-authored "<tag>" must never open a real HTML tag once
-    # embedded in the row payload -- it is escaped before it reaches the
-    # JSON blob the client-side renderer concatenates into innerHTML.
     assert "<tag>" not in html
     assert "&lt;tag&gt;" in html
 
@@ -299,10 +265,6 @@ def test_page_nav_and_chrome_include_the_new_page() -> None:
     assert 'href="pool.html"' in html
     assert '<div class="ats">' in html
 
-
-# ---------------------------------------------------------------------------
-# Theme invariants: role tokens only, never a raw hex colour
-# ---------------------------------------------------------------------------
 
 _HEX_COLOR = re.compile(r"(?<!&)#[0-9a-fA-F]{3,8}\b")
 
@@ -343,8 +305,6 @@ def test_candidate_status_and_chip_were_dropped_not_shipped_empty() -> None:
 
     body, _script = build_signal_ledger_body(_edge_case_registry())
     assert 'data-value="candidate"' not in body
-    # No chip carries the word -- it still appears once, in the explanatory
-    # note that says the status was dropped, which is the point.
     assert ">Candidate<" not in body
     assert ">Candidates<" not in body
     rows = build_ledger_rows(_edge_case_registry())

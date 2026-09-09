@@ -30,8 +30,6 @@ class EvaluationCandidate:
         return f"{self.model_name}:{self.feature_set}"
 
 
-# This fixed, reviewable search budget is intentionally small. Adding a
-# candidate changes the protocol and therefore the experiment configuration.
 DEFAULT_EVALUATION_CANDIDATES = (
     EvaluationCandidate("logistic", "market"),
     EvaluationCandidate("logistic", "market_context"),
@@ -158,11 +156,6 @@ def nested_walk_forward_evaluation(
     if len(set(candidates)) != len(candidates):
         raise ValueError("Evaluation candidates must be unique")
 
-    # Each candidate's prediction for a given week depends only on games before
-    # that week, not on which outer fold later consumes it. Compute that stream
-    # once, then take immutable season slices below. This is statistically
-    # identical to refitting overlapping validation windows independently and
-    # avoids repeating the same candidate/week fit two or three times.
     stream_start_season = first_test_season - validation_seasons
     candidate_streams = {
         candidate: _evaluate_candidate(

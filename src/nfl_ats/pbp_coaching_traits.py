@@ -90,27 +90,11 @@ from nfl_ats.data import require_columns
 from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.pbp import build_drive_table
 
-# ---------------------------------------------------------------------------
-# Shared constants (frozen in docs/pbp_trait_reliability.md before scoring)
-# ---------------------------------------------------------------------------
-
-#: One seed for the whole screen so every number here is reproducible and
-#: any two metrics' bootstraps are comparable. Do not override per metric.
 PBP_TRAIT_RELIABILITY_SEED = 20260905
 PBP_TRAIT_N_BOOT = 2000
 PBP_TRAIT_N_NULL = 2000
-#: Floor on observations required in EACH half of an odd/even split before a
-#: team-season is used. Kept at 1 (lower than the CFB precedent's 2) because
-#: LEAD-30's opportunity population is rare by construction; the counts are
-#: reported alongside so a reader can see how thin any given cell is.
 PBP_TRAIT_MIN_PER_HALF = 1
 
-#: LEAD-30's frozen definition (ROADMAP.md + task brief): 4th-and-<=3, ball
-#: between the 30s (outside compressed field-goal range, not so deep that a
-#: punt is the only sane option). ``no_play`` (penalty-nullified) snaps are
-#: EXCLUDED from the opportunity population -- the intended call cannot be
-#: identified from ``play_type`` alone once a penalty voids the play, and
-#: this trait is already rare-opportunity by construction.
 FOURTH_DOWN_MAX_YDSTOGO = 3
 FOURTH_DOWN_YARDLINE_LOW = 30.0
 FOURTH_DOWN_YARDLINE_HIGH = 70.0
@@ -156,11 +140,6 @@ def _normalize_teams(frame: pd.DataFrame, columns: tuple[str, ...]) -> pd.DataFr
         if column in result.columns:
             result[column] = result[column].replace(TEAM_ABBREVIATION_ALIASES)
     return result
-
-
-# ---------------------------------------------------------------------------
-# LEAD-26: scripted-drive (opening-drive) efficiency
-# ---------------------------------------------------------------------------
 
 
 def build_opening_drive_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
@@ -287,11 +266,6 @@ def build_opening_drive_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
     return team_games[columns]
 
 
-# ---------------------------------------------------------------------------
-# LEAD-27: third-quarter point differential
-# ---------------------------------------------------------------------------
-
-
 def build_third_quarter_point_diff_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
     """One row per (game_id, team): the team's own Q3 points minus its opponent's.
 
@@ -403,11 +377,6 @@ def build_third_quarter_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
     )
     team_games["rolling_q3_games"] = team_games["prior_cum_games"]
     return team_games[columns]
-
-
-# ---------------------------------------------------------------------------
-# LEAD-30: fourth-down aggressiveness
-# ---------------------------------------------------------------------------
 
 
 def build_fourth_down_opportunities(pbp: pd.DataFrame) -> pd.DataFrame:
@@ -556,11 +525,6 @@ def build_fourth_down_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
     ].replace(0, np.nan)
     team_games["rolling_fourth_down_eligible"] = team_games["prior_cum_eligible"]
     return team_games[columns]
-
-
-# ---------------------------------------------------------------------------
-# Reliability engine (generic; used by all four recorded metrics)
-# ---------------------------------------------------------------------------
 
 
 def build_odd_even_halves(long: pd.DataFrame, value_col: str, *, min_per_half: int) -> pd.DataFrame:

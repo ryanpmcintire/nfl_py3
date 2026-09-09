@@ -112,7 +112,6 @@ from nfl_ats.surface_switch_tilt_overlay import GRASS_SURFACES
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: The one new column each candidate profile adds. Frozen names.
 OPEN_CORNER_WIND_DOG_COLUMN = OPEN_CORNER_WIND_DOG_ON_PRODUCTION_FEATURE_COLUMNS[0]
 RAIN_ON_GRASS_DOG_COLUMN = RAIN_ON_GRASS_DOG_ON_PRODUCTION_FEATURE_COLUMNS[0]
 
@@ -122,9 +121,6 @@ OPEN_CORNER_WIND_MPH_MIN = 15.0
 OPEN_CORNER_OUTDOOR_ROOFS = frozenset({"outdoors", "open"})
 RAIN_ON_GRASS_PRECIP_PROB_MIN = 60.0
 
-#: (stadium_id -> team code(s)), frozen 2026-09-05 against
-#: ``data/raw/20260824T115346Z/schedules.parquet`` -- see the module
-#: docstring for the disclosed judgement call and the exclusion rationale.
 OPEN_CORNER_STADIUMS: dict[str, str] = {
     "BUF00": "BUF",
     "CHI98": "CHI",
@@ -147,12 +143,6 @@ _OPEN_CORNER_WIND_REQUIRED_SCHEDULE_COLUMNS = {
     "wind",
 }
 _RAIN_ON_GRASS_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "home_team", "away_team", "surface"}
-
-
-# ---------------------------------------------------------------------------
-# Shared loaders (duplicated from nfl_ats.schedule_flag_features -- see the
-# module docstring for why).
-# ---------------------------------------------------------------------------
 
 
 def default_schedule(repo_root: Path | None = None) -> pd.DataFrame:
@@ -233,11 +223,6 @@ def _attach(
     )
     merged.index = features.index
     return merged
-
-
-# ---------------------------------------------------------------------------
-# LEAD-36: open-corner stadium wind
-# ---------------------------------------------------------------------------
 
 
 def derive_open_corner_wind_dog_features(
@@ -326,11 +311,6 @@ def open_corner_wind_population_diagnostic(
             (eligible & merged["tue_open_home_spread"].isna()).sum()
         ),
     }
-
-
-# ---------------------------------------------------------------------------
-# LEAD-37: rain-on-grass fumble chaos
-# ---------------------------------------------------------------------------
 
 
 def derive_rain_on_grass_dog_features(

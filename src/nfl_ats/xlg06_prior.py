@@ -29,8 +29,6 @@ EPA_COLUMN = "rookie_epa"
 WEEKS_COLUMN = "rookie_reg_weeks"
 YEAR_COLUMN = "recruit_year_num"
 
-#: Columns the fitter is allowed to read. A synthetic post-dated predictor
-#: can never silently substitute for the pre-draft rating.
 FIT_ALLOWLIST = frozenset(
     {
         RATING_COLUMN,

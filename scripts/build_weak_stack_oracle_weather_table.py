@@ -54,7 +54,7 @@ def main() -> None:
     print(f"observed-weather coverage: {int(present.sum())}/{len(oracle)} ({present.mean():.1%})")
 
     oracle.to_parquet(DEST)
-    stamp_sidecar(DEST)  # ENG-38
+    stamp_sidecar(DEST)
     print(f"wrote {DEST} rows={len(oracle)} cols={len(oracle.columns)}")
 
 

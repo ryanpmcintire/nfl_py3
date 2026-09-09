@@ -44,8 +44,7 @@ SOURCE = (
     "{timestamp}/results.json; docs/attention_followup.md"
 )
 
-RELIABILITY = 0.13153959916293442  # read from attention_battery_both_cold registry entry;
-# same underlying attention_z trait, not recomputed here.
+RELIABILITY = 0.13153959916293442
 
 CLASSIFICATION_EVIDENCE = (
     "Mined 4-cell follow-up battery (uncorrected multiplicity) deepening "

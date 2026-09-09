@@ -46,8 +46,6 @@ from nfl_ats.public_board import find_matching_opener_evaluation
 OUT = common.REPO / "artifacts/research/laneC2"
 FAMILY = "mod18_discrete_side_read_v1"
 PREFIX = "ds"
-#: The two declared baselines: the served smooth read, and the played card's
-#: exact-atom override (lane T's KL1b) rebuilt on this archive.
 BASELINES = ("S3", "KL1b")
 DISCOUNT = (
     "Mined archive lanes K, T, H, S and V were selected on; S3 is itself a post-hoc restriction "
@@ -99,11 +97,6 @@ KIND_SUMMARIES = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Stage 1: the served baseline, rebuilt from the archive and verified
-# ---------------------------------------------------------------------------
-
-
 def recover_week_shape(group: pd.DataFrame) -> tuple[float, float]:
     """The week's fitted residual median and standard deviation, exactly.
 
@@ -144,12 +137,6 @@ def replay(archive: pd.DataFrame, active: dict, archive_path: Path) -> None:
     gap = float((frame.p_S3 - frame.home_cover_probability_at_open).abs().max())
     if not np.isfinite(gap) or gap > 1e-9:
         raise ValueError(f"STOP: S3 replay mismatch: {gap}")
-    # The push is deliberately NOT reconstructed for the smooth baseline: the
-    # served push already comes from this same lattice (lane S,
-    # docs/discrete_push_read.md), so there is no smooth push in production to
-    # grade against and inventing one here would be a number with no source.
-    # This lane grades the SIDE; the push column exists only to carry the
-    # lattice's own value through the arm application.
     frame["push_S3"] = np.nan
     frame["offset_S3"] = frame.home_side_offset_at_open
     frame["center_S3"] = (
@@ -185,11 +172,6 @@ def replay(archive: pd.DataFrame, active: dict, archive_path: Path) -> None:
     print(json.dumps({"games": len(frame), "max_probability_gap": gap}, indent=2), flush=True)
 
 
-# ---------------------------------------------------------------------------
-# Stage 2: the discrete reads and the frozen arms
-# ---------------------------------------------------------------------------
-
-
 def exact_atom_mask(line: pd.Series, atoms: tuple[float, ...] = SERVED_ATOMS) -> np.ndarray:
     """Lane T's served predicate: the line sits EXACTLY on a declared atom."""
 
@@ -213,7 +195,6 @@ def map_replay(archive: pd.DataFrame) -> None:
         frame[f"{column}_lattice"] = mapped[column].to_numpy()
     frame["p_lattice"] = mapped.home_cover_probability.to_numpy()
     frame["push_lattice"] = mapped.push.to_numpy()
-    # Baseline 2: lane T's served exact-atom override, rebuilt on this archive.
     served_touched = exact_atom_mask(frame.tue_open_home_spread)
     frame["touched_KL1b"] = served_touched
     frame["p_KL1b"] = np.where(served_touched, frame.p_lattice, frame.p_S3)
@@ -268,11 +249,6 @@ def map_replay(archive: pd.DataFrame) -> None:
         OUT / "mapping.json",
     )
     print(json.dumps(counts, indent=2), flush=True)
-
-
-# ---------------------------------------------------------------------------
-# Stage 3: the paired opener grade
-# ---------------------------------------------------------------------------
 
 
 def research_per_game(frame: pd.DataFrame, column: str, arm: str, archive_path: Path) -> Path:
@@ -399,9 +375,6 @@ def score(archive_path: Path) -> None:
         for baseline in BASELINES:
             groups = arm_groups(frame, arm)
             if arm.startswith("PC"):
-                # The controls answer one question -- what can this harness
-                # resolve -- so they are recorded overall and on the games they
-                # touch, never sliced into a second family of rows.
                 groups = [(label, g) for label, g in groups if label in ("overall", "touched")]
             for label, group in groups:
                 for kind in ("standalone", "card"):
@@ -413,9 +386,6 @@ def score(archive_path: Path) -> None:
                         bp = group[f"card_{baseline}"].to_numpy()
                     graded = (group.margin_vs_open.ne(0) & group.margin_vs_open.notna()).to_numpy()
                     if not bool((cp != bp)[graded].any()):
-                        # No graded pick moved: the paired difference is
-                        # identically zero, a fact for the write-up and never a
-                        # registry row (a bootstrap of zeros is a dead heat).
                         skipped.append(f"{arm}_vs_{baseline}_{label}_{kind}")
                         continue
                     cells[f"{PREFIX}_{arm.lower()}_vs_{baseline.lower()}_{label}_{kind}"] = (
@@ -504,11 +474,6 @@ def loss_cells(group: pd.DataFrame, column: str, baseline_column: str) -> dict[s
     return cells
 
 
-# ---------------------------------------------------------------------------
-# Stage 4: Week 1 2026, read only
-# ---------------------------------------------------------------------------
-
-
 def week1(active: dict) -> None:
     from nfl_ats.four_overlay_composition import apply_four_overlay_composition_for_publication
     from nfl_ats.margin import fit_margin_model
@@ -590,10 +555,7 @@ def week1(active: dict) -> None:
             composed = apply_four_overlay_composition_for_publication(
                 candidate, schedules, common.REPO / "data"
             ).overlaid_predictions
-        except Exception as error:  # reported below, never swallowed
-            # A concurrent capture can leave the newest arrest snapshot without
-            # a manifest; the raw side changes above are the primary Week 1
-            # output and the reason is recorded rather than hidden.
+        except Exception as error:
             card_note = f"{type(error).__name__}: {error}"
             card_changes = {"unavailable": card_note}
             break
@@ -621,11 +583,6 @@ def week1(active: dict) -> None:
         OUT / "week1.json",
     )
     print(json.dumps({"touched": touched_counts}, indent=2), flush=True)
-
-
-# ---------------------------------------------------------------------------
-# Stage 5: the registry rows
-# ---------------------------------------------------------------------------
 
 
 def split_cell(name: str) -> tuple[str, str, str, str]:

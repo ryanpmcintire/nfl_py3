@@ -28,10 +28,6 @@ from nfl_ats.prediction_safety import (
     validate_prediction_compatibility,
 )
 
-# ---------------------------------------------------------------------------
-# stamp() / read_contract() round trip, one per registered kind.
-# ---------------------------------------------------------------------------
-
 
 @pytest.mark.parametrize("kind", sorted(ARTIFACT_KINDS))
 def test_stamp_round_trips_for_every_registered_kind(kind: str) -> None:
@@ -39,7 +35,6 @@ def test_stamp_round_trips_for_every_registered_kind(kind: str) -> None:
     original = {"some_field": 1, "destination": "x"}
     stamped = stamp(kind, original)
 
-    # Additive: original keys survive untouched, and the input is not mutated.
     assert original == {"some_field": 1, "destination": "x"}
     assert stamped["some_field"] == 1
     assert stamped["destination"] == "x"
@@ -77,11 +72,6 @@ def test_read_contract_reports_legacy_for_a_block_with_no_contract() -> None:
     assert contract.schema_version is None
 
 
-# ---------------------------------------------------------------------------
-# check_compatible: legacy_unversioned warns, version_mismatch refuses.
-# ---------------------------------------------------------------------------
-
-
 def test_check_compatible_with_no_active_model_has_no_issues() -> None:
     feature_table = stamp(KIND_FEATURE_TABLE, {"rows": 1})
     report = check_compatible(None, feature_table)
@@ -90,8 +80,6 @@ def test_check_compatible_with_no_active_model_has_no_issues() -> None:
 
 
 def test_check_compatible_legacy_unversioned_is_a_warning_not_a_failure() -> None:
-    # Neither side carries an artifact_contract block -- exactly today's real
-    # active_ats_model.json / pre-ENG-09 feature-table manifests.
     model_manifest = {"model_id": "abc"}
     feature_table = {"rows": 1}
     report = check_compatible(model_manifest, feature_table)
@@ -165,12 +153,7 @@ def test_check_compatible_forecast_recognized_schema_version_is_fine() -> None:
 
 def test_refuse_if_incompatible_is_a_no_op_when_compatible() -> None:
     report = check_compatible(None, stamp(KIND_FEATURE_TABLE, {}))
-    report.refuse_if_incompatible(action="do anything")  # must not raise
-
-
-# ---------------------------------------------------------------------------
-# check_ledger: missing required columns always refuses.
-# ---------------------------------------------------------------------------
+    report.refuse_if_incompatible(action="do anything")
 
 
 def test_check_ledger_passes_with_every_required_column_present() -> None:
@@ -191,14 +174,6 @@ def test_check_ledger_refuses_on_a_missing_column() -> None:
         report.refuse_if_incompatible(action="load this ledger")
 
 
-# ---------------------------------------------------------------------------
-# The registry's ledger column lists must not drift from their source of
-# truth. artifact_contracts.py cannot import nfl_ats.clv / nfl_ats.pick_refresh
-# directly (see the module docstring on the circular-import hazard); this
-# test is the mechanical backstop that catches drift instead.
-# ---------------------------------------------------------------------------
-
-
 def test_decision_ledger_columns_match_clv_source_of_truth() -> None:
     from nfl_ats.clv import PAPER_DECISION_COLUMNS
 
@@ -214,16 +189,7 @@ def test_pick_revision_ledger_columns_match_pick_refresh_source_of_truth() -> No
 def test_lockday_package_schema_version_matches_its_source_of_truth() -> None:
     from nfl_ats.lockday_package import PACKAGE_SCHEMA_VERSION
 
-    # lockday_package.build_manifest owns its own "schema_version" key with
-    # narrower semantics (the package format's own version) and is
-    # deliberately not wired to stamp() -- see ARTIFACT_KINDS[KIND_LOCKDAY_PACKAGE]'s
-    # description. This just keeps the registry's number honest.
     assert ARTIFACT_KINDS[KIND_LOCKDAY_PACKAGE].schema_version == PACKAGE_SCHEMA_VERSION
-
-
-# ---------------------------------------------------------------------------
-# prediction_safety integration: the one release-blocking contract check.
-# ---------------------------------------------------------------------------
 
 
 def test_validate_prediction_compatibility_passes_on_a_compatible_report() -> None:
@@ -301,10 +267,6 @@ def test_validate_outcome_prediction_card_fails_closed_on_a_contract_mismatch(mo
 
 
 def test_card_kind_is_registered_and_stampable() -> None:
-    # nfl_ats.publishing stamps the publish-predictions summary with this
-    # kind; asserted here (rather than by driving the full publish path,
-    # which requires a synchronized active model and live snapshots) so the
-    # contract itself is covered without rebuilding that whole fixture.
     stamped = stamp(KIND_CARD, {"model_id": "abc", "season": 2026, "week": 1})
     contract = read_contract(stamped)
     assert contract.kind == KIND_CARD

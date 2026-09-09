@@ -67,12 +67,6 @@ STATUS_RECORDED = "recorded"
 STATUS_CONTROL = "control"
 STATUS_CLOSED = "closed"
 
-#: Reader-facing label + pill tone (see ``public_board.pill_html``) per
-#: status, in filter-chip order: "All / On the card / Recorded / Controls /
-#: Closed" -- five chips, all of which can match a row (see the module
-#: docstring for why "Candidate" was dropped instead of shipped empty). The
-#: per-row PILL text differs slightly from the per-chip text
-#: (:data:`_STATUS_CHIP_LABELS`) only for grammatical number.
 _STATUS_META: dict[str, tuple[str, str]] = {
     STATUS_ON_CARD: ("On the card", "live"),
     STATUS_RECORDED: ("Recorded", "idle"),
@@ -80,8 +74,6 @@ _STATUS_META: dict[str, tuple[str, str]] = {
     STATUS_CLOSED: ("Closed", "bad"),
 }
 
-#: Filter-chip label text, plural where the owner's brief used the plural
-#: ("Controls") -- the per-row pill above stays singular.
 _STATUS_CHIP_LABELS: dict[str, str] = {
     STATUS_ON_CARD: "On the card",
     STATUS_RECORDED: "Recorded",
@@ -89,8 +81,6 @@ _STATUS_CHIP_LABELS: dict[str, str] = {
     STATUS_CLOSED: "Closed",
 }
 
-#: Reader-facing names for the fixed :data:`nfl_ats.weak_signals.CATEGORIES`
-#: vocabulary, in the module's own declared order.
 CATEGORY_LABELS: dict[str, str] = {
     "market": "Market",
     "onfield": "On-field play",
@@ -105,8 +95,6 @@ CATEGORY_LABELS: dict[str, str] = {
 UNCATEGORISED = "uncategorised"
 UNCATEGORISED_LABEL = "Uncategorised"
 
-#: Decimal precision + unit words per ``effect_units``, matching the scale
-#: comment at the top of ``weak_signals.py``.
 _UNIT_META: dict[str, tuple[int, str]] = {
     "accuracy_points": (2, "accuracy pts"),
     "ats_points": (3, "ATS pts"),
@@ -116,26 +104,14 @@ _UNIT_META: dict[str, tuple[int, str]] = {
 }
 _ACCURACY_UNIT = "accuracy_points"
 
-#: Free-text markers this project's registry entries already use to disclose
-#: a mined/multi-cell battery or a correlated, non-independent measurement
-#: (see AGENTS.md's "pooled inputs must be commensurable" discipline and
-#: ``weak_signals.family_overlap_warnings``). Substring, case-insensitive.
 _MINED_MARKERS = ("mined", "multiplicit", "predeclared cell", "uncorrected multiplicity")
 _CORRELATED_MARKERS = ("correlated decomposition", "not independent", "correlated with")
 
 
-#: Computed once at import time, not per-row: a frozenset lookup is cheap
-#: enough to call for all 480+ rows, but there is no reason to recompute the
-#: SAME five-name set that many times over one page build.
 _ON_THE_CARD_NAMES = on_the_card_registry_names()
 
 
 def _status(signal: WeakSignal) -> str:
-    # Precedence: a definitive registry verdict (closed) or a declared
-    # control arm always wins over "happens to also be a live policy
-    # member" -- neither co-occurs in the current registry, but a closed or
-    # control-labelled row would be a more important fact than its card
-    # membership if it ever did.
     if signal.classification in TERMINAL_CLASSIFICATIONS:
         return STATUS_CLOSED
     if signal.category == "control":
@@ -219,15 +195,6 @@ def _duplicate_names(registry: Registry) -> frozenset[str]:
     return frozenset(name for names in fingerprints.values() if len(names) > 1 for name in names)
 
 
-# ---------------------------------------------------------------------------
-# Evidence chip group (owner spec, 2026-08-26): a third filter axis over
-# whether a row has actually been CHECKED for repeatability, not just
-# whether the effect looks big. Bands are independently derived per row
-# (a row can carry more than one -- "never checked" and "found by sweeping"
-# are unrelated axes), so the JS filter matches by set-membership, not
-# equality, unlike the single-valued status/category groups.
-# ---------------------------------------------------------------------------
-
 EVIDENCE_REPEATS_WELL = "repeats_well"
 EVIDENCE_DOESNT_REPEAT = "doesnt_repeat"
 EVIDENCE_NEVER_CHECKED = "never_checked"
@@ -243,12 +210,6 @@ _EVIDENCE_LABELS: dict[str, str] = {
 _REPEATS_WELL_MIN = 0.60
 _DOESNT_REPEAT_MAX = 0.20
 
-#: Owner-specified, case-insensitive substrings over ``notes``/``description``
-#: that flag a mined/multi-cell battery or a non-independent result -- the
-#: SAME kind of disclosure :func:`_caveat_flags` looks for on the idea cell,
-#: kept as an independently-named list here since the owner gave an exact set
-#: (measured against the live registry, 2026-08-26) rather than the looser
-#: markers that function already used.
 _SWEEP_MARKERS = (
     "mined",
     "multiplicity",
@@ -281,12 +242,6 @@ def _row_payload(
     status = _status(signal)
     category = signal.category if signal.category in CATEGORIES else None
     digits, unit_words = _UNIT_META.get(signal.effect_units, (2, signal.effect_units))
-    # Escaped HERE, not in the JS: these two fields are free text out of the
-    # registry (a plain summary, a raw description, an internal name), and
-    # the client-side renderer concatenates them straight into innerHTML
-    # (see ideaCell() in _JS). Every OTHER string the JS renders is either a
-    # developer-authored constant (flags, unit words) or a value already
-    # constrained to a fixed vocabulary (status, category, league).
     return {
         "name": escape(signal.name),
         "idea": escape(idea),
@@ -399,8 +354,6 @@ def _controls_html(counts: dict[str, int]) -> str:
         _filter_chip(group="status", value=value, label=_STATUS_CHIP_LABELS[value], pressed=False)
         for value in _STATUS_META
     ]
-    # Labelled "Subject" in the UI (the owner's term); the group key stays
-    # "category" internally, matching WeakSignal.category and CATEGORY_LABELS.
     subject_chips = [_filter_chip(group="category", value="all", label="All", pressed=True)]
     subject_chips += [
         _filter_chip(group="category", value=value, label=label, pressed=False)
@@ -490,10 +443,6 @@ def _script(rows: list[dict[str, Any]]) -> str:
     )
 
 
-# Vanilla JS, delegated once per page (same pattern as
-# ``nfl_ats.dashboard.viz.cover_curve_script`` and the team-explorer matchup
-# script): embedded JSON is the single source of truth, sort/filter/search
-# rebuild the visible <tbody> from it. No external requests, no libraries.
 _JS = """
 (function () {
   var dataEl = document.getElementById('ledger-data');

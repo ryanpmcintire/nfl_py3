@@ -82,8 +82,6 @@ from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  #
 
 DEFAULT_OUTPUT_ROOT = REPO / "artifacts/overlay_leave_one_out"
 
-#: The four variants, predeclared in docs/overlay_leave_one_out.md. Each drops
-#: exactly one member from PLAYED_UNION.
 VARIANTS: dict[str, str] = {
     "drop_coach_fade": "coach_fade_overlay",
     "drop_division_revenge_tilt": "division_revenge_tilt_overlay",
@@ -176,9 +174,6 @@ def main(argv: list[str] | None = None) -> int:
         "variants": {},
     }
 
-    # Sanity anchor: reproduce the played union's full-archive accuracy against
-    # docs/overlay_subset_holdout_v2.md's reported 55.4225% (vs raw 53.3599%)
-    # on 1,503 opener games.
     all_correct = frame["correct"].to_numpy(dtype=float)
     played_full_archive = evaluate(
         PLAYED_UNION,
@@ -238,8 +233,6 @@ def main(argv: list[str] | None = None) -> int:
         selection_deltas[variant_name] = selection["paired_delta_accuracy_points"]
         holdout_deltas[variant_name] = holdout["paired_delta_accuracy_points"]
 
-    # Shrinkage/rank-stability diagnostics across the four variants, exactly as
-    # requested, explicitly flagged as under-powered at n=4 (see predeclaration).
     sel_vals = np.array([selection_deltas[name] for name in VARIANTS])
     hold_vals = np.array([holdout_deltas[name] for name in VARIANTS])
     slope = float(np.polyfit(sel_vals, hold_vals, 1)[0]) if len(set(sel_vals)) > 1 else float("nan")

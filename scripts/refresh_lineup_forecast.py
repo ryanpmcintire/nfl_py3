@@ -48,8 +48,6 @@ def main() -> int:
     completed = subprocess.run(command, cwd=REPO, check=False)
     if completed.returncode != 0:
         return completed.returncode
-    # Rebuild after weekly-run so the public artifact is linked to the
-    # forecast scored from the refreshed depth snapshot.
     subprocess.run(
         [sys.executable, str(REPO / "scripts" / "build_week_lineups.py")],
         cwd=REPO,

@@ -104,20 +104,11 @@ from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 
-# --- Frozen configuration -----------------------------------------------
-# Both arms hold ridge_alpha=10.0 and regressor="ridge" fixed at the
-# incumbent's own values (artifacts/active_ats_model.json, read this
-# session) -- only feature_profile differs. This isolates the
-# surface_switch_flag column's effect exactly, matching
-# docs/surface_switch_feature_arm.md's own close-graded predeclaration.
 BASELINE_PROFILE: MarginFeatureProfile = "weak_stack"
 CANDIDATE_PROFILE: MarginFeatureProfile = "weak_stack_surface"
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 
-# Matches docs/opener_evaluation.md's predeclared seed, reused by
-# scripts/ridge_alpha_promotion_eval.py for every opener-grade confirmation
-# run since -- keeping this run comparable to those, not a fresh choice.
 OPENER_BOOTSTRAP_SAMPLES = 20_000
 OPENER_BOOTSTRAP_SEED = 20260817
 
@@ -203,9 +194,6 @@ def paired_frame(baseline: pd.DataFrame, candidate: pd.DataFrame) -> pd.DataFram
         "candidate_correct_close_pr",
     ):
         merged[column] = merged[column].astype(float)
-    # Binary actual outcome for Brier/log-loss, NaN on a push (excluded),
-    # matching nfl_ats.outcomes.summarize_predictions' convention and
-    # ridge_alpha_promotion_eval.py's identical construction.
     merged["actual_home_cover_open"] = np.where(
         merged["margin_vs_open"] > 0.0, 1.0, np.where(merged["margin_vs_open"] < 0.0, 0.0, np.nan)
     )
@@ -368,9 +356,6 @@ def run_opener_grade(
     flip_buckets_sign = line_flip_buckets(paired, "")
     flip_buckets_pr = line_flip_buckets(paired, "_pr")
 
-    # surface_switch_flag prevalence on the paired opener archive population
-    # itself, needed to reason about the surface_switch_tilt_overlay
-    # double-counting interaction (task step 5).
     flag_lookup = features[["game_id", "surface_switch_flag"]].drop_duplicates("game_id")
     flagged = paired.merge(flag_lookup, on="game_id", how="left")
     n_flag_missing = int(flagged["surface_switch_flag"].isna().sum())
@@ -465,13 +450,13 @@ def main() -> None:
         "generated_at_utc": datetime.now(UTC).isoformat(),
         **opener_report,
     }
-    write_stamped_artifact(metadata, out_dir / "opener_summary.json")  # ENG-38
+    write_stamped_artifact(metadata, out_dir / "opener_summary.json")
     opener_result["paired_frame"].to_parquet(out_dir / "opener_paired.parquet")
-    stamp_sidecar(out_dir / "opener_paired.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_paired.parquet")
     opener_result["baseline_frame"].to_parquet(out_dir / "opener_baseline.parquet")
-    stamp_sidecar(out_dir / "opener_baseline.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_baseline.parquet")
     opener_result["candidate_frame"].to_parquet(out_dir / "opener_candidate.parquet")
-    stamp_sidecar(out_dir / "opener_candidate.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_candidate.parquet")
 
     print(f"\nWrote {out_dir}")
 

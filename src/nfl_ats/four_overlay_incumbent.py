@@ -46,7 +46,7 @@ def record_former_production_incumbent_decisions(
     paired control.
     """
 
-    del data_root  # the primary paper ledger already froze every required input
+    del data_root
     entry = find_challenger(artifacts_root, INCUMBENT_CHALLENGER_ID)
     status = str(entry.get("status"))
     if status != ACTIVE_CHALLENGER_STATUS:

@@ -35,13 +35,11 @@ from nfl_ats.data import DataContractError
 from nfl_ats.nfl_week import pool_decision_cutoff
 from nfl_ats.provenance import sha256_file
 
-#: The completed kickoff-nearest archive, relative to the repository root.
 DEFAULT_FORECAST_ARCHIVE = Path(
     "data/raw/forecast_archive/pool_decision_2009_2025/forecasts.parquet"
 )
 POOL_DECISION_CUTOFF_MODE = "pool_decision"
 
-#: Frozen in docs/weak_stack_v4.md before any scoring.
 FORECAST_WEATHER_COLUMNS: tuple[str, ...] = (
     "forecast_temp_f",
     "forecast_wind_mph",
@@ -66,9 +64,6 @@ _ARCHIVE_SOURCE_COLUMNS = (
 
 _CONSUMABLE_FETCH_STATUSES = frozenset({"ok", "unmappable_international_stadium"})
 
-#: POSITIVE CONTROL ONLY -- the weather that ACTUALLY happened, which is not
-#: knowable before kickoff. Never promotable, never a production feature; see
-#: :func:`derive_observed_weather_features`.
 OBSERVED_WEATHER_COLUMNS: tuple[str, ...] = (
     "observed_temp_f",
     "observed_wind_mph",

@@ -96,7 +96,7 @@ def record(out: Path, name: str, m: dict, units: str, start: int, end: int, sour
     full_name = f"{FAMILY}_{name}_{start}_{end}"
     registry = Path(os.environ["NFL_ATS_REGISTRY_DIR"]) / "weak_signals.json"
     if registry.exists() and full_name in json.loads(registry.read_text())["signals"]:
-        return  # Already recorded by an earlier partial run of this stage; keep it verbatim.
+        return
     cli(
         out,
         "weak-signals",

@@ -95,11 +95,6 @@ def _targets(frame: pd.DataFrame) -> pd.DataFrame:
     return rows.drop(columns="kickoff").reset_index(drop=True)
 
 
-# ---------------------------------------------------------------------------
-# 1-4: leakage
-# ---------------------------------------------------------------------------
-
-
 def test_future_season_outcomes_never_move_an_earlier_prior() -> None:
     """The frozen leakage contract: rewrite the future, the past must not move."""
 
@@ -154,8 +149,6 @@ def test_history_boundary_is_the_kickoff_not_the_season() -> None:
     history = _history(frame)
     targets = _targets(frame)
     aggregates = history.aggregates(targets)
-    # The second row's cutoff is 12 hours BEFORE the first row's kickoff, so
-    # neither row may see the other.
     assert aggregates["rate_n"].tolist() == [0.0, 0.0]
 
     later = targets.iloc[[1]].copy()
@@ -174,7 +167,6 @@ def test_roster_history_is_strictly_earlier_season_week() -> None:
     outcomes = _outcome_rows("A", seasons=[2016], weeks=[4], unavailable=[0.0])
     history = DurabilityHistory(outcomes=outcomes, rosters=rosters)
     aggregates = history.aggregates(_targets(outcomes))
-    # Weeks 1-3 count; the target's own week 4 row does not.
     assert float(aggregates.loc[0, "reserve_n"]) == 3.0
     assert float(aggregates.loc[0, "reserve_k"]) == 3.0
     assert float(aggregates.loc[0, "roster_absent"]) == 3.0
@@ -186,15 +178,10 @@ def test_reserve_statuses_carry_suspensions() -> None:
     assert "DEV" not in RESERVE_STATUSES
 
 
-# ---------------------------------------------------------------------------
-# 5: shrinkage math
-# ---------------------------------------------------------------------------
-
-
 def test_beta_binomial_prior_strength_recovers_a_planted_dispersion() -> None:
     generator = np.random.default_rng(11)
     trials = np.full(4_000, 40.0)
-    rates = generator.beta(2.0, 6.0, size=trials.size)  # mean 0.25, strength 8
+    rates = generator.beta(2.0, 6.0, size=trials.size)
     successes = generator.binomial(trials.astype(int), rates).astype(float)
     strength = beta_binomial_prior_strength(successes, trials)
     assert 6.0 < strength < 11.0
@@ -256,11 +243,6 @@ def test_clipped_logit_never_returns_an_infinity() -> None:
     assert values[0] == pytest.approx(np.log(LOGIT_CLIP / (1 - LOGIT_CLIP)))
 
 
-# ---------------------------------------------------------------------------
-# 6: join correctness
-# ---------------------------------------------------------------------------
-
-
 def test_attach_preserves_rows_order_and_index() -> None:
     frame = _outcome_rows(
         "A", seasons=[2013, 2014, 2015], weeks=[1, 1, 1], unavailable=[1.0, 0.0, 1.0]
@@ -311,11 +293,6 @@ def test_history_rejects_a_missing_kickoff() -> None:
     frame.loc[0, "kickoff"] = pd.NaT
     with pytest.raises(DataContractError, match="kickoff"):
         _history(frame)
-
-
-# ---------------------------------------------------------------------------
-# Trait reliability helper
-# ---------------------------------------------------------------------------
 
 
 def test_split_half_reliability_is_high_for_a_planted_trait() -> None:

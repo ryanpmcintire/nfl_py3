@@ -72,8 +72,6 @@ def test_paired_feature_comparison_preserves_games_and_blocks() -> None:
     assert comparison["paired_games"].eq(20).all()
     assert comparison["estimate"].gt(0).all()
     assert comparison["lower"].gt(0).all()
-    # A candidate this dominant should win essentially every blocked resample;
-    # probability_positive is the continuous evidence statement, in [0, 1].
     assert comparison["probability_positive"].between(0.0, 1.0).all()
     assert comparison["probability_positive"].eq(1.0).all()
 
@@ -118,10 +116,6 @@ def test_paired_feature_comparison_flags_a_degenerate_block_count() -> None:
         "a 4-block interval must be flagged; leaving it unflagged is the D4 defect"
     )
 
-    # Same games, same estimate -- only the blocking choice differs. Week
-    # blocking gives 24 blocks and is not flagged, which is why the companion
-    # week-blocked row for those same 997 games was trustworthy while the
-    # season-blocked one was not.
     week_blocked = paired_feature_comparisons(
         predictions, baseline_feature_set="baseline", samples=50, block="week", seed=7
     )
@@ -247,7 +241,7 @@ def test_player_profile_experiment_guards(model_frame: pd.DataFrame) -> None:
         )
 
 
-@pytest.mark.full  # ENG-11: dominates --durations; frozen player model selection
+@pytest.mark.full
 def test_frozen_player_model_selection_reuses_raw_streams(
     model_frame: pd.DataFrame,
     monkeypatch: pytest.MonkeyPatch,

@@ -63,18 +63,10 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Owner decision 2026-08-18 (docs/coach_fade_overlay.md): play the clean-case
-#: overlay for real. Flipping this off restores the un-overlaid card wherever
-#: the overlay is wired in; the challenger ledger still records both arms
-#: regardless of this switch, since it reads the flag itself, not this
-#: constant's effect on the published card.
 OVERLAY_ENABLED = True
 
-#: The registered measurement (ROADMAP PER-07, docs/hc_year_one_fade.md) only
-#: covers weeks 1-8; the overlay has no claim outside that window.
 OVERLAY_WEEK_MAX = 8
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "hc_year_one_fade_overlay"
 
 

@@ -145,9 +145,6 @@ def split_margin_evidence(predictions: pd.DataFrame, *, samples: int, seed: int)
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -251,9 +248,6 @@ def main() -> None:
             candidate_columns=CFB_TIME_DECAYED_MODEL_FEATURE_COLUMNS,
             candidate_method=OPPONENT_BENCHMARK_CONTROL_METHOD,
         )
-        # The two runs share a baseline arm by construction; assert it rather
-        # than assume it, then stitch so the control and the frozen candidate
-        # can be compared to each other on the same games.
         for method in ("market", OPPONENT_BENCHMARK_BASELINE_METHOD):
             left = result.predictions.loc[result.predictions["method"].eq(method)]
             right = control_result.predictions.loc[control_result.predictions["method"].eq(method)]

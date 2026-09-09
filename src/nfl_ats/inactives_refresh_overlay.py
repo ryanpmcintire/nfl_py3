@@ -118,17 +118,8 @@ from nfl_ats.players import (
     load_player_snapshot,
 )
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "inactives_refresh_v1"
 
-#: The league's published inactives lead, REPORTED in
-#: ``docs/inactives_channel.md`` Section 3 (RotoWire's own FAQ: "NFL
-#: inactives are released 90 minutes before kickoff for every game") and used
-#: unchanged throughout that document's Section 2 deadline arithmetic, which
-#: MEASURED SNF at -170 minutes of slack and MNF at -1,605 against their own
-#: pick deadlines while every other slot stayed positive. Not a tuned
-#: parameter and not re-derived here: it is the source's own convention, and
-#: it is what makes the SNF/MNF exclusion structural rather than a filter.
 INACTIVES_LEAD_MINUTES = 90
 
 SOURCE_NO_SNAPSHOT = "tuesday_card (no in-window snapshot)"
@@ -191,11 +182,6 @@ def load_inactives_refresh_overlay_decisions(artifacts_root: Path) -> pd.DataFra
             f"Inactives refresh-overlay ledger is missing columns: {', '.join(missing)}"
         )
     return ledger[list(INACTIVES_REFRESH_OVERLAY_COLUMNS)]
-
-
-# ---------------------------------------------------------------------------
-# Reading captured inactives snapshots (WP17's writer, read back)
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -390,21 +376,12 @@ def inactives_rows_for_game(
     return game_rows
 
 
-# ---------------------------------------------------------------------------
-# The P(plays) = 0 override, folded through production's own aggregation
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class PlayerContext:
     """Everything needed to turn one inactives list into injury increments."""
 
-    #: (season, team, normalized player name) -> gsis_id, plus a globally
-    #: unique-name fallback under key ``(season, "", name)``.
     identities: dict[tuple[int, str, str], str]
-    #: gsis_id -> the newest injury-report unavailability already credited.
     credited: dict[tuple[int, int, str, str], float]
-    #: gsis_id -> production-shaped role dict for _injury_features.
     roles: dict[str, dict[str, float | str]]
 
 
@@ -428,9 +405,6 @@ def _identity_lookup(rosters: pd.DataFrame) -> dict[tuple[int, str, str], str]:
     frame = frame.copy()
     frame["norm"] = frame["full_name"].map(_normalized_player_name)
     lookup: dict[tuple[int, str, str], str] = {}
-    # Season-wide unique-name fallback, mirroring attach_snap_player_ids'
-    # own "accepted only when that normalized name refers to exactly one
-    # GSIS identity" rule rather than inventing a looser match.
     ambiguous: set[tuple[int, str]] = set()
     unique: dict[tuple[int, str], str] = {}
     for record in frame.to_dict("records"):
@@ -528,7 +502,7 @@ def load_player_context(
         injuries = canonicalize_injuries(injuries_raw)
         rosters = canonicalize_rosters(rosters_raw)
         snaps = attach_snap_player_ids(canonicalize_snaps(snaps_raw), rosters)
-    except Exception:  # deliberate fail-open, see docstring
+    except Exception:
         return None
     return PlayerContext(
         identities=_identity_lookup(rosters),
@@ -578,9 +552,6 @@ def team_unavailability_increments(
             continue
         role = context.roles.get(key)
         if role is None:
-            # No prior snap row: production's own roles.get(id, {}) default is
-            # an empty role, i.e. every share 0.0. Kept explicit so the
-            # position still reaches _injury_features' group fallback.
             role = {"position_group": _position_group(record["position"])}
         roles[key] = role
         rows.append({"gsis_id": key, "_unavailability": increment, "position": record["position"]})
@@ -630,11 +601,6 @@ def apply_inactives_increments(
                     adjusted.loc[positions, home_column] - adjusted.loc[positions, away_column]
                 )
     return adjusted
-
-
-# ---------------------------------------------------------------------------
-# The overlay pass
-# ---------------------------------------------------------------------------
 
 
 def _inactives_instant(kickoff: pd.Timestamp) -> pd.Timestamp:

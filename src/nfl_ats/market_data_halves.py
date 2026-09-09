@@ -69,20 +69,12 @@ ODDS_API_EVENT_ODDS_URL_TEMPLATE = (
     f"https://api.the-odds-api.com/v4/sports/{ODDS_API_SPORT}/events/{{event_id}}/odds"
 )
 
-#: The four markets LEAD-61 asks for -- no ``spreads_q1``/other quarter
-#: markets: those are out of scope for this lead (see ``docs/half_game_markets
-#: .md`` "Build plan" -> "Manifest shape", step 1) and would need their own
-#: measured cost before a future lead adds them.
 HALF_MARKETS: tuple[str, ...] = ("spreads_h1", "spreads_h2", "totals_h1", "totals_h2")
 HALF_MARKETS_DEFAULT = ",".join(HALF_MARKETS)
 
 CAPTURE_KIND = "event_halves"
 SNAPSHOT_SUFFIX = "-halves"
 
-#: Matches ONLY a bare bulk-board snapshot directory name -- excludes both
-#: this module's own ``<stamp>-halves`` output and any ad-hoc probe directory
-#: (e.g. lane AO's ``<stamp>-event-halves-probe``), the same full-match
-#: pattern ``scripts/capture_scheduler.py``'s ``SNAPSHOT_NAME`` uses.
 _BULK_SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}Z)$")
 
 
@@ -201,7 +193,6 @@ def filter_events_to_next_week(
             return []
         first = games.iloc[0]
         slate = games.loc[games["season"].eq(first["season"]) & games["week"].eq(first["week"])]
-        # NFL week identity, including a Monday finish, comes from the schedule.
         start, _ = current_week_kickoff_window(first["kickoff"].to_pydatetime())
         _, end = current_week_kickoff_window(slate["kickoff"].max().to_pydatetime())
     else:

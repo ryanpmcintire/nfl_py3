@@ -51,7 +51,7 @@ from typing import Any
 
 REPO = Path(__file__).resolve().parents[1]
 
-MIN_BLOCKS_FOR_INTERVAL = 10  # nfl_ats.estimation_variance.MIN_BLOCKS_FOR_INTERVAL
+MIN_BLOCKS_FOR_INTERVAL = 10
 
 SOURCE = (
     "scripts/dst_transition_battery_screen.py; artifacts/dst_transition_battery/"

@@ -42,7 +42,6 @@ def quarter_margins(pbp: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
         q4, on="game_id", validate="one_to_one"
     )
     result = result.merge(overtime, on="game_id", how="left", validate="one_to_one")
-    # An OT marker without a usable score state must not fall back to OT final.
     ot_ids = set(pbp.loc[pbp.qtr.ge(5), "game_id"])
     result = result.loc[~result.game_id.isin(ot_ids) | result.regulation_margin.notna()].copy()
     result["regulation_margin"] = result.regulation_margin.fillna(result["result"])

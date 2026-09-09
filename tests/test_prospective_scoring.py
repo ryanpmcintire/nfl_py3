@@ -62,7 +62,6 @@ def _decisions(**overrides: Any) -> pd.DataFrame:
 
 
 def _outcomes() -> pd.DataFrame:
-    # result is home minus away points.
     return pd.DataFrame(
         {
             "game_id": ["g_home", "g_away", "g_push_dec", "g_push_close"],
@@ -81,35 +80,24 @@ def _close_reference() -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 1. Settlement, hand computed at both grades
-# ---------------------------------------------------------------------------
-
-
 def test_settlement_is_hand_computable_at_both_grades_including_pushes() -> None:
     settled = settle_prospective_picks(
         _decisions(), _outcomes(), close_reference=_close_reference()
     ).set_index("game_id")
 
-    # HOME pick at -3.5, result +7 -> margin +10.5 -> home covered -> correct.
     assert settled.loc["g_home", "ats_margin_at_decision_line"] == pytest.approx(10.5)
     assert settled.loc["g_home", "correct_at_decision_line"] == pytest.approx(1.0)
-    # Same pick at the close of -6.5 -> margin +13.5 -> still correct.
     assert settled.loc["g_home", "correct_at_close_line"] == pytest.approx(1.0)
 
-    # AWAY pick at +6.5, result +3 -> margin -3.5 -> home did NOT cover -> correct.
     assert settled.loc["g_away", "ats_margin_at_decision_line"] == pytest.approx(-3.5)
     assert settled.loc["g_away", "correct_at_decision_line"] == pytest.approx(1.0)
 
-    # A zero margin is a push at that grade: excluded, never scored as a loss.
     assert settled.loc["g_push_dec", "ats_margin_at_decision_line"] == pytest.approx(0.0)
     assert pd.isna(settled.loc["g_push_dec", "correct_at_decision_line"])
     assert settled.loc["g_push_dec", "status_at_decision_line"] == "push"
-    # ...and the same game is NOT a push at the close (line 3.0, margin +4.0).
     assert settled.loc["g_push_dec", "status_at_close_line"] == "settled"
     assert settled.loc["g_push_dec", "correct_at_close_line"] == pytest.approx(1.0)
 
-    # The mirror case: settled at the decision line, push at the close.
     assert settled.loc["g_push_close", "status_at_decision_line"] == "settled"
     assert settled.loc["g_push_close", "status_at_close_line"] == "push"
     assert pd.isna(settled.loc["g_push_close", "correct_at_close_line"])
@@ -122,7 +110,6 @@ def test_games_without_a_result_or_close_stay_pending_not_wrong() -> None:
 
     assert settled.loc["g_home", "status_at_decision_line"] == "pending"
     assert pd.isna(settled.loc["g_home", "correct_at_decision_line"])
-    # No close reference was supplied at all, so every close grade is pending.
     assert set(settled["status_at_close_line"]) == {"pending"}
     assert settled["correct_at_close_line"].isna().all()
 
@@ -135,7 +122,6 @@ def test_accuracy_reports_both_grades_plus_best_pick_and_bet_subsets() -> None:
 
     assert summary["decisions"] == 4
     decision = summary["forced_picks"]["decision_line"]
-    # Three non-push games at the decision line; all three picks were correct.
     assert decision["games"] == 3
     assert decision["correct"] == 3
     assert decision["accuracy"] == pytest.approx(1.0)
@@ -143,10 +129,8 @@ def test_accuracy_reports_both_grades_plus_best_pick_and_bet_subsets() -> None:
     assert decision["vs_coin_flip"] == pytest.approx(0.5)
     assert summary["forced_picks"]["close_line"]["pushes"] == 1
 
-    # The Best Pick subset is exactly the one flagged game.
     assert summary["best_pick"]["weeks_nominated"] == 1
     assert summary["best_pick"]["decision_line"]["games"] == 1
-    # PASS rows are excluded from the paper-bet subset.
     assert summary["paper_bets"]["bets"] == 3
 
 
@@ -203,11 +187,6 @@ def test_settlement_contract_guards() -> None:
         settle_prospective_picks(_decisions(), outcomes.drop(columns=["result"]))
 
 
-# ---------------------------------------------------------------------------
-# 2. Anti-backdating: the guarantee the whole exercise rests on
-# ---------------------------------------------------------------------------
-
-
 def test_scoring_refuses_a_pick_recorded_at_or_after_its_own_kickoff() -> None:
     """The read-side half of the guarantee.
 
@@ -221,22 +200,16 @@ def test_scoring_refuses_a_pick_recorded_at_or_after_its_own_kickoff() -> None:
     with pytest.raises(DataContractError, match="recorded at or after kickoff"):
         settle_prospective_picks(backdated, _outcomes())
 
-    # Exactly at kickoff is late too -- the pool locks strictly before.
     at_kickoff = _decisions()
     at_kickoff.loc[0, "recorded_at_utc"] = KICKOFF
     with pytest.raises(DataContractError, match="recorded at or after kickoff"):
         settle_prospective_picks(at_kickoff, _outcomes())
 
-    # A row that cannot prove its timing at all is refused rather than assumed.
     unknown = _decisions()
     unknown.loc[0, "kickoff"] = pd.NaT
     with pytest.raises(DataContractError, match="cannot prove pre-kickoff timing"):
         settle_prospective_picks(unknown, _outcomes())
 
-
-# ---------------------------------------------------------------------------
-# 3. The challenger ledger
-# ---------------------------------------------------------------------------
 
 _MODEL = {
     "method": "market_residual",
@@ -335,8 +308,6 @@ def test_record_challenger_records_dedupes_and_refuses_started_games(tmp_path: P
     assert ledger["pick_side"].tolist() == ["HOME"]
     assert ledger["source_sha256"].str.len().iloc[0] == 64
 
-    # Re-running records nothing new, and a card with moved lines and a flipped
-    # pick cannot rewrite what is already on the ledger.
     moved = _write_card(
         artifacts,
         "2026-week-01-b",
@@ -431,7 +402,6 @@ def test_artifact_lookup_matches_on_fingerprint_not_on_recency(tmp_path: Path) -
         probabilities=[0.61],
         profile="weak_stack",
     )
-    # A NEWER card from a different (baseline) configuration.
     _write_card(
         artifacts,
         "2026-week-01-20260908T110000Z",
@@ -460,7 +430,6 @@ def test_fingerprint_is_stable_across_int_float_and_path_style() -> None:
     other["min_train_games"] = 500.0
     other["feature_table"] = "F:\\repo\\data\\processed\\game_features_weak_stack.parquet"
     assert config_fingerprint(other) == config_fingerprint(_MODEL)
-    # But a real configuration change moves it.
     assert config_fingerprint({**_MODEL, "ridge_alpha": 1.0}) != config_fingerprint(_MODEL)
 
 

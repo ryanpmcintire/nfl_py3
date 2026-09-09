@@ -163,9 +163,6 @@ from nfl_ats.players import (
 AGE_CURVES_VERSION = "age-curves-v1"
 CAREER_AGE_AXIS = "years_exp"
 
-#: Frozen snap-table position -> position-group mapping. The snap table's own
-#: ``position`` column is authoritative; a player's roster position in a
-#: different week is never used to relabel a snap row.
 POSITION_GROUPS: dict[str, str] = {
     "QB": "QB",
     "RB": "RB",
@@ -196,8 +193,6 @@ POSITION_GROUPS: dict[str, str] = {
     "LS": "LS",
 }
 
-#: One label per position group naming the metric definition used for its
-#: cells; ``"no_local_metric"`` groups get a snap-volume curve only.
 METRIC_BY_GROUP: dict[str, str] = {
     "QB": "epa_per_dropback",
     "RB": "epa_per_offense_snap",
@@ -232,11 +227,6 @@ _MIN_SHARED_AGES_FOR_RELIABILITY = 3
 _MIN_VALID_BOOTSTRAP_DRAWS = 100
 
 
-# ---------------------------------------------------------------------------
-# Panel construction
-# ---------------------------------------------------------------------------
-
-
 def build_career_age_panel(
     snaps_raw: pd.DataFrame,
     rosters_raw: pd.DataFrame,
@@ -262,10 +252,6 @@ def build_career_age_panel(
 
     rosters = canonicalize_rosters(rosters_raw)
     snaps = canonicalize_snaps(snaps_raw)
-    # Same "no stats supplied" convention as
-    # nfl_ats.players.enrich_with_player_features: an empty, columnless
-    # stats_raw (a caller with nothing to attach, e.g. an OL/K/P/LS-only
-    # panel) is valid input, not a data-contract violation.
     stats = (
         canonicalize_player_stats(stats_raw)
         if len(stats_raw.columns)
@@ -303,21 +289,6 @@ def build_career_age_panel(
     linked["metric_numerator"] = np.nan
     linked["metric_denominator"] = np.nan
 
-    # Every skill/defense row defaults to "0 production over the full snap
-    # denominator" -- a matched player_stats row (below) then overrides just
-    # the numerator where production was actually observed. This must hold
-    # even when ``stats`` has zero rows at all (an OL/K/P/LS-only caller), not
-    # only when a specific player-game is individually missing.
-    #
-    # IMPORTANT: every mask used AFTER a ``linked = linked.merge(...)`` call is
-    # recomputed fresh from the POST-merge frame, never carried across the
-    # reassignment. ``DataFrame.merge`` always returns a new frame with a
-    # fresh ``RangeIndex`` (even for a row-preserving left join), so a mask
-    # built against the pre-merge frame's (possibly non-contiguous, after the
-    # ``.loc[...]`` filters above) index would silently misalign on the
-    # post-merge frame's index and select the wrong rows -- caught by
-    # comparing this function's real-data output against an independent
-    # from-scratch join before this module shipped.
     skill_mask = linked["pos_group"].isin(OFFENSE_SKILL_METRIC_GROUPS)
     linked.loc[skill_mask, "metric_numerator"] = 0.0
     linked.loc[skill_mask, "metric_denominator"] = linked.loc[skill_mask, "offense_snaps"]
@@ -448,11 +419,6 @@ def _qb_dropback_epa(pbp_frames: Mapping[int, pd.DataFrame]) -> pd.DataFrame:
     return combined.rename(columns={"passer_player_id": "gsis_id"})
 
 
-# ---------------------------------------------------------------------------
-# Player-season cells and the cross-sectional curve
-# ---------------------------------------------------------------------------
-
-
 def player_age_cells(panel: pd.DataFrame) -> pd.DataFrame:
     """Collapse the player-week panel to one row per (player, group, season, age).
 
@@ -501,11 +467,6 @@ def cross_sectional_curve(cells: pd.DataFrame) -> pd.DataFrame:
     curve.loc[curve["coverage_status"].eq("no_local_metric"), "raw_rate"] = np.nan
     curve["sparse"] = curve["n_players"] < 5
     return curve.sort_values(["pos_group", "career_age"]).reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# Empirical-Bayes shrinkage and the local-linear smooth
-# ---------------------------------------------------------------------------
 
 
 def shrink_cells(curve: pd.DataFrame, cells: pd.DataFrame) -> pd.DataFrame:
@@ -650,11 +611,6 @@ def smooth_curve(curve: pd.DataFrame, *, bandwidth: float = 1.5) -> pd.DataFrame
     return result
 
 
-# ---------------------------------------------------------------------------
-# Delta-method (within-player) curve
-# ---------------------------------------------------------------------------
-
-
 def delta_curve(
     cells: pd.DataFrame, curve: pd.DataFrame, *, snap_floor: float = DELTA_METHOD_SNAP_FLOOR
 ) -> pd.DataFrame:
@@ -755,11 +711,6 @@ def delta_curve(
         summary.loc[mask, "cumulative_delta"] = summary.loc[mask, "career_age_from"].map(cumulative)
 
     return summary.sort_values(["pos_group", "career_age_from"]).reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# Split-half reliability
-# ---------------------------------------------------------------------------
 
 
 def _weighted_pearson(x: np.ndarray, y: np.ndarray, weights: np.ndarray) -> float:
@@ -917,7 +868,7 @@ def split_half_reliability(
     every group in :data:`_METRIC_GROUPS` present in ``cells`` is scored.
     """
 
-    del curve  # reserved for a future group-restriction hook; not needed today.
+    del curve
     metric_cells = cells.loc[
         cells["pos_group"].isin(_METRIC_GROUPS)
         & cells["metric_denominator"].gt(0)
@@ -970,11 +921,6 @@ def split_half_reliability(
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# PBP snapshot loading (self-contained, mirroring scripts/build_metagame_series.py
-# rather than importing nfl_ats.pbp, per LEAD-58's import allowlist)
-# ---------------------------------------------------------------------------
-
 _PBP_LOAD_COLUMNS = ("game_id", "season_type", "qb_dropback", "passer_player_id", "epa")
 
 
@@ -997,11 +943,6 @@ def load_pbp_seasons(snapshot_dir: Path, seasons: Iterable[int]) -> dict[int, pd
         if path.is_file():
             frames[season] = pd.read_parquet(path, columns=list(_PBP_LOAD_COLUMNS))
     return frames
-
-
-# ---------------------------------------------------------------------------
-# Top-level orchestrator
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)

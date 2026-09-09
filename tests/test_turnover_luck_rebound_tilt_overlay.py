@@ -60,10 +60,6 @@ from nfl_ats.turnover_luck_rebound_tilt_overlay import (
     turnover_under_flag_by_game,
 )
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-
 
 def _pbp_row(
     game_id: str, posteam: str, *, interception: float = 0.0, fumble_lost: float = 0.0
@@ -86,19 +82,14 @@ def _pbp_2025(*, extra_2026_rows: list[dict[str, object]] | None = None) -> pd.D
     """
 
     rows = [
-        # 2025_01_TEAMA_OPPX: TEAMA home, gives the ball away 5 times (3 INT + 2 FL).
         *[_pbp_row("2025_01_TEAMA_OPPX", "TEAMA", interception=1.0) for _ in range(3)],
         *[_pbp_row("2025_01_TEAMA_OPPX", "TEAMA", fumble_lost=1.0) for _ in range(2)],
-        # 2025_02_OPPY_TEAMA: TEAMA away, gives the ball away 5 more times.
         *[_pbp_row("2025_02_OPPY_TEAMA", "TEAMA", interception=1.0) for _ in range(3)],
         *[_pbp_row("2025_02_OPPY_TEAMA", "TEAMA", fumble_lost=1.0) for _ in range(2)],
-        # 2025_03_TEAME_OPPX: TEAME home, gives the ball away 6 times.
         *[_pbp_row("2025_03_TEAME_OPPX", "TEAME", interception=1.0) for _ in range(4)],
         *[_pbp_row("2025_03_TEAME_OPPX", "TEAME", fumble_lost=1.0) for _ in range(2)],
-        # 2025_04_OPPY_TEAME: TEAME away, gives the ball away 6 more times.
         *[_pbp_row("2025_04_OPPY_TEAME", "TEAME", interception=1.0) for _ in range(4)],
         *[_pbp_row("2025_04_OPPY_TEAME", "TEAME", fumble_lost=1.0) for _ in range(2)],
-        # 2025_05_TEAMB_TEAMC: no turnovers at all (a clean neutral game).
         _pbp_row("2025_05_TEAMB_TEAMC", "TEAMB"),
         _pbp_row("2025_05_TEAMB_TEAMC", "TEAMC"),
     ]
@@ -116,13 +107,9 @@ def _schedule() -> pd.DataFrame:
         ("2025_05_TEAMB_TEAMC", 2025, 5, "REG", "TEAMB", "TEAMC"),
     ]
     rows_2026 = [
-        # G-flip: TEAMD (home, no 2025 history) hosts TEAMA (away, flagged).
         ("2026_01_TEAMD_TEAMA", 2026, 1, "REG", "TEAMD", "TEAMA"),
-        # G-neutral: neither TEAMB nor TEAMC is flagged.
         ("2026_01_TEAMB_TEAMC", 2026, 1, "REG", "TEAMB", "TEAMC"),
-        # G-both: TEAMA (home) vs TEAME (away) -- both flagged.
         ("2026_01_TEAMA_TEAME", 2026, 1, "REG", "TEAMA", "TEAME"),
-        # G-already: OPPX (home) vs TEAMA (away) -- flagged side already picked.
         ("2026_01_OPPX_TEAMA", 2026, 1, "REG", "OPPX", "TEAMA"),
     ]
     columns = ["game_id", "season", "week", "game_type", "home_team", "away_team"]
@@ -145,22 +132,9 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["TEAMA", "TEAMC", "TEAME", "TEAMA"],
             "kickoff": ["2026-09-13T17:00:00+00:00"] * 4,
             "spread_line": [-2.5, 1.0, -3.0, -6.0],
-            # G-flip: model picks HOME (TEAMD) -- TEAMA (away, flagged) is not
-            #   the pick -- should flip to AWAY.
-            # G-neutral: model picks HOME (TEAMB) -- neither side flagged --
-            #   should not move regardless of the model's own probability.
-            # G-both: model picks HOME (TEAMA) -- both TEAMA and TEAME are
-            #   flagged -- mutual case, must not flip.
-            # G-already: model already has AWAY (TEAMA, the flagged team) --
-            #   already on the flagged side, must not flip.
             "home_cover_probability": [0.58, 0.55, 0.65, 0.30],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. turnover_under_flag_by_game: derived, pregame-safe
-# ---------------------------------------------------------------------------
 
 
 def test_the_frozen_threshold_matches_the_screens_measured_value() -> None:
@@ -183,12 +157,12 @@ def test_flag_reproduces_the_screens_quartile_cut_on_this_fixture() -> None:
 
     flags = turnover_under_flag_by_game(_schedule(), _pbp_2025())
     both = flags.set_index("game_id").loc["2026_01_TEAMA_TEAME"]
-    assert bool(both["home_turnover_under_flag"]) is True  # TEAMA
-    assert bool(both["away_turnover_under_flag"]) is True  # TEAME
+    assert bool(both["home_turnover_under_flag"]) is True
+    assert bool(both["away_turnover_under_flag"]) is True
 
     neutral = flags.set_index("game_id").loc["2026_01_TEAMB_TEAMC"]
-    assert bool(neutral["home_turnover_under_flag"]) is False  # TEAMB
-    assert bool(neutral["away_turnover_under_flag"]) is False  # TEAMC
+    assert bool(neutral["home_turnover_under_flag"]) is False
+    assert bool(neutral["away_turnover_under_flag"]) is False
 
 
 def test_flag_is_false_when_the_team_has_no_prior_season_data() -> None:
@@ -208,11 +182,6 @@ def test_flag_requires_its_schedule_columns() -> None:
 def test_flag_requires_its_play_by_play_columns() -> None:
     with pytest.raises(DataContractError, match="play-by-play is missing columns"):
         turnover_under_flag_by_game(_schedule(), pd.DataFrame({"game_id": ["G1"]}))
-
-
-# ---------------------------------------------------------------------------
-# 1b. Leakage regression: prior-season only, never current-season/current-game
-# ---------------------------------------------------------------------------
 
 
 def test_flag_is_unchanged_by_the_current_seasons_own_turnover_events() -> None:
@@ -252,11 +221,6 @@ def test_flag_is_unchanged_by_a_flipped_outcome_in_the_current_seasons_other_gam
         baseline.sort_values("game_id").reset_index(drop=True),
         mutated.sort_values("game_id").reset_index(drop=True),
     )
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_turnover_luck_rebound_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_onto_the_flagged_team_when_not_already_picked() -> None:
@@ -363,11 +327,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     schedule = _schedule()
     matched_only = _predictions().loc[lambda frame: frame["game_id"].eq("2026_01_TEAMB_TEAMC")]
@@ -389,10 +348,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "TEAMD -> TEAMA" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_turnover_luck_rebound_tilt_challenger_decisions: dual-tracked
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -527,13 +482,9 @@ def test_record_turnover_luck_rebound_challenger_decisions_records_the_tilt_arm(
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The tilt's own arm diverges from the active model's raw pick (0.58 ->
-    # HOME): the tilt flips it to AWAY (TEAMA), onto the flagged team.
     assert ledger.loc["2026_01_TEAMD_TEAMA", "pick_side"] == "AWAY"
-    # The neutral game keeps the model's own pick (0.55 -> HOME).
     assert ledger.loc["2026_01_TEAMB_TEAMC", "pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_turnover_luck_rebound_tilt_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -559,9 +510,6 @@ def test_record_turnover_luck_rebound_challenger_refuses_a_fingerprint_mismatch(
 ) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = _write_data_root(tmp_path)
 

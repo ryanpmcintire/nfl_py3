@@ -52,11 +52,6 @@ from nfl_ats.data import DataContractError
 from nfl_ats.margin import MarginFeatureProfile, make_margin_estimator, margin_feature_columns
 from nfl_ats.modeling import regular_season_rows
 
-#: The adversarial control's training pool is restricted to games that
-#: themselves carry a resolved opener/close movement label (2020-2025 only),
-#: not the full pre-2020 archive every real market-residual model trains on.
-#: A lower default gives it a fair within-window start instead of being
-#: starved out of most of 2020.
 DEFAULT_MOVEMENT_MIN_TRAIN_GAMES = 150
 
 
@@ -153,10 +148,6 @@ def fit_movement_target_model(
         raise ValueError("No completed games have both a Tuesday opener and a close")
     paired["open_move"] = paired["close_home_spread"] - paired["tue_open_home_spread"]
 
-    # Only paired games carry a known movement label -- the model literally
-    # cannot see a movement outcome for anything else, unlike the real
-    # market-residual model, which trains on every completed game back to
-    # 2009 regardless of opener/close coverage.
     train_pool = frame.merge(paired[["game_id", "open_move"]], on="game_id", how="inner")
 
     scored_weeks: list[pd.DataFrame] = []

@@ -71,12 +71,6 @@ def plan(now: datetime) -> tuple[Step, ...]:
     """The four steps, with the Tuesday-opener guard applied for ``now`` (ET)."""
 
     local = now.astimezone(ET)
-    # ``tuesday_opener_quotes`` keys "Tuesday" on the Eastern calendar day
-    # (nfl_ats.market_data.pool_calendar_day), the same day this guard reads:
-    # a Monday-evening press is Monday to both, a Tuesday-evening press is
-    # Tuesday to both. The pool's lock is the ONE declared constant
-    # (nfl_ats.market_data); the guard reads it rather than restating a
-    # clock time here.
     et_tuesday = local.weekday() == 1
     pool_locked = local.time() >= POOL_SPREAD_LOCK_ET
     odds_skip = None

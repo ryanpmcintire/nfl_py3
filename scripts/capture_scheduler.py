@@ -59,43 +59,21 @@ ET = ZoneInfo("America/New_York")
 UV = REPO / ".tools" / "uv.exe"
 STATE_PATH = REPO / "data" / "scheduler_state.json"
 LOG_PATH = REPO / "data" / "scheduler_log.txt"
-# ENG-03: separate from STATE_PATH on purpose -- a stale heartbeat must be
-# detectable even in a week where no job was due, which state["runs"] alone
-# cannot show (it is only ever touched when a job runs or a window closes).
 HEARTBEAT_PATH = REPO / "data" / "scheduler_heartbeat.json"
 POLL_SECONDS = 60
-# --health's "is the daemon alive" verdict: derived from POLL_SECONDS (three
-# missed ticks), not a separate chosen constant.
 HEARTBEAT_STALE_AFTER_SECONDS = POLL_SECONDS * 3
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/ -- every write
-# site the scanner finds resolves under STATE_PATH/HEARTBEAT_PATH/LOG_PATH,
-# all data/scheduler_*, never artifacts/ or registry/ (a backup job it can
-# launch mirrors the artifacts/ tree elsewhere, but this script's own writes
-# never touch it).
 READ_ONLY_EXCEPTIONS: dict[int, str] = {
-    # ENG-38: line numbers re-synced -- unrelated capture-observability edits
-    # to this file (ENG-03/ENG-26) shifted these write sites since ENG-29
-    # first recorded them; the destinations themselves are unchanged.
-    # 2026-09-07: re-synced again (LEAD-61 half-line jobs shifted them 52
-    # lines, this note two more); tests/test_experiment_registry.py pins these against the scanner.
-    # 2026-09-08: re-synced three times today (noon-lock schedule change,
-    # then the retry-with-backoff addition, then the injury/player-snapshot
-    # jobs -- both of the latter two add lines ABOVE these sites).
-    # 2026-09-09: re-synced (Wednesday inactives pair + heartbeat keep-alive).
-    1373: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
-    1375: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
-    1402: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
-    1416: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
-    1540: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+    1100: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1102: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1129: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
+    1143: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1252: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
 }
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
 
-# nfl_ats.capture_freshness (ENG-03) lives under src/, following the same
-# sys.path convention scripts/lockday_verify.py already uses to reach it --
-# see that module's docstring for why it never imports this script back.
 if str(REPO / "src") not in sys.path:
     sys.path.insert(0, str(REPO / "src"))
 from nfl_ats.capture_freshness import (  # noqa: E402
@@ -110,68 +88,17 @@ from nfl_ats.capture_freshness import (  # noqa: E402
 class Job:
     name: str
     day: str
-    at: str  # "HH:MM" local (America/New_York)
+    at: str
     grace_minutes: int
     command: list[str]
     enabled: bool
     why: str
-    # False = run year-round. The market captures do: books post week-1 lines
-    # months early, and the existing Task Scheduler entries have been capturing
-    # them all summer (rows=4544 on 2026-08-25, well before any kickoff).
-    # Gating those on "is it the season" would silently drop early line
-    # movement, so only the jobs that genuinely need a live week are guarded.
     season_guarded: bool = True
-    # Directory of timestamped snapshots this job produces, plus how recent a
-    # snapshot has to be for the job to consider its work already done. This is
-    # what makes the job safe to double-schedule: during the migration the
-    # retired Windows tasks and this scheduler both target the same captures,
-    # and whichever fires first satisfies the other. It also protects against a
-    # second scheduler copy, a manual run, or a `--once` invocation landing in
-    # the same window. Each threshold must stay well under the gap to this
-    # job's nearest sibling (odds: 225 min at Sun 12:30 -> 16:15; injuries:
-    # 16.5 h at Fri 17:30 -> Sat 10:00) or a real capture would be skipped.
     dedupe_dir: str = ""
     dedupe_minutes: int = 0
-    # ISO date this job was ADDED to the schedule. Windows that closed before
-    # it are neither run nor branded MISSED -- the job did not exist to miss
-    # them. Without this, adding any job on a Thursday immediately fabricates a
-    # MISSED row for the Sunday window that closed before it was written, and a
-    # MISSED row is the one signal that means captures are being LOST
-    # PERMANENTLY (AGENTS.md tells every session to restart the scheduler on
-    # seeing one). `snapshot_in_window` already protects the jobs that produce
-    # timestamped snapshots; this protects the ones that do not, and every
-    # future job added to SCHEDULE. Empty = no backfill guard, the behaviour
-    # every pre-existing job was written under.
     added_on: str = ""
-    # True only for a job whose command is safe to run late: idempotent, and
-    # not a point-in-time capture that a delayed run would mislabel (a closing
-    # line captured after kickoff is not a closing line; an off-device mirror
-    # copied twelve hours late is still a correct mirror). When a catch_up
-    # job's window closes with nothing run and no snapshot to show for it,
-    # `sweep_missed` runs it right there instead of writing MISSED, and the
-    # occurrence is recorded CAUGHT_UP -- a status that is honest about the
-    # original miss (unlike OK, which would read as on time) without raising
-    # the one alarm that is supposed to mean data is gone for good (MISSED).
-    # Default False keeps every point-in-time job's behaviour byte-for-byte
-    # unchanged: a missed window still writes MISSED and nothing runs late.
     catch_up: bool = False
-    # Same-day jobs named here must have completed successfully before this
-    # job becomes due. This is intentionally scheduler state (not wall-clock
-    # inference): a paper forecast must never assume its opener capture landed.
     requires: tuple[str, ...] = ()
-    # Opt-in retry for a job that RAN and FAILED (distinct from catch_up,
-    # which only covers a window that closed with nothing attempted at all --
-    # see sweep_missed's own docstring). 0 (default) preserves every existing
-    # job's behaviour byte-for-byte: a FAIL record still blocks a second
-    # attempt at the same occurrence. player_arrests_tue is the job this was
-    # built for (2026-09-08, WinError 10013: "An attempt was made to access a
-    # socket in a way forbidden by its access permissions" on all 3 of its
-    # own in-process attempts at 07:00, three seconds apart -- a transient
-    # Windows socket/firewall block that a same-process retry inside one
-    # 12-second span could not ride out, but a human's manual re-run 15
-    # minutes later did). due_jobs() re-offers the occurrence once
-    # retry_backoff_minutes have passed since the failed attempt, up to
-    # max_retries times, as long as the window's own grace has not closed.
     retry_backoff_minutes: int = 0
     max_retries: int = 0
 
@@ -282,18 +209,6 @@ def _player_snapshot_job(day: str) -> Job:
             "2026",
             "--snap-start-season",
             "2013",
-            # 2026-09-08: pinned at 2025, NOT current_year - 1's usual value once
-            # 2026 becomes it -- snap_counts_2026 404s (no games played yet) and will
-            # keep 404ing until after Week 1's first Sunday (2026-09-13). player-ingest
-            # raises on a 404 (nflreadpy has no partial-season snap result), so asking
-            # for 2026 here would take this job down every run until that Sunday.
-            # DECISION: stay pinned at 2025 through Week 1; bump this literal to 2026
-            # in a dated follow-up once a manual `nfl-ats player-ingest
-            # --snap-end-season 2026 ...` probe confirms the season has rows (the same
-            # verify-before-scheduling discipline AGENTS.md's "label how you know it"
-            # rule requires elsewhere in this file). Not derived from current_year
-            # automatically on purpose: an auto-rolling snap upper bound would silently
-            # reintroduce the exact 404 this pin exists to avoid every future September.
             "--snap-end-season",
             "2025",
             "--include-postseason",
@@ -341,19 +256,11 @@ def _inactives_capture(slot: str) -> list[str]:
     ]
 
 
-# The schedule. Times are America/New_York, matching the retired Task Scheduler
-# entries exactly so the migration changes the mechanism and not the cadence.
 SCHEDULE: tuple[Job, ...] = (
-    # --- Projected lineup snapshots -----------------------------------------
-    # Depth charts are mutable well before kickoff. One daily snapshot keeps
-    # Monday/Tuesday planning useful and gives later injury/inactives feeds a
-    # current-roster context without checking data into Git.
     *(
         Job(
             f"lineups_{day}",
             day,
-            # Tuesday: after the lock chain (opener 12:05, lock 12:20, about
-            # 35 minutes with the evaluation) so two weekly-runs never overlap.
             "14:30" if day == "tue" else "12:00",
             180,
             LINEUP_CAPTURE,
@@ -365,7 +272,6 @@ SCHEDULE: tuple[Job, ...] = (
         )
         for day in ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
     ),
-    # --- The Odds API point-in-time captures (3 requests each) ---------------
     Job(
         "odds_tue_open",
         "tue",
@@ -423,15 +329,6 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_minutes=50,
         added_on="2026-09-02",
     ),
-    # 2026-09-07: the 2026 season opens on a WEDNESDAY (2026_01_NE_SEA,
-    # 2026-09-09 20:20 ET -- read from the schedules snapshot), and the
-    # owner's late-week half-point follow (docs/late_week_refresh.md) needs a
-    # captured line after Tuesday's opener and a refresh pass before that
-    # kickoff. Neither existed: the earliest post-Tuesday capture was
-    # odds_thu_tnf and the earliest refresh was refresh_thu 15:00, both after
-    # the Wednesday game had locked. In an ordinary week this pair costs three
-    # API requests and a refresh that finds nothing changed and writes
-    # nothing, which docs/late_week_refresh.md declares harmless.
     Job(
         "odds_wed_opener",
         "wed",
@@ -508,30 +405,6 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_dir="data/market/raw",
         dedupe_minutes=90,
     ),
-    # --- LEAD-61: per-event half/quarter-game market captures ----------------
-    # Rides the Tuesday-opener and Saturday bulk-board windows exactly (same
-    # day/time/grace as odds_tue_open/odds_sat above), per the build plan in
-    # docs/half_game_markets.md: the per-event endpoint
-    # (/v4/sports/{sport}/events/{eventId}/odds) is what actually serves
-    # spreads_h1/h2 and totals_h1/h2 (measured HTTP 422 INVALID_MARKET on the
-    # bulk board, lane AM; measured HTTP 200 with all four markets on the
-    # per-event endpoint, lane AO), so this job reads event ids and the last
-    # quota reading from the PAIRED bulk snapshot rather than spending a
-    # request of its own to list events -- requires=(...) guarantees that
-    # snapshot exists and succeeded before this job becomes due, exactly the
-    # weekly_lock/odds_tue_open pattern already proven above. Filters to the
-    # current week's ~16 events (never the ~272-event remaining-season board
-    # a bulk snapshot carries) via nfl_ats.market_data_halves
-    # .current_week_kickoff_window. No dedupe_dir: write_market_snapshot's
-    # <stamp>-halves directory name does not match this module's own
-    # SNAPSHOT_NAME (bare YYYYMMDDTHHMMSSZ) pattern -- deliberately, so it can
-    # never collide with the paired bulk snapshot's identically-timestamped
-    # directory -- so the snapshot-based dedupe this scheduler otherwise uses
-    # does not apply here, the same reasoning as refresh_trigger_log_sun's own
-    # comment above. Measured cost (docs/half_game_markets.md): 4 credits per
-    # event (4 markets x 1 region), ~16 events/week per job, refused before
-    # any call if the paired bulk capture's own quota reading would breach
-    # DEFAULT_QUOTA_FLOOR=600 (nfl_ats.market_data_halves.QuotaFloorRefusal).
     Job(
         "odds_tue_open_halves",
         "tue",
@@ -560,7 +433,6 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-05",
         requires=("odds_sat",),
     ),
-    # --- Action Network public betting percentages ---------------------------
     Job(
         "public_betting_sat",
         "sat",
@@ -585,10 +457,6 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_dir="data/raw/public_betting_live",
         dedupe_minutes=90,
     ),
-    # --- NFL.com injury report revision stream -------------------------------
-    # A living page teams overwrite Wed->Fri; the revisions cannot be recovered
-    # retroactively. The FRIDAY run is the one the frozen challenger rule
-    # consumes (it needs a page fetched at or after Friday 16:00 ET).
     Job(
         "injuries_wed",
         "wed",
@@ -637,12 +505,6 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_dir="data/raw/nflcom_injuries",
         dedupe_minutes=300,
     ),
-    # --- Licensed replacement injury report revision stream -----------------
-    # Sportradar documents a four-hour endpoint cache. The command derives the
-    # live REG week from the local schedule, requires every slate team, and
-    # records the capture time as availability. Jobs remain dormant unless the
-    # scheduler process has the provider credential; a missing secret must not
-    # create recurring failures or imply that a capture occurred.
     *(
         _sportradar_injury_job(day, at, report)
         for day, at, report in (
@@ -652,10 +514,6 @@ SCHEDULE: tuple[Job, ...] = (
             ("sat", "10:00", "post-Friday fallback"),
         )
     ),
-    # --- Late-week pick refresh (docs/late_week_refresh.md cadence) ----------
-    # These are the ONLY recording path for model_only_refresh_incumbent and
-    # injury_signal_refresh_tilt. Over-running is explicitly harmless: "a pass
-    # that finds nothing changed writes nothing".
     Job(
         "refresh_wed",
         "wed",
@@ -701,27 +559,6 @@ SCHEDULE: tuple[Job, ...] = (
         True,
         "FINAL pass; the only one that touches the card, additively.",
     ),
-    # --- ENG-08: timing-policy instrumentation (read-only) -------------------
-    # Reconstructs real non-clock refresh triggers (inactives-posted,
-    # injury-report-posted, lineup-change, line-move) plus the week's fired
-    # clock checkpoints, validates each against pick_refresh.pick_deadline,
-    # and appends to the append-only artifacts/refresh_triggers/ evidence
-    # log. Scheduled at 18:00 ET -- after the LAST Sunday refresh-picks pass
-    # closes (refresh_sun's own window closes 15:00 ET;
-    # refresh_sun_inactives_late's closes 15:50 ET) and before backup_data
-    # (22:00 ET), so the week's Sunday captures are already on disk when this
-    # reconstructs them. catch_up=True: idempotent by construction (its own
-    # JSONL append is de-duplicated by (trigger_source, source_capture_time,
-    # game)), and a late run reconstructs the same true history a late
-    # capture would -- not a point-in-time value that goes stale, matching
-    # player_arrests_tue/referee_assignments_wed's reasoning, not
-    # odds_sun_close's. No dedupe_dir: its output is a JSONL file per week,
-    # not a UTC-stamped snapshot directory, so the snapshot-based dedupe this
-    # scheduler otherwise uses does not apply here -- same as
-    # refresh_thu/refresh_sat/refresh_sun above. Never runs refresh-picks,
-    # publish-predictions, or a weak-signals/rotation recorder, and never
-    # writes to registry/ -- read-only against every capture directory it
-    # scans.
     Job(
         "refresh_trigger_log_sun",
         "sun",
@@ -743,7 +580,6 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-04",
         catch_up=True,
     ),
-    # --- Off-device data mirror ---------------------------------------------
     Job(
         "backup_data",
         "sun",
@@ -772,7 +608,6 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-08-27",
         catch_up=True,
     ),
-    # --- Player-arrests point-in-time snapshot -------------------------------
     Job(
         "player_arrests_tue",
         "tue",
@@ -791,53 +626,16 @@ SCHEDULE: tuple[Job, ...] = (
         "is safe. Measured 2026-08-31: 56 pages, 1,116 rows, ~3-4 minutes "
         "including the 1.5s per-page delay, well inside the 90m grace and "
         "the 1800s subprocess timeout.",
-        season_guarded=False,  # a running archive, not tied to a game week;
-        # an offseason gap would show up as a stale snapshot once weekly
-        # picks resume, and the cost is a few minutes once a week.
+        season_guarded=False,
         dedupe_dir="data/raw/player_arrests",
         dedupe_minutes=240,
         added_on="2026-09-01",
         catch_up=True,
-        # 2026-09-08: FAIL(2) at 07:00 with WinError 10013 ("An attempt was
-        # made to access a socket in a way forbidden by its access
-        # permissions") on all 3 of the in-process retries inside _request()
-        # (3s/6s apart, ~12s total) -- a transient Windows socket/firewall
-        # block, not a source-side error. A human's manual re-run 15 minutes
-        # later (07:15) succeeded. Two scheduler-level retries, 15 minutes
-        # apart, automate that same recovery inside the existing 90m grace
-        # (07:00 -> 07:15 -> 07:30, closing 08:30) instead of depending on a
-        # session noticing the FAIL row.
         retry_backoff_minutes=15,
         max_retries=2,
     ),
-    # --- Injury data into the model pipeline (2026-09-08) --------------------
-    # Measured this session: no job anywhere in this file ever captured injury
-    # data into the model's own feature-building path (grep -c
-    # "player-ingest|nflverse_injuries_ingest" against this file's own
-    # pre-session text returned 0) -- the only injury-shaped jobs are the
-    # paused NFL.com scrape (injuries_wed/thu/fri/sat, MKT-09) and the
-    # credential-gated Sportradar jobs (disabled without SPORTRADAR_API_KEY).
-    # The active card's injury input was therefore frozen at whatever
-    # snapshot a session happened to build by hand. Five days (Wed-Sun,
-    # matching every refresh_*/lineups_* pass that day), 06:00/06:15 ET so
-    # every capture clears the day's tightest consumer (refresh_sun 10:00 ET)
-    # with hours to spare -- see each job's own "why" for the argv and the
-    # known week_proxy/lineage-check interaction.
     *(_nflverse_injuries_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
     *(_player_snapshot_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
-    # --- Official game-day inactives (WP17) -----------------------------------
-    # docs/inactives_channel.md Section 2 (measured this session) computes T-90
-    # ("official inactives instant" = kickoff - 90 minutes) against each slot's
-    # own pick_refresh deadline for every 2026 REG game; Section 6 proposes the
-    # capture windows below from that arithmetic. All seven are point-in-time
-    # captures (catch_up=False -- a missed inactives window cannot be caught up
-    # after the fact, unlike backup_data/player_arrests_tue) and season_guarded
-    # (no REG game, no inactive list to capture). dedupe_dir points at
-    # data/players/inactives, NOT the doc's originally proposed
-    # data/raw/nflcom_inactives: the actual capture
-    # (src/nfl_ats/inactives_capture.py) writes snapshots under
-    # data/players/inactives/<UTC ts>/ per the WP17 task spec that built it, so
-    # the dedupe target follows the real write location.
     Job(
         "inactives_sun_early",
         "sun",
@@ -927,12 +725,6 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-01",
         catch_up=False,
     ),
-    # 2026-09-09: 2026 Week 1 opens on a WEDNESDAY (NE at SEA, 20:20 ET) and
-    # no inactives capture existed that day. Same T-90 window and grace as the
-    # Thursday primetime row; the per-game pick deadline is the game's own
-    # kickoff (docs/late_week_refresh.md), so the post-inactives refresh below
-    # is playable for a Wednesday game. A no-op in weeks with no Wednesday
-    # kickoff: the capture records "no upcoming kickoff".
     Job(
         "inactives_wed_primetime",
         "wed",
@@ -981,13 +773,6 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-01",
         catch_up=False,
     ),
-    # --- Post-inactives challenger refreshes (POL-11 / WP41) -----------------
-    # Each pass begins five minutes after its capture window closes. The grace
-    # ends ten minutes before the earliest deadline that capture can cover, so
-    # an on-time scheduler run has a bounded decision-time path from snapshot
-    # to refresh. These passes record the inactives challenger separately;
-    # record_inactives_refresh_overlay consumes the RefreshResult read-only and
-    # cannot change the played pick or its revision ledger.
     Job(
         "refresh_thu_inactives_early",
         "thu",
@@ -1084,28 +869,6 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-02",
         catch_up=False,
     ),
-    # --- Weekly officiating-crew assignments (WP22) --------------------------
-    # Feeds a prospective join to the referee-battery/penalty-crew-tendencies
-    # crew traits (docs/referee_battery.md, docs/penalty_crew_tendencies.md;
-    # docs/referee_assignments_capture.md is this job's own predeclaration/
-    # survey). Football Zebras' weekly post is the only public pregame source
-    # found for the UPCOMING week's officiating assignment (no independent
-    # second source exists: operations.nfl.com carries no weekly-assignments
-    # page at all, measured), and its publish time is NOT fixed: measured
-    # across 10 sampled 2025 weeks (docs/referee_assignments_capture.md
-    # Section 2), timestamps range Mon 12:44 ET (Week 18's compressed finale
-    # schedule) through Wed 12:42 ET (Weeks 8/9), with most weeks landing Tue
-    # 16:53-21:27 ET -- NEVER measured before Tuesday afternoon, so this
-    # capture cannot feed the Tuesday-lock/opener card, only a later-week
-    # refresh (see that doc's Section 2 for the exact per-cell overlay this
-    # would need to become a prospective challenger). Wed 15:00 ET clears
-    # every measured 2025 publish time by >2h. catch_up=True for the same
-    # reason as player_arrests_tue/backup_data (not the odds-close reasoning):
-    # a late capture is still a valid, un-mislabelled snapshot -- assignments
-    # do not go stale the way a post-kickoff "closing line" would -- and
-    # src/nfl_ats/referee_assignments_capture.py is idempotent by
-    # construction (every run writes a fresh UTC-stamped snapshot dir under
-    # data/players/referee_assignments/ and never mutates an older one).
     Job(
         "referee_assignments_wed",
         "wed",
@@ -1131,26 +894,6 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-01",
         catch_up=True,
     ),
-    # --- Pro Football Rumors transaction wire (PER-03 live path) --------------
-    # Owner directive 2026-09-03 is "pull both": this plus the credential-gated
-    # Sportradar jobs. NFL.com stays paused (RED policy: written consent
-    # required).
-    # ENG-32 fix (2026-09-04): the original argv below (no flags) resumed the
-    # SAME 2026-08-20 snapshot directory forever and skipped every year
-    # already on disk (including the current one), so it could run
-    # successfully every week and STILL never produce a new capture --
-    # nfl_ats.capture_freshness / nfl_ats.source_freshness_policy read the
-    # snapshot DIRECTORY NAME, never contents or mtime, as the capture
-    # instant, so pfr_transactions would look permanently stale regardless of
-    # how many times the job ran. `--fresh-snapshot` (see
-    # scripts/ingest_transaction_news.py's create_fresh_snapshot_dir) writes
-    # a brand-new timestamped directory each run, copying forward every
-    # already-cached year with zero network requests and force-refetching
-    # only the current year's chunk -- one sitemap-index fetch plus one
-    # yearly-chunk fetch per run, ~2s at 1s politeness with a contact UA.
-    # Wed 07:00 lands ahead of the Thursday refresh pass; Sat 07:00 ahead of
-    # the Saturday refresh pass. Dedupe (2000m) sits well under the 3-day
-    # sibling gap.
     Job(
         "pfr_transactions_wed",
         "wed",
@@ -1197,22 +940,6 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-03",
         catch_up=True,
     ),
-    # --- ENG-11: full verification tier (release gate), scheduled separately
-    # from the fast PR loop -----------------------------------------------
-    # `scripts/verify_full.py` is the unchanged four AGENTS.md "Required
-    # verification" gates (ruff format --check, ruff check, mypy src, the
-    # full `pytest` suite -- 3,600+ tests, measured ~40s wall on this
-    # machine's 24 xdist workers but CPU-bound and not something to fire
-    # unattended without a decision to do so). `scripts/verify_fast.py`
-    # (safety/typing/lint/`-m "not full"`) is what a PR loop should run
-    # instead; see docs/verification_tiers.md. Disabled by default
-    # (enabled=False): this entry documents WHERE a periodic full run would
-    # live if the owner wants one, without actually scheduling a multi-minute
-    # job on every session's silent `--once` sweep, and without needing the
-    # already-running scheduler daemon restarted to pick it up. Not a
-    # point-in-time capture -- code health, not data -- so season_guarded is
-    # off and a late run is still a fully valid one (catch_up=True) once
-    # enabled.
     Job(
         "verify_full_weekly",
         "mon",
@@ -1355,7 +1082,7 @@ def season_active(when: datetime) -> bool:
             _SEASON_CACHE.append(set(days.dt.date))
     known = _SEASON_CACHE[0]
     if known is None:
-        return True  # no schedule locally: never silently suppress a capture
+        return True
     day = when.date()
     return any((day + timedelta(days=offset)) in known for offset in range(-10, 4))
 
@@ -1417,17 +1144,6 @@ def write_heartbeat(
         tmp.replace(HEARTBEAT_PATH)
 
 
-# The daemon runs each job synchronously inside its poll loop, so before
-# 2026-09-09 the heartbeat froze for the whole duration of a long job
-# (lineups_* is a full weekly-run, 15-35 minutes). After 3 polls without a
-# write, --is-running and --health both reported the daemon dead, the start
-# script's double-start guard waved a second daemon through, and the
-# stop-then-start "restart it" reflex killed the in-flight run: lineups_wed
-# was killed mid-run three times on 2026-09-09 (13:37, 14:11, 14:17 ET) with
-# no OK/FAIL line ever logged. The keep-alive thread rewrites the heartbeat
-# every poll interval while a job runs, under the same lock the poll loop's
-# own write takes (two writers sharing one .tmp name is the exact race that
-# corrupted the registry on 2026-09-08).
 _HEARTBEAT_WRITE_LOCK = threading.Lock()
 
 
@@ -1517,10 +1233,6 @@ def _short_hash(value: str | None) -> str:
     return value[:12] if value else "unknown"
 
 
-# ENG-03 per-job persisted health, written under a NEW state["job_health"]
-# key, a sibling of the existing state["runs"] key rather than a change to
-# it -- every existing reader of state["runs"] (show_status, the pre-existing
-# scheduler tests) is unaffected by this key's presence.
 _DEFAULT_JOB_HEALTH: dict[str, Any] = {
     "last_success_at": None,
     "last_failure_at": None,
@@ -1542,8 +1254,6 @@ def log(message: str) -> None:
     line = f"{stamp} {message}"
     with LOG_PATH.open("a", encoding="utf-8") as handle:
         handle.write(line + "\n")
-    # The daemon runs headless (hidden console); nobody watches this stdout.
-    # The file above is the record.
     print(line, flush=True)
 
 
@@ -1705,8 +1415,6 @@ def execute_job(command: list[str]) -> tuple[str, str]:
     """
 
     try:
-        # CREATE_NO_WINDOW: the daemon's console is hidden (or absent), and
-        # without this flag a child could allocate and flash a visible one.
         no_window = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
         proc = subprocess.run(
             command,
@@ -1717,11 +1425,6 @@ def execute_job(command: list[str]) -> tuple[str, str]:
             creationflags=no_window,
         )
         out = (proc.stdout or "").strip().splitlines()
-        # 300 to match failure_detail's own budget. A child that fails by
-        # PRINTING a JSON failure line instead of raising (scheduled_weekly_lock
-        # .py) leaves stderr empty, so this line IS the record; trimming it to
-        # 200 first discarded a third of the budget before failure_detail ever
-        # saw it. On 2026-09-08 that cut landed mid-word.
         tail = out[-1][:300] if out else ""
         status = "OK" if proc.returncode == 0 else f"FAIL({proc.returncode})"
         detail = tail if proc.returncode == 0 else failure_detail(proc.stderr, tail)
@@ -1732,11 +1435,6 @@ def execute_job(command: list[str]) -> tuple[str, str]:
     return status, detail
 
 
-#: The only argv tokens ``--run-job --dry`` removes: the two flags that make a
-#: refresh/publish pass WRITE ledgers or the card. Everything else in the
-#: job's argv runs verbatim, so a dry manual run still proves the command
-#: parses, resolves its week and completes -- which is what the 2026-09-06
-#: refresh failures needed and never had.
 RECORDING_FLAGS: frozenset[str] = frozenset({"--record-decisions", "--publish-card"})
 
 
@@ -1754,9 +1452,6 @@ def has_ever_executed(state: dict[str, Any], job_name: str) -> bool:
         entry.get(field) for field in ("last_success_at", "last_failure_at", "last_manual_run_at")
     ):
         return True
-    # Runs recorded before job_health existed (ENG-26) live only in
-    # state["runs"]; MISSED and ALREADY-CAPTURED rows mean the command did
-    # NOT run, so they do not count.
     prefix = f"{job_name}@"
     return any(
         key.startswith(prefix)
@@ -1786,9 +1481,6 @@ def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> i
     entry = _job_health_entry(state, job.name)
     entry["last_manual_run_at"] = datetime.now(tz=ET).isoformat(timespec="seconds")
     entry["last_manual_status"] = f"{status}{' (dry)' if dry else ''}"
-    # Recorded unconditionally (OK included) so a caller -- --rehearse-all --
-    # can show the "last non-empty output line" for every job from this
-    # structured field rather than re-parsing this function's own stdout.
     entry["last_manual_detail"] = detail[:300]
     if status != "OK":
         entry["last_error"] = detail[:300]
@@ -1799,24 +1491,8 @@ def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> i
     return 0 if status == "OK" else 1
 
 
-#: --rehearse-all's default skip list: lineups_* are full 15-35 minute
-#: weekly-runs (one per weekday, seven jobs), backup_data is a long
-#: off-device mirror, and verify_full_weekly is a multi-minute CPU-bound
-#: pytest run -- none of the three belongs in a "run every job once, fast"
-#: sweep. Exposed as a real default rather than only living in argparse so
-#: a caller of ``rehearse_all`` directly (tests included) gets the same
-#: behaviour as the CLI without repeating the literal.
 DEFAULT_REHEARSE_SKIP_PREFIX = "lineups_,backup_data,verify_full_weekly"
 
-#: weekly_lock (scripts/scheduled_weekly_lock.py) "deliberately has no
-#: season/week flags: the verified schedule must identify exactly one game
-#: week whose line-lock Tuesday is today" -- its own module docstring. A
-#: --rehearse-all dry run never supplies --season/--week, so on any day that
-#: is not the week's lock Tuesday this job refuses BY DESIGN, not because of
-#: a defect. --rehearse-all reports a failure here under its own heading
-#: instead of alongside real defects, per the 2026-09-09 task that added
-#: this command -- but it still counts toward every total and the exit
-#: code; only its PRESENTATION differs. Nothing else is special-cased.
 REHEARSE_EXPECTED_FAILURES: frozenset[str] = frozenset({"weekly_lock"})
 
 
@@ -1959,8 +1635,6 @@ def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool 
     log(f"{label} {job.name} (window {start.isoformat()}{attempt_note})")
     status, detail = execute_job(list(job.command))
     if catch_up and status == "OK":
-        # Honest about the original miss: not OK (which reads as on time),
-        # not MISSED (data was not lost -- it just landed late).
         status = "CAUGHT_UP"
     record: dict[str, Any] = {
         "status": status,
@@ -2020,20 +1694,12 @@ def build_health_report(now: datetime, state: dict[str, Any]) -> dict[str, Any]:
         for key, record in sorted(state.get("runs", {}).items())
         if record.get("status") == "MISSED"
     ]
-    # ENG-26: an acknowledged MISSED row is never deleted (it is still real
-    # history) but stops counting toward the non-zero exit -- see
-    # `acknowledge_missed`.
     missed_unacknowledged = [row for row in missed if not row.get("acknowledged")]
 
     sources: list[SourceFreshness] = compute_freshness(
         SCHEDULE, repo_root=REPO, now=now, season_active=season_active
     )
 
-    # ENG-26: code/schedule identity. `heartbeat` (if any) carries the values
-    # the DAEMON STARTED with; recomputing here always reads current disk.
-    # Absent fields (a heartbeat written before ENG-26 existed) count as
-    # STALE, not as "unknown/skip" -- an unverifiable daemon must fail closed,
-    # which is exactly the 2026-09-04 situation this item was written to fix.
     code_sha256_disk = compute_code_sha256()
     schedule_digest_disk = compute_schedule_digest()
     code_sha256_running = heartbeat.get("code_sha256") if heartbeat else None
@@ -2078,7 +1744,7 @@ def build_health_report(now: datetime, state: dict[str, Any]) -> dict[str, Any]:
         "missed": missed,
         "missed_unacknowledged": missed_unacknowledged,
         "job_health": state.get("job_health", {}),
-        "sources": sources,  # list[SourceFreshness]; see _health_report_json for JSON output
+        "sources": sources,
         "ok": ok,
     }
 
@@ -2106,9 +1772,6 @@ def render_health(report: dict[str, Any]) -> str:
             f"  poll interval {hb['poll_seconds']}s  dead-after {hb['stale_after_seconds']}s  "
             f"verdict: {'ALIVE' if hb['daemon_alive'] else 'DEAD'}"
         )
-        # ENG-26: code/schedule version guard, only meaningful once a
-        # heartbeat exists at all -- the MISSING branch below already names
-        # the same remedy for a dead/never-run daemon.
         cv = report["code_version"]
         lines.append(
             "  code: "
@@ -2217,9 +1880,6 @@ def show_status(now: datetime, state: dict[str, Any]) -> None:
         else:
             last = f"not run ({start.date()})"
         if job.enabled and not has_ever_executed(state, job.name):
-            # A job that has never executed is unverified, whatever its
-            # window says (2026-09-07: the first in-season fire of every
-            # refresh job failed on an argparse usage line).
             last += f" | NEVER RUN (exercise: --run-job {job.name})"
         print(
             f"{job.name:<22} {job.day} {job.at:<10} {job.grace_minutes:>5}m  "
@@ -2277,12 +1937,6 @@ def pid_is_alive(pid: int) -> bool:
         handle = kernel32.OpenProcess(query_limited_information, False, pid)
         if not handle:
             return False
-        # 2026-09-07: OpenProcess alone SUCCEEDS on a process that has already
-        # exited while any handle to it is still open (its kernel object
-        # outlives it), so the killed daemon pid 31916 kept reading as
-        # "running" and start_capture_scheduler.cmd refused to start a new
-        # one. GetExitCodeProcess distinguishes: STILL_ACTIVE (259) is alive,
-        # anything else is a finished process whose object simply lingers.
         still_active = 259
         exit_code = ctypes.c_ulong()
         try:
@@ -2290,10 +1944,6 @@ def pid_is_alive(pid: int) -> bool:
         finally:
             kernel32.CloseHandle(handle)
         return bool(queried) and exit_code.value == still_active
-    # mypy's platform inference (this project's `mypy src` always runs on
-    # win32) statically proves the branch above is always taken and this one
-    # dead -- true for THIS CI/dev machine, not for the language: keep the
-    # POSIX fallback for correctness if this ever runs elsewhere.
     try:  # type: ignore[unreachable]
         os.kill(pid, 0)
     except OSError:
@@ -2476,10 +2126,6 @@ def main(argv: list[str] | None = None) -> int:
         f"scheduler started (poll {POLL_SECONDS}s, {sum(j.enabled for j in SCHEDULE)} enabled jobs)"
     )
     started_at = datetime.now(tz=ET)
-    # ENG-26: computed ONCE, here, at daemon start -- not inside the loop --
-    # so the heartbeat always reports what this running process STARTED
-    # with, never a value that silently tracks a file edited on disk after
-    # startup. `--health` recomputes both fresh from disk for comparison.
     code_sha256 = compute_code_sha256()
     schedule_digest = compute_schedule_digest()
     keepalive_stop = threading.Event()
@@ -2509,9 +2155,6 @@ def main(argv: list[str] | None = None) -> int:
                 log(f"TICK-ERROR {type(exc).__name__}: {exc}")
             time.sleep(POLL_SECONDS)
     finally:
-        # Stops the keep-alive thread on ANY exit (a test raising SystemExit
-        # out of the loop included) so it can never outlive the loop and
-        # keep rewriting the heartbeat from a process that is not the daemon.
         keepalive_stop.set()
 
 

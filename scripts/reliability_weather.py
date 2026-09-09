@@ -107,9 +107,6 @@ KN_ARCHIVE_REL = "data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.
 KN_ARCHIVE = REPO / KN_ARCHIVE_REL
 TN_ARCHIVE = REPO / "data/raw/forecast_archive/full_2020_2025/forecasts.parquet"
 
-#: The 33 registry cells in this group (read: <scratchpad>/orchD_manifest.json,
-#: key groups.weather.entries, 2026-09-01). Hardcoded rather than read from a
-#: scratchpad path at runtime so the script has no dependency on a temp file.
 ENTRY_NAMES: tuple[str, ...] = (
     "forecast_weather_dome_team_outdoors_cold",
     "forecast_weather_high_wind_outdoor",
@@ -146,9 +143,6 @@ ENTRY_NAMES: tuple[str, ...] = (
     "wxtot_wind15_top_total",
 )
 
-#: kn flag_builder name for each *_full/_pre2020 pair (read:
-#: src/nfl_ats/experiment_runner.py FLAG_BUILDERS keys, verbatim match to the
-#: registry experiment_specs' construct.flag_builder).
 KN_BUILDER_FOR: dict[str, str] = {
     "forecast_weather_kn_dome_cold_windy_full": "forecast_weather_kn_dome_cold_windy",
     "forecast_weather_kn_dome_cold_windy_pre2020": "forecast_weather_kn_dome_cold_windy",
@@ -166,16 +160,12 @@ KN_BUILDER_FOR: dict[str, str] = {
     "forecast_weather_kn_warm_team_cold_late_pre2020": "forecast_weather_kn_warm_team_cold_late",
 }
 
-#: name -> (family, method_tag, quantity_key | None, reason)
-#: quantity_key indexes into the QUANTITIES long-frame cache below; None means
-#: "use the cell's own flag" (EXPOSURE) or "skip" (weak_stack_v4).
 FAMILY = "family"
 METHOD_TAG = "method_tag"
 QUANTITY = "quantity"
 REASON = "reason"
 
 ENTRY_SPECS: dict[str, dict[str, Any]] = {
-    # --- weather_battery_* (scripts/nfl_weather_battery_screen.py) ---
     "weather_battery_high_wind_outdoor": {
         FAMILY: "battery",
         METHOD_TAG: "VENUE",
@@ -256,7 +246,6 @@ ENTRY_SPECS: dict[str, dict[str, Any]] = {
             "same venue-week actual temperature trait as weather_battery_extreme_cold"
         ),
     },
-    # --- weather_followup_* (scripts/nfl_weather_followup_screen.py) ---
     "weather_followup_temp_gap_cold_visitor": {
         FAMILY: "followup",
         METHOD_TAG: "VENUE",
@@ -312,7 +301,6 @@ ENTRY_SPECS: dict[str, dict[str, Any]] = {
             "same venue-week actual temperature trait as weather_battery_extreme_cold"
         ),
     },
-    # --- forecast_weather_* tuesday_noon (scripts/nfl_forecast_weather_screen.py) ---
     "forecast_weather_high_wind_outdoor": {
         FAMILY: "forecast_tn",
         METHOD_TAG: "VENUE",
@@ -354,7 +342,6 @@ ENTRY_SPECS: dict[str, dict[str, Any]] = {
             "venue-week forecast temp trait as forecast_weather_dome_team_outdoors_cold"
         ),
     },
-    # --- wxtot_* (scripts/weather_total_interaction_screen.py) ---
     "wxtot_wind15_top_total": {
         FAMILY: "wxtot",
         METHOD_TAG: "VENUE",
@@ -396,7 +383,6 @@ ENTRY_SPECS: dict[str, dict[str, Any]] = {
         ),
     },
 }
-# kn entries added programmatically below (10, share one reason template).
 for _kn_name, _builder_name in KN_BUILDER_FOR.items():
     ENTRY_SPECS[_kn_name] = {
         FAMILY: "forecast_kn",
@@ -449,13 +435,6 @@ def target_entries() -> dict[str, dict[str, Any]]:
     return out
 
 
-# ---------------------------------------------------------------------------
-# Shared continuous-quantity long frames (built once, sliced per entry season
-# window inside measure_reliability -- avoids recomputing the same trait's
-# reliability once per sibling cell).
-# ---------------------------------------------------------------------------
-
-
 def _venue_long(df: pd.DataFrame, metric_col: str, *, outdoor_col: str = "outdoor") -> pd.DataFrame:
     """One row per game: home_team as the venue unit, season, week, metric.
 
@@ -487,7 +466,7 @@ def build_quantities() -> dict[str, pd.DataFrame]:
     battery_df = battery_screen.load_population(battery_screen.DEFAULT_SCHEDULES)
     quantities["temp_actual"] = _venue_long(battery_df, "temp")
     quantities["wind_actual"] = _venue_long(battery_df, "wind")
-    quantities["_battery_df"] = battery_df  # kept for build_cells() reuse below
+    quantities["_battery_df"] = battery_df
 
     followup_df = followup_screen.load_population(
         followup_screen.default_schedules(), followup_screen.DEFAULT_TEAM_STATS
@@ -736,7 +715,7 @@ def main() -> int:
             replication = rlib.half_season_replication(
                 flag_source_df, flag, outcome_col=outcome_col
             )
-        else:  # EXPOSURE
+        else:
             if family == "forecast_kn":
                 builder_name = spec[QUANTITY]
                 if builder_name not in kn_construct_cache:
@@ -814,16 +793,12 @@ def main() -> int:
         shown = f"{rel:+.4f}" if isinstance(rel, float) else "  n/a "
         print(f"  {name:<58} n={row.get('n_units', 'n/a'):>4} rel={shown} {row['status']}")
 
-    # weak_stack_v4 report-only inputs: 3 continuous kn forecast columns at
-    # the entries' own [2020, 2025] window.
     v4_window = (2020, 2025)
     v4_inputs = {
         q: measure_venue(quantities, q, v4_window, n_boot=args.n_boot)
         for q in ("forecast_temp_kn", "forecast_wind_kn", "forecast_precip_kn")
     }
 
-    # Positive controls: venue-unit and team-unit, once per season window
-    # actually used above.
     windows = sorted({tuple(r["seasons"]) for r in rows if r.get("n_units")})
     positive_controls: dict[str, dict[str, list[dict[str, Any]]]] = {}
     a_team_unit_long = (

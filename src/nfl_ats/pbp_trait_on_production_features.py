@@ -106,8 +106,6 @@ from nfl_ats.schedule_flag_features import (  # noqa: E402
     default_opener_lines,
 )
 
-#: The one new column each candidate profile adds. Frozen names -- matching
-#: the fleet task's own candidate names verbatim.
 OPENING_DRIVE_EPA_COLUMN = "opening_drive_epa"
 Q3_POINT_DIFF_COLUMN = "q3_point_diff"
 FOURTH_DOWN_INTERACTION_COLUMN = "fourth_down_interaction"
@@ -187,11 +185,6 @@ def _pivot_rolling_home_away(
     )
 
 
-# ---------------------------------------------------------------------------
-# LEAD-26: opening-drive EPA differential
-# ---------------------------------------------------------------------------
-
-
 def derive_opening_drive_epa_features(
     features: pd.DataFrame, *, pbp: pd.DataFrame | None = None
 ) -> pd.DataFrame:
@@ -226,11 +219,6 @@ def attach_opening_drive_epa_features(
     )
 
 
-# ---------------------------------------------------------------------------
-# LEAD-27: third-quarter point-differential differential
-# ---------------------------------------------------------------------------
-
-
 def derive_q3_point_diff_features(
     features: pd.DataFrame, *, pbp: pd.DataFrame | None = None
 ) -> pd.DataFrame:
@@ -263,28 +251,6 @@ def attach_q3_point_diff_features(
     )
 
 
-# ---------------------------------------------------------------------------
-# LEAD-30: fourth-down aggressiveness x opener-spread interaction
-# ---------------------------------------------------------------------------
-
-#: A team-game row exists in ``build_fourth_down_team_games`` ONLY for a game
-#: where that team faced at least one eligible 4th-down opportunity -- lane
-#: J's frozen population (4th-and-<=3, yardline_100 in [30, 70]) is rare by
-#: construction, so MOST games are absent for MOST teams. Joining a target
-#: game onto that table by exact ``game_id`` (the way :func:`_pivot_rolling_home_away`
-#: works for LEAD-26/LEAD-27, where a team-game row exists for essentially
-#: every game) would therefore read "team had zero opportunities THIS game"
-#: as "team has no rolling history at all," discarding real, known trailing
-#: state for the vast majority of games. Instead this candidate carries each
-#: team's cumulative (go, eligible) totals FORWARD across every game via an
-#: as-of merge on a chronological ``order_key = season * 100 + week`` (REG
-#: weeks never exceed 99; a genuine POST-season row could in principle share
-#: an ``order_key`` with an earlier REG week -- e.g. week 18 REG vs. a later
-#: POST week also labelled >=18 in some seasons -- a known, rare, disclosed
-#: limitation, not a silent one), taking the LATEST cumulative snapshot
-#: STRICTLY BEFORE the target game's own ``order_key`` (``allow_exact_matches
-#: =False`` -- if the target game is itself an opportunity game, its own
-#: contribution is excluded, preserving leak safety).
 _FOURTH_DOWN_REQUIRED_TEAM_GAME_COLUMNS = (
     "game_id",
     "season",
@@ -422,11 +388,6 @@ def attach_fourth_down_interaction_features(
         ),
         FOURTH_DOWN_INTERACTION_ON_PRODUCTION_FEATURE_COLUMNS,
     )
-
-
-# ---------------------------------------------------------------------------
-# Shared additive-merge helper
-# ---------------------------------------------------------------------------
 
 
 def _attach(

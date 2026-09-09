@@ -55,9 +55,6 @@ from nfl_ats.io import atomic_json
 WEAK_SIGNAL_REGISTRY_VERSION = 1
 WEAK_SIGNAL_REGISTRY_FILENAME = "weak_signals.json"
 
-# The taxonomy in docs/pool_edge_plan.md. Only the first is poolable: a refuted
-# mechanism is real evidence against, and a control-bounded null is a genuine
-# negative. Pooling either of those in would be laundering a known failure.
 CLASSIFICATIONS = (
     "unresolved_below_power",
     "refuted_mechanism",
@@ -66,31 +63,13 @@ CLASSIFICATIONS = (
 POOLABLE_CLASSIFICATION = "unresolved_below_power"
 TERMINAL_CLASSIFICATIONS = ("refuted_mechanism", "bounded_by_control")
 
-# AGENTS.md, "An interval crossing zero is NOT grounds for rejection (binding)":
-# only two things justify closing a line of work, and each terminal entry must
-# name which one it stands on. An interval containing zero is not on this list
-# and never will be — at this evaluator's ~2-point resolution that outcome is
-# EXPECTED for a real small signal, so treating it as a negative silently
-# deletes exactly the signals worth keeping. Enforced in `signal_from_payload`
-# so a session that never read AGENTS.md still cannot record the violation.
 CLOSING_GROUNDS: dict[str, tuple[str, ...]] = {
     "refuted_mechanism": ("wrong_sign_resolved", "no_split_half_reliability"),
     "bounded_by_control": ("positive_control_bound",),
 }
 
-#: A ``no_split_half_reliability`` closure asserts the trait has no signal for
-#: ANY sample size, so the recorded reliability measurement must actually sit
-#: near zero. AGENTS.md: "wrong sign, or the trait has no split-half
-#: reliability". A trait measured at reliability 0.719 (e.g. the CFB role
-#: continuity traits) is reliable and can NEVER close on this ground; letting
-#: such a number through was a validator gap, fixed 2026-08-24.
 NO_SPLIT_HALF_RELIABILITY_MAX = 0.10
 
-#: Families are inferred from names when no explicit ``family`` field is set.
-#: These suffixes mark one construct decomposed into grades/eras/sub-windows --
-#: the same measurement campaign, so its members share football and must not
-#: count as independent votes. Mirrors ``findings_registry``'s duplication
-#: passes (the ``_opener`` grade suffix and the battery-marker prefix rule).
 _FAMILY_DECOMPOSITION_SUFFIXES = (
     re.compile(r"_opener$"),
     re.compile(r"_era_\d{4}_\d{4}$"),
@@ -99,10 +78,6 @@ _FAMILY_DECOMPOSITION_SUFFIXES = (
     re.compile(r"_(?:pre|post)\d{4}$"),
 )
 
-#: A name carrying one of these markers in its first three tokens is a cell of
-#: a predeclared multi-cell screening battery; the whole battery is one family
-#: (same tokens-up-to-and-including the marker). Same convention as
-#: ``findings_registry._battery_key``.
 FAMILY_BATTERY_MARKERS = ("battery", "microstructure")
 
 _CLOSING_RULE = (
@@ -113,51 +88,6 @@ _CLOSING_RULE = (
     "not closed."
 )
 
-# Effects are always stored so that POSITIVE FAVOURS THE CANDIDATE, whatever the
-# underlying metric's own polarity. Brier and MAE improve downward, so a caller
-# recording those must negate before storing; the unit is kept for provenance.
-#
-# SCALES, pinned because two of the first entries were recorded on different
-# ones and pooling them would have been silently meaningless:
-#   ats_points      -- points of margin/line error, e.g. 0.174
-#   accuracy_points -- PERCENTAGE POINTS of forced-pick accuracy, e.g. 1.10 for
-#                      a 1.1-point gap. NOT a fraction: record 1.10, not 0.011.
-#   brier, log_loss -- the raw metric difference, e.g. 0.0015. Ambiguous
-#                      on its own: the module-wide "positive favours candidate"
-#                      convention means the raw (candidate - baseline) natural
-#                      difference has already been NEGATED before storage, but
-#                      nothing in the unit name says so -- a pooler has to trust
-#                      prose in ``notes`` to know a stored +0.0015 here means
-#                      the candidate's Brier/log-loss was 0.0015 LOWER (better),
-#                      not higher. Kept, unchanged, for the entries already
-#                      recorded this way; prefer ``brier_improvement`` /
-#                      ``log_loss_improvement`` below for new entries so the
-#                      sign convention is legible from the unit name alone.
-#   mae             -- points of mean absolute error, e.g. 0.013. Same
-#                      ambiguity and the same fix: prefer ``mae_improvement``.
-#   correlation     -- a Pearson (or equivalent) correlation coefficient,
-#                      native range [-1, +1]. Positive = the predeclared
-#                      candidate-favouring direction, exactly like every other
-#                      unit here -- NOT "positive means positively
-#                      correlated" independent of what direction was
-#                      predeclared. Added 2026-09-01: a CFB entry had been
-#                      forced into ``accuracy_points`` as a "numeric container
-#                      only" for lack of a real unit.
-#   mae_improvement, brier_improvement, log_loss_improvement
-#                   -- the metric's own natural units, but HIGHER IS BETTER,
-#                      unlike the bare ``mae``/``brier``/``log_loss`` units
-#                      above: store (baseline_metric - candidate_metric)
-#                      directly, with no extra negation, e.g. +0.00082 means
-#                      the candidate's MAE was 0.00082 LOWER (better) than the
-#                      baseline's. This is the SAME "positive favours
-#                      candidate" convention every unit in this module already
-#                      follows (see ``favours_candidate``); the point of these
-#                      three units is only that the unit name itself now says
-#                      "improvement", so a pooler never has to consult prose
-#                      in ``notes`` to know which way is better. Added
-#                      2026-09-01 after an NFL totals-residual entry had to be
-#                      recorded under bare ``mae`` with the sign explained only
-#                      in ``notes``.
 EFFECT_UNITS = (
     "ats_points",
     "accuracy_points",
@@ -170,27 +100,6 @@ EFFECT_UNITS = (
     "log_loss_improvement",
 )
 
-#: Reader-facing taxonomy for the public Signal Ledger page: exactly one of
-#: these per signal, optional so the pre-existing registry keeps loading
-#: while a signal awaits classification. Fixed vocabulary -- adding a tenth
-#: bucket means widening this tuple deliberately, not typing a new string at
-#: record time.
-#:   market      -- the betting market itself: line movement, cross-book
-#:                  disagreement, public money, opener/close mechanics.
-#:   onfield     -- on-field play: EPA, drives, pressure, personnel,
-#:                  quarterbacks, special teams, penalties and officials.
-#:   health      -- injuries, illness, availability, participation.
-#:   schedule    -- rest, travel, body clock, revenge/divisional spots,
-#:                  byes, the daylight-saving clock change.
-#:   environment -- weather, surface, altitude, air quality, venue.
-#:   attention   -- media volume, Wikipedia, Reddit, fantasy ADP, TV
-#:                  audience.
-#:   offfield    -- coaches, arrests, transactions, suspensions.
-#:   modeling    -- the model's own settings, calibration, stacking, era
-#:                  weighting -- not a claim about the games themselves.
-#:   control     -- placebos, oracles, instrument checks, mirror nulls:
-#:                  deliberately unplayable arms that exist to prove the
-#:                  measuring tools work, not to be played.
 CATEGORIES = (
     "market",
     "onfield",
@@ -231,15 +140,12 @@ _SIGNAL_FIELDS = frozenset(
         "status",
         "invalidated_reason",
         "superseded_by",
-        # Append-only trail for a wrong SUMMARY restated in place; see _validate_corrections.
         "corrections",
     }
 )
 
-#: Fields a :data:`corrections` entry must carry, and the only fields it may.
 _CORRECTION_FIELDS = frozenset({"at", "field", "from", "to", "reason"})
 
-#: The only fields a recorded correction may rewrite. Deliberately narrow: everything else is a.
 _CORRECTABLE_FIELDS = frozenset({"probability_positive"})
 
 
@@ -268,17 +174,6 @@ class UnknownRegistryFieldWarning(UserWarning):
     """
 
 
-#: ``"raise"`` (the default everywhere -- unchanged behaviour for the
-#: ``weak-signals`` CLI, where an unrecognised field is exactly the kind of
-#: typo an operator should hear about immediately) or ``"warn"`` (emit
-#: :class:`UnknownRegistryFieldWarning` and drop the field instead of
-#: raising). Every OTHER validation -- missing required fields, an
-#: unrecognised enum value, an incoherent effect/interval, an inadmissible
-#: closing ground -- still raises regardless of this setting: those describe
-#: corrupted or contradictory DATA, not additive schema drift, and a site
-#: build has no business publishing on top of either. Only the read path
-#: feeding the public site (``findings_registry.load_weak_signal_registry``)
-#: passes ``"warn"``.
 OnUnknownField = Literal["raise", "warn"]
 
 
@@ -316,14 +211,7 @@ class WeakSignal:
     reliability: float | None = None
     family: str | None = None
     notes: str = ""
-    #: One or two plain-English sentences a football fan with no statistics
-    #: background can read on its own -- naming the situation AND what the
-    #: rule does about it. Optional so the pre-existing registry keeps
-    #: loading; the Signal Ledger page falls back to ``description``,
-    #: visibly marked as a raw technical description, when this is unset.
     plain_summary: str | None = None
-    #: One of :data:`CATEGORIES`, or ``None`` while unclassified. Validated
-    #: against the fixed vocabulary in :func:`signal_from_payload`.
     category: str | None = None
     status: str = "active"
     invalidated_reason: str | None = None
@@ -382,7 +270,6 @@ class WeakSignal:
             low, high = self.interval
             width = float(high) - float(low)
             if width > 0.0:
-                # A 95% interval spans 2 * 1.96 standard errors.
                 return width / (2.0 * 1.959963984540054)
         return None
 
@@ -445,7 +332,7 @@ def validate_closure(
                 f"Signal {name!r} claims no split-half reliability but records "
                 f"no reliability measurement to cite. {_CLOSING_RULE}",
             )
-            assert reliability is not None  # narrowing for mypy; _require raised above
+            assert reliability is not None
             _require(
                 reliability <= NO_SPLIT_HALF_RELIABILITY_MAX,
                 f"Signal {name!r} claims no split-half reliability but records "
@@ -980,12 +867,6 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
         raise WeakSignalError(
             f"Signal {signal.name!r} is already recorded; pass replace=True to correct it"
         )
-    # The CLI constructs WeakSignal directly, so every check signal_from_payload
-    # would otherwise apply on load must be enforced here too — record time is
-    # when the session about to write a bad row needs to hear about it, not the
-    # NEXT load (measured 2026-09-08: a --standard-error 0.0 record went
-    # straight into the file with no complaint here, and only failed to load
-    # afterwards -- by which point it was already written).
     _validate_signal_numeric_fields(
         signal.name,
         effect=signal.effect,
@@ -1003,12 +884,6 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
         probability_positive=signal.probability_positive,
     )
     validate_coherence(signal.name, effect=signal.effect, interval=signal.interval)
-    # docs/weak_signal_pooling.md defect 4: a band narrower than its own
-    # sample_games can support is a block-bootstrap artifact, not power, and
-    # is floored rather than trusted at POOL time. Applying the SAME floor
-    # here, at RECORD time, means a future lane cannot store a zero-width (or
-    # otherwise implausibly narrow) band in the first place -- widening only,
-    # and only ever with a warning; see ImplausibleStandardErrorWarning.
     floor = _floor_standard_error_for_record(registry, signal)
     if floor is not None and signal.standard_error is not None and signal.standard_error < floor:
         warnings.warn(
@@ -1019,9 +894,6 @@ def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = Fal
             ImplausibleStandardErrorWarning,
             stacklevel=2,
         )
-        # dataclasses.replace, fully qualified: this function's own `replace`
-        # PARAMETER (whether to overwrite an existing name) shadows the
-        # `replace` imported from `dataclasses` for the rest of this scope.
         signal = dataclasses.replace(signal, standard_error=floor)
     signals = dict(registry.signals)
     signals[signal.name] = signal
@@ -1207,11 +1079,6 @@ def set_reliability(
     return Registry(version=registry.version, notes=registry.notes, signals=signals)
 
 
-# ---------------------------------------------------------------------------
-# The arithmetic
-# ---------------------------------------------------------------------------
-
-
 def sign_test(signals: Sequence[WeakSignal]) -> dict[str, Any]:
     """Do the point estimates lean one way more than chance allows?
 
@@ -1286,10 +1153,8 @@ def sign_test(signals: Sequence[WeakSignal]) -> dict[str, Any]:
     }
 
 
-#: Weighting schemes accepted by :func:`pooled_effect`.
 POOLING_WEIGHTINGS = ("sample_floored", "inverse_variance")
 
-#: How many robust standard deviations below the pool's own SE-versus-sample curve an entry's.
 _IMPLAUSIBLE_SE_ROBUST_SIGMAS = 3.0
 
 
@@ -1391,7 +1256,6 @@ def _plausibility_curve(usable: Sequence[WeakSignal]) -> _PlausibilityCurve | No
     finite = [r for r in log_ratios if math.isfinite(r)]
     centre = statistics.median(finite)
     deviations = [abs(r - centre) for r in finite]
-    # 1.4826 rescales a median absolute deviation to a standard deviation under normality. When.
     robust_sigma = 1.4826 * statistics.median(deviations)
     if robust_sigma <= 0.0:
         robust_sigma = 1.2533 * statistics.fmean(deviations)
@@ -1563,7 +1427,6 @@ def pooled_effect(
     applied = weighting
     floored: list[dict[str, Any]] = []
     if weighting == "sample_floored" and curve is None:
-        # Nothing better than the recorded bands exists here (synthetic pools, and pools too thin.
         applied = "inverse_variance_fallback_no_curve"
         variances = recorded_variances
     elif curve is not None:
@@ -1595,7 +1458,6 @@ def pooled_effect(
     total_weight = sum(weights)
     fixed_mean = sum(w * e for w, e in zip(weights, effects, strict=True)) / total_weight
 
-    # DerSimonian-Laird between-signal variance.
     q = sum(w * (e - fixed_mean) ** 2 for w, e in zip(weights, effects, strict=True))
     degrees = len(usable) - 1
     tau_squared = 0.0
@@ -1614,7 +1476,6 @@ def pooled_effect(
 
     shares = [w / total_weight for w in weights]
     heaviest = max(range(len(shares)), key=lambda i: shares[i])
-    # Kish's effective sample size: how many equally-weighted signals this pool is really worth..
     effective_signals = (total_weight**2) / sum(w**2 for w in weights)
 
     result: dict[str, Any] = {
@@ -1626,7 +1487,6 @@ def pooled_effect(
         "pooled_effect": mean,
         "standard_error": standard_error,
         "interval": (mean - half, mean + half),
-        # AGENTS.md, binding: report probability_positive, never the binary "contains zero" --.
         "probability_positive": (
             None
             if standard_error <= 0.0
@@ -1634,7 +1494,6 @@ def pooled_effect(
         ),
         "excludes_zero": bool((mean - half) * (mean + half) > 0.0),
         "heterogeneity_tau_squared": tau_squared,
-        # Measured against the sharpest input the pool actually TRUSTS, i.e. after flooring..
         "sharpening_vs_best_single": (
             None if standard_error == 0 else math.sqrt(min(variances)) / standard_error
         ),
@@ -2008,12 +1867,6 @@ def combination_report(
     ]
     leagues = {signal.league for signal in eligible}
     if league is None and len(leagues) > 1:
-        # AGENTS.md: pooled inputs must be commensurable -- same units, same
-        # scale, same POPULATION. NFL and CFB differ in market sharpness and in
-        # evaluator resolution, so averaging them is not a finding, it is a
-        # units error that happens to typecheck. This stayed latent while the
-        # registry held only NFL signals; the first CFB entry would otherwise
-        # have silently moved the headline pooled estimate.
         raise ValueError(
             "Refusing to pool across leagues ("
             + ", ".join(sorted(leagues))

@@ -26,16 +26,11 @@ from nfl_ats.margin import fit_margin_model, fit_market_baseline
 from nfl_ats.modeling import fit_cover_model, regular_season_rows
 from nfl_ats.outcomes import OUTCOME_METHODS, score_outcome_week, walk_forward_outcomes
 
-# ---------------------------------------------------------------------------
-# A tiny two-season league with a full postseason bracket
-# ---------------------------------------------------------------------------
-
 FIRST_SEASON = 2021
 SECOND_SEASON = 2022
 REGULAR_SEASON_WEEKS = 18
 SEASON_OPENERS = {FIRST_SEASON: date(2021, 9, 12), SECOND_SEASON: date(2022, 9, 11)}
 
-# (game_type, week, gameday, home, away, margin, spread_line)
 POSTSEASON_BRACKET: tuple[tuple[str, int, date, str, str, float, float], ...] = (
     ("WC", 19, date(2022, 1, 16), "A", "C", 49.0, 2.5),
     ("WC", 19, date(2022, 1, 16), "B", "D", 6.0, -1.5),
@@ -48,17 +43,9 @@ DIVISIONAL_GAME_ID = "2021_20_B_A"
 SUPER_BOWL_GAME_ID = "2021_22_B_A"
 WEEK_18_GAME_ID = "2021_18_A_B"
 BRACKET_TEAM = "A"
-# The comparison bracket: the same wild-card game lost by three touchdowns
-# instead of won by seven. Elo is margin-blind, so flipping the winner is what
-# makes the divisional round's rating provably a function of the wild-card
-# result; the margin-weighted schedule graph moves either way.
 UPSET_MARGIN = -21.0
-# ``add_elo_features``' default home-field term, removed when recovering a
-# team-oriented Elo gap from the published ``elo_diff`` column.
 HOME_FIELD_ELO = 55.0
 
-# Small enough to keep the fixture cheap; the postseason contract does not
-# depend on the rolling-window sizes.
 BUILD_KWARGS = {"span": 3, "min_periods": 1, "graph_min_games": 4}
 
 
@@ -217,27 +204,15 @@ def postseason_build() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     return schedules, regular, combined
 
 
-# ---------------------------------------------------------------------------
-# 1. Regular-season rows are bit-identical either way
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.full  # ENG-11: asserts bit-for-bit determinism across a full build
+@pytest.mark.full
 def test_regular_season_rows_are_bit_identical_with_postseason_included(
     postseason_build: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
 ) -> None:
     _, regular, combined = postseason_build
     subset = combined.loc[combined["game_type"].eq("REG")].reset_index(drop=True)
     pd.testing.assert_frame_equal(regular.reset_index(drop=True), subset)
-    # Both seasons are present, so the offseason carry-over paths (Elo reset,
-    # team-state regression, graph decay) actually ran inside the comparison.
     assert sorted(regular["season"].unique()) == [FIRST_SEASON, SECOND_SEASON]
     assert regular["game_type"].eq("REG").all()
-
-
-# ---------------------------------------------------------------------------
-# 2. Postseason rows are present, labeled, and encoded
-# ---------------------------------------------------------------------------
 
 
 def test_postseason_rows_are_appended_and_encoded(
@@ -254,8 +229,6 @@ def test_postseason_rows_are_appended_and_encoded(
     assert super_bowl["neutral_site"] == 1
     assert regular["neutral_site"].eq(0).all()
 
-    # Playoff weeks clamp to the top of the regular-season cycle rather than
-    # wrapping the cyclic encoding back to September.
     week_18 = combined.loc[combined["game_id"].eq(WEEK_18_GAME_ID)].iloc[0]
     assert postseason["week"].min() == 19
     assert postseason["week_sin"].eq(week_18["week_sin"]).all()
@@ -270,11 +243,6 @@ def test_postseason_rows_are_appended_and_encoded(
     ] == pytest.approx(46.5)
 
 
-# ---------------------------------------------------------------------------
-# 3. Playoff results reach postseason rows only
-# ---------------------------------------------------------------------------
-
-
 def test_postseason_results_reach_postseason_rows_only(
     postseason_build: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
 ) -> None:
@@ -287,22 +255,15 @@ def test_postseason_results_reach_postseason_rows_only(
         **BUILD_KWARGS,  # type: ignore[arg-type]
     )
 
-    # Pass two carried the wild-card result forward into the divisional row:
-    # the team's Elo standing there is neither its week-18 standing nor the
-    # standing it would have had after losing that wild-card game instead.
     week_18_gap = _elo_gap(blowout, WEEK_18_GAME_ID, BRACKET_TEAM)
     blowout_gap = _elo_gap(blowout, DIVISIONAL_GAME_ID, BRACKET_TEAM)
     upset_gap = _elo_gap(upset, DIVISIONAL_GAME_ID, BRACKET_TEAM)
     assert blowout_gap != pytest.approx(week_18_gap)
     assert blowout_gap > upset_gap
-    # The blowout's size (not just its winner) also reaches the later rounds,
-    # through the margin-weighted schedule graph.
     assert _schedule_rating_diff(blowout, DIVISIONAL_GAME_ID) != pytest.approx(
         _schedule_rating_diff(upset, DIVISIONAL_GAME_ID)
     )
 
-    # ...and nowhere else: every regular-season row is untouched by the change,
-    # including the season played after the bracket.
     pd.testing.assert_frame_equal(
         blowout.loc[blowout["game_type"].eq("REG")].reset_index(drop=True),
         upset.loc[upset["game_type"].eq("REG")].reset_index(drop=True),
@@ -315,11 +276,6 @@ def test_postseason_results_reach_postseason_rows_only(
     pd.testing.assert_frame_equal(
         _team_season_elo(upset, BRACKET_TEAM, SECOND_SEASON), next_season_elo
     )
-
-
-# ---------------------------------------------------------------------------
-# 4. The guard itself
-# ---------------------------------------------------------------------------
 
 
 def test_regular_season_rows_drops_postseason_and_passes_through() -> None:
@@ -336,10 +292,6 @@ def test_regular_season_rows_drops_postseason_and_passes_through() -> None:
     without_game_type = frame.drop(columns="game_type")
     pd.testing.assert_frame_equal(regular_season_rows(without_game_type), without_game_type)
 
-
-# ---------------------------------------------------------------------------
-# A model table with postseason rows the fitters must not see
-# ---------------------------------------------------------------------------
 
 FILL_COLUMNS = (*MODEL_FEATURE_COLUMNS, *GRAPH_FEATURE_COLUMNS)
 
@@ -408,11 +360,6 @@ def postseason_model_frame() -> pd.DataFrame:
     return _model_frame_with_postseason()
 
 
-# ---------------------------------------------------------------------------
-# 5. Fitters are immune to postseason rows
-# ---------------------------------------------------------------------------
-
-
 def test_margin_and_market_fits_ignore_postseason_rows(
     postseason_model_frame: pd.DataFrame,
 ) -> None:
@@ -435,7 +382,6 @@ def test_margin_and_market_fits_ignore_postseason_rows(
     assert market_with.training_rows == market_regular.training_rows == len(regular)
     assert market_with.training_max_gameday == market_regular.training_max_gameday
     assert np.array_equal(market_with.residuals, market_regular.residuals)
-    # A leaked 250-point ATS margin would be impossible to miss in the residuals.
     assert float(np.abs(market_with.residuals).max()) == pytest.approx(3.0)
 
 
@@ -452,11 +398,6 @@ def test_cover_model_fit_ignores_postseason_rows(postseason_model_frame: pd.Data
         with_postseason.predict_home_cover(regular.tail(5)),
         regular_only.predict_home_cover(regular.tail(5)),
     )
-
-
-# ---------------------------------------------------------------------------
-# 6. Walk-forward evaluation is unchanged by appended postseason rows
-# ---------------------------------------------------------------------------
 
 
 def test_walk_forward_backtest_ignores_postseason_rows(
@@ -497,11 +438,6 @@ def test_walk_forward_outcomes_ignores_postseason_rows(
     pd.testing.assert_frame_equal(with_postseason.season_summary, regular_only.season_summary)
 
 
-# ---------------------------------------------------------------------------
-# 7. A playoff week can still be served
-# ---------------------------------------------------------------------------
-
-
 def test_outcome_week_scores_a_playoff_week_without_training_on_postseason(
     postseason_model_frame: pd.DataFrame,
 ) -> None:
@@ -514,16 +450,10 @@ def test_outcome_week_scores_a_playoff_week_without_training_on_postseason(
     assert set(predictions["game_type"]) == {"WC"}
     assert len(predictions) == len(playoff_ids) * len(OUTCOME_METHODS)
 
-    # Training stopped at the last regular-season game, not the 2019 bracket
-    # that sits chronologically between the two regular seasons. Every
-    # regular-season row precedes the target week, so all of them -- and only
-    # them -- are eligible.
     regular = frame.loc[frame["game_type"].eq("REG")]
     assert set(predictions["train_max_gameday"]) == {max(regular["gameday"]).isoformat()}
     assert set(predictions["train_rows"]) == {len(regular)}
 
-    # Dropping the earlier postseason "poison" rows changes nothing, which is
-    # only possible if they were never in the training set.
     without_poison = frame.loc[~(frame["season"].eq(2019) & frame["game_type"].ne("REG"))]
     clean = score_outcome_week(without_poison, season=2020, week=19, min_train_games=80)
     pd.testing.assert_frame_equal(predictions.reset_index(drop=True), clean.reset_index(drop=True))
@@ -577,11 +507,6 @@ def test_margin_predict_cli_preserves_postseason_round_in_artifact_metadata(
     assert not (artifacts / "active_ats_model.json").exists()
 
 
-# ---------------------------------------------------------------------------
-# 8. Weekly serving skips unplayed postseason rows
-# ---------------------------------------------------------------------------
-
-
 def test_upcoming_week_skips_unplayed_postseason_rows() -> None:
     frame = pd.DataFrame(
         {
@@ -592,8 +517,6 @@ def test_upcoming_week_skips_unplayed_postseason_rows() -> None:
             "result": [np.nan, np.nan, np.nan, np.nan],
         }
     )
-    # Sorted by (season, week) the postseason rows come first; the guard keeps
-    # them from claiming the upcoming week.
     assert upcoming_week(frame) == (2025, 5)
 
     only_postseason_unplayed = frame.copy()

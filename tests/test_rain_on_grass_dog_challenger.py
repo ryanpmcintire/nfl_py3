@@ -45,25 +45,9 @@ from nfl_ats.rain_on_grass_dog_challenger import (
 )
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# HDOG at FAV, grass, precip 70%, home is the underdog (spread -3), model
-#   picks AWAY (favorite) -> flips HOME.
-# FAV2 at ADOG, grass, precip 70%, AWAY is the underdog (spread +3), model
-#   picks HOME (favorite) -> flips AWAY.
-# TURF at WET2, turf (not grass), precip 70%, home dog -- no flip.
-# GRASS3 at WET3, grass, precip 40% (below 60) -- no flip.
-# PICKEM at WET4, grass, precip 70%, spread_line == 0 (no underdog) -- no flip.
-# GRASS5 at WET5, grass, precip 70%, home dog, model ALREADY on HOME -- no flip.
-# GRASS6 at WET6, grass, NO forecast row at all -- no flip.
-# POSTG at POSTW mirrors the clean flagged shape but game_type=POST.
-
 
 def _schedule() -> pd.DataFrame:
     rows = [
-        # game_id, season, game_type, week, home, away, surface
         ("2025_10_HDOG_FAV", 2025, "REG", 10, "HDOG", "FAV", "grass"),
         ("2025_10_FAV2_ADOG", 2025, "REG", 10, "FAV2", "ADOG", "grass"),
         ("2025_10_TURF_WET2", 2025, "REG", 10, "TURF", "WET2", "fieldturf"),
@@ -89,7 +73,6 @@ def _forecasts() -> pd.DataFrame:
                 "2025_10_GRASS3_WET3",
                 "2025_10_PICKEM_WET4",
                 "2025_10_GRASS5_WET5",
-                # 2025_10_GRASS6_WET6 deliberately absent -- missing forecast row
                 "2025_20_POSTG_POSTW",
             ],
             "forecast_precip_prob_pct": [70.0, 70.0, 70.0, 40.0, 70.0, 70.0, 70.0],
@@ -121,11 +104,6 @@ def _predictions() -> pd.DataFrame:
             "home_cover_probability": [0.35, 0.65, 0.35, 0.35, 0.35, 0.60, 0.35, 0.35],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. rain_on_grass_flag_by_game
-# ---------------------------------------------------------------------------
 
 
 def test_flag_fires_on_grass_and_high_precip() -> None:
@@ -165,11 +143,6 @@ def test_flag_requires_schedule_columns() -> None:
 
 def test_threshold_is_the_frozen_sixty_percent() -> None:
     assert PRECIP_PROB_THRESHOLD_PCT == 60.0
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_rain_on_grass_dog_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_to_the_home_underdog() -> None:
@@ -263,11 +236,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     only_turf = _predictions().loc[lambda frame: frame["game_id"].eq("2025_10_TURF_WET2")]
     result = apply_rain_on_grass_dog_tilt_overlay(only_turf, _schedule(), _forecasts())
@@ -300,10 +268,6 @@ def test_disclosure_note_formats_a_hand_built_flip() -> None:
     assert "-> HM1" in note
     assert "precip 70%" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_rain_on_grass_dog_challenger_decisions
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -407,7 +371,7 @@ def _no_network_stub(station: str, runtime_utc, *, model: str) -> list[dict]:
     ]
 
 
-@pytest.mark.full  # ENG-11: dominates --durations
+@pytest.mark.full
 def test_record_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -534,7 +498,7 @@ def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_
     assert result["forecast_cutoff_mode"] == "pool_decision"
 
 
-@pytest.mark.full  # ENG-11: dominates --durations
+@pytest.mark.full
 def test_record_challenger_refuses_outside_recording_lock_window(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -586,11 +550,6 @@ def test_record_challenger_refuses_an_inactive_registration(tmp_path: Path) -> N
             now=datetime(2025, 11, 4, 16, 0, tzinfo=UTC),
             fetch_bulletin=_no_network_stub,
         )
-
-
-# ---------------------------------------------------------------------------
-# 5. Registration self-consistency (the TRACKED registry entry)
-# ---------------------------------------------------------------------------
 
 
 def test_real_registry_entry_fingerprint_is_internally_consistent() -> None:

@@ -23,7 +23,7 @@ from nfl_ats.cfb_roles import (
     summarize_delivery,
 )
 
-_ALPHA = 2.0 / (FROZEN_ROLE_SPAN + 1.0)  # 2/9, matching FROZEN_ROLE_SPAN=8
+_ALPHA = 2.0 / (FROZEN_ROLE_SPAN + 1.0)
 
 
 def _action_row(
@@ -49,11 +49,6 @@ def _action_row(
         "count": count,
         "team_total": team_total,
     }
-
-
-# ---------------------------------------------------------------------------
-# 1. build_role_states: share/prior_share/prior_appearances EWM mirror
-# ---------------------------------------------------------------------------
 
 
 def test_build_role_states_hand_computed_ewm_sequence() -> None:
@@ -92,7 +87,6 @@ def test_build_role_states_hand_computed_ewm_sequence() -> None:
                 count=30,
                 team_total=40,
             ),
-            # Same player, different team: state must start fresh (team-keyed).
             _action_row(
                 game_id="G4",
                 season=2022,
@@ -126,7 +120,6 @@ def test_build_role_states_hand_computed_ewm_sequence() -> None:
     assert by_game.loc["G3", "prior_share"] == pytest.approx(expected_state_after_g2)
     assert by_game.loc["G3", "prior_appearances"] == 2
 
-    # Team B's row for the same player has no prior state of its own.
     assert math.isnan(by_game.loc["G4", "prior_share"])
     assert by_game.loc["G4", "prior_appearances"] == 0
 
@@ -136,7 +129,6 @@ def test_build_role_states_hand_computed_ewm_sequence() -> None:
         "prior_share",
         "prior_appearances",
     ]
-    # Sanity: expected_state_after_g3 is only used to seed the delivery test below.
     assert expected_state_after_g3 > expected_state_after_g2
 
 
@@ -162,11 +154,6 @@ def test_build_role_states_rejects_zero_count_rows() -> None:
         build_role_states(actions)
 
 
-# ---------------------------------------------------------------------------
-# 2. build_delivery_frame: threshold / min-prior-appearances gating + ratio
-# ---------------------------------------------------------------------------
-
-
 def _states_row(
     *, action_type: str, share: float, prior_share: float, prior_appearances: int
 ) -> dict[str, object]:
@@ -189,27 +176,22 @@ def _states_row(
 def test_build_delivery_frame_filters_and_computes_ratio() -> None:
     states = pd.DataFrame(
         [
-            # Qualifies: prior_share >= 0.50, prior_appearances >= 3.
             {
                 **_states_row(
                     action_type="dropback", share=0.5, prior_share=0.6, prior_appearances=3
                 )
             },
-            # Fails: prior_appearances below the minimum.
             {
                 **_states_row(
                     action_type="dropback", share=0.5, prior_share=0.6, prior_appearances=2
                 )
             },
-            # Fails: prior_share below the dropback threshold.
             {
                 **_states_row(
                     action_type="dropback", share=0.5, prior_share=0.4, prior_appearances=5
                 )
             },
-            # Qualifies: carry threshold is 0.20.
             {**_states_row(action_type="carry", share=0.3, prior_share=0.25, prior_appearances=4)},
-            # Fails: no prior appearance at all (NaN prior_share).
             {
                 **_states_row(
                     action_type="carry", share=0.3, prior_share=math.nan, prior_appearances=0
@@ -244,19 +226,12 @@ def test_summarize_delivery_aggregates_per_action_type() -> None:
     summary = summarize_delivery(delivery)
     row = summary.loc[summary["action_type"].eq("dropback")].iloc[0]
     assert row["n"] == 2
-    assert row["median_ratio"] == pytest.approx(0.75)  # median of ratios 1.0 and 0.5
+    assert row["median_ratio"] == pytest.approx(0.75)
     assert row["fraction_at_or_above_one"] == pytest.approx(0.5)
-    assert row["fraction_severe_under"] == pytest.approx(0.5)  # the 0.5 ratio row
-
-
-# ---------------------------------------------------------------------------
-# 3. build_absence_frame: proxy absence events, state frozen during a streak
-# ---------------------------------------------------------------------------
+    assert row["fraction_severe_under"] == pytest.approx(0.5)
 
 
 def test_build_absence_frame_detects_streak_without_updating_state() -> None:
-    # Team A, action_type "carry": P1 appears G1-G3, is absent G4-G5; P2
-    # appears every game (also the top replacement while P1 is absent).
     rows = []
     p1_counts = {"G1": 10, "G2": 12, "G3": 11}
     p2_counts = {"G1": 5, "G2": 4, "G3": 5, "G4": 8, "G5": 7}
@@ -312,32 +287,23 @@ def test_build_absence_frame_detects_streak_without_updating_state() -> None:
     p1_absences = absences.loc[absences["player_id"].eq("P1")].sort_values("game_id")
     assert p1_absences["game_id"].tolist() == ["G4", "G5"]
 
-    # The state is frozen during the absence streak: identical prior_share
-    # (and hence identical top_replacement lookups keyed off the same state
-    # formula) on both absence rows.
     prior_shares = p1_absences["prior_share"].tolist()
     assert prior_shares[0] == pytest.approx(prior_shares[1])
 
-    # Hand-recompute P1's state after G1-G3 to cross-check the frozen value.
     alpha = _ALPHA
     state = 10.0 / 20.0
     state = alpha * (12.0 / 20.0) + (1.0 - alpha) * state
     state = alpha * (11.0 / 20.0) + (1.0 - alpha) * state
     assert prior_shares[0] == pytest.approx(state)
 
-    # top_replacement on G4 is P2, whose own share that game was 8/20.
     g4_row = p1_absences.loc[p1_absences["game_id"].eq("G4")].iloc[0]
     assert g4_row["top_replacement_share"] == pytest.approx(8.0 / 20.0)
     assert not math.isnan(g4_row["top_replacement_prior_share"])
 
-    # team_total_trailing equals the (constant) prior team_total of 20 once
-    # there is history to trail.
     assert g4_row["team_total_trailing"] == pytest.approx(20.0)
 
 
 def test_build_absence_frame_excludes_team_games_below_minimum() -> None:
-    # Same qualifying player as above, but the only "absence" opportunity is
-    # a team-game whose team_total is below FROZEN_MIN_TEAM_ACTIONS["carry"].
     rows = [
         _action_row(
             game_id=f"G{index}",
@@ -382,11 +348,6 @@ def test_build_absence_frame_excludes_team_games_below_minimum() -> None:
     )
     absences = build_absence_frame(team_games, states)
     assert absences.empty
-
-
-# ---------------------------------------------------------------------------
-# 4. cfb_role_actions: coverage gate and action definitions
-# ---------------------------------------------------------------------------
 
 
 def _canonical_games(rows: list[tuple[object, str]]) -> pd.DataFrame:
@@ -452,8 +413,6 @@ def test_cfb_role_actions_coverage_gate_excludes_low_coverage_season() -> None:
 
 
 def test_cfb_role_actions_definitions_and_uncredited_play() -> None:
-    # pbp game_id is numeric; canonical_games' game_id is a string -- the
-    # adapter must normalize both to str before joining.
     canonical_games = pd.DataFrame({"game_id": ["1"], "gameday": pd.to_datetime(["2020-09-05"])})
     rows = []
     for index in range(20):
@@ -461,7 +420,7 @@ def test_cfb_role_actions_definitions_and_uncredited_play() -> None:
             _base_pbp_row(
                 game_id=1,
                 **{"pass": True},
-                passer_player_id="QB1" if index < 19 else np.nan,  # one uncredited dropback
+                passer_player_id="QB1" if index < 19 else np.nan,
             )
         )
     for _ in range(12):
@@ -487,13 +446,7 @@ def test_cfb_role_actions_definitions_and_uncredited_play() -> None:
     assert coverage_by_type.loc["carry", "coverage"] == pytest.approx(1.0)
     assert coverage_by_type.loc["reception", "coverage"] == pytest.approx(1.0)
 
-    # order_key comes from the canonical games' gameday.
     assert (actions["order_key"] == pd.Timestamp("2020-09-05")).all()
-
-
-# ---------------------------------------------------------------------------
-# 5. nfl_role_actions: dropback = attempts + sacks_taken
-# ---------------------------------------------------------------------------
 
 
 def test_nfl_role_actions_dropback_is_attempts_plus_sacks_taken() -> None:
@@ -532,17 +485,12 @@ def test_nfl_role_actions_dropback_is_attempts_plus_sacks_taken() -> None:
     carry_team_total = actions.loc[
         actions["action_type"].eq("carry") & actions["player_id"].eq("RB1"), "team_total"
     ].iloc[0]
-    assert carry_team_total == 17  # 2 (QB1) + 15 (RB1)
+    assert carry_team_total == 17
 
     official_note = coverage.loc[coverage["action_type"].eq("dropback")].iloc[0]
     assert official_note["coverage"] == pytest.approx(1.0)
     assert official_note["note"] == "official_stats"
     assert bool(official_note["excluded"]) is False
-
-
-# ---------------------------------------------------------------------------
-# 6. evaluate_replication_gates
-# ---------------------------------------------------------------------------
 
 
 def _summary_row(
@@ -564,7 +512,7 @@ def test_evaluate_replication_gates_mixed_pass_fail() -> None:
     cfb_summary = pd.DataFrame(
         [
             _summary_row("dropback", median_ratio=0.95, fraction_severe_under=0.05),
-            _summary_row("carry", median_ratio=1.25, fraction_severe_under=0.05),  # band fails
+            _summary_row("carry", median_ratio=1.25, fraction_severe_under=0.05),
             _summary_row("reception", median_ratio=1.00, fraction_severe_under=0.05),
         ]
     )
@@ -572,7 +520,7 @@ def test_evaluate_replication_gates_mixed_pass_fail() -> None:
         [
             _summary_row("dropback", median_ratio=1.00, fraction_severe_under=0.05),
             _summary_row("carry", median_ratio=1.20, fraction_severe_under=0.05),
-            _summary_row("reception", median_ratio=1.25, fraction_severe_under=0.05),  # gap fails
+            _summary_row("reception", median_ratio=1.25, fraction_severe_under=0.05),
         ]
     )
     gates = evaluate_replication_gates(cfb_summary, nfl_summary)
@@ -607,11 +555,6 @@ def test_evaluate_replication_gates_missing_action_type() -> None:
     assert gates["dropback"]["replicated"] is False
     assert "note" in gates["dropback"]
     assert gates["carry"]["replicated"] is False
-
-
-# ---------------------------------------------------------------------------
-# 7. run_role_replication end-to-end
-# ---------------------------------------------------------------------------
 
 
 def test_run_role_replication_end_to_end_produces_all_keys() -> None:
@@ -675,9 +618,6 @@ def test_run_role_replication_end_to_end_produces_all_keys() -> None:
     assert result["configuration"]["min_prior_appearances"] == FROZEN_MIN_PRIOR_APPEARANCES
     assert set(FROZEN_ROLE_THRESHOLDS) == set(result["configuration"]["role_thresholds"])
 
-    # QB1 delivers 100% of both leagues' dropbacks every week, so the two
-    # trailing appearances (weeks 4-5, once min_prior=3 is satisfied) qualify
-    # with ratio == 1.0 in both leagues, and the gate is a clean replication.
     dropback_gate = result["gates"]["dropback"]
     assert dropback_gate["replicated"] is True
     assert dropback_gate["cfb_median_ratio"] == pytest.approx(1.0)

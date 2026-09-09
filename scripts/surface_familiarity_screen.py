@@ -95,13 +95,9 @@ OUT_DIR = Path(
 PREDECLARATION_PATH = OUT_DIR / "predeclaration.json"
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/ -- its only two
-# write sites are under OUT_DIR, a scratchpad temp directory (see module
-# docstring), never artifacts/ or registry/; the module mentions an
-# artifacts/... path only as a citation of another script's prior output.
 READ_ONLY_EXCEPTIONS: dict[int, str] = {
-    271: "OUT_DIR is the scratchpad temp directory defined above, not artifacts/",
-    438: "output_path == OUT_DIR / 'results.json', the scratchpad temp directory",
+    267: "OUT_DIR is the scratchpad temp directory defined above, not artifacts/",
+    428: "output_path == OUT_DIR / 'results.json', the scratchpad temp directory",
 }
 
 BOOTSTRAP_SAMPLES = 20_000
@@ -286,7 +282,6 @@ def main() -> None:
         "predeclaration": str(PREDECLARATION_PATH),
     }
 
-    # ---- R1: venue-controlled, within turf-venue games ----
     print("\n=== R1: turf-venue games, grass-modal vs turf-modal visitor ===")
     r1_pair = build_pair(df, venue_surface="turf", mismatch_surface="grass")
     r1 = score_pair(
@@ -309,7 +304,6 @@ def main() -> None:
         f"n_week_blocks={r1['n_week_blocks']}"
     )
 
-    # ---- R2: mirror, within grass-venue games ----
     print("\n=== R2: grass-venue games, turf-modal vs grass-modal visitor (mirror) ===")
     r2_pair = build_pair(df, venue_surface="grass", mismatch_surface="turf")
     r2 = score_pair(
@@ -332,7 +326,6 @@ def main() -> None:
         f"n_week_blocks={r2['n_week_blocks']}"
     )
 
-    # ---- R3: era split of R1 ----
     results["R3_era_split"] = {}
     for label, (start, end) in (("2009_2017", ERA_1), ("2018_2025", ERA_2)):
         print(f"\n=== R3 era {start}-{end}: R1 rerun within era, own denominator ===")
@@ -355,7 +348,6 @@ def main() -> None:
             f"P+={wbe['probability_positive']:.4f}"
         )
 
-    # ---- distinct turf-venue home franchises per era (report only) ----
     turf_franchises_by_era = {}
     for label, (start, end) in (("2009_2017", ERA_1), ("2018_2025", ERA_2)):
         era_df = df.loc[df["season"].between(start, end)]
@@ -364,7 +356,6 @@ def main() -> None:
         print(f"\nturf-venue home franchises {label} (n={len(teams)}): {teams}")
     results["turf_venue_home_franchises_by_era"] = turf_franchises_by_era
 
-    # ---- R4: franchise-cluster robustness of R1 (not recorded) ----
     print("\n=== R4: R1 re-intervaled with a home-franchise-blocked bootstrap ===")
     r4_draws = block_bootstrap_two_arm(
         r1_pair,
@@ -405,7 +396,6 @@ def main() -> None:
             f"(n_mismatched={row['n_mismatched']}, n_matched={row['n_matched']})"
         )
 
-    # ---- R5: dome interaction within R1 (report only) ----
     print("\n=== R5: R1 split by roof (dome/closed vs outdoor-turf), report only ===")
     r5: dict[str, Any] = {}
     for roof_label, roof_set in (("dome_closed", DOME_CLOSED_ROOFS), ("outdoor", OUTDOOR_ROOFS)):

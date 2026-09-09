@@ -27,19 +27,14 @@ from nfl_ats.reddit_attention_production_feature import (
     derive_reddit_attention_features,
 )
 
-# Ten consecutive Sunday game days in one season. The trailing baseline needs
-# TRAILING_MIN_GAMES=2 strictly prior games (shift(1) then min_periods=2), so
-# a z-score first exists on a team's THIRD game; the spike is placed on the
-# tenth, with eight quiet games behind it.
 SUNDAYS = (
     [f"2012-{month:02d}-{day:02d}" for month, day in [(9, 9), (9, 16), (9, 23), (9, 30)]]
     + [f"2012-10-{day:02d}" for day in (7, 14, 21, 28)]
     + ["2012-11-04", "2012-11-11"]
 )
 
-TARGET_GAMEDAY = pd.Timestamp(SUNDAYS[-1])  # 2012-11-11, a Sunday
-# window_end = gameday - ((weekday - 1) mod 7) days; Sunday weekday=6 -> 5 days
-TARGET_WINDOW_END = pd.Timestamp("2012-11-06")  # Tuesday of that game week
+TARGET_GAMEDAY = pd.Timestamp(SUNDAYS[-1])
+TARGET_WINDOW_END = pd.Timestamp("2012-11-06")
 TARGET_WINDOW_START = pd.Timestamp("2012-10-31")
 
 
@@ -76,10 +71,6 @@ def _games() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-#: A trailing z-score needs a non-degenerate trailing standard deviation, so
-#: the fixture's daily comment counts carry seeded, deterministic day-to-day
-#: variation. Posts stay flat, which keeps the comment-to-post ratio a clean
-#: rescaling of the comment series.
 _JITTER_SEED = 20260901
 
 
@@ -129,17 +120,12 @@ def _target(derived: pd.DataFrame, column: str) -> float:
     return float(derived.set_index("game_id").loc["2012_10_AAA_BBB", column])
 
 
-# ---------------------------------------------------------------------------
-# Leakage, both directions: the Tuesday-ending window is binding
-# ---------------------------------------------------------------------------
-
-
 def test_away_spike_inside_the_pre_kickoff_window_reaches_the_column() -> None:
     """A volume spike on a day inside the Tuesday-ending window must fire the
     away column. Without this direction the post-kickoff test below would pass
     trivially on a builder that never returns anything."""
 
-    inside = str(TARGET_WINDOW_END.date())  # Tuesday 2012-11-06, the last day in
+    inside = str(TARGET_WINDOW_END.date())
     assert TARGET_WINDOW_START <= pd.Timestamp(inside) <= TARGET_WINDOW_END
     derived = derive_reddit_attention_features(
         _games(), team_daily=_team_daily(away_comment_spike={inside: 100_000.0})
@@ -213,11 +199,6 @@ def test_a_future_weeks_spike_cannot_reach_an_earlier_games_baseline() -> None:
         assert (pd.isna(left) and pd.isna(right)) or left == right
 
 
-# ---------------------------------------------------------------------------
-# Missing coverage is NaN, never False (predeclaration section 2, deviation 1)
-# ---------------------------------------------------------------------------
-
-
 def test_first_games_of_a_season_have_no_baseline_and_stay_missing() -> None:
     """A z-score needs two strictly prior games, so a team's first two games of
     a season come back NaN rather than "not elevated"."""
@@ -239,7 +220,6 @@ def test_a_team_with_no_subreddit_data_stays_missing() -> None:
     del daily["AAA"]
     derived = derive_reddit_attention_features(_games(), team_daily=daily).set_index("game_id")
     assert np.isnan(derived.loc["2012_10_AAA_BBB", REDDIT_AWAY_SPIKE_COLUMN])
-    # the home side of the same game still resolves: the columns are per-side
     assert not np.isnan(derived.loc["2012_10_AAA_BBB", REDDIT_HOME_RATIO_ELEVATED_COLUMN])
 
 
@@ -268,11 +248,6 @@ def test_no_fetched_data_at_all_returns_all_missing_not_all_false() -> None:
     for column in REDDIT_ATTENTION_ON_PRODUCTION_FEATURE_COLUMNS:
         assert derived[column].isna().all()
     assert len(derived) == len(_games())
-
-
-# ---------------------------------------------------------------------------
-# Additivity and join contracts
-# ---------------------------------------------------------------------------
 
 
 def test_attach_is_purely_additive() -> None:

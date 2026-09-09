@@ -113,11 +113,6 @@ def default_schedules() -> Path:
     return latest_schedules()
 
 
-# ---------------------------------------------------------------------------
-# Loading + join
-# ---------------------------------------------------------------------------
-
-
 def load_raw_schedule(schedules_path: Path) -> pd.DataFrame:
     """REG-only schedule, team codes normalized to current nflverse codes."""
 
@@ -243,11 +238,6 @@ def add_sagarin_side_cover(
     )
 
 
-# ---------------------------------------------------------------------------
-# Populations
-# ---------------------------------------------------------------------------
-
-
 def build_close_population(
     schedules_path: Path, sagarin_root: Path
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -335,11 +325,6 @@ def build_model_agreement_population(
         "min_train_games cutoff, not a choice made in this script)"
     )
     return merged.reset_index(drop=True), note
-
-
-# ---------------------------------------------------------------------------
-# Week-blocked bootstrap
-# ---------------------------------------------------------------------------
 
 
 def block_bootstrap_single(
@@ -435,11 +420,6 @@ def summarize_two_group(
     }
 
 
-# ---------------------------------------------------------------------------
-# Cells
-# ---------------------------------------------------------------------------
-
-
 def build_cells(
     close_pop: pd.DataFrame,
     open_pop: pd.DataFrame,
@@ -469,7 +449,6 @@ def build_cells(
             }
         )
 
-    # (a) large divergence, close + open grade
     large_close = close_pop.loc[close_pop["divergence_close"].abs() >= LARGE_DIVERGENCE_THRESHOLD]
     add_single(
         "sagarin_battery_large_divergence_close",
@@ -484,7 +463,6 @@ def build_cells(
         large_open,
     )
 
-    # (c) top-decile sub-cell, threshold computed within each population separately
     if len(close_pop):
         close_decile_threshold = float(close_pop["divergence_close"].abs().quantile(0.90))
         top_close = close_pop.loc[close_pop["divergence_close"].abs() >= close_decile_threshold]
@@ -504,7 +482,6 @@ def build_cells(
             top_open,
         )
 
-    # (d) era splits of the close-grade large-divergence cell
     for label, lo, hi in ERA_SPLITS:
         subset = large_close.loc[large_close["season"].between(lo, hi)]
         add_single(
@@ -513,7 +490,6 @@ def build_cells(
             subset,
         )
 
-    # (b) divergence-sign agreement with the active model's forced pick
     if len(agreement_pop):
         summary = summarize_two_group(
             agreement_pop, flag_col="agree", value_col="model_correct", samples=samples, seed=seed
@@ -546,11 +522,6 @@ def build_cells(
         )
 
     return results
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:

@@ -82,8 +82,6 @@ from nfl_ats.prospective_scoring import (
     challenger_registry_path,
 )
 
-#: The DoD's fixed classification vocabulary. Nothing else may appear in a
-#: recorder row's ``status`` field.
 STATUS_CONSISTENT = "consistent"
 STATUS_MISSING_ROWS = "missing_rows"
 STATUS_ORPHAN_ROWS = "orphan_rows"
@@ -100,22 +98,9 @@ ALL_STATUSES: tuple[str, ...] = (
     STATUS_NOT_RUN,
 )
 
-#: Recorder id for the active model's own paper-decision ledger. Chosen to
-#: never collide with a real ``challenger_id`` (registry ids are all
-#: lowercase snake_case module/overlay names; this one is deliberately
-#: distinct prose).
 ACTIVE_MODEL_RECORDER_ID = "active_model"
 
-#: Marks the pick text a card row carries for that week's nominated Best
-#: Pick. Duplicated from ``nfl_ats.publishing.BEST_PICK_MARK`` (a one-line
-#: literal, not logic) rather than imported, so this read-only module never
-#: has to import the publisher.
 _BEST_PICK_MARK = "★ "
-
-
-# ---------------------------------------------------------------------------
-# scripts/lockday_verify.py -- reused, not duplicated
-# ---------------------------------------------------------------------------
 
 
 def _load_lockday_verify(repo_root: Path) -> Any:
@@ -156,11 +141,6 @@ def load_lockday_verify_module(repo_root: Path) -> Any:
     return _load_lockday_verify(repo_root)
 
 
-# ---------------------------------------------------------------------------
-# raw ledger reads -- deliberately bypass the strict load_* loaders
-# ---------------------------------------------------------------------------
-
-
 def _read_parquet_raw(path: Path) -> tuple[pd.DataFrame, str | None]:
     """Read a ledger parquet with no schema/duplicate validation.
 
@@ -175,7 +155,7 @@ def _read_parquet_raw(path: Path) -> tuple[pd.DataFrame, str | None]:
         return pd.DataFrame(), None
     try:
         return pd.read_parquet(path), None
-    except Exception as error:  # deliberately broad: a read must never abort reconciliation
+    except Exception as error:
         return pd.DataFrame(), f"{type(error).__name__}: {error}"
 
 
@@ -209,11 +189,6 @@ def _duplicate_keys(frame: pd.DataFrame, key_columns: tuple[str, ...]) -> list[d
         {**dict(zip(present, key, strict=True)), "row_count": int(count)}
         for key, count in zip(keys, duplicated.to_numpy(), strict=True)
     ]
-
-
-# ---------------------------------------------------------------------------
-# published card
-# ---------------------------------------------------------------------------
 
 
 class CardParseError(ValueError):
@@ -273,7 +248,7 @@ def parse_published_card(card_path: Path) -> dict[str, Any]:
         if not stripped.startswith("|"):
             break
         if set(stripped.replace("|", "").replace(":", "").replace("-", "").strip()) == set():
-            continue  # the "|:---|:---|" separator row
+            continue
         cells = [cell.strip() for cell in stripped.strip("|").split("|")]
         if len(cells) != 4:
             continue
@@ -310,11 +285,6 @@ def parse_published_card(card_path: Path) -> dict[str, Any]:
         "model_id": model_id,
         "games": games,
     }
-
-
-# ---------------------------------------------------------------------------
-# recorder result summaries (run-summary JSON and/or an ENG-01 package manifest)
-# ---------------------------------------------------------------------------
 
 
 class Declaration:
@@ -390,9 +360,6 @@ def _load_package_manifest(package_path: Path | None) -> dict[str, Any] | None:
 
         payload = load_package(package_path)
     except Exception:
-        # Fall back to a bare JSON read so a hand-supplied or future-shaped
-        # manifest can still contribute its "recorders"/"ledgers" sections
-        # even if nfl_ats.lockday_package changes shape or is unavailable.
         try:
             manifest_file = (
                 package_path / "manifest.json" if package_path.is_dir() else package_path
@@ -403,13 +370,6 @@ def _load_package_manifest(package_path: Path | None) -> dict[str, Any] | None:
     return payload if isinstance(payload, dict) else None
 
 
-#: ``recorder_id`` (paper ledger / dedicated-refresh challengers) -> the
-#: ledger name an ENG-01 package manifest's ``ledgers`` list uses. Only the
-#: recorders with a ONE ledger file to themselves are listed: the shared
-#: challenger ledger holds every other challenger's rows interleaved, so its
-#: package-level ``appended_rows`` cannot be attributed to one challenger_id
-#: -- those recorders are read from ``recorders.by_challenger_id`` instead
-#: (see :func:`_declarations_from_package`), which IS keyed per-challenger.
 _PACKAGE_LEDGER_NAMES: dict[str, str] = {
     ACTIVE_MODEL_RECORDER_ID: "paper_decisions",
     "model_only_refresh_incumbent": "pick_revisions",
@@ -496,11 +456,6 @@ def build_declarations(
     return declared
 
 
-# ---------------------------------------------------------------------------
-# recorder inventory
-# ---------------------------------------------------------------------------
-
-
 def _registry_entries(artifacts_root: Path) -> dict[str, dict[str, Any]]:
     path = challenger_registry_path(artifacts_root)
     if not path.is_file():
@@ -534,11 +489,6 @@ def _derive_rerun_command(raw: str, *, season: int, week: int) -> tuple[str | No
     command = re.sub(r"--season\s+\d+", f"--season {season}", prefix)
     command = re.sub(r"--week\s+(<N>|\d+)", f"--week {week}", command)
     return command, raw
-
-
-# ---------------------------------------------------------------------------
-# per-recorder classification
-# ---------------------------------------------------------------------------
 
 
 def _classify(
@@ -629,11 +579,6 @@ def _classify(
     return STATUS_NOT_RUN, note, [], []
 
 
-# ---------------------------------------------------------------------------
-# main entry point
-# ---------------------------------------------------------------------------
-
-
 def reconcile(
     artifacts_root: Path,
     *,
@@ -684,11 +629,10 @@ def reconcile(
             getattr(verify_module, "STANDALONE_PENDING_WIRING", ())
         )
     except Exception:
-        pass  # degrade to shared-ledger-only classification; noted per-recorder below
+        pass
 
     recorders: list[dict[str, Any]] = []
 
-    # --- active model / paper-decision ledger --------------------------------
     paper_path = paper_decision_ledger_path(artifacts_root)
     paper_frame, paper_read_error = _read_parquet_raw(paper_path)
     paper_frame = _run_id_rows(paper_frame, run_id=run_id, run_id_column="forecast_artifact")
@@ -719,7 +663,6 @@ def reconcile(
         }
     )
 
-    # --- shared challenger ledger (read once, sliced per challenger) ---------
     shared_path = challenger_ledger_path(artifacts_root)
     shared_frame, shared_read_error = _read_parquet_raw(shared_path)
     shared_frame = _run_id_rows(shared_frame, run_id=run_id, run_id_column="source_artifact")
@@ -730,10 +673,6 @@ def reconcile(
         present_ids = sorted(shared_week_all["challenger_id"].astype(str).unique().tolist())
         for challenger_id in present_ids:
             if challenger_id in dedicated_ledgers or challenger_id in pending_refresh_ledgers:
-                # Known limitation: a stray row written into the SHARED ledger under a
-                # dedicated-ledger challenger's id (never expected from any production
-                # write path) is silently skipped here rather than flagged, because that
-                # id's real evidence is read from its own ledger file in the loop below.
                 continue
             entry = registry_by_id.get(challenger_id)
             if entry is None:
@@ -777,7 +716,6 @@ def reconcile(
                     }
                 )
 
-    # --- every currently active challenger ------------------------------------
     for challenger_id in active_challenger_ids:
         entry = registry_by_id.get(challenger_id, {})
         raw_command = str(entry.get("weekly_recording_command", ""))
@@ -834,7 +772,6 @@ def reconcile(
             )
             continue
 
-        # shared ledger
         rows = (
             shared_week_all.loc[shared_week_all["challenger_id"].astype(str).eq(challenger_id)]
             if not shared_week_all.empty and "challenger_id" in shared_week_all.columns
@@ -901,18 +838,6 @@ def reconcile(
     }
 
 
-# ---------------------------------------------------------------------------
-# recovery plan
-# ---------------------------------------------------------------------------
-
-#: Safety notes keyed by ``kind``, applied when a recorder is non-consistent.
-#: Grounded in what each recorder's own write path actually does (module
-#: docstring cites the exact functions/lines this was read from):
-#: ``record_paper_decisions``/``record_challenger_decisions`` dedupe against
-#: existing rows before appending (``already = ... isin(existing[...])``), so
-#: re-running never creates a duplicate; the five refresh ledgers are
-#: revision logs with no such check, so a re-run is safe from corruption but
-#: intentionally NOT a no-op -- it appends a fresh revision row every time.
 _SAFETY_NOTES: dict[str, str] = {
     "paper_ledger": (
         "record_paper_decisions (src/nfl_ats/clv.py) skips any game_id already present in "
@@ -994,11 +919,6 @@ def recovery_plan(recorders: list[dict[str, Any]]) -> list[dict[str, Any]]:
             )
         plan.append(entry)
     return plan
-
-
-# ---------------------------------------------------------------------------
-# human rendering
-# ---------------------------------------------------------------------------
 
 
 def render(report: dict[str, Any]) -> str:

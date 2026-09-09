@@ -35,10 +35,6 @@ from nfl_ats.roster_availability_flag_features import (
 from nfl_ats.transaction_flag_features import distinct_player_slugs
 from nfl_ats.transaction_wire_features import classify_transaction_slug
 
-# ---------------------------------------------------------------------------
-# Fixture builders (mirrors tests/test_transaction_flag_features.py)
-# ---------------------------------------------------------------------------
-
 
 def _game(
     game_id: str,
@@ -132,11 +128,6 @@ def _injuries(rows: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Frozen phrase discipline: regexes and the designate-phrasing normalizer
-# ---------------------------------------------------------------------------
-
-
 def test_ir_activate_regex_positive_matches_both_prepositions() -> None:
     m = IR_ACTIVATE_RE.search("packers-activate-andrew-quarless-from-ir-dtr")
     assert m is not None and m.group("prefix") == "packers"
@@ -190,13 +181,7 @@ def test_ir_place_regex_positive_and_rejects_non_place_phrasing() -> None:
     assert m.group("prefix") == "bears"
     assert m.group("player") == "ls-patrick-scales"
 
-    # "waive ... reverts to ir" is a different verb shape and must not match.
     assert IR_PLACE_RE.search("bengals-waive-p-kevin-huber-kr-brandon-wilson-reverts-to-ir") is None
-
-
-# ---------------------------------------------------------------------------
-# Event extraction: PUP/NFI/COVID exclusion, compound-slug clause isolation
-# ---------------------------------------------------------------------------
 
 
 def _full_universe_slugs() -> pd.DataFrame:
@@ -269,7 +254,7 @@ def test_specialist_ir_placement_events_lsp_restricted_universe() -> None:
     lsp_slugs = specialist_player_slugs(injuries)
     index = _transactions([_txn_row("49ers-place-arik-armstead-on-ir-claim-chris-jones", 2020, 10)])
     events = specialist_ir_placement_events(index, lsp_slugs)
-    assert events.empty  # neither armstead nor jones is a specialist
+    assert events.empty
 
     index2 = _transactions(
         [_txn_row("panthers-place-andy-lee-on-ir-sign-michael-palardy", 2020, 10)]
@@ -291,11 +276,6 @@ def test_specialist_player_slugs_restricted_to_ls_and_p() -> None:
     assert set(slugs["player"]) == {"Some Snapper", "Some Punter"}
 
 
-# ---------------------------------------------------------------------------
-# LEAD-13: IR-return reinforcement bump
-# ---------------------------------------------------------------------------
-
-
 def _ir_return_schedule() -> pd.DataFrame:
     return _schedule(
         [
@@ -303,16 +283,15 @@ def _ir_return_schedule() -> pd.DataFrame:
             _game("w2", 2025, 2, "2025-09-14", "WAS", "OPP2"),
             _game("w3", 2025, 3, "2025-09-21", "OPP3", "WAS"),
             _game("w4", 2025, 4, "2025-09-28", "WAS", "OPP4"),
-            _game("w5", 2025, 5, "2025-10-05", "WAS", "OPP5"),  # home WAS -> +1
-            _game("w6", 2025, 6, "2025-10-12", "OPP6", "WAS"),  # away WAS -> -1
-            _game("w7", 2025, 7, "2025-10-19", "WAS", "OPP7"),  # home WAS -> +1
-            _game("w8", 2025, 8, "2025-10-26", "OPP8", "WAS"),  # away WAS -> -1
+            _game("w5", 2025, 5, "2025-10-05", "WAS", "OPP5"),
+            _game("w6", 2025, 6, "2025-10-12", "OPP6", "WAS"),
+            _game("w7", 2025, 7, "2025-10-19", "WAS", "OPP7"),
+            _game("w8", 2025, 8, "2025-10-26", "OPP8", "WAS"),
         ]
     )
 
 
 def _ir_return_snap_counts(share: float = 0.6) -> pd.DataFrame:
-    # Starter through weeks 1-4 ("before going on IR"); absent thereafter.
     return _snaps([_snap_row("Fake Return", "WAS", 2025, week, share) for week in range(1, 5)])
 
 
@@ -322,12 +301,10 @@ def test_ir_return_reinforcement_sign_convention_and_week_window() -> None:
         _ir_return_schedule(), index, _ir_return_snap_counts()
     ).set_index("game_id")
 
-    assert derived.loc["w5", IR_RETURN_REINFORCEMENT_COLUMN] == 1.0  # home return -> BACK home
-    assert derived.loc["w6", IR_RETURN_REINFORCEMENT_COLUMN] == -1.0  # away return -> BACK away
+    assert derived.loc["w5", IR_RETURN_REINFORCEMENT_COLUMN] == 1.0
+    assert derived.loc["w6", IR_RETURN_REINFORCEMENT_COLUMN] == -1.0
     assert derived.loc["w7", IR_RETURN_REINFORCEMENT_COLUMN] == 1.0
     assert derived.loc["w8", IR_RETURN_REINFORCEMENT_COLUMN] == -1.0
-    # Outside the weeks 5-8 window -> never flagged, even though the player
-    # was a confirmed starter in those very weeks.
     assert derived.loc["w1", IR_RETURN_REINFORCEMENT_COLUMN] == 0.0
     assert derived.loc["w4", IR_RETURN_REINFORCEMENT_COLUMN] == 0.0
 
@@ -354,8 +331,6 @@ def test_ir_return_reinforcement_leakage_guard() -> None:
     5-8 game's own kickoff must not flag that game, even though the player
     is otherwise a confirmed returning starter."""
 
-    # October report: month-end (Oct 31) is AFTER every week 5-8 kickoff
-    # below (Oct 5 - Oct 26), so none may flag.
     index = _transactions([_txn_row("commanders-activate-fake-return-from-ir", 2025, 10)])
     derived = derive_ir_return_reinforcement_features(
         _ir_return_schedule(), index, _ir_return_snap_counts()
@@ -393,19 +368,14 @@ def test_attach_ir_return_reinforcement_features_additive() -> None:
     assert IR_RETURN_REINFORCEMENT_COLUMN in merged.columns
 
 
-# ---------------------------------------------------------------------------
-# LEAD-17: specialist absence fade
-# ---------------------------------------------------------------------------
-
-
 def test_weekly_specialist_out_qualifying_position_status_and_season_gates() -> None:
     injuries = _injuries(
         [
-            _injury_row(2020, 3.0, "NO", "Some Punter", "P", "Out"),  # qualifies
-            _injury_row(2020, 4.0, "NO", "Some Punter", "P", "Questionable"),  # wrong status
-            _injury_row(2020, 5.0, "NO", "Some Wideout", "WR", "Out"),  # wrong position
-            _injury_row(2020, 6.0, "NO", "Some LS", "LS", "Out", game_type="WC"),  # not REG
-            _injury_row(2025, 3.0, "NO", "Future LS", "LS", "Out"),  # season > 2024
+            _injury_row(2020, 3.0, "NO", "Some Punter", "P", "Out"),
+            _injury_row(2020, 4.0, "NO", "Some Punter", "P", "Questionable"),
+            _injury_row(2020, 5.0, "NO", "Some Wideout", "WR", "Out"),
+            _injury_row(2020, 6.0, "NO", "Some LS", "LS", "Out", game_type="WC"),
+            _injury_row(2025, 3.0, "NO", "Future LS", "LS", "Out"),
         ]
     )
     qualifying = weekly_specialist_out_qualifying(injuries)
@@ -418,8 +388,8 @@ def test_specialist_absence_fade_weekly_out_sign_convention() -> None:
     injuries = _injuries([_injury_row(2020, 3.0, "NO", "Some Punter", "P", "Out")])
     schedule = _schedule(
         [
-            _game("g_away", 2020, 3, "2020-09-27", "OPP", "NO"),  # NO away -> +1
-            _game("g_home", 2020, 3, "2020-09-27", "NO", "OPP2"),  # NO home -> -1
+            _game("g_away", 2020, 3, "2020-09-27", "OPP", "NO"),
+            _game("g_home", 2020, 3, "2020-09-27", "NO", "OPP2"),
         ]
     )
     derived = derive_specialist_absence_features(schedule, _transactions([]), injuries).set_index(
@@ -430,16 +400,15 @@ def test_specialist_absence_fade_weekly_out_sign_convention() -> None:
 
 
 def _specialist_wire_injuries() -> pd.DataFrame:
-    # Only seeds the LS/P name universe -- no weekly report rows needed.
     return _injuries([_injury_row(2021, 1.0, "LV", "Fake Snapper", "LS", None)])
 
 
 def _specialist_wire_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            _game("s_jan", 2021, 1, "2021-01-05", "LV", "OPP1"),  # before placement -> 0
-            _game("s_apr", 2021, 4, "2021-04-10", "LV", "OPP2"),  # after placement -> flagged
-            _game("s_jul", 2021, 7, "2021-07-10", "LV", "OPP3"),  # after activation -> not flagged
+            _game("s_jan", 2021, 1, "2021-01-05", "LV", "OPP1"),
+            _game("s_apr", 2021, 4, "2021-04-10", "LV", "OPP2"),
+            _game("s_jul", 2021, 7, "2021-07-10", "LV", "OPP3"),
         ]
     )
 
@@ -453,8 +422,8 @@ def test_specialist_absence_fade_wire_placement_window_open_ended() -> None:
         _specialist_wire_schedule(), index, _specialist_wire_injuries()
     ).set_index("game_id")
     assert derived.loc["s_jan", SPECIALIST_ABSENCE_FADE_COLUMN] == 0.0
-    assert derived.loc["s_apr", SPECIALIST_ABSENCE_FADE_COLUMN] == -1.0  # LV home missing
-    assert derived.loc["s_jul", SPECIALIST_ABSENCE_FADE_COLUMN] == -1.0  # still open
+    assert derived.loc["s_apr", SPECIALIST_ABSENCE_FADE_COLUMN] == -1.0
+    assert derived.loc["s_jul", SPECIALIST_ABSENCE_FADE_COLUMN] == -1.0
 
 
 def test_specialist_absence_fade_wire_placement_window_closed_by_activation() -> None:
@@ -467,8 +436,8 @@ def test_specialist_absence_fade_wire_placement_window_closed_by_activation() ->
     derived = derive_specialist_absence_features(
         _specialist_wire_schedule(), index, _specialist_wire_injuries()
     ).set_index("game_id")
-    assert derived.loc["s_apr", SPECIALIST_ABSENCE_FADE_COLUMN] == -1.0  # still out
-    assert derived.loc["s_jul", SPECIALIST_ABSENCE_FADE_COLUMN] == 0.0  # closed by activation
+    assert derived.loc["s_apr", SPECIALIST_ABSENCE_FADE_COLUMN] == -1.0
+    assert derived.loc["s_jul", SPECIALIST_ABSENCE_FADE_COLUMN] == 0.0
 
 
 def test_specialist_absence_fade_season_cutoff_2024() -> None:
@@ -504,17 +473,12 @@ def test_describe_specialist_population_diagnostic() -> None:
     assert diag["n_resolved_ir_placement_events"] == 1
 
 
-# ---------------------------------------------------------------------------
-# Shared sign-convention helper
-# ---------------------------------------------------------------------------
-
-
 def test_signed_flag_from_qualifying_sign_convention() -> None:
     schedule = _schedule(
         [
-            _game("g_away", 2020, 2, "2020-09-20", "HHH", "AAA"),  # AAA away qualifies
-            _game("g_home", 2020, 2, "2020-09-20", "AAA", "ZZZ"),  # AAA home qualifies
-            _game("g_both", 2020, 2, "2020-09-20", "AAA", "BBB"),  # both qualify
+            _game("g_away", 2020, 2, "2020-09-20", "HHH", "AAA"),
+            _game("g_home", 2020, 2, "2020-09-20", "AAA", "ZZZ"),
+            _game("g_both", 2020, 2, "2020-09-20", "AAA", "BBB"),
             _game("g_neither", 2020, 2, "2020-09-20", "CCC", "DDD"),
         ]
     )

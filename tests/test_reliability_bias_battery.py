@@ -39,12 +39,6 @@ import nfl_bias_battery_screen as battery  # noqa: E402
 import reliability_bias_battery as sweep  # noqa: E402
 import reliability_lib as rlib  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# A small, hand-constructed long frame carrying every column
-# ``build_hypotheses`` reads, so it can be called on a fixture this test
-# fully controls rather than the real (large, slow-to-load) feature table.
-# ---------------------------------------------------------------------------
-
 
 def _synthetic_long_frame() -> pd.DataFrame:
     """Six team-game rows, hand-picked to exercise several hypotheses'
@@ -80,11 +74,6 @@ def _synthetic_long_frame() -> pd.DataFrame:
             "temp": [45.0, 70.0, 20.0, 55.0, 60.0, 25.0],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. The cell -> hypothesis -> flag/column mapping agrees with the battery
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -129,8 +118,6 @@ def test_exposure_frame_reproduces_the_battery_flag_exactly() -> None:
         flag = hyps[name]["flag"]
         frame = sweep._exposure_frame(long_df, flag, eligible=None)
         assert frame["exposure"].tolist() == flag.astype(float).tolist()
-        # And it disagrees with an intentionally wrong mask, proving the
-        # comparison above is not vacuously true.
         wrong = ~flag
         assert frame["exposure"].tolist() != wrong.astype(float).tolist()
 
@@ -147,20 +134,14 @@ def test_exposure_frame_respects_the_battery_eligibility_mask() -> None:
     spec = hyps["backup_qb_start"]
     frame = sweep._exposure_frame(long_df, spec["flag"], spec["eligible"])
 
-    # Row 2 (GB) has backup_qb_flag = NaN -> ineligible -> exposure NaN.
     assert math.isnan(frame.loc[2, "exposure"])
-    assert frame.loc[0, "exposure"] == 1.0  # SEA: backup_qb_flag == 1.0
-    assert frame.loc[1, "exposure"] == 0.0  # DAL: backup_qb_flag == 0.0
+    assert frame.loc[0, "exposure"] == 1.0
+    assert frame.loc[1, "exposure"] == 0.0
 
 
 def test_an_unrelated_entry_name_is_rejected_not_guessed() -> None:
     with pytest.raises(AssertionError):
         sweep.hypothesis_for("weather_battery_extreme_cold")
-
-
-# ---------------------------------------------------------------------------
-# 2. The split arithmetic, on an answer computable by hand
-# ---------------------------------------------------------------------------
 
 
 def _long_frame(values: dict[tuple[str, int], list[float]], *, id_col: str) -> pd.DataFrame:
@@ -209,9 +190,6 @@ def test_exposure_column_recovers_a_hand_computed_correlation_via_exposure_frame
     the resulting split-half correlation against a value computable by hand.
     """
 
-    # 3 team-seasons, 4 weeks each; flag is True on weeks 1,3 (odd) with
-    # varying rates and weeks 2,4 (even) with a DIFFERENT, hand-picked rate,
-    # so the odd/even team-season MEAN exposures are known in advance.
     long_df = pd.DataFrame(
         {
             "team": ["A"] * 4 + ["B"] * 4 + ["C"] * 4,
@@ -219,8 +197,6 @@ def test_exposure_column_recovers_a_hand_computed_correlation_via_exposure_frame
             "week": [1, 2, 3, 4] * 3,
         }
     )
-    # odd-week (1,3) flags per team: A=[T,T] B=[T,F] C=[F,F]
-    # even-week (2,4) flags per team: A=[F,F] B=[T,F] C=[T,T]
     flag = pd.Series([True, False, True, False, True, True, False, False, False, True, False, True])
     frame = sweep._exposure_frame(long_df, flag, eligible=None)
     assert frame["exposure"].tolist() == flag.astype(float).tolist()
@@ -259,11 +235,6 @@ def test_seasons_restriction_uses_only_the_cells_own_window() -> None:
     assert restricted["seasons"] == [2011, 2013]
 
 
-# ---------------------------------------------------------------------------
-# 3. An unmeasurable reliability is reported as unmeasured, never as a number
-# ---------------------------------------------------------------------------
-
-
 def test_too_few_units_returns_unmeasured_not_zero() -> None:
     long = _long_frame(
         {("T0", 2020): [1.0, 2.0, 3.0, 4.0], ("T1", 2020): [2.0, 1.0, 4.0, 3.0]}, id_col="team"
@@ -285,7 +256,7 @@ def test_too_few_eligible_exposure_rows_after_masking_returns_unmeasured() -> No
         {"team": ["A", "A", "B", "B"], "season": [2020, 2020, 2020, 2020], "week": [1, 2, 1, 2]}
     )
     flag = pd.Series([True, False, True, False])
-    eligible = pd.Series([True, False, False, False])  # only 1 row survives
+    eligible = pd.Series([True, False, False, False])
     frame = sweep._exposure_frame(long_df, flag, eligible)
 
     result = rlib.measure_reliability(

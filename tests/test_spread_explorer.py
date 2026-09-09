@@ -73,11 +73,6 @@ def _week_card(model_frame: pd.DataFrame) -> pd.DataFrame:
     return card
 
 
-# ---------------------------------------------------------------------------
-# 1. compute_spread_explorer_params
-# ---------------------------------------------------------------------------
-
-
 def test_compute_params_reproduces_the_gaussian_control(model_frame: pd.DataFrame) -> None:
     card = _week_card(model_frame)
     params = compute_spread_explorer_params(
@@ -97,11 +92,6 @@ def test_compute_params_reproduces_the_gaussian_control(model_frame: pd.DataFram
         assert p.card_home_cover_probability == pytest.approx(
             float(row["home_cover_probability"]), abs=1e-9
         )
-        # compute_spread_explorer_params already raises if a refit Gaussian
-        # probability fails to reproduce the supplied card (see the "refuses
-        # a drifted probability" test below); reaching this point without an
-        # exception IS that proof. The next test additionally re-derives the
-        # scipy-precision probability from the returned params directly.
 
 
 def test_compute_params_matches_scipy_precision_gaussian(model_frame: pd.DataFrame) -> None:
@@ -195,11 +185,6 @@ def test_compute_params_refuses_a_game_missing_from_the_refit_universe(
         )
 
 
-# ---------------------------------------------------------------------------
-# 2. widget_home_cover_probability (the browser-mirrored erf approximation)
-# ---------------------------------------------------------------------------
-
-
 def test_widget_formula_tracks_scipy_closely(model_frame: pd.DataFrame) -> None:
     from scipy import stats
 
@@ -240,11 +225,6 @@ def test_widget_formula_pick_em_is_near_half_when_residual_mean_is_near_zero() -
     assert p == pytest.approx(0.5, abs=1e-6)
 
 
-# ---------------------------------------------------------------------------
-# 3. spread_explorer_payload
-# ---------------------------------------------------------------------------
-
-
 def test_payload_is_json_serializable_and_rounded(model_frame: pd.DataFrame) -> None:
     card = _week_card(model_frame)
     params = compute_spread_explorer_params(
@@ -273,11 +253,6 @@ def test_payload_of_empty_params_is_empty() -> None:
     assert spread_explorer_payload({}) == {}
 
 
-# ---------------------------------------------------------------------------
-# 4. load_feature_table_for_forecast
-# ---------------------------------------------------------------------------
-
-
 def test_load_feature_table_prefers_the_recorded_absolute_path(
     tmp_path: Path, model_frame: pd.DataFrame
 ) -> None:
@@ -296,7 +271,6 @@ def test_load_feature_table_falls_back_to_data_root_processed(
     processed.mkdir(parents=True)
     feature_path = processed / "game_features_weak_stack.parquet"
     model_frame.to_parquet(feature_path)
-    # The recorded path is from a DIFFERENT machine and does not exist here.
     metadata = {
         "provenance": {
             "feature_table": {"path": "C:\\some\\other\\machine\\game_features_weak_stack.parquet"}
@@ -315,11 +289,6 @@ def test_load_feature_table_raises_when_neither_path_exists(tmp_path: Path) -> N
 def test_load_feature_table_raises_without_a_recorded_path(tmp_path: Path) -> None:
     with pytest.raises(DataContractError, match="no feature table path"):
         load_feature_table_for_forecast({}, tmp_path / "data")
-
-
-# ---------------------------------------------------------------------------
-# 5. Constants (declared range/step)
-# ---------------------------------------------------------------------------
 
 
 def test_slider_constants_match_the_declared_spec() -> None:

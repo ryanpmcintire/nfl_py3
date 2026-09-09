@@ -67,21 +67,6 @@ BOOTSTRAP_SEED = 20260826
 VI_SEASON_START = 2009
 VI_SEASON_END = 2016
 
-# Measured this session (not previously documented at this resolution):
-# capture 2009-12-16 09:52:59 (VI's Week 15 2009 board) has a spread/total
-# token-parsing defect -- named books agree TIGHTLY with each other (cross-
-# book range <1.0pt, so it passes vi_dispersion_screen.py's own
-# spread_range>10 parse-artifact cap) but on a number in the 37-54pt range,
-# which is a TOTAL, not a spread (no real NFL spread is ever that large).
-# docs/vi_dispersion_screen.md's predeclaration already flagged "2 instances"
-# from this exact capture via its range cap; this check found 7 of that
-# capture's games carry the same defect by magnitude, all missed by the
-# range cap because the mislabeling is consistent across books, not
-# disagreeing. Excluded by capture_ts (a targeted, documented exclusion),
-# NOT by a blanket magnitude cap: a genuinely large legitimate spread exists
-# in this same window (2013_06_JAX_DEN, VI median 27.5 vs SBR open 24.0/
-# close 26.5 -- close agreement, a real historically-lopsided game, not an
-# artifact) that a magnitude cap would have wrongly discarded.
 KNOWN_DEFECTIVE_VI_CAPTURES = frozenset({"20091216095259"})
 
 
@@ -190,9 +175,6 @@ def sbr_vs_vi_wayback_2009_2016(sbr: pd.DataFrame, schedules_path: Path) -> dict
         (clean_pair["sbr_open_abs"] - clean_pair["vi_median_abs"]).std()
     )
 
-    # Robustness subset: >=3 named books feeding the VI median (the same
-    # MIN_BOOKS gate vi_dispersion_screen.py uses for its own scoring frame),
-    # since a 1- or 2-book "median" is a much noisier point estimate.
     robust = joined.loc[joined["n_books_spread"] >= 3]
     robust_stats = _diff_stats(robust["diff"]) if len(robust) else {"n": 0}
     robust_clean = robust.dropna(subset=["sbr_open_abs", "vi_median_abs"])

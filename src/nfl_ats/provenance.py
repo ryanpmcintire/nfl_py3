@@ -48,8 +48,6 @@ def configuration_hash(configuration: dict[str, Any]) -> str:
 
 
 def _git(command: list[str], workdir: Path) -> subprocess.CompletedProcess[str]:
-    # Explicit utf-8: text=True alone decodes with the locale codepage (cp1252 on
-    # Windows), which crashes on any non-cp1252 byte in the output.
     return subprocess.run(
         ["git", *command],
         cwd=workdir,
@@ -84,8 +82,6 @@ def git_diff_sha256(workdir: Path) -> str | None:
     ``git_state``'s own degenerate case.
     """
 
-    # Hash the diff's raw bytes: decoding to text first is both unnecessary and
-    # fragile (any single undecodable byte would change or crash the hash).
     diff = subprocess.run(
         ["git", "diff", "HEAD"],
         cwd=workdir,
@@ -123,26 +119,11 @@ def artifact_provenance(
         },
         "code": code,
         "uv_lock_sha256": uv_lock_sha256,
-        # ENG-21: Python/uv/package/platform/env-var lock report, reusing the
-        # git/uv.lock work already done above rather than recomputing it.
-        # environment_report() never raises (see its own docstring), so this
-        # cannot turn a provenance write into a run-aborting failure.
         "environment": environment_report(
             project_root=root, git_info=code, uv_lock_sha256=uv_lock_sha256
         ),
     }
 
-
-# ---------------------------------------------------------------------------
-# RWB-09: the experiment-provenance registry
-#
-# One JSON file per experiment RUN (not per curated finding -- that is what
-# ``weak_signals.py``/``rotation_registry.py`` are for), under
-# ``registry/experiments/<command>/<stamp>.json``. A directory of small files,
-# not one growing ledger, because this project routinely runs several agents
-# in parallel and a single read-modify-write JSON file is a lost-update race
-# under concurrent writers; independently-named files are not.
-# ---------------------------------------------------------------------------
 
 EXPERIMENT_REGISTRY_DIRNAME = "experiments"
 
@@ -169,13 +150,6 @@ _EXPERIMENT_RECORD_FIELDS = frozenset(
     }
 )
 
-# Metrics are deliberately schema-free (run shapes vary too much to enumerate
-# up front, unlike weak_signals.json's narrow effect/interval/P+ triple), but
-# every record still carries a required schema_version -- not a version of
-# the registry file format (each file is a single record; the round-trip
-# functions below are that contract), but a version of the *metrics* dict's
-# own shape for this command, so a reader knows which fields to expect from a
-# script whose output shape might change later.
 DEFAULT_METRICS_SCHEMA_VERSION = 1
 
 
@@ -208,13 +182,8 @@ class ExperimentRecord:
     feature_table_sha256: str | None = None
     uv_lock_sha256: str | None = None
     notes: str = ""
-    # Optional pointers into the higher-level registries. Deliberately loose
-    # -- a name string, not a foreign key -- so this module never has to
-    # import weak_signals.py/rotation_registry.py or validate against them.
     weak_signal_name: str | None = None
     rotation_family: str | None = None
-    # Honest about backfilled rows: a mechanical lift from an artifact that
-    # already carried provenance, never an invented/approximated value.
     provenance_backfilled: bool = False
     backfill_note: str | None = None
 
@@ -416,11 +385,6 @@ def verify_experiment_links(
                 flags.append("absolute_machine_path")
                 candidates.append(parsed)
             else:
-                # A relative ``artifact_directory`` is repo-relative and already
-                # begins with ``artifacts/`` (e.g. ``artifacts/backtests/<stamp>``).
-                # Resolve it against each provided artifacts *directory* (stripping
-                # the redundant prefix so we land in ``<artifacts>/backtests/<stamp>``)
-                # and, as written, against the repo root.
                 stripped = (
                     parsed.relative_to("artifacts")
                     if parsed.parts[:1] == ("artifacts",)
@@ -453,12 +417,6 @@ def verify_experiment_links(
     return results
 
 
-# A git-tracked registry must not grow unbounded per row. Applied uniformly
-# regardless of what a caller passes in: a hand-curated, small ``metrics``
-# dict passes straight through untouched; a large, uncurated dict (as the
-# mechanical cli.py retrofit passes, since hand-picking a "headline subset"
-# per call site would not be mechanical) gets its oversized top-level entries
-# dropped and NAMED, never silently truncated in place.
 _METRICS_MAX_BYTES = 4096
 _METRICS_VALUE_MAX_BYTES = 512
 
@@ -569,12 +527,6 @@ def write_experiment_artifact(
     )
     atomic_json(payload, registry_dir / f"{stamp}.json")
     return payload
-
-
-# ---------------------------------------------------------------------------
-# ENG-29: a second, deliberately narrower write path for the provenance gate
-# in tests/test_experiment_registry.py.
-# ---------------------------------------------------------------------------
 
 
 def write_stamped_artifact(

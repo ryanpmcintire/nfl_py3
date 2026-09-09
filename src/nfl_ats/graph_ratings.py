@@ -274,7 +274,6 @@ def add_schedule_strength_features(
             home_score = pd.to_numeric(pd.Series([game.get("home_score")]), errors="coerce").iloc[0]
             away_score = pd.to_numeric(pd.Series([game.get("away_score")]), errors="coerce").iloc[0]
             if pd.notna(home_score) and pd.notna(away_score):
-                # Edge direction follows the old project: defense -> offense.
                 scoring[away_index, home_index] += max(0.0, float(home_score))
                 scoring[home_index, away_index] += max(0.0, float(away_score))
             history.append((home, away, numeric_margin, step, season))

@@ -61,11 +61,6 @@ def write_schedule(repo: Path, rows: list[dict[str, Any]]) -> None:
     frame.to_parquet(out_dir / "schedules.parquet", index=False)
 
 
-# --------------------------------------------------------------------------
-# Parse correctness + team-code mapping
-# --------------------------------------------------------------------------
-
-
 def test_parse_populated_fixture_maps_team_codes_and_rows() -> None:
     rows, warnings = ic._parse_shared_design_system(
         POPULATED_HTML,
@@ -81,11 +76,8 @@ def test_parse_populated_fixture_maps_team_codes_and_rows() -> None:
     assert teams == {"KC", "DEN", "SF", "SEA"}
 
     by_name = {row["player_name"]: row for row in rows}
-    # The "Reason"-headed column on the Broncos table must resolve the same
-    # as a "Status"-headed one.
     assert by_name["Dominic Fairweather"]["status"] == "Inactive - Injury (Hamstring)"
     assert by_name["Dominic Fairweather"]["team"] == "DEN"
-    # The "Pos"-headed column on the 49ers table must resolve like "Position".
     assert by_name["Elijah Sandoval"]["position"] == "WR"
     assert all(row["status"] for row in rows)
 
@@ -93,8 +85,6 @@ def test_parse_populated_fixture_maps_team_codes_and_rows() -> None:
 def test_placeholder_markers_present_in_their_own_fixtures() -> None:
     assert ic.PRIMARY_PLACEHOLDER_TEXT in PRIMARY_PLACEHOLDER_HTML
     assert ic.FALLBACK_PLACEHOLDER_TEXT in FALLBACK_PLACEHOLDER_HTML
-    # And absent from the populated / garbage fixtures, or the placeholder
-    # branch would wrongly short-circuit real content.
     assert ic.PRIMARY_PLACEHOLDER_TEXT not in POPULATED_HTML
     assert ic.PRIMARY_PLACEHOLDER_TEXT not in GARBAGE_HTML
 
@@ -109,11 +99,6 @@ def test_garbage_html_parses_to_zero_rows_no_crash() -> None:
     )
     assert rows == []
     assert warnings == []
-
-
-# --------------------------------------------------------------------------
-# run_capture: source selection + empty_reason branches
-# --------------------------------------------------------------------------
 
 
 def test_run_capture_primary_success_writes_snapshot_and_skips_fallback(tmp_path: Path) -> None:
@@ -135,7 +120,7 @@ def test_run_capture_primary_success_writes_snapshot_and_skips_fallback(tmp_path
     )
 
     assert ok is True
-    assert calls == [ic.PRIMARY_URL]  # fallback never fetched: primary already had rows
+    assert calls == [ic.PRIMARY_URL]
     assert (snapshot / "primary.html").read_text(encoding="utf-8") == POPULATED_HTML
     assert not (snapshot / "fallback.html").exists()
 
@@ -179,7 +164,7 @@ def test_run_capture_offseason_placeholder_is_expected_zero_row_ok(tmp_path: Pat
     )
 
     assert ok is True
-    assert calls == [ic.PRIMARY_URL]  # no point trying the fallback: both would agree
+    assert calls == [ic.PRIMARY_URL]
 
     frame = pd.read_parquet(snapshot / "inactives.parquet")
     assert len(frame) == 0
@@ -243,7 +228,7 @@ def test_run_capture_unrecognized_structure_both_sources_exits_non_zero(tmp_path
         now=FIXED_NOW,
     )
 
-    assert ok is False  # a real page with unparseable structure is a bug to fix, not a success
+    assert ok is False
     assert calls == [ic.PRIMARY_URL, ic.FALLBACK_URL]
 
     manifest = _read_manifest(snapshot)
@@ -295,11 +280,6 @@ def test_run_capture_unknown_slot_rejected(tmp_path: Path) -> None:
         )
 
 
-# --------------------------------------------------------------------------
-# Off-season / no-schedule zero-row behaviour (resolved via --current)
-# --------------------------------------------------------------------------
-
-
 def test_run_capture_no_schedule_snapshot_is_zero_row_ok_and_never_fetches(tmp_path: Path) -> None:
     calls: list[str] = []
 
@@ -313,7 +293,7 @@ def test_run_capture_no_schedule_snapshot_is_zero_row_ok_and_never_fetches(tmp_p
         week=None,
         slot="sun_early",
         out_root=out_root,
-        repo=tmp_path,  # no data/raw/*/schedules.parquet under here
+        repo=tmp_path,
         fetch=fetch,
         now=FIXED_NOW,
     )
@@ -355,18 +335,13 @@ def test_run_capture_season_complete_is_zero_row_ok(tmp_path: Path) -> None:
         out_root=out_root,
         repo=tmp_path,
         fetch=fetch,
-        now=FIXED_NOW,  # 2026-09-07, long after the only game in this fake schedule
+        now=FIXED_NOW,
     )
 
     assert ok is True
     assert calls == []
     manifest = _read_manifest(snapshot)
     assert manifest["empty_reason"] == ic.EMPTY_REASON_SEASON_COMPLETE
-
-
-# --------------------------------------------------------------------------
-# Schedule-derived game_id / home_team / away_team
-# --------------------------------------------------------------------------
 
 
 def test_run_capture_resolves_game_id_and_home_away_from_schedule(tmp_path: Path) -> None:
@@ -383,8 +358,6 @@ def test_run_capture_resolves_game_id_and_home_away_from_schedule(tmp_path: Path
                 "gameday": "2026-09-13",
                 "gametime": "13:00:00",
             }
-            # SF/SEA deliberately absent: those rows must resolve to None,
-            # not crash or fabricate a game.
         ],
     )
     fetch, _ = make_fetch({ic.PRIMARY_URL: (POPULATED_HTML, 200, None, True)})
@@ -407,11 +380,6 @@ def test_run_capture_resolves_game_id_and_home_away_from_schedule(tmp_path: Path
     assert (frame.loc[["KC"], "away_team"] == "DEN").all()
     assert (frame.loc[["DEN"], "game_id"] == "2026_01_DEN_KC").all()
     assert frame.loc[["SF"], "game_id"].isna().all()
-
-
-# --------------------------------------------------------------------------
-# main(): argument validation + exit-code passthrough
-# --------------------------------------------------------------------------
 
 
 def test_main_requires_current_or_explicit_season_week() -> None:
@@ -446,14 +414,6 @@ def test_main_returns_zero_or_one_from_run_capture_ok(
     assert exit_ok == 0
     assert exit_bad == 1
     assert calls["slot"] == "sun_early"
-
-
-# --------------------------------------------------------------------------
-# Idempotence: the scheduler-level dedupe this capture relies on (mirrors
-# injuries_*/player_arrests_tue -- there is no in-script "skip if already
-# captured", the SCHEDULER checks the newest snapshot's age before ever
-# invoking the job; see scripts/capture_scheduler.py's already_captured()).
-# --------------------------------------------------------------------------
 
 
 def test_snapshot_directory_name_matches_scheduler_naming_convention(tmp_path: Path) -> None:
@@ -497,7 +457,7 @@ def test_scheduler_dedupe_recognizes_a_fresh_inactives_snapshot(
     age = capture_scheduler.newest_snapshot_age_minutes("data/players/inactives", ten_minutes_later)
 
     assert age is not None
-    assert age < 60  # the dedupe_minutes used for every inactives_* SCHEDULE row
+    assert age < 60
     job = capture_scheduler.Job(
         name="inactives_sun_early",
         day="sun",

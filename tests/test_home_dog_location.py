@@ -21,7 +21,6 @@ PROFILES = {
 
 
 def test_home_dog_points_and_hinge_follow_the_home_line_orientation() -> None:
-    # nflverse convention: positive spread_line means the HOME team is favoured.
     frame = pd.DataFrame({"spread_line": [3.0, 0.0, -3.5, -7.0, -10.5, np.nan]})
     actual = attach_home_dog_location(frame)
     assert actual.home_dog_points.tolist()[:5] == [0.0, 0.0, 3.5, 7.0, 10.5]

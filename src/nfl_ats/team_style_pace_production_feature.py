@@ -63,17 +63,10 @@ from nfl_ats.constants import (
 )
 from nfl_ats.data import DataContractError
 
-#: The one new column this module adds. Frozen name.
 TEAM_STYLE_PACE_MISMATCH_COLUMN = TEAM_STYLE_PACE_MISMATCH_ON_PRODUCTION_FEATURE_COLUMNS[0]
 
-#: Inherited unchanged from ``scripts/team_style_screen.py`` (``QUARTILE``).
-#: Deliberately NOT re-tuned here: re-cutting a threshold after seeing an
-#: outcome number is exactly what the predeclaration discipline prevents.
 PACE_QUARTILE = 0.75
 
-#: The team-season style panel ``scripts/team_style_features.py`` writes.
-#: Gitignored (``data/pbp/**``), so callers in a fresh clone must build it
-#: first; tests inject their own in-memory panel instead.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TEAM_SEASON_STYLE_PATH = REPO_ROOT / "data/pbp/team_style/team_season_style.parquet"
 

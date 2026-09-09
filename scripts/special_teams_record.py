@@ -44,18 +44,14 @@ LEAGUE = "nfl"
 SEASON_START = 2009
 SEASON_END = 2025
 
-# Weakest-link reliability figure embedded in each cell's --reliability flag
-# (measured, scripts/special_teams_reliability.py); the two composite cells
-# use the lower of their inputs so the recorded figure is conservative,
-# matching the PBP-08 team-style precedent's own convention.
 CELL_RELIABILITY: dict[str, float] = {
     "special_teams_fg_kicker_top_quartile": 0.065,
     "special_teams_fg_kicker_bottom_quartile": 0.065,
     "special_teams_punt_net_top_quartile": 0.313,
     "special_teams_punt_net_bottom_quartile": 0.313,
-    "special_teams_return_top_quartile": 0.109,  # min(punt_return 0.109, kickoff_return 0.158)
+    "special_teams_return_top_quartile": 0.109,
     "special_teams_return_bottom_quartile": 0.109,
-    "special_teams_composite_edge_top_quartile": 0.065,  # min over all 4 kept dims (fg_oe)
+    "special_teams_composite_edge_top_quartile": 0.065,
     "special_teams_composite_edge_bottom_quartile": 0.065,
 }
 

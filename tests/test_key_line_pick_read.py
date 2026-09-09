@@ -103,11 +103,6 @@ from nfl_ats.spread_explorer import (
 REPO = Path(__file__).resolve().parents[1]
 
 
-# ---------------------------------------------------------------------------
-# 1. Atom selection and the decision number
-# ---------------------------------------------------------------------------
-
-
 def test_atoms_are_declared_once_as_three_and_seven() -> None:
     assert KEY_LINE_ATOMS == (3.0, 7.0)
     assert prediction_cli.KEY_LINE_ATOMS is KEY_LINE_ATOMS
@@ -120,11 +115,9 @@ def test_key_line_mask_selects_exactly_three_and_seven_either_sign() -> None:
     mask = key_line_mask(lines)
     assert mask.tolist() == [True, True, True, True] + [False] * 11
     assert key_line_mask(pd.Series(lines)).tolist() == mask.tolist()
-    # Lane T's real quarter-point archive rows (6.75 / 7.25) are never on the atom.
     assert not key_line_mask([6.75, 7.25]).any()
     assert key_line_atom(-7.0) == 7.0 and key_line_atom(3.0) == 3.0
     assert key_line_atom(7.5) is None and key_line_atom(float("nan")) is None
-    # An explicit atom set is honoured (lane T's KL1 shape), the default is KL1b.
     assert key_line_mask([10.0, 14.0], atoms=(3.0, 7.0, 10.0, 14.0)).tolist() == [True, True]
     assert key_line_mask([10.0], atoms=()).tolist() == [False]
 
@@ -135,8 +128,6 @@ def test_applicability_predicate_is_the_vectorised_mask_and_names_half_points() 
     lines = [3.0, -3.0, 7.0, -7.0, 3.5, -2.5, 6.5, 9.5, 6.75, 10.0, 0.0, float("nan")]
     assert [key_line_read_applicable(line) for line in lines] == key_line_mask(lines).tolist()
     assert key_line_read_applicable(None) is False
-    # Half points are the pool's own convention; a whole number off the atoms
-    # is a different reason for the same "not touched" outcome.
     assert [is_half_point_line(line) for line in lines] == [
         False, False, False, False, True, True, True, True, False, False, False, False
     ]  # fmt: skip
@@ -167,7 +158,6 @@ def test_pool_week_of_half_points_is_inapplicable_not_a_read_that_did_not_run() 
     reason = applicability.reason
     assert reason is not None and "half points" in reason and "3 or 7" in reason
 
-    # A week that DOES sit on an atom is applicable, with no reason to give.
     on_atom = key_line_applicability([3.0, 3.5, -7.0])
     assert on_atom.applicable is True and on_atom.reason is None
     assert on_atom.lines_on_an_atom == 2 and on_atom.half_point_lines == 1
@@ -191,15 +181,12 @@ def test_scope_gate_is_never_recorded_as_retiring_the_discrete_read() -> None:
     doc = (REPO / "docs" / "key_line_pick_read.md").read_text(encoding="utf-8")
     push_doc = (REPO / "docs" / "discrete_push_read.md").read_text(encoding="utf-8")
 
-    # The measured half-point evidence is stated where the gate is stated.
     for text in (module, doc):
         assert "2.87x" in text and "14.58%" in text
         assert "MOD-18 candidate C2" in text or "candidate C2" in text
     assert "TODO, predeclared" in doc
     assert "every half-point line" in doc.lower()
 
-    # Nothing anywhere frames the discrete read itself as switched off, and
-    # the three-way split really does still serve on every game.
     for text in (module, doc, push_doc):
         lowered = text.lower()
         for banned in (
@@ -215,7 +202,6 @@ def test_scope_gate_is_never_recorded_as_retiring_the_discrete_read() -> None:
     outcomes_source = (REPO / "src" / "nfl_ats" / "outcomes.py").read_text(encoding="utf-8")
     assert "serve_discrete_three_way(" in outcomes_source
 
-    # Nothing in this lane closes anything; both docs say so in the taxonomy.
     for text in (doc, push_doc):
         assert "unresolved_below_power" in text
 
@@ -226,15 +212,9 @@ def test_decision_number_is_lane_t_cover_plus_half_push() -> None:
     assert read.push > 0.05
     assert key_line_decision_probability(read) == read.cover + 0.5 * read.push
     assert key_line_decision_probability(read) == read.home_cover_probability
-    # Not the push-renormalised read: that is a different number on a key line.
     assert key_line_decision_probability(read) != pytest.approx(
         read.cover / (read.cover + read.loss), abs=1e-6
     )
-
-
-# ---------------------------------------------------------------------------
-# 2. The override on the served card: after the offset, only the two-way
-# ---------------------------------------------------------------------------
 
 
 def _policy() -> KeyLinePickRead:
@@ -289,7 +269,6 @@ def test_override_touches_only_key_line_two_way_after_the_offset(
     ]
     untouched_columns = [c for c in base.columns if c not in decision_columns]
     pd.testing.assert_frame_equal(base[untouched_columns], served[untouched_columns])
-    # Companion methods never change, and neither does any half-point game.
     others = base["method"].ne("market_residual") | base["spread_line"].ne(3.0)
     pd.testing.assert_frame_equal(base.loc[others], served.loc[others])
     ats = served.loc[served["method"].eq("market_residual")].set_index(
@@ -301,17 +280,13 @@ def test_override_touches_only_key_line_two_way_after_the_offset(
     for game_id, row in touched.iterrows():
         record = log[str(game_id)]
         assert record.touched and record.atom == 3.0
-        # The served point is the OFFSET-corrected centre plus the residual
-        # location -- the same point the push read tilts to.
         assert record.point == push_log[str(game_id)].point
         assert record.point - unshifted_log[str(game_id)].point == pytest.approx(1.5)
         read = policy.reader.read(3.0, record.point)
         assert row["home_cover_probability"] == key_line_decision_probability(read)
         assert record.served == row["home_cover_probability"]
         assert record.push == row["push_probability"]
-        # Applied AFTER the offset: the read at the uncorrected point differs.
         assert unshifted_log[str(game_id)].served != record.served
-        # Decision columns follow the served number.
         if "pick" in row:
             assert row["pick"] == ("HOME" if row["home_cover_probability"] >= 0.5 else "AWAY")
     for game_id, row in ats.loc[ats["spread_line"].ne(3.0)].iterrows():
@@ -405,11 +380,6 @@ def test_sweep_reads_the_lattice_at_every_alternative_atom_line(model_frame: pd.
         )
 
 
-# ---------------------------------------------------------------------------
-# 3. Sidecar, metadata, and the per-game override helpers
-# ---------------------------------------------------------------------------
-
-
 def _served_week(model_frame: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, ServedKeyLineRead]]:
     features = integer_line_week(model_frame)
     log: dict[str, ServedKeyLineRead] = {}
@@ -469,13 +439,11 @@ def test_sidecar_and_metadata_carry_both_reads_and_rebuild_the_overrides(
     assert served_pick_overrides(tmp_path) == expected
     assert load_pick_overrides({}, tmp_path) == expected
     assert load_pick_overrides(metadata, tmp_path / "missing") == expected
-    # Pre-promotion: no block, no sidecar -> nothing to override.
     assert pick_overrides_from_metadata({}) is None
     assert served_pick_overrides(tmp_path / "missing") is None
     assert served_pick_overrides(None) is None
     assert load_pick_overrides({}, None) is None
     assert key_line_touched_games({}) == frozenset()
-    # A week the policy could not be served on has nothing to override either.
     degraded = key_line_sidecar(None, {}, ids, error="no lattice")
     assert degraded["served"] is False and degraded["error"] == "no lattice"
     assert (
@@ -484,7 +452,6 @@ def test_sidecar_and_metadata_carry_both_reads_and_rebuild_the_overrides(
     )
     (tmp_path / KEY_LINE_PICK_READ_FILENAME).write_text(json.dumps(degraded), encoding="utf-8")
     assert served_pick_overrides(tmp_path) is None
-    # The override helper itself.
     values = apply_pick_overrides([0.1, 0.2, 0.3], ["a", "b", "c"], {"b": 0.9})
     assert values.tolist() == [0.1, 0.9, 0.3]
     assert apply_pick_overrides(pd.Series([0.1]), ["a"], None).tolist() == [0.1]
@@ -504,7 +471,6 @@ def test_sidecar_tells_did_not_apply_apart_from_did_not_run(model_frame: pd.Data
     ids = sorted(ats["game_id"].astype(str))
     policy = _policy()
 
-    # (a) Served and applicable: at least one line on an atom.
     served = key_line_sidecar(policy, log, ids)
     assert served["served"] is True and served["status"] == KEY_LINE_STATUS_SERVED
     assert served["applicability"]["applicable"] is True
@@ -512,8 +478,6 @@ def test_sidecar_tells_did_not_apply_apart_from_did_not_run(model_frame: pd.Data
     assert served["applicability"]["lines_on_an_atom"] > 0
     assert any(game["touched"] for game in served["games"])
 
-    # (b) Served but INAPPLICABLE: the same fitted lattice, every line moved
-    # to the half point the pool actually posts. Zero touched, and a reason.
     half_point_log = {
         game_id: replace(
             read,
@@ -535,23 +499,19 @@ def test_sidecar_tells_did_not_apply_apart_from_did_not_run(model_frame: pd.Data
     for game in inapplicable["games"]:
         assert game["inapplicable_reason"] is not None
         assert "half-point line" in game["inapplicable_reason"]
-    # It still has nothing to override, exactly like a week that touched none.
     assert _overrides(inapplicable) == {}
 
-    # (c) Did NOT run: no lattice. There is nothing to be applicable about.
     not_run = key_line_sidecar(None, {}, ids, error="no lattice")
     assert not_run["served"] is False and not_run["status"] == KEY_LINE_STATUS_NOT_RUN
     assert not_run["applicability"] is None
     assert not_run["error"] == "no lattice" and not_run["fit"] is None
 
-    # The metadata block carries the same distinction without the sidecar file.
     assert key_line_metadata_block(served)["status"] == KEY_LINE_STATUS_SERVED
     block = key_line_metadata_block(inapplicable)
     assert block["status"] == KEY_LINE_STATUS_INAPPLICABLE and block["touched"] == []
     assert block["applicability"]["reason"] == reason
     assert key_line_metadata_block(not_run)["status"] == KEY_LINE_STATUS_NOT_RUN
     assert key_line_metadata_block(not_run)["applicability"] is None
-    # A pre-status card (no such keys) degrades to None rather than lying.
     assert key_line_metadata_block({"served": True})["status"] is None
 
 
@@ -598,7 +558,6 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
     features_path.parent.mkdir(parents=True)
     integer_line_week(model_frame).to_parquet(features_path, index=False)
     allow_whole_number_pool_lines(monkeypatch)
-    # A real, non-zero served offset so "after the offset" is exercised end to end.
     monkeypatch.setattr(
         prediction_cli,
         "fit_production_home_side_offsets",
@@ -656,7 +615,6 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
     for _, row in card.iterrows():
         game = by_game[str(row["game_id"])]
         assert row["home_cover_probability"] == pytest.approx(game["home_cover_probability"])
-        # The push sidecar's two-way number is the served one too.
         assert push_by_game[str(row["game_id"])]["home_cover_probability"] == pytest.approx(
             row["home_cover_probability"]
         )
@@ -677,7 +635,6 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
                 expected.cover + 0.5 * expected.push
             )
             assert offsets_by_game[str(row["game_id"])]["home_side_offset"] == 1.25
-            # The offset-off arm keeps the key-line read at ITS point: one policy apart.
             uncorrected_point = float(game["point"]) - 1.25
             expected_off = discrete_read(
                 pool,
@@ -710,9 +667,8 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
         assert zero.loc[game_id, "home_cover_probability"] == pytest.approx(
             by_game[game_id]["home_cover_probability"]
         )
-    # Flag off: no sidecar, no metadata block, and the pick is the smooth one.
     monkeypatch.setattr(prediction_cli, "KEY_LINE_PICK_READ_SERVED", False)
-    time.sleep(1.1)  # the run id has one-second resolution; never reuse the directory
+    time.sleep(1.1)
     off = prediction_cli.orchestrate_margin_predict(request)
     assert off.output != result.output
     assert not (off.output / KEY_LINE_PICK_READ_FILENAME).exists()
@@ -722,11 +678,6 @@ def test_margin_predict_serves_the_key_line_read_and_writes_the_sidecar(
         assert off_card.loc[game_id, "home_cover_probability"] == pytest.approx(
             by_game[game_id]["home_cover_probability_smooth"]
         )
-
-
-# ---------------------------------------------------------------------------
-# 4. Every refit path reproduces the served probability on a touched game
-# ---------------------------------------------------------------------------
 
 
 def test_card_refit_applies_the_override_after_predict(tmp_path: Path) -> None:
@@ -743,7 +694,6 @@ def test_card_refit_applies_the_override_after_predict(tmp_path: Path) -> None:
     pd.testing.assert_frame_equal(
         out.drop(columns="home_cover_probability"), base.drop(columns="home_cover_probability")
     )
-    # Pre-promotion: no overrides -> byte-identical to the model's own read.
     pd.testing.assert_frame_equal(CardRefit(None, "gaussian_median").predict(model, target), base)
     forecast = tmp_path / "forecast"
     forecast.mkdir()
@@ -798,7 +748,7 @@ def _touched_card(card: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, float]]:
 
     touched = card.copy()
     game_id = str(touched["game_id"].iloc[0])
-    override = 1.0 - float(touched["home_cover_probability"].iloc[0])  # the other side
+    override = 1.0 - float(touched["home_cover_probability"].iloc[0])
     touched.iloc[0, touched.columns.get_loc("home_cover_probability")] = override
     return touched, {game_id: override}
 
@@ -835,7 +785,6 @@ def test_spread_explorer_reproduces_a_pinned_game_and_is_unchanged_without_one(
     assert_spread_explorer_matches_card(params, touched)
     with pytest.raises(DataContractError):
         assert_spread_explorer_matches_card(plain, touched)
-    # The single-game distribution path, the same way.
     with pytest.raises(DataContractError, match="does not reproduce"):
         compute_spread_explorer_distribution(touched, model_frame, game_id=game_id, **kwargs)
     distribution = compute_spread_explorer_distribution(
@@ -866,7 +815,6 @@ def test_mapping_incumbent_recorders_reproduce_a_touched_card(model_frame: pd.Da
     mean_touched = apply_gaussian_mean_mapping_incumbent_overlay(
         touched, model_frame, pick_overrides=overrides, **kwargs
     )
-    # The challenger's OWN arm is the mapping on every game: unchanged by the override.
     assert np.array_equal(
         mean_plain.overlaid_predictions["home_cover_probability"],
         mean_touched.overlaid_predictions["home_cover_probability"],
@@ -949,7 +897,6 @@ def test_board_curve_adjuster_and_widget_carry_the_pinned_number() -> None:
         "pinnedP" in board_terminal._DIVE_SCRIPT
         and "offset === 0 && !isNaN(pinnedP)" in board_terminal._DIVE_SCRIPT
     )
-    # The build-time guard accepts the pinned number and refuses the smooth one.
     predictions = pd.DataFrame({"game_id": [params.game_id], "home_cover_probability": [0.472]})
     assert_spread_explorer_matches_card({params.game_id: params}, predictions)
     with pytest.raises(DataContractError):
@@ -958,24 +905,12 @@ def test_board_curve_adjuster_and_widget_carry_the_pinned_number() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# 5. The late-week refresh
-# ---------------------------------------------------------------------------
-
-
-#: Tuesday's served three-way split per game, as the discrete push sidecar
-#: records it (``games[].served``): push is exactly zero on the half-point
-#: lines (-1.5, 0.5) and positive on the whole-number lines (-1.0, 3.0), so
-#: a restored split passes ``validate_three_way_split`` at the frozen lines.
 _TUESDAY_PUSH_SPLITS: dict[str, tuple[float, float, float]] = {
     "2026_02_AAA_BBB": (0.47, 0.0, 0.53),
     "2026_02_CCC_DDD": (0.45, 0.06, 0.49),
     "2026_02_EEE_FFF": (0.52, 0.0, 0.48),
     "2026_02_GGG_HHH": (0.40, 0.11, 0.49),
 }
-#: The touched game's split as the KEY-LINE sidecar records it -- deliberately
-#: different from the push sidecar's row above so the fallback's precedence
-#: (the key-line row wins on a touched game) is pinned, not assumed.
 _TUESDAY_KEY_LINE_SPLIT = (0.38, 0.12, 0.50)
 
 
@@ -1178,8 +1113,6 @@ def test_refresh_reproduces_the_served_number_and_reapplies_the_policy(
         tmp_path, model_frame, with_sidecar=True
     )
     now = datetime(2026, 9, 16, tzinfo=UTC)
-    # (a) The week's lattice cannot be rebuilt from this fixture (no prior
-    # season within five years) -> the served number is substituted verbatim.
     plan = plan_refresh(
         artifacts_root,
         data_root,
@@ -1194,8 +1127,6 @@ def test_refresh_reproduces_the_served_number_and_reapplies_the_policy(
     for game_id, value in reference.items():
         if game_id != "2026_02_GGG_HHH":
             assert by_id[game_id].new_home_cover_probability == pytest.approx(value)
-    # (b) With the lattice available the policy is re-applied at the refit's
-    # own point -- the same read margin-predict would serve on that point.
     reader = DiscretePushReader.for_week(
         synthetic_pool(), season=2020, week=1, cutoff=pd.Timestamp("2020-09-10")
     )
@@ -1281,13 +1212,6 @@ def test_refresh_without_a_sidecar_is_the_pre_promotion_refit(
         assert game.new_home_cover_probability == pytest.approx(reference[game.game_id])
 
 
-# Lane AE (2026-09-08, Codex lane AC finding 4): the refresh frame used to
-# carry a lattice pick beside the model's SMOOTH split on a touched game. It
-# now applies margin-predict's order -- discrete split on every game, then
-# the key-line pick on the touched games -- and restores both from the
-# sidecars when the lattice cannot be rebuilt.
-
-
 def test_refresh_frame_split_is_the_lattice_split_beside_the_key_line_pick(
     tmp_path: Path, model_frame: pd.DataFrame, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -1300,8 +1224,6 @@ def test_refresh_frame_split_is_the_lattice_split_beside_the_key_line_pick(
     )
     reader = _stand_in_lattice(monkeypatch)
     model, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
-    # The frame is exactly margin-predict's composition: the discrete split
-    # on every game, then the key-line pick on the touched game.
     expected = serve_discrete_three_way(
         forecasts, overridden, reader, residuals=model.residuals, probability_method="ecdf"
     )
@@ -1316,8 +1238,6 @@ def test_refresh_frame_split_is_the_lattice_split_beside_the_key_line_pick(
         point = float(forecasts["predicted_margin"].iloc[position]) + location
         assert _split(result, position) == reader.read(line, point).three_way()
         if game_id == "2026_02_GGG_HHH":
-            # The touched pick is the decision number of ITS OWN split in the
-            # same frame -- the consistency lane AC measured as broken.
             cover, push, _ = _split(result, position)
             assert result["home_cover_probability"].iloc[position] == cover + 0.5 * push
             assert result["home_cover_probability"].iloc[position] == key_line_decision_probability(
@@ -1327,7 +1247,6 @@ def test_refresh_frame_split_is_the_lattice_split_beside_the_key_line_pick(
             assert result["home_cover_probability"].iloc[position] == float(
                 forecasts["home_cover_probability"].iloc[position]
             )
-    # The split really moved off the smooth read on the whole-number lines.
     touched = ids.index("2026_02_GGG_HHH")
     assert _split(result, touched) != _split(forecasts, touched)
     scored = pd.concat(
@@ -1338,7 +1257,6 @@ def test_refresh_frame_split_is_the_lattice_split_beside_the_key_line_pick(
         axis=1,
     )
     validate_three_way_split(scored, line_column="spread_line")
-    # And the plan serves the same pick on every game.
     plan = plan_refresh(
         artifacts_root,
         data_root,
@@ -1361,9 +1279,6 @@ def test_refresh_frame_split_is_the_lattice_split_beside_the_key_line_pick(
 def test_refresh_serves_the_discrete_split_without_a_key_line_sidecar(
     tmp_path: Path, model_frame: pd.DataFrame, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # The push read served the card (its sidecar says so) but the key-line
-    # read did not: the split is the lattice's on every game, the pick is
-    # the smooth one on every game -- exactly what the card served.
     artifacts_root, _, features_path, _ = _refresh_setup(
         tmp_path, model_frame, with_sidecar=False, with_push_sidecar=True
     )
@@ -1386,8 +1301,6 @@ def test_refresh_fallback_restores_the_split_and_the_pick_from_the_sidecars(
 
     from nfl_ats.pick_refresh import plan_refresh
 
-    # No prior season within the lattice's window -> the production fit
-    # raises -> Tuesday's numbers are substituted verbatim.
     artifacts_root, data_root, features_path, reference = _refresh_setup(
         tmp_path,
         model_frame,
@@ -1399,7 +1312,6 @@ def test_refresh_fallback_restores_the_split_and_the_pick_from_the_sidecars(
     ids = overridden["game_id"].astype(str).to_list()
     for position, game_id in enumerate(ids):
         if game_id == "2026_02_GGG_HHH":
-            # The key-line row wins on the touched game: its split AND its pick.
             assert _split(result, position) == _TUESDAY_KEY_LINE_SPLIT
             assert result["home_cover_probability"].iloc[position] == 0.31
         else:
@@ -1407,13 +1319,10 @@ def test_refresh_fallback_restores_the_split_and_the_pick_from_the_sidecars(
             assert result["home_cover_probability"].iloc[position] == float(
                 forecasts["home_cover_probability"].iloc[position]
             )
-    # Every other column is the refit's own.
     untouched = [
         c for c in forecasts.columns if c not in (*THREE_WAY_COLUMNS, "home_cover_probability")
     ]
     pd.testing.assert_frame_equal(result[untouched], forecasts[untouched])
-    # The restored frame passes the same guard plan_refresh applies, and the
-    # plan serves Tuesday's pick on the touched game.
     plan = plan_refresh(
         artifacts_root,
         data_root,
@@ -1433,7 +1342,6 @@ def test_refresh_fallback_restores_the_split_and_the_pick_from_the_sidecars(
 def test_refresh_fallback_restores_from_whichever_sidecar_served(
     tmp_path: Path, model_frame: pd.DataFrame
 ) -> None:
-    # Push sidecar alone: every split restored, every pick smooth.
     artifacts_root, _, features_path, _ = _refresh_setup(
         tmp_path / "push", model_frame, with_sidecar=False, with_push_sidecar=True
     )
@@ -1445,8 +1353,6 @@ def test_refresh_fallback_restores_from_whichever_sidecar_served(
         result["home_cover_probability"].to_numpy(dtype=float),
         forecasts["home_cover_probability"].to_numpy(dtype=float),
     )
-    # Key-line sidecar alone, with the split recorded: the touched game gets
-    # its split and its pick, every other game keeps the smooth split.
     artifacts_root, _, features_path, _ = _refresh_setup(
         tmp_path / "key",
         model_frame,
@@ -1460,7 +1366,6 @@ def test_refresh_fallback_restores_from_whichever_sidecar_served(
             assert result["home_cover_probability"].iloc[position] == 0.31
         else:
             assert _split(result, position) == _split(forecasts, position)
-    # An older key-line row without the split fields restores the pick alone.
     artifacts_root, _, features_path, _ = _refresh_setup(
         tmp_path / "old", model_frame, with_sidecar=True
     )
@@ -1468,7 +1373,6 @@ def test_refresh_fallback_restores_from_whichever_sidecar_served(
     touched = ids.index("2026_02_GGG_HHH")
     assert result["home_cover_probability"].iloc[touched] == 0.31
     assert _split(result, touched) == _split(forecasts, touched)
-    # A sidecar that says the read was NOT served restores nothing.
     artifacts_root, _, features_path, _ = _refresh_setup(
         tmp_path / "off",
         model_frame,
@@ -1488,7 +1392,6 @@ def test_refresh_without_any_sidecar_keeps_the_smooth_split_bit_for_bit(
     artifacts_root, _, features_path, _ = _refresh_setup(
         tmp_path, model_frame, with_sidecar=False, with_push_sidecar=False
     )
-    # Even with a lattice at hand: a pre-promotion card is refit as it was.
     _stand_in_lattice(monkeypatch)
     _, _, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
     assert result is forecasts
@@ -1510,9 +1413,6 @@ def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
     artifacts_root, data_root, features_path, reference = _refresh_setup(
         tmp_path, model_frame, with_sidecar=True, with_push_sidecar=True
     )
-    # Since Tuesday the market moved CCC-DDD (frozen -1.0) onto the atom 7
-    # and GGG-HHH (frozen 3.0) off the atom to -3.5: the CURRENT feature
-    # table says the opposite of the frozen ledger on both.
     moved = copy.deepcopy(GAMES)
     for game in moved:
         if game["game_id"] == "2026_02_CCC_DDD":
@@ -1522,8 +1422,6 @@ def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
     atomic_parquet(_target_frame(model_frame, moved), features_path)
     reader = _stand_in_lattice(monkeypatch)
     model, overridden, forecasts, result = _refresh_lattice_reads(artifacts_root, features_path)
-    # The frame the reads run on carries the frozen lines, and only the
-    # frozen 3 is on an atom.
     ids = overridden["game_id"].astype(str).to_list()
     assert dict(zip(ids, overridden["spread_line"].astype(float), strict=True)) == ORIGINAL_LINES
     assert key_line_mask(overridden["spread_line"]).tolist() == [
@@ -1543,14 +1441,12 @@ def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
     point = float(forecasts["predicted_margin"].iloc[touched]) + residual_location(
         model.residuals, "ecdf"
     )
-    # Frozen on 3 -> read off the lattice at 3, although the market left it.
     assert by_id["2026_02_GGG_HHH"].new_home_cover_probability == key_line_decision_probability(
         reader.read(3.0, point)
     )
     assert by_id["2026_02_GGG_HHH"].new_home_cover_probability == float(
         result["home_cover_probability"].iloc[touched]
     )
-    # Frozen off the atoms -> the smooth read, although the market now says 7.
     assert by_id["2026_02_CCC_DDD"].new_home_cover_probability == pytest.approx(
         reference["2026_02_CCC_DDD"]
     )
@@ -1558,7 +1454,6 @@ def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
     assert result["home_cover_probability"].iloc[drifted] == float(
         forecasts["home_cover_probability"].iloc[drifted]
     )
-    # Its split is nonetheless the lattice's at the FROZEN -1.0, never at 7.
     assert (
         _split(result, drifted)
         == reader.read(
@@ -1568,10 +1463,6 @@ def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
         ).three_way()
     )
 
-
-# ---------------------------------------------------------------------------
-# 6. The paired challenger recorder
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -1662,7 +1553,7 @@ def test_recorder_writes_the_smooth_picks_verbatim_and_reports_the_flip(tmp_path
     assert result["flip_count"] == 1 and result["flipped_game_ids"] == ["2026_01_NO_DET"]
     ledger = load_challenger_decisions(artifacts)
     mine = ledger.loc[ledger["challenger_id"].eq(CHALLENGER_ID)].set_index("game_id")
-    assert mine.loc["2026_01_NO_DET", "pick_side"] == "HOME"  # the smooth read keeps Detroit
+    assert mine.loc["2026_01_NO_DET", "pick_side"] == "HOME"
     assert mine.loc["2026_01_DEN_KC", "pick_side"] == "HOME"
     assert mine.loc["2026_01_NE_SEA", "pick_side"] == "AWAY"
     assert (mine["bet_side"] == "PASS").all()
@@ -1692,11 +1583,6 @@ def test_recorder_refuses_without_a_served_sidecar_or_on_fingerprint_drift(tmp_p
         record_key_line_pick_read_incumbent_challenger_decisions(
             artifacts, tmp_path / "data", now=datetime(2026, 9, 8, 14, 0, tzinfo=UTC)
         )
-
-
-# ---------------------------------------------------------------------------
-# 7. Reader text, publish wiring and the lock-day rehearsal
-# ---------------------------------------------------------------------------
 
 
 def test_explanation_says_the_line_sits_on_the_number_in_pool_player_words() -> None:
@@ -1750,12 +1636,9 @@ def test_half_point_game_says_there_is_no_tie_rather_than_a_zero_push_chance() -
     text = explain_pick({**base, "push_probability": 0.0}).text
     assert "The line is a half point, so the game cannot finish exactly on it" in text
     assert "there are no ties here" in text
-    # No push arithmetic is offered on a game that cannot push.
     assert "in 100" not in text and "0%" not in text and "0.0" not in text
     assert "The line sits" not in text
 
-    # The whole-number sentence is unchanged, so the archive's real pushes
-    # still read as they did (this read is correct machinery on those lines).
     whole = explain_pick(
         {**base, "spread_line": 3.0, "push_probability": 0.091},
     ).text
@@ -1764,8 +1647,6 @@ def test_half_point_game_says_there_is_no_tie_rather_than_a_zero_push_chance() -
     )
     assert "cannot finish exactly on it" not in whole
 
-    # A half point wins even when the key-line read is flagged for the game:
-    # it cannot have acted there, so the reader is never told it did.
     flagged = explain_pick({**base, "push_probability": 0.0}, key_line_read=True).text
     assert "read off how games" not in flagged
     assert "there are no ties here" in flagged
@@ -1803,9 +1684,6 @@ def test_publish_and_rehearsal_wire_the_recorder() -> None:
         labels.index("key_line_pick_read_off_incumbent")
         == labels.index("home_side_offset_off_incumbent") + 1
     )
-    # The publish result map and the registry move together (the lock-day
-    # audit refuses either one alone): the map entry is added in the same
-    # step as the registration in docs/key_line_pick_read.md.
     from nfl_ats.cli_commands.publishing import PUBLISH_CHALLENGER_RESULT_KEYS
 
     registry_path = REPO / "artifacts" / "prospective" / "challengers.json"
@@ -1816,11 +1694,6 @@ def test_publish_and_rehearsal_wire_the_recorder() -> None:
             if e.get("status") == "ACTIVE_PROSPECTIVE"
         }
         assert (CHALLENGER_ID in PUBLISH_CHALLENGER_RESULT_KEYS) == (CHALLENGER_ID in registered)
-
-
-# ---------------------------------------------------------------------------
-# 8. Lane T's frozen numbers replay through the served module, bit for bit
-# ---------------------------------------------------------------------------
 
 
 def _lane_t_root() -> Path:

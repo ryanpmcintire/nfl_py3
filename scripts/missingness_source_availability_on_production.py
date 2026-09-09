@@ -95,9 +95,6 @@ def main() -> int:
     opener = pd.read_parquet(args.opener_artifact)
     leak = args.mode == "positive-control"
 
-    # Instrument checks run on the opener grade, which is the stated decision
-    # grade.  The single screen reuses the same fitted sequence for its
-    # required transparent close-grade secondary report.
     opener_fitted = evaluator.run_window(
         features,
         seasons,

@@ -170,26 +170,12 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file, stamp_sidecar
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "pace_mismatch_dog_tilt_overlay"
 
-#: Frozen, MEASURED cut -- scripts/team_style_screen.py's own
-#: ``pace_diff_abs_threshold`` (QUARTILE=0.75 over the REG population),
-#: read from artifacts/team_style_screen/20260819T210011Z/results.json.
-#: Not a free parameter of this overlay; never recomputed here.
 PACE_DIFF_ABS_THRESHOLD = 2.1685022294778378
 
-#: The merged-in flag travels under this module-private name, matching
-#: surface_switch_tilt_overlay's OVERLAY_FLAG_COLUMN convention -- a
-#: predictions frame that already carries a same-named column collides
-#: silently instead of crashing, and a missing flag column folds into the
-#: documented no-op.
 OVERLAY_FLAG_COLUMN = "_pace_mismatch_dog_tilt_flag"
 
-#: Required columns of the team-season pace cache this module reads
-#: (data/pbp/team_style/team_season_style.parquet, built by
-#: scripts/team_style_features.py -- see module docstring for the exact
-#: derivation of seconds_per_play_pace_centered).
 TEAM_SEASON_STYLE_REQUIRED_COLUMNS = frozenset({"season", "team", "seconds_per_play_pace_centered"})
 
 
@@ -260,9 +246,6 @@ def pace_mismatch_flag_by_game(
     style = team_season_style[["team", "season", "seconds_per_play_pace_centered"]].copy()
     style["team"] = _canonical_team(style["team"])
     style["season"] = style["season"].astype(int)
-    # Shift one season forward so joining on `season` pulls the PRIOR
-    # season's centered pace onto this season's game -- scripts/
-    # team_style_screen.py:151-161 (`_prior`), applied once per side.
     style["season"] = style["season"] + 1
 
     prior_home = style.rename(
@@ -276,10 +259,6 @@ def pace_mismatch_flag_by_game(
     reg = reg.merge(prior_away, on=["away_team", "season"], how="left")
 
     reg["pace_diff_abs"] = (reg["home_prior_pace_centered"] - reg["away_prior_pace_centered"]).abs()
-    # NaN >= threshold evaluates False in pandas/numpy, so missing prior-
-    # season data for either side already yields flag=False; .fillna(False)
-    # is kept for explicitness and mypy's benefit, not because it is load-
-    # bearing.
     reg["pace_mismatch_flag"] = reg["pace_diff_abs"].ge(PACE_DIFF_ABS_THRESHOLD).fillna(False)
 
     return reg[["game_id", "season", "pace_diff_abs", "pace_mismatch_flag"]].reset_index(drop=True)
@@ -426,7 +405,7 @@ def apply_pace_mismatch_dog_tilt_overlay(
     spread_line = pd.to_numeric(merged["spread_line"], errors="coerce")
     home_favored = spread_line.gt(0.0)
     away_favored = spread_line.lt(0.0)
-    eligible &= home_favored | away_favored  # excludes NaN and exact-zero pick'ems
+    eligible &= home_favored | away_favored
 
     pick_home = merged["home_cover_probability"].ge(0.5)
     model_has_favorite = (home_favored & pick_home) | (away_favored & ~pick_home)
@@ -615,8 +594,6 @@ def record_pace_mismatch_dog_tilt_challenger_decisions(
         )
         ledger_path = challenger_ledger_path(artifacts_root)
         atomic_parquet(combined[list(CHALLENGER_DECISION_COLUMNS)], ledger_path)
-        # ENG-38: stamp which commit appended these rows -- a JSON sidecar,
-        # not a rewrite of the parquet ledger itself.
         stamp_sidecar(
             ledger_path, extra={"challenger_id": CHALLENGER_ID, "rows_appended": len(decisions)}
         )

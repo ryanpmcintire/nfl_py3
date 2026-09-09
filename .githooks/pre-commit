@@ -4,6 +4,13 @@ set -eu
 repo_root=$(git rev-parse --show-toplevel)
 cd "$repo_root"
 
+staged_py=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' || true)
+if [ -n "$staged_py" ]; then
+    if [ -x "./.venv/Scripts/python.exe" ]; then
+        ./.venv/Scripts/python.exe scripts/strip_comments.py --check $staged_py || { echo "error: code comments are banned (owner, 2026-09-09); run scripts/strip_comments.py on the files above" >&2; exit 1; }
+    fi
+fi
+
 if [ "${NFL_ATS_SKIP_HANDOFF:-0}" = "1" ]; then
     exit 0
 fi
@@ -21,9 +28,6 @@ else
     exit 1
 fi
 
-# `nfl-ats handoff` also refreshes README.md's generated ACTIVE_MODEL_STATE
-# and RESEARCH_STATE blocks (nfl_ats.readme_state) when README.md exists, the
-# same way it has always refreshed HANDOFF.md -- stage both.
 git add -- HANDOFF.md
 if [ -f README.md ]; then
     git add -- README.md

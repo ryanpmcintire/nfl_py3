@@ -28,10 +28,6 @@ from nfl_ats.graph_ratings_v2 import (
     katz_feature_columns,
 )
 
-#: Frozen in docs/graph_ratings_v2_screen.md section 5, before scoring, and
-#: not retuned on NFL. Identical to `scripts/graph_team_stat_screen.py`'s
-#: FROZEN_STRUCTURE -- this module inherits that freeze, it does not repeat
-#: the decision.
 FROZEN_STRUCTURE: dict[str, object] = {
     "alpha": 0.85,
     "half_life_weeks": 8.0,

@@ -69,8 +69,6 @@ def test_model_sync_guard_skips_historical_rows_without_a_lineup_entry() -> None
             "players": [{"name": "Kirk Cousins", "position": "QB", "gsis_id": "cousins"}],
         }
     )
-    # The predictions artifact also carries historical rows that the current
-    # lineup artifact cannot cover; they must not trip the fail-closed guard.
     validate_lineup_model_sync(
         {"G": (lineup, lineup)},
         pd.DataFrame(

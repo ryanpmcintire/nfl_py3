@@ -39,11 +39,6 @@ SEASON = 2026
 WEEK = 1
 
 
-# ---------------------------------------------------------------------------
-# fixtures / builders
-# ---------------------------------------------------------------------------
-
-
 def _registry(*entries: dict[str, Any]) -> dict[str, Any]:
     return {"challengers": list(entries)}
 
@@ -82,11 +77,6 @@ Active model: `market_residual` with `weak_stack` features.
 
 def _write_card(path: Path, text: str = CARD_TEXT) -> None:
     path.write_text(text, encoding="utf-8")
-
-
-# ---------------------------------------------------------------------------
-# parse_published_card
-# ---------------------------------------------------------------------------
 
 
 def test_parse_published_card_reads_heading_model_and_picks(tmp_path: Path) -> None:
@@ -128,11 +118,6 @@ def test_parse_published_card_rejects_a_file_without_the_heading(tmp_path: Path)
         parse_published_card(path)
 
 
-# ---------------------------------------------------------------------------
-# _derive_rerun_command
-# ---------------------------------------------------------------------------
-
-
 def test_derive_rerun_command_substitutes_season_and_week() -> None:
     raw = (
         ".\\.tools\\uv.exe run python -m nfl_ats prospective-record "
@@ -156,11 +141,6 @@ def test_derive_rerun_command_strips_trailing_parenthetical() -> None:
     raw = "nfl-ats publish-predictions --record-decisions (also records the paper ledger)"
     command, _ = _derive_rerun_command(raw, season=2026, week=1)
     assert command == "nfl-ats publish-predictions --record-decisions"
-
-
-# ---------------------------------------------------------------------------
-# reconcile: the six classifications
-# ---------------------------------------------------------------------------
 
 
 def test_reconcile_active_model_consistent_when_ledger_matches_card(tmp_path: Path) -> None:
@@ -202,7 +182,7 @@ def test_reconcile_active_model_card_mismatch(tmp_path: Path) -> None:
                 "season": [SEASON],
                 "week": [WEEK],
                 "game_id": ["2026_01_AAA_BBB"],
-                "pick_side": ["AWAY"],  # card says HOME (BBB) for this game
+                "pick_side": ["AWAY"],
                 "forecast_artifact": ["2026-week-01-abc123"],
             }
         ),
@@ -260,7 +240,6 @@ def test_reconcile_active_model_missing_rows_from_run_summary(tmp_path: Path) ->
         json.dumps({"clv_ledger": {"recorded": 3, "season": SEASON, "week": WEEK}}),
         encoding="utf-8",
     )
-    # no ledger file written at all -> zero rows this week
 
     report = reconcile(
         artifacts_root,
@@ -277,7 +256,7 @@ def test_reconcile_active_model_missing_rows_from_run_summary(tmp_path: Path) ->
 
 def test_reconcile_shared_ledger_challenger_orphan_rows(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
-    _write_registry(artifacts_root)  # empty registry: nothing is registered
+    _write_registry(artifacts_root)
     _write_parquet(
         challenger_ledger_path(artifacts_root),
         pd.DataFrame(
@@ -342,7 +321,6 @@ def test_reconcile_shared_ledger_challenger_not_run_and_na_command(tmp_path: Pat
             "N/A -- there is no dedicated command; see refresh-picks --record-decisions",
         ),
     )
-    # no ledger rows at all, no run summary/package
 
     report = reconcile(
         artifacts_root,
@@ -432,11 +410,6 @@ def test_reconcile_shared_ledger_consistent(tmp_path: Path) -> None:
     assert "good_challenger" not in plan_ids
 
 
-# ---------------------------------------------------------------------------
-# dedicated (revision-log) ledgers: looser (game_id, refresh_run_id) key
-# ---------------------------------------------------------------------------
-
-
 def test_dedicated_ledger_different_refresh_run_id_is_not_a_duplicate(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
     _write_registry(
@@ -504,7 +477,6 @@ def test_dedicated_ledger_unwired_and_empty_is_not_run(tmp_path: Path) -> None:
         artifacts_root,
         _entry("inactives_refresh_v1", "N/A YET -- refresh-picks pending"),
     )
-    # no ledger file at all -> zero rows
 
     report = reconcile(
         artifacts_root,
@@ -517,11 +489,6 @@ def test_dedicated_ledger_unwired_and_empty_is_not_run(tmp_path: Path) -> None:
     row = next(row for row in report["recorders"] if row["recorder_id"] == "inactives_refresh_v1")
     assert row["status"] == STATUS_NOT_RUN
     assert "not wired" in row["note"]
-
-
-# ---------------------------------------------------------------------------
-# run_id filter
-# ---------------------------------------------------------------------------
 
 
 def test_run_id_filter_restricts_ledger_rows(tmp_path: Path) -> None:
@@ -560,11 +527,6 @@ def test_run_id_filter_restricts_ledger_rows(tmp_path: Path) -> None:
     assert filtered_rows["rows_this_week"] == 1
 
 
-# ---------------------------------------------------------------------------
-# package manifest integration (ENG-01)
-# ---------------------------------------------------------------------------
-
-
 def test_reconcile_uses_package_manifest_for_missing_rows(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
     package_path = tmp_path / "manifest.json"
@@ -584,7 +546,6 @@ def test_reconcile_uses_package_manifest_for_missing_rows(tmp_path: Path) -> Non
         ),
         encoding="utf-8",
     )
-    # no ledger file written -> zero rows this week, package says 5 appended
 
     report = reconcile(
         artifacts_root,
@@ -629,11 +590,6 @@ def test_build_declarations_prefers_package_over_run_summary() -> None:
     declared = build_declarations(run_summary=run_summary, package_manifest=package_manifest)
     assert declared["active_model"].recorded == 9
     assert declared["active_model"].source == "package_ledger_diff"
-
-
-# ---------------------------------------------------------------------------
-# idempotency: the binding guarantee
-# ---------------------------------------------------------------------------
 
 
 def test_reconcile_is_idempotent_and_never_writes(tmp_path: Path) -> None:
@@ -693,7 +649,6 @@ def test_reconcile_is_idempotent_and_never_writes(tmp_path: Path) -> None:
     assert report_1 == report_2
     assert paper_path.read_bytes() == paper_bytes_before
     assert shared_path.read_bytes() == shared_bytes_before
-    # render() must also work off either report without raising
     assert render(report_1) == render(report_2)
 
 
@@ -718,11 +673,6 @@ def test_reconcile_works_with_no_ledgers_no_registry_no_card(tmp_path: Path) -> 
     assert "active_model" in rendered
 
 
-# ---------------------------------------------------------------------------
-# render()
-# ---------------------------------------------------------------------------
-
-
 def test_render_includes_recovery_plan_for_non_consistent_recorders(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
     report = reconcile(
@@ -735,11 +685,6 @@ def test_render_includes_recovery_plan_for_non_consistent_recorders(tmp_path: Pa
     rendered = render(report)
     assert "recovery plan" in rendered
     assert "re-run:" in rendered
-
-
-# ---------------------------------------------------------------------------
-# Declaration
-# ---------------------------------------------------------------------------
 
 
 def test_declaration_as_dict_round_trips() -> None:

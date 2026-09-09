@@ -56,10 +56,6 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.fluview_battery_ingest import STATE_BY_TEAM  # noqa: E402
 from scripts.fluview_battery_screen import attach_asof_ili, build_checkpoint_tables  # noqa: E402
 
-#: The two new columns this module adds. Frozen names, matching the already
-#: -recorded weak-signal registry cell names 1:1 (docs/fluview_battery.md
-#: section 5, F1/F2) so the lineage between the bare-baseline screen and this
-#: on-production stacking is legible from the column name alone.
 FLUVIEW_HOME_ELEVATED_COLUMN = "fluview_home_market_elevated"
 FLUVIEW_AWAY_ELEVATED_COLUMN = "fluview_away_market_elevated"
 FLUVIEW_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = (
@@ -155,7 +151,7 @@ def derive_fluview_elevated_features(
     if fluview_raw is None:
         fluview_raw = pd.read_parquet(default_fluview_raw_path())
     checkpoints = build_checkpoint_tables(fluview_raw.loc[fluview_raw["region"] != "nat"])
-    frame = attach_asof_ili(frame, checkpoints)  # adds home_ili, away_ili
+    frame = attach_asof_ili(frame, checkpoints)
 
     resolved_thresholds = (
         thresholds if thresholds is not None else load_frozen_state_thresholds()[0]

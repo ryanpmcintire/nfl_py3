@@ -36,11 +36,6 @@ from nfl_ats.provenance import (
 )
 
 _METADATA_FILENAMES: tuple[str, ...] = ("metadata.json", "run.json")
-# What an artifact_provenance() dict looks like -- present either as the
-# metadata file's own top level (the bare "run.json" convention) or under
-# some key inside it ("provenance", "baseline_provenance",
-# "provenance_candidate", ...). Any dict carrying both of these is treated as
-# one, regardless of what key it sits under.
 _PROVENANCE_SHAPE_KEYS: tuple[str, ...] = ("code", "configuration_sha256")
 
 
@@ -154,9 +149,6 @@ def backfill_run_directory(directory: Path) -> tuple[ExperimentRecord | None, st
         source=str(found_file).replace("\\", "/"),
         code_revision=code.get("revision"),
         code_dirty=code.get("dirty"),
-        # Backfill cannot recover a historical working-tree diff -- only a
-        # LIVE write_experiment_artifact() call can hash `git diff HEAD` at
-        # the moment the dirty run actually happened.
         code_diff_sha256=None,
         feature_table_sha256=feature_table.get("sha256"),
         uv_lock_sha256=chosen.get("uv_lock_sha256"),

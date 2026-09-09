@@ -33,37 +33,27 @@ from nfl_ats import model_ledger, public_board
 from nfl_ats.dashboard import findings_content
 from nfl_ats.dashboard import viz as dashboard_viz
 
-#: Every canonical accuracy figure, in one list. Substring matching is
-#: deliberate: "52.14" must be caught inside "52.145", and the band strings
-#: ("55-56") must match however they are embedded in prose.
 CANONICAL_FIGURE_TOKENS: tuple[str, ...] = (
-    # Headline grades + arrest evaluation (home: model record).
     "53.4",
     "52.1",
     "53.76",
     "53.36",
-    # Played-chain history (home: index.html).
     "54.2",
-    # Overlay-union evidence constants (pinned in findings_content).
     "55.42",
     "1.2641",
     "0.8571",
     "0.8562",
     "0.493",
-    # Ceiling bands (pinned in findings_content).
     "55-56",
     "57-58",
     "54-55",
-    # Per-card study numbers that collide with canonical grades (pinned in
-    # findings_content by study name).
     "51.1",
     "52.14",
     "52.24",
     "51.7",
 )
 
-#: The exact comment text that ends findings_content's allowed region.
-_REGION_END_MARKER = "End of the pinned-number region"
+_REGION_END_MARKER = 'PINNED_NUMBER_REGION_END = "End of the pinned-number region"'
 
 _PROSE_MODULES = (
     public_board,

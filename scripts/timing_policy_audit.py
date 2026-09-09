@@ -340,8 +340,6 @@ def parse_args() -> argparse.Namespace:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- an operational audit that
-# reads the artifacts tree and prints JSON to stdout, never writing an artifact.
 
 
 def main() -> int:

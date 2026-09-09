@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T20:51:02.681709+00:00`
+Refreshed at: `2026-09-09T21:06:19.927891+00:00`
 
 ## Start here
 
@@ -20,10 +20,29 @@ Refreshed at: `2026-09-09T20:51:02.681709+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c9c5ded9a159` — Test moratorium (owner, 2026-09-09): no new test files or functions until lifted
-- Pending change set: 2 paths
-  - `M  docs/capture_scheduling.md`
-  - `M  scripts/capture_scheduler.py`
+- Baseline commit: `76737fcb9b16` — capture_scheduler --rehearse-all: execute every enabled job's real argv once, verdicts from the run itself
+- Pending change set: 784 paths
+  - `M  .githooks/pre-commit`
+  - `M  AGENTS.md`
+  - `M  HANDOFF.md`
+  - `M  scripts/absence_dependence_screen.py`
+  - `M  scripts/absence_pairwise_screen.py`
+  - `M  scripts/anytime_validate.py`
+  - `M  scripts/anytime_weekly_monitor.py`
+  - `M  scripts/apm_unit_opener_eval.py`
+  - `M  scripts/arctic_shift_battery_fetch.py`
+  - `M  scripts/arctic_shift_battery_screen.py`
+  - `M  scripts/artifact_retention.py`
+  - `M  scripts/assistant_eval.py`
+  - `M  scripts/attention_battery_screen.py`
+  - `M  scripts/attention_followup_screen.py`
+  - `M  scripts/audit_terminal_verdicts.py`
+  - `M  scripts/availability_ablation.py`
+  - `M  scripts/availability_mechanism_screen.py`
+  - `M  scripts/availability_overlap_audit.py`
+  - `M  scripts/b1g_parse.py`
+  - `M  scripts/backfill_experiment_registry.py`
+  - ...and 764 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

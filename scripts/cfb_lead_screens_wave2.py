@@ -82,18 +82,15 @@ BOOTSTRAP_SAMPLES = 1_000
 SEED = 20260905
 PERMUTATIONS = 200
 
-# LEAD-47 population: excludes 2012-2013 (stat-credited-only roster regime;
-# see docs/cfb_lead_screens_wave2.md for the measured finding).
 LEAD47_SEASONS: tuple[int, ...] = tuple(range(2014, 2020)) + tuple(range(2021, 2026))
 LEAD47_ERAS: tuple[tuple[str, int, int], ...] = (
     ("2014_2019", 2014, 2019),
     ("2021_2025", 2021, 2025),
 )
-LEAD47_ROSTER_ARCHIVE_START = 2004  # full local roster archive floor
+LEAD47_ROSTER_ARCHIVE_START = 2004
 
-# LEAD-49 population: CFBD portal data starts 2021.
 LEAD49_SEASONS: tuple[int, ...] = tuple(range(2021, 2026))
-LEAD49_ERAS: tuple[tuple[str, int, int], ...] = ()  # single regime; no split
+LEAD49_ERAS: tuple[tuple[str, int, int], ...] = ()
 
 CANDIDATE_COLUMNS: dict[str, str] = {
     "true_freshman_road_qb": "cfb_lead47_true_freshman_road_qb_flag",
@@ -115,10 +112,6 @@ LEAD_CONFIG: dict[str, dict[str, Any]] = {
     "portal_qb_early": {"scored_seasons": LEAD49_SEASONS, "eras": LEAD49_ERAS},
 }
 
-# Columns build_cfb_qb_game_metrics' internal cfb_competitive_plays() needs
-# (nfl_ats.cfb_features._PBP_LOAD_COLUMNS) plus the passer identity column
-# that function itself requires. Declared locally rather than importing a
-# private module symbol, matching wave 1's self-contained style.
 PBP_QB_LOAD_COLUMNS: tuple[str, ...] = (
     "game_id",
     "season",
@@ -148,11 +141,6 @@ def _game_id_key(values: pd.Series) -> pd.Series:
 
 def _normalize_name(series: pd.Series) -> pd.Series:
     return series.astype("string").str.strip().str.lower()
-
-
-# ---------------------------------------------------------------------------
-# Shared starter-identification (reused by both leads; see module docstring)
-# ---------------------------------------------------------------------------
 
 
 def leading_passer_per_game_team(pbp: pd.DataFrame) -> pd.DataFrame:
@@ -287,11 +275,6 @@ def starter_agreement_rate(walked: pd.DataFrame) -> dict[str, Any]:
     return {"n_comparable": len(known), "agreement_rate": float(agree)}
 
 
-# ---------------------------------------------------------------------------
-# LEAD-47: true-freshman road QB
-# ---------------------------------------------------------------------------
-
-
 def attach_true_freshman_road_qb_flag(
     features: pd.DataFrame, *, pbp: pd.DataFrame, rosters: pd.DataFrame
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -346,11 +329,6 @@ def attach_true_freshman_road_qb_flag(
     frame = frame.drop(columns=["_game_id_key", "_season_int"])
     diagnostics["n_games"] = len(frame)
     return frame, diagnostics
-
-
-# ---------------------------------------------------------------------------
-# LEAD-49: portal-QB early starts
-# ---------------------------------------------------------------------------
 
 
 def resolve_team_name_map(schedules: pd.DataFrame) -> pd.Series:
@@ -416,9 +394,6 @@ def match_portal_qbs_to_athletes(
         .drop_duplicates(subset=key_cols, keep="first")
         .set_index(key_cols)["athlete_id"]
     )
-    # Ambiguous (team, season, name) keys are counted and EXCLUDED, never
-    # guessed -- per CFBD_PORTAL_IDENTITY_CONTRACT's "must never silently
-    # join on names".
     roster_lookup = roster_lookup.loc[roster_lookup.index.isin(unambiguous_keys)]
 
     matched_ids: list[Any] = []
@@ -505,9 +480,6 @@ def attach_portal_qb_early_flag(
             ],
             index=frame.index,
         )
-        # Point-in-time lookup keyed on this game's OWN kickoff date, not on
-        # whether this exact game happens to have an identified starter of
-        # its own -- see build_team_starter_timeline's docstring.
         prev_starter = pd.Series(
             [
                 lookup_previous_starter(timeline, int(team), gameday)
@@ -558,11 +530,6 @@ def attach_candidate(
             features, pbp=pbp, portal=portal, rosters=rosters, schedules=schedules
         )
     raise ValueError(f"no scoring attacher for lead {lead!r}")
-
-
-# ---------------------------------------------------------------------------
-# Shared walk-forward harness (mirrors scripts/cfb_lead_screens_wave1.py)
-# ---------------------------------------------------------------------------
 
 
 def run_walk_forward(

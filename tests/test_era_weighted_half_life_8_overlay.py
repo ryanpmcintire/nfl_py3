@@ -80,11 +80,6 @@ def _week_card(
     return card
 
 
-# ---------------------------------------------------------------------------
-# 0. half_life_weights: pure arithmetic, ported from scripts/era_weighting_lib.py
-# ---------------------------------------------------------------------------
-
-
 def test_half_life_weights_is_one_for_the_predicted_season() -> None:
     weights = half_life_weights(np.array([2020.0, 2019.0]), predict_season=2020, half_life=8.0)
     assert weights[0] == pytest.approx(1.0)
@@ -106,11 +101,6 @@ def test_half_life_weights_never_looks_forward() -> None:
 def test_half_life_weights_rejects_a_nonpositive_half_life() -> None:
     with pytest.raises(ValueError, match="half_life must be positive"):
         half_life_weights(np.array([2020.0]), predict_season=2020, half_life=0.0)
-
-
-# ---------------------------------------------------------------------------
-# 1. apply_era_weighted_half_life_8_overlay
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_reproduces_the_uniform_control_before_reweighting(
@@ -152,10 +142,6 @@ def test_overlay_changes_every_probability_and_only_that_column(model_frame: pd.
     )
     original = card["home_cover_probability"].to_numpy(dtype=float)
     reweighted = overlaid["home_cover_probability"].to_numpy(dtype=float)
-    # model_frame spans seasons 2019/2020 (conftest.py), so half-life-8
-    # weighting genuinely changes the training row weights for a 2020 week 4
-    # target (2019 rows get weight 0.5**(1/8) < 1) -- the refit coefficients,
-    # and therefore the probabilities, must differ from the uniform control.
     assert not np.allclose(original, reweighted)
 
 
@@ -271,11 +257,6 @@ def test_half_life_constant_matches_mod14_selected_arm() -> None:
     assert HALF_LIFE_SEASONS == 8.0
 
 
-# ---------------------------------------------------------------------------
-# 2. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_disabled(model_frame: pd.DataFrame) -> None:
     card = _week_card(model_frame)
     disabled = apply_era_weighted_half_life_8_overlay(card, model_frame, enabled=False)
@@ -305,10 +286,6 @@ def test_disclosure_note_formats_a_flip() -> None:
     assert "HOME -> AWAY" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 3. record_era_weighted_half_life_8_challenger_decisions
-# ---------------------------------------------------------------------------
 
 _FORECAST_DIR = "2020-week-04-forecast"
 
@@ -393,7 +370,6 @@ def test_record_challenger_decisions_records_the_reweighted_arm(
     assert ledger["edge"].isna().all()
     assert result["flip_count"] == len(result["flipped_game_ids"])
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_era_weighted_half_life_8_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == expected_games
@@ -420,9 +396,6 @@ def test_record_challenger_refuses_a_fingerprint_mismatch(
     artifacts = tmp_path / "artifacts"
     data_root = tmp_path / "data"
     _write_challenger_registry(artifacts, ridge_alpha=_RIDGE_ALPHA)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, data_root, model_frame, ridge_alpha=1.0)
 
     with pytest.raises(DataContractError, match="configuration fingerprint"):
@@ -476,7 +449,6 @@ def test_era_refit_replays_served_card(tmp_path, monkeypatch, model_frame, mode)
     metadata = json.loads((forecast / "metadata.json").read_text(encoding="utf-8"))
     card_refit = load_card_refit(metadata, card, forecast)
     monkeypatch.setattr(era, "fit_weighted_ridge_margin", lambda *a, **k: model)
-    # Both fits are the incumbent: any disagreement is plumbing drift.
     result = apply_era_weighted_half_life_8_overlay(
         card.iloc[::-1],
         model_frame.assign(

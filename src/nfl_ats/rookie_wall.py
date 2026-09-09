@@ -118,9 +118,6 @@ DEFAULT_PLAYERS_VALUES_RAW_ROOT = REPO_ROOT / "data" / "players" / "values" / "r
 DEFAULT_PBP_RAW_ROOT = REPO_ROOT / "data" / "pbp" / "raw"
 DEFAULT_COMBINE_RAW_ROOT = REPO_ROOT / "data" / "raw" / "combine"
 
-#: Every position group :mod:`nfl_ats.age_curves` scores with a real
-#: per-snap/per-dropback rate. OL/K/P/LS are deliberately excluded -- no
-#: local performance metric exists for them (see module docstring).
 METRIC_GROUPS: tuple[str, ...] = (
     QB_METRIC_GROUP,
     *sorted(OFFENSE_SKILL_METRIC_GROUPS),
@@ -132,10 +129,6 @@ HIGH_WORKLOAD_SNAP_SHARE = 0.70
 EARLY_WEEKS: tuple[int, ...] = tuple(range(1, 12))
 LATE_WEEKS: tuple[int, ...] = tuple(range(12, 18))
 VETERAN_MIN_CAREER_AGE = 3
-#: Same 100-snap(/dropback) floor as ``age_curves.DELTA_METHOD_SNAP_FLOOR``,
-#: applied to EACH half (weeks 1-11 and weeks 12-17) independently, so a
-#: rookie who is benched or injured in one half never contributes a delta
-#: built on a handful of garbage-time snaps.
 WALL_METRIC_SNAP_FLOOR = 100.0
 ERA_WINDOWS: dict[str, tuple[int, int]] = {
     "2013_2018": (2013, 2018),
@@ -149,11 +142,6 @@ DEFAULT_BOOTSTRAP_SEED = 20260905
 _MIN_BLOCKS_FOR_BOOTSTRAP = 2
 _MIN_VALID_BOOTSTRAP_DRAWS = 100
 _MIN_UNITS_FOR_RELIABILITY = 5
-
-
-# ---------------------------------------------------------------------------
-# Top-50-pick identity
-# ---------------------------------------------------------------------------
 
 
 def top50_pick_lookup(
@@ -212,11 +200,6 @@ def top50_pick_lookup(
         "n_unique_players_top50": int(sum(lookup.values())),
     }
     return lookup, diagnostics
-
-
-# ---------------------------------------------------------------------------
-# Panel construction: age_curves' per-snap metric panel + raw snap shares
-# ---------------------------------------------------------------------------
 
 
 def build_rookie_wall_panel(
@@ -292,11 +275,6 @@ def build_rookie_wall_panel(
     diagnostics["panel_rows_missing_pct"] = int(merged["offense_pct"].isna().sum())
     diagnostics["top50_pick_lookup"] = top50_diagnostics
     return merged, diagnostics
-
-
-# ---------------------------------------------------------------------------
-# Measurement 1: the wall itself (rookie vs. veteran within-player delta)
-# ---------------------------------------------------------------------------
 
 
 def high_workload_player_seasons(
@@ -582,11 +560,6 @@ def rookie_wall_measurement(
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Measurement 2: pregame team-week dependence metric
-# ---------------------------------------------------------------------------
-
-
 def team_week_dependence_shares(panel: pd.DataFrame) -> pd.DataFrame:
     """Per (team, season, week): the share of that team's offensive AND
     defensive snaps taken by top-50-pick rookies.
@@ -673,11 +646,6 @@ def late_season_high_dependence_flag(
         & (result["week"] >= late_week_min)
     )
     return result
-
-
-# ---------------------------------------------------------------------------
-# Measurement 3: split-half reliability of the dependence metric
-# ---------------------------------------------------------------------------
 
 
 def team_season_split_half(shares: pd.DataFrame) -> pd.DataFrame:
@@ -876,11 +844,6 @@ def dependence_split_half_reliability(
         )
 
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# Input loading (mirrors nfl_ats.age_curves.build_age_curves' snapshot resolution)
-# ---------------------------------------------------------------------------
 
 
 def latest_combine_raw(combine_raw_root: Path) -> pd.DataFrame:

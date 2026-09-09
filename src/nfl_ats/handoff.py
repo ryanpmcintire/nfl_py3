@@ -104,9 +104,6 @@ def _tracked_publication(predictions_path: Path) -> dict[str, str] | None:
         return None
     text = predictions_path.read_text(encoding="utf-8")
     title = re.search(r"^# NFL ATS predictions: (\d+) Week (\d+)$", text, re.MULTILINE)
-    # Since 2026-09-05 the card's reader-facing sentence carries no id or
-    # timestamp (owner rule: the board is for humans); the machine-readable
-    # record is an HTML comment. Older cards keep the legacy backtick line.
     model = re.search(
         r"<!-- publication: model_id=(\S+) published_at_utc=(\S+) -->", text
     ) or re.search(r"Published from synchronized model `([^`]+)` at `([^`]+)`", text)
@@ -322,11 +319,6 @@ def check_session_handoff(
     if missing_priorities:
         failures.append("roadmap execution priorities are not reflected in the handoff")
 
-    # Extend the same freshness protection to the README's own generated
-    # blocks (ACTIVE_MODEL_STATE / RESEARCH_STATE, see nfl_ats.readme_state).
-    # A README-less fixture/environment is not itself a failure here -- only
-    # drift in a README that exists is; requiring the file would break every
-    # caller that legitimately has no README (e.g. this module's own tests).
     readme_path = repo_root / "README.md"
     if readme_path.is_file():
         failures.extend(

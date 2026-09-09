@@ -56,7 +56,7 @@ EXISTING_MANIFEST = PROCESSED / "game_features_weak_stack.manifest.json"
 OUTPUT_TABLE = PROCESSED / "game_features_weak_stack_js_prior.parquet"
 OUTPUT_MANIFEST = PROCESSED / "game_features_weak_stack_js_prior.manifest.json"
 
-VALUE_JS_PRIOR_POOL_MINIMUM = 20  # docs/mod06_position_prior_shrinkage.md: reused CFB constant
+VALUE_JS_PRIOR_POOL_MINIMUM = 20
 
 
 def main() -> None:
@@ -98,11 +98,6 @@ def main() -> None:
         flush=True,
     )
 
-    # role_span, qb_span, qb_min_dropbacks, offseason_retention, value_span,
-    # value_prior_snaps all left at function defaults, which match cli.py's
-    # build-learned-availability-features subcommand defaults exactly
-    # (role_span=8, qb_span=12, qb_min_dropbacks=20, offseason_retention=0.75,
-    # value_span=16, value_prior_snaps=200.0).
     common_kwargs = {"decision_hours_before_kickoff": decision_hours}
 
     print("\n=== Re-deriving value_shrinkage_target='zero' (reproduction check) ===", flush=True)
@@ -190,7 +185,6 @@ def main() -> None:
     na_counts = merged[js_prior_columns].isna().sum().to_dict()
     print(f"js_prior column NA counts after merge: {na_counts}", flush=True)
 
-    # Purely additive: every pre-existing column must be untouched.
     existing_by_game_id = existing.set_index("game_id")
     merged_by_game_id = merged.set_index("game_id")
     for column in existing.columns:

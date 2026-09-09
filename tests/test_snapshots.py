@@ -43,9 +43,6 @@ def test_latest_snapshot_ignores_foreign_source_directories(
     tmp_path,
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    # data/raw also hosts named source directories (e.g. injury_news) carrying their
-    # own manifest.json; sorting alphabetically after the timestamped snapshots must
-    # not make them the "latest" snapshot.
     schedules, stats = schedules_and_stats
     real = write_snapshot(schedules, stats, [2022], tmp_path, "20220101T000000Z")
 

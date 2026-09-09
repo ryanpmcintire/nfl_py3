@@ -44,7 +44,6 @@ def empty_state() -> dict[str, Any]:
     return {"runs": {}}
 
 
-# A Thursday, four days after the Sunday 22:00 window has closed.
 THURSDAY = datetime(2026, 8, 27, 17, 0, tzinfo=ET)
 
 
@@ -65,7 +64,7 @@ def test_the_same_window_is_missed_without_the_guard(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     """The guard is load-bearing, not decorative -- drop it and the row appears."""
-    job = make_job()  # no added_on
+    job = make_job()
     monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
     monkeypatch.setattr(capture_scheduler, "LOG_PATH", tmp_path / "log.txt")
     state = empty_state()
@@ -101,7 +100,6 @@ def test_predates_job_is_inert_for_every_pre_existing_job() -> None:
 def test_a_predating_window_is_never_due_to_run(monkeypatch: pytest.MonkeyPatch) -> None:
     job = make_job(added_on="2026-08-27", day="thu", at="16:00", grace_minutes=300)
     monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
-    # Inside the grace window, so only `added_on` can hold it back.
     inside_window = datetime(2026, 8, 27, 17, 0, tzinfo=ET)
     assert capture_scheduler.due_jobs(inside_window, empty_state())
 
@@ -129,7 +127,7 @@ def test_the_real_backup_job_is_guarded_and_runs_after_the_weeks_last_capture() 
     backup = schedule["backup_data"]
 
     assert backup.added_on == "2026-08-27"
-    assert not backup.season_guarded  # data accrues year-round
+    assert not backup.season_guarded
     sunday = datetime(2026, 8, 30, 23, 0, tzinfo=ET)
     latest_capture = max(
         capture_scheduler.occurrence(job, sunday)
@@ -149,7 +147,6 @@ def test_backup_job_finishes_well_inside_the_subprocess_timeout() -> None:
 
     assert any(part.endswith("backup_data.py") for part in command)
     assert "--include-artifacts" in command
-    # No --verify-all: that re-hashes 3.5 GB and would blow the timeout.
     assert "--verify-all" not in command
 
 
@@ -169,7 +166,6 @@ def test_a_missed_catch_up_job_runs_once_on_the_next_tick_and_shows_caught_up(
     record = state["runs"][key]
     assert record["status"] == "CAUGHT_UP"
     assert record["caught_up"] is True
-    # The state file run_job() wrote must be the tmp one, never the real one.
     assert (tmp_path / "state.json").is_file()
 
 
@@ -187,8 +183,6 @@ def test_a_non_catch_up_job_still_shows_missed_and_does_not_run(
 
     key = f"{job.name}@{capture_scheduler.occurrence(job, THURSDAY).date().isoformat()}"
     assert state["runs"][key]["status"] == "MISSED"
-    # sweep_missed never runs a job -- confirm no state file was ever written
-    # (run_job is the only thing in this module that calls save_state).
     assert not (tmp_path / "state.json").exists()
 
 
@@ -205,7 +199,6 @@ def test_a_catch_up_job_never_runs_twice_for_one_occurrence(
     key = f"{job.name}@{capture_scheduler.occurrence(job, THURSDAY).date().isoformat()}"
     first_ran_at = state["runs"][key]["ran_at"]
 
-    # A later tick, same occurrence still current -- must be a no-op.
     later = THURSDAY + timedelta(hours=6)
     capture_scheduler.sweep_missed(later, state)
 
@@ -273,13 +266,6 @@ def test_grace_window_does_not_collide_with_the_next_job(monkeypatch: pytest.Mon
     assert close < monday_mnf
 
 
-# --- Official inactives capture (WP17) --------------------------------------
-# docs/inactives_channel.md Section 2 (measured 2026-09-01) derives T-90
-# ("official inactives instant" = kickoff - 90 minutes) against each slot's
-# own pick_refresh deadline; Section 6 proposes the capture windows these
-# pins check. See scripts/capture_scheduler.py's inactives_* Job comments for
-# the full per-row derivation.
-
 _INACTIVES_JOB_NAMES = (
     "inactives_sun_early",
     "inactives_sun_late",
@@ -304,9 +290,6 @@ def test_inactives_jobs_are_point_in_time_and_added_this_session() -> None:
         assert job.catch_up is False
         assert job.added_on == ("2026-09-09" if name == "inactives_wed_primetime" else "2026-09-01")
         assert job.season_guarded is True
-        # Actual write location is data/players/inactives (WP17 task spec),
-        # NOT docs/inactives_channel.md Section 6's originally proposed
-        # data/raw/nflcom_inactives -- the dedupe target must match reality.
         assert job.dedupe_dir == "data/players/inactives"
         assert job.dedupe_minutes == 60
         slot = name.removeprefix("inactives_")
@@ -400,7 +383,7 @@ def test_no_inactives_row_targets_snf_or_mnf() -> None:
         assert job.day != "mon"
         if job.day == "sun":
             hour, _minute = (int(part) for part in job.at.split(":"))
-            assert hour < 16  # strictly before the Sunday pick lock
+            assert hour < 16
 
 
 _INACTIVES_REFRESH_WINDOWS = {
@@ -494,7 +477,7 @@ def test_referee_assignments_wed_target_clears_the_latest_measured_publish_time(
     target_hour, target_minute = (int(part) for part in job.at.split(":"))
     latest_measured_publish_minutes = 12 * 60 + 42
     target_minutes = target_hour * 60 + target_minute
-    assert target_minutes - latest_measured_publish_minutes >= 120  # >= 2h margin
+    assert target_minutes - latest_measured_publish_minutes >= 120
 
 
 def test_pfr_transaction_jobs_are_resume_safe_and_well_spaced() -> None:
@@ -553,9 +536,6 @@ def test_pfr_transactions_argv_resolves_and_dry_run_exits_0_with_no_network() ->
         assert payload["mode"] == "fresh_snapshot"
 
 
-# --- LEAD-61: per-event half/quarter-game market captures -------------------
-
-
 def test_odds_halves_jobs_ride_their_paired_bulk_capture_window() -> None:
     """The two new per-event half-market jobs must fire in the exact same
     window as the bulk-board capture they depend on, and must gate on it via
@@ -584,11 +564,6 @@ def test_odds_halves_jobs_ride_their_paired_bulk_capture_window() -> None:
         assert job.enabled is True
         assert job.season_guarded is False
         assert job.added_on == "2026-09-05"
-        # The <stamp>-halves snapshot directory deliberately does not match
-        # SNAPSHOT_NAME (bare YYYYMMDDTHHMMSSZ), so the snapshot-based dedupe
-        # this scheduler otherwise uses cannot apply here -- see the Job's
-        # own comment and market_data_halves.write_market_snapshot's
-        # snapshot_suffix docstring.
         assert job.dedupe_dir == ""
         assert job.dedupe_minutes == 0
         assert job.command[-1] == "odds-ingest-halves"
@@ -631,18 +606,6 @@ def test_odds_sat_halves_waits_for_odds_sat_to_succeed() -> None:
     assert capture_scheduler.prerequisites_satisfied(job, start, succeeded) is True
 
 
-# ---------------------------------------------------------------------------
-# Every scheduled `nfl-ats` command must parse (2026-09-07)
-# ---------------------------------------------------------------------------
-#
-# Measured 2026-09-06 (data/scheduler_log.txt): the first in-season fire of
-# refresh_sun, refresh_sun_inactives_early and refresh_sun_inactives_late all
-# died on `usage: nfl-ats refresh-picks [-h] --season SEASON --week WEEK` --
-# the parser required a pair the schedule never passed, and nothing between
-# writing the job and its first live window had ever parsed the argv. These
-# tests close that gap for every job, not just the three that failed.
-
-
 def _nfl_ats_argv(job: Job) -> list[str] | None:
     command = list(job.command)
     if "nfl-ats" not in command:
@@ -661,10 +624,9 @@ def test_every_scheduled_nfl_ats_command_parses_against_the_real_parser() -> Non
             continue
         try:
             parser.parse_args(argv)
-        except SystemExit as error:  # argparse exits 2 on a usage error
+        except SystemExit as error:
             pytest.fail(f"{job.name}: nfl-ats {' '.join(argv)} does not parse ({error})")
         checked.append(job.name)
-    # The late-week refresh passes are the reason this test exists.
     assert {"refresh_thu", "refresh_sat", "refresh_sun"} <= set(checked)
 
 
@@ -730,11 +692,6 @@ def test_wednesday_opener_pair_runs_between_the_tuesday_lock_and_the_wednesday_k
     assert "--publish-card" not in refresh.command
 
 
-# ---------------------------------------------------------------------------
-# --run-job: a job is not done until it has executed once (2026-09-07)
-# ---------------------------------------------------------------------------
-
-
 def _isolate_state(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setattr(capture_scheduler, "STATE_PATH", tmp_path / "state.json")
     monkeypatch.setattr(capture_scheduler, "LOG_PATH", tmp_path / "log.txt")
@@ -759,7 +716,6 @@ def test_run_job_executes_the_exact_argv_and_records_a_manual_run(
     health = state["job_health"]["demo_ok"]
     assert health["last_manual_status"] == "OK"
     assert health["last_manual_run_at"]
-    # A manual run never fabricates a dated window row.
     assert state["runs"] == {}
     out = capsys.readouterr().out
     assert "MANUAL-RUN demo_ok: OK" in out and "captured 3 rows" in out
@@ -805,7 +761,6 @@ def test_dry_run_strips_only_the_recording_flags() -> None:
         "--note",
         "thursday_afternoon",
     ]
-    # Not a refresh job: --dry changes nothing.
     assert capture_scheduler.dry_command(["x.ps1", "--current"]) == ["x.ps1", "--current"]
 
 
@@ -838,11 +793,9 @@ def test_status_marks_enabled_jobs_that_have_never_executed(
     monkeypatch.setattr(capture_scheduler, "SCHEDULE", (fresh, exercised, disabled))
     state = empty_state()
     state["job_health"] = {"ran_by_hand": {"last_manual_run_at": "2026-09-07T09:00:00-04:00"}}
-    # A MISSED or ALREADY-CAPTURED row is not an execution.
     state["runs"]["never_ran@2026-09-06"] = {"status": "MISSED"}
     state["runs"]["never_ran@2026-08-30"] = {"status": "ALREADY-CAPTURED"}
     assert capture_scheduler.has_ever_executed(state, "never_ran") is False
-    # A pre-job_health run row (any real status) is.
     assert capture_scheduler.has_ever_executed(
         {"runs": {"legacy@2026-08-30": {"status": "OK"}}}, "legacy"
     )
@@ -911,17 +864,9 @@ def test_tuesday_opener_is_captured_after_the_pool_locks_at_noon() -> None:
     assert (halves.day, halves.at) == ("tue", "12:05")
     assert lineups_start >= lock_start + timedelta(minutes=lock.grace_minutes)
     assert "odds_tue_noon" not in schedule
-    # No Tuesday odds capture before the pool lock.
     for job in capture_scheduler.SCHEDULE:
         if job.day == "tue" and "odds" in job.name:
             assert capture_scheduler.occurrence(job, tuesday) > pool_lock, job.name
-
-
-# ---------------------------------------------------------------------------
-# Retry-with-backoff for a job that RAN and FAILED (2026-09-08:
-# player_arrests_tue's WinError 10013 -- distinct from catch_up, which only
-# covers a window that closed with nothing attempted at all).
-# ---------------------------------------------------------------------------
 
 
 def test_retry_is_opt_in_and_every_pre_existing_job_defaults_off() -> None:
@@ -992,7 +937,7 @@ def test_retry_stops_after_max_retries_even_inside_the_grace_window(
                 "status": "FAIL(2)",
                 "window_start": first_attempt.isoformat(),
                 "ran_at": first_attempt.isoformat(),
-                "retries": 2,  # both retries already spent
+                "retries": 2,
             }
         }
     }
@@ -1118,13 +1063,6 @@ def test_player_arrests_tue_diagnoses_winerror_10013() -> None:
     assert ingest_player_arrests._diagnose(TimeoutError("timed out")) == ""
 
 
-# ---------------------------------------------------------------------------
-# Injury data reaching the model pipeline (2026-09-08): before this, no job
-# anywhere in SCHEDULE ever captured injury data into the feature-building
-# path -- injuries_wed/thu/fri/sat are paused (MKT-09) and sportradar_injuries_*
-# are disabled without a paid key.
-# ---------------------------------------------------------------------------
-
 _INJURY_PIPELINE_DAYS = ("wed", "thu", "fri", "sat", "sun")
 
 
@@ -1200,8 +1138,6 @@ def test_injury_pipeline_jobs_run_before_every_same_day_consumer() -> None:
     day's noon lineups_* pass, and (Wed/Thu/Sat/Sun) that day's refresh_*
     pass -- refresh_sun (10:00 ET) is the tightest of all."""
     schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
-    # A representative Tuesday; occurrence() only reads day-of-week/time, not
-    # the specific date, so any anchor date works here.
     anchor = datetime(2026, 9, 8, 12, 0, tzinfo=ET)
     consumers_by_day = {
         "wed": ("lineups_wed", "refresh_wed"),

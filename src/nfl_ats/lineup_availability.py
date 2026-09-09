@@ -70,44 +70,21 @@ import pandas as pd
 from nfl_ats.availability import position_group, resolve_unavailability
 from nfl_ats.players import attach_snap_player_ids
 
-#: Deliberately NOT ``nfl_ats.players._ACTIVE_ROSTER_STATUSES`` (``{"ACT",
-#: "INA"}``): that constant is right for roster-continuity purposes but
-#: wrong here. "INA" is nflverse's own weekly gameday-inactive tag, so
-#: folding it into the "active roster" population makes "unavailable"
-#: tautological (measured: 100% of not-listed "INA" rows have zero snaps)
-#: rather than an empirically discovered rate. Only "ACT" is a genuine
-#: "expected to be eligible to play" population.
 _ELIGIBLE_ROSTER_STATUS = "ACT"
 
-#: Shrinkage priors for the no-designation base rate: a position group's
-#: rate is pulled toward the season's global not-listed rate by
-#: ``NO_DESIGNATION_POSITION_PRIOR`` pseudo-observations (same magnitude as
-#: ``nfl_ats.availability.AVAILABILITY_POSITION_PRIOR``), and within a
-#: position group, a ``recent_role`` rate is further pulled toward its own
-#: group's rate by ``NO_DESIGNATION_ROLE_PRIOR`` pseudo-observations.
 NO_DESIGNATION_POSITION_PRIOR = 100.0
 NO_DESIGNATION_ROLE_PRIOR = 20.0
 NO_DESIGNATION_RATE_VERSION = "v2-recent-role"
 _ALL = "__all__"
 
-#: ``recent_role`` values `build_no_designation_outcomes` tags every row
-#: with; see the module docstring's "measured, not assumed" note.
 RECENT_ROLE_RETURNING_CONTRIBUTOR = "returning_contributor"
 RECENT_ROLE_NO_RECENT_ROLE = "no_recent_role"
 RECENT_ROLE_UNKNOWN_NO_HISTORY = "unknown_no_history"
 
-#: Probability provenance tags carried per player in the lineup artifact.
 PROBABILITY_SOURCE_BASE_MODEL_QB: Final = "base_model_qb"
 PROBABILITY_SOURCE_AVAILABILITY_MODEL: Final = "availability_model"
 PROBABILITY_SOURCE_UNAVAILABLE: Final = "unavailable"
 
-#: nflverse depth charts (``scripts/build_week_lineups.py``'s own
-#: ``position_order``) use side-specific tags -- LDE/RDE, LILB/RILB/MLB/
-#: WLB/SLB, LCB/RCB/NB, SS/FS, LT/RT, LG/RG -- that
-#: ``nfl_ats.availability.position_group`` does not recognize (it only knows
-#: the generic tags injuries/rosters already use). Mapped to the closest
-#: generic tag before grouping, so an unlisted starting DE and an unlisted
-#: LDE1 land in the same "front" bucket.
 _DEPTH_CHART_POSITION_ALIASES: dict[str, str] = {
     "LDE": "DE",
     "RDE": "DE",

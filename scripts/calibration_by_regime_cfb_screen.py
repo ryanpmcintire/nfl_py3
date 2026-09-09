@@ -55,7 +55,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 from nfl_ats.calibration import (  # noqa: E402
     COVER_CALIBRATION_METHODS,
-    _calibrated_probabilities,  # reused, not reimplemented -- adjudication 2
+    _calibrated_probabilities,
     calibrate_cover_prediction_stream,
 )
 from nfl_ats.cfb_benchmark import (  # noqa: E402
@@ -121,11 +121,6 @@ def build_raw_stream(
     predictions = result.predictions.loc[result.predictions["method"].eq("market_residual")].copy()
     predictions = _regime_columns(predictions)
     return predictions.sort_values(["gameday", "game_id"]).reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# Section 2 of the predeclaration: derive the per-bucket calibration floor.
-# ---------------------------------------------------------------------------
 
 
 def derive_bucket_calibration_floor(
@@ -209,8 +204,6 @@ def derive_bucket_calibration_floor(
     summary["_order"] = summary["history_bin"].map({label: i for i, label in enumerate(order)})
     summary = summary.sort_values("_order").drop(columns="_order").reset_index(drop=True)
 
-    # Decision rule: smallest bin where improvement holds AND every larger
-    # bin also improves.
     derived_floor: int | None = None
     demonstrated = False
     present = list(summary["history_bin"])
@@ -233,11 +226,6 @@ def derive_bucket_calibration_floor(
         derived_floor = bins[-1][0]
 
     return derived_floor, summary, demonstrated
-
-
-# ---------------------------------------------------------------------------
-# Section 3 of the predeclaration: the stratified calibrator.
-# ---------------------------------------------------------------------------
 
 
 def stratified_calibrate(
@@ -348,11 +336,6 @@ def pooled_calibrate(
     return calibrated
 
 
-# ---------------------------------------------------------------------------
-# Section 4 of the predeclaration: split-half calibration-gap reliability.
-# ---------------------------------------------------------------------------
-
-
 def _cover_reliability_by_regime(predictions: pd.DataFrame, *, regime_column: str) -> pd.DataFrame:
     """Same statistic as key_numbers.cover_reliability_by_line_bucket, any regime column."""
 
@@ -450,11 +433,6 @@ def split_half_reliability(
     return table, summary
 
 
-# ---------------------------------------------------------------------------
-# Section 6 of the predeclaration: pick-flip reporting.
-# ---------------------------------------------------------------------------
-
-
 def flip_report(
     control: pd.DataFrame,
     candidate: pd.DataFrame,
@@ -511,11 +489,6 @@ def flip_report(
     }
 
 
-# ---------------------------------------------------------------------------
-# Orchestration
-# ---------------------------------------------------------------------------
-
-
 def run_paired_comparison(
     *,
     pooled_predictions: pd.DataFrame,
@@ -557,9 +530,6 @@ def run_paired_comparison(
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -597,7 +567,6 @@ def main() -> None:
 
     clean_core_raw = raw_stream.loc[raw_stream["season"].isin(CFB_CLEAN_CORE_SEASONS)].copy()
 
-    # --- Section 4: reliability BEFORE any accuracy claim -----------------
     print(f"[{time.time() - t0:7.1f}s] Split-half calibration-gap reliability (before accuracy)")
     line_reliability_table, line_reliability_summary = split_half_reliability(
         clean_core_raw, regime_column="line_bucket"
@@ -608,7 +577,6 @@ def main() -> None:
     line_reliability_table.to_csv(output / "reliability_line_bucket.csv", index=False)
     era_reliability_table.to_csv(output / "reliability_season_era.csv", index=False)
 
-    # --- Section 2: derive the per-bucket calibration floor ---------------
     print(f"[{time.time() - t0:7.1f}s] Deriving the per-bucket calibration-games floor")
     derived_floor, derivation_summary, demonstrated = derive_bucket_calibration_floor(
         clean_core_raw, regime_column="line_bucket"
@@ -620,7 +588,6 @@ def main() -> None:
     )
     print(derivation_summary.to_string(index=False))
 
-    # --- Section 5/3: score every arm x method -----------------------------
     residual_quartile_edges = np.quantile(
         raw_stream["predicted_market_residual"].abs(), [0.0, 0.25, 0.5, 0.75, 1.0]
     )
@@ -703,7 +670,6 @@ def main() -> None:
                 frame.loc[:, [c for c in keep if c in frame.columns]].assign(population=tag)
             )
 
-        # line_bucket headline: clean-core only, vs pooled (clean-core-fit)
         paired_line = run_paired_comparison(
             pooled_predictions=pooled_clean,
             candidate_predictions=line_bucket_clean,
@@ -715,7 +681,6 @@ def main() -> None:
         paired_line["headline_population"] = "clean_core_for_line_bucket"
         paired_frames.append(paired_line)
 
-        # season_era headline: full window, vs pooled (full-window-fit)
         paired_era = run_paired_comparison(
             pooled_predictions=pooled_full,
             candidate_predictions=season_era_full,

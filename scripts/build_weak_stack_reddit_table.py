@@ -65,9 +65,6 @@ def main() -> None:
             f"fires on {firing:.3%} of covered rows"
         )
 
-    # Per-season coverage / firing inside the seasons a close-graded family can
-    # draw, printed BEFORE any model is fit -- the disclosure
-    # docs/reddit_attention_on_production.md section 6.1(c) commits to.
     reg = widened.loc[widened["game_type"].astype(str).eq("REG")]
     for column in expected:
         by_season = reg.groupby("season")[column].agg(["count", "mean", "size"])

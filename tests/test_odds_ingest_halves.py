@@ -34,16 +34,11 @@ def _iso_z(instant: datetime) -> str:
     return instant.astimezone(UTC).isoformat().replace("+00:00", "Z")
 
 
-# ---------------------------------------------------------------------------
-# current_week_kickoff_window / filter_events_to_week
-# ---------------------------------------------------------------------------
-
-
 def test_current_week_kickoff_window_spans_seven_days_from_tuesday() -> None:
     from zoneinfo import ZoneInfo
 
     eastern = ZoneInfo("America/New_York")
-    now = datetime(2026, 9, 9, 15, 0, tzinfo=UTC)  # arbitrary instant
+    now = datetime(2026, 9, 9, 15, 0, tzinfo=UTC)
     start, end = current_week_kickoff_window(now)
 
     cycle_sunday = week_cycle_sunday(now.astimezone(eastern).date())
@@ -85,17 +80,11 @@ def test_filter_events_to_week_never_selects_the_whole_272_event_board() -> None
 
     now = datetime(2026, 9, 9, 15, 0, tzinfo=UTC)
     start, _end = current_week_kickoff_window(now)
-    # 272 events spread one per day across the remaining season.
     events = [
         {"id": f"evt-{i}", "commence_time": _iso_z(start + timedelta(days=i))} for i in range(272)
     ]
     kept = filter_events_to_week(events, now)
     assert 0 < len(kept) < 20
-
-
-# ---------------------------------------------------------------------------
-# newest_bulk_snapshot
-# ---------------------------------------------------------------------------
 
 
 def _write_bulk_dir(
@@ -132,17 +121,12 @@ def test_newest_bulk_snapshot_returns_none_when_absent(tmp_path: Path) -> None:
     assert newest_bulk_snapshot(tmp_path / "market" / "raw") is None
 
 
-# ---------------------------------------------------------------------------
-# plan_half_market_capture / quota refusal
-# ---------------------------------------------------------------------------
-
-
 def test_plan_never_refuses_with_no_known_remaining() -> None:
     plan = plan_half_market_capture(
         [f"evt-{i}" for i in range(16)], known_remaining=None, quota_floor=600
     )
     assert plan.refused is False
-    assert plan.credits_per_event == 4  # 4 half markets x 1 region
+    assert plan.credits_per_event == 4
     assert plan.planned_credits == 64
 
 
@@ -162,7 +146,7 @@ def test_plan_allows_when_comfortably_above_the_floor() -> None:
 
 def test_plan_multiplies_credits_by_region_count() -> None:
     plan = plan_half_market_capture(["evt-1"], regions="us,us2", known_remaining=None)
-    assert plan.credits_per_event == 8  # 4 markets x 2 regions
+    assert plan.credits_per_event == 8
 
 
 def test_plan_rejects_empty_markets_or_regions() -> None:
@@ -172,20 +156,10 @@ def test_plan_rejects_empty_markets_or_regions() -> None:
         plan_half_market_capture(["evt-1"], regions="", known_remaining=None)
 
 
-# ---------------------------------------------------------------------------
-# assemble_events_payload
-# ---------------------------------------------------------------------------
-
-
 def test_assemble_events_payload_is_a_bulk_shaped_json_array() -> None:
     payload = assemble_events_payload([{"id": "a"}, {"id": "b"}])
     decoded = json.loads(payload)
     assert decoded == [{"id": "a"}, {"id": "b"}]
-
-
-# ---------------------------------------------------------------------------
-# capture_half_markets: end-to-end assembly, no network
-# ---------------------------------------------------------------------------
 
 
 def _half_market_event_payload(event_id: str, commence: datetime) -> dict[str, Any]:
@@ -286,14 +260,11 @@ def test_capture_half_markets_filters_fetches_and_writes_one_snapshot(tmp_path: 
         sleep_seconds=0,
     )
 
-    # Only the in-window event was ever fetched -- evt-out never called.
     assert calls == ["evt-in"]
     assert result.events_returned == 1
-    assert result.quotes_written == 4  # 2 markets x 2 outcomes
-    assert result.total_credits_spent == 2  # from the stub's requests_last header
-    assert (
-        result.snapshot.snapshot_id == "20260909T150000Z-halves"
-    )  # from `now`, not the bulk stamp
+    assert result.quotes_written == 4
+    assert result.total_credits_spent == 2
+    assert result.snapshot.snapshot_id == "20260909T150000Z-halves"
     assert result.snapshot.root.name.endswith("-halves")
 
     quotes = pd.read_parquet(result.snapshot.quotes_path)
@@ -335,7 +306,6 @@ def test_capture_half_markets_refuses_before_any_call_when_floor_would_breach(
             "bookmakers": [],
         }
     ]
-    # 1 event x 4 credits = 4; 603 - 4 = 599 < the 600 floor.
     _write_bulk_dir(market_root, "20260908T090000Z", bulk_events, remaining="603")
 
     calls: list[str] = []

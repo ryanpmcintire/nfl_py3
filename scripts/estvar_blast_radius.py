@@ -88,16 +88,6 @@ class Mechanism:
     provenance: str
 
 
-#: Comparisons between differently FITTED models (different feature columns or
-#: different ridge alpha). MEASURED this session on real CFB clean core (8,933
-#: games, 199 week blocks, f=19.8%, 120 paired refits):
-#: ``scripts/estvar_refit_intervals.py --study cfb`` gives an interaction-free
-#: training component of 0.042 accuracy points against a conditional SD of
-#: 0.512, i.e. a factor of **1.003 with a one-sided 95% upper bound of 1.099**.
-#: The published 17-58% band came from adding the FIXED-GAMES refit spread
-#: (0.419 pts, factor 1.293), which double-counts the training-by-game
-#: interaction the game bootstrap already carries. See
-#: ``docs/estimation_variance.md`` Part II.
 REFIT_MECHANISM = Mechanism(
     name="refit (differently fitted models)",
     low=1.000,
@@ -106,11 +96,6 @@ REFIT_MECHANISM = Mechanism(
     provenance="measured 2026-08-18 on CFB clean core, this session",
 )
 
-#: Comparisons that hold the fitted mean model FIXED and vary only how the
-#: residual sample is READ. ``docs/estimation_variance.md`` sec 7 already
-#: disclaimed the refit bootstrap for these; a parallel agent built the
-#: mechanism-appropriate bootstrap and measured 2.07x / 2.29x. REPORTED, not
-#: verified here -- I did not re-run it.
 READER_MECHANISM = Mechanism(
     name="reader (fixed mean model, residual sample re-read)",
     low=2.07,
@@ -119,8 +104,6 @@ READER_MECHANISM = Mechanism(
     provenance="reported by a parallel agent 2026-08-18, UNVERIFIED by this script",
 )
 
-#: CFB role-continuity, measured family-specifically by a parallel agent on a
-#: cheaper refit cadence. REPORTED, not verified here.
 ROLE_MECHANISM = Mechanism(
     name="refit, family-specific",
     low=1.438,
@@ -159,8 +142,6 @@ def mechanism_for(identifier: str) -> tuple[Mechanism, str]:
 
 
 _POINTS = re.compile(r"([+-]?\d+(?:\.\d+)?)\s*pts")
-#: Only an interval the notes explicitly label as block-bootstrapped is trusted;
-#: a bare bracket may be in any units (see rotation_window_evidence).
 _BLOCKED_INTERVAL = re.compile(
     r"(week|season)-blocked\s*\[\s*([+-]?\d+(?:\.\d+)?)\s*,\s*([+-]?\d+(?:\.\d+)?)\s*\]"
 )

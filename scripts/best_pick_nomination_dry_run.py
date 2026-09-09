@@ -60,7 +60,6 @@ def main() -> None:
     print(f"NOMINATION_V2_ENABLED = {NOMINATION_V2_ENABLED}")
     print()
 
-    # --- v1: incumbent sweep_robustness -------------------------------------
     sweep_path = forecast / "line_sweep.parquet"
     if sweep_path.is_file():
         sweep = pd.read_parquet(sweep_path)
@@ -76,7 +75,6 @@ def main() -> None:
         print(f"Disclosure: {v1_tie}")
     print()
 
-    # --- v2: measured winner -------------------------------------------------
     observed_config = artifact_model_config(metadata)
     feature_table = observed_config.get("feature_table")
     print("=== v2 (measured, POL-09) ===")

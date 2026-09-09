@@ -67,7 +67,6 @@ OUTPUT_ROOT = REPO / "artifacts/leak_ceiling_opener"
 RIDGE_ALPHA = 10.0
 ALT_ALPHA = 1.0
 
-#: Honest references on the SAME population, measured elsewhere this session.
 RAW_MODEL_OPENER = 0.533599
 PLAYED_UNION_OPENER = 0.554225
 
@@ -89,7 +88,6 @@ def leak_arm(frame: pd.DataFrame, columns: list[str], alpha: float) -> dict[str,
     residuals = target - fitted
     sigma = float(np.std(residuals[np.isfinite(residuals)], ddof=1))
 
-    # Gaussian mapping, matching production's promoted probability read.
     from scipy.stats import norm
 
     probability = norm.cdf(fitted / sigma) if sigma > 0 else np.full(len(fitted), 0.5)
@@ -122,9 +120,6 @@ def main() -> None:
     archive["game_id"] = archive["game_id"].astype(str)
     features["game_id"] = features["game_id"].astype(str)
 
-    # The opener-graded ATS margin. `margin_vs_open` is the archive's own
-    # field; recomputing it from result and the opener line and asserting they
-    # agree means a schema change cannot silently redefine the target.
     archive["opener_ats_margin"] = archive["margin_vs_open"].astype(float)
     recomputed = archive["result"].astype(float) - archive["tue_open_home_spread"].astype(float)
     disagreement = float((archive["opener_ats_margin"] - recomputed).abs().max())
@@ -132,8 +127,6 @@ def main() -> None:
         raise SystemExit(f"margin_vs_open does not equal result - opener line (max {disagreement})")
 
     merged = archive.merge(features, on="game_id", how="inner", suffixes=("", "_feat"))
-    # Pushes carry no forced-pick outcome and are excluded, matching every
-    # other evaluation in this project.
     merged = merged.loc[merged["opener_ats_margin"] != 0.0].reset_index(drop=True)
 
     weak_stack_columns = [
@@ -182,7 +175,7 @@ def main() -> None:
 
     out_dir = OUTPUT_ROOT / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_dir.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(report, out_dir / "results.json")  # ENG-38
+    write_stamped_artifact(report, out_dir / "results.json")
 
     print(json.dumps({k: v for k, v in report.items() if k != "arms"}, indent=2))
     for name, arm in report["arms"].items():

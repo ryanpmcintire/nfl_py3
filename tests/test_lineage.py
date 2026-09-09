@@ -98,11 +98,6 @@ def _lineage(**kwargs: Any) -> CardLineage:
     )
 
 
-# ---------------------------------------------------------------------------
-# Building and round-tripping
-# ---------------------------------------------------------------------------
-
-
 def test_synthetic_forecast_gets_lineage_for_every_decision_bearing_field(
     tmp_path: Path,
 ) -> None:
@@ -115,8 +110,6 @@ def test_synthetic_forecast_gets_lineage_for_every_decision_bearing_field(
     assert "model_input:player_injuries" in fields
     assert all(is_decision_bearing(field) for field in fields)
 
-    # The player family names a real snapshot; the base families cannot, and
-    # must say so rather than going quiet.
     injuries = lineage.field("model_input:player_injuries")
     assert injuries is not None and injuries.lineage is not None
     assert injuries.lineage.source_snapshot == PLAYER_SNAPSHOT
@@ -194,11 +187,6 @@ def test_parse_snapshot_capture_refuses_to_guess() -> None:
     assert parse_snapshot_capture(None) is None
 
 
-# ---------------------------------------------------------------------------
-# ENG-22: an inherited source_snapshots block names a real snapshot
-# ---------------------------------------------------------------------------
-
-
 def test_market_and_base_families_prefer_an_inherited_snapshot_over_the_digest(
     tmp_path: Path,
 ) -> None:
@@ -274,11 +262,6 @@ def test_legacy_manifests_without_a_source_snapshots_block_are_unaffected() -> N
     assert market.lineage.unknown_source_reason == BASE_SNAPSHOT_UNRECORDED
 
 
-# ---------------------------------------------------------------------------
-# The pool's own board is the market line's source when it was captured
-# ---------------------------------------------------------------------------
-
-
 _POOL_CAPTURE_BLOCK = {
     "policy": "pool_capture",
     "builder_module": "nfl_ats.pool_decision_lines",
@@ -322,8 +305,6 @@ def test_market_line_names_the_pool_board_capture_for_a_captured_week() -> None:
     assert market.lineage.builder_module == "nfl_ats.pool_decision_lines"
     assert market.lineage.unknown_source_reason is None
     assert market.lineage.effective_timestamp_basis == "source_capture"
-    # The families the model consumed still name the nflverse snapshot: only
-    # the graded LINE moved to the pool's board, not the rest of the table.
     market_input = lineage.field("model_input:market")
     assert market_input is not None and market_input.lineage is not None
     assert market_input.lineage.source_snapshot == "20260824T115346Z"
@@ -350,11 +331,6 @@ def test_market_line_keeps_the_nflverse_snapshot_for_an_uncaptured_week() -> Non
     assert market is not None and market.lineage is not None
     assert market.lineage.source_snapshot == "20260824T115346Z"
     assert market.lineage.builder_module == "nfl_ats.features"
-
-
-# ---------------------------------------------------------------------------
-# The release-blocking half
-# ---------------------------------------------------------------------------
 
 
 def test_safety_check_passes_on_complete_lineage() -> None:
@@ -418,8 +394,6 @@ def test_safety_check_fails_on_an_effective_timestamp_after_the_prediction() -> 
     message = str(error.value)
     assert "after the prediction timestamp" in message
     assert "model_input:player_injuries" in message
-    # Same card, graded against a later decision instant, is fine: the
-    # invariant is about ordering, not about the literal string.
     assert (
         validate_prediction_lineage(
             leaked, prediction_timestamp=datetime(2026, 9, 15, tzinfo=UTC)
@@ -496,11 +470,6 @@ def test_unparseable_effective_timestamp_is_rejected() -> None:
         validate_card_lineage(lineage, required_fields=(FIELD_PICK,))
 
 
-# ---------------------------------------------------------------------------
-# Overlay adaptation
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class _FakeMember:
     member_id: str
@@ -561,11 +530,6 @@ def test_a_non_snapshot_overlay_member_still_explains_its_absent_snapshot() -> N
     assert sources[0].source_snapshot is None
     assert sources[0].unknown_source_reason
     assert validate_prediction_lineage(_lineage(overlay_sources=sources)).status == "PASS"
-
-
-# ---------------------------------------------------------------------------
-# Integration with the pre-existing, unchanged safety contract
-# ---------------------------------------------------------------------------
 
 
 def test_existing_card_validation_is_unchanged_without_lineage(

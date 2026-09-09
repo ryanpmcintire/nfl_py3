@@ -53,7 +53,6 @@ def test_ecdf_control_arm_reproduces_production_probabilities(
         rtol=0.0,
         atol=1e-12,
     )
-    # The smoother is a pure reader: it must never mutate the model's residuals.
     np.testing.assert_array_equal(model.residuals, residuals_before)
 
 
@@ -90,11 +89,7 @@ def test_survival_is_monotone_and_bounded(method: str) -> None:
     thresholds = np.linspace(-40.0, 40.0, 41)
     survival = smoother.survival(thresholds)
     assert np.all(survival >= 0.0) and np.all(survival <= 1.0)
-    # A survival function P(X > t) is non-increasing in t.
     assert np.all(np.diff(survival) <= 1e-12)
-    # Deep in either tail, probability should be near its bound (loose check;
-    # this is a sanity property of any of the four estimators, not a precise
-    # calibration claim).
     assert survival[0] > 0.9
     assert survival[-1] < 0.1
 

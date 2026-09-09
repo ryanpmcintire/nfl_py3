@@ -100,14 +100,7 @@ WEEK10_SCHEDULE_ROWS = [
         "gameday": "2025-11-09",
         "gametime": "13:00:00",
     },
-    # BUF/MIA (the Ron Torbert row) deliberately absent: exercises the
-    # unmatched-schedule-pair warning path without a crash.
 ]
-
-
-# --------------------------------------------------------------------------
-# Parse correctness + team-code mapping + referee-name normalisation
-# --------------------------------------------------------------------------
 
 
 def test_parse_week10_fixture_maps_teams_and_both_matchup_forms() -> None:
@@ -123,11 +116,9 @@ def test_parse_week10_fixture_maps_teams_and_both_matchup_forms() -> None:
     assert len(rows) == 14
 
     by_source_name = {row["referee_source_name"]: row for row in rows}
-    # "Team at Team" form.
     assert by_source_name["Bill Vinovich"]["team_code_a"] == "LV"
     assert by_source_name["Bill Vinovich"]["team_code_b"] == "DEN"
     assert by_source_name["Bill Vinovich"]["game_day_label"] == "Thursday, Nov. 6"
-    # "Team vs. Team" form (international, designated-home game).
     assert by_source_name["Clete Blakeman"]["team_code_a"] == "ATL"
     assert by_source_name["Clete Blakeman"]["team_code_b"] == "IND"
     assert by_source_name["Clete Blakeman"]["game_day_label"] == "Sunday, Nov. 9"
@@ -149,7 +140,6 @@ def test_referee_name_alias_resolves_the_one_measured_mismatch() -> None:
     )
     row = next(r for r in rows if r["referee_source_name"] == "Ron Torbert")
     assert row["referee"] == "Ronald Torbert"
-    # Every other referee on this page is unchanged by the alias table.
     unchanged = [r for r in rows if r["referee_source_name"] != "Ron Torbert"]
     assert all(r["referee"] == r["referee_source_name"] for r in unchanged)
 
@@ -169,7 +159,6 @@ def test_parse_week18_excerpt_strips_sup_seed_tags_and_asterisk_footnote() -> No
     by_source_name = {row["referee_source_name"]: row for row in rows}
     assert by_source_name["Bill Vinovich"]["team_code_a"] == "SEA"
     assert by_source_name["Bill Vinovich"]["team_code_b"] == "SF"
-    # "Buccaneers*" must resolve to TB, not fail to map because of the "*".
     assert by_source_name["Brad Allen"]["team_code_a"] == "CAR"
     assert by_source_name["Brad Allen"]["team_code_b"] == "TB"
 
@@ -203,11 +192,6 @@ def test_empty_referee_cell_and_unparseable_matchup_are_skipped_with_warnings() 
     assert "empty referee cell" in warnings[0]
     assert "unparseable matchup text" in warnings[1]
     assert "unresolved team nickname" in warnings[2]
-
-
-# --------------------------------------------------------------------------
-# Measured join rate against the historical officials.parquet crew traits
-# --------------------------------------------------------------------------
 
 
 def test_current_crew_names_join_the_historical_officials_snapshot() -> None:
@@ -255,11 +239,6 @@ def test_current_crew_names_join_the_historical_officials_snapshot() -> None:
     assert aliased <= historical_names, aliased - historical_names
 
 
-# --------------------------------------------------------------------------
-# find_week_url: category-index discovery
-# --------------------------------------------------------------------------
-
-
 def test_find_week_url_locates_a_listed_week() -> None:
     assert (
         rac.find_week_url(CATEGORY_INDEX_HTML, season=2025, week=18)
@@ -280,11 +259,6 @@ def test_find_week_url_returns_none_for_a_week_not_yet_listed() -> None:
 
 def test_find_week_url_does_not_confuse_week_1_with_week_18() -> None:
     assert rac.find_week_url(CATEGORY_INDEX_HTML, season=2025, week=1) is None
-
-
-# --------------------------------------------------------------------------
-# run_capture: source selection + empty_reason branches
-# --------------------------------------------------------------------------
 
 
 def test_run_capture_category_index_success_resolves_schedule_join(tmp_path: Path) -> None:
@@ -325,8 +299,6 @@ def test_run_capture_category_index_success_resolves_schedule_join(tmp_path: Pat
     assert matched.loc["Bill Vinovich", "away_team"] == "LV"
     assert matched.loc["Clete Blakeman", "game_id"] == "2025_10_ATL_IND"
     assert matched.loc["Clete Blakeman", "home_team"] == "IND"
-    # BUF/MIA deliberately not in the fake schedule: must resolve to None,
-    # not crash or fabricate a game.
     assert pd.isna(matched.loc["Ron Torbert", "game_id"])
     assert matched.loc["Ron Torbert", "referee"] == "Ronald Torbert"
     assert (frame["crew_number"].isna()).all()
@@ -371,7 +343,7 @@ def test_run_capture_direct_guess_succeeds_when_index_has_not_caught_up(tmp_path
     guess_url = "https://www.footballzebras.com/2025/11/week-10-referee-assignments-2025/"
     fetch, calls = make_fetch(
         {
-            rac.CATEGORY_URL: (CATEGORY_INDEX_HTML, 200, None, True),  # does not list week 10
+            rac.CATEGORY_URL: (CATEGORY_INDEX_HTML, 200, None, True),
             guess_url: (WEEK10_HTML, 200, None, True),
         }
     )
@@ -402,7 +374,7 @@ def test_run_capture_unrecognized_structure_when_listed_url_parses_zero(tmp_path
         season=2025, week=18, out_root=out_root, repo=tmp_path, fetch=fetch, now=FIXED_NOW
     )
 
-    assert ok is False  # the index says it exists; failing to read it is a bug to fix
+    assert ok is False
     assert calls == [rac.CATEGORY_URL, WEEK18_URL]
     manifest = _read_manifest(snapshot)
     assert manifest["empty_reason"] == rac.EMPTY_REASON_UNRECOGNIZED_STRUCTURE
@@ -425,11 +397,6 @@ def test_run_capture_category_index_fetch_failed_exits_non_zero(tmp_path: Path) 
     assert manifest["category_index"]["error"] == "http_503"
     assert not (snapshot / "category_index.html").exists()
     assert not (snapshot / "post.html").exists()
-
-
-# --------------------------------------------------------------------------
-# Off-season / no-schedule zero-row behaviour (resolved via --current)
-# --------------------------------------------------------------------------
 
 
 def test_run_capture_no_schedule_snapshot_is_zero_row_ok_and_never_fetches(tmp_path: Path) -> None:
@@ -474,17 +441,12 @@ def test_run_capture_season_complete_is_zero_row_ok(tmp_path: Path) -> None:
         out_root=out_root,
         repo=tmp_path,
         fetch=fetch,
-        now=FIXED_NOW,  # 2025-11-05, long after the only game in this fake schedule
+        now=FIXED_NOW,
     )
 
     assert ok is True
     manifest = _read_manifest(snapshot)
     assert manifest["empty_reason"] == rac.EMPTY_REASON_SEASON_COMPLETE
-
-
-# --------------------------------------------------------------------------
-# main(): argument validation
-# --------------------------------------------------------------------------
 
 
 def test_main_requires_current_or_explicit_season_week() -> None:
@@ -514,15 +476,6 @@ def test_main_returns_zero_or_one_from_run_capture_ok(
     assert exit_ok == 0
     assert exit_bad == 1
     assert calls["week"] == 1
-
-
-# --------------------------------------------------------------------------
-# Idempotence: the scheduler-level dedupe referee_assignments_wed relies on
-# (mirrors injuries_*/player_arrests_tue/inactives_* -- there is no in-script
-# "skip if already captured"; the SCHEDULER checks the newest snapshot's age
-# before ever invoking the job; see scripts/capture_scheduler.py's
-# already_captured()).
-# --------------------------------------------------------------------------
 
 
 def test_snapshot_directory_name_matches_scheduler_naming_convention(tmp_path: Path) -> None:
@@ -560,7 +513,7 @@ def test_scheduler_dedupe_recognizes_a_fresh_referee_assignments_snapshot(
     )
 
     assert age is not None
-    assert age < 240  # the dedupe_minutes used by referee_assignments_wed
+    assert age < 240
     schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
     job = schedule["referee_assignments_wed"]
     satisfied, reported_age = capture_scheduler.already_captured(job, ten_minutes_later)

@@ -50,24 +50,6 @@ from nfl_ats.tank_zone_fade_tilt_overlay import (
     tank_zone_flag_by_game,
 )
 
-# ---------------------------------------------------------------------------
-# Shared fixture: a synthetic six-team league season
-# ---------------------------------------------------------------------------
-#
-# Weeks 1-13: CCC beats AAA and DDD beats BBB, every week. Entering week 14 the
-#   ordering key (wins asc, losses desc, team asc) puts AAA (0-13) and BBB
-#   (0-13) below EEE/FFF (0-0), so the tank zone is exactly {AAA, BBB}.
-# Week 13 (AAA at CCC): AAA IS flagged, but week 13 is outside the registered
-#   14-18 window -- the "weeks 1-13 never flip" guard.
-# Week 14: AAA hosts EEE (AAA flagged, home) and BBB visits FFF (BBB flagged,
-#   away). Both week-14 games are lost by the flagged team, so entering week 15
-#   the tank zone is still {AAA, BBB}.
-# Week 15: AAA hosts BBB -- BOTH sides flagged, no measured direction, never
-#   flipped. AAA wins it, so entering week 16 the zone is still {BBB, AAA}.
-# Week 16: AAA hosts CCC (AAA flagged) with the model picking the OPPONENT --
-#   the "flip only when the pick is on the tank side" guard -- plus EEE vs FFF
-#   with neither side flagged.
-
 _SCHEDULE_COLUMNS = [
     "game_id",
     "season",
@@ -94,16 +76,11 @@ def _schedule() -> pd.DataFrame:
         day = f"2026-{9 + (week // 5):02d}-{1 + (week % 28):02d}"
         rows.append((f"2026_{week:02d}_CCC_AAA", 2026, week, "REG", day, "CCC", "AAA", 7.0, -3.0))
         rows.append((f"2026_{week:02d}_DDD_BBB", 2026, week, "REG", day, "DDD", "BBB", 7.0, -3.0))
-    # Week 13: the same two beatdowns; the AAA game is the weeks-1-13 guard.
     rows.append((_GAME_WEEK_13, 2026, 13, "REG", "2026-12-03", "CCC", "AAA", 7.0, -3.0))
     rows.append(("2026_13_DDD_BBB", 2026, 13, "REG", "2026-12-03", "DDD", "BBB", 7.0, -3.0))
-    # Week 14: exactly one flagged side in each game; both flagged teams lose.
     rows.append((_GAME_ONE_FLAG_HOME, 2026, 14, "REG", "2026-12-10", "AAA", "EEE", -7.0, 3.0))
     rows.append((_GAME_ONE_FLAG_AWAY, 2026, 14, "REG", "2026-12-10", "FFF", "BBB", 7.0, -3.0))
-    # Week 15: both sides flagged. AAA wins, keeping both in the bottom two.
     rows.append((_GAME_BOTH_FLAGGED, 2026, 15, "REG", "2026-12-17", "AAA", "BBB", 7.0, -3.0))
-    # Week 16: one flagged side, but the model picks the opponent; plus a
-    # game with neither side flagged.
     rows.append((_GAME_PICK_OPPONENT, 2026, 16, "REG", "2026-12-24", "AAA", "CCC", -7.0, 3.0))
     rows.append((_GAME_NO_FLAG, 2026, 16, "REG", "2026-12-24", "EEE", "FFF", 7.0, -3.0))
     return pd.DataFrame(rows, columns=_SCHEDULE_COLUMNS)
@@ -132,21 +109,9 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["AAA", "EEE", "BBB", "BBB", "CCC", "FFF", "MISS_A"],
             "kickoff": ["2026-12-10T18:00:00+00:00"] * 7,
             "spread_line": [-3.0, 3.0, -3.0, 7.0, 3.0, -3.0, 1.0],
-            # W13:  model picks AWAY (AAA, flagged) -- week 13 is outside the
-            #       registered window, so NO flip.
-            # OneH: model picks HOME (AAA, flagged)      -> flip to 0.38.
-            # OneA: model picks AWAY (BBB, flagged)      -> flip to 0.60.
-            # Both: both sides flagged                   -> never flipped.
-            # PickOpp: model picks AWAY (CCC, not flagged) -> no flip.
-            # NoFlag / Missing: no signal                 -> no flip.
             "home_cover_probability": [0.30, 0.62, 0.40, 0.70, 0.30, 0.55, 0.50],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. tank_zone_flag_by_game: the derived flag
-# ---------------------------------------------------------------------------
 
 
 def test_flag_identifies_the_two_worst_records_entering_the_week() -> None:
@@ -179,11 +144,6 @@ def test_flag_covers_every_reg_game_exactly_once() -> None:
 def test_flag_requires_its_schedule_columns() -> None:
     with pytest.raises(DataContractError, match="tank-zone tracking"):
         tank_zone_flag_by_game(pd.DataFrame({"game_id": ["G1"], "season": [2026]}))
-
-
-# ---------------------------------------------------------------------------
-# 2. Leakage regressions: pregame-only inputs (AGENTS.md mandate)
-# ---------------------------------------------------------------------------
 
 
 def test_flag_is_leak_safe_against_the_games_own_result() -> None:
@@ -225,7 +185,6 @@ def test_flag_is_leak_safe_against_later_weeks() -> None:
 
     rewritten = schedule.copy()
     later = rewritten["week"].ge(15)
-    # Invert every later result: the flagged teams now win out.
     rewritten.loc[later, "result"] = -rewritten.loc[later, "result"]
     after = tank_zone_flag_by_game(rewritten).set_index("game_id")
 
@@ -259,11 +218,6 @@ def test_flag_never_reads_an_unplayed_current_week() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# 3. apply_tank_zone_fade_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
-
-
 def test_overlay_fades_the_tank_zone_side_when_the_model_picks_it() -> None:
     result = apply_tank_zone_fade_tilt_overlay(_predictions(), _schedule())
     flipped = {flip.game_id for flip in result.flips}
@@ -291,8 +245,6 @@ def test_overlay_never_flips_before_week_14() -> None:
     overlaid = result.overlaid_predictions.set_index("game_id")
     assert overlaid.loc[_GAME_WEEK_13, "home_cover_probability"] == pytest.approx(0.30)
 
-    # And the flag itself really did fire on that game -- the guard is the
-    # week window, not an accidentally empty flag.
     flags = _flags()
     assert bool(flags.loc[_GAME_WEEK_13, "tank_zone_away"]) is True
 
@@ -379,11 +331,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_tank_zone_fade_tilt_overlay(pd.DataFrame({"game_id": ["G1"]}), _schedule())
 
 
-# ---------------------------------------------------------------------------
-# 4. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     quiet = _predictions().loc[lambda frame: frame["game_id"].eq(_GAME_NO_FLAG)]
     assert overlay_disclosure_note(apply_tank_zone_fade_tilt_overlay(quiet, _schedule())) == ""
@@ -399,10 +346,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "weeks 14-18" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 5. record_tank_zone_fade_tilt_challenger_decisions: dual-tracked
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -473,10 +416,7 @@ def test_record_tank_zone_fade_challenger_decisions_records_the_tilt_arm(tmp_pat
     assert ledger["edge"].isna().all()
 
     indexed = ledger.set_index("game_id")
-    # The model's raw pick was HOME (0.62 -> AAA, the tank-zone team); the
-    # fade flips it to AWAY.
     assert indexed.loc[_GAME_ONE_FLAG_HOME, "pick_side"] == "AWAY"
-    # The unflagged game keeps the model's own pick (0.55 -> HOME).
     assert indexed.loc[_GAME_NO_FLAG, "pick_side"] == "HOME"
 
     again = record_tank_zone_fade_tilt_challenger_decisions(artifacts, data_root, now=_NOW)

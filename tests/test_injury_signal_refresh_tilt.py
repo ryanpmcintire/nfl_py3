@@ -35,8 +35,6 @@ from nfl_ats.pick_refresh import (
     RefreshResult,
 )
 
-# Thursday-night kickoff used throughout -- own-week Tuesday noon ET falls on
-# 2026-09-15 (September is EDT, UTC-4), i.e. 2026-09-15T16:00:00Z.
 KICKOFF = pd.Timestamp("2026-09-18T00:15:00+00:00")
 TUESDAY_NOON = own_week_tuesday_noon_utc(pd.Series([KICKOFF])).iloc[0]
 BEFORE_TUESDAY = TUESDAY_NOON - pd.Timedelta(days=1)
@@ -75,11 +73,6 @@ def _pft_frame(rows: list[tuple[str, pd.Timestamp]]) -> pd.DataFrame:
     frame = pd.DataFrame(rows, columns=["headline_norm", "lastmod"])
     frame["lastmod"] = pd.to_datetime(frame["lastmod"], utc=True)
     return frame
-
-
-# ---------------------------------------------------------------------------
-# 1. Official-path trigger logic
-# ---------------------------------------------------------------------------
 
 
 def test_official_path_fires_on_a_brand_new_post_tuesday_designation() -> None:
@@ -142,7 +135,6 @@ def test_official_path_nets_against_the_opponents_own_injury_news() -> None:
         injuries=injuries,
         pft=None,
     )
-    # 4 (Out) - 3 (Doubtful) = 1, below the >=2 bar.
     assert reading.net_score == pytest.approx(1.0)
     assert reading.fires is False
 
@@ -200,7 +192,7 @@ def test_official_path_a_genuine_midweek_worsening_is_captured() -> None:
         injuries=injuries,
         pft=None,
     )
-    assert reading.net_score == pytest.approx(2.0)  # 3 (Doubtful) - 1 (Probable)
+    assert reading.net_score == pytest.approx(2.0)
     assert reading.fires is True
 
 
@@ -228,16 +220,11 @@ def test_official_path_signal_is_zero_before_any_post_tuesday_filing_lands() -> 
     assert reading.fires is False
 
 
-# ---------------------------------------------------------------------------
-# 2. PFT-headline fallback
-# ---------------------------------------------------------------------------
-
-
 def test_pft_fallback_used_when_season_has_no_official_coverage() -> None:
     injuries = _injuries_frame(
         [_injury_row(team="TST", gsis_id="p1", report_status="Out", date_modified=WED_MORNING)]
     )
-    injuries["season"] = 2019  # a season this game's season (2026) never matches
+    injuries["season"] = 2019
     pft = _pft_frame(
         [
             ("Cowboys WR questionable for Sunday", WED_MORNING),
@@ -265,8 +252,8 @@ def test_pft_fallback_excludes_headlines_outside_the_tuesday_to_now_window() -> 
     injuries = None
     pft = _pft_frame(
         [
-            ("Cowboys news before Tuesday", BEFORE_TUESDAY),  # excluded: too early
-            ("Cowboys news after now", FRIDAY + pd.Timedelta(days=2)),  # excluded: too late
+            ("Cowboys news before Tuesday", BEFORE_TUESDAY),
+            ("Cowboys news after now", FRIDAY + pd.Timedelta(days=2)),
         ]
     )
     reading = injury_signal_for_game(
@@ -282,11 +269,6 @@ def test_pft_fallback_excludes_headlines_outside_the_tuesday_to_now_window() -> 
     )
     assert reading.net_score == pytest.approx(0.0)
     assert reading.fires is False
-
-
-# ---------------------------------------------------------------------------
-# 3. Fail-open
-# ---------------------------------------------------------------------------
 
 
 def test_fails_open_to_no_signal_with_no_injury_data_at_all() -> None:
@@ -326,11 +308,6 @@ def test_fails_open_when_official_frame_present_but_season_and_pft_both_absent()
     assert reading.fires is False
 
 
-# ---------------------------------------------------------------------------
-# 4. Disagreement classification
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     "injury_fires,injury_side,movement_policy,movement_side,expected",
     [
@@ -353,11 +330,6 @@ def test_classify_disagreement_covers_every_branch(
         )
         == expected
     )
-
-
-# ---------------------------------------------------------------------------
-# 5. build_injury_signal_rows: both arms, disagreement metadata, eligibility
-# ---------------------------------------------------------------------------
 
 
 def _game(
@@ -467,13 +439,13 @@ def test_build_injury_signal_rows_records_both_arms_and_excludes_ineligible_game
 
     fired = rows.set_index("game_id").loc["g_fires"]
     assert fired["hold_pick_side"] == "HOME"
-    assert fired["injury_tilt_pick_side"] == "AWAY"  # flipped: TST's own injury news
+    assert fired["injury_tilt_pick_side"] == "AWAY"
     assert bool(fired["injury_signal_fires"]) is True
     assert fired["disagreement_type"] == DISAGREEMENT_INJURY_ONLY
 
     quiet = rows.set_index("game_id").loc["g_quiet"]
     assert quiet["hold_pick_side"] == "AWAY"
-    assert quiet["injury_tilt_pick_side"] == "AWAY"  # unchanged: no injury data for QUI/ETT
+    assert quiet["injury_tilt_pick_side"] == "AWAY"
     assert bool(quiet["injury_signal_fires"]) is False
     assert quiet["disagreement_type"] == DISAGREEMENT_MOVEMENT_ONLY
     assert quiet["played_pick_side"] == "AWAY"
@@ -519,11 +491,6 @@ def test_build_injury_signal_rows_fails_open_with_no_data_sources(
     assert bool(row["injury_signal_fires"]) is False
     assert row["hold_pick_side"] == row["injury_tilt_pick_side"] == "HOME"
     assert row["disagreement_type"] == DISAGREEMENT_NEITHER
-
-
-# ---------------------------------------------------------------------------
-# 6. record_injury_signal_refresh_tilt: the append-only ledger write
-# ---------------------------------------------------------------------------
 
 
 def _write_original_card(

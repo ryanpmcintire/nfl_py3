@@ -165,33 +165,16 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "forecast_weather_kn_warm_team_cold_late_tilt"
 
-#: Reused verbatim from scripts/nfl_forecast_weather_screen.py /
-#: scripts/nfl_weather_battery_screen.py / src/nfl_ats/experiment_runner.py
-#: (the warm_team_cold_late mechanism's static warm-winter-metro away-team
-#: list -- historical franchise codes (OAK, SD) kept alongside their current
-#: ones (LV, LAC) so this set matches regardless of which era's schedules row
-#: it is checked against).
 WARM_METRO_TEAM_CODES = frozenset(
     {"MIA", "TB", "JAX", "ARI", "SF", "OAK", "LA", "LAC", "SD", "HOU", "DAL", "NO", "LV"}
 )
 WARM_TEAM_COLD_LATE_TEMP_THRESHOLD_F = 35.0
 WARM_TEAM_COLD_LATE_MIN_WEEK = 13
 
-# ---------------------------------------------------------------------------
-# Live-fetch constants and helpers -- kickoff_nearest cutoff, model=GFS,
-# ported from scripts/ingest_forecast_archive.py's kickoff_nearest path.
-# Reuses forecast_cold_visitor_tilt_overlay's cutoff-agnostic MOS-bulletin
-# primitives (fetch_mos_bulletin, nearest_row, candidate_runtimes) directly
-# rather than reimplementing the HTTP/retry/walk-backward logic; only the
-# cutoff computation (kickoff itself, not Tuesday noon) and the extracted
-# fields (temp AND precip, not just temp) differ from that module's fetch.
-# ---------------------------------------------------------------------------
 
-MOS_MODEL = "GFS"  # kickoff_nearest's model, per MOS_MODEL_BY_CUTOFF_MODE in
-# scripts/ingest_forecast_archive.py -- NOT MEX (that is tuesday_noon's model).
+MOS_MODEL = "GFS"
 LIVE_FORECAST_CUTOFF_MODE = "pool_decision"
 
 
@@ -482,11 +465,6 @@ def fetch_shared_kickoff_nearest_forecasts_fail_open(
     return fetch_kickoff_nearest_forecasts_fail_open(
         games_for_fetch, station_map_path, fetch_bulletin=fetch_bulletin
     )
-
-
-# ---------------------------------------------------------------------------
-# Flag + pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def _canonical_team(team: pd.Series) -> pd.Series:

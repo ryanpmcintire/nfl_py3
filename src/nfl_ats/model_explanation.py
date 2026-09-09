@@ -49,19 +49,8 @@ import pandas as pd
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.reporting import artifact_directories, read_json
 
-#: A family's market-weight refit-to-refit standard deviation as a fraction of
-#: its mean weight (a coefficient-of-variation-style ratio) at or above which
-#: the stability note reads "jumps around between refits" rather than "steady
-#: across refits". This is page-wording judgment (which caption a number
-#: earns), not a modeling threshold, so it lives here rather than in
-#: :mod:`nfl_ats.market_decomposition` -- same spirit as that module's own
-#: declared, non-magic thresholds, just scoped to this section's captions.
 STABILITY_JUMPY_RATIO = 0.15
 
-#: Plain-English translations of the four classification buckets produced by
-#: ``classify_families``. The ``unpriced_predictive`` wording is deliberate and
-#: fixed: this bucket most resembles "a lead", and it is a diagnostic, not
-#: evidence of edge -- so the caption says "unconfirmed" out loud.
 CLASSIFICATION_CAPTIONS: dict[str, str] = {
     "unpriced_predictive": (
         "the model leans on this and the market does not seem to price it -- unconfirmed"
@@ -71,9 +60,6 @@ CLASSIFICATION_CAPTIONS: dict[str, str] = {
     "noise": "neither says much about this",
 }
 
-#: Caveats rendered verbatim at the foot of the section. These are the terms
-#: under which the numbers above them may be read; they travel with the table
-#: so no screenshot can separate them.
 HONESTY_NOTES: tuple[tuple[str, str], ...] = (
     (
         "A diagnostic, not a discovery",
@@ -330,9 +316,6 @@ def render_model_explanation_section(explanation: ModelExplanation) -> str:
             "</tr>"
         )
     out.append("</tbody></table>")
-    # Trust signals (UX rubric dimension 8): training window, method, and the
-    # artifact's own timestamp, stated next to the numbers they describe --
-    # never implied, always printed.
     provenance_bits = []
     if explanation.start_season is not None and explanation.end_season is not None:
         provenance_bits.append(

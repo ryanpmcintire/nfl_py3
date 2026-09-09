@@ -75,15 +75,10 @@ DEFAULT_MARKET_ROOT = REPO_ROOT / "data/market/raw"
 OPENER_SOFTNESS_FADE_COLUMN = "opener_softness_fade_signal"
 ML_SPREAD_DIVERGENCE_COLUMN = "ml_spread_divergence_signal"
 
-#: A book needs this many strictly-prior opener/close error observations
-#: before a walk-forward ranking may name it the softest book.
 MIN_BOOK_HISTORY_GAMES = 100
 
-#: A book needs this many games in EACH season-parity half to enter the
-#: descriptive split-half reliability read.
 MIN_BOOK_GAMES_PER_HALF = 50
 
-#: LEAD-03's predeclared divergence threshold, in home-win-probability points.
 DIVERGENCE_THRESHOLD_PP = 0.03
 
 CLOSE_LABEL_PRIORITY: tuple[str, ...] = ("sun_late_close", "sun_early_close")
@@ -146,11 +141,6 @@ def _no_vig_home_probability(home_odds: pd.Series, away_odds: pd.Series) -> np.n
         home_probability, _ = no_vig_probabilities(home_values[position], away_values[position])
         probability[position] = home_probability
     return probability
-
-
-# ---------------------------------------------------------------------------
-# LEAD-05: opener-softness book ranking
-# ---------------------------------------------------------------------------
 
 
 def book_level_tue_open_spreads(root: Path, schedule: pd.DataFrame) -> pd.DataFrame:
@@ -484,11 +474,6 @@ def attach_opener_softness_fade_features(
     return merged
 
 
-# ---------------------------------------------------------------------------
-# LEAD-03: moneyline-spread divergence
-# ---------------------------------------------------------------------------
-
-
 def tue_open_moneyline_coverage(root: Path, schedule: pd.DataFrame) -> dict[str, object]:
     """Measured coverage of BOTH moneyline sides at the Tuesday opener.
 
@@ -549,9 +534,6 @@ def _walk_forward_spread_implied_home_win_probability(
             continue
         model = LogisticRegression()
         model.fit(train_x, train_y)
-        # ``working`` was reset to a plain RangeIndex above, so ``group``'s
-        # (inherited) index values are exactly this week's row POSITIONS in
-        # ``result`` -- no separate position lookup needed.
         score_index = group.index[home_spread.loc[group.index].notna()]
         if score_index.empty:
             continue

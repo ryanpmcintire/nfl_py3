@@ -100,10 +100,6 @@ from nfl_ats.pick_refresh import (
 )
 from nfl_ats.weak_signals import CLOSING_GROUNDS, POOLABLE_CLASSIFICATION, TERMINAL_CLASSIFICATIONS
 
-# ---------------------------------------------------------------------------
-# trigger_source vocabulary
-# ---------------------------------------------------------------------------
-
 TRIGGER_CLOCK_CHECKPOINT = "clock_checkpoint"
 TRIGGER_INACTIVES_POSTED = "inactives_posted"
 TRIGGER_INJURY_REPORT_POSTED = "injury_report_posted"
@@ -122,17 +118,6 @@ TRIGGER_SOURCES: frozenset[str] = frozenset(
     }
 )
 
-#: The scheduler jobs that are purely clock-driven refresh passes
-#: (``scripts/capture_scheduler.py`` ``SCHEDULE``, read). ``refresh_thu`` /
-#: ``refresh_sat`` / ``refresh_sun`` are the three named checkpoints;
-#: ``refresh_*_inactives_*`` fire on a fixed clock offset from their own
-#: capture window closing, NOT on the inactives capture actually reporting
-#: anything -- they are clock checkpoints under an inactives-flavoured name,
-#: exactly as ENG-08's own brief states. This module does not import
-#: ``scripts/capture_scheduler.py`` (src/nfl_ats never imports scripts/), so
-#: this list is a literal mirror of that file's job names; a name changed
-#: there without a matching update here would simply stop matching, fail
-#: open, and be visible as a gap in a ``--scan`` summary.
 CLOCK_CHECKPOINT_NAMES: tuple[str, ...] = (
     "refresh_thu",
     "refresh_sat",
@@ -165,11 +150,6 @@ def mkt08_trigger_type(trigger_source: str) -> str:
     if trigger_source in TRIGGER_SOURCES:
         return TRIGGER_NEWS_EVENT
     raise ValueError(f"Unknown trigger_source {trigger_source!r}")
-
-
-# ---------------------------------------------------------------------------
-# Small shared helpers
-# ---------------------------------------------------------------------------
 
 
 def _as_utc(value: Any) -> pd.Timestamp | None:
@@ -236,11 +216,6 @@ def _validate_deadline(
     )
 
 
-# ---------------------------------------------------------------------------
-# RefreshTrigger
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class RefreshTrigger:
     """One reconstructed refresh-trigger event for one game.
@@ -255,15 +230,9 @@ class RefreshTrigger:
     game_id: str
     season: int
     week: int
-    #: When this scan observed/reconstructed the trigger (the scan's clock).
     observation_time: pd.Timestamp
-    #: When the underlying source was actually captured -- from the
-    #: snapshot's own manifest/payload, NEVER from ``observation_time``.
     source_capture_time: pd.Timestamp
-    #: The scheduler job name for a ``clock_checkpoint`` trigger; ``None``
-    #: for every genuine non-clock trigger.
     checkpoint_name: str | None
-    #: This game's own ``pick_refresh.pick_deadline``.
     deadline: pd.Timestamp
     deadline_valid: bool
     deadline_reason: str
@@ -299,11 +268,6 @@ class RefreshTrigger:
             "deadline_reason": self.deadline_reason,
             "detail": self.detail,
         }
-
-
-# ---------------------------------------------------------------------------
-# Per-week game windows (kickoff + deadline), reused by every detector
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -369,11 +333,6 @@ def schedule_game_windows(repo_root: Path, *, season: int, week: int) -> tuple[G
     return tuple(windows)
 
 
-# ---------------------------------------------------------------------------
-# Detector 1: fixed clock checkpoints (from the scheduler's own state file)
-# ---------------------------------------------------------------------------
-
-
 def detect_clock_checkpoint_triggers(
     scheduler_state: dict[str, Any],
     games: Sequence[GameWindow],
@@ -430,11 +389,6 @@ def detect_clock_checkpoint_triggers(
     return tuple(triggers)
 
 
-# ---------------------------------------------------------------------------
-# Detector 2: a new official inactives snapshot (WP17), reusing its reader
-# ---------------------------------------------------------------------------
-
-
 def detect_inactives_triggers(
     data_root: Path,
     games: Sequence[GameWindow],
@@ -489,11 +443,6 @@ def detect_inactives_triggers(
                 )
             )
     return tuple(triggers)
-
-
-# ---------------------------------------------------------------------------
-# Detector 3: a new injury-report snapshot (nflverse / Sportradar)
-# ---------------------------------------------------------------------------
 
 
 def _nflverse_injury_snapshots(data_root: Path) -> tuple[tuple[str, pd.Timestamp], ...]:
@@ -602,11 +551,6 @@ def detect_injury_report_triggers(
                 )
             )
     return tuple(triggers)
-
-
-# ---------------------------------------------------------------------------
-# Detector 4: a lineup change between consecutive lineups.json captures
-# ---------------------------------------------------------------------------
 
 
 def _lineup_signature(team_payload: Any) -> frozenset[tuple[str, str, str | None]]:
@@ -749,11 +693,6 @@ def archive_lineup_snapshot(source: Path, archive_dir: Path) -> Path | None:
     return destination
 
 
-# ---------------------------------------------------------------------------
-# Detector 5: an opener-vs-current line move beyond MOVEMENT_POLICY_THRESHOLD
-# ---------------------------------------------------------------------------
-
-
 def detect_line_move_triggers(
     artifacts_root: Path,
     data_root: Path,
@@ -829,11 +768,6 @@ def detect_line_move_triggers(
     return tuple(triggers)
 
 
-# ---------------------------------------------------------------------------
-# Orchestration: every detector, one call
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class TriggerScanRoots:
     """Every path a full scan needs, gathered once so callers (and tests)
@@ -897,11 +831,6 @@ def detect_all_triggers(
     return tuple(triggers)
 
 
-# ---------------------------------------------------------------------------
-# The append-only evidence artifact (JSONL, gitignored under artifacts/)
-# ---------------------------------------------------------------------------
-
-
 def evidence_log_path(artifacts_root: Path, *, season: int, week: int) -> Path:
     return artifacts_root / "refresh_triggers" / str(season) / f"week_{week}.jsonl"
 
@@ -959,10 +888,6 @@ def append_triggers_to_evidence_log(
 
     return len(to_write), len(triggers) - len(to_write)
 
-
-# ---------------------------------------------------------------------------
-# The prospective comparison scaffold
-# ---------------------------------------------------------------------------
 
 COMPARISON_REQUIRED_COLUMNS: tuple[str, ...] = (
     "game_id",
@@ -1114,8 +1039,8 @@ def compare_trigger_vs_checkpoint(
     classification = POOLABLE_CLASSIFICATION
     closing_ground: str | None = None
     if not interval.degenerate and interval.upper < 0.0:
-        classification = TERMINAL_CLASSIFICATIONS[0]  # "refuted_mechanism"
-        closing_ground = CLOSING_GROUNDS[classification][0]  # "wrong_sign_resolved"
+        classification = TERMINAL_CLASSIFICATIONS[0]
+        closing_ground = CLOSING_GROUNDS[classification][0]
 
     n_weeks = int(pd.Series(block_ids).nunique())
     return TriggerComparisonResult(

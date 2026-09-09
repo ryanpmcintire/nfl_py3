@@ -65,10 +65,6 @@ import urllib.request
 from pathlib import Path
 
 import pandas as pd
-
-# Same-directory import, not a package import: `python scripts/foo.py` puts
-# `scripts/` at sys.path[0], so this resolves without any src/nfl_ats
-# dependency, matching this script's own standalone-script convention.
 from ingest_public_betting import (
     USER_AGENT,
     parse_actionnetwork_snapshot,
@@ -125,10 +121,6 @@ def capture(url: str = LIVE_URL, out_root: Path = DEFAULT_OUT) -> dict:
     if not frame.empty:
         frame.to_parquet(frame_path, index=False)
     else:
-        # An empty DataFrame still needs a parquet on disk so downstream
-        # tooling (e.g. `nfl_ats.snapshots.latest_snapshot`-style directory
-        # scans) never has to special-case a missing file; write an
-        # explicitly empty, schema-less frame rather than skipping the write.
         pd.DataFrame().to_parquet(frame_path, index=False)
 
     n_rows = len(frame)
@@ -170,9 +162,6 @@ def main() -> None:
     args = parser.parse_args()
 
     summary = capture(args.url, args.out)
-    # Single-line JSON on its own -- scripts/public_betting_capture.ps1
-    # regex-matches this exact shape, mirroring how scripts/odds_capture.ps1
-    # regex-matches nfl-ats odds-ingest's own JSON stdout.
     print(json.dumps(summary))
 
 

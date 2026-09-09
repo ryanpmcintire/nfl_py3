@@ -113,27 +113,10 @@ if str(REPO_ROOT / "src") not in sys.path:
 
 from nfl_ats import artifact_retention_policy as retention_policy  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# Path-reference discovery
-# ---------------------------------------------------------------------------
-
-# A "run" boundary: the UTC-stamped directory or file name every capture,
-# experiment screen, and forecast artifact in this repo is named with, e.g.
-# "20260821T182533Z" or "2026-week-01-20260824T120725Z".
 TIMESTAMP_RE = re.compile(r"\d{8}T\d{6}Z")
 
-# Matches an artifacts/... or data/... path reference inside free text or a
-# JSON string value, forward-slash or Windows-backslash separated (JSON
-# escaping is already undone by json.loads before this ever runs against a
-# JSON string; raw doc text may use either separator). \b keeps this from
-# matching "database" or "metadata" -- neither has a word boundary before the
-# "data" substring.
 PATH_REF_RE = re.compile(r"\b(?:artifacts|data)[/\\][A-Za-z0-9_.\\/-]+")
 
-# artifacts/active_ats_model.json's own schema stores some references as a
-# bare two-segment "<family>/<stamp>" string (e.g. "margins/20260824T120013Z")
-# that is implicitly relative to artifacts/ -- it never spells out the
-# "artifacts/" prefix. Recognise that shape specifically for that one file.
 BARE_FAMILY_STAMP_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 
 NAMED_DATA_SUBTREES = ("raw", "processed", "market", "players")
@@ -147,34 +130,13 @@ ACTIVE_MODEL_REL = "artifacts/active_ats_model.json"
 PROSPECTIVE_REL = "artifacts/prospective"
 CLV_LEDGER_REL = "artifacts/clv_ledger"
 
-# ENG-19 gap-close: ENG-01's lock-day decision packages, and its rehearsal
-# counterpart (both folders another session is adding concurrently -- see
-# src/nfl_ats/lockday_package.py's PACKAGES_DIRNAME). Protected wholesale
-# like PROSPECTIVE_REL/CLV_LEDGER_REL (they package exactly the evidence a
-# published lock-day forecast, or its rehearsal, depends on); an empty or
-# nonexistent directory is a no-op both here and in the glob below, so this
-# is safe to wire in before either folder exists on disk.
 LOCKDAY_PACKAGES_REL = "artifacts/lockday_packages"
 LOCKDAY_PACKAGES_REHEARSAL_REL = "artifacts/lockday_packages_rehearsal"
-# Scanned for path references the same way REGISTRY_JSON_GLOBS is: a package
-# manifest (src/nfl_ats/lockday_package.py's build_manifest/hashed_files)
-# cites specific runs elsewhere by repo-relative path, and those runs must be
-# protected too, not just the package that cites them.
 LOCKDAY_PACKAGE_JSON_GLOBS = (
     "artifacts/lockday_packages/**/*.json",
     "artifacts/lockday_packages_rehearsal/**/*.json",
 )
 
-# Never listed as prunable, full stop, independent of any reference scan.
-# Discovered by reading src/nfl_ats/clv.py (paper_decision_ledger_path ->
-# artifacts/clv_ledger/decisions.parquet, the append-only paper-decision
-# ledger) and src/nfl_ats/prospective_scoring.py (challenger_decisions.parquet
-# under artifacts/prospective/), plus the .gitignore carve-out for
-# artifacts/prospective/ and the AGENTS.md session-startup instruction to
-# always inspect artifacts/active_ats_model.json. `data/scheduler_state.json`
-# / `data/scheduler_log.txt` are also currently protected incidentally via
-# docs/capture_scheduling.md:345 -- hardcoded here too (ENG-19) so that a
-# future doc edit can never silently drop the capture scheduler's heartbeat.
 ALWAYS_PROTECTED = (
     ACTIVE_MODEL_REL,
     PROSPECTIVE_REL,
@@ -322,11 +284,6 @@ def collect_protected_refs(repo_root: Path) -> dict[str, set[str]]:
     return refs
 
 
-# ---------------------------------------------------------------------------
-# Filesystem scanning
-# ---------------------------------------------------------------------------
-
-
 @dataclass
 class SubtreeStats:
     size_bytes: int = 0
@@ -442,17 +399,6 @@ def _protection_for(rel: str, protected: dict[str, set[str]]) -> set[str] | None
     return None
 
 
-# Directories that are never decomposed into individual runs, independent of
-# the general reference-scan protection mechanism above. This is a narrow,
-# explicit, PERFORMANCE-and-sanity exception, not a protection rule: measured
-# 2026-09-01 (`du -sh artifacts/rehearsal_lockday` -> 2.1G), `rehearsal_lockday/
-# sim/` is a full hard-link mirror of most of `data/` built by
-# `scripts/lockday_rehearsal.py` for a dry-run rehearsal. Decomposing it would
-# re-discover thousands of nodes that are byte-for-byte the same on-disk data
-# already counted under `data/` (hard links share inodes -- deleting a link
-# here would not even free the reported bytes). It is also referenced wholesale
-# in `docs/week1_readiness.md`, so it is protected either way; this constant
-# only controls whether the walk decomposes it or reports it as one node.
 COARSE_NO_DESCEND = frozenset({"artifacts/rehearsal_lockday"})
 
 
@@ -522,8 +468,6 @@ def discover_runs(
             except OSError:
                 is_link = False
             if is_link:
-                # Defensive: never descend into a reparse point (worktree
-                # junction hazard) and never treat it as a run either.
                 continue
             if TIMESTAMP_RE.search(entry.name):
                 runs.append(make_run(entry_path))
@@ -578,11 +522,6 @@ def artifact_family_of(run: RunNode) -> str:
     if len(parts) == 2 and run.is_dir:
         return parts[1]
     return "(root files)"
-
-
-# ---------------------------------------------------------------------------
-# Report
-# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -654,11 +593,6 @@ def build_report(repo_root: Path) -> ReportData:
     )
 
 
-# ---------------------------------------------------------------------------
-# Plan (dry run only)
-# ---------------------------------------------------------------------------
-
-
 @dataclass
 class PlanCandidate:
     rel: str
@@ -701,10 +635,6 @@ def build_plan(repo_root: Path, older_than_days: int = 30) -> PlanData:
         for run in runs:
             if run.protected:
                 continue
-            # ENG-19: point-in-time captures are never a candidate, full
-            # stop -- independent of whether a doc reference happens to
-            # protect them too (see retention_policy module docstring and
-            # docs/artifact_retention.md Safety rule 3, the gap this closes).
             if retention_policy.is_point_in_time_capture(tree_name, run.rel):
                 continue
             if newest_by_group.get(run.group_key) is run:
@@ -735,11 +665,6 @@ def build_plan(repo_root: Path, older_than_days: int = 30) -> PlanData:
         candidates=candidates,
         total_bytes=sum(c.size_bytes for c in candidates),
     )
-
-
-# ---------------------------------------------------------------------------
-# Budget check (dry run only -- ENG-19)
-# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -818,11 +743,6 @@ def build_budget_check(
         rows=rows,
         any_over_budget=any_over_budget,
     )
-
-
-# ---------------------------------------------------------------------------
-# Rendering
-# ---------------------------------------------------------------------------
 
 
 def _human_bytes(count: int) -> str:
@@ -1015,15 +935,7 @@ def render_budget_check_text(check: BudgetCheckData) -> str:
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
-
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it only builds a report in
-# memory and prints it (--json prints to stdout), never writing under artifacts/ or registry/ (see
-# the module's own read-only claim, formerly in tests/test_experiment_registry.py's allowlist).
 
 
 def main(argv: list[str] | None = None) -> int:

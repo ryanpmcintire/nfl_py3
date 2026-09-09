@@ -53,10 +53,6 @@ from nfl_ats.third_down_reversion_fade_overlay import (
     third_down_over_flag_by_game,
 )
 
-# ---------------------------------------------------------------------------
-# PBP fixture helpers
-# ---------------------------------------------------------------------------
-
 
 def _pbp_row(**overrides: object) -> dict[str, object]:
     row: dict[str, object] = dict.fromkeys(PBP_SNAPSHOT_COLUMNS, np.nan)
@@ -102,14 +98,6 @@ def _third_down_plays(
     return rows
 
 
-# Season 2025 (the PRIOR season for every 2026 game below). Five teams:
-#   AAA 6/10 = 0.60, FFF 6/10 = 0.60, BBB 4/10 = 0.40, CCC 3/10 = 0.30,
-#   DDD 2/10 = 0.20 -- league mean 0.42, centered AAA=+0.18, FFF=+0.18,
-#   BBB=-0.02, CCC=-0.12, DDD=-0.22. THIRD_DOWN_TOP_QUARTILE_CENTERED is
-#   ~0.0339, so AAA and FFF (both +0.18) are clearly flagged and the other
-#   three are clearly not -- deliberately far from the cutoff so the test
-#   is robust to float rounding, not a boundary probe.
-# GGG and HHH never appear in season 2025 at all (missing prior data).
 def _season_2025_pbp() -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     rows += _third_down_plays(
@@ -130,17 +118,6 @@ def _season_2025_pbp() -> list[dict[str, object]]:
     return rows
 
 
-# Season 2020 (the PRIOR season for the 2021 global-vs-local test game).
-# Four teams, all CLOSE to the frozen cutoff on purpose:
-#   QQQ 29/100=0.29, RRR 27/100=0.27, SSS 25/100=0.25, TTT 23/100=0.23,
-#   league mean 0.26, centered QQQ=+0.03, RRR=+0.01, SSS=-0.01, TTT=-0.03.
-# QQQ's +0.03 sits just BELOW THIRD_DOWN_TOP_QUARTILE_CENTERED (~0.033926),
-# so the correct (global, frozen) rule never flags it. But the LOCAL
-# quantile(0.75) of these four centered values (linear interpolation) is
-# ~0.015 -- comfortably BELOW QQQ's +0.03 -- so a (wrong) implementation
-# that recomputed a quantile from this local sample would flag QQQ. This is
-# the fixture that distinguishes "global, frozen" from "within-season/
-# within-sample" behaviour.
 def _season_2020_pbp() -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     rows += _third_down_plays(
@@ -214,25 +191,9 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["BBB", "AAA", "FFF", "DDD", "CCC", "HHH", "MISS_A", "RRR"],
             "kickoff": ["2026-09-10T17:00:00+00:00"] * 8,
             "spread_line": [-3.0, 3.0, -3.0, -3.0, 1.0, -1.0, 1.0, -6.0],
-            # HomeFlag: model picks HOME (AAA, flagged)         -> flip to 0.35.
-            # AwayFlag: model picks AWAY (AAA, flagged)         -> flip to 0.70.
-            # Both:     both sides flagged                      -> never flipped.
-            # PickOpp:  model picks AWAY (DDD, not flagged)     -> no flip.
-            # NoFlag:   neither side flagged                    -> no flip.
-            # MissPrior:neither team has prior data             -> no flip.
-            # Missing:  no schedule row at all                  -> no flip.
-            # GlobalVsLocal: model picks HOME (QQQ); QQQ's centered rate
-            #   (+0.03) is below the frozen threshold, so no flip even
-            #   though QQQ would be the local top quartile of its 4-team
-            #   sample.
             "home_cover_probability": [0.65, 0.30, 0.65, 0.30, 0.55, 0.60, 0.50, 0.70],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. third_down_over_flag_by_game: the derived flag
-# ---------------------------------------------------------------------------
 
 
 def test_flag_fires_for_a_team_whose_prior_season_rate_is_top_quartile() -> None:
@@ -262,11 +223,6 @@ def test_flag_requires_its_schedule_columns() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# 2. The threshold is GLOBAL/frozen, not a locally recomputed quantile
-# ---------------------------------------------------------------------------
-
-
 def test_threshold_constant_matches_the_measured_registry_cell_value() -> None:
     """The frozen constant is the cell's own measured number, transcribed.
 
@@ -292,11 +248,6 @@ def test_flag_uses_the_frozen_global_threshold_not_a_locally_recomputed_quantile
 
     result = apply_third_down_reversion_fade_overlay(_predictions(), _schedule(), _pbp_frame())
     assert all(flip.game_id != _GAME_GLOBAL_VS_LOCAL for flip in result.flips)
-
-
-# ---------------------------------------------------------------------------
-# 3. Leakage regressions: pregame-only inputs (AGENTS.md mandate)
-# ---------------------------------------------------------------------------
 
 
 def test_flag_is_leak_safe_against_the_current_seasons_own_pbp() -> None:
@@ -345,11 +296,6 @@ def test_missing_prior_season_data_means_unflagged_never_an_error() -> None:
     flags = _flags()
     assert bool(flags.loc[_GAME_MISSING_PRIOR, "third_down_over_home"]) is False
     assert bool(flags.loc[_GAME_MISSING_PRIOR, "third_down_over_away"]) is False
-
-
-# ---------------------------------------------------------------------------
-# 4. apply_third_down_reversion_fade_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_fades_the_flagged_side_when_the_model_picks_it() -> None:
@@ -459,11 +405,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# 5. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     quiet = _predictions().loc[lambda frame: frame["game_id"].eq(_GAME_NO_FLAG)]
     result = apply_third_down_reversion_fade_overlay(quiet, _schedule(), _pbp_frame())
@@ -482,10 +423,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "AAA -> CCC" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 6. record_third_down_reversion_fade_challenger_decisions: dual-tracked
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -560,10 +497,7 @@ def test_record_third_down_reversion_fade_challenger_decisions_records_the_fade_
     assert ledger["edge"].isna().all()
 
     indexed = ledger.set_index("game_id")
-    # The model's raw pick was HOME (0.65 -> AAA, flagged); the fade flips
-    # it to AWAY.
     assert indexed.loc[_GAME_HOME_FLAGGED, "pick_side"] == "AWAY"
-    # The unflagged game keeps the model's own pick (0.55 -> HOME).
     assert indexed.loc[_GAME_NO_FLAG, "pick_side"] == "HOME"
 
     again = record_third_down_reversion_fade_challenger_decisions(artifacts, data_root, now=_NOW)

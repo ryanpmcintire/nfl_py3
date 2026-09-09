@@ -56,11 +56,6 @@ _SEASON = 2020
 _WEEK = 4
 
 
-# ---------------------------------------------------------------------------
-# 1. _tokenize_game_query / resolve_game
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     "query,expected",
     [
@@ -132,11 +127,6 @@ def test_resolve_game_ambiguous_single_token_raises() -> None:
     )
     with pytest.raises(cover_odds.CoverOddsError, match="more than one"):
         cover_odds.resolve_game(ambiguous, "SF")
-
-
-# ---------------------------------------------------------------------------
-# 2. load_active_forecast -- fail-closed preconditions
-# ---------------------------------------------------------------------------
 
 
 def _week_card(model_frame: pd.DataFrame) -> pd.DataFrame:
@@ -261,11 +251,6 @@ def test_load_active_forecast_returns_the_synchronized_chain(
     assert len(predictions) == len(card)
 
 
-# ---------------------------------------------------------------------------
-# 3. query_cover_odds -- end to end
-# ---------------------------------------------------------------------------
-
-
 def test_query_cover_odds_at_the_cards_own_line_matches_the_published_probability(
     tmp_path: Path, model_frame: pd.DataFrame
 ) -> None:
@@ -291,7 +276,6 @@ def test_query_cover_odds_at_the_cards_own_line_matches_the_published_probabilit
     assert payload["provenance"]["published_home_cover_probability"] == pytest.approx(
         published, abs=1e-6
     )
-    # cover + push + no_cover always sums to 1.
     total = (
         payload["cover_probability"] + payload["push_probability"] + payload["no_cover_probability"]
     )
@@ -366,7 +350,7 @@ def test_query_cover_odds_push_is_zero_at_a_half_point_line_and_can_be_nonzero_a
         artifacts_root=artifacts_root,
         data_root=data_root,
     )
-    assert at_integer["push_probability"] >= 0.0  # never negative; may legitimately be 0
+    assert at_integer["push_probability"] >= 0.0
 
 
 def test_query_cover_odds_refuses_a_season_week_mismatch(
@@ -409,11 +393,6 @@ def test_query_cover_odds_refuses_a_drifted_card(tmp_path: Path, model_frame: pd
             artifacts_root=artifacts_root,
             data_root=data_root,
         )
-
-
-# ---------------------------------------------------------------------------
-# 4. format_text / main() -- CLI entry point smoke tests
-# ---------------------------------------------------------------------------
 
 
 def test_main_prints_text_by_default(

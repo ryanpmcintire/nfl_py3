@@ -78,17 +78,10 @@ if str(REPO / "src") not in sys.path:
 
 from nfl_ats.cfb_qb_dependence import split_half_reliability  # noqa: E402
 
-#: One seed for the whole sweep so any two groups' numbers are comparable and
-#: every run is reproducible. Do not override it per group.
 RELIABILITY_SEED = 20260901
 
-#: Bootstrap draws, matching ``scripts/reliability_map.py``'s precedent.
 N_BOOT = 4000
 
-#: Below this many usable units (team-seasons / venue-seasons surviving the
-#: >=2-per-half floor) a split-half correlation is not a sound measurement of
-#: anything, and a near-zero value from it must never be read as "no
-#: reliability". Reported as :data:`STATUS_INSUFFICIENT_UNITS` instead.
 MIN_UNITS = 20
 
 STATUS_MEASURED = "measured"
@@ -173,8 +166,6 @@ def _package(raw: dict[str, Any], *, method: str, min_units: int) -> dict[str, A
         point, low, high = sb, sb_lo, sb_hi
         out["method"] = method
     else:
-        # Spearman-Brown is unbounded below for r <~ -0.33; the raw
-        # correlation is always on scale, so report that and say so.
         point, low, high = r, float(ci[0]), float(ci[1])
         out["method"] = method + _SB_FALLBACK_NOTE
 

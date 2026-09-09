@@ -33,21 +33,6 @@ import pandas as pd
 
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 
-# ---------------------------------------------------------------------------
-# 1. Team-nickname matching (slug -> canonical team codes)
-# ---------------------------------------------------------------------------
-
-# Duplicated from ``src/nfl_ats/injury_signal_refresh_tilt.py``'s
-# ``TEAM_NICKNAMES`` (itself extending ``TEAM_ABBREVIATION_ALIASES`` the same
-# way ``scripts/movement_attribution.py`` and ``scripts/ingest_public_betting.py``
-# do), per this repo's convention of duplicating small cross-module constant
-# dicts rather than importing between unrelated feature modules. Nicknames
-# are relocation-invariant (the Raiders were "Raiders" in Oakland and are
-# "Raiders" in Las Vegas), unlike ``scripts/fluview_battery_ingest.py``'s
-# ``STATE_BY_TEAM`` state mapping, which is why this dict only needs the 32
-# CURRENT canonical codes -- ``TEAM_ABBREVIATION_ALIASES`` handles the
-# historical OAK/SD/STL codes on the schedules side (``canonical_team``
-# below), not here.
 TEAM_NICKNAMES: dict[str, tuple[str, ...]] = {
     "ARI": ("cardinals",),
     "ATL": ("falcons",),
@@ -83,11 +68,6 @@ TEAM_NICKNAMES: dict[str, tuple[str, ...]] = {
     "WAS": ("commanders", "washington", "football team", "redskins"),
 }
 
-# nickname token (hyphenated form, matching a PFR slug's own hyphen
-# delimiter) -> canonical team code. Multi-word nicknames ("football team")
-# are matched as a hyphenated substring; single-word nicknames are matched as
-# a whole slug TOKEN (split on "-") so "cardinals" never false-positives
-# inside an unrelated longer token.
 _NICKNAME_TOKEN_TO_TEAM: dict[str, str] = {}
 _NICKNAME_SUBSTRING_TO_TEAM: dict[str, str] = {}
 for _team, _nicknames in TEAM_NICKNAMES.items():
@@ -133,10 +113,6 @@ def match_transaction_teams(slug: str) -> frozenset[str]:
     return frozenset(hits)
 
 
-# ---------------------------------------------------------------------------
-# 2. Transaction-type classification (slug -> one of 8 categories, or "other")
-# ---------------------------------------------------------------------------
-
 TRANSACTION_CATEGORIES: tuple[str, ...] = (
     "ir_activation",
     "ir_placement",
@@ -150,13 +126,6 @@ TRANSACTION_CATEGORIES: tuple[str, ...] = (
 OTHER_CATEGORY = "other"
 ALL_CATEGORIES: tuple[str, ...] = (*TRANSACTION_CATEGORIES, OTHER_CATEGORY)
 
-# Priority-ordered keyword sets. A slug is classified into the FIRST category
-# (in this order) whose pattern matches, so a headline that could plausibly
-# match more than one keyword family (e.g. "activated ... from injured
-# reserve" contains both "activat" and "injured-reserve") lands in the more
-# specific/informative bucket rather than being double counted. Matched
-# against the hyphenated ``slug`` (identical token content to
-# ``headline_from_slug``, just hyphens instead of spaces).
 _IR_RE = re.compile(r"injured-reserve|-ir-|-on-ir|placed-on-ir|^ir-|-ir$")
 _ACTIVATE_RE = re.compile(r"activat")
 _ELEVATE_RE = re.compile(r"elevat|practice-squad.*promot|promot.*practice-squad")
@@ -216,10 +185,6 @@ def classify_transaction_slug(slug: str) -> str:
         return "signing"
     return OTHER_CATEGORY
 
-
-# ---------------------------------------------------------------------------
-# 3. Team-week population + point-in-time cutoffs
-# ---------------------------------------------------------------------------
 
 TEAM_WEEK_COLUMNS: tuple[str, ...] = (
     "season",
@@ -322,10 +287,6 @@ def build_team_week_population(
         long[list(TEAM_WEEK_COLUMNS)].sort_values(["season", "week", "team"]).reset_index(drop=True)
     )
 
-
-# ---------------------------------------------------------------------------
-# 4. Dated, team-attributed transaction rows + point-in-time window counts
-# ---------------------------------------------------------------------------
 
 DATED_TRANSACTION_COLUMNS: tuple[str, ...] = ("slug", "precise_ts", "category", "team")
 

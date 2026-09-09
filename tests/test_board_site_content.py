@@ -218,11 +218,6 @@ def test_history_challenger_labels_registry_evidence_when_score_report_is_not_pa
     assert "pre-registration/historical evidence" in rows[0].grading_basis
 
 
-# ---------------------------------------------------------------------------
-# UI-20(h): _season_grade_rows / _history_week_grades / _load_close_schedule
-# ---------------------------------------------------------------------------
-
-
 def _season_row(season: str, games: int, opener: float, close: float | None) -> bsc.SeasonRowView:
     return bsc.SeasonRowView(
         season=season, games=games, opener_accuracy=opener, close_accuracy=close
@@ -293,7 +288,6 @@ def test_history_week_grades_empty_ledger_returns_no_rows() -> None:
 def test_history_week_grades_reports_both_records_and_their_delta() -> None:
     decisions = pd.DataFrame(
         [
-            # Home picked, home wins by 4 vs a -3 decision line -> covers.
             _decision_row("G1", 2026, 1, pick_side="HOME", decision_home_spread=-3.0),
         ]
     )

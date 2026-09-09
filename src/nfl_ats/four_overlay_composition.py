@@ -43,68 +43,14 @@ INCUMBENT_CHALLENGER_ID = "overlay_production_chain_coach_arrest_incumbent"
 COACH_FADE = "coach_fade"
 DIVISION_REVENGE_TILT = "division_revenge_tilt"
 PLAYER_ARRESTS_BACK_SIDE_POLICY = "player_arrests_back_side_policy"
-# Kept as a legacy provenance identifier for archived cards and challengers.
 SPREAD_GAP_ZONE_FADE = "spread_gap_zone_fade"
 
-# This order is part of the policy identity and provenance.  It controls
-# deterministic evaluation/reporting order, not pick precedence: all three
-# members see the raw card and the final transform is their joint OR.
 COMPOSITION_ORDER = (
     COACH_FADE,
     DIVISION_REVENGE_TILT,
     PLAYER_ARRESTS_BACK_SIDE_POLICY,
 )
 
-# ---------------------------------------------------------------------------
-# Weak-signal registry evidence per member (owner-directed, 2026-08-26)
-#
-# The obvious place to read this link was ``artifacts/prospective/
-# challengers.json``'s ``evidence.registry_source`` field -- the exact
-# mechanism ``nfl_ats.model_ledger`` already uses to link a challenger to its
-# registry evidence. Measured against the live artifact: it is ``None`` on
-# EVERY player-arrests-related entry (the promoted overlay, its retired
-# coach-only incumbent, the union policy itself, and its own incumbent), not
-# just the one this module originally flagged as unresolved. So that
-# mechanism resolves nothing for this policy, and the right fix is to stop
-# depending on it here: an artifact field that is null everywhere is exactly
-# how the public Signal Ledger page (nfl_ats.signal_ledger, the one consumer
-# of this mapping) shipped with a permanently-empty "On the card" filter.
-#
-# This mapping lives in CODE, next to the policy it describes, so it is
-# version-controlled and reviewed the same way the policy itself is --
-# never re-derived from an artifact field that has already been observed to
-# go silently empty.
-#
-#   coach_fade -> hc_year_one_fade
-#     Declared: challengers.json's hc_year_one_fade_overlay entry cites
-#     "registry/weak_signals.json:hc_year_one_fade" directly.
-#
-#   division_revenge_tilt -> bias_battery_division_revenge_game AND
-#   bias_battery_division_revenge_game_opener (both grades, deliberately not
-#   collapsed to one)
-#     Declared: challengers.json's division_revenge_tilt_overlay entry cites
-#     BOTH registry rows as its evidence -- the same two-entry evidence list
-#     nfl_ats.model_ledger already treats as one challenger's full evidence,
-#     not as competing claims to pick between. Picking only the opener grade
-#     would be a new judgment call this codebase does not already make.
-#
-#   player_arrests_back_side_policy -> player_arrests_recent_14d_back_side_policy_opener
-#     NOT declared anywhere (registry_source is null on every arrest-related
-#     challenger entry, as above). Verified instead by an exact NUMBER MATCH
-#     against HANDOFF.md's promoted player-arrest policy component line
-#     ("53.76% vs 53.36% on 1,503 games; +0.399 accuracy points;
-#     probability_positive=0.8562", read 2026-08-26): the registry row
-#     records effect=0.3992015968, probability_positive=0.8562,
-#     seasons=[2020, 2025], sample_games=1503 -- an exact match on every
-#     figure, not a fuzzy name match. If this policy's promoted arrest
-#     component is ever re-measured under a new registry name, this line
-#     must move with it; the completeness test below only proves the NAME
-#     still resolves, not that it is still the right name.
-#
-# tests/test_four_overlay_composition.py fails the build if a member here
-# has no entry, or if any cited name is missing from the live registry --
-# so a future member added without a link breaks CI instead of silently
-# emptying a chip.
 MEMBER_REGISTRY_EVIDENCE: dict[str, tuple[str, ...]] = {
     COACH_FADE: ("hc_year_one_fade",),
     DIVISION_REVENGE_TILT: (
@@ -329,8 +275,6 @@ def apply_four_overlay_composition(
     try:
         coach = apply_coach_fade_overlay(raw, schedules, enabled=True)
     except DataContractError as error:
-        # card_view.resolve_overlay already treats coach DataContractError as a
-        # disabled member.  Preserve that contract and make it visible here.
         coach = apply_coach_fade_overlay(raw, schedules, enabled=False)
         member_rows.append(
             _member_provenance(

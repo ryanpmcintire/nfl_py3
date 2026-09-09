@@ -77,22 +77,10 @@ from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.experiments import paired_feature_comparisons
 from nfl_ats.margin import fit_market_baseline
 
-# ---------------------------------------------------------------------------
-# Frozen configuration (see docs/cfb_role_features.md; fixed before any
-# outcome-touching run)
-# ---------------------------------------------------------------------------
-
-# Only the two action types whose role delivery replicated cross-league in
-# XLG-04. Receptions are deliberately excluded (recorded non-replication).
 ROLE_FEATURE_ACTION_TYPES: tuple[str, ...] = ("dropback", "carry")
 
-# A qualified role holder who misses this many consecutive valid team-games
-# is treated as departed/out-for-season and leaves the active role mass.
-# Justified by the absence-separation study recorded in the predeclaration.
 FROZEN_STREAK_CAP: int = 4
 
-# Neutral value when a team-game has no computable continuity (no valid
-# prior game, empty active mass, or a team absent from the actions table).
 CONTINUITY_NEUTRAL: float = 1.0
 
 CFB_ROLE_FEATURE_COLUMNS: tuple[str, ...] = (
@@ -201,11 +189,6 @@ def _iter_team_action_games(
     return result
 
 
-# ---------------------------------------------------------------------------
-# 1. Departure vs temporary absence: the descriptive separation study
-# ---------------------------------------------------------------------------
-
-
 def absence_separation_study(
     actions: pd.DataFrame,
     team_games: pd.DataFrame,
@@ -241,11 +224,8 @@ def absence_separation_study(
         threshold = thresholds[action_type]
         seasons_with_games = sorted({int(game["season"]) for game in games})
         trails: dict[str, _PlayerTrail] = {}
-        # Open episodes: player -> mutable episode record.
         open_episodes: dict[str, dict[str, Any]] = {}
-        # Every appearance (team, player) -> list of seasons, for carryover.
         appearance_seasons: dict[str, set[int]] = {}
-        # End-of-season qualified snapshots: season -> {player: state}.
         season_end_state: dict[int, dict[str, float]] = {}
         previous_season: int | None = None
 
@@ -400,11 +380,6 @@ def summarize_carryover(carryover: pd.DataFrame) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# 2. The frozen pregame feature: role continuity
-# ---------------------------------------------------------------------------
 
 
 def build_role_continuity(
@@ -571,11 +546,6 @@ def attach_role_continuity(
     return result
 
 
-# ---------------------------------------------------------------------------
-# 3. The three-arm benchmark run (scores ATS outcomes -- predeclaration only)
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class CfbRoleBenchmarkResult:
     predictions: pd.DataFrame
@@ -609,10 +579,6 @@ def cfb_role_benchmark(
     missing = sorted(required.difference(features.columns))
     if missing:
         raise DataContractError(f"CFB role features are missing columns: {', '.join(missing)}")
-    # Fail closed on the exact defect that voided the first run: if every
-    # role column is constant (e.g. an all-neutral failed join), the
-    # candidate arm would silently reproduce the baseline bit-for-bit and
-    # the "comparison" would be vacuous.
     role_values = features.loc[:, list(CFB_ROLE_FEATURE_COLUMNS)]
     if bool(role_values.nunique(dropna=False).le(1).all()):
         raise DataContractError(

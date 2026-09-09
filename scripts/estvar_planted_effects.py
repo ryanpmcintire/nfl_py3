@@ -88,11 +88,6 @@ def _accuracy_improvement_point(actual, baseline_prob, candidate_prob) -> float:
     return float(np.mean(cand_correct - base_correct))
 
 
-# ---------------------------------------------------------------------------
-# Part 1: coverage of naive vs. refit-aware intervals against a KNOWN true effect
-# ---------------------------------------------------------------------------
-
-
 def true_effect_mc(
     *, extra_coef: np.ndarray, n_train: int, n_test_huge: int, mc_replicates: int, seed: int
 ) -> tuple[float, float]:
@@ -225,11 +220,6 @@ def coverage_study(
     }
 
 
-# ---------------------------------------------------------------------------
-# Part 2a: bagging -- power and own-model flip-rate reduction
-# ---------------------------------------------------------------------------
-
-
 def bagging_study(
     *, extra_coef: np.ndarray, n_train: int, n_test: int, replicates: int, n_boot: int, seed: int
 ) -> dict:
@@ -290,9 +280,6 @@ def bagging_study(
             _accuracy_improvement_point(actual, sigmoid(baseline_bag), sigmoid(candidate_bag))
         )
 
-        # Own-model instability: resample the training set ONCE MORE (a fresh
-        # "different history" draw) and see whether the single-fit's sign and
-        # the bagged predictor's sign move relative to their ORIGINAL values.
         fresh_train_indices = np.random.default_rng(rep_seed + 777).integers(
             0, n_train, size=n_train
         )
@@ -350,17 +337,6 @@ def bagging_study(
         "single_fit_detection_rate": single_pp_hits / replicates,
         "bagged_detection_rate": bagged_pp_hits / replicates,
     }
-
-
-# ---------------------------------------------------------------------------
-# Part 2b: center shrinkage -- uses a LOCATION-BIASED residual sample so a
-# uniform positive scalar is NOT sign-invariant. Unlike naive coefficient
-# scaling (which cannot change any sign-based pick, see MOD-06), the forced
-# pick here reads a fixed threshold off a nonzero-location empirical sample,
-# exactly like production's home_cover_probability -- so shrinking the CENTRE
-# toward the market line moves the threshold relative to that fixed sample
-# and genuinely can change picks.
-# ---------------------------------------------------------------------------
 
 
 def shrinkage_study(
@@ -452,11 +428,6 @@ def shrinkage_study(
         "n_boot": n_boot,
         "rows": rows,
     }
-
-
-# ---------------------------------------------------------------------------
-# Part 3: the f lever -- gate a candidate to where it disagrees with the baseline
-# ---------------------------------------------------------------------------
 
 
 def make_subset_frame(n: int, *, seed: int, coef: float, threshold: float) -> pd.DataFrame:
@@ -564,7 +535,7 @@ def main() -> None:
     results: dict = {}
 
     null_coef = np.array([0.0, 0.0, 0.0])
-    effect_coef = np.array([1.5, 1.2, 0.9])  # calibrated: true effect ~1.6 accuracy points
+    effect_coef = np.array([1.5, 1.2, 0.9])
 
     print("=== Part 1: coverage (null DGP) ===", flush=True)
     results["coverage_null"] = coverage_study(
@@ -627,7 +598,7 @@ def main() -> None:
     print(json.dumps(results["f_lever"], indent=2), flush=True)
 
     out_path = OUT_DIR / "planted_effects_results.json"
-    write_stamped_artifact(results, out_path)  # ENG-38
+    write_stamped_artifact(results, out_path)
     print(f"\nWrote {out_path} in {time.time() - started:.1f}s", flush=True)
 
 

@@ -71,9 +71,6 @@ def card_payload(board: BoardContent) -> dict[str, object]:
                 else game.market_spread,
                 "score": game.probability_text,
                 "kickoff": f"{game.weekday_name}, {game.gameday:%B} {game.gameday.day}",
-                # When the pick stops being changeable (owner rule: own
-                # kickoff or Sunday 4:00 PM ET, whichever is earlier); null
-                # when the forecast carried no kickoff instant.
                 "locks": game.lock_text,
                 "explanation": game.explanation_text,
                 "adjusted": game.is_flipped,

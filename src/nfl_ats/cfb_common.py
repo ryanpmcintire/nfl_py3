@@ -33,10 +33,6 @@ import pandas as pd
 
 from nfl_ats.data import DataContractError
 
-# ---------------------------------------------------------------------------
-# Snapshot loading
-# ---------------------------------------------------------------------------
-
 
 def snapshot_manifest_paths(raw_root: Path, label: str) -> list[Path]:
     """Every snapshot manifest under one source's ``raw`` directory, sorted."""
@@ -82,11 +78,6 @@ def load_parquet_partitions(
 
     frames = [pd.read_parquet(path, columns=columns) for path in paths]
     return pd.concat(frames, ignore_index=True)
-
-
-# ---------------------------------------------------------------------------
-# Column normalization
-# ---------------------------------------------------------------------------
 
 
 def fill_missing_columns(frame: pd.DataFrame, columns: tuple[str, ...]) -> pd.DataFrame:
@@ -158,11 +149,6 @@ def cast_string_columns(frame: pd.DataFrame, columns: Sequence[str]) -> pd.DataF
     for column in columns:
         frame[column] = frame[column].astype("string")
     return frame
-
-
-# ---------------------------------------------------------------------------
-# Bootstrap plumbing
-# ---------------------------------------------------------------------------
 
 
 def week_block_indices(frame: pd.DataFrame) -> list[npt.NDArray[np.intp]]:

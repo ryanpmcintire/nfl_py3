@@ -78,10 +78,6 @@ MIN_TRAIN_GAMES = 500
 SAMPLES = 20000
 SEED = 20260819
 
-# Exact snapshots scripts/injury_tuesday_cutoff_experiment.py used, matching
-# the on-disk game_features_player_value.parquet manifest -- kept identical
-# here so results are directly comparable to the recorded +1.316 (Saturday)
-# and 0.000 (Tuesday-official) arms on the same 456 games.
 PLAYER_SNAPSHOT_ID = "20260812T200527Z"
 PBP_SNAPSHOT_ID = "20260812T142851Z"
 PLAYER_VALUE_SNAPSHOT_ID = "20260813T121050Z"
@@ -98,11 +94,6 @@ def _config(profile: str) -> dict[str, Any]:
         "ridge_alpha": RIDGE_ALPHA,
         "target": "market_residual",
     }
-
-
-# ---------------------------------------------------------------------------
-# Team schedule: each team's actual immediately-preceding game (bye-safe)
-# ---------------------------------------------------------------------------
 
 
 def team_schedule_prior_week(games: pd.DataFrame) -> pd.DataFrame:
@@ -125,11 +116,6 @@ def team_schedule_prior_week(games: pd.DataFrame) -> pd.DataFrame:
     long["prior_game_id"] = grouped["game_id"].shift(1)
     long["prior_kickoff"] = grouped["kickoff"].shift(1)
     return long
-
-
-# ---------------------------------------------------------------------------
-# Played / active-roster-absent tables, built exactly like production inputs
-# ---------------------------------------------------------------------------
 
 
 def build_played_and_active(
@@ -253,11 +239,6 @@ def build_prior_week_absence(
         "synthetic_rows_after_schedule_mapping": len(synthetic),
     }
     return synthetic[list(INJURY_REQUIRED_COLUMNS)], stats
-
-
-# ---------------------------------------------------------------------------
-# Arm construction / contrast (re-derived from scripts/injury_tuesday_cutoff_experiment.py)
-# ---------------------------------------------------------------------------
 
 
 def spent_window_split(

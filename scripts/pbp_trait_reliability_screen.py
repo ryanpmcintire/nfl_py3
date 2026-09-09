@@ -78,7 +78,7 @@ def _fmt(value: Any, digits: int = 4) -> str:
         fvalue = float(value)
     except (TypeError, ValueError):
         return str(value)
-    if fvalue != fvalue:  # NaN
+    if fvalue != fvalue:
         return "nan"
     return f"{fvalue:+.{digits}f}"
 

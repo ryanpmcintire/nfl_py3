@@ -70,7 +70,6 @@ from nfl_ats.data import DataContractError
 from nfl_ats.features import add_ats_outcomes
 from nfl_ats.weak_stack_v3_features import latest_schedules_snapshot
 
-#: The one new column each candidate profile adds. Frozen names.
 POST_OT_FATIGUE_COLUMN = POST_OT_FATIGUE_ON_PRODUCTION_FEATURE_COLUMNS[0]
 MNF_ROAD_SHORT_WEEK_COLUMN = MNF_ROAD_SHORT_WEEK_ON_PRODUCTION_FEATURE_COLUMNS[0]
 HOME_THURSDAY_COLUMN = HOME_THURSDAY_ON_PRODUCTION_FEATURE_COLUMNS[0]
@@ -85,10 +84,6 @@ ATS_STREAK_REGRESS_COLUMN = ATS_STREAK_REGRESS_ON_PRODUCTION_FEATURE_COLUMNS[0]
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: Wave 2 (LEAD-41/LEAD-42) needs the Tuesday-OPENER consensus spread/total,
-#: never the nflverse schedule's own (closing) ``spread_line``/``total_line``.
-#: Same store and decision label ``scripts/on_production_opener_confirmation.py``
-#: already grades every on-production candidate against.
 DEFAULT_MARKET_ROOT = REPO_ROOT / "data/market/raw"
 
 _REQUIRED_SCHEDULE_COLUMNS = {
@@ -101,9 +96,6 @@ _REQUIRED_SCHEDULE_COLUMNS = {
     "overtime",
 }
 
-#: Six days after a Monday game is a Sunday -- the "following Sunday" LEAD-22
-#: predeclares. Checked directly against the calendar gap, not inferred from
-#: it, so a data inconsistency (a mislabeled weekday) cannot silently pass.
 MNF_ROAD_SHORT_WEEK_REST_DAYS = 6
 
 
@@ -177,11 +169,6 @@ def _pivot_home_away(long_df: pd.DataFrame, value_column: str) -> pd.DataFrame:
     return home.merge(away, on="game_id", how="inner", validate="one_to_one")
 
 
-# ---------------------------------------------------------------------------
-# LEAD-21: post-overtime fatigue
-# ---------------------------------------------------------------------------
-
-
 def derive_post_ot_fatigue_features(schedule: pd.DataFrame) -> pd.DataFrame:
     """Return ``(game_id, post_ot_fatigue_flag)`` for every game in ``schedule``.
 
@@ -193,11 +180,6 @@ def derive_post_ot_fatigue_features(schedule: pd.DataFrame) -> pd.DataFrame:
     """
 
     long_df = _team_long_table(schedule)
-    # A missing overtime value NEVER occurs for an actual completed
-    # preceding game in this dataset (verified: overtime is NaN exactly for
-    # not-yet-played games, never for a resolved one) -- so treating a
-    # missing/absent preceding-game value as "not post-OT" is a safe,
-    # measured simplification, not a silent assumption.
     qualifies = long_df["prev_overtime"].eq(1.0)
     long_df = long_df.assign(post_ot_qualifies=qualifies)
 
@@ -214,11 +196,6 @@ def attach_post_ot_fatigue_features(
     """Additively join ``post_ot_fatigue_flag`` onto ``features`` by ``game_id``."""
 
     return _attach(features, schedule, derive_post_ot_fatigue_features, (POST_OT_FATIGUE_COLUMN,))
-
-
-# ---------------------------------------------------------------------------
-# LEAD-22: Monday-night-road short week
-# ---------------------------------------------------------------------------
 
 
 def derive_mnf_road_short_week_features(schedule: pd.DataFrame) -> pd.DataFrame:
@@ -239,7 +216,7 @@ def derive_mnf_road_short_week_features(schedule: pd.DataFrame) -> pd.DataFrame:
     gap_days = (long_df["gameday_dt"] - long_df["prev_gameday_dt"]).dt.days
     qualifies = (
         long_df["prev_weekday"].eq("Monday")
-        & long_df["prev_is_home"].eq(False)  # NaN-safe: NaN == False evaluates to False
+        & long_df["prev_is_home"].eq(False)
         & long_df["weekday"].eq("Sunday")
         & gap_days.eq(MNF_ROAD_SHORT_WEEK_REST_DAYS)
     )
@@ -260,11 +237,6 @@ def attach_mnf_road_short_week_features(
     return _attach(
         features, schedule, derive_mnf_road_short_week_features, (MNF_ROAD_SHORT_WEEK_COLUMN,)
     )
-
-
-# ---------------------------------------------------------------------------
-# LEAD-40: home-Thursday rest compound
-# ---------------------------------------------------------------------------
 
 
 def derive_home_thursday_features(schedule: pd.DataFrame) -> pd.DataFrame:
@@ -294,39 +266,13 @@ def attach_home_thursday_features(
     return _attach(features, schedule, derive_home_thursday_features, (HOME_THURSDAY_COLUMN,))
 
 
-# ---------------------------------------------------------------------------
-# Wave 2 (docs/schedule_flag_battery.md "Wave 2"): LEAD-39 new-stadium
-# honeymoon, LEAD-41 dome-shootout favorite, LEAD-42 low-total divisional
-# home dog, LEAD-35 September heat-humidity home edge.
-# ---------------------------------------------------------------------------
-
-
-# ---------------------------------------------------------------------------
-# LEAD-39: new-stadium honeymoon (seasons 1-2)
-# ---------------------------------------------------------------------------
-
-#: (stadium_id -> its first two REG-season-of-use calendar years), frozen
-#: 2026-09-05 by measuring data/raw/20260824T115346Z/schedules.parquet:
-#: every stadium_id whose first REG-season use is >= 2010, EXCLUDING (a)
-#: neutral/international one-off sites -- LON00/LON01/LON02, MEX00, GER00,
-#: FRA00, SAO00 (task-given) plus the same-class 2026 one-off sites
-#: MAD01/MEL00/MUN01/PAR00/RIO00 (single-game international friendlies, not
-#: a team's repeat home base) -- and (b) temporary construction-displacement
-#: homes superseded by a team's own LATER permanent venue already in this
-#: same table: MIN98 (TCF Bank Stadium; Vikings' 2010 storm-displacement
-#: game and 2014-2015 home while U.S. Bank Stadium/MIN01 was built), LAX99
-#: (LA Memorial Coliseum; Rams' 2016-2019 home while SoFi/LAX01 was built),
-#: LAX97 (StubHub Center; Chargers' 2017-2019 home while SoFi/LAX01 was
-#: built). What remains is exactly the six permanent-build stadium_ids
-#: docs/schedule_flag_battery.md Wave 2 section 4 states, matching the fleet
-#: task's own worked examples verbatim.
 NEW_STADIUM_HONEYMOON_SEASONS: dict[str, tuple[int, int]] = {
-    "NYC01": (2010, 2011),  # MetLife Stadium (NYG, NYJ)
-    "SFO01": (2014, 2015),  # Levi's Stadium (SF)
-    "MIN01": (2016, 2017),  # U.S. Bank Stadium (MIN)
-    "ATL97": (2017, 2018),  # Mercedes-Benz Stadium (ATL)
-    "LAX01": (2020, 2021),  # SoFi Stadium (LA, LAC)
-    "VEG00": (2020, 2021),  # Allegiant Stadium (LV)
+    "NYC01": (2010, 2011),
+    "SFO01": (2014, 2015),
+    "MIN01": (2016, 2017),
+    "ATL97": (2017, 2018),
+    "LAX01": (2020, 2021),
+    "VEG00": (2020, 2021),
 }
 
 _NEW_STADIUM_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "season", "stadium_id"}
@@ -365,17 +311,6 @@ def attach_new_stadium_home_features(
     return _attach(features, schedule, derive_new_stadium_home_features, (NEW_STADIUM_COLUMN,))
 
 
-# ---------------------------------------------------------------------------
-# Opener (Tuesday-consensus) line loader -- LEAD-41/LEAD-42 need the OPENER
-# total/spread, never the nflverse schedule's own (closing) total_line/
-# spread_line. Reuses nfl_ats.clv.build_pairing_table's HISTORICAL
-# decision-labeled archive, the SAME "opener store"
-# scripts/on_production_opener_confirmation.py already grades every
-# on-production candidate against (its "tue_open" decision label) -- not a
-# new market pipeline, no new network fetch.
-# ---------------------------------------------------------------------------
-
-
 def default_opener_lines(
     schedule: pd.DataFrame, *, market_root: Path | None = None
 ) -> pd.DataFrame:
@@ -408,10 +343,6 @@ def default_opener_lines(
     )
     return lines.drop_duplicates("game_id").reset_index(drop=True)
 
-
-# ---------------------------------------------------------------------------
-# LEAD-41: dome-shootout favorite archetype
-# ---------------------------------------------------------------------------
 
 DOME_SHOOTOUT_ROOFS = frozenset({"dome", "closed"})
 DOME_SHOOTOUT_TOTAL_MIN = 49.0
@@ -495,10 +426,6 @@ def attach_dome_shootout_favorite_features(
     return _attach(features, schedule, _derive, (DOME_SHOOTOUT_COLUMN,))
 
 
-# ---------------------------------------------------------------------------
-# LEAD-42: low-total divisional home dog
-# ---------------------------------------------------------------------------
-
 LOW_TOTAL_DIV_DOG_TOTAL_MAX = 42.0
 
 _LOW_TOTAL_DIV_DOG_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "div_game"}
@@ -564,17 +491,7 @@ def attach_low_total_div_home_dog_features(
     return _attach(features, schedule, _derive, (LOW_TOTAL_DIV_DOG_COLUMN,))
 
 
-# ---------------------------------------------------------------------------
-# LEAD-35: September heat-humidity home edge
-# ---------------------------------------------------------------------------
-
 SEPT_HEAT_UNCONDITIONAL_HOME_TEAMS = frozenset({"MIA", "TB", "JAX"})
-#: Only when this game's own roof is outdoors/open -- these three venues can
-#: also play under a closed roof/dome, which removes the heat/humidity
-#: mechanism entirely (measured 2026-09-05: HOU roof is closed for 124/139
-#: recorded games, "open" for 15; NO is a fixed dome for 145/147, "outdoors"
-#: for 2; ATL is closed 55, dome 63 [Georgia Dome era], open 18, outdoors 2,
-#: of 138).
 SEPT_HEAT_ROOF_CONDITIONAL_HOME_TEAMS = frozenset({"HOU", "NO", "ATL"})
 SEPT_HEAT_OPEN_AIR_ROOFS = frozenset({"outdoors", "open"})
 SEPT_HEAT_COLD_VISITOR_TEAMS = frozenset(
@@ -599,18 +516,6 @@ SEPT_HEAT_COLD_VISITOR_TEAMS = frozenset(
     }
 )
 SEPT_HEAT_MAX_WEEK = 3
-#: Eastern Time is this repo's established schedule.parquet ``gametime``
-#: convention (scripts/body_clock_screen.py compares raw "%H:%M" ``gametime``
-#: minutes directly against ET-labeled thresholds); "1 PM local" needs each
-#: home team's OWN clock, so its ET kickoff is shifted back by its zone's
-#: constant offset from Eastern. All six heat-candidate teams sit in either
-#: America/New_York (0h behind ET) or America/Chicago (always exactly 1h
-#: behind ET -- both zones observe US daylight saving on the same calendar
-#: dates, so the gap never varies by season or date); verified against
-#: registry/stadium_coordinates.json's own tz entries for Hard Rock Stadium
-#: (MIA), Raymond James Stadium (TB), TIAA Bank/EverBank Stadium (JAX),
-#: Mercedes-Benz Stadium (ATL) = America/New_York, and NRG/Reliant Stadium
-#: (HOU), Caesars/Mercedes-Benz/Louisiana Superdome (NO) = America/Chicago.
 SEPT_HEAT_HOME_TEAM_ET_OFFSET_HOURS: dict[str, int] = {
     "MIA": 0,
     "TB": 0,
@@ -620,7 +525,7 @@ SEPT_HEAT_HOME_TEAM_ET_OFFSET_HOURS: dict[str, int] = {
     "NO": 1,
 }
 _SEPT_HEAT_LOCAL_ONE_PM_START_MIN = 13 * 60
-_SEPT_HEAT_LOCAL_ONE_PM_END_MIN = 14 * 60  # exclusive
+_SEPT_HEAT_LOCAL_ONE_PM_END_MIN = 14 * 60
 
 _SEPT_HEAT_REQUIRED_SCHEDULE_COLUMNS = {
     "game_id",
@@ -690,17 +595,6 @@ def attach_sept_heat_home_features(
     return _attach(features, schedule, _derive, (SEPT_HEAT_COLUMN,))
 
 
-# ---------------------------------------------------------------------------
-# Wave 3 (docs/schedule_flag_battery.md "Wave 3"): LEAD-57 public-claim leads
-# on production. road_fav_big_fade, division_dog, and week1_dog read the
-# Tuesday-OPENER consensus spread via default_opener_lines (never the
-# nflverse schedule's own closing spread_line); ats_streak_regress reads only
-# the schedule's own CLOSE result/spread_line, matching
-# docs/public_claim_battery.md's own close-graded convention for the streak
-# history itself (a frozen, predeclared design choice, not an oversight).
-# ---------------------------------------------------------------------------
-
-#: docs/public_claim_battery.md's own team_spread >= 7 threshold.
 ROAD_FAV_BIG_FADE_SPREAD_MIN_ABS = 7.0
 
 _ROAD_FAV_BIG_FADE_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "game_type"}
@@ -767,21 +661,6 @@ def attach_road_fav_big_fade_features(
         return derive_road_fav_big_fade_features(sched, lines)
 
     return _attach(features, schedule, _derive, (ROAD_FAV_BIG_FADE_COLUMN,))
-
-
-# ---------------------------------------------------------------------------
-# division_dog / week1_dog share exactly one shape (docs/public_claim_battery.md
-# claims 4 and 9, "week1 dog likewise" per the fleet task): BACK whichever
-# side is the underdog at the Tuesday opener, within an eligible REG-season
-# population (divisional game / Week 1). ``+1`` if the HOME team is the
-# underdog, ``-1`` if the AWAY team is, ``0`` if the game is not eligible, is
-# an exact opener pick'em, or the opener store lacks a resolved spread.
-# Eligibility is restricted to game_type == "REG": measured 2026-09-05,
-# postseason rows can carry div_game == 1 (26 of 371 postseason games) and
-# can share week numbers with REG season (postseason week ranges 18-22,
-# overlapping REG's own week 18), so an unrestricted mask would silently
-# admit games lane G's REG-only population never tested.
-# ---------------------------------------------------------------------------
 
 
 def _dog_flag_from_opener_spread(eligible: pd.Series, spread: pd.Series) -> np.ndarray:
@@ -903,17 +782,6 @@ def attach_week1_dog_features(
     return _attach(features, schedule, _derive, (WEEK1_DOG_COLUMN,))
 
 
-# ---------------------------------------------------------------------------
-# ats_streak_regress: BACK a team on a 3+ game ATS losing streak entering
-# this game (docs/public_claim_battery.md's ``public_claim_ats_streak_regress``).
-# Streak history is graded at the CLOSE (schedule's own result/spread_line),
-# matching the archive's own convention exactly (docs/schedule_flag_battery.md
-# "Wave 3" states this is a frozen, predeclared choice); only the streak
-# LENGTH counts toward this game's flag -- nothing here ever reads this
-# game's own result or spread_line.
-# ---------------------------------------------------------------------------
-
-#: docs/public_claim_battery.md's own ats_streak_len >= 3 threshold.
 ATS_STREAK_REGRESS_MIN_STREAK = 3.0
 _ATS_STREAK_REQUIRED_SCHEDULE_COLUMNS = {
     "game_id",
@@ -953,7 +821,7 @@ def _team_ats_streak_entering_each_game(schedule: pd.DataFrame) -> pd.DataFrame:
     sides = []
     for side_column, is_home in (("home_team", True), ("away_team", False)):
         covered = reg["home_cover"] if is_home else 1.0 - reg["home_cover"]
-        covered = covered.where(reg["home_cover"].notna())  # push stays NaN either side
+        covered = covered.where(reg["home_cover"].notna())
         sides.append(
             pd.DataFrame(
                 {
@@ -978,7 +846,7 @@ def _team_ats_streak_entering_each_game(schedule: pd.DataFrame) -> pd.DataFrame:
             streaks_entering[position] = current
             covered_value = covered_array[position]
             if np.isnan(covered_value):
-                continue  # push: neither extends nor resets
+                continue
             current = 0.0 if covered_value >= 1.0 else current + 1.0
     long_df["streak_entering"] = streaks_entering
     return long_df[["game_id", "team", "streak_entering"]]
@@ -1031,11 +899,6 @@ def attach_ats_streak_regress_features(
     return _attach(
         features, schedule, derive_ats_streak_regress_features, (ATS_STREAK_REGRESS_COLUMN,)
     )
-
-
-# ---------------------------------------------------------------------------
-# Shared additive-merge helper
-# ---------------------------------------------------------------------------
 
 
 def _attach(
@@ -1125,8 +988,6 @@ __all__ = [
 ]
 
 
-# Frozen venue policy: retractable roofs default closed, fixed roofs dome.
-# Names, not home-team stadium ids, preserve neutral-site assignments.
 VENUE_INDOOR_DEFAULTS = {
     **dict.fromkeys(
         (

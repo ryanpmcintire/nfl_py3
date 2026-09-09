@@ -77,11 +77,6 @@ PRODUCTION_PICK_COL = "pick_home_at_open_probability_rule"
 PRODUCTION_CORRECT_COL = "correct_at_open_probability_rule"
 
 
-# ---------------------------------------------------------------------------
-# Population construction
-# ---------------------------------------------------------------------------
-
-
 def load_window_population(archive_path: Path, seasons: tuple[int, int]) -> pd.DataFrame:
     archive = pd.read_parquet(archive_path)
     window = archive.loc[archive["season"].between(seasons[0], seasons[1])].reset_index(drop=True)
@@ -112,11 +107,6 @@ def load_timing_checkpoints(
     return wide.reset_index()
 
 
-# ---------------------------------------------------------------------------
-# Candidate pick construction (frozen, docs/movement_expansion_battery.md)
-# ---------------------------------------------------------------------------
-
-
 def oracle_pick(cur: pd.Series, tue_open: pd.Series, production_home: pd.Series) -> pd.Series:
     move = cur - tue_open
     return pd.Series(
@@ -135,11 +125,6 @@ def threshold_pick(
         np.where(eligible, movement_home, production_home.astype(bool)),
         index=cur.index,
     ).astype(bool)
-
-
-# ---------------------------------------------------------------------------
-# Scoring: paired week/season-blocked bootstrap + within-week permutation null
-# ---------------------------------------------------------------------------
 
 
 def _paired_metric_fn(candidate_col: str, production_col: str):
@@ -268,11 +253,6 @@ def row_or_nan(row: pd.Series, key: str) -> float:
     return float(value) if pd.notna(value) else float("nan")
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, default=DEFAULT_ARCHIVE)
@@ -308,13 +288,11 @@ def main() -> int:
     production_home = merged[PRODUCTION_PICK_COL].astype(bool)
     tue_open = merged["tue_open_home_spread"]
 
-    # Cell 1: reproduction/consistency check, close timing, 1.0 threshold, window-only.
     merged["_pick_close_thr_1_0"] = threshold_pick(
         merged["close_home_spread"], tue_open, production_home, 1.0
     )
     cell_1_pop = merged
 
-    # Cells 2-3: Thursday-pre-TNF timing checkpoint (oracle + 1.0 threshold).
     thu_pop = merged.loc[merged["thu_pre_tnf_home_spread"].notna()].reset_index(drop=True)
     thu_pop["_pick_thu_oracle"] = oracle_pick(
         thu_pop["thu_pre_tnf_home_spread"],
@@ -328,7 +306,6 @@ def main() -> int:
         1.0,
     )
 
-    # Cell 4: Saturday-midday timing checkpoint, 1.0 threshold.
     sat_pop = merged.loc[merged["sat_midday_home_spread"].notna()].reset_index(drop=True)
     sat_pop["_pick_sat_thr_1_0"] = threshold_pick(
         sat_pop["sat_midday_home_spread"],
@@ -337,7 +314,6 @@ def main() -> int:
         1.0,
     )
 
-    # Cell 5: close timing, 2.0 threshold (untested magnitude tier).
     merged["_pick_close_thr_2_0"] = threshold_pick(
         merged["close_home_spread"], tue_open, production_home, 2.0
     )
@@ -380,9 +356,6 @@ def main() -> int:
         ),
     ]
 
-    # Positive control: perfect-foresight pick (deliberate leak of the
-    # settlement outcome), NOT recorded to weak_signals -- instrument
-    # sensitivity diagnostic only.
     control_frame = merged.copy()
     control_frame["_pick_perfect_foresight"] = control_frame["margin_vs_open"].gt(0.0)
     control = score_cell(

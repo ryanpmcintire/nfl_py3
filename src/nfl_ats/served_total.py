@@ -78,45 +78,14 @@ from nfl_ats.totals import TotalsDataError, TotalsView, design_matrix
 
 ServedTotalMethod = Literal["blend_k01", "joint_residual"]
 
-#: Today's rule's blend weight. Duplicated from (rather than imported from)
-#: ``nfl_ats.tiebreaker.TOTALS_RESIDUAL_WEIGHT`` -- this module is imported
-#: BY ``tiebreaker.py``, so importing back would be circular. Production
-#: callers (``nfl_ats.tiebreaker.build_report``) pass ``weight=
-#: TOTALS_RESIDUAL_WEIGHT`` explicitly on every call so the two constants
-#: cannot silently diverge; ``tests/test_served_total.py`` pins both this
-#: value and their equality directly.
 BLEND_K01_WEIGHT = 0.1
 
-#: The joint model's own MAE-minimizing blend weight from the same k-sweep
-#: ``nfl_ats.totals`` uses (docs/mod17_joint_residual_model.md Part 2,
-#: ``total_side.joint_k`` in the 20260905T160219Z artifact) -- measured
-#: separately from :data:`BLEND_K01_WEIGHT` above and happens to equal it.
 JOINT_TOTAL_BLEND_WEIGHT = 0.1
 
-#: The production feature table the joint model's own contract is frozen
-#: against (docs/mod17_joint_residual_model.md "Frozen contract" -- the
-#: production margin `weak_stack` table, a strict column superset of both
-#: totals allowlists).
 DEFAULT_JOINT_FEATURES_FILENAME = "game_features_weak_stack.parquet"
 
-#: Which method is SERVED -- the one total every published number uses
-#: (tiebreaker centre, panel, board assistant; docs/tiebreaker.md "one
-#: lattice, one margin, one total"). Measured justification, 2026-09-05:
-#: lane AC's joint-total screen (artifact stamp 20260905T160219Z,
-#: ``artifacts/mod17_joint_residual/20260905T160219Z/results.json``,
-#: registry entry ``mod17_joint_residual_total_blend``) found the joint
-#: model's total output beats the k=0.1 blend by +0.00491 mae_improvement,
-#: week-blocked bootstrap 95% [-0.00662, +0.01646], probability_positive
-#: 0.791, 3,919 games -- EV-favoured per the project's decision rule
-#: (probability_positive > 0.5), so it is served. Flipping this back to
-#: "blend_k01" restores today's rule everywhere without touching any other
-#: code; :func:`served_total_joint_residual` already degrades to the blend
-#: automatically whenever it cannot price a game, so this switch only
-#: matters when a joint view WAS successfully fit.
 SERVED_TOTAL_METHOD: ServedTotalMethod = "joint_residual"
 
-#: Ordered exactly like ``nfl_ats.joint_residual_model``'s own
-#: ``_TARGET_COLUMNS`` -- the joint estimator's second output column.
 _JOINT_TARGET_COLUMNS: tuple[str, str] = ("margin_residual", "total_residual")
 
 

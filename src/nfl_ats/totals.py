@@ -43,18 +43,6 @@ from nfl_ats.clv import week_blocked_bootstrap
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.io import atomic_json, run_id
 
-#: The explicit feature allowlist frozen in ``docs/totals_model.md`` (read
-#: 2026-09-01, lines 37-45). NOTHING outside this tuple enters the design
-#: matrix -- :func:`design_matrix` selects by this list, so a new column
-#: appearing in ``game_features.parquet`` cannot silently join the fit.
-#:
-#: Deliberately excluded, per the same contract: identifiers and outcomes
-#: (``result``, ``ats_margin``, ``home_cover``, the scores); the ``diff_*``
-#: columns (a total rides the SUM of the two teams, not their difference --
-#: ridge forms whatever sum it wants from the home/away columns directly);
-#: and the ``*_ats_residual`` / graph / schedule / bias / surface columns,
-#: which are spread-oriented constructs a separately declared second wave may
-#: screen as totals features.
 TOTALS_FEATURES: tuple[str, ...] = (
     "total_line",
     "spread_line",
@@ -99,17 +87,10 @@ TOTALS_FEATURES: tuple[str, ...] = (
     "away_point_diff",
 )
 
-#: Primary ridge penalty: production's exact constant (``margin.py`` line 366
-#: default ``ridge_alpha: float = 10.0``, read 2026-09-01), frozen in the
-#: predeclaration so no tuning ever touches the test stream.
 TOTALS_RIDGE_ALPHA = 10.0
 
-#: Reported alongside the primary for transparency only -- never used to pick
-#: a winner (``docs/totals_model.md`` line 56).
 TOTALS_REPORTED_ALPHAS: tuple[float, ...] = (1.0, 100.0)
 
-#: The blend weights swept for the decision. ``0.0`` is the market-alone null
-#: and ``1.0`` is the raw model total; the MAE-minimizing entry is the answer.
 BLEND_WEIGHTS: tuple[float, ...] = tuple(round(0.1 * step, 1) for step in range(11))
 
 _TARGET = "total_residual"
@@ -131,7 +112,7 @@ class TotalsView:
 
     predicted_total: float
     market_total: float
-    residual: float  # predicted_total - market_total
+    residual: float
     train_games: int
     source: str
 

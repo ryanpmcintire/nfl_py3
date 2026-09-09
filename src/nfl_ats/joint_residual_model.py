@@ -43,27 +43,15 @@ from nfl_ats.totals_wave2 import WAVE2_DRIVE_FEATURES
 
 BootstrapBlock = Literal["week", "season"]
 
-#: Production's margin feature contract for the ``market_residual`` target
-#: under the ``weak_stack`` profile -- the "base marginal margin model" arm,
-#: reused unmodified rather than re-derived.
 MARGIN_BASELINE_FEATURES: tuple[str, ...] = margin_feature_columns("market_residual", "weak_stack")
 
-#: The frozen union: production margin features plus the totals wave-2
-#: drive-pace family. ``docs/mod17_joint_residual_model.md`` verifies the
-#: totals wave-1 allowlist is already a strict subset of
-#: ``MARGIN_BASELINE_FEATURES`` (so it needs no separate listing here) and
-#: that this union has zero internal overlap.
 _union_overlap = set(MARGIN_BASELINE_FEATURES) & set(WAVE2_DRIVE_FEATURES)
 if _union_overlap:
     raise RuntimeError(f"MOD-17 union feature set has unexpected overlap: {sorted(_union_overlap)}")
 UNION_FEATURES: tuple[str, ...] = MARGIN_BASELINE_FEATURES + WAVE2_DRIVE_FEATURES
 
-#: Production's ridge penalty, unchanged throughout this module.
 JOINT_RIDGE_ALPHA = 10.0
 
-#: The positive-control column: an arbitrary, pre-chosen, already-present
-#: member of the union design matrix -- same convention
-#: ``nfl_ats.totals_wave2.POSITIVE_CONTROL_COLUMN`` uses.
 POSITIVE_CONTROL_COLUMN = "home_point_diff"
 
 _TARGET_COLUMNS: tuple[str, str] = ("margin_residual", "total_residual")
@@ -173,10 +161,6 @@ def walk_forward_joint_predictions(
         estimator.fit(design.loc[train_mask], targets[train_mask])
         predicted = np.atleast_2d(np.asarray(estimator.predict(design.loc[test_mask]), dtype=float))
         if predicted.shape[0] != int(test_mask.sum()):
-            # sklearn's Ridge returns a 1-D array for a single target column;
-            # atleast_2d on a 1-D array of length n makes a (1, n) row rather
-            # than the (n, 1) column this loop needs -- reshape explicitly
-            # rather than relying on atleast_2d's orientation guess.
             predicted = predicted.reshape(int(test_mask.sum()), -1)
         block = population.loc[test_mask, :].copy()
         for index, name in enumerate(target_columns):

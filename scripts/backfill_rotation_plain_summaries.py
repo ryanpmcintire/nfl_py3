@@ -25,9 +25,6 @@ from nfl_ats.findings_registry import (
 )
 from nfl_ats.rotation import default_registry_path
 
-# Reviewed situation-and-action descriptions, used only when a mirrored summary
-# is absent or needs translation. Keep new families explicit: never manufacture
-# reader prose from a registry identifier.
 ROTATION_PLAIN_SUMMARIES = {
     "ats_streak_regress_on_production": (
         "After a team fails to cover the spread in at least three straight games, this rule "
@@ -214,7 +211,6 @@ ROTATION_PLAIN_SUMMARIES = {
     ),
 }
 
-# Mirrors containing technical result prose need the reviewed translation above.
 TECHNICAL_TEXT = re.compile(
     r"_|P\+|\b(?:window\w*|production|sample|resamples|interval|range|"
     r"graph-adjusted|schedule-adjusted|signal|flag|feature|predeclared|"
@@ -270,8 +266,6 @@ def without_summaries(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def without_summary_bytes(raw: bytes) -> bytes:
-    # The standard serializer writes each summary as a single JSON string line.
-    # Remove that line and its adjacent separator to compare every other byte.
     string = rb'"plain_summary": "(?:[^"\\]|\\.)*"'
     raw = re.sub(rb"[ \t]*" + string + rb",\r?\n", b"", raw)
     return re.sub(rb",\r?\n[ \t]*" + string, b"", raw)

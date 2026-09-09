@@ -50,8 +50,6 @@ BIG = "10.5+"
 MID = "7.5-10"
 DIAGNOSED = tuple(HOME_SIDE_OFFSET_BUCKETS)
 
-#: Pregame columns taken from the feature table. Outcomes (result, scores,
-#: home_cover, ats_margin) are read from the evaluation only.
 FEATURE_COLUMNS = (
     "game_id",
     "gameday",
@@ -73,8 +71,6 @@ FEATURE_COLUMNS = (
     "diff_injury_offense_unavailability",
     "diff_injury_defense_unavailability",
 )
-#: Pregame (home minus away) features whose co-movement with the model's
-#: residual is tabulated, so a future lane knows WHICH inputs push the point.
 LEAN_FEATURES = (
     "elo_diff",
     "rest_diff",
@@ -87,7 +83,6 @@ LEAN_FEATURES = (
     "diff_injury_offense_unavailability",
     "diff_injury_defense_unavailability",
 )
-#: Pairs of cuts crossed inside the 10.5+ bucket (question 2, localisation).
 CROSSES: tuple[tuple[str, str], ...] = (
     ("line_band", "pick_location"),
     ("move_band", "pick_location"),
@@ -105,10 +100,6 @@ SCHEDULE_COLUMNS = (
     "away_team",
 )
 
-#: Kickoff time zones by franchise (inferred from stadium locations, declared
-#: here because ``src/nfl_ats`` carries no NFL team table). Offsets from
-#: Eastern in hours; Arizona has no daylight saving but sits at -2 or -3 and
-#: is folded to -2 (Mountain) for a whole-hour crossing count.
 TEAM_ZONE_OFFSET: dict[str, int] = {
     "ARI": -2,
     "ATL": 0,
@@ -148,7 +139,6 @@ TEAM_ZONE_OFFSET: dict[str, int] = {
     "WAS": 0,
 }
 
-#: The cuts of question (2), each a column of ``build_frame``'s output.
 CUTS: tuple[tuple[str, str], ...] = (
     ("home_side", "home favourite / home underdog"),
     ("pick_side", "model picked the favourite / the underdog"),
@@ -173,11 +163,6 @@ CUTS: tuple[tuple[str, str], ...] = (
     ("primetime", "kickoff at 19:00 ET or later"),
     ("roof_band", "roof"),
 )
-
-
-# ---------------------------------------------------------------------------
-# Inputs
-# ---------------------------------------------------------------------------
 
 
 def latest_schedules() -> Path:
@@ -210,11 +195,6 @@ def load_inputs(artifacts_root: Path) -> tuple[pd.DataFrame, pd.DataFrame, pd.Da
         "schedules": str(latest_schedules().relative_to(REPO)).replace("\\", "/"),
     }
     return per_game, features, schedules, provenance
-
-
-# ---------------------------------------------------------------------------
-# Frame construction (pure; the unit test drives this on a synthetic frame)
-# ---------------------------------------------------------------------------
 
 
 def _band(values: pd.Series, edges: list[float], labels: list[str]) -> pd.Series:
@@ -275,11 +255,7 @@ def build_frame(
     frame["point_raw"] = spread + raw_residual
     frame["error_served"] = result - frame["point_served"]
     frame["error_raw"] = result - frame["point_raw"]
-    # The same error seen from the favourite's side: positive means the
-    # favourite beat the served point, whichever side it was on.
     frame["error_served_favourite"] = frame["error_served"] * np.sign(spread)
-    # ... and from the model's pick side: positive means the picked team beat
-    # the served point (the pick "had room"), negative means it fell short.
     frame["error_served_pick"] = frame["error_served"] * np.where(pick_home, 1.0, -1.0)
     frame["offset"] = pd.to_numeric(frame["home_side_offset_at_open"], errors="coerce")
     frame["residual_abs"] = served_residual.abs()
@@ -389,11 +365,6 @@ def build_frame(
     return frame
 
 
-# ---------------------------------------------------------------------------
-# Week-blocked bootstrap (whole weeks resampled; within-week correlation zero)
-# ---------------------------------------------------------------------------
-
-
 def week_blocked_mean(
     values: pd.Series, blocks: pd.Series, *, draws: int = DRAWS, seed: int = SEED
 ) -> dict[str, float]:
@@ -456,8 +427,6 @@ def week_blocked_slope(
     def slope(idx: np.ndarray) -> np.ndarray:
         tn, tx, ty = n[idx].sum(axis=-1), sx[idx].sum(axis=-1), sy[idx].sum(axis=-1)
         txy, txx = sxy[idx].sum(axis=-1), sxx[idx].sum(axis=-1)
-        # A draw whose resampled weeks carry no x-variance has no slope (NaN)
-        # and is left out of the quantiles, never padded.
         with np.errstate(divide="ignore", invalid="ignore"):
             return (txy - tx * ty / tn) / (txx - tx * tx / tn)
 
@@ -536,11 +505,6 @@ def residual_information_table(
             }
         )
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# Cell tables
-# ---------------------------------------------------------------------------
 
 
 def _blocks(frame: pd.DataFrame) -> pd.Series:
@@ -721,11 +685,6 @@ def lean_table(frame: pd.DataFrame, buckets: tuple[str, ...]) -> pd.DataFrame:
                 }
             )
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def table(frame: pd.DataFrame, path: Path, extra: dict[str, Any] | None = None) -> None:

@@ -158,9 +158,6 @@ def test_handoff_write_regenerates_readme_generated_blocks(tmp_path: Path) -> No
     manifest = {
         "version": 1,
         "status": "SYNCHRONIZED",
-        # Matches _write_project_context's CURRENT_PREDICTIONS.md so the
-        # pre-existing "local active model and tracked weekly publication do
-        # not match" check stays out of this test's way.
         "model_id": "published123",
         "method": "market_residual",
         "feature_profile": "player",
@@ -243,10 +240,6 @@ def test_handoff_check_flags_stale_readme_generated_block(tmp_path: Path) -> Non
         registry_root=tmp_path / "registry",
     )
 
-    # The model changes after the README was last regenerated -- e.g. a new
-    # promotion ran without re-publishing. (Now mismatches the tracked
-    # publication too, but that failure is independent of, and additive
-    # with, the README staleness this test targets.)
     manifest["model_id"] = "active456"
     (artifacts / "active_ats_model.json").write_text(json.dumps(manifest), encoding="utf-8")
 

@@ -145,18 +145,10 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file, stamp_sidecar
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "special_teams_return_tilt_overlay"
 
-#: Ported verbatim from scripts/special_teams_screen.py:66. Applied to the
-#: WHOLE team-season panel (global cut, not within-season), exactly as
-#: scripts/special_teams_screen.py's own ``main()`` computes it (see that
-#: script's printed "544-row 2009-2025 team-season panel" threshold line).
 QUARTILE_TOP = 0.75
 
-#: The two raw dimensions scripts/special_teams_screen.py::add_composites
-#: (lines 126-145) averages into ``return_composite_z``. Ported verbatim,
-#: including the leg order (punt leg first, matching the source).
 RETURN_COMPOSITE_LEGS: tuple[str, ...] = ("punt_return_yards", "kickoff_return_yards")
 
 REQUIRED_TEAM_SEASON_COLUMNS = {
@@ -249,10 +241,6 @@ def special_teams_return_flag_by_game(
     composite = composite[["season", "team", "return_composite_z"]].copy()
     composite["team"] = _canonical_team(composite["team"])
     composite["season"] = composite["season"].astype(int)
-    # Ported verbatim from scripts/special_teams_screen.py::_prior (line 148):
-    # shift the team-season row's OWN season forward by one, so it is only
-    # ever joined onto a game whose season is one greater than the one this
-    # row describes -- i.e. it is consulted as the PRIOR value only.
     composite["season"] = composite["season"] + 1
 
     reg = schedules.loc[schedules["game_type"].astype(str).eq("REG")].copy()
@@ -619,8 +607,6 @@ def record_special_teams_return_tilt_challenger_decisions(
         )
         ledger_path = challenger_ledger_path(artifacts_root)
         atomic_parquet(combined[list(CHALLENGER_DECISION_COLUMNS)], ledger_path)
-        # ENG-38: stamp which commit appended these rows -- a JSON sidecar,
-        # not a rewrite of the parquet ledger itself.
         stamp_sidecar(
             ledger_path, extra={"challenger_id": CHALLENGER_ID, "rows_appended": len(decisions)}
         )

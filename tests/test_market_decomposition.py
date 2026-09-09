@@ -32,15 +32,6 @@ from nfl_ats.market_decomposition import (
     walk_forward_decomposition,
 )
 
-# ---------------------------------------------------------------------------
-# Synthetic "planted family" fixture: `known` truly drives both margin and
-# the market's spread; `hidden` truly drives margin but the market ignores
-# it; `overpriced` drives the market's spread but has no true margin effect;
-# `noise` drives neither. The signal-to-noise ratio is deliberately tight
-# (small residual scales) so ridge alpha=10 recovers this structure reliably
-# with a fixed seed -- a known-good configuration, not tuned per assertion.
-# ---------------------------------------------------------------------------
-
 SYNTHETIC_FAMILIES: dict[str, tuple[str, ...]] = {
     "known": ("feat_known",),
     "hidden": ("feat_hidden",),
@@ -106,11 +97,6 @@ def synthetic_walk_forward(synthetic_frame: pd.DataFrame) -> WalkForwardDecompos
     )
 
 
-# ---------------------------------------------------------------------------
-# Family registry plumbing
-# ---------------------------------------------------------------------------
-
-
 def test_build_family_map_covers_real_market_family() -> None:
     mapping = build_family_map(["spread_line", "total_line"])
     assert mapping == {"spread_line": "market", "total_line": "market"}
@@ -143,11 +129,6 @@ def test_decomposition_feature_columns_excludes_market_family() -> None:
     assert columns == margin_feature_columns("margin", "player")
 
 
-# ---------------------------------------------------------------------------
-# Walk-forward matched regressions, reconciliation, R^2
-# ---------------------------------------------------------------------------
-
-
 def test_walk_forward_decomposition_reconciles_within_tolerance(
     synthetic_walk_forward: WalkForwardDecomposition,
 ) -> None:
@@ -166,11 +147,9 @@ def test_planted_families_classify_correctly(
     assert classification.loc["hidden", "classification"] == "unpriced_predictive"
     assert classification.loc["overpriced", "classification"] == "overpriced"
     assert classification.loc["noise", "classification"] == "noise"
-    # The planted "hidden" family has real margin weight but ~zero spread weight.
     assert (
         classification.loc["hidden", "margin_share"] > classification.loc["hidden", "spread_share"]
     )
-    # The planted "overpriced" family has real spread weight but ~zero margin weight.
     assert (
         classification.loc["overpriced", "spread_share"]
         > classification.loc["overpriced", "margin_share"]
@@ -181,12 +160,7 @@ def test_r_squared_table_high_for_spread_lower_for_margin(
     synthetic_walk_forward: WalkForwardDecomposition,
 ) -> None:
     r_squared = r_squared_table(synthetic_walk_forward.predictions).set_index("target")
-    # The spread target is nearly deterministic given `known`/`over` (residual
-    # scale 0.5), so its out-of-sample R^2 should be high.
     assert r_squared.loc["spread", "r_squared"] > 0.9
-    # The margin target has a much noisier generating process; it should
-    # still be well above zero (the features are genuinely informative) but
-    # far short of the spread target's fit.
     assert 0.0 < r_squared.loc["margin", "r_squared"] < r_squared.loc["spread", "r_squared"]
 
 
@@ -230,19 +204,14 @@ def test_classify_families_requires_all_targets() -> None:
         classify_families(incomplete)
 
 
-# ---------------------------------------------------------------------------
-# classify_family boundary behavior
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     ("spread_share", "margin_share", "expected"),
     [
         (0.01, 0.01, "noise"),
         (0.01, 0.20, "unpriced_predictive"),
         (0.20, 0.01, "overpriced"),
-        (0.15, 0.05, "overpriced"),  # ratio 3.0 >= default 1.5 threshold
-        (0.10, 0.09, "priced"),  # ratio ~1.11 < default 1.5 threshold
+        (0.15, 0.05, "overpriced"),
+        (0.10, 0.09, "priced"),
     ],
 )
 def test_classify_family_buckets(spread_share: float, margin_share: float, expected: str) -> None:
@@ -252,11 +221,6 @@ def test_classify_family_buckets(spread_share: float, margin_share: float, expec
 def test_classify_family_rejects_out_of_range_shares() -> None:
     with pytest.raises(ValueError, match="between 0 and 1"):
         classify_family(1.5, 0.1)
-
-
-# ---------------------------------------------------------------------------
-# Per-game attribution
-# ---------------------------------------------------------------------------
 
 
 def test_attribute_predictions_sums_exactly_to_predicted_residual(
@@ -275,23 +239,14 @@ def test_attribute_predictions_sums_exactly_to_predicted_residual(
         total = rows["contribution"].sum()
         predicted = rows["predicted_residual"].iloc[0]
         assert total == pytest.approx(predicted, abs=1e-6), game_id
-        # The rendered explanation is identical across every family row for
-        # the same game (it is a per-game, not a per-family, artifact).
         assert rows["explanation"].nunique() == 1
 
 
 def test_attribute_predictions_routes_slate_constant_features_to_weekly_context(
     synthetic_frame: pd.DataFrame,
 ) -> None:
-    # A feature identical for every game in the attributed week (week-of-season
-    # encodings, a uniformly-zero week-1 rest differential) cannot explain
-    # game-to-game differences vs the market. It must land in the shared
-    # weekly-context bucket, stay out of the per-game narrative drivers, and
-    # be disclosed as a general adjustment when material.
     frame = synthetic_frame.copy()
     frame["feat_slate"] = np.where(frame["week"].eq(6) & frame["season"].eq(2022), 1.0, 0.0)
-    # Give the constant column real training signal so its coefficient (and
-    # therefore its shared contribution) is material rather than noise.
     frame["result"] = frame["result"] + 3.0 * frame["feat_slate"]
     attribution = attribute_predictions(
         frame,
@@ -305,12 +260,10 @@ def test_attribute_predictions_routes_slate_constant_features_to_weekly_context(
     assert WEEKLY_CONTEXT_FAMILY in families
     assert "slate" not in families
     weekly = attribution.loc[attribution["family"].eq(WEEKLY_CONTEXT_FAMILY), "contribution"]
-    # Identical shared contribution for every game in the slate.
     assert weekly.nunique() == 1
     for explanation in attribution["explanation"].unique():
         assert "shared by every game" not in explanation.split("(A general adjustment")[0] or True
         assert "slate" not in explanation
-    # The shared component is disclosed, not narrated as a game-specific driver.
     assert any(
         "applied equally to every game" in explanation
         for explanation in attribution["explanation"].unique()
@@ -362,11 +315,6 @@ def test_attribute_predictions_requires_a_spread(synthetic_frame: pd.DataFrame) 
             min_train_games=SYNTHETIC_MIN_TRAIN_GAMES,
             families=SYNTHETIC_FAMILIES,
         )
-
-
-# ---------------------------------------------------------------------------
-# Plain-English explanations
-# ---------------------------------------------------------------------------
 
 
 def test_explain_game_single_driver_home_pick() -> None:
@@ -471,11 +419,6 @@ def test_phrase_fallback_for_unmapped_family_is_readable() -> None:
     assert "some custom family" in sentence
 
 
-# ---------------------------------------------------------------------------
-# Opener variant
-# ---------------------------------------------------------------------------
-
-
 def _synthetic_opener_games(n: int = 80, seed: int = 7) -> tuple[pd.DataFrame, pd.DataFrame]:
     rng = np.random.default_rng(seed)
     game_ids = [f"open_{index}" for index in range(n)]
@@ -560,11 +503,6 @@ def test_latest_open_close_games_path(tmp_path: Path) -> None:
 
     found = latest_open_close_games_path(tmp_path)
     assert found == late / "games.parquet"
-
-
-# ---------------------------------------------------------------------------
-# Markdown rendering
-# ---------------------------------------------------------------------------
 
 
 def test_market_decomposition_markdown_renders_all_sections(

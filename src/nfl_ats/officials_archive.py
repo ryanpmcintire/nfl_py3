@@ -102,21 +102,11 @@ from nfl_ats.data import DataContractError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: The sweep's own ``SOURCE_ID`` (``scripts/officials_wayback_sweep.py``).
-#: Retyped here so importing this module never requires loading the script;
-#: ``tests/test_officials_archive.py`` pins the two strings equal.
 ARCHIVE_SOURCE = "internet_archive_pfr_boxscores"
-#: Provenance label for rows that came from the nflverse officials feed.
 NFLVERSE_SOURCE = "nflverse_officials"
 
-#: Only a directory whose ``manifest.json`` declares this schema is a sweep
-#: run. The two ``laneN_probe_*`` directories declare
-#: ``officials_pfr_wayback_probe/1`` instead and are skipped, not crashed on.
 MANIFEST_SCHEMA = "officials_pfr_wayback_manifest/1"
 
-#: Measured (2026-09-08, read-only pass over both real run directories):
-#: exactly these seven position labels appear across all 9,724 parsed crew
-#: rows. No "Replay Official" row has ever been parsed.
 CORE_CREW_POSITIONS: tuple[str, ...] = (
     "Referee",
     "Umpire",
@@ -127,13 +117,8 @@ CORE_CREW_POSITIONS: tuple[str, ...] = (
     "Back Judge",
 )
 
-#: The NFL renamed "Head Linesman" to "Down Judge" for the 2017 season, after
-#: this archive's 2009-2014 window; no captured page has ever used it. The
-#: alias keeps the wide table correct if a future sweep window moves past
-#: 2016, and matches ``scripts/officials_coverage_report.py``'s own alias.
 POSITION_ALIASES: dict[str, str] = {"Down Judge": "Head Linesman"}
 
-#: Wide-table column for each on-field position.
 CREW_COLUMN_BY_POSITION: dict[str, str] = {
     "Referee": "referee",
     "Umpire": "umpire",
@@ -146,7 +131,6 @@ CREW_COLUMN_BY_POSITION: dict[str, str] = {
 
 CREW_COLUMNS: tuple[str, ...] = tuple(CREW_COLUMN_BY_POSITION[p] for p in CORE_CREW_POSITIONS)
 
-#: :func:`canonical_crew_table`'s frozen column order.
 CANONICAL_CREW_COLUMNS: tuple[str, ...] = (
     "game_id",
     "old_game_id",
@@ -169,8 +153,6 @@ CANONICAL_CREW_COLUMNS: tuple[str, ...] = (
     "fetched_at_utc",
 )
 
-#: The nflverse officials feed's own 9 columns, in its own order (measured:
-#: ``data/raw/officials/20260819T190537Z/officials.parquet``).
 NFLVERSE_OFFICIALS_COLUMNS: tuple[str, ...] = (
     "game_id",
     "game_key",
@@ -183,22 +165,12 @@ NFLVERSE_OFFICIALS_COLUMNS: tuple[str, ...] = (
     "week",
 )
 
-#: The archive holds REG games only -- ``officials_wayback_sweep.load_games``
-#: filters ``game_type == "REG"`` before any fetch.
 ARCHIVE_SEASON_TYPE = "REG"
 
-#: Timing-contract label for the archive family. See the module docstring.
 ARCHIVE_TIMING_CLASS = "crew_identity_public_pregame_not_provably_captured_pregame"
 
-#: Shipped default for :func:`load_officials`. ``False`` == nflverse feed
-#: only == today's production behaviour, bit-for-bit. Flipping this is
-#: LEAD-59's own next step and must be measured on the played card first.
 INCLUDE_ARCHIVE_DEFAULT = False
 
-#: A live sweep replaces ``manifest.json`` atomically; a concurrent read can
-#: transiently fail on Windows (measured once, 2026-09-07, WinError 5 --
-#: ``docs/officials_archive_probe.md``). Same bounded retry
-#: ``scripts/officials_coverage_report.py`` already uses.
 _MANIFEST_READ_ATTEMPTS = 5
 _MANIFEST_READ_RETRY_SECONDS = 0.05
 
@@ -217,11 +189,6 @@ class SweepRun:
     season_start: int | None
     season_end: int | None
     n_manifest_rows: int
-
-
-# ---------------------------------------------------------------------------
-# Parser reuse: the sweep's own ``parse_officials_block``, never a second copy
-# ---------------------------------------------------------------------------
 
 
 _SWEEP_MODULE_NAME = "nfl_ats_officials_wayback_sweep"
@@ -271,11 +238,6 @@ def normalize_position(position: str) -> str:
     return POSITION_ALIASES.get(position, position)
 
 
-# ---------------------------------------------------------------------------
-# Run discovery and crew-row parsing
-# ---------------------------------------------------------------------------
-
-
 def _read_manifest(run_dir: Path) -> dict[str, Any] | None:
     manifest_path = run_dir / "manifest.json"
     if not manifest_path.is_file():
@@ -284,7 +246,7 @@ def _read_manifest(run_dir: Path) -> dict[str, Any] | None:
     for attempt in range(_MANIFEST_READ_ATTEMPTS):
         try:
             payload = json.loads(manifest_path.read_text(encoding="utf-8"))
-        except (OSError, ValueError) as exc:  # transient atomic-replace collision
+        except (OSError, ValueError) as exc:
             last_error = exc
             if attempt + 1 < _MANIFEST_READ_ATTEMPTS:
                 time.sleep(_MANIFEST_READ_RETRY_SECONDS)
@@ -342,10 +304,6 @@ def default_archive_root(repo_root: Path | None = None) -> Path:
     return (repo_root or REPO_ROOT) / "data" / "raw" / "officials_pfr_wayback"
 
 
-#: ``(raw_root, fingerprint) -> parsed crew rows``. Parsing ~1,400 captured
-#: pages is pure disk work, so the result is memoised on a fingerprint of
-#: every manifest's size and mtime -- a live sweep writing a new row
-#: invalidates it on the next call. :func:`clear_cache` empties it.
 _CREW_ROW_CACHE: dict[tuple[str, tuple[tuple[str, int, int], ...]], pd.DataFrame] = {}
 
 
@@ -363,7 +321,6 @@ def clear_cache() -> None:
     _CREW_ROW_CACHE.clear()
 
 
-#: :func:`load_archive_crew_rows`'s frozen column order.
 ARCHIVE_CREW_ROW_COLUMNS: tuple[str, ...] = (
     "game_id",
     "season",
@@ -449,11 +406,6 @@ def load_archive_crew_rows(
     return frame
 
 
-# ---------------------------------------------------------------------------
-# Timing contract
-# ---------------------------------------------------------------------------
-
-
 def _as_text(value: Any) -> str | None:
     """``value`` as text, or ``None`` for anything that is not text-like.
 
@@ -522,11 +474,6 @@ def refuse_archive_rows(frame: pd.DataFrame, *, channel: str) -> None:
             "its captures are always after kickoff and can never satisfy a "
             "captured-before-the-pick-deadline test"
         )
-
-
-# ---------------------------------------------------------------------------
-# Canonical per-game crew table
-# ---------------------------------------------------------------------------
 
 
 def latest_schedules_path(repo_root: Path | None = None) -> Path:
@@ -701,11 +648,6 @@ def canonical_crew_table(
     return table.loc[:, list(CANONICAL_CREW_COLUMNS)]
 
 
-# ---------------------------------------------------------------------------
-# nflverse-schema long view of the archive
-# ---------------------------------------------------------------------------
-
-
 def archive_officials_long(
     *,
     repo_root: Path | None = None,
@@ -778,11 +720,6 @@ def _empty_merged_frame() -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# The single loader every consumer calls
-# ---------------------------------------------------------------------------
-
-
 def latest_nflverse_officials_path(repo_root: Path | None = None) -> Path:
     """Newest ``data/raw/officials/*/officials.parquet``.
 
@@ -831,11 +768,6 @@ def load_officials(
     if feed is None:
         feed = pd.read_parquet(officials_path or latest_nflverse_officials_path(root))
     if not include_archive:
-        # Pure pass-through, deliberately unvalidated: each consumer already
-        # states the columns IT needs (``_build_referee_trait_data`` raises
-        # its own ``ExperimentRunnerError``), and several tests build a
-        # minimal officials fixture with only those columns. Validating here
-        # would reject a fixture the consumer is happy with.
         return feed
 
     missing = sorted(set(NFLVERSE_OFFICIALS_COLUMNS).difference(feed.columns))
@@ -881,11 +813,6 @@ def load_officials_for_prospective_channel(
     )
     refuse_archive_rows(frame, channel=channel)
     return frame
-
-
-# ---------------------------------------------------------------------------
-# Coverage description (read-only; for docs and the session report)
-# ---------------------------------------------------------------------------
 
 
 def describe_archive_coverage(

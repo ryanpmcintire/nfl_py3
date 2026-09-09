@@ -66,7 +66,6 @@ __all__ = [
     "probability_positive_from_draws",
 ]
 
-#: How much credit a resample of exactly zero gives the candidate. Half, because an exact tie is.
 ZERO_ATOM_CREDIT = 0.5
 
 
@@ -136,7 +135,6 @@ def binomial_two_sided_p(favourable: int, total: int) -> float:
     if favourable < 0 or favourable > total:
         raise ValueError(f"favourable={favourable} is outside 0..{total}")
 
-    # For p = 0.5 the pmf is symmetric about total/2, so "no more likely than the observed.
     observed_distance = abs(2 * favourable - total)
     log_half = total * math.log(0.5)
     log_total_factorial = math.lgamma(total + 1)

@@ -54,9 +54,6 @@ from nfl_ats.tiebreaker import (
     weighted_score_counts,
 )
 
-#: Chronological sort key. Playoff rounds carry week numbers above the regular
-#: season's, so ``(season, week)`` orders the whole history correctly and a
-#: strict prefix of the sorted frame is exactly "everything before this week".
 _ORDER = ["season", "week", "gameday", "game_id"]
 
 
@@ -360,9 +357,6 @@ def main() -> None:
         "by_season": _season_table(scored, with_oracle=with_oracle),
         "push_calibration": _push_calibration(scored),
         "manifest": {**configuration, "schedules": str(schedules_path), "generated_at": stamp},
-        # ``artifact_provenance`` hashes the input table it is handed; the
-        # schedules snapshot IS this evaluation's only input table, so it is
-        # what gets pinned (there is no engineered feature parquet here).
         "provenance": artifact_provenance(configuration, schedules_path, project_root=REPO),
     }
     write_experiment_artifact(

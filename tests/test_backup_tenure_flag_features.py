@@ -66,65 +66,28 @@ def _rosters(rows: list[tuple[int, str, str]]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["season", "team", "gsis_id"])
 
 
-# ---------------------------------------------------------------------------
-# Shared fixture: one schedule covering every scenario, keyed by game_id.
-# ---------------------------------------------------------------------------
-
-
 def _combined_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            # --- Group 1: backup detection carries across a season boundary
-            # (no reset), sign convention "home starts a NEW-system backup" -> -1.
             _game("bk1", 2013, "2013-09-08", "BKA", "OPP1", "S1", "Z1"),
-            _game(
-                "bk2", 2013, "2013-09-15", "OPP2", "BKA", "Z2", "S1"
-            ),  # same starter S1, not backup
-            _game(
-                "bk3", 2014, "2014-09-07", "BKA", "OPP3", "S2", "Z3"
-            ),  # S2 != S1 -> backup, tenure 0
-            # --- Group 2: system-tenured backup (>=2 strictly-prior seasons) -> +1.
+            _game("bk2", 2013, "2013-09-15", "OPP2", "BKA", "Z2", "S1"),
+            _game("bk3", 2014, "2014-09-07", "BKA", "OPP3", "S2", "Z3"),
             _game("t0", 2013, "2013-09-08", "TEN", "OPP4", "S3", "Z4"),
-            _game("t1", 2015, "2015-09-13", "TEN", "OPP5", "S4", "Z5"),  # S4 != S3 -> backup
-            # --- Group 3: leakage -- a roster row in the game's OWN season must
-            # never be read; S B has exactly 1 STRICTLY PRIOR season (2017) plus
-            # a same-season (2018) row that must be ignored -> stays new-system.
+            _game("t1", 2015, "2015-09-13", "TEN", "OPP5", "S4", "Z5"),
             _game("l0", 2016, "2016-09-11", "LEAK", "OPP6", "SA", "Z6"),
             _game("l1", 2018, "2018-09-09", "LEAK", "OPP7", "SB", "Z7"),
-            # --- Group 4: unresolved backup identity (never appears in rosters
-            # at all) contributes to neither bucket -> 0.
             _game("u0", 2013, "2013-09-08", "UNK", "OPP8", "SC", "Z8"),
             _game("u1", 2015, "2015-09-13", "UNK", "OPP9", "SD", "Z9"),
-            # --- Group 5: franchise-relocation continuity on the ROSTER side
-            # (old codes SL/STL alias to LA) -- 2 prior seasons under two
-            # different literal roster codes still counts as system-tenured.
             _game("r0", 2013, "2013-09-08", "LA", "OPPA", "SE", "ZA"),
             _game("r1", 2016, "2016-09-11", "LA", "OPPB", "SF", "ZB"),
-            # --- Group 6: franchise-relocation continuity on the SCHEDULE side
-            # (OAK -> LV): the SAME starter across the relocation is NOT a
-            # backup start; a later, genuinely different starter IS.
             _game("v0", 2013, "2013-09-08", "OAK", "OPPC", "SG", "ZC"),
-            _game("v1", 2020, "2020-09-13", "LV", "OPPD", "SG", "ZD"),  # same SG -> not backup
-            _game(
-                "v2", 2021, "2021-09-12", "LV", "OPPE", "SH", "ZE"
-            ),  # SH != SG -> backup, tenure 0
-            # --- Group 7: population restriction -- ingredients for a
-            # system-tenured backup, but the game's own season (2011) is
-            # outside the declared [2013, 2025] range -> forced to 0.0.
+            _game("v1", 2020, "2020-09-13", "LV", "OPPD", "SG", "ZD"),
+            _game("v2", 2021, "2021-09-12", "LV", "OPPE", "SH", "ZE"),
             _game("o0", 2009, "2009-09-13", "OLD", "OPPF", "SI", "ZF"),
             _game("o1", 2011, "2011-09-11", "OLD", "OPPG", "SJ", "ZG"),
-            # --- Group 8: both sides independently favour the same direction
-            # simultaneously -> cancels to 0.0 (home system-tenured AND away
-            # new-system both push toward home, so this is NOT the cancelling
-            # case -- see "bothA"/"bothB" below for the two true cancel cases).
             _game("bothA", 2015, "2015-09-13", "TENH", "TENA", "SK", "SL_"),
             _game("bothB", 2015, "2015-09-20", "NEWH", "NEWA", "SM", "SN"),
-            # --- Group 9: a not-yet-played future game (both starters
-            # missing) must still appear in the output, with flag 0.0 -- never
-            # dropped, never NaN.
             _game("future", 2026, "2026-09-10", "FUT1", "FUT2", None, None),
-            # Priming rows so bothA/bothB's own starters have a proxy to
-            # differ from (each team's OWN first archived game).
             _game("bothA0", 2013, "2013-09-08", "TENH", "X1", "P1", "X1Q"),
             _game("bothA0b", 2013, "2013-09-08", "TENA", "X2", "P2", "X2Q"),
             _game("bothB0", 2013, "2013-09-08", "NEWH", "X3", "P3", "X3Q"),
@@ -136,46 +99,20 @@ def _combined_schedule() -> pd.DataFrame:
 def _combined_rosters() -> pd.DataFrame:
     return _rosters(
         [
-            # Group 1: S2 (BKA backup at bk3, season 2014) has a roster row
-            # ONLY in the game's OWN season (2014) -- resolved (a legitimate
-            # new signee), but 0 STRICTLY PRIOR seasons -> new-system. (A
-            # gsis_id with NO roster row anywhere is UNRESOLVED, not
-            # new-system -- see group 4's SD -- so every "new-system"
-            # scenario here deliberately carries a current-season-only row.)
             (2014, "BKA", "S2"),
-            # Group 2: S4 (TEN backup at t1, season 2015) has 2 strictly-prior
-            # seasons with TEN.
             (2013, "TEN", "S4"),
             (2014, "TEN", "S4"),
-            # Group 3: SB (LEAK backup at l1, season 2018) has exactly 1
-            # strictly-prior season (2017) PLUS a same-season (2018) row that
-            # must be ignored.
             (2017, "LEAK", "SB"),
             (2018, "LEAK", "SB"),
-            # Group 4: SD (UNK backup at u1) deliberately has NO row anywhere
-            # -- the one genuinely UNRESOLVED backup identity in this fixture.
-            # Group 5: SF (LA backup at r1, season 2016) has 2 strictly-prior
-            # seasons under two different literal (alias) roster codes.
             (2014, "SL", "SF"),
             (2015, "STL", "SF"),
-            # Group 6: SH (LV backup at v2, season 2021) has a roster row
-            # ONLY in the game's own season (2021) -- resolved, 0 strictly-
-            # prior seasons -> new-system.
             (2021, "LV", "SH"),
-            # Group 7: SJ (OLD backup at o1, season 2011) has 2 strictly-prior
-            # seasons -- would be system-tenured if the population restriction
-            # did not zero the flag first.
             (2009, "OLD", "SJ"),
             (2010, "OLD", "SJ"),
-            # Group 8a ("bothA"): both SK (home, TENH) and SL_ (away, TENA)
-            # are system-tenured backups (>=2 prior seasons each).
             (2013, "TENH", "SK"),
             (2014, "TENH", "SK"),
             (2013, "TENA", "SL_"),
             (2014, "TENA", "SL_"),
-            # Group 8b ("bothB"): both SM (home, NEWH) and SN (away, NEWA) are
-            # resolved (current-season-only rows), 0-prior-season new-system
-            # backups.
             (2015, "NEWH", "SM"),
             (2015, "NEWA", "SN"),
         ]
@@ -187,11 +124,6 @@ def combined() -> pd.DataFrame:
     return derive_backup_tenure_gap_features(_combined_schedule(), _combined_rosters()).set_index(
         "game_id"
     )
-
-
-# ---------------------------------------------------------------------------
-# Backup-start detection, season-boundary carry, sign convention
-# ---------------------------------------------------------------------------
 
 
 def test_first_archived_game_has_no_proxy_and_is_never_a_backup(combined: pd.DataFrame) -> None:
@@ -285,20 +217,10 @@ def test_system_tenured_min_seasons_threshold_is_two() -> None:
     assert BACKUP_TENURE_SYSTEM_TENURED_MIN_SEASONS == 2
 
 
-# ---------------------------------------------------------------------------
-# Team-code canonicalization
-# ---------------------------------------------------------------------------
-
-
 def test_canonical_team_normalizes_relocation_codes() -> None:
     codes = pd.Series(["OAK", "LV", "SD", "LAC", "STL", "SL", "LA", "ARZ", "ARI"])
     canonical = _canonical_team(codes)
     assert list(canonical) == ["LV", "LV", "LAC", "LAC", "LA", "LA", "LA", "ARI", "ARI"]
-
-
-# ---------------------------------------------------------------------------
-# Leakage
-# ---------------------------------------------------------------------------
 
 
 def test_leakage_never_reads_current_season_roster_rows() -> None:
@@ -325,9 +247,6 @@ def test_leakage_never_reads_current_season_roster_rows() -> None:
     pd.testing.assert_series_equal(
         baseline[BACKUP_TENURE_GAP_COLUMN], after[BACKUP_TENURE_GAP_COLUMN]
     )
-    # And, for the specific game under test, still reads new-system (-1.0),
-    # not 0.0 -- proving the assertion above is not vacuously true because
-    # the flag collapsed to a default.
     assert baseline.loc["l1", BACKUP_TENURE_GAP_COLUMN] == -1.0
 
 
@@ -352,37 +271,18 @@ def test_leakage_ignores_unrelated_outcome_columns() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Population diagnostic
-# ---------------------------------------------------------------------------
-
-
 def test_describe_backup_tenure_population_diagnostic() -> None:
     diagnostic = describe_backup_tenure_population(_combined_schedule(), _combined_rosters())
-    # Backup-start SIDES within [2013, 2025]: bk3(BKA), t1(TEN), l1(LEAK),
-    # u1(UNK), r1(LA), v2(LV), bothA(TENH+TENA=2 sides), bothB(NEWH+NEWA=2
-    # sides) = 6 single-side games + 2 double-side games = 6 + 4 = 10 sides,
-    # 8 games. (o1/OLD is season 2011 -- outside the population.)
     assert diagnostic["n_backup_start_games_2013_2025"] == 8
     assert diagnostic["n_backup_start_sides_2013_2025"] == 10
-    # System-tenured sides: t1(S4), r1(SF), bothA home(SK), bothA away(SL_) = 4.
     assert diagnostic["n_system_tenured_backup_sides"] == 4
-    # New-system sides (resolved, <2 prior seasons): bk3(S2, 0 prior),
-    # l1(SB, 1 prior), v2(SH, 0 prior), bothB home(SM, 0 prior), bothB away
-    # (SN, 0 prior) = 5.
     assert diagnostic["n_new_system_backup_sides"] == 5
-    # Unresolved: u1(SD) only = 1. (l1's SB IS resolved, just new-system.)
     assert diagnostic["n_unresolved_tenure_backup_sides"] == 1
-    assert diagnostic["flagged_games_by_season"][2014] == 1  # bk3
-    assert diagnostic["flagged_games_by_season"][2015] == 4  # t1, u1, bothA, bothB
-    assert diagnostic["flagged_games_by_season"][2016] == 1  # r1
-    assert diagnostic["flagged_games_by_season"][2018] == 1  # l1
-    assert diagnostic["flagged_games_by_season"][2021] == 1  # v2
-
-
-# ---------------------------------------------------------------------------
-# Additive-merge / data-contract discipline
-# ---------------------------------------------------------------------------
+    assert diagnostic["flagged_games_by_season"][2014] == 1
+    assert diagnostic["flagged_games_by_season"][2015] == 4
+    assert diagnostic["flagged_games_by_season"][2016] == 1
+    assert diagnostic["flagged_games_by_season"][2018] == 1
+    assert diagnostic["flagged_games_by_season"][2021] == 1
 
 
 def test_attach_is_purely_additive() -> None:
@@ -422,11 +322,6 @@ def test_derive_requires_every_roster_column() -> None:
     rosters = _combined_rosters().drop(columns=["team"])
     with pytest.raises(DataContractError, match="team"):
         derive_backup_tenure_gap_features(schedule, rosters)
-
-
-# ---------------------------------------------------------------------------
-# Registered candidate profile: production plus exactly the one column
-# ---------------------------------------------------------------------------
 
 
 def test_registered_profile_is_production_plus_the_declared_one_column() -> None:

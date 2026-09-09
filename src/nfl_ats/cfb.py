@@ -61,9 +61,6 @@ CFBFASTR_DATA_REPOSITORY = "sportsdataverse/cfbfastR-data"
 CFBFASTR_DATA_BRANCH = "main"
 SPORTSDATAVERSE_DATA_REPOSITORY = "sportsdataverse/sportsdataverse-data"
 
-# Licensing from the XLG-01 audit (2026-08-16): cfbfastR-data declares
-# CC BY 4.0 and sportsdataverse-data is MIT, but both archives reshape
-# ESPN/CFBD data whose upstream rights the maintainers cannot enlarge.
 CFB_REDISTRIBUTION_RULE = (
     "Private research retention only. Raw CFB source tables are never "
     "republished from this repository; publish derived aggregates with "
@@ -72,9 +69,6 @@ CFB_REDISTRIBUTION_RULE = (
 CFBFASTR_LICENSE = "CC BY 4.0 (repository DESCRIPTION); ESPN/CFBD-derived rows"
 SPORTSDATAVERSE_LICENSE = "MIT (repository); ESPN-derived rows"
 
-# CollegeFootballData API (XLG-01 audit, terms fetched 2026-08-16): commercial
-# use and private caching/retention are permitted, including after access
-# ends; republishing raw API data as a dataset, mirror, or proxy is prohibited.
 CFBD_API_ROOT = "https://api.collegefootballdata.com"
 CFBD_API_DOCS_URL = "https://apinext.collegefootballdata.com/api-docs.json"
 CFBD_API_KEY_ENV = "CFBD_API_KEY"
@@ -82,23 +76,16 @@ CFBD_LICENSE = (
     "CollegeFootballData.com terms: commercial use and private "
     "caching/retention permitted; republishing raw data prohibited"
 )
-# Candidate response headers that could carry the remaining monthly quota;
-# whichever are present on the last response are recorded in the manifest.
-# Observed live 2026-08-16: X-CallLimit-Remaining counts down from 1,000 and
-# HTTP 429 burst rejections do NOT consume it.
 CFBD_QUOTA_HEADERS = (
     "X-CallLimit-Remaining",
     "X-RateLimit-Remaining",
     "RateLimit-Remaining",
     "X-Api-Calls-Remaining",
 )
-# CFBD also enforces an undocumented burst rate limit (HTTP 429 observed after
-# ~39 back-to-back calls on 2026-08-16). Calls are spaced politely and a 429
-# is retried after increasing waits; 429 responses do not spend monthly quota.
 CFBD_THROTTLE_SECONDS = 1.2
 CFBD_RETRY_WAITS = (15.0, 45.0)
 
-_sleep = time.sleep  # indirection so tests can observe or suppress waits
+_sleep = time.sleep
 
 
 @dataclass(frozen=True)
@@ -108,7 +95,7 @@ class CfbSourceSpec:
     key: str
     dataset: str
     partition_filename: str
-    origin: str  # "cfbfastr_raw", "sportsdataverse_release", or "cfbd_api"
+    origin: str
     first_season: int
     default_start_season: int
     release_tag: str | None = None
@@ -117,10 +104,10 @@ class CfbSourceSpec:
     raw_name_pattern: str | None = None
     refused_seasons: frozenset[int] = frozenset()
     refusal_reason: str | None = None
-    api_path: str | None = None  # cfbd_api origin only
-    season_param: str = "year"  # query parameter naming the season
-    season_column: str = "season"  # response field carrying the season
-    single_call: bool = False  # one unfiltered call, partitioned locally
+    api_path: str | None = None
+    season_param: str = "year"
+    season_column: str = "season"
+    single_call: bool = False
 
 
 CFB_SOURCES: dict[str, CfbSourceSpec] = {
@@ -259,10 +246,6 @@ def cfb_source_spec(source: str) -> CfbSourceSpec:
     return CFB_SOURCES[key]
 
 
-# ---------------------------------------------------------------------------
-# Schema contracts
-# ---------------------------------------------------------------------------
-
 CFB_SCHEDULE_REQUIRED_COLUMNS = (
     "game_id",
     "season",
@@ -333,8 +316,6 @@ CFB_LINE_SNAPSHOT_COLUMNS = (
     "away_team_id",
 )
 CFB_LINE_MARKET_TYPES = frozenset({"spread", "total", "money_line"})
-# Openers are essentially absent before 2012, carried by a single SBR book
-# through 2019, absent again in 2020, and near-universal from 2021.
 CFB_LINE_OPENERS_EXPECTED_FROM = 2012
 CFB_LINE_ZERO_OPENER_SEASONS = frozenset({2020})
 CFB_LINE_SOURCE_REGIMES = {
@@ -413,10 +394,6 @@ CFB_PBP_SNAPSHOT_COLUMNS = (
     "wallclock",
 )
 CFB_PBP_SEASON_TYPE_CODES = {"1": "preseason", "2": "regular", "3": "postseason"}
-# The 2026-08-03 upstream rebuild labels a handful of ESPN off-season/all-star
-# exhibitions (2-4 games per season, 2008+) with codes outside the competitive
-# calendar. They are dropped and counted rather than failing the whole season;
-# any other unknown code still fails closed.
 CFB_PBP_EXCLUDED_SEASON_TYPE_CODES = {
     "4": "espn_offseason_allstar",
     "5": "espn_offseason_allstar",
@@ -426,10 +403,6 @@ CFB_PBP_SOURCE_REGIMES = {
     "2014-present": "full ESPN coverage: ~98% of completed FBS games (verified on 2024)",
 }
 
-# The XLG-01 audit proved these ESPN game-roster flags are scrape-time athlete
-# attributes, not game-day designations: zero of 27,471 players changed
-# Active/Inactive across all 2024 games, and did_not_play/starter/valid are
-# False on every audited row. They must never feed an availability feature.
 CFB_ROSTER_QUARANTINED_COLUMNS: dict[str, str] = {
     "active": "static athlete attribute stamped at scrape time; never varies within a season",
     "is_active": "near-constant scrape-time attribute, not a game-day designation",
@@ -533,9 +506,6 @@ ESPN_CFB_BETTING_REQUIRED_COLUMNS = (
     "odds_source",
 )
 
-# CFBD gap-filler contracts. Column names are kept verbatim from the CFBD v5
-# response schemas (camelCase; nested objects flattened with a dot separator)
-# so the canonical parquet stays traceable to the snapshotted raw JSON.
 CFBD_DRAFT_PICK_REQUIRED_COLUMNS = (
     "year",
     "round",
@@ -1038,9 +1008,6 @@ def canonicalize_cfbd_usage(
     require_single_season(result, season, "cfbd_usage")
     if result["id"].isna().any():
         raise DataContractError(f"cfbd_usage season {season} has null athlete ids")
-    # Upstream artifact (observed live on 2023): some player rows appear twice,
-    # identical except for a blank conference. Shadow copies are dropped, but
-    # duplicates that disagree on any usage share stay a contract violation.
     duplicated = result.duplicated(["id", "team"], keep=False)
     if duplicated.any():
         share_variants = (
@@ -1095,11 +1062,6 @@ def canonicalize_cfbd_portal(
         "identity_contract": CFBD_PORTAL_IDENTITY_CONTRACT,
     }
     return result, audit
-
-
-# ---------------------------------------------------------------------------
-# Download plumbing
-# ---------------------------------------------------------------------------
 
 
 def _http_bytes(url: str) -> bytes:
@@ -1292,11 +1254,6 @@ def _validate_requested_seasons(spec: CfbSourceSpec, seasons: list[int]) -> list
             f"CFB source {spec.key} refuses seasons {refused}: {spec.refusal_reason}"
         )
     return values
-
-
-# ---------------------------------------------------------------------------
-# Snapshots
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)

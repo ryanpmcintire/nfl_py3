@@ -89,7 +89,6 @@ def map_replay() -> None:
     verify_replay(frame.p_S3.to_numpy(), frame.home_cover_probability_at_open.to_numpy())
     history = build_centers(frame)
     targets = history.set_index("game_id").loc[frame.game_id].reset_index()
-    # Target point comes from the exact served replay, including its median center.
     targets["predicted_margin"] = frame.center_S3.to_numpy()
     for arm, method in ARMS.items():
         mapped = hybrid(history, targets, frame.p_S3.to_numpy(), method, frame.push_S3.to_numpy())

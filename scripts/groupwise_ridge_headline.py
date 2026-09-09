@@ -18,10 +18,6 @@ import argparse
 from pathlib import Path
 
 import pandas as pd
-
-# Sibling module: Python puts this script's own directory on sys.path, so the
-# screen imports by bare name rather than through a `scripts` package (there is
-# none -- pyproject packages only `src/nfl_ats`).
 from groupwise_ridge_screen import (
     BASELINE_ARM,
     FEATURES_PATH,
@@ -33,9 +29,6 @@ from groupwise_ridge_screen import (
 
 from nfl_ats.cfb_benchmark import CFB_BENCHMARK_RIDGE_ALPHA
 
-# The best-performing block arm from the predeclared grid, at the penalty level
-# where the penalty is not inert. Named here so the comparison is explicit about
-# being a post-hoc selection out of 21 configurations.
 CANDIDATE_ARM = "market_light_10"
 CANDIDATE_ALPHA = 10_000.0
 

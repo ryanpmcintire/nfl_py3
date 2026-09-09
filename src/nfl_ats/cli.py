@@ -33,10 +33,6 @@ from nfl_ats.cli_common import (
     _repo_root_on_path,
 )
 
-#: Names that existed on ``nfl_ats.cli`` before the ENG-10 split and are read by
-#: tests or ``scripts/``. Listed so the linter keeps the re-exports. Note that
-#: monkeypatching a re-export here does NOT affect the handler that uses it --
-#: patch the owning module instead.
 __all__ = [
     "PUBLISH_CHALLENGER_RESULT_KEYS",
     "_artifacts_root",

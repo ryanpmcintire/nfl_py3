@@ -45,11 +45,6 @@ def site_content(_shared_real_site_content: SiteContent) -> SiteContent:
     return _shared_real_site_content
 
 
-# ---------------------------------------------------------------------------
-# item 1 -- flip pill + deep-dive flip note
-# ---------------------------------------------------------------------------
-
-
 def test_flip_pill_shows_the_glyph_and_member_name_not_the_word_flipped() -> None:
     content = build_fixture_content()
     flipped = next(game for game in content.games if game.flip_member_labels)
@@ -58,11 +53,6 @@ def test_flip_pill_shows_the_glyph_and_member_name_not_the_word_flipped() -> Non
     assert "⇄ coach fade" in html
     pill_html = f'class="pill flip-pill">{flipped.flip_pill_text}</span>'
     assert pill_html in html
-    # The pill itself never spells out the word "FLIPPED" -- just the glyph
-    # plus the member name (the owner's explicit instruction). Prose
-    # elsewhere on the page (the policy-overlay narrative) legitimately uses
-    # the word "flipped" in a sentence, so this checks the PILL's own text,
-    # not the whole page.
     assert "FLIPPED" not in flipped.flip_pill_text.upper()
 
 
@@ -81,12 +71,7 @@ def test_dive_flip_note_names_raw_side_vs_played_side() -> None:
     assert escape(flipped_dive.flip_note) in html
 
 
-# ---------------------------------------------------------------------------
-# item 2 -- findings trace chips
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.full  # ENG-11: triggers the real-artifact site-content build (dominates --durations)
+@pytest.mark.full
 def test_findings_trace_chip_renders_signal_name_and_probability_positive(
     site_content: SiteContent,
 ) -> None:
@@ -99,9 +84,6 @@ def test_findings_trace_chip_renders_signal_name_and_probability_positive(
     ]
     assert traced, "expected at least one curated finding to trace to a registry signal"
     for finding in traced[:5]:
-        # Rendered as words, not the raw registry id, and as a plain-English
-        # confidence figure, not "P+ x.xx" (owner mandate, 2026-09-05: "this
-        # is for humans not the opus autist").
         name_words = escape(finding.trace_signal_name.replace("_", " "))
         if finding.trace_signal_name == "mod18_home_side_location_v1_s3_through_card_vs_s2":
             name_words = "Big-spread push versus all-spread push"
@@ -119,11 +101,6 @@ def test_findings_without_a_trace_render_no_chip() -> None:
 
     bare = FindingItemView(question="Q", verdict="evergreen", plain_answer="A", detail="D")
     assert board_terminal._trace_chip_html(bare) == ""
-
-
-# ---------------------------------------------------------------------------
-# item 3 -- prospective scoreboard rendering
-# ---------------------------------------------------------------------------
 
 
 def test_prospective_scoreboard_dormant_state_renders() -> None:
@@ -154,11 +131,6 @@ def test_prospective_scoreboard_live_state_renders_with_detail() -> None:
     assert 'class="prospective-scoreboard dormant"' not in html
 
 
-# ---------------------------------------------------------------------------
-# item 5 -- sortable board
-# ---------------------------------------------------------------------------
-
-
 def test_sort_toggle_has_both_buttons_kickoff_default() -> None:
     html = board_terminal.render(build_fixture_content())
     assert 'data-sort="kickoff"' in html
@@ -173,11 +145,6 @@ def test_every_board_row_carries_a_sort_probability() -> None:
     html = board_terminal.render(content)
     for game in content.games:
         assert f'data-prob="{game.pick_probability:.6f}"' in html
-
-
-# ---------------------------------------------------------------------------
-# item 6/7 -- clickable, shared ticker + command row on every page
-# ---------------------------------------------------------------------------
 
 
 def test_ticker_ticks_are_real_links_to_index_with_game_hash() -> None:
@@ -289,8 +256,6 @@ def test_actual_page_content_has_ambient_compositor_only_telemetry() -> None:
     assert "translate3d" in panel_trace
     assert "width:" not in panel_trace.split("@keyframes section-beacon", 1)[0]
     assert "infinite paused" in css
-    # Never toggled to running anymore -- the toggle class was
-    # content-motion-active, now removed entirely.
     assert "content-motion-active" not in css
 
 
@@ -314,11 +279,6 @@ def test_dive_panels_have_id_anchors_for_ticker_deep_links() -> None:
         assert f'id="{dive.game_id}"' in html
 
 
-# ---------------------------------------------------------------------------
-# item 8 -- six-season dot chart
-# ---------------------------------------------------------------------------
-
-
 def test_six_season_chart_renders_one_direct_labeled_dot_per_season(
     site_content: SiteContent,
 ) -> None:
@@ -335,11 +295,6 @@ def test_six_season_chart_keeps_the_season_table_too(site_content: SiteContent) 
     html = board_terminal.render_model_page(site_content.model)
     assert "<th>Season</th>" in html
     assert html.index('class="curve season-chart"') < html.index("<th>Season</th>")
-
-
-# ---------------------------------------------------------------------------
-# item 9 -- grouped challenger ledger
-# ---------------------------------------------------------------------------
 
 
 def test_ledger_is_grouped_into_graded_and_waiting_sections(site_content: SiteContent) -> None:
@@ -363,11 +318,6 @@ def test_grouped_ledger_rows_cover_every_original_row(site_content: SiteContent)
     }
     original_ids = {row.arm_id for row in site_content.model.rows}
     assert grouped_ids == original_ids
-
-
-# ---------------------------------------------------------------------------
-# item 10 -- link previews + cadence line
-# ---------------------------------------------------------------------------
 
 
 def test_every_page_has_og_and_twitter_meta_tags(site_content: SiteContent) -> None:

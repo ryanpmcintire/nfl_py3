@@ -179,23 +179,12 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file, stamp_sidecar
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "turnover_luck_rebound_tilt_overlay"
 
-#: Frozen, not tuned here: the screen's own pooled-panel 25th percentile of
-#: ``turnover_diff_per_game_centered`` across the full 2009-2025 team-season
-#: panel (scripts/close_game_luck_screen.py:369), read from
-#: artifacts/close_game_luck_screen/20260821T182234Z/results.json ->
-#: thresholds.turnover_q25. AGENTS.md: "every overlay parameter must be the
-#: registry cell's own measured value, cited" -- this IS that value.
 TURNOVER_UNDER_Q25_THRESHOLD = -0.4026832217261905
 
-#: Required play-by-play columns for the giveaways leg (mirrors
-#: scripts/close_game_luck_screen.py::build_giveaways_table).
 _REQUIRED_PBP_COLUMNS = {"game_id", "season_type", "posteam", "interception", "fumble_lost"}
 
-#: Required schedule columns for the team-game / panel construction (mirrors
-#: scripts/close_game_luck_screen.py::build_team_games / build_panel).
 _REQUIRED_SCHEDULE_COLUMNS = {"game_id", "season", "game_type", "home_team", "away_team"}
 
 
@@ -647,8 +636,6 @@ def record_turnover_luck_rebound_tilt_challenger_decisions(
         )
         ledger_path = challenger_ledger_path(artifacts_root)
         atomic_parquet(combined[list(CHALLENGER_DECISION_COLUMNS)], ledger_path)
-        # ENG-38: stamp which commit appended these rows -- a JSON sidecar,
-        # not a rewrite of the parquet ledger itself.
         stamp_sidecar(
             ledger_path, extra={"challenger_id": CHALLENGER_ID, "rows_appended": len(decisions)}
         )

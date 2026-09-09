@@ -67,7 +67,6 @@ def build_stage2_population(
     linked["recruit_year_num"] = pd.to_numeric(linked["year"], errors="coerce")
     usable = linked.loc[linked["rating_num"].notna()].copy()
     excluded["null_rating"] = int(len(linked) - len(usable))
-    # One row per NFL identity; keep the best-rated recruiting row on ties.
     usable = (
         usable.sort_values("rating_num", ascending=False)
         .drop_duplicates(subset="gsis_id", keep="first")
@@ -149,8 +148,6 @@ def blocked_bootstrap_correlation(
     pearson_draws = np.empty(samples)
     spearman_draws = np.empty(samples)
     for draw in range(samples):
-        # Cluster bootstrap: resample whole cohorts with replacement, taking
-        # every row of each drawn cohort (drawn cohorts repeat).
         chosen = rng.choice(unique_blocks, size=len(unique_blocks), replace=True)
         sample = np.concatenate([block_rows[block] for block in chosen])
         pearson_draws[draw] = _pearson(x[sample], y[sample])

@@ -12,11 +12,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-#: Q1 -- points by which the home team is the underdog at the line the row is
-#: scored at; zero when the home team is favoured or the game is a pick'em.
 HOME_DOG_POINTS_COLUMNS = ("home_dog_points",)
-#: Q2 -- Q1 plus the same quantity above seven points, so the fitted
-#: correction may bend where lane L located the error.
 HOME_DOG_HINGE_COLUMNS = ("home_dog_points", "home_dog_hinge_7")
 HINGE_POINTS = 7.0
 

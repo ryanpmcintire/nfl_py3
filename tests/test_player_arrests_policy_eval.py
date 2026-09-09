@@ -28,11 +28,11 @@ def test_broad_flags_are_strictly_pregame_and_ignore_retrospective_fields() -> N
         {
             "record_id": [1, 2, 3, 4, 5],
             "incident_date": [
-                "2024-09-03",  # JAC: 14 days before Tuesday, included
-                "2024-09-02",  # BUF: 15 days before Tuesday, excluded
-                "2024-09-17",  # IN: same Tuesday, excluded
-                "2024-09-18",  # CHI: after Tuesday, excluded
-                "2024-09-10",  # IN: seven days before Tuesday, included
+                "2024-09-03",
+                "2024-09-02",
+                "2024-09-17",
+                "2024-09-18",
+                "2024-09-10",
             ],
             "team": ["JAC", "BUF", "IN", "CHI", "IN"],
             "outcome_archive_only": ["a", "b", "c", "d", "e"],

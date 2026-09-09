@@ -176,12 +176,6 @@ def activate_matching_ats_model(
         "model_id": model_id,
         "activated_at_utc": forecast_metadata.get("created_at_utc"),
         **model_identity,
-        # ENG-09: additive record of the feature table's own contract version
-        # at fit time, if the table was stamped -- NOT folded into
-        # model_identity/model_id above, so this never changes the hash an
-        # existing model_id was already computed from. A later
-        # check_compatible() call reads these two keys to detect a feature
-        # table whose builder/schema version has since moved on.
         **_feature_table_contract_fields(forecast_metadata),
         "historical_evaluation": {
             "artifact": evaluation_relative.as_posix(),
@@ -228,7 +222,6 @@ def matching_opener_evaluation(
     block) so both surfaces report the same number from the same lookup.
     """
 
-    # Local import avoids the public-board / active-model import cycle.
     from nfl_ats.public_board import load_baseline_measurement
 
     try:

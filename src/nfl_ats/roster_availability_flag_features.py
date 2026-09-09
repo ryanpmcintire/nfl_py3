@@ -103,16 +103,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 IR_RETURN_REINFORCEMENT_COLUMN = IR_RETURN_REINFORCEMENT_ON_PRODUCTION_FEATURE_COLUMNS[0]
 SPECIALIST_ABSENCE_FADE_COLUMN = SPECIALIST_ABSENCE_FADE_ON_PRODUCTION_FEATURE_COLUMNS[0]
 
-#: Pinned, not "newest" -- see module docstring. Frozen 2026-09-05.
 DEFAULT_SNAP_COUNTS_PATH = REPO_ROOT / "data/players/raw/20260817T184901Z/snap_counts.parquet"
-#: Pinned, not "newest" -- see module docstring. Frozen 2026-09-05.
 DEFAULT_INJURIES_PATH = REPO_ROOT / "data/raw/nflverse_injuries/20260826T122850Z/injuries.parquet"
 
 HIGH_SNAP_SHARE_THRESHOLD = 0.5
 IR_RETURN_WEEK_START = 5
 IR_RETURN_WEEK_END = 8
 SPECIALIST_POSITIONS: tuple[str, ...] = ("LS", "P")
-SPECIALIST_INJURY_SEASON_END = 2024  # "full 2009-2024 depth" per the task/ROADMAP row.
+SPECIALIST_INJURY_SEASON_END = 2024
 
 _REQUIRED_SCHEDULE_COLUMNS = {
     "game_id",
@@ -124,10 +122,6 @@ _REQUIRED_SCHEDULE_COLUMNS = {
     "away_team",
 }
 
-
-# ---------------------------------------------------------------------------
-# Frozen phrase regexes (predeclared 2026-09-05, before any scoring)
-# ---------------------------------------------------------------------------
 
 IR_ACTIVATE_RE = re.compile(
     r"^(?P<prefix>.*?)-activat(?:e|es|ed)-(?P<player>.+?)-(?:from|off)-(?:injured-reserve|ir)(?:-|$)"
@@ -166,11 +160,6 @@ def _prefix_team(prefix: str) -> str | None:
     if len(teams) != 1:
         return None
     return next(iter(teams))
-
-
-# ---------------------------------------------------------------------------
-# Loaders
-# ---------------------------------------------------------------------------
 
 
 def pinned_snap_counts(path: Path | None = None) -> pd.DataFrame:
@@ -237,11 +226,6 @@ def _team_week_kickoffs(reg_schedule: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([home, away], ignore_index=True)
 
 
-# ---------------------------------------------------------------------------
-# Shared additive-merge / sign-convention helper
-# ---------------------------------------------------------------------------
-
-
 def _signed_flag_from_qualifying(
     schedule: pd.DataFrame, qualifying: pd.DataFrame, column: str
 ) -> pd.DataFrame:
@@ -299,11 +283,6 @@ def _attach(features: pd.DataFrame, derived: pd.DataFrame, column: str) -> pd.Da
     return merged
 
 
-# ---------------------------------------------------------------------------
-# Shared wire-event extraction (activation is used by BOTH leads)
-# ---------------------------------------------------------------------------
-
-
 def ir_activation_events(
     transactions_index: pd.DataFrame, player_slugs: pd.DataFrame
 ) -> pd.DataFrame:
@@ -341,11 +320,6 @@ def ir_activation_events(
     )
 
 
-# ---------------------------------------------------------------------------
-# LEAD-13: IR-return reinforcement bump
-# ---------------------------------------------------------------------------
-
-
 def designate_return_events(
     transactions_index: pd.DataFrame, player_slugs: pd.DataFrame
 ) -> pd.DataFrame:
@@ -368,7 +342,7 @@ def designate_return_events(
             continue
         suffix = match.group("suffix")
         if suffix is not None and _NON_IR_RETURN_SUFFIX_RE.search(suffix):
-            continue  # PUP/NFI/COVID-19-list return, not an IR return.
+            continue
         team = _prefix_team(match.group("prefix"))
         if team is None:
             continue
@@ -478,7 +452,7 @@ def derive_ir_return_reinforcement_features(
             & (snap_counts["week"].isin(prior_weeks))
         ]
         if prior_rows.empty:
-            continue  # cannot resolve "starter before going on IR" -- never guessed.
+            continue
         trailing_share = float(prior_rows["snap_share"].mean())
         if trailing_share < HIGH_SNAP_SHARE_THRESHOLD:
             continue
@@ -496,8 +470,6 @@ def derive_ir_return_reinforcement_features(
             )
 
     qualifying = pd.DataFrame.from_records(qualifying_records, columns=["season", "week", "team"])
-    # Sign convention is HOME-positive (see docstring): reuse the shared
-    # AWAY-positive helper, then flip.
     derived = _signed_flag_from_qualifying(schedule, qualifying, IR_RETURN_REINFORCEMENT_COLUMN)
     derived[IR_RETURN_REINFORCEMENT_COLUMN] = -derived[IR_RETURN_REINFORCEMENT_COLUMN]
     return derived
@@ -522,11 +494,6 @@ def attach_ir_return_reinforcement_features(
         resolved_schedule, resolved_transactions, resolved_snaps
     )
     return _attach(features, derived, IR_RETURN_REINFORCEMENT_COLUMN)
-
-
-# ---------------------------------------------------------------------------
-# LEAD-17: specialist (LS/P) absence fade
-# ---------------------------------------------------------------------------
 
 
 def specialist_player_slugs(injuries: pd.DataFrame) -> pd.DataFrame:

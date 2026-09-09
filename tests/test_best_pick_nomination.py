@@ -54,7 +54,7 @@ from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
 from nfl_ats.data import DataContractError
 from nfl_ats.prospective_scoring import CHALLENGER_DECISION_COLUMNS, load_challenger_decisions
 
-TUESDAY = pd.Timestamp("2026-08-18T13:00:00Z")  # a real Tuesday
+TUESDAY = pd.Timestamp("2026-08-18T13:00:00Z")
 KICKOFF = TUESDAY + pd.Timedelta(days=4)
 
 _MODEL_CONFIG = {
@@ -68,11 +68,6 @@ _MODEL_CONFIG = {
     "min_train_games": 100,
     "feature_table": "features.parquet",
 }
-
-
-# ---------------------------------------------------------------------------
-# 1. week_dispersion_pool: the predeclared fallback rule
-# ---------------------------------------------------------------------------
 
 
 _QUOTE_COLUMNS = [
@@ -117,7 +112,6 @@ def _quotes(per_game: dict[str, list[float]]) -> pd.DataFrame:
 def test_dispersion_pool_filters_to_below_median_spread_std(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # std: g1=0.0, g2~0.707, g3~1.414, g4~2.121; median of those four is 1.06.
     monkeypatch.setattr(
         bpn,
         "load_quote_history",
@@ -174,11 +168,6 @@ def test_dispersion_pool_requires_at_least_one_game() -> None:
         week_dispersion_pool(Path("unused"), [])
 
 
-# ---------------------------------------------------------------------------
-# 2. select_nominee: the pure ranking/tie-break rule
-# ---------------------------------------------------------------------------
-
-
 def _candidates(**rows: tuple[float, float | None]) -> pd.DataFrame:
     """rows: game_id -> (candidate_dist, spread_std)."""
 
@@ -224,20 +213,12 @@ def test_select_nominee_a_missing_dispersion_candidate_loses_the_tiebreak() -> N
     game_id, n_tied, tie_break = select_nominee(candidates)
     assert game_id == "z_game"
     assert n_tied == 2
-    # Only ONE candidate has a measured spread_std, so this does not count as
-    # a resolved dispersion COMPARISON (see select_nominee's classification
-    # rule) even though the na-last mechanics still pick the game with data.
     assert tie_break == "game_id"
 
 
 def test_select_nominee_requires_at_least_one_candidate() -> None:
     with pytest.raises(ValueError, match="at least one candidate"):
         select_nominee(pd.DataFrame(columns=["game_id", "candidate_dist", "spread_std"]))
-
-
-# ---------------------------------------------------------------------------
-# 2b. select_nominee_v3: same primary ranking, NO dispersion tie-break layer
-# ---------------------------------------------------------------------------
 
 
 def test_select_nominee_v3_takes_the_unambiguous_max() -> None:
@@ -265,11 +246,6 @@ def test_select_nominee_v3_ignores_missing_dispersion_entirely() -> None:
 def test_select_nominee_v3_requires_at_least_one_candidate() -> None:
     with pytest.raises(ValueError, match="at least one candidate"):
         select_nominee_v3(pd.DataFrame(columns=["game_id", "candidate_dist", "spread_std"]))
-
-
-# ---------------------------------------------------------------------------
-# 3. Disclosure text
-# ---------------------------------------------------------------------------
 
 
 def _result(
@@ -366,12 +342,6 @@ def test_disclosure_note_appends_the_tie_note_when_present() -> None:
     assert "broken by lower cross-book dispersion" in note
 
 
-# ---------------------------------------------------------------------------
-# 4. nominate_v2 orchestration (fit_candidate_probabilities monkeypatched --
-#    the ranking/fallback rule is pinned above; this pins the WIRING).
-# ---------------------------------------------------------------------------
-
-
 def _fake_probabilities(dist_by_game: dict[str, float]) -> pd.DataFrame:
     return pd.DataFrame(
         {
@@ -389,8 +359,6 @@ def _predictions(game_ids: list[str], *, game_type: str = "REG") -> pd.DataFrame
 def test_nominate_v2_restricts_the_winner_to_the_eligible_pool(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # g_hi has the single highest candidate_dist but sits ABOVE the median
-    # dispersion, so it must be excluded once the filter applies.
     monkeypatch.setattr(
         bpn,
         "fit_candidate_probabilities",
@@ -413,9 +381,9 @@ def test_nominate_v2_restricts_the_winner_to_the_eligible_pool(
     assert result is not None
     assert result.dispersion.fallback is False
     passing = set(result.probability_table.loc[result.probability_table["pool_pass"], "game_id"])
-    assert "g_hi" not in passing  # excluded by the filter
+    assert "g_hi" not in passing
     assert result.game_id in passing
-    assert result.game_id == "g_mid"  # the best-ranked ELIGIBLE game
+    assert result.game_id == "g_mid"
 
 
 def test_nominate_v2_gate_matches_v1_regular_season_only(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -436,7 +404,7 @@ def test_nominate_v2_gate_matches_v1_regular_season_only(monkeypatch: pytest.Mon
         feature_profile="base",
     )
     assert result is None
-    assert called == []  # short-circuited before ever fitting anything
+    assert called == []
 
 
 def test_nominate_v2_returns_none_for_an_empty_card() -> None:
@@ -512,12 +480,6 @@ def test_nominate_v2_ignores_home_cover_probability_entirely(
     assert a.game_id == b.game_id == "g1"
 
 
-# ---------------------------------------------------------------------------
-# 4b. nominate_v3 orchestration: same fitting/pool wiring as v2, tie-break
-#     differs (pinned above in select_nominee_v3's own unit tests).
-# ---------------------------------------------------------------------------
-
-
 def test_nominate_v3_restricts_the_winner_to_the_eligible_pool(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -547,8 +509,8 @@ def test_nominate_v3_restricts_the_winner_to_the_eligible_pool(
     assert result is not None
     assert result.dispersion.fallback is False
     passing = set(result.probability_table.loc[result.probability_table["pool_pass"], "game_id"])
-    assert "g_hi" not in passing  # excluded by the filter
-    assert result.game_id == "g_mid"  # the best-ranked ELIGIBLE game
+    assert "g_hi" not in passing
+    assert result.game_id == "g_mid"
 
 
 def test_nominate_v3_and_v2_can_disagree_only_via_the_tie_break(
@@ -575,10 +537,10 @@ def test_nominate_v3_and_v2_can_disagree_only_via_the_tie_break(
         "load_quote_history",
         lambda root: _quotes(
             {
-                "g_noisy": [1.0, 3.0],  # std = 2.0
-                "g_quiet": [1.0, 2.0],  # std = 1.0
-                "g_extra1": [1.0, 21.0],  # std = 20.0
-                "g_extra2": [1.0, 21.0],  # std = 20.0
+                "g_noisy": [1.0, 3.0],
+                "g_quiet": [1.0, 2.0],
+                "g_extra1": [1.0, 21.0],
+                "g_extra2": [1.0, 21.0],
             }
         ),
     )
@@ -596,7 +558,7 @@ def test_nominate_v3_and_v2_can_disagree_only_via_the_tie_break(
     passing = set(
         v2_result.probability_table.loc[v2_result.probability_table["pool_pass"], "game_id"]
     )
-    assert passing == {"g_noisy", "g_quiet"}  # the median split, confirmed
+    assert passing == {"g_noisy", "g_quiet"}
     assert v2_result.game_id == "g_quiet"
     assert v3_result.game_id == "g_noisy"
 
@@ -633,11 +595,6 @@ def test_nominate_v3_returns_none_for_an_empty_card() -> None:
         feature_profile="base",
     )
     assert result is None
-
-
-# ---------------------------------------------------------------------------
-# 5. fit_candidate_probabilities: real walk-forward wiring (leak-safety)
-# ---------------------------------------------------------------------------
 
 
 def _walk_forward_features(train_rows: int = 150, target_rows: int = 6) -> pd.DataFrame:
@@ -712,11 +669,6 @@ def test_fit_candidate_probabilities_never_leaks_the_target_weeks_own_outcome() 
     )
 
 
-# ---------------------------------------------------------------------------
-# 6. record_nomination_challenger_decisions: dual recording, anti-backdating
-# ---------------------------------------------------------------------------
-
-
 def _write_registry(
     artifacts: Path, *, status: str = "ACTIVE_PROSPECTIVE", challenger_id: str = CHALLENGER_ID
 ) -> None:
@@ -785,8 +737,6 @@ def _write_active_model_and_card(
     (artifacts / "active_ats_model.json").write_text(json.dumps(active), encoding="utf-8")
 
     features_path = tmp_path / "features.parquet"
-    # Overwrite the relative path recorded above with an absolute one the
-    # test can actually read, without touching the fingerprinted config.
     metadata["provenance"]["feature_table"]["path"] = str(features_path)
     (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
     pd.DataFrame({"game_id": ["placeholder"]}).to_parquet(features_path)
@@ -824,9 +774,8 @@ def test_record_nomination_challenger_decisions_records_one_nominee_row(
     assert row["challenger_id"] == CHALLENGER_ID
     assert row["bet_side"] == "PASS"
     assert pd.isna(row["edge"])
-    assert row["pick_side"] == "HOME"  # 0.55 >= 0.5, the active model's OWN side, unchanged
+    assert row["pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_nomination_challenger_decisions(artifacts, tmp_path, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 1
@@ -867,8 +816,6 @@ def test_record_nomination_challenger_decisions_requires_the_whole_week_pre_kick
         dispersion=DispersionPool(pd.DataFrame(), False, None, 2, 0, 2),
     )
     monkeypatch.setattr(bpn, "nominate_v2", lambda *a, **k: fake)
-    # G0 kicks off first (KICKOFF); recording at KICKOFF+30min is past G0's
-    # kickoff but still before G1 (kicks off an hour later).
     now = KICKOFF + pd.Timedelta(minutes=30)
 
     result = record_nomination_challenger_decisions(artifacts, tmp_path, now=now)
@@ -898,8 +845,6 @@ def test_record_nomination_challenger_refuses_a_fingerprint_mismatch(
 ) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse.
     _write_active_model_and_card(artifacts, tmp_path, ridge_alpha=1.0)
     monkeypatch.setattr(bpn, "nominate_v2", lambda *a, **k: None)
 
@@ -922,12 +867,6 @@ def test_record_nomination_challenger_refuses_an_inactive_registration(
         record_nomination_challenger_decisions(
             artifacts, tmp_path, now=KICKOFF - pd.Timedelta(days=3)
         )
-
-
-# ---------------------------------------------------------------------------
-# 7. record_nomination_v3_challenger_decisions: mirrors section 6 exactly,
-#    v3 is a separate side-ledger row under CHALLENGER_ID_V3.
-# ---------------------------------------------------------------------------
 
 
 def test_record_nomination_v3_challenger_decisions_records_one_nominee_row(
@@ -963,7 +902,6 @@ def test_record_nomination_v3_challenger_decisions_records_one_nominee_row(
     assert pd.isna(row["edge"])
     assert row["pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_nomination_v3_challenger_decisions(artifacts, tmp_path, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 1

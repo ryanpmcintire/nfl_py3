@@ -35,18 +35,6 @@ _PROVENANCE_HELPERS = frozenset(
     {"write_experiment_artifact", "write_stamped_artifact", "stamp_sidecar"}
 )
 
-# ENG-38: a small, explicit allowlist of library functions (outside any single
-# script's own file) that this AST-only scanner cannot see writing on a
-# script's behalf -- e.g. ``record_bye_edge_fade_challenger.py`` has zero
-# write sites of its own; the real write happens inside
-# ``record_bye_edge_fade_challenger_decisions()`` in
-# ``nfl_ats.bye_edge_fade_overlay``. Listing the delegating call here (as
-# ``"module.qualified.name:function"``) lets the provenance gate treat a
-# script that calls one of these exactly like a script that calls
-# ``write_stamped_artifact``/``write_experiment_artifact`` directly, while
-# ``tests/test_script_contracts.py::test_stamped_library_writers_really_stamp``
-# keeps the claim honest with an AST check that the named function's own body
-# actually calls a stamping helper.
 STAMPED_LIBRARY_WRITERS: frozenset[tuple[str, str]] = frozenset(
     {
         ("nfl_ats.bye_edge_fade_overlay", "record_bye_edge_fade_challenger_decisions"),
@@ -79,10 +67,8 @@ _ATOMIC_HELPERS = frozenset(
 )
 _PANDAS_WRITE_METHODS = frozenset({"to_parquet", "to_csv", "to_json"})
 _PATH_WRITE_METHODS = frozenset({"write_text", "write_bytes"})
-_WRITE_MODE_CHARS = frozenset("wax")  # any of these in an open() mode string means "writes"
+_WRITE_MODE_CHARS = frozenset("wax")
 
-# Best-effort tokens used to classify a destination's unparsed source text.
-# Order matters: registry beats artifacts beats stdout beats tmp/arg.
 _TMP_OR_ARG_TOKENS = ("args.", "opts.", "parsed.", "tmp_path", "tempfile", "namedtemporaryfile")
 
 
@@ -105,13 +91,6 @@ class ScriptContract:
     calls_provenance_helper: bool
     write_sites: tuple[WriteSite, ...]
     read_only_exceptions: dict[int, str] = field(default_factory=dict)
-    # ENG-38: True when the script calls a function listed in
-    # STAMPED_LIBRARY_WRITERS (imported via a plain `from module import name`).
-    # A script whose own write sites the scanner sees as none (the real write
-    # happens inside the delegated-to library function) is otherwise
-    # indistinguishable from a script that never writes at all; this field is
-    # the gate's third acceptable resolution, alongside calls_provenance_helper
-    # and is_read_only_verified.
     calls_stamped_library_writer: bool = False
 
     @property
@@ -407,9 +386,9 @@ def _open_mode_writes(call: ast.Call) -> bool:
             if kw.arg == "mode":
                 mode_node = kw.value
     if mode_node is None:
-        return False  # default mode is "r"
+        return False
     if not (isinstance(mode_node, ast.Constant) and isinstance(mode_node.value, str)):
-        return False  # non-literal mode: cannot determine statically, don't guess
+        return False
     return any(char in mode_node.value for char in _WRITE_MODE_CHARS)
 
 
@@ -581,7 +560,6 @@ def _find_write_sites(tree: ast.Module) -> list[WriteSite]:
             continue
 
         if name in _ATOMIC_HELPERS:
-            # nfl_ats.io.atomic_*(payload, destination) -- destination is arg[1].
             dest = node.args[1] if len(node.args) >= 2 else None
             classification, detail = _classify_destination(
                 dest, tree, namespace_names, arg_defaults

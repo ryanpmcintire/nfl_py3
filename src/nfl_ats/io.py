@@ -77,7 +77,6 @@ def _replace(temporary: Path, destination: Path, *, attempts: int = 40) -> None:
             time.sleep(0.05)
 
 
-#: A lock file older than this is treated as abandoned (a crashed writer).
 STALE_LOCK_SECONDS = 180.0
 
 

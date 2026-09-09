@@ -57,12 +57,6 @@ IMPROVEMENT_METRICS: tuple[str, ...] = (
     "log_loss_improvement",
 )
 
-# Candidate pregame, arm-identical covariates for the CUPED adjustment. Every
-# one is knowable before kickoff, and by the paired design each is literally
-# the same value for the baseline and candidate arm on a given game -- so
-# adjusting on it cannot bias which arm looks better, only how precisely the
-# comparison resolves it. Ordering matches the task's own suggestion: spread
-# magnitude, total line, key-number status, rest differential, week number.
 DEFAULT_CUPED_COVARIATES: tuple[str, ...] = (
     "abs_spread_line",
     "total_line",

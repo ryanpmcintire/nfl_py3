@@ -83,11 +83,6 @@ TRAILING_WINDOW = 8
 TRAILING_MIN = 2
 
 
-# --------------------------------------------------------------------------
-# Parse raw GDELT JSON -> per-team daily frames
-# --------------------------------------------------------------------------
-
-
 def _parse_volraw(payload: dict[str, Any]) -> pd.DataFrame:
     """timelinevolraw payload -> DataFrame[date, raw_count, monitored_total]."""
 
@@ -196,11 +191,6 @@ def load_team_daily(raw_dir: Path) -> tuple[dict[str, pd.DataFrame], dict[str, A
     }
 
 
-# --------------------------------------------------------------------------
-# Schedule grid + window aggregation
-# --------------------------------------------------------------------------
-
-
 def _canonical(team: pd.Series) -> pd.Series:
     return team.map(lambda code: TEAM_ABBREVIATION_ALIASES.get(code, code))
 
@@ -240,7 +230,7 @@ def load_schedule_grid(schedules_path: Path) -> pd.DataFrame:
         sides.append(side)
     long_df = pd.concat(sides, ignore_index=True)
 
-    weekday = long_df["gameday"].dt.weekday  # Monday=0 ... Sunday=6, Tuesday=1
+    weekday = long_df["gameday"].dt.weekday
     tuesday_offset = (weekday - 1) % 7
     tuesday_end = long_df["gameday"] - pd.to_timedelta(tuesday_offset, unit="D")
     long_df["tuesday_window_end"] = tuesday_end
@@ -333,11 +323,6 @@ def build_weekly_table(grid: pd.DataFrame, team_daily: dict[str, pd.DataFrame]) 
         table[f"{cutoff}_z"] = z
 
     return table
-
-
-# --------------------------------------------------------------------------
-# Main
-# --------------------------------------------------------------------------
 
 
 def main() -> None:

@@ -24,10 +24,6 @@ from nfl_ats.surrogate_outcome import (
     movement_agreement_rate,
 )
 
-# ---------------------------------------------------------------------------
-# movement_agreement / movement_agreement_rate: pure functions, no fixtures.
-# ---------------------------------------------------------------------------
-
 
 def test_movement_agreement_matches_expected_directional_convention() -> None:
     scored = pd.DataFrame(
@@ -37,10 +33,6 @@ def test_movement_agreement_matches_expected_directional_convention() -> None:
         }
     )
     result = movement_agreement(scored)
-    # Row 0: picked home, line moved toward home (positive) -> agree.
-    # Row 1: picked home, line moved away from home -> disagree.
-    # Row 2: picked away, line moved toward away -> agree.
-    # Row 3: picked away, line moved toward home -> disagree.
     assert result.tolist() == [1.0, 0.0, 1.0, 0.0]
 
 
@@ -65,11 +57,6 @@ def test_movement_agreement_rate_excludes_pushes_from_the_denominator() -> None:
     summary = movement_agreement_rate(scored)
     assert summary["movement_agreement_games"] == 2.0
     assert summary["movement_agreement_rate"] == pytest.approx(0.5)
-
-
-# ---------------------------------------------------------------------------
-# fit_movement_target_model: leak-safety + shape, via a synthetic snapshot store.
-# ---------------------------------------------------------------------------
 
 
 def _pilot_features_frame(n_games: int = 70) -> pd.DataFrame:
@@ -244,8 +231,6 @@ def _store_tue_and_close_for_game(
 def movement_fit_setup(tmp_path: Path) -> tuple[Path, pd.DataFrame]:
     features = _pilot_features_frame()
     root = tmp_path / "raw"
-    # Several paired games spread across both seasons so at least one week
-    # clears a small min_train_games threshold.
     pairs = {
         30: (2.5, 3.5),
         35: (1.0, 0.5),
@@ -279,7 +264,6 @@ def test_fit_movement_target_model_returns_expected_shape(
         "correct_at_open",
     ):
         assert column in scored.columns
-    # The known-paired games' open_move must match tue_open/close exactly.
     row = scored.set_index("game_id").loc["G045"]
     assert row["open_move"] == pytest.approx(1.5 - 0.5)
 
@@ -303,7 +287,7 @@ def test_fit_movement_target_model_never_trains_on_same_or_later_games(
         40: (-1.0, -2.5),
         45: (0.5, 1.5),
         55: (2.5, 3.5),
-        65: (-1.0, 999.0),  # last (latest) paired game's movement, poisoned
+        65: (-1.0, 999.0),
     }
     for idx, (tue_open, close) in pairs.items():
         _store_tue_and_close_for_game(
@@ -348,8 +332,4 @@ def test_movement_agreement_applies_directly_to_fit_movement_target_model_output
 
 
 def test_default_movement_min_train_games_is_lower_than_the_real_model_default() -> None:
-    # The adversarial control only ever trains on paired (2020+) games, so it
-    # needs a lower floor than the real market-residual model's 500-game
-    # default (which draws on the full pre-2020 archive) or it would be
-    # starved out of most of the window it is meant to test against.
     assert DEFAULT_MOVEMENT_MIN_TRAIN_GAMES < 500

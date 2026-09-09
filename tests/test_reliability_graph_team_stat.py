@@ -34,10 +34,6 @@ import reliability_graph_team_stat as sweep  # noqa: E402
 import reliability_lib as rlib  # noqa: E402
 import reliability_map as relmap  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# 1. The cell -> column mapping agrees with the screen that built the cells
-# ---------------------------------------------------------------------------
-
 
 @pytest.mark.parametrize(
     ("entry", "expected_column"),
@@ -98,11 +94,6 @@ def test_an_unrelated_name_maps_to_nothing_rather_than_guessing() -> None:
     assert sweep.family_for("weather_battery_extreme_cold") is None
 
 
-# ---------------------------------------------------------------------------
-# 2. The split arithmetic, on an answer computable by hand
-# ---------------------------------------------------------------------------
-
-
 def _long_frame(values: dict[tuple[str, int], list[float]]) -> pd.DataFrame:
     """One row per (team, season, week); weeks 1..n alternate odd/even."""
 
@@ -114,14 +105,10 @@ def _long_frame(values: dict[tuple[str, int], list[float]]) -> pd.DataFrame:
 
 
 def test_recovers_a_hand_computed_correlation_and_its_spearman_brown_step_up() -> None:
-    # Four observations per team-season: weeks 1,3 (odd half) and 2,4 (even
-    # half). Each team-season's half-means are set directly, so the Pearson r
-    # between the odd and even half-means is computable by hand.
     odd_means = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
     even_means = [1.0, 3.0, 2.0, 5.0, 4.0, 6.0]
     values = {}
     for index, (odd, even) in enumerate(zip(odd_means, even_means, strict=True)):
-        # weeks 1,2,3,4 -> odd half sees weeks 1 and 3, even half weeks 2 and 4
         values[(f"T{index}", 2020)] = [odd, even, odd, even]
     long = _long_frame(values)
 
@@ -158,11 +145,6 @@ def test_seasons_restriction_uses_only_the_cells_own_window() -> None:
     )
     assert restricted["n_units"] == 6
     assert restricted["seasons"] == [2011, 2013]
-
-
-# ---------------------------------------------------------------------------
-# 3. An unmeasurable reliability is reported as unmeasured, never as a number
-# ---------------------------------------------------------------------------
 
 
 def test_too_few_units_returns_unmeasured_not_zero() -> None:
@@ -214,11 +196,6 @@ def test_a_strongly_negative_correlation_falls_back_to_the_raw_r_and_stays_on_sc
     assert "raw" in result["method"].lower()
 
 
-# ---------------------------------------------------------------------------
-# 4. Flag exposure and the reported-only replication diagnostic
-# ---------------------------------------------------------------------------
-
-
 def test_game_flag_explodes_to_two_team_rows_per_game() -> None:
     games = pd.DataFrame(
         {
@@ -252,5 +229,4 @@ def test_half_season_replication_reports_both_halves_and_never_a_reliability() -
     assert report["odd_seasons"]["gap_pts"] == pytest.approx(100.0)
     assert report["even_seasons"]["gap_pts"] == pytest.approx(100.0)
     assert report["sign_agreement"] is True
-    # Only 2 flagged rows per half: honestly under-powered, and it says so.
     assert report["status"] == rlib.STATUS_INSUFFICIENT_UNITS

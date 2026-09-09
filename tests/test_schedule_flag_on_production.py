@@ -54,24 +54,14 @@ def _schedule(rows: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# LEAD-21: post-overtime fatigue
-# ---------------------------------------------------------------------------
-
-
 def _post_ot_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            # DDD's week-1 game goes to OT.
             _game("g0", 2020, "2020-09-13", "Sunday", "DDD", "FFF", 1.0),
-            # AAA's week-1 game does NOT go to OT.
             _game("g1", 2020, "2020-09-10", "Thursday", "AAA", "BBB", 0.0),
-            # g3: AAA (home, not post-OT) hosts DDD (away, post-OT from g0) -> +1.
             _game("g3", 2020, "2020-09-27", "Sunday", "AAA", "DDD", 0.0),
-            # g4: CCC (home, post-OT via a separate OT game) hosts EEE (away, not) -> -1.
             _game("gX", 2020, "2020-09-13", "Sunday", "CCC", "ZZZ", 1.0),
             _game("g4", 2020, "2020-09-27", "Sunday", "CCC", "EEE", 0.0),
-            # g5: both sides post-OT (two independent OT games in week 2) -> 0.
             _game("gY", 2020, "2020-09-20", "Sunday", "QQQ", "RRR", 1.0),
             _game("gZ", 2020, "2020-09-20", "Sunday", "SSS", "TTT", 1.0),
             _game("g5", 2020, "2020-09-27", "Sunday", "QQQ", "SSS", 0.0),
@@ -81,10 +71,10 @@ def _post_ot_schedule() -> pd.DataFrame:
 
 def test_post_ot_sign_convention_covers_all_states() -> None:
     derived = derive_post_ot_fatigue_features(_post_ot_schedule()).set_index("game_id")
-    assert derived.loc["g3", POST_OT_FATIGUE_COLUMN] == 1.0  # away (DDD) post-OT
-    assert derived.loc["g4", POST_OT_FATIGUE_COLUMN] == -1.0  # home (CCC) post-OT
-    assert derived.loc["g5", POST_OT_FATIGUE_COLUMN] == 0.0  # both post-OT
-    assert derived.loc["g1", POST_OT_FATIGUE_COLUMN] == 0.0  # neither; also no prior game
+    assert derived.loc["g3", POST_OT_FATIGUE_COLUMN] == 1.0
+    assert derived.loc["g4", POST_OT_FATIGUE_COLUMN] == -1.0
+    assert derived.loc["g5", POST_OT_FATIGUE_COLUMN] == 0.0
+    assert derived.loc["g1", POST_OT_FATIGUE_COLUMN] == 0.0
 
 
 def test_post_ot_week_one_has_no_prior_game_and_is_zero_not_nan() -> None:
@@ -108,26 +98,15 @@ def test_post_ot_never_crosses_a_season_boundary() -> None:
     assert derived.loc["s2", POST_OT_FATIGUE_COLUMN] == 0.0
 
 
-# ---------------------------------------------------------------------------
-# LEAD-22: Monday-night-road short week
-# ---------------------------------------------------------------------------
-
-
 def _mnf_road_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            # AAA plays away on Monday at CCC ...
             _game("m1", 2020, "2020-09-21", "Monday", "CCC", "AAA", 0.0),
-            # ... then hosts DDD the following Sunday (6 days later) -> home (AAA) qualifies -> -1.
             _game("m2", 2020, "2020-09-27", "Sunday", "AAA", "DDD", 0.0),
-            # BBB plays away on Monday at EEE ...
             _game("m3", 2020, "2020-09-21", "Monday", "EEE", "BBB", 0.0),
-            # ... then plays AWAY again the following Sunday at FFF -> away (BBB) qualifies -> +1.
             _game("m4", 2020, "2020-09-27", "Sunday", "FFF", "BBB", 0.0),
-            # GGG played HOME on Monday (not on the road) then plays Sunday -> does not qualify.
             _game("m5", 2020, "2020-09-21", "Monday", "GGG", "HHH", 0.0),
             _game("m6", 2020, "2020-09-27", "Sunday", "GGG", "III", 0.0),
-            # JJJ played away on Monday but the next game is NOT the following Sunday (bye first).
             _game("m7", 2020, "2020-09-21", "Monday", "KKK", "JJJ", 0.0),
             _game("m8", 2020, "2020-10-11", "Sunday", "JJJ", "LLL", 0.0),
         ]
@@ -158,11 +137,6 @@ def test_mnf_road_requires_exactly_six_days_not_just_monday_then_sunday() -> Non
     assert derived.loc["m8", MNF_ROAD_SHORT_WEEK_COLUMN] == 0.0
 
 
-# ---------------------------------------------------------------------------
-# LEAD-40: home-Thursday rest compound
-# ---------------------------------------------------------------------------
-
-
 def test_home_thursday_flags_every_thursday_game_unsigned() -> None:
     schedule = _schedule(
         [
@@ -173,11 +147,6 @@ def test_home_thursday_flags_every_thursday_game_unsigned() -> None:
     derived = derive_home_thursday_features(schedule).set_index("game_id")
     assert derived.loc["t1", HOME_THURSDAY_COLUMN] == 1.0
     assert derived.loc["t2", HOME_THURSDAY_COLUMN] == 0.0
-
-
-# ---------------------------------------------------------------------------
-# Leakage: a game's OWN outcome never changes its OWN flag
-# ---------------------------------------------------------------------------
 
 
 def test_flags_are_invariant_to_a_games_own_outcome() -> None:
@@ -231,14 +200,9 @@ def test_a_later_games_flag_may_legitimately_depend_on_an_earlier_result() -> No
     assert before.loc["g3", POST_OT_FATIGUE_COLUMN] == 1.0
 
     mutated = schedule.copy()
-    mutated.loc[mutated["game_id"] == "g0", "overtime"] = 0.0  # DDD's prior game no longer OT
+    mutated.loc[mutated["game_id"] == "g0", "overtime"] = 0.0
     after = derive_post_ot_fatigue_features(mutated).set_index("game_id")
     assert after.loc["g3", POST_OT_FATIGUE_COLUMN] == 0.0
-
-
-# ---------------------------------------------------------------------------
-# Additivity / join contracts (mirrors every sibling *_production_feature module)
-# ---------------------------------------------------------------------------
 
 
 def test_attach_is_purely_additive_for_all_three() -> None:
@@ -282,11 +246,6 @@ def test_derive_requires_every_schedule_column() -> None:
     schedule = _post_ot_schedule().drop(columns=["overtime"])
     with pytest.raises(DataContractError, match="overtime"):
         derive_post_ot_fatigue_features(schedule)
-
-
-# ---------------------------------------------------------------------------
-# Registered candidate profiles: production plus exactly the one column
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("key", sorted(sfop.CANDIDATES))

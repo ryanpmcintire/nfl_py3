@@ -63,15 +63,8 @@ from nfl_ats.cross_league_transfer import (
 )
 from nfl_ats.margin import MarginModel
 
-#: The shared feature subset S: the measured name-and-semantics intersection of
-#: the CFB benchmark contract and the NFL production feature table. Identical to
-#: ``ALIGNED_TRANSFER_FEATURE_COLUMNS``, aliased here so this module's own
-#: contract is explicit at its call sites.
 XLG05_FEATURE_COLUMNS: tuple[str, ...] = ALIGNED_TRANSFER_FEATURE_COLUMNS
 
-#: The team-quality block Q inside S -- the only columns in S that estimate how
-#: good the teams are. Named BEFORE the look (predeclaration section 2) so the
-#: "team quality is already priced" bound check partitions on a frozen set.
 XLG05_TEAM_QUALITY_COLUMNS: tuple[str, ...] = (
     "home_off_epa_per_play",
     "away_off_epa_per_play",
@@ -81,14 +74,8 @@ XLG05_TEAM_QUALITY_COLUMNS: tuple[str, ...] = (
     "diff_def_epa_per_play",
 )
 
-#: Frozen prior-strength grid for arm (d). ``0.0`` reproduces arm (a) exactly
-#: and ``1.0`` reproduces arm (c) exactly, so the arm is an interpolation
-#: containing both of its neighbours rather than a third mechanism.
 XLG05_PRIOR_STRENGTH_GRID: tuple[float, ...] = (0.0, 0.25, 0.5, 0.75, 1.0)
 
-#: Prior strength used when leave-one-season-out cannot run (fewer than this
-#: many usable folds). Falls back onto arm (c)'s setting, not arm (a)'s, so an
-#: unselectable week collapses (d) onto the fixed-prior arm.
 XLG05_MIN_LOSO_SEASONS = 2
 XLG05_FALLBACK_PRIOR_STRENGTH = 1.0
 
@@ -106,11 +93,6 @@ def team_quality_mask(
         [column in XLG05_TEAM_QUALITY_COLUMNS for column in feature_columns], dtype=bool
     )
     return np.concatenate([mask, np.array([False], dtype=bool)])
-
-
-# ---------------------------------------------------------------------------
-# The prior-strength ridge
-# ---------------------------------------------------------------------------
 
 
 def prior_scaled_theta(
@@ -160,11 +142,6 @@ def prior_strength_path(
     theta_zero = prior_scaled_theta(design, target, theta_prior, 0.0, ridge_alpha)
     theta_one = prior_scaled_theta(design, target, theta_prior, 1.0, ridge_alpha)
     return theta_zero, theta_one - theta_zero
-
-
-# ---------------------------------------------------------------------------
-# Leave-one-season-out selection of the prior strength
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -263,11 +240,6 @@ def select_prior_strength(
     )
 
 
-# ---------------------------------------------------------------------------
-# Arm (d), and the bound-check diagnostic that shares its machinery
-# ---------------------------------------------------------------------------
-
-
 def auxiliary_prior_theta(
     auxiliary_training: pd.DataFrame,
     imputer: SimpleImputer,
@@ -342,11 +314,6 @@ def fit_partially_pooled_model(
         model_name,
     )
     return model, selection
-
-
-# ---------------------------------------------------------------------------
-# Stability of the transferred object itself
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)

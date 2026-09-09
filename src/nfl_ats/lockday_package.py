@@ -72,7 +72,6 @@ from nfl_ats.pick_refresh import pick_revision_ledger_path
 from nfl_ats.prospective_scoring import challenger_ledger_path
 from nfl_ats.provenance import git_diff_sha256, git_state, sha256_bytes, sha256_file
 
-#: Bump when the manifest's shape changes in a way a reader must notice.
 PACKAGE_SCHEMA_VERSION = 1
 PACKAGE_KIND = "lockday_decision_package"
 PACKAGES_DIRNAME = "lockday_packages"
@@ -80,14 +79,8 @@ MANIFEST_FILENAME = "manifest.json"
 MANIFEST_DIGEST_FILENAME = "manifest.sha256"
 PACKAGE_README_FILENAME = "README.md"
 
-#: Files above this size are LISTED but not hashed, so one stray multi-GB
-#: artifact cannot turn the lock-day package write into a long stall.
 MAX_HASHED_BYTES = 512 * 1024 * 1024
 
-#: Every append-only ledger a lock-day run can write, by the same names the
-#: rehearsal empties in ``scripts/lockday_rehearsal.build_isolated_root``.
-#: Resolved through each module's own path function rather than restated as
-#: literals, so a relocation cannot silently drop a ledger from the package.
 LEDGER_PATH_FUNCTIONS: dict[str, Callable[[Path], Path]] = {
     "paper_decisions": paper_decision_ledger_path,
     "challenger_decisions": challenger_ledger_path,
@@ -98,15 +91,12 @@ LEDGER_PATH_FUNCTIONS: dict[str, Callable[[Path], Path]] = {
     "crew_tilt_refresh_decisions": crew_tilt_refresh_ledger_path,
 }
 
-#: How an appended-row digest is computed, stated in the manifest so a reader
-#: with pandas and no access to this file can reproduce it exactly.
 APPENDED_ROWS_DIGEST_METHOD = (
     "sha256 of pandas.read_parquet(path).iloc[rows_before:].to_csv(index=False) "
     "encoded utf-8; the ledgers are append-only, so the tail beyond rows_before "
     "is exactly this run's write"
 )
 
-#: Step-command flags whose value is a snapshot id worth pinning by name.
 _SNAPSHOT_FLAGS = (
     "--snapshot",
     "--player-snapshot",
@@ -114,9 +104,6 @@ _SNAPSHOT_FLAGS = (
     "--pbp-snapshot",
 )
 
-#: Roles whose bytes are EXPECTED to change after the package is written --
-#: the ledgers keep being appended to by later refresh passes in the same
-#: week. The verifier reports them but never fails on them.
 MUTABLE_ROLES = frozenset({"ledger_after"})
 
 
@@ -140,16 +127,10 @@ def _collect(
 
     try:
         return builder()
-    # Deliberately broad: see the module docstring's fail-safe contract.
     except Exception as error:
         errors.append({"component": component, "error": _describe(error)})
         print(f"lockday package: component {component!r} failed: {error}", file=sys.stderr)
         return default
-
-
-# ---------------------------------------------------------------------------
-# hashing
-# ---------------------------------------------------------------------------
 
 
 def _repo_relative(path: Path, repo_root: Path | None) -> str | None:
@@ -199,7 +180,7 @@ def hash_entry(
             )
             return entry
         entry["sha256"] = sha256_file(path)
-    except Exception as error:  # deliberately broad; see module docstring
+    except Exception as error:
         entry["error"] = _describe(error)
     return entry
 
@@ -233,11 +214,6 @@ def _read_json_file(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-# ---------------------------------------------------------------------------
-# ledgers
-# ---------------------------------------------------------------------------
-
-
 def ledger_paths(artifacts_root: Path) -> dict[str, Path]:
     """Every append-only ledger a lock-day run can write, by name."""
 
@@ -258,7 +234,7 @@ def _ledger_snapshot(name: str, path: Path) -> dict[str, Any]:
     try:
         entry["sha256"] = sha256_file(path)
         entry["rows"] = len(pd.read_parquet(path))
-    except Exception as error:  # deliberately broad; see module docstring
+    except Exception as error:
         entry["error"] = _describe(error)
     return entry
 
@@ -318,15 +294,10 @@ def ledger_diff(
         if after["exists"] and int(after["rows"]) > rows_before:
             try:
                 entry.update(_appended_rows(path, rows_before))
-            except Exception as error:  # deliberately broad; see module docstring
+            except Exception as error:
                 entry["error"] = _describe(error)
         rows.append(entry)
     return rows
-
-
-# ---------------------------------------------------------------------------
-# run-summary readers
-# ---------------------------------------------------------------------------
 
 
 def _steps(run_summary: Mapping[str, Any] | None) -> list[dict[str, Any]]:
@@ -420,10 +391,6 @@ def _recorder_results(run_summary: Mapping[str, Any] | None) -> dict[str, Any]:
     return {"steps": steps, "by_challenger_id": by_challenger}
 
 
-# ---------------------------------------------------------------------------
-# lockday_verify
-# ---------------------------------------------------------------------------
-
 VerifyRunner = Callable[[Path, int, int, Mapping[str, Any] | None], dict[str, Any]]
 
 
@@ -466,11 +433,6 @@ def run_lockday_verify(
     payload["rendered"] = module.render(report)
     payload["exit_code"] = 1 if (report.get("missing") or report.get("pending_wiring")) else 0
     return payload
-
-
-# ---------------------------------------------------------------------------
-# manifest
-# ---------------------------------------------------------------------------
 
 
 def _model_identity(artifacts_root: Path, repo_root: Path | None) -> dict[str, Any]:
@@ -530,7 +492,7 @@ def _input_section(
         if manifest_path.is_file():
             try:
                 content = _read_json_file(manifest_path)
-            except Exception as error:  # deliberately broad; see module docstring
+            except Exception as error:
                 content = {"error": _describe(error)}
         manifests.append(
             {
@@ -671,10 +633,6 @@ def build_manifest(
         },
         default={"revision": None, "dirty": None, "diff_sha256": None, "uv_lock_sha256": None},
     )
-    # ENG-21: the deterministic environment lock report (Python/uv/package/
-    # platform/env-var details, secrets redacted to booleans). Additive to
-    # "code" above, not a replacement -- environment_report() never raises,
-    # so this can only ever add a section, never break the lock-day package.
     manifest["environment"] = _collect(
         errors,
         "environment",
@@ -743,11 +701,6 @@ def build_manifest(
     manifest["errors"] = errors
     manifest["ok"] = not errors
     return manifest
-
-
-# ---------------------------------------------------------------------------
-# writing
-# ---------------------------------------------------------------------------
 
 
 def packages_root(artifacts_root: Path) -> Path:
@@ -931,7 +884,7 @@ def write_decision_package(
         written["written"] = True
         written["ok"] = bool(manifest.get("ok", False))
         return written
-    except Exception as error:  # deliberately broad; see module docstring
+    except Exception as error:
         print(
             "lockday package: FAILED to write the decision package "
             f"({_describe(error)}). The lock itself is unaffected: the ledger rows "
@@ -945,11 +898,6 @@ def write_decision_package(
             "manifest_path": None,
             "errors": [{"component": "write_decision_package", "error": _describe(error)}],
         }
-
-
-# ---------------------------------------------------------------------------
-# reading and verifying
-# ---------------------------------------------------------------------------
 
 
 def resolve_manifest_path(path: Path) -> Path:

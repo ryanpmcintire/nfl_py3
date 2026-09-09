@@ -95,8 +95,6 @@ def build_contributor_games(
     base["side_snaps"] = np.where(
         base["unit"].str.startswith("OFF"), base["offense_snaps"], base["defense_snaps"]
     )
-    # Window covers the current row plus predecessors; subtracting the
-    # current row leaves exactly the trailing ``trailing_games`` predecessors.
     prior = (
         base.groupby(["gsis_id", "season", "team", "unit"], sort=False)["side_snaps"]
         .rolling(trailing_games + 1, min_periods=1)

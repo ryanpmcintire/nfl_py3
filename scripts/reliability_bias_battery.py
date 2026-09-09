@@ -81,12 +81,6 @@ PREFIX = "bias_battery_"
 OPENER_SUFFIX = "_opener"
 
 
-#: Registry entry (minus the ``bias_battery_`` prefix and any ``_opener``
-#: suffix) -> the hypothesis key ``build_hypotheses`` returns. Every one of
-#: the 17 hypotheses maps to itself; the 8 opener cells strip their suffix to
-#: land on the same base hypothesis, per the registry's own stated
-#: convention (an opener re-grade shares the base construct, "Opener-grade
-#: re-screen of an already-recorded close-graded cell").
 def hypothesis_for(entry_name: str) -> str:
     assert entry_name.startswith(PREFIX), entry_name
     stem = entry_name[len(PREFIX) :]
@@ -95,18 +89,6 @@ def hypothesis_for(entry_name: str) -> str:
     return stem
 
 
-# Per-hypothesis parent-quantity spec, read off ``nfl_bias_battery_screen.
-# build_hypotheses`` (scripts/nfl_bias_battery_screen.py:259-398) cell by
-# cell. ``kind`` is "trait" (a continuous team-week column measured with
-# METHOD_TRAIT) or "exposure" (the hypothesis's own boolean flag, measured
-# with METHOD_EXPOSURE as a per-team-week exposure rate). "column" for a
-# trait cell names the continuous parent; two or three hypotheses share one
-# parent column deliberately (bad_team_late/great_team_late both threshold
-# prior_win_pct; motivation_mismatch also gates on prior_win_pct, read:
-# build_hypotheses lines 269-293; post_blowout_win_letdown/loss_bounce both
-# threshold prior_score_margin, lines 302-313) -- on the SAME season window
-# those measurements are numerically identical, the same convention the
-# registry's attention_battery_* cells already use for one shared trait.
 HYPOTHESIS_SPEC: dict[str, dict[str, Any]] = {
     "bad_team_late": {
         "kind": "trait",
@@ -295,39 +277,6 @@ def target_entries() -> dict[str, dict[str, Any]]:
     return out
 
 
-#: Hazard, sharpened mid-session by a concurrent ORCH-D worker's independent
-#: measurement and confirmed here by re-running its own diagnostic (a random,
-#: non-odd/even half split; if the strongly negative correlation survives
-#: randomizing the split, it is not an odd/even artifact -- it is a
-#: COMPOSITIONAL CONSTRAINT: a quantity whose season TOTAL is conserved (a
-#: fixed calendar span split among a team's games) mechanically forces more
-#: rest in one half to imply less in the other, no matter how the halves are
-#: drawn. Split-half reliability is NOT APPLICABLE to such a quantity -- a
-#: low or strongly negative value is a measurement artifact of the
-#: estimator's assumption (independent halves), not evidence about a trait,
-#: and per the concurrent worker's warning, recording it would plant an
-#: illegitimate `no_split_half_reliability` closing ground.
-#:
-#: own_rest (this script, 2009-2025, measured just now): real odd/even raw
-#: Pearson r = -0.9313 (Spearman-Brown reliability -0.9313, already at the
-#: [-1,1] floor so SB leaves it unchanged); 20 reseeds of a RANDOM (non-
-#: odd/even) half split give mean raw r = -0.8014, range [-0.8321, -0.7751]
-#: -- the negative correlation survives randomizing the split, confirming
-#: compositional conservation rather than an odd/even-parity artifact.
-#: Corroborates a concurrent ORCH-D worker's independent measurement on the
-#: 2009-2025 REG schedule's own `rest` column: odd/even r=-0.9766 95%
-#: [-0.9816,-0.9713] n=544, random-half mean r=-0.8514 range
-#: [-0.8813,-0.8066] (reported to this worker verbatim mid-session).
-#:
-#: rest_diff (own_rest - opp_rest, this script, 2009-2025): real odd/even
-#: raw Pearson r = -0.3132 (Spearman-Brown reliability -0.9122, the
-#: correction's amplification of a raw r near the -1/3 singularity of
-#: 2r/(1+r) -- the recorded-looking number is far more extreme than the raw
-#: correlation that produced it); 20 reseeds of a random half split give
-#: mean raw r = -0.3331, range [-0.3714, -0.3006] -- again survives
-#: randomizing the split, confirming compositional conservation (rest_diff
-#: sums two conserved quantities, so it inherits the same constraint,
-#: attenuated by the subtraction).
 NEAR_CONSTANT_HAZARD: dict[str, str] = {
     "own_rest": (
         "not_applicable_compositional_constraint: own_rest is a per-team-season conserved "

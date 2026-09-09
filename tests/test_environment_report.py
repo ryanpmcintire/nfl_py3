@@ -12,10 +12,6 @@ from nfl_ats.environment_report import (
     environment_report,
 )
 
-# ---------------------------------------------------------------------------
-# environment_report(): shape
-# ---------------------------------------------------------------------------
-
 
 def test_report_has_the_documented_top_level_sections() -> None:
     report = environment_report()
@@ -40,7 +36,6 @@ def test_report_lists_the_numerically_relevant_packages() -> None:
     packages = report["packages"]
     for name in ("numpy", "pandas", "scikit-learn", "scipy", "pyarrow"):
         assert name in packages
-        # Installed in the locked dev env this test runs under.
         assert packages[name] is not None
 
 
@@ -53,13 +48,7 @@ def test_report_python_and_platform_fields_are_populated() -> None:
 
 
 def test_report_is_json_serializable() -> None:
-    # Would raise TypeError on any non-JSON-native value (e.g. a Path).
     json.dumps(environment_report())
-
-
-# ---------------------------------------------------------------------------
-# secrets: presence booleans only, values never leak
-# ---------------------------------------------------------------------------
 
 
 def test_fake_secret_value_never_appears_in_the_report(monkeypatch: Any) -> None:
@@ -124,11 +113,6 @@ def test_allowlisted_env_vars_are_included_with_their_real_values(monkeypatch: A
     assert env_vars["NFL_ATS_REGISTRY_DIR"] == "registry_test"
 
 
-# ---------------------------------------------------------------------------
-# fail-safe wrapper
-# ---------------------------------------------------------------------------
-
-
 def test_environment_report_never_raises_even_when_assembly_breaks(monkeypatch: Any) -> None:
     def _boom(*_args: Any, **_kwargs: Any) -> Any:
         raise RuntimeError("simulated assembly failure")
@@ -152,11 +136,6 @@ def test_uv_absence_is_tolerated_not_raised(monkeypatch: Any, tmp_path: Path) ->
 
 
 def test_report_tolerates_a_non_git_project_root() -> None:
-    # Deliberately NOT pytest's tmp_path: this suite is run with
-    # --basetemp .agent_tmp/<name> INSIDE this repository, so a plain
-    # tmp_path is still under nfl_py3's own .git tree and `git rev-parse`
-    # would resolve there instead of failing. tempfile's default location is
-    # the OS temp directory, genuinely outside any git repository.
     with tempfile.TemporaryDirectory() as raw_directory:
         report = environment_report(project_root=Path(raw_directory))
 
@@ -170,11 +149,6 @@ def test_precomputed_git_and_lock_info_are_reused_verbatim(tmp_path: Path) -> No
 
     assert report["git"] == git_info
     assert report["uv_lock"] == {"present": True, "sha256": "abc123"}
-
-
-# ---------------------------------------------------------------------------
-# compare_environment(): reproducibility-affecting vs cosmetic
-# ---------------------------------------------------------------------------
 
 
 def _synthetic_report(**overrides: Any) -> dict[str, Any]:
@@ -225,7 +199,6 @@ def test_python_minor_version_difference_is_reproducibility_affecting() -> None:
 
     assert "python.minor" in comparison["reproducibility_affecting_fields"]
     assert comparison["reproducibility_affecting"] is True
-    # The full version string differs on patch too, but is itself cosmetic.
     assert "python.version" in comparison["cosmetic_fields"]
 
 
@@ -326,13 +299,6 @@ def test_an_error_report_compares_without_raising() -> None:
     assert comparison["differs"] is True
 
 
-# ---------------------------------------------------------------------------
-# wiring: artifact_provenance() (the shared metadata writer both experiment
-# metadata and forecast/weekly-run metadata already go through) carries this
-# report additively.
-# ---------------------------------------------------------------------------
-
-
 def test_artifact_provenance_carries_an_environment_section(tmp_path: Path) -> None:
     from nfl_ats.provenance import artifact_provenance
 
@@ -343,7 +309,5 @@ def test_artifact_provenance_carries_an_environment_section(tmp_path: Path) -> N
 
     assert "environment" in payload
     assert "python" in payload["environment"]
-    # Reused, not recomputed, from the same git_state()/uv.lock work
-    # artifact_provenance() already does for "code"/"uv_lock_sha256".
     assert payload["environment"]["git"] == payload["code"]
     assert payload["environment"]["uv_lock"]["sha256"] == payload["uv_lock_sha256"]

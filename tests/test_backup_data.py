@@ -91,7 +91,6 @@ def test_verify_all_catches_corruption_that_size_and_mtime_miss(
     backup_data.process_tree("data", mirror, apply=True, verify_all=False)
     copied = mirror / "data" / "raw" / "injury_news" / "week1.json"
     original = copied.stat()
-    # Same byte count, same mtime -- invisible to the skip check by design.
     copied.write_text("SNAPSHOT", encoding="utf-8")
     os.utime(copied, (original.st_atime, original.st_mtime))
 

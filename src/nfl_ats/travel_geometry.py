@@ -37,8 +37,6 @@ DEFAULT_STADIUM_COORDINATES_PATH = (
     Path(__file__).resolve().parents[2] / "registry" / "stadium_coordinates.json"
 )
 
-# Every US venue in the checked-in NFL registry uses one of these IANA zones.
-# A venue in any other zone is international from the NFL's US perspective.
 DOMESTIC_TIME_ZONES = frozenset(
     {
         "America/Chicago",
@@ -179,8 +177,6 @@ def haversine_mi(origin: StadiumLocation, destination: StadiumLocation) -> float
 
 
 def _offset_hours(venue: StadiumLocation, gameday: pd.Timestamp) -> float:
-    # Noon avoids DST's skipped/repeated overnight wall-clock interval while
-    # retaining the correct game-date-specific offset.
     local_noon = datetime.combine(gameday.date(), time(hour=12), tzinfo=ZoneInfo(venue.timezone))
     offset = local_noon.utcoffset()
     if offset is None:  # pragma: no cover - ZoneInfo always supplies one

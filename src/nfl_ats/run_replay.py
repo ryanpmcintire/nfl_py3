@@ -89,16 +89,7 @@ KIND_UNKNOWN = "unknown"
 
 REPLAY_SCHEMA_VERSION = 1
 
-#: A forecast generator: ``(feature_table, configuration) -> predictions``.
-#: Overridable so tests can replay against a tiny synthetic forecast without
-#: fitting a real model, and so a future caller can plug in a different
-#: scoring entry point without editing this module.
 GenerateForecast = Callable[[pd.DataFrame, Mapping[str, Any]], pd.DataFrame]
-
-
-# ---------------------------------------------------------------------------
-# report shape
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -132,14 +123,7 @@ class ReplayReport:
         }
 
 
-# ---------------------------------------------------------------------------
-# small helpers
-# ---------------------------------------------------------------------------
-
-
 def _default_repo_root() -> Path:
-    # src/nfl_ats/run_replay.py -> parents[2] is the repo root, the same
-    # pattern nfl_ats.environment_report._default_project_root() uses.
     return Path(__file__).resolve().parents[2]
 
 
@@ -182,11 +166,6 @@ def _load_manifest(path: Path) -> tuple[dict[str, Any], Path]:
     if not isinstance(payload, dict):
         raise ValueError(f"{candidate} does not contain a JSON object")
     return payload, candidate
-
-
-# ---------------------------------------------------------------------------
-# digest verification
-# ---------------------------------------------------------------------------
 
 
 def _forecast_metadata_digest_entries(
@@ -260,11 +239,6 @@ def _verify_digest_entries(entries: Sequence[Mapping[str, Any]], repo_root: Path
     }
 
 
-# ---------------------------------------------------------------------------
-# git revision + environment
-# ---------------------------------------------------------------------------
-
-
 def _git_revision_check(code: Mapping[str, Any], repo_root: Path) -> dict[str, Any]:
     recorded_revision = code.get("revision")
     recorded_dirty = code.get("dirty")
@@ -295,21 +269,6 @@ def _environment_comparison(recorded_env: Any, repo_root: Path) -> dict[str, Any
     return {"available": True, **diff}
 
 
-# ---------------------------------------------------------------------------
-# recompute
-# ---------------------------------------------------------------------------
-
-
-#: Digest roles whose mismatch alone must never block recompute. ``uv_lock``
-#: pins the *dependency environment*, not the model's actual input (the
-#: feature table) -- a lockfile that has moved since the manifest was
-#: written is the common case for replaying any run older than the newest
-#: ``uv sync``, and refusing recompute over it would make this command
-#: unable to ever demonstrate recompute against a real, slightly-aged
-#: artifact. A drifted ``uv_lock`` is still a real, reported finding (see
-#: ``digest_verification`` and ``notes``) and it still keeps
-#: :attr:`ReplayReport.ok` false -- it just does not veto the recompute
-#: check specifically.
 _DIGEST_ROLES_THAT_DO_NOT_BLOCK_RECOMPUTE = frozenset({"uv_lock"})
 
 
@@ -574,9 +533,6 @@ def _run_recompute(
     output_root.mkdir(parents=True, exist_ok=True)
     regenerated_path = output_root / "regenerated_predictions.csv"
     atomic_csv(regenerated, regenerated_path)
-    # Round-trip the regenerated frame through the same CSV encoding the
-    # recorded predictions.csv went through, so the comparison is apples to
-    # apples rather than in-memory-float vs. csv-parsed-float.
     regenerated_for_compare = pd.read_csv(regenerated_path)
     recorded = pd.read_csv(recorded_predictions_path)
 
@@ -597,11 +553,6 @@ def _run_recompute(
         "metadata_comparison": metadata_comparison,
         "match": bool(predictions_comparison["match"] and metadata_comparison["match"]),
     }
-
-
-# ---------------------------------------------------------------------------
-# entry point
-# ---------------------------------------------------------------------------
 
 
 def replay_manifest(

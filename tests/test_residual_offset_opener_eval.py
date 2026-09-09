@@ -61,7 +61,6 @@ def test_every_offset_excludes_decision_and_future_outcomes(model_frame):
     assert model.distribution_rows == 24
     assert offsets == after
     np.testing.assert_array_equal(model.residuals, second.residuals)
-    # Input ordering cannot turn an in-week result into a prior residual.
     _, shuffled, _ = study.weekly_models(changed.sample(frac=1, random_state=4), cutoff, config)
     assert offsets == shuffled
 
@@ -93,7 +92,6 @@ def test_fast_bootstrap_matches_repository_whole_week_draws():
     assert estimate[0] == pytest.approx(reference["estimate"])
     assert np.quantile(draws[:, 0], 0.025) == pytest.approx(reference["lower"])
     assert np.quantile(draws[:, 0], 0.975) == pytest.approx(reference["upper"])
-    # Both sides must use the shared zero-atom convention: these draws contain exact ties, and a.
     assert probability_positive_from_draws(draws[:, 0]) == reference["probability_positive"]
 
 
@@ -109,7 +107,6 @@ def test_null_freezes_picks_and_summary_excludes_pushes():
     assert result["archive_rows"] == 6 and result["graded_games"] == 5
     assert result["pushes"] == 1
     assert result["arms"]["production"]["delta"] == 0
-    # The frozen-pick null makes the production arm identical to itself, so every resample is an.
     assert result["arms"]["production"]["probability_positive"] == 0.5
 
 
@@ -133,13 +130,11 @@ def test_prediction_frame_reproduces_probability_boundary_and_checks_drift(model
         baseline["home_cover_probability"].ge(0.5).to_numpy()
     )
     archive["margin_vs_open"] = targets["result"].to_numpy() - targets["spread_line"].to_numpy()
-    # Reverse archive order to test game-id alignment against the model's positional output.
     result = study.build_predictions(features, archive.iloc[::-1], config)
     assert result["pick_production"].equals(result["pick_home_at_open_probability_rule"])
     assert (result["training_max_gameday"] < result["decision_cutoff"]).all()
     assert result["decision_cutoff"].eq(features.iloc[-6]["gameday"]).all()
     assert result["archive_refit_cutoff"].eq(features.iloc[-5]["gameday"]).all()
-    # An opening game absent from the quote archive cannot enter candidate offsets.
     clean_model, clean_offsets, _ = study.weekly_models(
         features, features.iloc[-6]["gameday"], config
     )

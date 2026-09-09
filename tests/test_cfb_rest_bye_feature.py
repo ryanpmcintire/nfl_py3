@@ -50,22 +50,8 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 FEATURES_PATH = REPO_ROOT / "data" / "processed" / "cfb_game_features.parquet"
 CFB_DATA_ROOT = REPO_ROOT / "data" / "cfb"
 
-# ---------------------------------------------------------------------------
-# The hand-built fixture. Ten benchmark games plus ONE schedule-only game.
-#
-# Season 2024. Per-team appearance dates, and therefore the hand-computed rest:
-#   T1: 09-07, 09-21, 10-05, 10-11         -> NaN, 14, 14, 6
-#   T2: 09-07, 09-21*, 09-28, 10-10        -> NaN, 14,  7, 12   (* schedule-only)
-#   T3: 09-14, 09-21, 10-05, 10-11         -> NaN,  7, 14, 6
-#   T4: 09-14, 09-28, 10-05, 10-10         -> NaN, 14,  7, 5
-#   T5: 10-05                              -> NaN
-#   T6: 09-14, 09-28                       -> NaN, 14
-#   T7: 09-14, 09-28                       -> NaN, 14
-#   T99: 09-21 (schedule-only opponent)    -> NaN
-# ---------------------------------------------------------------------------
 
 _SCHEDULE_ROWS = [
-    # (date, home_id, away_id, in_benchmark, week)
     ("2024-09-07", 1, 2, True, 1),
     ("2024-09-14", 3, 4, True, 2),
     ("2024-09-14", 6, 7, True, 2),
@@ -79,25 +65,16 @@ _SCHEDULE_ROWS = [
     ("2024-10-11", 3, 1, True, 6),
 ]
 
-#: Hand-computed expected values, keyed by ``game_id``. ``None`` means NaN.
 _EXPECTED: dict[int, dict[str, float | None]] = {
-    # season openers on BOTH sides -- every cell undefined
     1: {"home_rest": None, "away_rest": None},
     2: {"home_rest": None, "away_rest": None},
     3: {"home_rest": None, "away_rest": None},
-    # T1 off a true open date (14) vs T3 on a normal week (7)
     4: {"home_rest": 14.0, "away_rest": 7.0},
-    # T2's 7 days is only reachable from the FULL schedule (its 09-21 game is
-    # not in the benchmark table); the benchmark subset alone would say 21.
     6: {"home_rest": 7.0, "away_rest": 14.0},
-    # BOTH sides off a true open date -- bye_edge_home must NOT fire
     7: {"home_rest": 14.0, "away_rest": 14.0},
     8: {"home_rest": 14.0, "away_rest": 7.0},
-    # away side is playing its FIRST game of the season -- away cells undefined
     9: {"home_rest": 14.0, "away_rest": None},
-    # home on the 12-day shoulder (not >=13), away on a 5-day short week
     10: {"home_rest": 12.0, "away_rest": 5.0},
-    # both sides on a 6-day short week (the <=6 sensitivity arm, not <=5)
     11: {"home_rest": 6.0, "away_rest": 6.0},
 }
 
@@ -127,7 +104,6 @@ def _games() -> pd.DataFrame:
             "gameday": pd.to_datetime([row[0] for _, row in rows]),
             "home_id": [row[1] for _, row in rows],
             "away_id": [row[2] for _, row in rows],
-            # Outcome columns exist so the leakage test can shuffle them.
             "result": np.arange(len(rows), dtype=float) - 3.0,
             "ats_margin": np.arange(len(rows), dtype=float) + 1.5,
             "home_points": np.arange(len(rows), dtype=float) + 20.0,
@@ -158,11 +134,6 @@ def _expected_cells(home: float | None, away: float | None) -> dict[str, float |
         CFB_AWAY_OFF_BYE_GAP12_COLUMN: float(away >= 12) if away_known else None,
         CFB_SHORT_WEEK_ROAD_LE6_COLUMN: float(away <= 6) if away_known else None,
     }
-
-
-# ---------------------------------------------------------------------------
-# Known answers
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("game_id", sorted(_EXPECTED))
@@ -240,11 +211,6 @@ def test_short_week_thresholds_separate_five_from_six() -> None:
     assert six[CFB_SHORT_WEEK_ROAD_LE6_COLUMN] == 1.0
 
 
-# ---------------------------------------------------------------------------
-# The first-game rule
-# ---------------------------------------------------------------------------
-
-
 def test_first_game_of_a_season_has_no_defined_rest_and_is_nan_not_zero() -> None:
     """Games 1-3 are both teams' season openers; game 9's AWAY side is one.
 
@@ -271,11 +237,6 @@ def test_first_game_rows_are_counted_in_the_diagnostics_not_dropped() -> None:
     assert diagnostics["n_either_rest_missing"] == 4
     assert diagnostics["missing_by_column"][CFB_HOME_OFF_BYE_COLUMN] == 3
     assert diagnostics["missing_by_column"][CFB_BYE_EDGE_HOME_COLUMN] == 4
-
-
-# ---------------------------------------------------------------------------
-# Leakage
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("outcome_column", ["result", "ats_margin", "home_points", "away_points"])
@@ -343,11 +304,6 @@ def test_a_future_game_never_changes_an_earlier_games_rest() -> None:
     pd.testing.assert_frame_equal(baseline.reset_index(), with_future)
 
 
-# ---------------------------------------------------------------------------
-# Contract / plumbing
-# ---------------------------------------------------------------------------
-
-
 def test_attach_is_purely_additive() -> None:
     games = _games()
     merged, _ = attach_cfb_rest_bye_features(games, schedules=_schedules())
@@ -374,28 +330,21 @@ def test_team_panel_stacks_both_sides_and_marks_undefined_rest() -> None:
     rested = derive_side_rest(_games(), _schedules())
     panel = build_cfb_rest_team_panel(rested)
     assert len(panel) == 2 * len(rested)
-    # T5 appears once, in its own season opener -- every propensity undefined.
     t5 = panel.loc[panel["team_id"].eq(5)]
     assert len(t5) == 1
     assert bool(t5["own_rest_days"].isna().all())
     assert bool(t5["own_off_bye_13"].isna().all())
-    # T4 in game 10 arrives on 5 days rest against a 12-day-rested opponent.
     t4 = panel.loc[panel["team_id"].eq(4) & panel["week"].eq(6) & ~panel["is_home"]]
     assert t4["own_rest_days"].iloc[0] == 5.0
     assert t4["own_short_week_5"].iloc[0] == 1.0
     assert t4["own_strict_bye_edge"].iloc[0] == 0.0
 
 
-# ---------------------------------------------------------------------------
-# The known-answer check against the real frozen table
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.skipif(
     not FEATURES_PATH.is_file() or not (CFB_DATA_ROOT / "schedules" / "raw").is_dir(),
     reason="local CFB snapshots are gitignored and absent in a fresh clone",
 )
-@pytest.mark.full  # ENG-11: reproduces a frozen result against real local CFB snapshots
+@pytest.mark.full
 def test_derived_side_rest_reproduces_the_frozen_rest_diff() -> None:
     """``home_rest - away_rest`` must equal the benchmark's own ``rest_diff``
     on every row where both are defined, with an identical missingness pattern.

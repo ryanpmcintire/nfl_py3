@@ -39,11 +39,6 @@ import reliability_weather as sweep  # noqa: E402
 
 from nfl_ats.experiment_runner import FLAG_BUILDERS  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# 1. reliability_weather.py's import of build_cells reproduces the battery's
-#    own flag exactly on a small synthetic fixture (never re-derived inline).
-# ---------------------------------------------------------------------------
-
 
 def _synthetic_battery_population() -> pd.DataFrame:
     """A handful of games with exactly the columns ``build_cells`` reads.
@@ -91,7 +86,6 @@ def test_battery_build_cells_reproduces_extreme_cold_flag_by_hand() -> None:
     df = _synthetic_battery_population()
     cells = sweep.battery_screen.build_cells(df)
 
-    # weather_battery_extreme_cold: outdoor AND temp <= 25F.
     expected = pd.Series([True, False, False, False, True, False], index=df.index, name="temp")
     got = cells["weather_battery_extreme_cold"]["flag"]
     pd.testing.assert_series_equal(got, expected, check_names=False)
@@ -101,7 +95,6 @@ def test_battery_build_cells_reproduces_high_wind_outdoor_flag_by_hand() -> None
     df = _synthetic_battery_population()
     cells = sweep.battery_screen.build_cells(df)
 
-    # weather_battery_high_wind_outdoor: outdoor AND wind >= 15mph.
     expected = pd.Series([False, False, False, False, True, False], index=df.index)
     got = cells["weather_battery_high_wind_outdoor"]["flag"]
     pd.testing.assert_series_equal(got, expected, check_names=False)
@@ -111,10 +104,6 @@ def test_battery_build_cells_reproduces_dome_team_outdoors_cold_flag_by_hand() -
     df = _synthetic_battery_population()
     cells = sweep.battery_screen.build_cells(df)
 
-    # weather_battery_dome_team_outdoors_cold: away_modal_roof in
-    # {dome, closed} AND outdoor AND temp <= 40F. Rows 4 and 5 (GB/MIA home,
-    # both against a dome-modal away opponent) qualify: outdoor True and
-    # temp 24/38 <= 40; rows 0-3's away_modal_roof is "outdoors", never dome.
     expected = pd.Series([False, False, False, False, True, True], index=df.index)
     got = cells["weather_battery_dome_team_outdoors_cold"]["flag"]
     pd.testing.assert_series_equal(got, expected, check_names=False)
@@ -134,12 +123,6 @@ def test_entry_specs_is_exactly_the_33_entry_names() -> None:
     assert len(sweep.ENTRY_NAMES) == 33
 
 
-# ---------------------------------------------------------------------------
-# 2. The split arithmetic, on an answer computable by hand, through this
-#    script's own measure_venue() entry point.
-# ---------------------------------------------------------------------------
-
-
 def _venue_quantity_frame(
     values: dict[tuple[str, int], list[float]], metric_col: str
 ) -> pd.DataFrame:
@@ -153,12 +136,6 @@ def _venue_quantity_frame(
 
 
 def test_measure_venue_recovers_a_hand_computed_correlation() -> None:
-    # reliability_lib.MIN_UNITS is 20, so this needs >= 20 venue-seasons --
-    # a deterministic linear pattern (even_mean = odd_mean plus a small,
-    # index-varying offset) keeps the expected correlation independently
-    # computable by numpy from the exact same odd/even half-means the
-    # estimator is fed, same convention as
-    # tests/test_reliability_graph_team_stat.py's "hand computed" tests.
     odd_means = [float(i) for i in range(1, 25)]
     even_means = [float(i) + ((-1.0) ** i) * 2.0 for i in range(1, 25)]
     values = {}
@@ -190,11 +167,6 @@ def test_measure_venue_too_few_units_returns_unmeasured_not_zero() -> None:
     assert result["reliability_low"] is None and result["reliability_high"] is None
 
 
-# ---------------------------------------------------------------------------
-# 3. The near-constant-column hazard guard (dominant_unit_check).
-# ---------------------------------------------------------------------------
-
-
 def test_dominant_unit_check_catches_a_sign_flip_like_high_altitude_road() -> None:
     """Reproduces this script's own first-run finding on a tiny fixture.
 
@@ -204,20 +176,9 @@ def test_dominant_unit_check_catches_a_sign_flip_like_high_altitude_road() -> No
     measured run (+0.7749 with Denver in, -0.2414 with it excluded).
     """
 
-    # reliability_lib.MIN_UNITS is 20, and split_half_reliability needs >= 2
-    # observations per half, so every unit gets 4 weeks (odd half = weeks
-    # 1,3; even half = weeks 2,4 -- same convention as
-    # tests/test_reliability_graph_team_stat.py's known-answer tests), and
-    # the DEN-excluded remeasurement must ALSO clear the 20-unit floor, so
-    # this needs >= 21 other units. One season is enough: a unit here is a
-    # (team_id, season) pair.
     rows = []
     for week, value in ((1, 1.0), (2, 1.0), (3, 1.0), (4, 1.0)):
         rows.append({"team_id": "DEN", "season": 2020, "week": week, "exposure": value})
-    # 24 other units: odd-half (weeks 1,3) and even-half (weeks 2,4) means
-    # set directly from two independent, roughly balanced patterns so the
-    # T-only correlation is small/uncorrelated -- DEN's single far-out point
-    # at (1, 1) is what should move the measured reliability.
     odd_pattern = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
     even_pattern = [0.6, 0.0, 0.8, 0.2, 1.0, 0.4]
     for i in range(24):
@@ -248,9 +209,6 @@ def test_dominant_unit_check_catches_a_sign_flip_like_high_altitude_road() -> No
     )
     assert dom is not None
     assert dom["dominant_unit"] == "DEN"
-    # The dominant unit sits at exposure=1.0 every season, far from the
-    # near-zero population mean -- removing it should collapse or flip the
-    # measured reliability relative to the baseline.
     assert dom["reliability_without_dominant_unit"] != pytest.approx(
         dom["reliability_with_dominant_unit"], abs=1e-6
     )
@@ -265,7 +223,7 @@ def test_near_constant_check_flags_one_or_two_active_units() -> None:
     )
     result = sweep.near_constant_check(long, "exposure")
     assert result["n_units_with_any_positive_value"] == 1
-    assert result["near_constant"] is False  # n_units_total (3) < 5, too small to judge
+    assert result["near_constant"] is False
 
 
 def test_near_constant_check_does_not_flag_broad_participation() -> None:

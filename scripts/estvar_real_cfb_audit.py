@@ -160,11 +160,11 @@ class SeasonFit:
     spread: np.ndarray
     actual: np.ndarray
     candidate_model: MarginModel
-    candidate_raw: np.ndarray  # point raw prediction (n_test,)
-    candidate_refits_raw: np.ndarray  # (n_boot, n_test)
-    baseline_model: MarginModel | None  # None => unconditional market arm
+    candidate_raw: np.ndarray
+    candidate_refits_raw: np.ndarray
+    baseline_model: MarginModel | None
     baseline_prob_point: np.ndarray
-    baseline_refits_raw: np.ndarray | None  # (n_boot, n_test) or None
+    baseline_refits_raw: np.ndarray | None
 
 
 def fit_seasons(
@@ -316,7 +316,6 @@ def bagging_report(fits: list[SeasonFit], arrays: dict[str, np.ndarray]) -> dict
         first_half = raw[:half].mean(axis=0)
         second_half = raw[half:].mean(axis=0)
         bagged_split_half_flip.append(float(np.mean(np.sign(first_half) != np.sign(second_half))))
-        # Pairwise: compare consecutive individual draws (b0 vs b1, b2 vs b3, ...)
         even = raw[0 : 2 * (b // 2) : 2]
         odd = raw[1 : 2 * (b // 2) : 2]
         single_pairwise_flip.append(float(np.mean(np.sign(even) != np.sign(odd))))
@@ -528,7 +527,7 @@ def main() -> None:
     print(json.dumps(results["f_lever"], indent=2, default=str), flush=True)
 
     out_path = OUT_DIR / "real_cfb_audit_results.json"
-    write_stamped_artifact(results, out_path)  # ENG-38
+    write_stamped_artifact(results, out_path)
     print(f"\nWrote {out_path} in {time.time() - started:.1f}s", flush=True)
 
 

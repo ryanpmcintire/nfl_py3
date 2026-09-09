@@ -326,9 +326,6 @@ def week1(out: Path, active: dict) -> None:
     )
     stream = pd.read_parquet(out / "stream.parquet")
     week = stream.loc[stream.season.eq(2026)].set_index("game_id").reindex(scratch.index)
-    # The incumbent read is the ACTIVE forecast's own probability; the scratch
-    # CLI run is a rehearsal only, and a working-tree drift there is recorded,
-    # not silently accepted as the incumbent.
     np.testing.assert_allclose(week.p_smooth, current.home_cover_probability, atol=1e-12)
     for arm in ARMS:
         candidate = scratch[

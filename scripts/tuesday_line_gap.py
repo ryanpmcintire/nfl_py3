@@ -57,7 +57,6 @@ from nfl_ats.market_data import (  # noqa: E402
 
 READ_ONLY_SCRIPT = True
 ET = POOL_TIMEZONE
-#: The ``--lock`` default: the one declared pool lock, never a local restatement.
 DEFAULT_LOCK = POOL_SPREAD_LOCK_ET.strftime("%H:%M")
 
 COLUMNS = [
@@ -79,7 +78,7 @@ NO_POST_LOCK_MESSAGE = "no post-lock capture that day yet: the locked line has n
 
 
 def home_spreads(quotes: pd.DataFrame) -> pd.DataFrame:
-    if quotes.empty:  # an empty store comes back without the quote columns
+    if quotes.empty:
         return pd.DataFrame(columns=QUOTE_COLUMNS)
     spreads = quotes.loc[
         quotes["market"].eq("spreads")
@@ -117,8 +116,6 @@ def tuesday_gap(quotes: pd.DataFrame, tuesday: date, lock: time) -> pd.DataFrame
 
     spreads = home_spreads(quotes)
     tuesday_day = pd.Timestamp(tuesday)
-    # This Tuesday's captures (Eastern calendar day), pregame, for exactly the
-    # games whose own-week Tuesday it is; the live store quotes the whole season.
     on_day = spreads.loc[
         pool_calendar_day(spreads["observed_at_utc"]).eq(tuesday_day)
         & own_week_tuesday(spreads["commence_time_utc"]).eq(tuesday_day)

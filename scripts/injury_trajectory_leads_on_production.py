@@ -75,7 +75,6 @@ def main() -> int:
     basis = canonical[[*keys, "observed_at_basis"]].drop_duplicates()
     raw = raw.merge(basis, on=keys, how="left", validate="many_to_one")
     revisions, coverage = prepare_revisions(raw)
-    # Source diagnosis precedes any arm computation, including when running normally.
     print(json.dumps({"coverage": coverage}, indent=2), flush=True)
     if args.coverage_only:
         return 0
@@ -169,7 +168,6 @@ def main() -> int:
             per_game_path,
         ),
     }
-    # Keep the experiment helper's registry sidecar within this lane's allowed output tree.
     write_experiment_artifact(
         destination,
         "results.json",

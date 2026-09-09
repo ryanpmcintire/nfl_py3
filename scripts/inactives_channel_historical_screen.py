@@ -114,11 +114,6 @@ def build_historical_increments(
         key: group.sort_values("date_modified")
         for key, group in injuries.groupby(["season", "week", "team"], sort=False)
     }
-    # nflverse snap_counts omits almost every player with zero snaps.  The
-    # historical proxy therefore starts with the weekly active roster and
-    # subtracts players with a positive snap row; this is the same
-    # roster-minus-play construction used by the project's availability
-    # outcome builder and preserves the predeclared zero-snap label.
     played = snaps.loc[snaps["total_snaps"].gt(0), ["season", "week", "game_id", "team", "gsis_id"]]
     played = played.drop_duplicates()
     roster_groups = dict(
@@ -350,7 +345,6 @@ def main() -> int:
     target = features[["game_id", "season", "week", "kickoff"]].drop_duplicates("game_id")
     target["kickoff"] = pd.to_datetime(target["kickoff"], utc=True)
     target = target.loc[target["season"].between(*SEASONS)].copy()
-    # Structural playability uses the unchanged Sunday lock rule: exclude only SNF/MNF.
     target["deadline"] = target["kickoff"].map(lambda _: pd.NaT)
     lock = sunday_pick_lock(target["kickoff"])
     target["deadline"] = target["kickoff"].map(lambda value: pick_deadline(value, lock))

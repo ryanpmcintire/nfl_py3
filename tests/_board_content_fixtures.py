@@ -36,8 +36,6 @@ from nfl_ats.board_content import (
     build_week_timeline,
 )
 
-#: 16 (away, home, spread_line, home_cover_probability) tuples -- enough
-#: variety to exercise every confidence band and a multi-day board.
 _FIXTURE_GAMES: tuple[tuple[str, str, float, float, str, date], ...] = (
     ("NE", "SEA", 3.5, 0.517, "Wednesday", date(2026, 9, 9)),
     ("SF", "LA", 3.5, 0.464, "Thursday", date(2026, 9, 10)),
@@ -57,23 +55,13 @@ _FIXTURE_GAMES: tuple[tuple[str, str, float, float, str, date], ...] = (
     ("DEN", "KC", 3.0, 0.571, "Monday", date(2026, 9, 14)),
 )
 
-#: The Best Pick game -- matches the real 2026 Week 1 card's MIA @ LV pick,
-#: so the fixture's shape mirrors the pilot's real data.
 BEST_PICK_GAME_ID = "2026_01_MIA_LV"
 
-#: "Flips at" lines for a couple of rows (owner request, 2026-09-01),
-#: mirroring the real Week 1 card's NYJ @ TEN example: pick NYJ at TEN -3,
-#: flips to TEN at -2.5. Games absent here carry ``flip_line=None`` -- the
-#: coach-fade BAL @ IND row is the HELD state (``flip_held=True``, "IND
-#: holds from +7.5 to -0.5"), the rest exercise the renderer's em-dash state.
 _FLIP_LINES: dict[str, float] = {
     "2026_01_NYJ_TEN": 2.5,
     "2026_01_DEN_KC": 5.5,
     "2026_01_ARI_LAC": 10.0,
 }
-#: Why each fixture flip happens: the ARI +10.5 row mirrors the real Week 1
-#: card -- the model still likes ARI at +10; the 7.5-10 spread-gap rule
-#: starts firing there (owner question, 2026-09-07).
 _FLIP_REASONS: dict[str, str] = {
     "2026_01_NYJ_TEN": "model",
     "2026_01_DEN_KC": "model",
@@ -81,11 +69,6 @@ _FLIP_REASONS: dict[str, str] = {
 }
 
 
-#: Reader-facing pick deadlines for the fixture rows (UI-20, 2026-09-07):
-#: the owner's min(own kickoff, Sunday 4:00 PM ET) rule applied to the real
-#: Week 1 kickoff times -- the Sunday late-window, night and Monday games
-#: lock at 4:00 PM ET, before they kick off. Games absent here carry
-#: ``lock_label=None`` so the renderer's "unknown" path is exercised too.
 _LOCK_LABELS: dict[str, tuple[str, bool]] = {
     "2026_01_NE_SEA": ("Wed 8:20 PM ET", False),
     "2026_01_SF_LA": ("Thu 8:35 PM ET", False),

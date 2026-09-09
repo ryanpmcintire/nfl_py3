@@ -40,7 +40,7 @@ def test_snap_weights_trades_unique_keys_and_team_effect_exclusion():
     ratings = aggregate_team_unit(table, "OFF_OL", lookup, coefs)
     assert not ratings.duplicated(["season", "team", "unit"]).any()
     buf = ratings.set_index("team").loc["BUF"]
-    assert buf.rating == pytest.approx(3.0)  # (2*1 + 1*7)/3
+    assert buf.rating == pytest.approx(3.0)
     assert (buf.players, buf.snaps, buf.members) == (2, 3, "a;b")
     assert ratings.set_index("team").loc["KC", "rating"] == 1.0
 

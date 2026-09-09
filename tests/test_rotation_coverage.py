@@ -26,11 +26,6 @@ LIVE_ROTATION = REPO_ROOT / "registry" / "rotation_registry.json"
 LIVE_WEAK_SIGNALS = REPO_ROOT / "registry" / "weak_signals.json"
 
 
-# ---------------------------------------------------------------------------
-# Synthetic registries.
-# ---------------------------------------------------------------------------
-
-
 def _weak_signal(**overrides: Any) -> dict[str, Any]:
     body: dict[str, Any] = {
         "recorded_at": "2026-01-01",
@@ -77,21 +72,16 @@ def _rotation_registry(**families: dict[str, Any]) -> rotation.Registry:
 
 def _synthetic_weak_registry() -> weak_signals.Registry:
     return _weak_registry(
-        # Already has a rotation-family match by NAME equality -> skipped entirely.
         already_covered_family=_weak_signal(family="already_covered_family", category="onfield"),
-        # category=control, name contains "oracle" -> reason "oracle".
         weather_oracle_ceiling_check=_weak_signal(
             family="weather_oracle_ceiling_check", category="control"
         ),
-        # category=control, no "oracle" in the name -> reason "positive_control".
         redteam_bye_fade_sham_placebo=_weak_signal(
             family="redteam_bye_fade_sham_placebo", category="control"
         ),
-        # No marker at all -> gets a stub.
         unmatched_family_needs_stub=_weak_signal(
             family="unmatched_family_needs_stub", category="onfield"
         ),
-        # Same bare family string in two different leagues -> collision fallback.
         shared_name_nfl=_weak_signal(family="shared_name_family", league="nfl", category="onfield"),
         shared_name_cfb=_weak_signal(family="shared_name_family", league="cfb", category="onfield"),
     )
@@ -99,11 +89,6 @@ def _synthetic_weak_registry() -> weak_signals.Registry:
 
 def _synthetic_rotation_registry() -> rotation.Registry:
     return _rotation_registry(already_covered_family=_rotation_family())
-
-
-# ---------------------------------------------------------------------------
-# coverage_plan: read-only.
-# ---------------------------------------------------------------------------
 
 
 def test_coverage_plan_skips_already_matched_and_classifies_the_rest() -> None:
@@ -125,23 +110,18 @@ def test_coverage_plan_skips_already_matched_and_classifies_the_rest() -> None:
     assert by_family["unmatched_family_needs_stub"]["stub_name"] == "unmatched_family_needs_stub"
     assert by_family["unmatched_family_needs_stub"]["reason"] is None
 
-    # Two distinct (league, family) rows share the bare name "shared_name_family";
-    # the plan must give them two DISTINCT stub names.
     shared_rows = [row for row in plan if row["weak_signal_family"] == "shared_name_family"]
     assert len(shared_rows) == 2
     stub_names = {row["stub_name"] for row in shared_rows}
     assert len(stub_names) == 2
-    assert "shared_name_family" in stub_names  # the first one keeps the bare name
-    assert any(name != "shared_name_family" for name in stub_names)  # the second is suffixed
+    assert "shared_name_family" in stub_names
+    assert any(name != "shared_name_family" for name in stub_names)
 
-    # Never mutates either registry.
     assert isinstance(plan, list)
 
 
 def test_coverage_plan_never_guesses_a_reason_for_an_unmatched_category() -> None:
     weak_registry = _weak_registry(
-        # category=market, no oracle/reliability/retired marker -> must be a stub, not a reason,
-        # even though it is a below-power weak signal like any other.
         odd_market_family=_weak_signal(family="odd_market_family", category="market"),
     )
     rot_registry = _rotation_registry()
@@ -150,18 +130,7 @@ def test_coverage_plan_never_guesses_a_reason_for_an_unmatched_category() -> Non
     assert plan[0]["action"] == "declare_stub"
 
 
-# ---------------------------------------------------------------------------
-# ENG-37 (ROADMAP.md Phase 13, 2026-09-05): CFB families are out of the
-# NFL-only rotation registry's scope (rule 8) and must never get a stub, even
-# when the name/category would otherwise classify to "oracle" or
-# "positive_control".
-# ---------------------------------------------------------------------------
-
-
 def test_classify_no_rotation_reason_routes_cfb_before_any_other_rule() -> None:
-    # A CFB family whose name/category would otherwise map to "oracle" or
-    # "positive_control" must still classify to "cfb_out_of_scope": scope is
-    # checked first and is the actual reason no NFL window is needed.
     assert (
         rotation.classify_no_rotation_reason(
             "weather_oracle_ceiling_check", "control", league="cfb"
@@ -174,13 +143,10 @@ def test_classify_no_rotation_reason_routes_cfb_before_any_other_rule() -> None:
         )
         == "cfb_out_of_scope"
     )
-    # A family with no other marker at all is still routed by league alone.
     assert (
         rotation.classify_no_rotation_reason("cfb_role_continuity", "onfield", league="cfb")
         == "cfb_out_of_scope"
     )
-    # league defaults to "nfl", so existing callers that never pass it keep
-    # the pre-ENG-37 behaviour exactly.
     assert (
         rotation.classify_no_rotation_reason("weather_oracle_ceiling_check", "control") == "oracle"
     )
@@ -189,17 +155,12 @@ def test_classify_no_rotation_reason_routes_cfb_before_any_other_rule() -> None:
 
 def test_coverage_plan_routes_cfb_families_to_no_rotation_needed_not_a_stub() -> None:
     weak_registry = _weak_registry(
-        # Would classify to "oracle" by name alone -- CFB scope wins anyway.
         cfb_weather_oracle=_weak_signal(
             family="cfb_weather_oracle", league="cfb", category="control"
         ),
-        # No oracle/reliability/retired/control marker at all -- still routed
-        # by league, never falls through to a stub.
         cfb_unmatched_family=_weak_signal(
             family="cfb_unmatched_family", league="cfb", category="onfield"
         ),
-        # Same bare family string in NFL still gets the pre-existing stub
-        # treatment -- only the CFB row is affected.
         cfb_unmatched_family_nfl_twin=_weak_signal(
             family="cfb_unmatched_family_nfl_twin", league="nfl", category="onfield"
         ),
@@ -232,11 +193,6 @@ def test_record_no_rotation_needed_accepts_cfb_out_of_scope() -> None:
     assert rotation.validate_registry(updated) == []
 
 
-# ---------------------------------------------------------------------------
-# Library write paths.
-# ---------------------------------------------------------------------------
-
-
 def test_declare_coverage_stub_sets_expected_fields() -> None:
     registry = _rotation_registry()
     updated = rotation.declare_coverage_stub(
@@ -254,7 +210,6 @@ def test_declare_coverage_stub_sets_expected_fields() -> None:
     assert family.coverage_league == "nfl"
     assert family.coverage_effect_units == ("accuracy_points",)
 
-    # Round-trips through save/load unchanged.
     assert rotation.validate_registry(updated) == []
 
 
@@ -292,8 +247,6 @@ def test_record_no_rotation_needed_validates_reason_and_is_append_only() -> None
             registry, "bogus_family", league="nfl", reason="because I said so"
         )
 
-    # decomposition_of_parent:<family> is admissible even though the automatic
-    # classifier never produces it itself.
     with_decomposition = rotation.record_no_rotation_needed(
         registry, "child_family", league="nfl", reason="decomposition_of_parent:parent_family"
     )
@@ -301,11 +254,6 @@ def test_record_no_rotation_needed_validates_reason_and_is_append_only() -> None
         with_decomposition.no_rotation_needed["child_family"].reason
         == "decomposition_of_parent:parent_family"
     )
-
-
-# ---------------------------------------------------------------------------
-# End-to-end: the plan, applied, is idempotent and mutates nothing pre-existing.
-# ---------------------------------------------------------------------------
 
 
 def _apply_plan(
@@ -341,25 +289,18 @@ def test_apply_is_idempotent_and_touches_no_pre_existing_family() -> None:
     assert len(once.families) > len(original.families)
     assert once.no_rotation_needed
 
-    # The pre-existing family is byte-for-byte the same sub-payload.
     once_payload = rotation.registry_payload(once)
     assert (
         once_payload["families"]["already_covered_family"]
         == (before_payload["families"]["already_covered_family"])
     )
 
-    # A second pass over the now-covered registries plans nothing further.
     second_plan = registry_explorer.coverage_plan(weak_registry, once)
     assert second_plan == []
 
     twice = _apply_plan(weak_registry, once)
     assert rotation.registry_payload(twice) == rotation.registry_payload(once)
     assert rotation.validate_registry(twice) == []
-
-
-# ---------------------------------------------------------------------------
-# CLI, against a tmp copy of the REAL registries.
-# ---------------------------------------------------------------------------
 
 
 def _write_uncovered_rotation_copy(destination: Path) -> None:
@@ -383,11 +324,6 @@ def _write_uncovered_rotation_copy(destination: Path) -> None:
         for name, family in families.items()
         if family.get("status") != rotation.COVERAGE_STUB_STATUS
     }
-    # 2026-09-07: a hand-declared family may legitimately inherit a coverage
-    # stub (mod06_residual_offset_opener_v1 inherits mod08_smooth_cdf_mapping),
-    # and the registry loader refuses a child whose parent is missing. Keep
-    # the transitive parents of every survivor so the copy stays loadable;
-    # every other stub is still stripped, so the dry-run still plans rows.
     pending = [parent for family in kept.values() for parent in family.get("inherits", [])]
     while pending:
         parent = pending.pop()
@@ -443,16 +379,11 @@ def test_cli_declare_coverage_apply_is_additive_and_idempotent(
     after_first = rotation.load_registry(rotation_path)
     after_first_payload = rotation.registry_payload(after_first)
 
-    # Every pre-existing family's sub-payload is byte-for-byte unchanged --
-    # additive growth only, never a rewrite of an existing entry or look.
     for name, family_payload in original_payload["families"].items():
         assert after_first_payload["families"][name] == family_payload, name
 
-    # validate_registry finds no NEW issues: coverage stubs carry no windows,
-    # so they cannot trip the width/overlap/mined-ack checks.
     assert rotation.validate_registry(after_first) == original_issues
 
-    # Second apply is a true no-op: the plan is empty, and the file does not change.
     assert cli.main(["rotation", "declare-coverage", "--apply"]) == 0
     second_apply = json.loads(capsys.readouterr().out)
     assert second_apply["applied_rows"] == 0
@@ -460,13 +391,6 @@ def test_cli_declare_coverage_apply_is_additive_and_idempotent(
 
     after_second_payload = rotation.registry_payload(rotation.load_registry(rotation_path))
     assert after_second_payload == after_first_payload
-
-
-# ---------------------------------------------------------------------------
-# ENG-37 (ROADMAP.md Phase 13, 2026-09-05): the live registry migration
-# (scripts/eng37_rotation_coverage_followups.py) that moved the 54
-# already-declared CFB coverage stubs into no_rotation_needed.
-# ---------------------------------------------------------------------------
 
 
 def test_live_registry_cfb_stubs_are_marked_out_of_scope_and_kept() -> None:
@@ -478,8 +402,6 @@ def test_live_registry_cfb_stubs_are_marked_out_of_scope_and_kept() -> None:
         for family in registry.families.values()
         if family.status == rotation.COVERAGE_STUB_STATUS and family.coverage_league == "cfb"
     ]
-    # Measured 2026-09-04 (ROADMAP.md ENG-37): 54 CFB weak-signal families had
-    # already been given a declared_for_coverage stub before this fix.
     assert len(cfb_stub_families) == 54
 
     cfb_out_of_scope = {
@@ -489,24 +411,16 @@ def test_live_registry_cfb_stubs_are_marked_out_of_scope_and_kept() -> None:
     }
     assert len(cfb_out_of_scope) == 54
 
-    # Every stub's weak-signal family has a matching no_rotation_needed
-    # record, keyed by the weak-signal family name (not the rotation-family
-    # name, which can differ on a collision suffix) -- and the stub Family
-    # entry itself is KEPT (no delete API; declarations are append-only).
     for family in cfb_stub_families:
         assert family.coverage_weak_signal_family in cfb_out_of_scope
         record = cfb_out_of_scope[family.coverage_weak_signal_family]
         assert record.league == "cfb"
 
-    # A re-run of the classifier/plan machinery against the live data never
-    # produces a second no_rotation_needed row or a stub for any of these 54
-    # -- matching_rotation_families already finds their stub by name.
     weak_registry = weak_signals.load_registry(LIVE_WEAK_SIGNALS)
     plan = registry_explorer.coverage_plan(weak_registry, registry)
     planned_families = {row["weak_signal_family"] for row in plan}
     assert planned_families.isdisjoint({f.coverage_weak_signal_family for f in cfb_stub_families})
 
-    # Read-only: never touches weak_signals.json.
     assert LIVE_WEAK_SIGNALS.read_bytes() == before
 
 

@@ -127,7 +127,6 @@ def main() -> None:
     site = contract.write_sites[0]
     assert site.kind == "json.dump("
     assert site.classification == "stdout"
-    # stdout never gates a read-only claim.
     assert contract.is_read_only_verified is True
 
 
@@ -161,7 +160,6 @@ def main() -> None:
     contract = scan_script(_write(tmp_path, source))
     assert len(contract.write_sites) == 1
     assert contract.write_sites[0].classification == "tmp_or_arg"
-    # tmp_or_arg never gates -- this script could self-certify read-only.
     assert contract.gated_write_sites == ()
 
 
@@ -197,9 +195,6 @@ def main() -> None:
     contract = scan_script(_write(tmp_path, source))
     assert len(contract.write_sites) == 1
     assert contract.write_sites[0].kind == "atomic_json"
-    # "some_scratch_path" resolves to nothing artifacts/registry-shaped, so
-    # it is unknown, not a free pass -- distinct from the tmp_or_arg cases
-    # above, which are recognised structurally (a parse_args() namespace).
     assert contract.write_sites[0].classification == "unknown"
 
 

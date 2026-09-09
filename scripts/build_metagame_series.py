@@ -70,15 +70,6 @@ REQUESTED_PBP_COLUMNS = {
 }
 
 
-# Kickoff touchback spot (yardline_100, i.e. yards from the receiving team's
-# own goal line subtracted from 100) by rule era. Read from
-# registry/reference/nfl_era_events.csv's kickoff rows -- restated here as a
-# plain lookup so this script stays a single, runnable file. 2009-2010: spot
-# was the 20 (yardline_100=80). 2011-2015: rule moved the *kickoff*, not the
-# touchback spot, so it stayed at the 20. 2016-2023: touchback moved to the
-# 25 (yardline_100=75). 2024: dynamic kickoff, touchback at the 30
-# (yardline_100=70). 2025+: dynamic kickoff made permanent, touchback moved
-# to the 35 (yardline_100=65).
 def expected_touchback_yardline_100(season: int) -> float:
     if season <= 2015:
         return 80.0
@@ -144,9 +135,6 @@ def pass_rate_series(df: pd.DataFrame) -> dict[str, float]:
     if "xpass" in df.columns:
         out["mean_xpass"] = float(df["xpass"].mean(skipna=True))
     if "pass_oe" in df.columns:
-        # nflverse's pass_oe is a per-play residual on a percentage-point
-        # scale ((actual - expected) * 100), so a single play swings from
-        # -100 to +100; the *season mean* is the league PROE-style trend.
         out["mean_pass_oe_pct_points"] = float(df["pass_oe"].mean(skipna=True))
     return out
 
@@ -295,7 +283,7 @@ def main() -> int:
     output_id = run_id()
     output_dir = REPO_ROOT / "artifacts" / "metagame_series" / output_id
     atomic_parquet(series, output_dir / "series.parquet")
-    stamp_sidecar(output_dir / "series.parquet")  # ENG-38
+    stamp_sidecar(output_dir / "series.parquet")
 
     manifest = {
         "built_at_utc": output_id,
@@ -312,7 +300,7 @@ def main() -> int:
             "stored touchback boolean -- see module docstring."
         ),
     }
-    write_stamped_artifact(manifest, output_dir / "manifest.json")  # ENG-38
+    write_stamped_artifact(manifest, output_dir / "manifest.json")
 
     print(f"\nWrote {len(series)} season rows to {output_dir / 'series.parquet'}")
     if missing_columns:

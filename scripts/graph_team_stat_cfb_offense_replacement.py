@@ -113,11 +113,6 @@ from nfl_ats.graph_team_stat_cfb_feature import (  # noqa: E402
     cfb_graph_column,
 )
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
-
-# WP8 and WP24 are complete and frozen; everything reusable is imported from
-# them rather than re-implemented, so the three experiments cannot drift apart
-# on the shared machinery (table load, paired metric, week blocks, permutation,
-# bootstrap summary, seed, era boundaries, the raw-triple rule).
 from scripts.graph_team_stat_cfb_replacement import (  # noqa: E402
     raw_cell_columns,
     replacement_feature_columns,
@@ -140,14 +135,8 @@ from scripts.graph_team_stat_cfb_replication import (  # noqa: E402
 ARTIFACT_ROOT = REPO_ROOT / "artifacts" / "graph_team_stat_cfb_offense_replacement"
 PREDECLARATION = "docs/graph_team_stat_cfb_offense_replacement.md"
 
-#: The two OFFENCE members of WP8's frozen three-cell list. Declared in section
-#: 2 of the predeclaration and not reopened: no third metric may be added after
-#: these are scored, and neither may be dropped after its sign is seen.
 OFFENCE_METRICS: tuple[str, ...] = ("off_epa_per_play", "off_success_rate")
 
-#: The positive control replaces EXACTLY ONE swapped-in column, named here in
-#: the predeclaration (section 5) rather than chosen at run time. The arms that
-#: do not carry it must reproduce their screen values exactly.
 LEAK_METRIC = "off_epa_per_play"
 
 ARM_NAMES = (
@@ -158,8 +147,6 @@ ARM_NAMES = (
     "replacement_off_success_rate",
 )
 
-#: ``(label, reference_arm, candidate_arm)``. The first four are the declared
-#: CELLS, in priority order; only the first votes on the decision rule.
 CELL_COMPARISONS: tuple[tuple[str, str, str], ...] = (
     ("cell1_primary_offense_two_metric_vs_benchmark", "benchmark", "offense_replacement"),
     (
@@ -175,18 +162,11 @@ CELL_COMPARISONS: tuple[tuple[str, str, str], ...] = (
     ("cell4_offense_two_metric_vs_ablation", "offense_ablation", "offense_replacement"),
 )
 
-#: Report only. No registry row, and it cannot be promoted to one after its sign
-#: is seen.
 DIAGNOSTIC_COMPARISONS: tuple[tuple[str, str, str], ...] = (
     ("diagnostic_report_only_offense_ablation_vs_benchmark", "benchmark", "offense_ablation"),
 )
 
 COMPARISONS = CELL_COMPARISONS + DIAGNOSTIC_COMPARISONS
-
-
-# ---------------------------------------------------------------------------
-# The contract substitution -- the whole point of this work package
-# ---------------------------------------------------------------------------
 
 
 def validate_metric(metric: str) -> None:
@@ -279,11 +259,6 @@ def add_offence_graph_columns(features: pd.DataFrame) -> pd.DataFrame:
     return widened
 
 
-# ---------------------------------------------------------------------------
-# The evaluator (WP8's walk-forward, five arms)
-# ---------------------------------------------------------------------------
-
-
 def run_window(
     features: pd.DataFrame,
     seasons: tuple[int, ...],
@@ -324,8 +299,6 @@ def run_window(
             continue
 
         at_close = group.copy()
-        # A game with no opener quote is unscorable at the opener grade, not a
-        # zero: it is left NaN and drops out of the opener comparison only.
         open_available = pd.to_numeric(group["spread_open"], errors="coerce").notna().to_numpy()
         at_open = group.loc[open_available].copy()
         at_open["spread_line"] = pd.to_numeric(at_open["spread_open"], errors="coerce")
@@ -581,10 +554,6 @@ def main() -> int:
                 f"{primary_null['observed_percentile_of_null']:.1f}th percentile of its own null"
             )
 
-        # Era MAGNITUDES, per the owner rule -- a weaker era is a smaller
-        # number, never an absence. Report only, no extra registry rows. Both
-        # grades, because the decision grade is the opener and the
-        # commensurable grade is the close.
         era_results: dict[str, Any] = {}
         for which in GRADES:
             graded = grade(fitted, which)

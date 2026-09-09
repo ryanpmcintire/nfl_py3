@@ -134,48 +134,15 @@ from nfl_ats.mass_preserving_lattice import (
 
 FloatArray = npt.NDArray[np.float64]
 
-#: Flip to ``False`` to serve the smooth two-way read on every game again.
-#: The sidecar carries both reads per game whenever the policy is served,
-#: so the paired challenger keeps recording either way.
 KEY_LINE_PICK_READ_SERVED = True
-#: Named served policy: lane T's KL1b (atoms 3 and 7, band 2.5, 200-game
-#: floor, the frozen MP1 construction, ``cover + push / 2``).
 KEY_LINE_PICK_READ_POLICY = "key_line_pick_read_v1"
-#: Sidecar written next to ``predictions.csv`` with both reads per game.
 KEY_LINE_PICK_READ_FILENAME = "key_line_pick_read.json"
-#: The atoms the served side is read off the lattice at, in absolute points:
-#: lane T's predeclared sibling KL1b (3 and 7 only). Declared here once;
-#: every caller imports it, nobody re-types it.
 KEY_LINE_ATOMS: tuple[float, ...] = (3.0, 7.0)
-#: Exact-match tolerance: a quarter-point line (6.75, 7.25) or a half-point
-#: line is never on an atom.
 KEY_LINE_TOLERANCE = 1e-9
 
-#: The three states the served policy can be in for one week, written into
-#: the sidecar and the metadata block as ``status``. They exist because two
-#: of them otherwise look identical from outside -- both report zero touched
-#: games -- and a reader has to be able to tell them apart:
-#:
-#: * ``served``      -- the lattice was fitted and at least one served line
-#:                      sat on an atom, so the read decided that game's side.
-#: * ``inapplicable`` -- the lattice was fitted and the atom-equality test
-#:                      matched NO served line. On the owner's pool, whose
-#:                      every quote is a half point, this is the expected
-#:                      steady state; ``applicability.reason`` says so in
-#:                      words. It says nothing about whether a discrete read
-#:                      belongs at those lines -- see the module docstring,
-#:                      where the measured answer is that it belongs more.
-#: * ``not_run``     -- the policy could not be built at all (flag off, or no
-#:                      lattice this week). ``error`` says why, ``fit`` is
-#:                      null, and there is nothing to be applicable ABOUT.
 KEY_LINE_STATUS_SERVED = "served"
 KEY_LINE_STATUS_INAPPLICABLE = "inapplicable"
 KEY_LINE_STATUS_NOT_RUN = "not_run"
-
-
-# ---------------------------------------------------------------------------
-# The atom selection and the decision number (lane T's definitions)
-# ---------------------------------------------------------------------------
 
 
 def key_line_atom(line: float, atoms: Iterable[float] = KEY_LINE_ATOMS) -> float | None:
@@ -358,11 +325,6 @@ def key_line_decision_probability(read: MassPreservingRead) -> float:
     """
 
     return float(read.home_cover_probability)
-
-
-# ---------------------------------------------------------------------------
-# Serving: the policy for one week and the per-game record
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -560,9 +522,6 @@ def apply_key_line_pick_read_to_sweep(
         )
         probability[index] = key_line_decision_probability(read)
     result["home_cover_probability"] = probability
-    # The sweep's own derived columns, recomputed on the touched rows only
-    # with ``MarginModel.line_sweep``'s formulas, so untouched rows stay
-    # bit-for-bit what the sweep produced.
     pick_probability = np.where(probability >= 0.5, probability, 1.0 - probability)
     if "pick_probability" in result.columns:
         current = result["pick_probability"].to_numpy(dtype=float).copy()
@@ -573,11 +532,6 @@ def apply_key_line_pick_read_to_sweep(
         confidence[touched] = pick_probability[touched] - 0.5
         result["confidence"] = confidence
     return result
-
-
-# ---------------------------------------------------------------------------
-# Sidecar and metadata: the per-game served-probability override
-# ---------------------------------------------------------------------------
 
 
 def key_line_sidecar(

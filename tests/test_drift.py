@@ -37,10 +37,6 @@ from nfl_ats.drift import (
 )
 from nfl_ats.weekly import plan_weekly_run
 
-# ---------------------------------------------------------------------------
-# Synthetic frames. Registered columns only, so the monitored set is stable.
-# ---------------------------------------------------------------------------
-
 
 def _features_frame(weeks: list[tuple[int, int]], games_per_week: int = 16) -> pd.DataFrame:
     """Sixteen prior weeks plus whatever target week the caller asks about."""
@@ -77,8 +73,6 @@ def _predictions_frame(
 ) -> pd.DataFrame:
     target = features.loc[features["season"].eq(season) & features["week"].eq(week)]
     if probabilities is None:
-        # Symmetric around 0.5 and entirely inside any plausible reference
-        # band, so the default never trips the probability-drift thresholds.
         probabilities = np.linspace(0.30, 0.70, len(target))
     if outcomes is None:
         outcomes = np.tile([1.0, 0.0], ceil_div(len(target), 2))[: len(target)]
@@ -152,11 +146,6 @@ def season_frame() -> pd.DataFrame:
     return _features_frame([(2025, week) for week in range(1, 18)])
 
 
-# ---------------------------------------------------------------------------
-# Status folding and the raw PSI signal
-# ---------------------------------------------------------------------------
-
-
 def test_worst_status_folds_in_severity_order() -> None:
     assert worst_status(["ok", "ok"]) == "ok"
     assert worst_status(["ok", "warn", "insufficient_history"]) == "warn"
@@ -180,11 +169,6 @@ def test_psi_catches_a_constant_column_going_nonconstant() -> None:
     assert psi(pd.Series(np.zeros(100)), constant_reference) == pytest.approx(0.0, abs=1e-9)
 
 
-# ---------------------------------------------------------------------------
-# Feature and missingness drift table
-# ---------------------------------------------------------------------------
-
-
 def test_feature_table_reports_no_alerts_on_a_stable_week(
     season_frame: pd.DataFrame,
 ) -> None:
@@ -193,9 +177,6 @@ def test_feature_table_reports_no_alerts_on_a_stable_week(
     assert len(keys) == 8
     table = feature_drift_table(current, reference)
     summary = summarize_feature_drift(table)
-    # A 16-game window cannot score PSI (below the noise floor), and a mean
-    # shift of a 16-game sample sits within a hair of the warn tier, so the
-    # binding assertions here are "no alert, nothing silently dropped".
     assert summary["status"] != "alert"
     assert summary["alerts"] == []
     row = table.loc[table["column"].eq("spread_line")].iloc[0]
@@ -256,11 +237,6 @@ def test_non_numeric_garbage_counts_as_missing(season_frame: pd.DataFrame) -> No
     assert row["missingness_current_pct"] == 100.0
 
 
-# ---------------------------------------------------------------------------
-# Probability and calibration drift
-# ---------------------------------------------------------------------------
-
-
 def test_probability_drift_flags_a_mean_shift_and_passes_a_matched_one() -> None:
     local = np.random.default_rng(11)
     reference = pd.Series(np.clip(local.normal(0.5, 0.15, 400), 0.02, 0.98))
@@ -269,7 +245,6 @@ def test_probability_drift_flags_a_mean_shift_and_passes_a_matched_one() -> None
     assert summary["status"] == "warn"
     assert summary["delta_mean"] > 0.05
 
-    # Same spread, same size, centered exactly on the reference mean.
     matched = pd.Series(np.linspace(0.42, 0.58, 16))
     assert probability_drift_summary(matched, reference)["status"] == "ok"
 
@@ -313,10 +288,6 @@ def test_calibration_drift_detects_recent_miscalibration() -> None:
             }
         )
 
-    # Prior history: 500 settled games in weeks 1-32; recent: 96 in weeks 40-45.
-    # The most recent four distinct weeks therefore hold >=32 games, the prior
-    # holds well over 200, and the calibrated recent window sits far enough
-    # from the warn boundary that the comparison is not RNG-flaky.
     prior = pd.concat(
         [
             calibrated_block(250, season=2024, week_start=1, games_per_week=16),
@@ -330,7 +301,6 @@ def test_calibration_drift_detects_recent_miscalibration() -> None:
     )
     assert ok_summary["status"] == "ok"
 
-    # Recent window: probabilities say 0.35, outcomes hit 100% -- Brier blows up.
     n_recent = 48
     miscalibrated = pd.DataFrame(
         {
@@ -351,11 +321,6 @@ def test_calibration_drift_detects_recent_miscalibration() -> None:
 def test_ece_is_zero_for_a_perfectly_calibrated_constant_and_positive_otherwise() -> None:
     assert _ece(np.array([0.5, 0.5]), np.array([1.0, 0.0])) == pytest.approx(0.0)
     assert _ece(np.array([0.9, 0.9]), np.array([0.0, 0.0])) == pytest.approx(0.9)
-
-
-# ---------------------------------------------------------------------------
-# Full report assembly and artifact writing
-# ---------------------------------------------------------------------------
 
 
 def test_build_drift_report_end_to_end(season_frame: pd.DataFrame) -> None:
@@ -421,17 +386,10 @@ def test_write_drift_artifacts_creates_json_and_csv(tmp_path: Path) -> None:
     assert not reloaded.empty
 
 
-# ---------------------------------------------------------------------------
-# Weekly-pipeline hook
-# ---------------------------------------------------------------------------
-
-
 def test_weekly_plan_includes_optional_drift_step_after_publish(tmp_path: Path) -> None:
     data_root = _write_weekly_data_root(tmp_path)
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root, skip_prospective=True)
     names = [step.name for step in steps]
-    # Since 85d2e79 the plan ends with the mandatory publish-board step; the
-    # optional drift report sits immediately before it, still after publish.
     assert names[-1] == "publish-board"
     assert names[-2] == "drift-report"
     assert names.index("drift-report") > names.index("publish-predictions")
@@ -441,7 +399,6 @@ def test_weekly_plan_includes_optional_drift_step_after_publish(tmp_path: Path) 
     assert drift_step.skipped is False
     assert drift_step.command[0] == "drift-report"
     assert "--feature-profile" in drift_step.command
-    # Read-only monitoring sits strictly after the publish, never on its path.
     assert names.index("publish-predictions") < names.index("drift-report")
 
 

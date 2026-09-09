@@ -26,13 +26,6 @@ from nfl_ats.constants import (
 from nfl_ats.data import DataContractError, validate_schedules, validate_team_stats
 from nfl_ats.graph_ratings import GraphRatingConfig, add_schedule_strength_features
 
-#: Builder version for the base game-feature families (market, context, elo,
-#: experience, offense/results/defense state, graph, schedule rating, bias,
-#: surface switch).  The enrichment builders already stamp their own versions
-#: (``pbp.PBP_FEATURE_VERSION``, ``players.PLAYER_FEATURE_VERSION``,
-#: ``quarterbacks.QB_FEATURE_VERSION``); this one existed only implicitly until
-#: ``nfl_ats.lineage`` needed to name the builder behind every card field.
-#: Bump it when a base family's definition changes.
 BUILDER_VERSION = "v1"
 
 
@@ -65,34 +58,6 @@ def add_ats_outcomes(schedules: pd.DataFrame) -> pd.DataFrame:
     return result
 
 
-# ---------------------------------------------------------------------------
-# The decision line: the number the pool actually grades (docs/splash_lines.md)
-# ---------------------------------------------------------------------------
-#
-# ``spread_line`` enters the canonical table in ``add_ats_outcomes`` above and
-# is the number every downstream decision is expressed and graded against:
-# ``ats_margin`` is ``result - spread_line``, the served cover probability is
-# asked AT that line, and the pool settles each pick on it.  Until 2026-09-08
-# the column was always nflverse's ``schedules.spread_line`` -- a *closing*
-# proxy -- while the owner's pool grades on the spread printed on its own
-# contest board, frozen Tuesday at noon Eastern.  Measured 2026-09-08 on the
-# Week 1 board: the two disagreed on 8 of 16 games.
-#
-# :func:`apply_decision_lines` is the one seam that replaces the proxy with the
-# real graded number.  It runs on the *schedules* frame, before any feature is
-# derived from it, so every table built downstream -- ``game_features``,
-# ``game_features_pbp``, ``game_features_player``, ``game_features_weak_stack``
-# and every research table cut from them -- inherits the same line without a
-# change of its own.  The Splash-specific half (finding captures on disk,
-# validating them, recording their identity in the build manifest) lives in
-# ``nfl_ats.pool_decision_lines``; this module stays free of that import graph,
-# for the same "keep the foundational module shallow" reason recorded on
-# :func:`add_surface_switch_features` below.
-
-#: Version of the override/refusal rules in :func:`apply_decision_lines`.
-#: Recorded in the feature-table manifest, so a table can say which semantics
-#: produced its lines.  Bump it when the rules below change.
-#: ``v2`` (2026-09-08): refuse on retroactivity (capture at/after kickoff), not on played-ness.
 DECISION_LINE_VERSION = "v2"
 
 
@@ -130,9 +95,7 @@ class AppliedDecisionLines:
     """What one :class:`DecisionLineOverride` actually did to a schedules frame."""
 
     override: DecisionLineOverride
-    #: Every scheduled game the override covered, in schedule order.
     game_ids: tuple[str, ...]
-    #: The subset whose line actually moved off the incoming (nflverse) value.
     changed_game_ids: tuple[str, ...]
 
 
@@ -221,7 +184,6 @@ def apply_decision_lines(
         else pd.Series(False, index=result.index)
     )
 
-    # Built once, and only when a covered game is played; an upcoming week never needs it.
     kickoffs: pd.Series | None = None
 
     applied: list[AppliedDecisionLines] = []
@@ -264,7 +226,6 @@ def apply_decision_lines(
         completed_mask = mask & played
         completed_ids = game_ids.loc[completed_mask]
         if not completed_ids.empty:
-            # A played game is fine when the board predates its kickoff; only later is retroactive.
             captured_at = override.captured_at
             if captured_at is None or captured_at.tzinfo is None:
                 raise DataContractError(
@@ -647,8 +608,6 @@ def _team_game_log(schedules: pd.DataFrame) -> pd.DataFrame:
                     "game_id": history["game_id"].astype(str),
                     "game_type": history["game_type"].astype(str),
                     "result": history["result"],
-                    # Team perspective, matching `ats_residual` in the team-state
-                    # builder: the schedule's ats_margin is home-signed.
                     "team_ats_margin": sign * history["ats_margin"],
                 }
             )
@@ -690,7 +649,6 @@ def add_bias_features(games: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFr
         )
     }
     completed = log.loc[log["result"].notna()]
-    # One strictly-earlier-than lookup table per team-season, ordered by date.
     histories: dict[tuple[str, int], tuple[np.ndarray, np.ndarray]] = {}
     for key, group in completed.groupby(["team", "season"], sort=False):
         team_key, season_key = cast("tuple[str, int]", key)
@@ -740,22 +698,6 @@ def add_bias_features(games: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFr
     return result
 
 
-# ---------------------------------------------------------------------------
-# Surface-switch tilt candidate (docs/surface_switch_feature_arm.md)
-# ---------------------------------------------------------------------------
-#
-# Ported VERBATIM from ``nfl_ats.surface_switch_tilt_overlay.surface_switch_flag_by_game``
-# (itself ported verbatim from ``scripts/nfl_weather_battery_screen.py``'s
-# ``_normalize_surface``/``load_population``), so this training-time feature
-# is bit-identical to the pick-level overlay's own flag and to the registry-
-# measured construct it is named after (``weather_battery_surface_switch_grass_to_turf``,
-# ``surface_familiarity_r1_turf_venue_visitor_split``). Duplicated here rather
-# than imported: ``surface_switch_tilt_overlay`` sits well above ``features``
-# in the dependency graph (it pulls in ``clv``/``prospective_scoring``), and
-# this module is foundational, so a verbatim, independently-tested copy keeps
-# the import graph shallow -- the same "ported, not re-derived" convention
-# already used twice for this exact construct (the screen script and the
-# overlay module).
 _SURFACE_SWITCH_GRASS_SURFACES = frozenset({"grass", "dessograss"})
 _SURFACE_SWITCH_TURF_SURFACES = frozenset(
     {"fieldturf", "sportturf", "matrixturf", "astroturf", "a_turf", "astroplay"}
@@ -873,8 +815,6 @@ def _build_features_pass(
         offseason_retention=offseason_retention,
     )
     games = attach_team_states(games, states, offseason_retention=offseason_retention)
-    # Reads the caller's full schedules frame (postseason included) rather than
-    # this pass's filtered games, so the values are pass-independent.
     games = add_bias_features(games, schedules)
     games = add_surface_switch_features(games, schedules)
 
@@ -901,8 +841,6 @@ def _build_features_pass(
         else pd.Series("Home", index=games.index, dtype="string")
     )
     games["neutral_site"] = location.astype(str).str.lower().eq("neutral").astype(int)
-    # Postseason weeks clamp to the top of the regular-season cycle instead of
-    # wrapping the cyclic encoding back to September. A no-op for REG rows.
     encoded_week = pd.to_numeric(games["week"], errors="raise").clip(upper=18)
     games["week_sin"] = np.sin(2.0 * np.pi * encoded_week / 18.0)
     games["week_cos"] = np.cos(2.0 * np.pi * encoded_week / 18.0)

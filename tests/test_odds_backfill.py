@@ -130,7 +130,6 @@ def test_planner_generates_dst_correct_decision_timestamps() -> None:
     targets = plan_backfill(schedule, 2024, 2024)
     assert len(targets) == 12
     by_key = {(target.week, target.label): target for target in targets}
-    # September week: Eastern daylight time (UTC-4).
     assert by_key[(2, "tue_open")].requested_at_utc == datetime(2024, 9, 10, 13, 0, tzinfo=UTC)
     assert by_key[(2, "thu_pre_tnf")].requested_at_utc == datetime(2024, 9, 12, 22, 0, tzinfo=UTC)
     assert by_key[(2, "sat_midday")].requested_at_utc == datetime(2024, 9, 14, 16, 0, tzinfo=UTC)
@@ -141,13 +140,11 @@ def test_planner_generates_dst_correct_decision_timestamps() -> None:
         2024, 9, 15, 20, 15, tzinfo=UTC
     )
     assert by_key[(2, "mon_pre_mnf")].requested_at_utc == datetime(2024, 9, 16, 23, 0, tzinfo=UTC)
-    # November week: Eastern standard time (UTC-5) after the DST change.
     assert by_key[(10, "tue_open")].requested_at_utc == datetime(2024, 11, 5, 14, 0, tzinfo=UTC)
     assert by_key[(10, "sun_early_close")].requested_at_utc == datetime(
         2024, 11, 10, 17, 30, tzinfo=UTC
     )
     assert by_key[(10, "mon_pre_mnf")].requested_at_utc == datetime(2024, 11, 12, 0, 0, tzinfo=UTC)
-    # h2h is planned only at the Tuesday open and Sunday early close.
     assert by_key[(2, "tue_open")].markets == "spreads,totals,h2h"
     assert by_key[(2, "sun_early_close")].markets == "spreads,totals,h2h"
     assert by_key[(2, "tue_open")].credits == 30
@@ -160,7 +157,6 @@ def test_planner_generates_dst_correct_decision_timestamps() -> None:
 
 
 def test_planner_spans_dst_transition_within_one_week() -> None:
-    # DST ended 02:00 on Sunday 2021-11-07, in the middle of this week's cycle.
     schedule = _schedule_frame([(2021, 9, "2021-11-07")])
     targets = plan_backfill(schedule, 2021, 2021)
     by_label = {target.label: target for target in targets}
@@ -169,8 +165,6 @@ def test_planner_spans_dst_transition_within_one_week() -> None:
 
 
 def test_planner_anchor_ignores_rescheduled_tuesday_games() -> None:
-    # 2020 week 5: BUF-TEN was moved to Tuesday 2020-10-13; the anchor Sunday
-    # must remain 2020-10-11 (mode of the week's Tue..Mon cycle Sundays).
     schedule = _schedule_frame(
         [
             (2020, 5, "2020-10-08"),
@@ -320,7 +314,6 @@ def test_execute_backfill_stops_at_quota_floor(tmp_path: Path) -> None:
     assert result["requests_remaining"] == 610.0
     assert len(result["stored_snapshots"]) == 2
     assert sleeps == [1.0]
-    # The archived rows are matched to the schedule and marked as backfill.
     stored = pd.read_parquet(tmp_path / result["stored_snapshots"][0] / "quotes.parquet")
     assert stored["nflverse_game_id"].eq("2024_02_CIN_KC").all()
     assert stored["capture_kind"].eq(HISTORICAL_CAPTURE_KIND).all()
@@ -378,7 +371,6 @@ def test_execute_backfill_budget_precheck_and_collisions(tmp_path: Path) -> None
             fetch=_FakeFetcher(remaining=["1", "1"]),
             log=lambda message: None,
         )
-    # Two requested times resolving to one provider snapshot must not overwrite.
     fetcher = _FakeFetcher(
         remaining=["19980", "19960"],
         timestamps=["2024-09-10T12:55:00Z", "2024-09-10T12:55:00Z"],
@@ -404,9 +396,6 @@ def test_cli_odds_backfill_dry_run_and_execution(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    # ENG-30: goes through the real CLI, whose `_cmd_odds_backfill` enforces
-    # `source_policy.require_private_raw_destination` on this destination --
-    # plain `tmp_path` trips that guard when `--basetemp` is pointed in-repo.
     data_root = private_raw_root / "data"
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(data_root))
     features_path = private_raw_root / "game_features.parquet"

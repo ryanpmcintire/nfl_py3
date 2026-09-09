@@ -76,10 +76,6 @@ from nfl_ats.cfb_common import blocked_bootstrap_positions, week_block_indices
 from nfl_ats.data import require_columns
 from nfl_ats.margin import MarginModel, fit_market_baseline
 
-# ---------------------------------------------------------------------------
-# The aligned feature contract
-# ---------------------------------------------------------------------------
-
 ALIGNED_TRANSFER_FEATURE_COLUMNS: tuple[str, ...] = (
     "spread_line",
     "total_line",
@@ -97,9 +93,6 @@ ALIGNED_TRANSFER_FEATURE_COLUMNS: tuple[str, ...] = (
     "diff_def_epa_per_play",
 )
 
-# Frozen, taken verbatim from the project's standing ridge convention
-# (CFB_BENCHMARK_RIDGE_ALPHA / the NFL market_residual model). Never tuned
-# in this module -- a swept alpha would be a new, separate question.
 CROSS_LEAGUE_RIDGE_ALPHA = 10.0
 CROSS_LEAGUE_DISTRIBUTION_FRACTION = 0.20
 CROSS_LEAGUE_MIN_DISTRIBUTION_ROWS = 10
@@ -124,11 +117,6 @@ def _require_transfer_columns(
     frame: pd.DataFrame, dataset: str, feature_columns: tuple[str, ...]
 ) -> None:
     require_columns(frame, (*_REQUIRED_BASE_COLUMNS, *feature_columns), dataset)
-
-
-# ---------------------------------------------------------------------------
-# Preprocessing shared by every arm
-# ---------------------------------------------------------------------------
 
 
 def fit_pooled_preprocessor(
@@ -198,11 +186,6 @@ def _fit_theta(
     model = Ridge(alpha=ridge_alpha, fit_intercept=False)
     model.fit(design, target)
     return np.asarray(model.coef_, dtype=np.float64)
-
-
-# ---------------------------------------------------------------------------
-# Single-league ridge fit + the mismatch measurement
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -318,11 +301,6 @@ def measure_league_mismatch(
     )
 
 
-# ---------------------------------------------------------------------------
-# Derived shrinkage strength (empirical-Bayes / random-effects partial pooling)
-# ---------------------------------------------------------------------------
-
-
 def _bootstrap_theta_variance(
     frame: pd.DataFrame,
     imputer: SimpleImputer,
@@ -352,9 +330,6 @@ def _bootstrap_theta_variance(
         target = _target_values(resample)
         draws[sample_index] = _fit_theta(design, target, ridge_alpha)
     variance = np.var(draws, axis=0, ddof=1)
-    # A component that never moves across resamples (e.g. a constant column
-    # after imputation) would otherwise divide by zero downstream; floor it
-    # at a tiny epsilon rather than special-casing.
     return np.maximum(variance, 1e-12)
 
 
@@ -440,12 +415,6 @@ def derive_shrinkage_weights(
         tau_squared=tau_squared,
         weights=weights,
     )
-
-
-# ---------------------------------------------------------------------------
-# A fitted coefficient vector, wrapped so MarginModel's machinery applies
-# unchanged (cover probabilities, line sweep, the outcome bootstrap, ...)
-# ---------------------------------------------------------------------------
 
 
 class _FixedLinearRegressor(BaseEstimator):
@@ -545,10 +514,6 @@ def _build_transfer_margin_model(
         training_max_gameday=ordered["gameday"].max().date().isoformat(),
     )
 
-
-# ---------------------------------------------------------------------------
-# The three transfer arms
-# ---------------------------------------------------------------------------
 
 TransferArm = Literal["target_only", "joint", "hierarchical", "prior_mean"]
 TRANSFER_ARMS: tuple[TransferArm, ...] = ("target_only", "joint", "hierarchical", "prior_mean")
@@ -690,10 +655,6 @@ def fit_prior_mean_ridge_model(
         target_training, coefficient_fn, imputer, scaler, feature_columns, ridge_alpha, "prior_mean"
     )
 
-
-# ---------------------------------------------------------------------------
-# Walk-forward driver
-# ---------------------------------------------------------------------------
 
 _PREDICTION_PASSTHROUGH = (
     "game_id",

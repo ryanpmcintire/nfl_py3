@@ -175,7 +175,7 @@ def build_team_game_table(features: pd.DataFrame) -> pd.DataFrame:
     away_rows["team_ats_margin"] = -away_rows["ats_margin"]
 
     long = pd.concat([home_rows, away_rows], ignore_index=True)
-    long = long.loc[long["team_covered"].notna()].copy()  # pushes: home_cover is NaN
+    long = long.loc[long["team_covered"].notna()].copy()
     long["week_block"] = long["season"].astype(int) * 100 + long["week"].astype(int)
     return long
 
@@ -191,7 +191,7 @@ def quartile_market_check(long: pd.DataFrame, lagged: pd.DataFrame) -> dict[str,
     n_total = len(merged)
     n_pair = n_q1 + n_q4
 
-    raw_gap_pct = (q1_cover - q4_cover) * 100.0  # positive favours the candidate hypothesis
+    raw_gap_pct = (q1_cover - q4_cover) * 100.0
     fraction_of_slate = n_pair / n_total
     scaled_effect_pct = raw_gap_pct * fraction_of_slate
 
@@ -364,7 +364,7 @@ def main() -> None:
 
     results["elapsed_seconds"] = time.time() - started
     output_path = OUT_DIR / "results.json"
-    write_stamped_artifact(results, output_path)  # ENG-38
+    write_stamped_artifact(results, output_path)
     print(f"\nwrote {output_path}")
 
 

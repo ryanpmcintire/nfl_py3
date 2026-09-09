@@ -26,8 +26,6 @@ from nfl_ats.provenance import sha256_file
 
 ROLE_ACTIONS_DATA_VERSION = "v1"
 
-# The final, on-disk column contract. ``sacks_taken`` is the renamed
-# passer-sacked count (see :func:`canonicalize_role_actions`).
 ROLE_ACTIONS_REQUIRED_COLUMNS = (
     "player_id",
     "season",

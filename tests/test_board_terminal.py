@@ -111,9 +111,6 @@ def test_terminal_stylesheet_verbatim_prefix_is_byte_identical_to_the_mockup() -
     marker = "/* degraded states -- appended to verbatim mockup sheet */"
     assert marker in css
     verbatim_prefix = css[: css.index(marker)].rstrip()
-    # The verbatim prefix must not itself contain any "appended" marker --
-    # i.e. everything before the first appended-block comment is untouched
-    # mockup CSS.
     assert "appended to verbatim mockup sheet" not in verbatim_prefix
 
 
@@ -142,7 +139,6 @@ def test_terminal_renders_all_sixteen_games() -> None:
         assert game.home in html
         assert game.pick_team in html
         assert game.probability_text in html
-    # 16 game rows (15 plain + 1 best-pick) plus 4 day-group header rows.
     assert html.count('<tr class="game') == 16
     assert html.count('<tr class="grp">') == 4
 
@@ -197,9 +193,6 @@ def test_terminal_stylesheet_class_set_is_subset_of_mockup_plus_allowlist() -> N
         "note",
         "chart-empty",
         "is-active",
-        # UI-20(a), 2026-09-05: the "Why this pick" collapsed row under each
-        # pick row on the board table -- an additive state row, not a mockup
-        # redesign (see board_terminal._why_this_pick_row_html).
         "explain",
     }
     extra = generated_classes - mockup_defined - allowlist
@@ -333,7 +326,6 @@ def test_history_renders_settled_challenger_assessment_without_play_decision_thr
     html = board_terminal.render_history_page(content)
     assert "Challenger X" in html
     assert "+2.50 pts" in html
-    # Reader wording, not the research token; this assertion used to pin the banned string.
     assert "87% likely better" in html
     assert "probability_positive" not in html
     assert "frozen decision/opener line" in html
@@ -350,9 +342,6 @@ def test_terminal_headline_main_foot_text_stays_mockup_scale() -> None:
     content = build_fixture_content()
     html = board_terminal.render(content)
     assert content.headline.played_card_foot_text in html
-    # The layout hazard is VISIBLE text: strip non-rendered <script> blocks
-    # first (the UI-16 assistant corpus embeds the long caption as data in
-    # its application/json blob, which cannot balloon any flex box).
     visible = re.sub(r"<script.*?</script>", "", html, flags=re.S)
     assert content.headline.played_card_caption not in visible
     assert len(content.headline.played_card_foot_text) < 80
@@ -365,19 +354,9 @@ def test_terminal_headline_main_has_a_defensive_max_width_rule() -> None:
 
     rule_bodies = re.findall(r"\.headline-main\{([^}]*)\}", board_terminal.TERMINAL_STYLE_CSS)
     assert len(rule_bodies) >= 2, "expected the mockup rule plus an appended override"
-    override = rule_bodies[-1]  # CSS cascade: the LAST rule with equal specificity wins
+    override = rule_bodies[-1]
     assert "max-width" in override
     assert "flex:01auto" in override.replace(" ", "")
-
-
-# ---------------------------------------------------------------------------
-# Mobile-width overflow fix (2026-08-31 390px-iframe audit): a policy overlay
-# id, challenger-ledger registry keys, a findings trace chip, a watching-
-# lead's channel name/artifact path, and a signal-registry name are all long
-# unbreakable mono identifiers that escaped every overflow-clipping ancestor
-# at narrow widths. See ``tests/test_board_site.py`` for the real-content,
-# real-page HTML scan; these test the stylesheet contract directly.
-# ---------------------------------------------------------------------------
 
 
 def _selectors_with_declaration(css: str, declaration_pattern: str) -> set[str]:
@@ -412,12 +391,12 @@ def test_mobile_overflow_fix_css_covers_every_long_identifier_class() -> None:
         board_terminal.TERMINAL_STYLE_CSS, r"overflow-wrap\s*:\s*anywhere"
     )
     required = {
-        ".policy-note",  # index.html + model.html: policy overlay id / model id
-        ".evidence-pill",  # model.html: challenger-ledger registry keys
-        ".trace-chip",  # findings.html: registry signal name trace chip
-        ".attr-row .chan",  # findings.html watching-leads + index.html dive attribution
-        ".attr-row .chan-sub",  # findings.html watching-leads artifact paths
-        ".mono-id",  # findings.html signal-registry name, model.html ledger arm fallback
+        ".policy-note",
+        ".evidence-pill",
+        ".trace-chip",
+        ".attr-row .chan",
+        ".attr-row .chan-sub",
+        ".mono-id",
     }
     missing = required - covered
     assert not missing, f"no overflow-wrap:anywhere rule for: {missing}"
@@ -469,13 +448,7 @@ def test_terminal_attribution_labels_are_plain_english() -> None:
     assert len(best_dive.attribution.rows) <= 6
 
 
-# ---------------------------------------------------------------------------
-# Game selector + line-offset adjuster (2026-08-31 owner redirect: the
-# standalone "spread explorer" page folded into This Week's deep dive).
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.full  # ENG-11: renders from real on-disk artifacts (dominates --durations)
+@pytest.mark.full
 def test_this_week_page_renders_from_real_artifacts_with_guard_proven_adjusters(
     site_content: SiteContent,
 ) -> None:
@@ -486,9 +459,6 @@ def test_this_week_page_renders_from_real_artifacts_with_guard_proven_adjusters(
 
     html = board_terminal.render(site_content.board)
     assert html.startswith("<!doctype html>")
-    # UI-20 layout A (2026-09-05): the board's own rows are the selector now
-    # (no more separate ``.dive-tab`` strip) -- one row-link per game, one
-    # inspector panel per game.
     assert html.count('class="row-link"') == len(site_content.board.games)
     assert html.count('<div class="dive-panel"') == len(site_content.board.games)
     dives_with_adjuster = [dive for dive in site_content.board.dives if dive.adjuster is not None]
@@ -506,7 +476,6 @@ def test_board_rows_select_every_game_and_default_to_the_best_pick() -> None:
     html = board_terminal.render(content)
     assert html.count('class="row-link"') == len(content.games)
     assert html.count('<div class="dive-panel"') == len(content.games)
-    # Exactly one panel is visible by default -- the Best Pick's.
     assert html.count(" hidden>") == len(content.games) - 1
 
 
@@ -650,11 +619,6 @@ def test_terminal_index_title_stays_unqualified() -> None:
     assert "<title>ATS Terminal</title>" in html
 
 
-# ---------------------------------------------------------------------------
-# The Model page (the aggregate model record; row-level outcomes live in History).
-# ---------------------------------------------------------------------------
-
-
 def test_model_page_renders_real_ledger_and_season_facts(site_content: SiteContent) -> None:
     html = board_terminal.render_model_page(site_content.model)
     assert html.startswith("<!doctype html>")
@@ -694,8 +658,8 @@ def test_model_page_promoted_row_never_prints_the_bare_no_cited_evidence_phrase(
     html = board_terminal.render_model_page(site_content.model)
     assert "NO CITED EVIDENCE" not in html
     promoted = next(row for row in site_content.model.rows if row.is_promoted)
-    assert not promoted.evidence  # the promoted row never cites outside registry evidence
-    assert "PROMOTED" in html  # the status badge itself still renders
+    assert not promoted.evidence
+    assert "PROMOTED" in html
 
 
 def test_model_page_ledger_evidence_collapses_past_the_inline_limit(
@@ -789,12 +753,6 @@ def test_model_ledger_every_live_challenger_arm_has_a_human_display_name() -> No
         )
         assert CHALLENGER_DISPLAY_NAMES[challenger_id].strip()
         assert CHALLENGER_DISPLAY_NAMES[challenger_id] != challenger_id
-
-
-# ---------------------------------------------------------------------------
-# What We've Learned (Findings, plus the compact signal-registry summary
-# that replaced the standalone Signal Ledger page).
-# ---------------------------------------------------------------------------
 
 
 def test_findings_page_renders_real_findings(site_content: SiteContent) -> None:
@@ -906,10 +864,6 @@ def test_findings_page_signal_registry_summary_renders(site_content: SiteContent
     for status, count in summary.counts_by_status.items():
         assert str(count) in html, f"missing count for status {status!r}"
     for row in summary.notable:
-        # Rendered as words, not the raw registry id (owner mandate,
-        # 2026-09-05: "this is for humans not the opus autist") --
-        # ``board_terminal.humanize_identifier`` is the one place that
-        # translation happens.
         assert escape(row.name.replace("_", " ")) in html
 
 
@@ -944,12 +898,6 @@ def test_cut_legacy_page_renderers_no_longer_exist() -> None:
     assert not hasattr(board_terminal, "render_pool_workbench_page")
     assert not hasattr(board_terminal, "render_models_page")
     assert not hasattr(board_terminal, "render_signal_ledger_page")
-
-
-# ---------------------------------------------------------------------------
-# ENG-34: the SOURCES panel -- ENG-14's source_policy card state, surfaced
-# on the This Week page beside the board.
-# ---------------------------------------------------------------------------
 
 
 def _content_with_source_policy(view: SourcePolicyView):
@@ -1021,14 +969,12 @@ def test_sources_panel_renders_one_line_per_source_with_worst_wins_state() -> No
     )
     html = board_terminal.render(_content_with_source_policy(view))
     assert 'class="sources-panel policy-note"' in html
-    # Header line carries the worst-wins card state, not either row's own.
     assert '<span class="src-state degraded">DEGRADED</span></b>' in html
-    # Rendered as words, not the raw source id (owner mandate, 2026-09-05).
     assert "odds opener" in html
     assert 'class="src-state complete"' in html
     assert "injuries nflverse" in html
     assert 'class="src-state degraded"' in html
-    assert "no snapshot" in html  # observed_at_text for the unobserved row
+    assert "no snapshot" in html
     assert (
         "complete: fresh enough to use; degraded: we fell back to an older copy; "
         "blocked: we refused to publish" in html
@@ -1149,11 +1095,6 @@ def test_lineup_caption_and_missing_injury_report_are_plain_words() -> None:
     assert "injury feed:" not in html
 
 
-# ---------------------------------------------------------------------------
-# Per-game pick lock time on the board and in the inspector (2026-09-07)
-# ---------------------------------------------------------------------------
-
-
 def _board_row_html(html: str, game_id: str) -> str:
     match = re.search(
         rf'<tr class="game[^"]*" data-game-id="{re.escape(game_id)}".*?</tr>', html, flags=re.S
@@ -1175,9 +1116,7 @@ def test_each_board_row_prints_when_its_pick_locks() -> None:
     assert '<span class="lock">Locks Sun 4:00 PM ET, before kickoff</span>' in monday
     unknown = _board_row_html(html, "2026_01_ARI_LAC")
     assert 'class="lock"' not in unknown
-    # The kickoff cell keeps its date label above the lock line.
     assert "THU 09/10" in thursday
-    # Styled as a muted second line, not inline with the date.
     assert "table.board td.kickoff .lock{display:block" in html
 
 
@@ -1305,8 +1244,6 @@ def test_week_timeline_names_only_the_next_check(now: str, expected: str, absent
     assert absent not in html
     assert "Pool lines locked Tuesday 12:00 PM ET" in html
     assert "kickoff, or Sunday 4:00 PM ET, whichever comes first" in html
-    # The wall itself: day headings, per-game deadline lines, the publication
-    # sentence, and the list markup must not be on the page any more.
     for banned in (
         "Wednesday, September 09",
         "Thursday, September 10",
@@ -1319,7 +1256,6 @@ def test_week_timeline_names_only_the_next_check(now: str, expected: str, absent
         "<li>",
     ):
         assert banned not in html
-    # ...but the assistant still has every deadline to answer from.
     assert dict(timeline.deadlines)["2026_01_DEN_KC"]
     assert timeline.groups
     for token in (*BANNED_BOILERPLATE, "refresh_wed", "2026-09-08T"):
@@ -1352,11 +1288,6 @@ def test_week_timeline_is_on_this_week_page_and_escapes_content() -> None:
     assert "<unsafe>" not in html
 
 
-# ---------------------------------------------------------------------------
-# UI-20(f): the injury state chip under the board
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     ("note", "label", "state"),
     [
@@ -1379,7 +1310,6 @@ def test_injury_state_chip_is_scannable_beside_its_own_sentence(
     chip = f'<span class="src-state {state}">{label}</span>'
     line = f"<b>Injury reports</b> {chip} &mdash; {escape(note)}"
     assert html.count(line) == 1
-    # Still between the board table and the tiebreaker disclosure.
     assert html.index("</tbody></table>") < html.index(line) < html.index("Tiebreaker guess")
 
 
@@ -1391,11 +1321,6 @@ def test_injury_state_chip_borrows_only_existing_source_state_ink() -> None:
     for _prefix, _label, state in board_content._INJURY_STATES:
         assert f".src-state.{state}" in css.replace(",", ",\n").replace(" ", ""), state
     assert ".src-state.not_recorded" in css.replace(",", ",\n").replace(" ", "")
-
-
-# ---------------------------------------------------------------------------
-# UI-20(e): rival rules
-# ---------------------------------------------------------------------------
 
 
 def _rival_panel() -> board_content.RivalRulesPanel:
@@ -1429,14 +1354,11 @@ def test_rival_rules_section_shows_the_public_test_and_hides_the_detail() -> Non
         assert escape(row.name) in html
         assert row.differs_text in html
         assert escape(row.games_text) in html
-    # Everything per-rule sits inside the one disclosure, and the section
-    # sits between the week grid and the findings desk.
     section = html[html.index('id="rivals-h"') : html.index('id="find-h"')]
     details = section[section.index("<details") : section.index("</details>")]
     for row in content.rivals.rows:
         assert escape(row.name) in details
     assert section.count("<details") == 1
-    # Default-visible text is a heading, a caption and one sentence.
     visible = section[: section.index("<details")]
     assert visible.count("<p") == 1
 

@@ -52,11 +52,6 @@ def _checkpoint_fixture() -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 1. The movement quantity is the screens' own, not a look-alike
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize("threshold", [0.5, 1.0, 2.0])
 @pytest.mark.parametrize("current_column", ["close_home_spread", "thu_pre_tnf_home_spread"])
 def test_checkpoint_move_reproduces_both_screens_threshold_pick(
@@ -87,7 +82,6 @@ def test_checkpoint_move_reproduces_both_screens_oracle_pick(current_column: str
     )
 
     assert mine.astype(bool).equals(theirs.astype(bool))
-    # The tie branch both screens share: no move keeps the production pick.
     no_move = move.eq(0.0)
     assert mine.astype(bool)[no_move].equals(production[no_move])
 
@@ -143,14 +137,8 @@ def test_team_week_frame_signs_the_move_toward_each_side() -> None:
     assert signed["CCC"] == pytest.approx(-3.0)
     assert signed["BBB"] == pytest.approx(-1.5)
     assert signed["DDD"] == pytest.approx(1.5)
-    # The magnitude the thresholds compare against is shared by both sides.
     magnitude = long.set_index("team_id")[sweep.ABS_METRIC]
     assert magnitude["AAA"] == magnitude["CCC"] == pytest.approx(3.0)
-
-
-# ---------------------------------------------------------------------------
-# 2. The split arithmetic, on an answer computable by hand
-# ---------------------------------------------------------------------------
 
 
 def _long_frame(values: dict[tuple[str, int], list[float]], metric: str) -> pd.DataFrame:
@@ -162,9 +150,6 @@ def _long_frame(values: dict[tuple[str, int], list[float]], metric: str) -> pd.D
 
 
 def test_recovers_a_hand_computed_pearson_r_and_its_spearman_brown_step_up() -> None:
-    # Weeks 1..4, so the odd half is weeks 1 and 3 and the even half weeks 2
-    # and 4. Each team-season's two half-means are set directly, which makes
-    # the Pearson r between them computable by hand from these two lists.
     odd_means = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0]
     even_means = [1.0, 3.0, 2.0, 5.0, 4.0, 7.0, 6.0]
     values = {
@@ -189,11 +174,6 @@ def test_recovers_a_hand_computed_pearson_r_and_its_spearman_brown_step_up() -> 
     assert result["reliability_low"] <= result["reliability"] <= result["reliability_high"]
 
 
-# ---------------------------------------------------------------------------
-# 3. Too short a window is UNMEASURED, never reliability 0
-# ---------------------------------------------------------------------------
-
-
 def test_a_short_window_returns_unmeasured_and_no_number() -> None:
     """A cell whose own seasons hold too few units must not receive a number.
 
@@ -213,11 +193,6 @@ def test_a_short_window_returns_unmeasured_and_no_number() -> None:
     assert result["status"] == rlib.STATUS_INSUFFICIENT_UNITS
     assert result["reliability"] is None
     assert result["reliability_low"] is None and result["reliability_high"] is None
-
-
-# ---------------------------------------------------------------------------
-# 4. The pre-stated near-constant guard
-# ---------------------------------------------------------------------------
 
 
 def test_a_flag_almost_no_unit_ever_carries_is_flagged_not_informative() -> None:
@@ -245,11 +220,6 @@ def test_a_well_populated_flag_is_not_flagged_near_constant() -> None:
     diagnostics = sweep.constancy_diagnostics(long, "exposure", (2020, 2020))
     assert diagnostics["n_units_non_constant"] >= rlib.MIN_UNITS
     assert sweep.near_constant(diagnostics) is False
-
-
-# ---------------------------------------------------------------------------
-# 5. The group covers exactly its 26 cells, each mapped to one construct
-# ---------------------------------------------------------------------------
 
 
 def test_the_group_spec_covers_twenty_six_distinct_cells() -> None:

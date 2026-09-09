@@ -100,18 +100,6 @@ from nfl_ats.weak_signals import (
     save_registry,
 )
 
-#: One-sided 95% upper bound on how much an honest, refit-aware interval can
-#: widen a naive (game-resample-only, single-fit) one for a comparison that
-#: changes what gets FIT (as opposed to only how the residual is read).
-#: MEASURED, not typed in from memory: ``docs/estimation_variance.md`` Part II
-#: reports the flagship real-CFB comparison's honest factor moving "...1.293x
-#: to 1.003x (one-sided 95% upper bound 1.099x)" after fixing a double-counted
-#: interaction term, and its per-comparison table (sec 11) lists every audited
-#: entry at "refit 1.003x" with this same upper bound. This is the SAME
-#: constant the registry's own reviewer adjudication cites verbatim on
-#: ``mod06_js_shrinkage_position_prior_cfb`` (``registry/weak_signals.json``):
-#: closure was refused there because re-crossing zero needed only a 1.082x
-#: widening, "inside the documented 1.003-1.099x honest refit-correction band".
 HONEST_REFIT_WIDENING_UPPER_BOUND = 1.099
 
 DEFAULT_SAMPLES = 20_000
@@ -141,10 +129,6 @@ class ExperimentRunnerError(ValueError):
     """
 
 
-# ---------------------------------------------------------------------------
-# Spec schema and validation
-# ---------------------------------------------------------------------------
-
 _TOP_LEVEL_FIELDS = frozenset(
     {
         "name",
@@ -167,8 +151,6 @@ _ENDPOINTS_FIELDS = frozenset({"primary", "secondary"})
 _BLOCKING_FIELDS = frozenset({"primary", "secondary"})
 _RELIABILITY_FIELDS = frozenset({"method", "reason"})
 
-#: ``fit_margin_model``'s own default -- not a project-authoritative constant,
-#: just what a ``feature_arm`` spec's arm gets if it omits ``ridge_alpha``.
 DEFAULT_FEATURE_ARM_RIDGE_ALPHA = 10.0
 
 
@@ -380,8 +362,6 @@ def experiment_spec_from_payload(payload: dict[str, Any]) -> ExperimentSpec:
     samples = int(payload.get("samples", DEFAULT_SAMPLES))
     _require(samples >= 10, "samples must be at least 10")
 
-    # No wall-clock nondeterminism: every run must be reproducible from the
-    # spec alone, so 'seed' has no default and must be explicit.
     seed_raw = payload["seed"]
     _require(
         isinstance(seed_raw, int) and not isinstance(seed_raw, bool), "seed must be an integer"
@@ -475,11 +455,6 @@ def experiment_spec_to_payload(spec: ExperimentSpec) -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
-# subset_bias: the team-game long table shared by every registered builder
-# ---------------------------------------------------------------------------
-
-
 def _canonical_team(team: pd.Series) -> pd.Series:
     return team.map(lambda code: TEAM_ABBREVIATION_ALIASES.get(code, code))
 
@@ -535,18 +510,11 @@ def _base_team_game_table(features: pd.DataFrame) -> pd.DataFrame:
         sides.append(side)
 
     long_df = pd.concat(sides, ignore_index=True)
-    # Pushes: home_cover is NaN and must not silently count as a loss/win on
-    # either side of any comparison.
     long_df = long_df.loc[long_df["team_covered"].notna()].copy()
     long_df["team"] = _canonical_team(long_df["team"])
     long_df["opponent"] = _canonical_team(long_df["opponent"])
     long_df["week_block"] = long_df["season"] * 100 + long_df["week"]
     return long_df.reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# The named flag-builder registry
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -575,7 +543,6 @@ class SubsetBiasConstruct:
     table: pd.DataFrame
     flag: pd.Series
     eligible: pd.Series | None
-    #: +1 if flag=True favours the stated hypothesis, -1 if it opposes it.
     sign: int
     reliability: float | None
     reliability_pairs: int | None
@@ -594,7 +561,7 @@ class FlagBuilder:
 def _flag_home_underdog(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    del seasons, params, repo_root  # unused: no persistent trait, no extra data source
+    del seasons, params, repo_root
     table = _base_team_game_table(features)
     flag = table["is_home"] & (table["spread_line"] < 0.0)
     return SubsetBiasConstruct(
@@ -623,7 +590,7 @@ def _flag_large_favorite(
         table=table,
         flag=flag,
         eligible=None,
-        sign=-1,  # hypothesis: large favourites are over-priced and cover LESS
+        sign=-1,
         reliability=None,
         reliability_pairs=None,
         reliability_note=(
@@ -825,7 +792,7 @@ def _flag_penalty_rate_quartile(
     paired" design; see :class:`SubsetBiasConstruct`).
     """
 
-    del seasons  # the trait needs the full local history to lag; season-filtering happens after
+    del seasons
     pbp_raw_root = Path(params.get("pbp_raw_root", repo_root / "data" / "pbp" / "raw"))
     snapshot = latest_pbp_snapshot(pbp_raw_root)
     pbp = load_pbp_snapshot(snapshot, include_postseason=False)
@@ -841,7 +808,7 @@ def _flag_penalty_rate_quartile(
         table=merged,
         flag=flag,
         eligible=eligible,
-        sign=1,  # hypothesis: the least-penalized quartile covers MORE
+        sign=1,
         reliability=reliability,
         reliability_pairs=reliability_pairs,
         reliability_note=(
@@ -852,22 +819,6 @@ def _flag_penalty_rate_quartile(
         population_note=f"PBP snapshot {snapshot.snapshot_id}.",
     )
 
-
-# ---------------------------------------------------------------------------
-# Bias-battery builders: ported from scripts/nfl_bias_battery_screen.py
-# ---------------------------------------------------------------------------
-#
-# ``scripts/nfl_bias_battery_screen.py`` is a measure-only script (never
-# writes the registry) that predeclared 17 situational/behavioral cells and
-# scored them itself with its own copy of the block-bootstrap machinery this
-# module already generalizes. The functions below port its ``build_long_table``
-# / ``add_history_features`` / ``build_hypotheses`` flag LOGIC verbatim (same
-# masks, same thresholds, same column derivations) into the runner's
-# ``SubsetBiasConstruct`` shape, so the already-recorded close-graded
-# ``bias_battery_*`` entries can be re-screened at other grades (starting
-# with the opener) through this pipeline instead of a second bespoke script.
-# Nothing about the CONSTRUCTS is redesigned here -- only the harness they run
-# through.
 
 PT_TEAMS = frozenset({"SEA", "SF", "LA", "LAC", "LV"})
 
@@ -1198,31 +1149,6 @@ def _flag_motivation_mismatch(
     )
 
 
-# ---------------------------------------------------------------------------
-# Referee-battery builders: officiating-crew effects on ATS cover rates
-# ---------------------------------------------------------------------------
-#
-# New signal family (2026-08-19), predeclared in docs/referee_battery.md
-# BEFORE any cover-rate sign was looked at. Every flag here is pregame-safe:
-# crew assignments (who is head referee this game) are public before kickoff,
-# and every trait used to bucket a referee is the referee's own PRIOR-season
-# officiating history -- never this game's own penalties (see the leakage
-# test in tests/test_experiment_runner.py). Data source:
-# nflreadpy.load_officials() (nflverse-data officials/officials release,
-# 2015-2025) fetched into data/raw/officials/<snapshot>/officials.parquet,
-# plus a derived per-game penalty-by-team aggregate
-# (data/raw/officials/<snapshot>/game_penalties.parquet, built from nflverse
-# PBP's own penalty/penalty_team columns -- NOT the repo's existing trimmed
-# local PBP snapshot, whose stored column list omits penalty_team). See
-# docs/referee_battery.md for the full predeclaration, data-coverage caveats,
-# and mechanisms.
-#
-# officials.parquet's own game_id is the LEGACY numeric GSIS format, not
-# game_features.parquet's game_id (e.g. "2015_01_PIT_NE"); the crosswalk is
-# the newest data/raw/*/schedules.parquet snapshot's own old_game_id column
-# (the same crosswalk source _latest_schedules_snapshot already serves to
-# the bias-battery builders above).
-
 _REFEREE_POSITION = "Referee"
 _REFEREE_SEASON_TYPE = "REG"
 _DEFAULT_VETERAN_THRESHOLD_SEASONS = 5
@@ -1282,9 +1208,6 @@ def _referee_year_over_year_reliability(
 
 def _build_referee_trait_data(repo_root: Path) -> _RefereeTraitData:
     officials_path, game_penalties_path, snapshot_id = _latest_officials_snapshot(repo_root)
-    # nfl_ats.officials_archive is the single officials loader (LEAD-59). At
-    # its shipped default it returns this feed bit-for-bit; the Wayback
-    # 2009-2014 archive is opt-in there, never here.
     officials = load_officials(repo_root, officials_path=officials_path)
     game_penalties = pd.read_parquet(game_penalties_path)
 
@@ -1308,10 +1231,6 @@ def _build_referee_trait_data(repo_root: Path) -> _RefereeTraitData:
 
     schedules_path = _latest_schedules_snapshot(repo_root)
     schedules = pd.read_parquet(schedules_path).loc[:, ["game_id", "old_game_id"]]
-    # The LEFT frame's overlapping "game_id" (legacy numeric) is suffixed
-    # "_legacy"; the RIGHT frame's (schedules' own, standard-format) keeps
-    # the bare "game_id" name -- so after this merge "game_id" IS the
-    # game_features-shaped id, matching every other builder's join key.
     refs = refs.merge(
         schedules, left_on="game_id", right_on="old_game_id", how="inner", suffixes=("_legacy", "")
     )
@@ -1386,10 +1305,6 @@ def _referee_team_game_table(
 ) -> tuple[pd.DataFrame, _RefereeTraitData]:
     table = _base_team_game_table(features)
     trait_data = _build_referee_trait_data(repo_root)
-    # table already carries its own "season" (from _base_team_game_table); keep only
-    # the trait columns the flag builders need, or "season"/"official_name" would
-    # collide and get silently suffixed (season_x/season_y), breaking the runner's
-    # own `construct.table["season"]` population filter downstream.
     trait_columns = trait_data.game_trait.loc[
         :,
         [
@@ -1582,37 +1497,6 @@ def _flag_referee_rookie_home_cover(
         ),
     )
 
-
-# ---------------------------------------------------------------------------
-# Penalty-TYPE crew tendencies: widens the referee battery above from total
-# penalty counts to type-specific rates (docs/archive/data_source_scout_v4.md lead
-# #1, "Penalty-type crew tendencies", predeclared docs/penalty_crew_tendencies.md).
-# ---------------------------------------------------------------------------
-#
-# New signal family (2026-08-20 session). Data source:
-# data/raw/officials/<timestamp>/game_penalty_types.parquet, built by
-# scripts/fetch_penalty_type_snapshot.py -- a fresh re-pull of
-# nflreadpy.load_pbp() (same nflverse pipeline the repo already ingests) that
-# retains penalty_type/penalty_team (present upstream, absent from
-# nfl_ats.pbp.PBP_SNAPSHOT_COLUMNS and data/pbp/team_style/raw_pbp_narrow.parquet
-# alike), aggregated to one row per (game_id, penalty_type) with
-# penalties_total/penalties_on_home/penalties_on_away -- same shape and same
-# home/away attribution convention (penalty_team == home_team/away_team) as
-# the existing game_penalties.parquet, MEASURED-verified to reproduce its
-# per-game totals exactly (0 count mismatches, 0 games only in either table,
-# all 11 seasons' game counts matched) after summing type counts back up.
-#
-# Every cell below is pregame-safe for the SAME reason the existing referee
-# battery is: crew assignment is public before kickoff, and every trait is
-# the referee's PRIOR-season history, never this game's own penalties (the
-# existing leakage test's mutation pattern applies identically here since
-# these builders reuse the same shift(1)-over-(official, season) lag
-# construction). The four cells interact a referee-crew trait with a SECOND,
-# already-pregame-safe condition (opener line, prior-rolling team pass rate,
-# game total line) -- each implemented as a boolean AND of two top/bottom
-# quartile flags, matching this module's existing quartile-cut convention
-# throughout (no continuous interaction terms; `subset_bias` is a boolean-flag
-# framework project-wide, see docs/experiment_pipeline.md).
 
 _DPI_PENALTY_TYPE = "Defensive Pass Interference"
 _HOLDING_PENALTY_TYPE = "Offensive Holding"
@@ -1956,57 +1840,8 @@ def _flag_referee_flag_rate_high_total_line(
     )
 
 
-# ---------------------------------------------------------------------------
-# Forecast-weather builders: the 2009-2019 archive backward-extension family
-# ---------------------------------------------------------------------------
-#
-# New signal family (2026-08-20 session, backlog item 3), predeclared in the
-# "2026-08-20 extension" section of docs/forecast_weather_screen.md BEFORE any
-# effect on the extended window was computed. Data source:
-# data/raw/forecast_archive/kickoff_nearest_2009_2025/forecasts.parquet, a
-# FRESH single-cutoff-mode (kickoff_nearest, model=GFS) archive spanning the
-# full 2009-2025 project window, built this session by reusing
-# scripts/ingest_forecast_archive.py's exact walking/cutoff/station-mapping
-# machinery unchanged (only the field EXTRACTION was extended, additively, to
-# also capture GFS MOS precipitation probability -- see that script's
-# nearest_row_with_field). tuesday_noon (the cutoff the ORIGINAL 4
-# forecast_weather_* cells in registry/weak_signals.json were scored on) is
-# NOT used here: its MOS model (MEX) is measurably absent from the IEM archive
-# before 2020-07-12 (docs/forecast_archive_build.md, reconfirmed this session
-# by a live probe), so a tuesday_noon-cutoff archive genuinely cannot extend
-# backward to 2009-2019 -- kickoff_nearest can (GFS's IEM archive reaches back
-# to at least 2005) and is, per the docs/forecast_archive_build.md
-# 2026-08-20 owner correction, the MORE pool-relevant cutoff anyway (picks are
-# editable up to each game's real deadline, not frozen at Tuesday noon). This
-# means these 6 builders are NOT byte-identical reproductions of their
-# `forecast_weather_*` (tuesday_noon) namesakes/siblings -- same mechanism,
-# different information-timing AND a different population (all use REG
-# 2009-2025 archive coverage vs. the originals' REG 2020-2025) -- so every
-# registry name below carries a distinguishing `_kn_` (kickoff_nearest)
-# infix, and must not be pooled against its tuesday_noon sibling as
-# independent evidence (same overlap-disclosure convention the tuesday_noon
-# screen already used against ITS actual-weather siblings).
-#
-# GAME-level construction, not team-long: `home_cover` is a GAME outcome and
-# these flags are GAME-level weather/market conditions with no team-relative
-# framing of their own, so this section does NOT reuse `_base_team_game_table`
-# (which duplicates every game into a home-side/away-side pair via `is_home`
-# gating -- correct for a genuinely team-relative situational condition like
-# `home_underdog`, but it changes what's measured for a flag that doesn't need
-# that duplication: the complement would silently absorb BOTH the flagged
-# game's own away-side row (team_covered=1-home_cover) and every other game's
-# both sides, which is not the same quantity as "mean(home_cover) over every
-# other game", the comparison scripts/nfl_forecast_weather_screen.py's
-# ORIGINAL 4 cells used). `_forecast_weather_game_table` below builds one row
-# per REG game instead, with `team_covered` set to `home_cover` directly --
-# this keeps these builders numerically faithful to that original screen's
-# subset-vs-complement design, just run through the standardized pipeline.
-
 _FORECAST_OUTDOOR_ROOFS = frozenset({"outdoors", "open"})
 _FORECAST_DOME_CLOSED_ROOFS = frozenset({"dome", "closed"})
-#: Reused verbatim from scripts/nfl_forecast_weather_screen.py /
-#: scripts/nfl_weather_battery_screen.py (the warm_team_cold_late mechanism's
-#: static warm-winter-metro away-team list).
 _FORECAST_WARM_METRO_TEAM_CODES = frozenset(
     {"MIA", "TB", "JAX", "ARI", "SF", "OAK", "LA", "LAC", "SD", "HOU", "DAL", "NO", "LV"}
 )
@@ -2083,12 +1918,6 @@ def _forecast_weather_game_table(
     temp, for the temp-swing-vs-prior-week cell).
     """
 
-    # game_features.parquet already carries its OWN temp/wind/gameday columns
-    # (unlike the bias-battery builders' source table); only stadium/roof are
-    # missing from it, so only those two are pulled from schedules -- pulling
-    # temp/wind/gameday too would silently collide and suffix (_x/_y) instead
-    # of erroring, which is exactly the bug this comment is here to prevent
-    # from being reintroduced.
     schedules_path = _latest_schedules_snapshot(repo_root)
     schedules = pd.read_parquet(schedules_path, columns=["game_id", "stadium", "roof"])
 
@@ -2104,7 +1933,7 @@ def _forecast_weather_game_table(
     reg["temp"] = pd.to_numeric(reg["temp"], errors="coerce")
     reg["wind"] = pd.to_numeric(reg["wind"], errors="coerce")
 
-    reg = reg.loc[reg["home_cover"].notna()].copy()  # pushes dropped
+    reg = reg.loc[reg["home_cover"].notna()].copy()
     reg["team_covered"] = reg["home_cover"]
     reg["outdoor"] = reg["roof"].isin(_FORECAST_OUTDOOR_ROOFS)
     reg["week_block"] = reg["season"] * 100 + reg["week"]
@@ -2412,41 +2241,6 @@ def _flag_forecast_weather_kn_dome_cold_windy(
     )
 
 
-# ---------------------------------------------------------------------------
-# Interim head-coach builders: motivation/effort discontinuity after a
-# mid-season coaching change (docs/archive/data_source_scout_v3.md section 5).
-# ---------------------------------------------------------------------------
-#
-# New signal family (2026-08-20), predeclared in full in
-# docs/interim_coach_screen.md BEFORE any cover-rate sign was looked at.
-# Distinct from -- and explicitly checked for overlap with -- the already-live
-# hc_year_one_fade_overlay challenger (nfl_ats.coach_fade_overlay): that
-# family flags a team whose CURRENT-season coach is new relative to LAST
-# season (a whole-season condition, no in-season discontinuity required);
-# THIS family flags a team whose coach changed WITHIN the current season (an
-# in-season firing/suspension), a narrower and rarer within-season event. A
-# team can be both (a mid-season-hired interim who is also new relative to
-# last season is trivially true, since the fired predecessor WAS last
-# season's coach too) -- overlap is expected and reported, not a bug.
-#
-# Source: the Pro Football Rumors "interim coaches since 2000" list
-# (data/raw/interim_coaches/<snapshot>/parsed_table.csv; see manifest.json in
-# the same directory for fetch provenance and cross-checks -- 3 randomly
-# selected entries independently verified via WebSearch, plus 2 more spot
-# checks and the 2012 Saints date resolution verified directly against
-# schedules.parquet, 6 of 6 agreeing). Joined onto the newest
-# data/raw/*/schedules.parquet snapshot's own PER-GAME home_coach/away_coach
-# field -- not a takeover-date range -- because that field is strictly more
-# precise: three spot-checked entries (BUF 2009, DEN 2010, NYG 2017) showed
-# the coach-name transition lands on exactly the week boundary the PFR
-# takeover date implies, and it directly resolved the two 2012 Saints entries
-# (Kromer/Vitt) that PFR's own article gives no date for at all.
-#
-# Joinable population is 2009-2025 only (game_features.parquet's own season
-# floor, measured); 13 of the 52 listed interim stints (seasons 2000-2008)
-# cannot be graded and are excluded from every cell below -- an honest
-# coverage limit, not a defect in the source list.
-
 _INTERIM_COACH_SEASON_FLOOR = 2009
 
 
@@ -2541,9 +2335,6 @@ def _build_interim_coach_trait_data(repo_root: Path) -> _InterimCoachTraitData:
         sides.append(side)
     long_sched = pd.concat(sides, ignore_index=True)
 
-    # Stage 1 (primary, preferred): exact (team, season, credited coach name) match
-    # against schedules.parquet's own per-game field -- proven exact-to-the-week
-    # against 3 spot-checked entries (see the module docstring above this section).
     matched_name = long_sched.merge(
         parsed[
             [
@@ -2565,15 +2356,6 @@ def _build_interim_coach_trait_data(repo_root: Path) -> _InterimCoachTraitData:
             f"{parsed_path} likely has an ambiguous (team, season, coach_name) triple"
         )
 
-    # Stage 2 (fallback, measured this session to be needed for 10 of 39 joinable
-    # entries): schedules.parquet's home_coach/away_coach field does NOT always
-    # reflect an in-season interim change -- for some team-seasons it credits the
-    # FIRED coach for every remaining game of the season (measured directly:
-    # MIA 2015, TEN 2015, LA 2016, CAR 2019, NYJ 2024, NO 2024, CHI 2024, TEN 2025,
-    # NYG 2025 never show the interim's name at all). For any joinable entry with
-    # ZERO stage-1 matches, fall back to a takeover-date range (team, season,
-    # gameday >= takeover_date_iso) -- the PFR list's own stated date, cross-checked
-    # in manifest.json.
     matched_via_name = set(matched_name["entry_id"].unique().tolist())
     unmatched = parsed.loc[~parsed["entry_id"].isin(matched_via_name)].copy()
     unmatched["takeover_date"] = pd.to_datetime(unmatched["takeover_date_iso"], errors="raise")
@@ -2728,7 +2510,7 @@ def _flag_interim_hc_active(
         table=table,
         flag=flag,
         eligible=None,
-        sign=1,  # hypothesis: motivation/effort discontinuity lifts cover rate under interim HCs
+        sign=1,
         reliability=None,
         reliability_pairs=None,
         reliability_note=(
@@ -2753,7 +2535,7 @@ def _flag_interim_hc_first_game(
         table=table,
         flag=flag,
         eligible=None,
-        sign=1,  # folklore: teams often cover their FIRST game under a new interim coach
+        sign=1,
         reliability=None,
         reliability_pairs=None,
         reliability_note=(
@@ -2777,8 +2559,7 @@ def _flag_interim_hc_home(
         table=table,
         flag=flag,
         eligible=eligible,
-        sign=1,  # arbitrary reporting convention (home > road within interim games); NO a priori
-        # mechanism was predeclared for this direction -- see docs/interim_coach_screen.md.
+        sign=1,
         reliability=None,
         reliability_pairs=None,
         reliability_note=(
@@ -2804,9 +2585,7 @@ def _flag_interim_hc_fired_year_one(
         table=table,
         flag=flag,
         eligible=eligible,
-        sign=-1,  # mechanism: firing a coach in his OWN year 1 signals organizational chaos/panic
-        # rather than a considered reset, hypothesized to BLUNT the interim cover-rate bump
-        # relative to firing a longer-tenured coach.
+        sign=-1,
         reliability=None,
         reliability_pairs=None,
         reliability_note=(
@@ -3217,11 +2996,6 @@ FLAG_BUILDERS: dict[str, FlagBuilder] = {
 }
 
 
-# ---------------------------------------------------------------------------
-# The generic subset-vs-complement bootstrap
-# ---------------------------------------------------------------------------
-
-
 def scale_subset_effect(raw_gap_fraction: float, *, sign: int, fraction_of_slate: float) -> float:
     """Full-slate-scaled effect in accuracy POINTS, positive favours the candidate.
 
@@ -3329,11 +3103,6 @@ def _interval_summary(
     )
 
 
-# ---------------------------------------------------------------------------
-# Mechanical classification (AGENTS.md binding rule; see module docstring)
-# ---------------------------------------------------------------------------
-
-
 def widening_factor_to_recross_zero(estimate: float, upper: float) -> float:
     """Symmetric-about-``estimate`` inflation factor that brings ``upper`` back to zero.
 
@@ -3428,11 +3197,6 @@ def classify_subset_bias_result(
     )
 
 
-# ---------------------------------------------------------------------------
-# Opener-grade population loader (population.grade == "opener")
-# ---------------------------------------------------------------------------
-
-
 def _opener_graded_features(
     features: pd.DataFrame, *, repo_root: Path, market_root: Path | None
 ) -> tuple[pd.DataFrame, str]:
@@ -3513,11 +3277,6 @@ def _opener_graded_features(
         "module)."
     )
     return merged.reset_index(drop=True), note
-
-
-# ---------------------------------------------------------------------------
-# Running a subset_bias experiment end to end
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -3633,13 +3392,6 @@ def run_subset_bias_experiment(
     complement_cover = float(comparison.loc[~comparison_flag, "team_covered"].mean())
     raw_gap_fraction = subset_cover - complement_cover
     raw_gap_pct = construct.sign * raw_gap_fraction * 100.0
-    # One-sided design (eligible=None, hc_year_one_fade/bias-battery precedent):
-    # the complement is "everyone else", so the effect only "fires" on the flag
-    # rows -- fraction_of_slate = n_flag / n_total. Two-sided/restricted design
-    # (eligible provided, penalty_discipline precedent): BOTH compared arms are
-    # exploitable (e.g. back Q1, fade Q4), so fraction_of_slate is the whole
-    # compared subset's share of the full population, (n_flag + n_complement) /
-    # n_total -- see SubsetBiasConstruct's docstring.
     slate_numerator = n_flag if eligible is None else len(comparison)
     fraction_of_slate = slate_numerator / n_total
     effect = scale_subset_effect(
@@ -3709,23 +3461,6 @@ def run_subset_bias_experiment(
     )
 
 
-# ---------------------------------------------------------------------------
-# feature_arm: profile-vs-profile / ridge_alpha-vs-ridge_alpha
-# ---------------------------------------------------------------------------
-#
-# Pattern named in the module docstring: two ``margin.fit_margin_model`` arms
-# (baseline/candidate feature profile and/or ridge_alpha) walked forward with
-# ``outcomes.walk_forward_outcomes`` (the ``nflverse_spread``/close grade --
-# game_features.parquet's own spread_line across its full history, the same
-# grade ``scripts/ridge_alpha_promotion_eval.py.run_nflverse_grade`` uses),
-# paired by ``game_id``, scored with ``experiments.paired_feature_comparisons``
-# -- the ALREADY-REVIEWED block-bootstrap engine this whole module exists to
-# stop hand-transcribing output from, so this arm reuses it rather than
-# re-deriving a second bootstrap.
-
-#: 95% interval spans 2 * 1.96 standard errors -- ``weak_signals.WeakSignal.
-#: resolved_standard_error``'s own fallback formula, reused here because
-#: ``paired_feature_comparisons`` reports only the interval, not a raw SE.
 _NORMAL_95_HALF_WIDTH = 1.959963984540054
 
 _PAIRED_METRIC_NAMES = {
@@ -3733,11 +3468,6 @@ _PAIRED_METRIC_NAMES = {
     "brier": "brier_improvement",
     "logloss": "log_loss_improvement",
 }
-#: The ONE 100x fraction-vs-points step, applied only to the accuracy metric
-#: (``weak_signals.EFFECT_UNITS``: accuracy_points are percentage points,
-#: e.g. record 1.10 not 0.011; brier/log_loss are recorded as the raw,
-#: unscaled metric difference). Getting this backwards is exactly the bug
-#: class ``scale_subset_effect`` above exists to prevent for subset_bias.
 _PAIRED_METRIC_SCALE = {"accuracy": 100.0, "brier": 1.0, "logloss": 1.0}
 
 
@@ -3832,9 +3562,6 @@ def run_feature_arm_experiment(
 
     baseline_predictions = _arm_predictions("baseline", spec.feature_arm_baseline)
     if spec.feature_arm_candidate == spec.feature_arm_baseline:
-        # An identity arm has the same deterministic fit and predictions.  Reuse
-        # the completed walk-forward instead of fitting every weekly model a
-        # second time; the copy keeps arm labels and downstream pairing intact.
         candidate_predictions = baseline_predictions.copy()
         candidate_predictions["feature_set"] = "candidate"
     else:
@@ -3916,11 +3643,6 @@ def run_feature_arm_experiment(
         logloss_secondary=logloss_secondary,
         classification=classification,
     )
-
-
-# ---------------------------------------------------------------------------
-# Evidence text, the WeakSignal payload, and the orchestrated run
-# ---------------------------------------------------------------------------
 
 
 def _format_block_line(result: BlockIntervalResult, *, label: str, seed: int) -> str:
@@ -4118,8 +3840,6 @@ def build_feature_arm_weak_signal(
     )
 
 
-#: Either result type a run can produce; which one is entirely determined by
-#: ``spec.experiment_type`` (never guessed downstream).
 ExperimentRunResult = SubsetBiasRunResult | FeatureArmRunResult
 
 
@@ -4155,11 +3875,6 @@ def run_experiment(
     if spec.experiment_type == "feature_arm":
         return run_feature_arm_experiment(spec, repo_root=repo_root, features_path=features_path)
     raise ExperimentRunnerError(f"Unhandled experiment_type {spec.experiment_type!r}")
-
-
-# ---------------------------------------------------------------------------
-# Registry locking: the single-writer convention, enforced rather than hoped for
-# ---------------------------------------------------------------------------
 
 
 class _RegistryLock:
@@ -4345,9 +4060,6 @@ def run_experiment_cli(
         "provenance": artifact_provenance(configuration, features_file, project_root=repo_root),
         "result": result_metadata,
     }
-    # ENG-21: top-level convenience mirror of the same dict artifact_provenance()
-    # already computed under "provenance" -- a reference, not a recomputation --
-    # so the environment lock report is visible without digging into provenance.
     metadata["environment"] = metadata["provenance"]["environment"]
     write_experiment_artifact(
         output_directory,

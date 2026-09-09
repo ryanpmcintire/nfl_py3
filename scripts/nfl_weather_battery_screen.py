@@ -103,11 +103,6 @@ GRASS_SURFACES = frozenset({"grass", "dessograss"})
 TURF_SURFACES = frozenset(
     {"fieldturf", "sportturf", "matrixturf", "astroturf", "a_turf", "astroplay"}
 )
-# Documented, static, state-level "warm winter metro" list -- see
-# predeclaration.json for the FL/AZ/CA/TX/LA/NV rationale and the SF/OAK
-# limitation. Applied to each game's AWAY team's *own per-season* code, so
-# STL (2009-2015, Missouri, not warm) is correctly excluded and only the
-# post-2016 "LA" code (the Rams' actual relocation) is tagged warm.
 WARM_METRO_TEAM_CODES = frozenset(
     {
         "MIA",
@@ -166,7 +161,7 @@ def load_population(schedules_path: Path) -> pd.DataFrame:
     df["week"] = pd.to_numeric(df["week"], errors="raise").astype(int)
     df = df.loc[df["season"].between(SEASON_START, SEASON_END)].reset_index(drop=True)
 
-    df = add_ats_outcomes(df)  # adds ats_margin, home_cover (reused verbatim)
+    df = add_ats_outcomes(df)
     n_before_push_drop = len(df)
     df = df.loc[df["home_cover"].notna()].reset_index(drop=True)
     pushes_or_missing = n_before_push_drop - len(df)
@@ -179,10 +174,6 @@ def load_population(schedules_path: Path) -> pd.DataFrame:
     df["week_block"] = df["season"] * 100 + df["week"]
     df["stadium"] = df["stadium"].fillna("")
 
-    # Per (team, season) modal home roof/surface, computed on the FULL REG
-    # 2009-2025 home-game population (roof/surface is a stadium fact, not a
-    # cover outcome, so it is unaffected by the push drop above; using the
-    # full home-game set avoids thinning an already-small per-season sample).
     modal_roof = (
         df.groupby(["home_team", "season"])["roof"]
         .agg(lambda s: s.mode().iat[0] if not s.mode().empty else None)
@@ -230,7 +221,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
 
     outdoor = df["outdoor"]
 
-    # 1. high_wind_outdoor
     wind_missing = df["wind"].isna() | df["roof"].isna()
     add(
         "weather_battery_high_wind_outdoor",
@@ -240,7 +230,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "(no home/away asymmetry in the flag)",
     )
 
-    # 2. high_wind_road_favorite
     add(
         "weather_battery_high_wind_road_favorite",
         outdoor & (df["wind"] >= 15) & (df["spread_line"] < 0),
@@ -249,7 +238,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "verified home-favored-when-positive convention) -- predicted home_cover edge",
     )
 
-    # 3. extreme_cold
     temp_missing = df["temp"].isna() | df["roof"].isna()
     add(
         "weather_battery_extreme_cold",
@@ -259,7 +247,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "predicted home_cover edge",
     )
 
-    # 4. dome_team_outdoors_cold
     dome_missing = df["away_modal_roof"].isna() | df["temp"].isna() | df["roof"].isna()
     add(
         "weather_battery_dome_team_outdoors_cold",
@@ -269,7 +256,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "outdoor/open AND temp<=40F -- dome-team cold-mismatch, predicted home_cover edge",
     )
 
-    # 5. warm_team_cold_late
     warm_missing = df["temp"].isna() | df["roof"].isna()
     add(
         "weather_battery_warm_team_cold_late",
@@ -283,7 +269,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "home_cover edge",
     )
 
-    # 6. surface_switch_grass_to_turf
     surface_missing = df["away_modal_surface"].isna() | df["surface_norm"].isna()
     add(
         "weather_battery_surface_switch_grass_to_turf",
@@ -294,7 +279,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "home_cover edge",
     )
 
-    # 7. high_altitude_road
     at_altitude = (df["home_team"] == "DEN") | df["stadium"].str.contains(
         "Azteca", case=False, na=False
     )
@@ -308,7 +292,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "home_cover edge",
     )
 
-    # 8. thursday_outdoor_cold
     thu_missing = df["temp"].isna() | df["roof"].isna()
     add(
         "weather_battery_thursday_outdoor_cold",
@@ -447,10 +430,6 @@ def main() -> None:
             "every cell predeclared to record unresolved_below_power via a separate "
             "nfl-ats weak-signals record call regardless of interval shape (AGENTS.md)."
         ),
-        # No explicit registry_root: matches nfl_ats.cli._registry_root()'s own
-        # convention (Path(os.environ.get("NFL_ATS_REGISTRY_DIR", "registry"))),
-        # which write_experiment_artifact's default already implements -- so a
-        # test harness setting NFL_ATS_REGISTRY_DIR still isolates this script.
     )
     print(f"\nwrote {output_dir / 'results.json'}")
 

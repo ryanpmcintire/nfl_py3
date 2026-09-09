@@ -66,16 +66,8 @@ from nfl_ats.public_board import (
 from nfl_ats.snapshots import write_snapshot
 from nfl_ats.spread_explorer import SpreadExplorerGameParams
 
-# ---------------------------------------------------------------------------
-# The licensing blocklist
-# ---------------------------------------------------------------------------
-
-# Book identities from the purchased odds feed. None of these can appear by
-# accident, so they are scanned against the raw HTML of every page.
 FORBIDDEN_BOOKS = ("DraftKings", "FanDuel", "BetMGM", "Caesars", "PointsBet", "Bovada")
 
-# Raw market-feed column names that ride along on recommendations.csv and must
-# be dropped on render. Also unambiguous, so also scanned against raw HTML.
 FORBIDDEN_FIELDS = (
     "home_spread_odds",
     "away_spread_odds",
@@ -84,10 +76,6 @@ FORBIDDEN_FIELDS = (
     "alternative_line",
 )
 
-# Per-book price values. These are scanned against the page's VISIBLE TEXT
-# rather than its HTML: the charts draw with clip-path polygons whose percent
-# coordinates legitimately contain arbitrary decimals, so a raw-HTML substring
-# scan for a number would be checking CSS geometry, not published data.
 FORBIDDEN_VALUES = ("-110", "-105", "46.5")
 
 _TAG = re.compile(r"<[^>]+>")
@@ -152,15 +140,8 @@ def assert_public_safe(page: str) -> None:
     assert '<meta charset="utf-8">' in page
     assert '<meta name="viewport"' in page
     assert '<div class="ats">' in page
-    # No host theme-sync script may ever ship on a static page: it would poll
-    # an element that does not exist here.
     assert "stApp" not in page
     assert "__atsThemeInterval" not in page
-
-
-# ---------------------------------------------------------------------------
-# Pure-function unit tests
-# ---------------------------------------------------------------------------
 
 
 def test_spread_words_uses_home_oriented_sign_convention() -> None:
@@ -183,11 +164,6 @@ def test_pick_side_takes_the_favoured_side() -> None:
     team, probability = pick_side(away_pick)
     assert team == "ARI"
     assert probability == pytest.approx(0.7)
-
-
-# ---------------------------------------------------------------------------
-# render_picks_page: fixture predictions/sweep/explanations
-# ---------------------------------------------------------------------------
 
 
 def _predictions_fixture() -> pd.DataFrame:
@@ -249,23 +225,17 @@ def test_render_picks_page_includes_only_allowlisted_fields() -> None:
         generated_at=datetime(2026, 8, 16, 20, 0, tzinfo=UTC),
     )
 
-    # Allowlisted fields present.
     assert "ARI at LAC" in page
     assert "SF at LA" in page
-    assert "LAC -3.5" in page  # the one consensus market line, in words
+    assert "LAC -3.5" in page
     assert "The model leans ARI by two and a half points." in page
     assert "model-123" in page
     assert "2026-08-16 20:00 UTC" in page
     assert "Sunday 13:00 ET" in page
     assert "Thursday 20:15 ET" in page
 
-    # Consolidation law (2026-08-23): no aggregate accuracy byline in the
-    # default view anymore -- the footer names the model and the line caveat
-    # only.
     assert "long-run accuracy" not in _index_default_view(page)
 
-    # Forbidden fields never rendered, even though every one of them is present
-    # on the input frame.
     assert_public_safe(page)
     assert "bookmaker" not in page.lower()
 
@@ -275,18 +245,11 @@ def test_render_picks_page_sorts_by_kickoff_not_confidence() -> None:
     assert page.index("SF at LA") < page.index("ARI at LAC")
 
 
-# ---------------------------------------------------------------------------
-# Glossary tooltips (wave-1 UX finding: "P+", "Ledger mini", "Evidence P+",
-# "Challenger watch" were unexplained at point of use on the picks page)
-# ---------------------------------------------------------------------------
-
-
 def test_glossary_covers_every_research_vocabulary_term() -> None:
     for term in ("P+", "Ledger mini", "Evidence P+", "Challenger watch"):
         abbr = glossary_abbr(term)
         assert abbr.startswith('<abbr title="')
         assert f">{term}</abbr>" in abbr
-        # The tooltip text itself must never be empty.
         title = abbr.split('title="', 1)[1].split('"', 1)[0]
         assert len(title) > 20
 
@@ -310,13 +273,11 @@ def test_render_picks_page_glosses_research_vocabulary_at_point_of_use() -> None
         challengers=challengers,
         model_id="model-123",
     )
-    # Every flagged term carries its plain-language expansion where it appears.
     assert '<abbr title="' in page
     assert ">P+</abbr>" in page
     assert ">Ledger mini</abbr>" in page
     assert ">Evidence P+</abbr>" in page
     assert ">Challenger watch</abbr>" in page
-    # The ledger row and the challenger-watch line both gloss their bare P+.
     assert '<td class="num"><abbr title="' in page
     assert "Our confidence that a measured effect is real" in page
     assert_public_safe(page)
@@ -335,27 +296,20 @@ def test_render_picks_page_glosses_survive_without_challengers() -> None:
 
 def test_render_picks_page_uses_the_shared_design_system() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    # theme.stylesheet() role tokens, both dark scopes included.
     assert "--series-model: #2a78d6;" in page
     assert "@media (prefers-color-scheme: dark)" in page
     assert '.ats[data-theme="dark"]' in page
-    # viz components, by their own class/label hooks.
-    assert 'class="ats-cover"' in page  # cover_curve
-    assert "our number" in page  # line_journey
+    assert 'class="ats-cover"' in page
+    assert "our number" in page
     assert 'class="kicker"' in page and 'class="num"' in page
-    # The de-firehose deep dive: one collapsed line per game, tools behind a toggle.
-    # Row 1: LAC favored by 3.5, model takes the dog ARI (62%) -- fair ARI +1.1.
-    # Row 2: SF favored by 3.5, model takes the home dog LA (62%).
     assert (
         'Pick <b>ARI</b> (+3.5) &middot; covers <span class="num">62%</span> '
         '&middot; fair ARI <span class="num">+1.1</span>' in page
     )
     assert 'Pick <b>LA</b> (+3.5) &middot; covers <span class="num">62%</span>' in page
     assert "<summary>Cover odds across hypothetical lines</summary>" in page
-    assert "Cover chance" not in page  # the per-game hero meter is gone
-    # The cover-curve drag handler ships as its own script tag on this page only.
+    assert "Cover chance" not in page
     assert "__atsCoverWired" in page
-    # Simple top nav linking the other public-board pages.
     for filename in (FINDINGS_PAGE, MODELS_PAGE):
         assert f'href="{filename}"' in page
 
@@ -376,12 +330,9 @@ def test_render_picks_page_strong_lean_gate() -> None:
     predictions = _predictions_fixture()
     explanations = {"2026_01_ARI_LAC": "Lineup continuity carries this one."}
     page = render_picks_page(predictions, _sweep_fixture(), explanations)
-    # Row 1 residual -2.4 clears the 1.5-point gate; row 2 at -1.1 does not.
     assert "What we think the market is missing" in page
     assert "We make this line 2.4 points different from the market, on the ARI side." in page
     assert "Lineup continuity carries this one." in page
-    # The no-opinion filler caption sentence is gone (2026-08-23 de-firehose):
-    # the collapsed pick line already conveys "close to the market".
     assert "We land close to the market" not in page
 
 
@@ -394,7 +345,7 @@ def test_render_picks_page_strong_lean_count_matches_the_board_buckets() -> None
     expected = sum(
         1 for _, row in predictions.iterrows() if confidence_word(pick_side(row)[1]) == "strong"
     )
-    assert expected > 0  # the fixture must exercise the non-trivial branch
+    assert expected > 0
     page = render_picks_page(predictions, _sweep_fixture())
     assert f"{expected} strong lean{'s' if expected != 1 else ''}" in page
 
@@ -437,8 +388,6 @@ def test_index_default_view_percentages_are_only_hero_measured_and_cover_chances
     page = render_picks_page(_predictions_fixture(), _sweep_fixture(), played_chain_accuracy=chain)
     view = _index_default_view(page)
     cover_chances = {f"{pick_side(row)[1]:.0%}" for _, row in _predictions_fixture().iterrows()}
-    # The hero carries its own approx sign; remove it whole so the digit scan
-    # cannot re-match the bare number inside it.
     assert PLAYED_CARD_EXPECTATION_HERO in view
     without_hero = view.replace(PLAYED_CARD_EXPECTATION_HERO, " ")
     visible = re.findall(r"\d+(?:\.\d+)?%", without_hero)
@@ -448,7 +397,6 @@ def test_index_default_view_percentages_are_only_hero_measured_and_cover_chances
             f"unexpected percentage {percentage!r} default-visible on index "
             f"(allowed: {sorted(allowed)})"
         )
-    # ...and nothing allowed went missing.
     assert f"{chain:.1%}" in view
     for cover_chance in cover_chances:
         assert re.search(rf"covers\s+{cover_chance} ", view)
@@ -457,8 +405,6 @@ def test_index_default_view_percentages_are_only_hero_measured_and_cover_chances
 def test_render_picks_page_no_sweep_omits_curve_without_error() -> None:
     page = render_picks_page(_predictions_fixture(), sweep=None)
     assert "ARI at LAC" in page
-    # No sweep AND no spread-explorer params: no chart at all for either
-    # game, the same silent omission the two retired tools followed.
     assert 'class="ats-cover"' not in page
 
 
@@ -512,16 +458,12 @@ def test_render_team_explorer_page_renders_trends_from_schema_fixture() -> None:
     state_table = team_explorer.make_schema_fixture()
     page = render_team_explorer_page(state_table, generated_at=datetime(2026, 8, 24, tzinfo=UTC))
     assert_public_safe(page)
-    # Overview + per-team trend + matchup comparison all present.
     assert "Team strength, game by game" in page
     assert "Season-by-season trends" in page
     assert "Head-to-head comparison" in page
-    # The interactive comparer ships its payload and a script.
     assert 'id="ats-te-data"' in page
     assert 'id="ats-te-a"' in page
-    # Latest season from the fixture is rendered.
     assert "Latest season shown: 2025" in page
-    # Every team in the fixture appears in the overview.
     for team in ("ARI", "BUF", "KC", "SF"):
         assert f">{team}<" in page or f"{team}</b>" in page
 
@@ -558,11 +500,6 @@ def test_render_picks_page_declares_utf8_charset_before_any_non_ascii() -> None:
     assert head_index < charset_index < non_ascii_index
 
 
-# ---------------------------------------------------------------------------
-# render_findings_page
-# ---------------------------------------------------------------------------
-
-
 def test_render_findings_page_carries_every_finding_and_group() -> None:
     from nfl_ats.dashboard.findings_content import FINDINGS, GROUPS
 
@@ -577,7 +514,6 @@ def test_render_findings_page_carries_every_finding_and_group() -> None:
     assert "Everything the research has settled, in plain English" in page
     assert "How to read any number on this dashboard" in page
     assert_public_safe(page)
-    # No charts on this page, so no interaction wiring either.
     assert "__atsCoverWired" not in page
 
 
@@ -635,11 +571,8 @@ def test_render_findings_page_renders_the_watching_section_from_a_fixture(
     page = public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
     assert "What we&#x27;re watching" in page
     assert "a synthetic open lead for tests" in page
-    # P+ now carries its own diverging tone (above/below the 0.5 decision
-    # midpoint), so the numeral sits inside a span. Asserting the tone as
-    # well as the value is a stronger check than the old bare-text one.
     assert '<span class="delta pos">0.82</span>' in page
-    assert "1 recorded signals" in page  # the fixture registry has exactly one entry
+    assert "1 recorded signals" in page
     assert_public_safe(page)
 
 
@@ -662,11 +595,6 @@ def test_render_findings_page_lists_challengers_when_given_some(
     )
     assert "synthetic challenger" in page
     assert "active prospective" in page
-
-
-# ---------------------------------------------------------------------------
-# Challenger board: caveat chips, opener/close divergence, and deactivation
-# ---------------------------------------------------------------------------
 
 
 def test_render_findings_page_challenger_card_shows_caveat_chips_and_divergence(
@@ -695,7 +623,6 @@ def test_render_findings_page_challenger_card_shows_caveat_chips_and_divergence(
     )
     assert "tuesday visibility caveat" in page
     assert "opener/close disagree in sign" in page
-    # The caveat's own long prose is never inlined as a chip label.
     assert "A long caveat about Tuesday visibility timing." not in page
 
 
@@ -725,8 +652,6 @@ def test_render_findings_page_challenger_card_greys_a_deactivated_entry(
     assert "Why it is not live" in page
     assert "DEACTIVATED because the underlying data source cannot populate" in page
     assert "<summary>Full reason</summary>" in page
-    # The (superseded) original registration rationale must never be shown
-    # instead of the later correction when both are present.
     assert "Original registration rationale" not in page
 
 
@@ -756,12 +681,6 @@ def test_first_sentence_truncates_long_prose_with_an_ellipsis() -> None:
     lead = _first_sentence(long_no_period, max_len=50)
     assert lead.endswith("...")
     assert len(lead) <= 53
-
-
-# ---------------------------------------------------------------------------
-# Challenger week-preview dispatch: best_pick_nomination_v3 and the honest
-# "evaluated at lock time" fallback for heavy-refit / live-fetch challengers
-# ---------------------------------------------------------------------------
 
 
 def test_challenger_week_previews_lock_time_notes_for_heavy_or_live_challengers(
@@ -840,8 +759,6 @@ def _surface_preview_predictions(**extra: object) -> pd.DataFrame:
             "away_team": ["ARI", "SF"],
             "home_team": ["LAC", "LA"],
             "spread_line": [3.5, -3.5],
-            # ARI@LAC picks AWAY (0.38 < 0.5) on a flagged game; SF@LA picks
-            # HOME (0.62 >= 0.5), which the asymmetric rule never flips anyway.
             "home_cover_probability": [0.38, 0.62],
             "predicted_market_residual": [-2.4, -1.1],
             "fair_spread": [1.1, -4.6],
@@ -906,8 +823,6 @@ def test_challenger_week_previews_surface_switch_tilt_survives_a_preexisting_fla
     )
     challengers = [{"challenger_id": "surface_switch_tilt_overlay", "status": "ACTIVE_PROSPECTIVE"}]
     absent = _surface_preview_predictions()
-    # Deliberately WRONG values: flags the unflagged game, clears the flagged
-    # one -- the overlay's own derivation must win over both.
     present = _surface_preview_predictions(
         surface_switch_flag=[True, False],
     )
@@ -934,11 +849,6 @@ def test_challenger_week_previews_surface_switch_tilt_survives_a_preexisting_fla
         "Would flip 1 pick on this week's card" in previews_present["surface_switch_tilt_overlay"]
     )
     assert "ARI at LAC (ARI to LAC)" in previews_present["surface_switch_tilt_overlay"]
-
-
-# ---------------------------------------------------------------------------
-# The research funnel strip: N signals -> N live challengers -> 1 active model
-# ---------------------------------------------------------------------------
 
 
 def test_render_findings_page_research_funnel_strip_counts_from_the_sources(
@@ -980,17 +890,12 @@ def test_render_findings_page_research_funnel_strip_counts_from_the_sources(
         weak_signal_registry=registry, challengers=challengers, active_model_id="model-123"
     )
 
-    # Every expectation below is DERIVED from the fixture data above, never a
-    # literal pasted from today's rendering -- that is the point of the test.
     expected_signals = len(registry.signals)
     expected_active_challengers = sum(
         1 for entry in challengers if entry["status"] == "ACTIVE_PROSPECTIVE"
     )
 
     assert "The research pipeline" in page
-    # Exact kicker-then-value fragments (mirrors ``viz.stat_tile``'s markup),
-    # not a bare digit check, so this cannot pass by matching an unrelated
-    # number elsewhere on the page.
     assert (
         f'<p class="kicker">Signals recorded</p><div class="hero num">{expected_signals:,}</div>'
         in page
@@ -1016,13 +921,7 @@ def test_render_findings_page_research_funnel_strip_zero_without_an_active_model
     monkeypatch.setattr(public_board, "LEAD_BLURBS", ())
     page = public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
     assert '<p class="kicker">Active model</p><div class="hero num">0</div>' in page
-    # No challengers passed either -- the challenger count must also read 0, not omit itself.
     assert '<p class="kicker">Live 2026 challengers</p><div class="hero num">0</div>' in page
-
-
-# ---------------------------------------------------------------------------
-# Era-magnitude row on era_trend_* lead cards
-# ---------------------------------------------------------------------------
 
 
 def _era_magnitude_profile_fixture(root: Path) -> None:
@@ -1058,11 +957,6 @@ def _era_magnitude_profile_fixture(root: Path) -> None:
                     },
                 }
             },
-            # A second, flat-schema variant actually present in the real
-            # artifact (production_model_opener_proxy_edge): no nested
-            # "week_blocked" object and no "effect" key at all -- the point
-            # estimate is "estimate", with lower/upper/probability_positive
-            # directly on the era row.
             "synthetic_flat_construct": {
                 "era_results": {
                     "era_2015_2019": {
@@ -1149,7 +1043,6 @@ def test_render_findings_page_era_trend_lead_shows_per_era_magnitude(
     assert "Same pattern, three eras" in page
     assert "2015-2019" in page
     assert "2020-2025" in page
-    # The insufficient-data era must never render as a silent zero.
     assert "2009-2014" not in page
     assert_public_safe(page)
 
@@ -1228,11 +1121,6 @@ def test_render_findings_page_raises_on_a_registry_key_that_does_not_exist(
         public_board.render_findings_page(weak_signal_registry=_weak_signal_registry_fixture())
 
 
-# ---------------------------------------------------------------------------
-# Artifact loaders and the end-to-end site build
-# ---------------------------------------------------------------------------
-
-
 def _opener_metadata_fixture() -> dict[str, object]:
     return {
         "games": 1537,
@@ -1273,8 +1161,6 @@ def _write_board_fixture(
         "week": 1,
     }
     (forecast / "metadata.json").write_text(json.dumps(metadata), encoding="utf-8")
-    # The real recommendations.csv carries the raw market-feed columns; writing
-    # them here is what gives the blocklist scan below something to catch.
     _leaky_predictions().to_csv(forecast / "recommendations.csv", index=False)
     sweep = pd.concat(
         [_sweep_fixture(), _sweep_fixture().assign(method="market")], ignore_index=True
@@ -1320,12 +1206,6 @@ def _write_board_fixture(
         ).to_parquet(decomposition / "attribution.parquet", index=False)
 
     if with_opener:
-        # Three runs, mirroring the 2026-08-18 incident:
-        #   - an older run of the ACTIVE profile (must lose to the newer one),
-        #   - the active profile's real run (must win),
-        #   - a NEWER run of a DIFFERENT profile (must be skipped entirely).
-        # Before the profile filter existed the last of these silently won and
-        # published another model's grade under the active model's id.
         stale = root / "opener_evaluation" / "20250101T000000Z"
         stale.mkdir(parents=True)
         (stale / "metadata.json").write_text(
@@ -1363,7 +1243,6 @@ def test_load_public_board_artifacts_reads_synchronized_chain(tmp_path: Path) ->
     _write_board_fixture(tmp_path)
     artifacts = load_public_board_artifacts(tmp_path)
     assert len(artifacts.predictions) == 2
-    # sweep is filtered to the active method only (market rows excluded).
     assert set(artifacts.sweep["method"].unique()) == {"market_residual"}
     assert artifacts.explanations["2026_01_ARI_LAC"] == "The model leans ARI by a hair."
     assert artifacts.metadata["season"] == 2026
@@ -1408,8 +1287,6 @@ def test_load_opener_evaluation_artifacts_reads_the_newest_run_of_the_active_pro
 ) -> None:
     _write_board_fixture(tmp_path)
     opener = load_opener_evaluation_artifacts(tmp_path, active_feature_profile="player")
-    # Newest wins WITHIN the active profile: the 2025 run (games=1) loses to the
-    # 2026 one, while the even newer `player_value` run is skipped entirely.
     assert opener.metadata["games"] == 1537
     assert list(opener.seasons["season"]) == [2020, 2021]
 
@@ -1425,7 +1302,6 @@ def test_opener_artifacts_never_publish_a_different_models_grade(tmp_path: Path)
 
     _write_board_fixture(tmp_path)
 
-    # The newest directory on disk belongs to the WRONG profile.
     newest = sorted((tmp_path / "opener_evaluation").iterdir(), reverse=True)[0]
     newest_metadata = json.loads((newest / "metadata.json").read_text(encoding="utf-8"))
     assert newest_metadata["active_model_config"]["feature_profile"] == "player_value"
@@ -1434,7 +1310,6 @@ def test_opener_artifacts_never_publish_a_different_models_grade(tmp_path: Path)
     assert opener.metadata["active_model_config"]["feature_profile"] == "player"
     assert opener.metadata["metrics"]["opener_accuracy"] == 0.5249
 
-    # No run for the active profile at all is empty, never another model's run.
     empty = load_opener_evaluation_artifacts(tmp_path, active_feature_profile="nonexistent")
     assert empty.metadata == {}
     assert empty.seasons.empty
@@ -1465,7 +1340,6 @@ def test_build_public_site_writes_six_pages(tmp_path: Path) -> None:
     for name, page in pages.items():
         assert page.rstrip().endswith("</html>"), name
         assert_public_safe(page)
-        # Every page links to the others and marks itself as current.
         assert 'aria-current="page"' in page
         for other in (
             PICKS_PAGE,
@@ -1480,9 +1354,6 @@ def test_build_public_site_writes_six_pages(tmp_path: Path) -> None:
 
     assert "The model leans ARI by a hair." in pages[PICKS_PAGE]
 
-    # The research funnel strip threads the REAL active model id from
-    # ``active_ats_model.json`` end to end (_write_board_fixture writes
-    # "model-123") into a count of 1, not a hardcoded literal.
     assert '<p class="kicker">Active model</p><div class="hero num">1</div>' in pages[FINDINGS_PAGE]
     assert "model-123" in pages[PICKS_PAGE]
     assert "2026-08-16 20:00 UTC" in pages[PICKS_PAGE]
@@ -1510,7 +1381,7 @@ def test_render_picks_page_marks_one_best_pick_from_the_confirmed_signal() -> No
     """
 
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    assert page.count("BEST PICK OF THE WEEK") == 1  # the P1 summary callout
+    assert page.count("BEST PICK OF THE WEEK") == 1
 
 
 def test_render_picks_page_without_a_sweep_marks_no_best_pick() -> None:
@@ -1525,11 +1396,6 @@ def test_render_picks_page_best_pick_is_regular_season_only() -> None:
     predictions["game_type"] = "DIV"
     page = render_picks_page(predictions, _sweep_fixture())
     assert "BEST PICK OF THE WEEK" not in page
-
-
-# ---------------------------------------------------------------------------
-# B1/B2 (2026-08-19): the overlay + Best Pick nomination, via nfl_ats.card_view
-# ---------------------------------------------------------------------------
 
 
 def _overlay_predictions_fixture() -> pd.DataFrame:
@@ -1550,7 +1416,6 @@ def _overlay_predictions_fixture() -> pd.DataFrame:
             "away_team": ["YR1", "OTHER2"],
             "home_team": ["KEEP", "OTHER1"],
             "spread_line": [-3.5, 2.5],
-            # KEEP (home, kept coach) is NOT picked -- YR1 (away, year-1) is.
             "home_cover_probability": [0.35, 0.55],
             "predicted_market_residual": [-2.0, 1.0],
             "fair_spread": [-1.0, 3.0],
@@ -1596,14 +1461,11 @@ def test_render_picks_page_applies_the_coach_fade_overlay_and_discloses_the_flip
     _write_overlay_schedule_snapshot(tmp_path)
     page = render_picks_page(_overlay_predictions_fixture(), data_root=tmp_path)
 
-    # The overlaid pick (KEEP), not the model's own raw pick (YR1).
     assert "KEEP" in page
     assert "1 pick flipped by the coach-fade overlay" in page
     assert "Coach-fade overlay applied" in page
     assert "flipped from YR1 (the model" in page
     assert "to KEEP.</p>" in page
-    # Consolidation law (2026-08-23): the rule's historical cover rate stays
-    # inside a collapsed toggle, not default-visible.
     assert "<summary>Rule evidence</summary>" in page
     assert "about 47%" in page
     assert "47%" not in _index_default_view(page)
@@ -1633,9 +1495,6 @@ def test_render_picks_page_discloses_active_arrest_policy_when_no_pick_flips() -
 
     assert "player-arrest policy active" in page
     assert "0 picks flipped this week" in page
-    # Consolidation law (2026-08-23): the policy's archive evaluation no
-    # longer rides in the footer; it stays behind the collapsed
-    # per-game Policy-evidence toggle.
     assert "53.76%" not in page
     assert_public_safe(page)
 
@@ -1662,14 +1521,12 @@ def test_arrest_flip_evidence_percentages_stay_collapsed() -> None:
 
     page = render_picks_page(predictions, _sweep_fixture(), arrest_overlay=arrest_overlay)
 
-    # The flip itself stays disclosed in plain sight; the archive numbers
-    # stay one click away.
     assert "Arrest rule applied" in page
     assert "<summary>Policy evidence</summary>" in page
     default_view = _index_default_view(page)
     for banned in ("53.76%", "53.36%", "0.8562"):
         assert banned not in default_view
-    assert "53.76%" in page  # still disclosed, collapsed
+    assert "53.76%" in page
     assert ">P+</abbr> 0.86" in page
 
 
@@ -1767,12 +1624,7 @@ def test_render_picks_page_uses_v2_nomination_end_to_end(tmp_path: Path) -> None
 
     page = render_picks_page(predictions, metadata=metadata, data_root=data_root)
     assert "nominated by calibrated probability among low-disagreement games" in page
-    assert "24 of the 35" not in page  # the stale v1 tie-break framing is gone
-
-
-# ---------------------------------------------------------------------------
-# D1: the week board
-# ---------------------------------------------------------------------------
+    assert "24 of the 35" not in page
 
 
 def test_confidence_word_bands() -> None:
@@ -1790,7 +1642,6 @@ def test_render_picks_page_week_board_anchors_to_each_card() -> None:
     assert '<a href="#2026_01_SF_LA">SF at LA</a>' in page
     assert 'id="2026_01_ARI_LAC"' in page
     assert 'id="2026_01_SF_LA"' in page
-    # The board comes before the first detail card in document order.
     assert page.index('class="data week-board"') < page.index('id="2026_01_SF_LA"')
 
 
@@ -1800,31 +1651,17 @@ def test_render_picks_page_week_board_stars_the_best_pick() -> None:
     assert "best-flag" in board
 
 
-# ---------------------------------------------------------------------------
-# D2: the cover curve is collapsed behind a details toggle
-# ---------------------------------------------------------------------------
-
-
 def test_render_picks_page_cover_curve_is_collapsed_by_default() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     marker = "Cover odds across hypothetical lines"
     idx = page.index(marker)
-    # The summary text sits inside a <details> tag, not a bare <p>, so the
-    # chart it wraps starts collapsed.
     assert "<summary>" in page[idx - 40 : idx + len(marker) + 20]
-
-
-# ---------------------------------------------------------------------------
-# B4: an explanation whose own residual disagrees with the live card is
-# dropped rather than rendered as a contradiction.
-# ---------------------------------------------------------------------------
 
 
 def test_load_public_board_artifacts_drops_a_stale_explanation(tmp_path: Path) -> None:
     _write_board_fixture(tmp_path, with_decomposition=False)
     forecast = tmp_path / "margin_predictions" / "forecast"
     predictions = pd.read_csv(forecast / "recommendations.csv")
-    # The live card's own residual for ARI at LAC is -2.4 (see _predictions_fixture).
     live_residual = float(
         predictions.loc[
             predictions["game_id"].eq("2026_01_ARI_LAC"), "predicted_market_residual"
@@ -1842,7 +1679,6 @@ def test_load_public_board_artifacts_drops_a_stale_explanation(tmp_path: Path) -
                 "The model essentially agrees with the market on this game (a 0.1-point gap).",
                 "The model and market agree on this one.",
             ],
-            # Stale for ARI/LAC (0.1 vs the live -2.4); consistent for SF/LA.
             "predicted_residual": [0.1, -1.1],
         }
     ).to_parquet(decomposition / "attribution.parquet", index=False)
@@ -1876,11 +1712,6 @@ def test_load_prospective_challengers_missing_file_is_empty(tmp_path: Path) -> N
     assert load_prospective_challengers(tmp_path) == []
 
 
-# ---------------------------------------------------------------------------
-# Spread explorer (owner request, 2026-08-20)
-# ---------------------------------------------------------------------------
-
-
 def _spread_explorer_params_fixture() -> dict[str, SpreadExplorerGameParams]:
     """Hand-built params for the two ``_predictions_fixture()`` games, chosen
     so ``home_cover_probability(card_line) == the fixture's own probability``
@@ -1896,9 +1727,6 @@ def _spread_explorer_params_fixture() -> dict[str, SpreadExplorerGameParams]:
         ("2026_01_SF_LA", "LA", "SF", -3.5, 0.62),
     ):
         mean, std, center = 0.0, 12.0, 0.0
-        # Solve for a center that reproduces the target probability exactly
-        # at (line, mean, std): threshold = line - center, want
-        # 1 - Phi((threshold-mean)/std) == target_probability.
         z = stats.norm.isf(target_probability)
         threshold = z * std + mean
         center = line - threshold
@@ -1927,13 +1755,7 @@ def test_render_picks_page_renders_the_cover_curve_with_gaussian_payload() -> No
     assert page.count('class="ats-cover"') == 2
     assert 'id="ats-cover-data"' in page
     assert "as of this build" in page
-    # The chart's own domain is OFFSETS from the quoted line (see
-    # SWEEP_HALF_WIDTH), so the slider's initial value is always 0 -- the
-    # card's own line is reproduced trivially at that offset, regardless of
-    # whether it is a whole or half-point number.
     assert page.count('value="0"') >= 2
-    # The JSON blob carries both games, keyed by game_id, WITH their Gaussian
-    # fit for the drag handler's erf formula.
     match = re.search(r'id="ats-cover-data">(.*?)</script>', page)
     assert match is not None
     payload = json.loads(match.group(1))
@@ -2012,10 +1834,6 @@ def test_spread_explorer_widget_formula_matches_the_fixtures_own_probability() -
         )
         assert computed == pytest.approx(probability, abs=1e-6)
 
-
-# ---------------------------------------------------------------------------
-# Spread explorer -- end to end through build_public_site (a real refit)
-# ---------------------------------------------------------------------------
 
 _SE_FEATURE_PROFILE = "base"
 _SE_RIDGE_ALPHA = 10.0
@@ -2171,13 +1989,6 @@ def test_build_public_site_refuses_a_drifted_gaussian_card(
         )
 
 
-# ---------------------------------------------------------------------------
-# 2026-08-23 redesign: "Ledger base + Terminal layout" chrome replaces the
-# retired Observatory theme pack (its injection, chalk defs and toggle tests
-# are gone; the site_theme package itself is orphaned, not deleted).
-# ---------------------------------------------------------------------------
-
-
 def test_light_palette_hex_budget() -> None:
     """The light CSS block may declare at most 10 distinct hex colors."""
 
@@ -2185,28 +1996,15 @@ def test_light_palette_hex_budget() -> None:
 
     light = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[0]
     hexes = set(re.findall(r"#[0-9a-fA-F]{3,8}\b", light))
-    # Still 10. The 2026-08-25 semantic-colour pass added a confidence ramp, a
-    # diverging delta pair and a status-pill palette WITHOUT spending new
-    # chrome: every one of them is derived with var()/color-mix() from the
-    # tokens already here, so meaning-bearing colour costs zero budget.
     assert len(hexes) <= 10
     assert "#2a78d6" in hexes
     assert "#1a7f37" in hexes
-    # Re-stepped 2026-08-25. The previous pair (#c0392b / #b35900) measured
-    # dE 7.5 in NORMAL vision and 2.7 under deuteranopia against each other --
-    # two "distinguishable" status roles that were effectively one colour.
-    # These values pass every check of the dataviz validator; do not revert
-    # them without re-running it.
     assert {"#9b2418", "#d59200"} <= hexes
     assert "--critical: #9b2418;" in light
     assert "--serious: #d59200;" in light
-    # Derived, not literal -- this is what keeps the budget at 10.
     assert "--warning: var(--serious);" in light
     assert "--pos: var(--good);" in light
     assert "--neg: var(--critical);" in light
-    # The confidence ramp moved from a one-hue color-mix to the validated
-    # status tokens (2026-08-25, owner: every bar looked the same). Still
-    # derived, so the budget is still untouched.
     assert "--band-1: var(--critical);" in light
 
 
@@ -2239,12 +2037,6 @@ def test_dark_mode_seq_ramp_and_semantic_tokens_are_lightened() -> None:
     from nfl_ats.public_board import _PAGE_CHROME
 
     dark = _PAGE_CHROME.split("@media (prefers-color-scheme: dark)", 1)[1]
-    # Re-stepped 2026-08-25 and re-validated against the dark surface. The
-    # previous steps failed FOUR checks -- three outside the lightness band,
-    # --series-model below the chroma floor (reading gray), CVD separation
-    # dE 5.4, and a normal-vision floor of 11.5 between critical and serious,
-    # i.e. this test's own premise was false. Now worst adjacent normal-vision
-    # dE is 15.2. Do not revert without re-running the validator.
     assert "--critical: #c9483c;" in dark
     assert "--serious: #b8891f;" in dark
 
@@ -2281,13 +2073,11 @@ def test_muted_text_tokens_meet_aa_normal_text_contrast() -> None:
     muted_dark = re.search(r"--muted:\s*(#[0-9a-f]{6})", chrome_dark)
     assert muted_light is not None and muted_dark is not None
 
-    # Page chrome surfaces/planes (light + dark).
     assert _contrast_ratio(muted_light.group(1)[1:], "ffffff") >= 4.5
     assert _contrast_ratio(muted_light.group(1)[1:], "fafaf8") >= 4.5
     assert _contrast_ratio(muted_dark.group(1)[1:], "0b0c0e") >= 4.5
     assert _contrast_ratio(muted_dark.group(1)[1:], "141518") >= 4.5
 
-    # The shared theme stylesheet's own muted token (same defect class).
     assert _contrast_ratio(TOKENS_LIGHT["muted"][1:], "fcfcfb") >= 4.5
     assert _contrast_ratio(TOKENS_LIGHT["muted"][1:], "f9f9f7") >= 4.5
     assert _contrast_ratio(TOKENS_DARK["muted"][1:], "1a1a19") >= 4.5
@@ -2350,14 +2140,11 @@ def test_index_renders_the_four_panel_terminal_grid() -> None:
     assert 'class="ledger-grid"' in page
     for panel in ("panel-summary", "panel-board", "panel-ledger", "panel-watch"):
         assert f'class="panel {panel}"' in page
-    # The board sits inside the grid; deep-dive blocks come after it.
     assert page.index('class="ledger-grid"') < page.index('class="deep-game"')
 
 
 def test_week_board_rows_expand_into_subrows() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
-    # The Best-Pick row carries an extra class so it can be emphasised, so
-    # count the class rather than one exact attribute string.
     assert page.count('class="board-game') == 2
     assert page.count('<tr class="board-sub"><td colspan="5">') == 2
 
@@ -2370,11 +2157,6 @@ def test_no_observatory_references_remain_in_generated_pages(tmp_path: Path) -> 
         assert "site_theme/" not in page, name
         assert "chalk-filter" not in page, name
         assert "theme-toggle-mount" not in page, name
-
-
-# ---------------------------------------------------------------------------
-# Model Ledger section (fail-open)
-# ---------------------------------------------------------------------------
 
 
 def _write_ledger_tree(tmp_path: Path) -> None:
@@ -2448,8 +2230,6 @@ def test_model_ledger_section_embeds_promoted_badge(
     assert "Every arm the card could come from" in models_page
     assert_public_safe(models_page)
 
-    # De-clutter revision: the picks page itself stays clean -- the ledger
-    # lives on its own page only.
     picks_page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert "Every arm the card could come from" not in picks_page
     assert_public_safe(picks_page)
@@ -2484,11 +2264,6 @@ def test_model_ledger_failopen_warning_box_on_registry_drift(
 
     picks_page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert "MODEL LEDGER UNAVAILABLE" not in picks_page
-
-
-# ---------------------------------------------------------------------------
-# Per-game "Why this pick" attribution (waterfall feed, fail-open)
-# ---------------------------------------------------------------------------
 
 
 def _feed_entry(**overrides: object) -> dict[str, object]:
@@ -2555,11 +2330,10 @@ def test_week_board_details_panel_carries_feed_numbers() -> None:
     assert '<details class="why-pick"><summary>Why this pick</summary>' in page
     assert "documented early-season line biases moves this 0.5 points against SEA" in page
     assert "Market-implied expectation" in page
-    assert "+0.41" in page or "0.41 pts" in page  # edge-vs-market, from edge_vs_spread
+    assert "+0.41" in page or "0.41 pts" in page
     assert "model-vs-market edge 0.41 pts" in page
     assert "0.00 pts from the nearest key number" in page
     assert "coach_fade: flips this pick on its own" in page
-    # The other game has no feed entry: quiet note, never an exception.
     assert page.count("Attribution not published.") == 1
 
 
@@ -2571,11 +2345,6 @@ def test_week_board_empty_steps_render_quiet_note() -> None:
     )
     assert page.count("Attribution not published.") == 2
     assert '<details class="why-pick">' not in page
-
-
-# ---------------------------------------------------------------------------
-# Margin-interval text row (theme-neutral info parity)
-# ---------------------------------------------------------------------------
 
 
 def test_game_card_margin_interval_row_renders_card_quantiles() -> None:
@@ -2594,11 +2363,6 @@ def test_game_card_without_margin_quantiles_renders_no_interval_row() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert "Projected margin intervals" not in page
     assert "cover margin:" not in page
-
-
-# ---------------------------------------------------------------------------
-# 2026-08-23 cold-read QA fixes
-# ---------------------------------------------------------------------------
 
 
 def test_week_board_carries_the_best_pick_and_flip_legend() -> None:
@@ -2621,11 +2385,6 @@ def test_sweep_table_formats_are_one_decimal_and_zero_never_signed() -> None:
     assert "<td>-0.0</td>" not in page
     assert "<td>-0.5</td>" in page
     assert "<td>+0.5</td>" in page
-    # The probability column is asserted as a FORMAT, not as a literal value.
-    # ``cover_curve`` rigidly translates the swept series onto the card's own
-    # published probability (see the cover-curve tests), so a hard-coded
-    # percentage here would pin this formatting test to that unrelated offset
-    # and break whenever the two estimators' gap changes.
     probabilities = re.findall(r">(\d+\.\d+)%</span></td>", page)
     assert probabilities, "sweep table rendered no probability cells"
     assert all(value.split(".")[1] and len(value.split(".")[1]) == 1 for value in probabilities)
@@ -2695,12 +2454,6 @@ def test_deep_dive_overlay_notes_are_plain_english_without_doc_refs() -> None:
     assert "docs/overlay_subset_composition.md." not in block
 
 
-# ---------------------------------------------------------------------------
-# B1/B2: findings.html must not leak internal audit prose, and the dek must
-# not claim "No jargon".
-# ---------------------------------------------------------------------------
-
-
 def test_findings_page_does_not_leak_internal_audit_prose() -> None:
     if not Path(_default_weak_signals_registry_path()).is_file():
         pytest.skip("live weak-signals registry absent")
@@ -2722,12 +2475,6 @@ def test_findings_page_dek_does_not_claim_no_jargon() -> None:
     assert "Every finding states its evidence and how confident we are" in page
 
 
-# ---------------------------------------------------------------------------
-# 2026-08-23 de-firehose revision (owner's rendered-page review): ONE crowned
-# number on the picks page; every other percentage collapsed or subordinate.
-# ---------------------------------------------------------------------------
-
-
 _INNERMOST_DETAILS = re.compile(
     r"<details\b[^>]*>(?:(?!<details\b).)*?</details>", re.DOTALL | re.IGNORECASE
 )
@@ -2739,7 +2486,7 @@ def _html_without_collapsed_content(page: str) -> str:
 
     text = _HEAD_BLOCK.sub(" ", page)
     previous = None
-    while previous != text:  # peel innermost details first, repeat until stable
+    while previous != text:
         previous = text
         text = _INNERMOST_DETAILS.sub(" ", text)
     return text
@@ -2754,14 +2501,8 @@ def _index_default_view(page: str) -> str:
     return unescape(_TAG.sub(" ", _html_without_collapsed_content(page)))
 
 
-#: The consolidation law's banned numerals: every accuracy figure that used
-#: to leak into the index default view (panel fine print, ladder prose,
-#: footer byline). None may appear outside the ONE collapsed ladder.
 _BANNED_DEFAULT_VIEW_NUMERALS = ("53.4", "52.1", "53.76", "53.36", "55.4", "0.00", "0.49")
 
-#: Measured on the fixture page (2026-08-23): 6 '%' default-visible -- two
-#: disclaimers (fixed legal chrome), the ≈55% hero, the 54.2% measured line,
-#: and one per-game cover chance per fixture game. Pinned at actual+5.
 _VISIBLE_PCT_BUDGET = 11
 
 
@@ -2787,14 +2528,11 @@ def test_index_default_view_carries_exactly_two_accuracy_stats() -> None:
     default_view = _index_default_view(page)
     for banned in _BANNED_DEFAULT_VIEW_NUMERALS:
         assert banned not in default_view, f"{banned!r} leaked into the default view"
-    # The two allowed stats are present and labeled as what they are.
     assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
     assert "Planning estimate" in default_view
     assert "Measured chain history:" in default_view
     assert "54.2%" in default_view
-    # The picks themselves stay: per-game cover chances are not hidden.
     assert 'covers <span class="num">62%</span>' in page
-    # ...and everything else lives on the story page, linked from Panel 1.
     assert "What this number means" in page
     assert "<summary>Where these numbers come from" not in page
 
@@ -2809,13 +2547,6 @@ def test_index_visible_percentage_budget_stays_tight() -> None:
     count = visible.count("%")
     assert count <= _VISIBLE_PCT_BUDGET, f"visible-percentage budget blown: {count} '%'"
     assert count >= 4, f"default view lost its required stats: only {count} '%'"
-
-
-# ---------------------------------------------------------------------------
-# Canonical-figure HOME guard (owner law, 2026-08-23): each canonical stat
-# renders as a figure ONLY on its home page -- every repeat references it
-# verbally. Source half: tests/test_number_variables.py. Rendered half: here.
-# ---------------------------------------------------------------------------
 
 
 def _models_home_page(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> str:
@@ -2841,13 +2572,10 @@ def test_index_has_exactly_one_24px_number_the_crowned_stat() -> None:
     crowned_index = page.index("font-size:24px")
     board_index = page.index('class="panel panel-board"')
     assert summary_index < crowned_index < board_index
-    # The crowned stat is the PLANNING expectation, labeled as one.
     assert "PLAYED CARD \u2014 HONEST EXPECTATION VS TUESDAY LINES" in page
     assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
     assert "Planning estimate for the played card." in page
     assert '<a href="models.html">What this number means &#8594;</a>' in page
-    # The page header title itself is class-sized now, visually unchanged;
-    # it is an <h1> since the a11y pass (one h1 per page, WCAG 1.3.1).
     assert 'class="title page-title">This week&#x27;s picks</h1>' in page
 
 
@@ -2865,12 +2593,9 @@ def test_crowned_stat_keeps_the_constant_hero_and_shows_the_measured_chain_histo
     )
     assert f">{PLAYED_CARD_EXPECTATION_HERO}</div>" in page
     assert '<strong>Measured chain history: <span class="num">54.2%</span></strong>' in page
-    # The fine-print lines are gone from the block entirely, and the page
-    # links to the story page instead of carrying the ladder itself.
     assert "Sequential chain:" not in page
-    assert "already discounted here" not in page  # old caveat wording
+    assert "already discounted here" not in page
     assert "What this number means" in page
-    # The raw baseline appears ONLY as the no-artifact fallback label.
     default_view = _index_default_view(page)
     assert "raw model before policy overlays" not in default_view.lower()
     assert "Raw model before policy overlays" not in page
@@ -2916,7 +2641,6 @@ def test_ledger_mini_column_header_reads_evidence_p_plus() -> None:
         }
     ]
     page = render_picks_page(_predictions_fixture(), _sweep_fixture(), challengers=challengers)
-    # The header keeps its label and now carries the plain-language tooltip.
     assert ">Evidence P+</abbr></th>" in page
     assert "<th>Best P+</th>" not in page
 
@@ -2941,7 +2665,7 @@ def test_challenger_watch_renders_human_names_in_plain_ink() -> None:
     assert "Turf-surface switch" in watch
     for raw_id in ("movement_rule_composed_v1", "nflcom_friday_refresh_out2_starters_v1"):
         assert raw_id not in watch
-    assert "<a href=" not in watch  # plain ink, not links/accent color
+    assert "<a href=" not in watch
 
 
 def test_challenger_watch_shows_top_six_and_collapses_the_rest() -> None:
@@ -2961,9 +2685,6 @@ def test_challenger_watch_shows_top_six_and_collapses_the_rest() -> None:
     assert watch_before.count("<li>") == 6
     details_body = after_toggle.split("</details>", 1)[0]
     assert details_body.count("<li>") == 2
-    # Strongest evidence leads: P+ 0.90 first, P+ 0.50 last among the visible.
-    # The numeral now sits inside its own diverging-tone span (above/below the
-    # 0.5 decision midpoint), so ordering is checked on the toned value.
     assert watch_before.index('<span class="delta pos">0.90</span>') < watch_before.index(
         '<span class="delta pos">0.70</span>'
     )
@@ -3091,7 +2812,6 @@ def test_load_played_chain_accuracy_reads_the_newest_run(tmp_path: Path) -> None
 
     assert load_played_chain_accuracy(tmp_path) == pytest.approx(0.541583499667332)
 
-    # Fail-open: no active model, or no matching run -> None, never a raise.
     empty = tmp_path / "elsewhere"
     empty.mkdir()
     assert load_played_chain_accuracy(empty) is None
@@ -3111,34 +2831,17 @@ def test_build_public_site_threads_the_played_chain_figure_into_the_summary(
     )
     picks = pages[PICKS_PAGE]
     assert "PLAYED CARD \u2014 HONEST EXPECTATION VS TUESDAY LINES" in picks
-    # The fixture writes no overlay_subset_composition run, so the measured
-    # line must degrade to the labeled raw-chain baseline, never invent a
-    # chain figure.
     assert "Raw chain baseline:" in picks
-    # Consolidation law end-to-end. This fixture deliberately has NO
-    # overlay_subset_composition run, so Panel 1 shows its one DEGRADED stat
-    # ("Raw chain baseline: 53.4%", the pinned fallback label); every other
-    # banned numeral stays out of the default view regardless.
     default_view = _index_default_view(picks)
     for banned in _BANNED_DEFAULT_VIEW_NUMERALS:
         if banned == "53.4":
             continue
         assert banned not in default_view
     assert "Raw chain baseline:" in default_view
-    assert "Unavailable" in default_view  # no fabricated fallback measurement
+    assert "Unavailable" in default_view
     assert "raw model before policy overlays" not in default_view.lower()
     assert "Raw model before policy overlays" not in picks
     assert_public_safe(picks)
-
-
-# ---------------------------------------------------------------------------
-# 2026-08-25 semantic-colour pass. Colour was almost entirely decorative: the
-# status tokens were defined but `var(--good)` was used zero times, `--warning`
-# was referenced twice and never defined at all, and the model ledger emitted
-# 28 badge-* elements that no stylesheet ever styled. These pin the contract
-# that pass established, not the specific hues (those are pinned by the
-# palette-budget tests above, with the validator output recorded there).
-# ---------------------------------------------------------------------------
 
 
 def test_every_css_variable_used_is_actually_defined() -> None:
@@ -3163,7 +2866,6 @@ def test_signed_values_keep_their_sign_so_colour_is_never_the_only_channel() -> 
     assert "zero" in _signed(0.0)
     assert "+1.25" in delta_html(1.25) and "delta pos" in delta_html(1.25)
     assert "-1.25" in delta_html(-1.25) and "delta neg" in delta_html(-1.25)
-    # An exact zero picks NO side -- that is what makes the midpoint neutral.
     assert "delta zero" in delta_html(0.0)
     assert "delta zero" in delta_html(None)
 
@@ -3177,7 +2879,6 @@ def test_probability_positive_diverges_around_the_decision_midpoint() -> None:
     assert "delta pos" in p_plus_html(0.51, "0.51")
     assert "delta neg" in p_plus_html(0.49, "0.49")
     assert "delta zero" in p_plus_html(0.5, "0.50")
-    # A value between 0.5 and 0.95 must still read as favouring the candidate.
     assert "delta pos" in p_plus_html(0.62, "0.62")
 
 
@@ -3199,7 +2900,6 @@ def test_confidence_meter_colours_the_three_bands_it_already_encoded() -> None:
     assert "band-1" in confidence_meter("slight")
     assert "band-2" in confidence_meter("lean")
     assert "band-3" in confidence_meter("strong")
-    # Still aria-hidden: the word beside it remains the accessible label.
     assert 'aria-hidden="true"' in confidence_meter("strong")
 
 
@@ -3240,17 +2940,12 @@ def test_metric_colour_means_good_not_positive() -> None:
 
     from nfl_ats.public_board import _signed
 
-    # Higher-is-better: sign and merit agree.
     assert "delta pos" in _signed(0.12, good_direction=1)
     assert "delta neg" in _signed(-0.12, good_direction=1)
-    # Lower-is-better: a NEGATIVE value is GOOD and must read green.
     assert "delta pos" in _signed(-0.12, good_direction=-1)
     assert "delta neg" in _signed(0.12, good_direction=-1)
-    # The sign character never changes -- only the hue does.
     assert "-0.12" in _signed(-0.12, good_direction=-1)
     assert "+0.12" in _signed(0.12, good_direction=-1)
-    # Unknown direction must be NEUTRAL, never a guess: a wrong colour is worse
-    # than no colour because it contradicts the text.
     assert "delta zero" in _signed(0.12, good_direction=0)
 
 
@@ -3265,7 +2960,6 @@ def test_every_trend_metric_declares_a_direction() -> None:
 
     assert set(METRIC_GOOD_DIRECTION) == set(METRIC_LABELS)
     assert all(value in (-1, 1) for value in METRIC_GOOD_DIRECTION.values())
-    # The tempting shortcut "offence positive, defence negative" is wrong twice.
     assert metric_good_direction("off_turnover_rate") == -1
     assert metric_good_direction("off_sack_rate") == -1
     assert metric_good_direction("def_takeaway_rate") == 1
@@ -3285,7 +2979,6 @@ def test_confidence_bands_are_an_ordinal_ramp_not_one_hue() -> None:
     assert "--band-1: var(--critical);" in light
     assert "--band-2: var(--serious);" in light
     assert "--band-3: var(--good);" in light
-    # Derived, so the ordinal ramp still costs zero chrome budget.
     assert "--band-1: #" not in light
 
 
@@ -3294,10 +2987,5 @@ def test_the_pick_is_emphasised_above_the_fields_beside_it() -> None:
 
     assert ".ats .pick-team" in _PAGE_CHROME
     assert "tr.is-best-pick" in _PAGE_CHROME
-    # The type treatment (size/weight/letter-spacing/colour) carries the
-    # emphasis on its own -- a left accent rule shipped alongside it read
-    # back as a stray blue vertical line beside every pick (owner,
-    # 2026-08-26) and was removed. Regression guard: no border-left on the
-    # Pick column, in either the base or best-pick variant.
     assert 'td[data-label="Pick"]' not in _PAGE_CHROME
     assert "border-left" not in _PAGE_CHROME

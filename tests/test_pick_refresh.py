@@ -50,13 +50,11 @@ _NON_FEATURE_COLUMNS = {
     "result",
 }
 
-# A Tue..Mon NFL week used across tests: Tuesday 2026-09-15 through Monday
-# 2026-09-21, in UTC (September is EDT, UTC-4).
-TNF_KICKOFF = pd.Timestamp("2026-09-18T00:15:00+00:00")  # Thu 8:15pm ET
-SUN_EARLY_KICKOFF = pd.Timestamp("2026-09-20T17:00:00+00:00")  # Sun 1:00pm ET
-SNF_KICKOFF = pd.Timestamp("2026-09-21T00:20:00+00:00")  # Sun 8:20pm ET
-MNF_KICKOFF = pd.Timestamp("2026-09-22T00:15:00+00:00")  # Mon 8:15pm ET
-SUNDAY_LOCK = pd.Timestamp("2026-09-20T20:00:00+00:00")  # Sun 4:00pm ET
+TNF_KICKOFF = pd.Timestamp("2026-09-18T00:15:00+00:00")
+SUN_EARLY_KICKOFF = pd.Timestamp("2026-09-20T17:00:00+00:00")
+SNF_KICKOFF = pd.Timestamp("2026-09-21T00:20:00+00:00")
+MNF_KICKOFF = pd.Timestamp("2026-09-22T00:15:00+00:00")
+SUNDAY_LOCK = pd.Timestamp("2026-09-20T20:00:00+00:00")
 
 
 def _target_frame(model_frame: pd.DataFrame, games: list[dict]) -> pd.DataFrame:
@@ -240,7 +238,7 @@ GAMES = [
         "gameday": pd.Timestamp("2026-09-17"),
         "away_team": "AAA",
         "home_team": "BBB",
-        "spread_line": 6.5,  # CURRENT feature table's line -- must never be used
+        "spread_line": 6.5,
         "kickoff": TNF_KICKOFF,
     },
     {
@@ -275,9 +273,6 @@ GAMES = [
     },
 ]
 
-# The FROZEN Tuesday lines -- deliberately different from GAMES' own
-# "current" spread_line above, so any test that used the current line by
-# mistake would compute a different (and therefore caught) probability.
 ORIGINAL_LINES = {
     "2026_02_AAA_BBB": -1.5,
     "2026_02_CCC_DDD": -1.0,
@@ -315,11 +310,6 @@ def _original_rows(reference: dict[str, float], *, flip: bool = True) -> list[di
     return rows
 
 
-# ---------------------------------------------------------------------------
-# 1. Lines frozen from the original card
-# ---------------------------------------------------------------------------
-
-
 def test_refreshed_probability_uses_the_original_frozen_line_not_current_features(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
@@ -345,10 +335,6 @@ def test_refreshed_probability_uses_the_original_frozen_line_not_current_feature
         game = by_id[game_id]
         assert game.decision_home_spread == pytest.approx(original_line)
         assert game.new_home_cover_probability == pytest.approx(reference[game_id])
-        # The CURRENT feature table's own spread_line differs from the
-        # frozen original on every game above -- confirms the reference
-        # (independently computed at the frozen line) is not simply
-        # reproducing whatever the current table happens to carry.
         current_line = next(g["spread_line"] for g in GAMES if g["game_id"] == game_id)
         assert current_line != original_line
 
@@ -371,8 +357,6 @@ def test_refresh_reuses_frozen_arrest_flags_and_never_reads_a_newer_snapshot(
     features_path = data_root / "processed" / "game_features.parquet"
     atomic_parquet(_target_frame(model_frame, GAMES), features_path)
 
-    # This intentionally unusable newer source would fail a fresh-source load.
-    # Refresh must not consult it: Tuesday's ledger flags are the frozen input.
     newest = data_root / "raw" / "player_arrests" / "20260916T120000Z"
     newest.mkdir(parents=True)
     (newest / "manifest.json").write_text('{"complete": false}', encoding="utf-8")
@@ -394,11 +378,6 @@ def test_refresh_reuses_frozen_arrest_flags_and_never_reads_a_newer_snapshot(
     assert refreshed.player_arrests_safe_index_sha256 == "safe-index-hash"
 
 
-# ---------------------------------------------------------------------------
-# 2. Kickoff guard: a started game is never revised
-# ---------------------------------------------------------------------------
-
-
 def test_kickoff_guard_never_revises_a_started_game(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
@@ -408,7 +387,6 @@ def test_kickoff_guard_never_revises_a_started_game(
     features_path = data_root / "processed" / "game_features.parquet"
     atomic_parquet(_target_frame(model_frame, GAMES), features_path)
 
-    # Friday noon UTC: after TNF's own kickoff, well before the Sunday lock.
     now = datetime(2026, 9, 19, 12, 0, tzinfo=UTC)
     result = record_refresh(
         artifacts_root,
@@ -423,7 +401,6 @@ def test_kickoff_guard_never_revises_a_started_game(
 
     assert "2026_02_AAA_BBB" in result["post_kickoff_skipped"]
     assert "2026_02_AAA_BBB" not in result["changed_game_ids"]
-    # Every OTHER game (kickoff still ahead, Sunday lock still ahead) did change.
     assert set(result["changed_game_ids"]) == {
         "2026_02_CCC_DDD",
         "2026_02_EEE_FFF",
@@ -432,11 +409,6 @@ def test_kickoff_guard_never_revises_a_started_game(
 
     revisions = load_pick_revisions(artifacts_root)
     assert "2026_02_AAA_BBB" not in set(revisions["game_id"])
-
-
-# ---------------------------------------------------------------------------
-# 3. Sunday 4:00 PM ET pick lock: SNF/MNF lock early
-# ---------------------------------------------------------------------------
 
 
 def test_sunday_pick_lock_blocks_monday_night_game_before_its_own_kickoff(
@@ -448,8 +420,6 @@ def test_sunday_pick_lock_blocks_monday_night_game_before_its_own_kickoff(
     features_path = data_root / "processed" / "game_features.parquet"
     atomic_parquet(_target_frame(model_frame, GAMES), features_path)
 
-    # Sunday 5:00pm ET (21:00 UTC): one hour after the 4:00pm ET lock, over a
-    # full day before the MNF game's own kickoff (Monday 8:15pm ET).
     after_lock = datetime(2026, 9, 20, 21, 0, tzinfo=UTC)
     plan_after = plan_refresh(
         artifacts_root,
@@ -464,13 +434,10 @@ def test_sunday_pick_lock_blocks_monday_night_game_before_its_own_kickoff(
     assert mnf_after.eligible is False
     assert mnf_after.ineligible_reason == "sunday_pick_lock_passed"
     assert mnf_after.changed is False
-    # SNF is bound by the same week-wide cap, even though its own kickoff was
-    # also still ahead at this instant.
     snf_after = next(g for g in plan_after.games if g.game_id == "2026_02_EEE_FFF")
     assert snf_after.eligible is False
     assert snf_after.ineligible_reason == "sunday_pick_lock_passed"
 
-    # One hour BEFORE the lock, the same MNF game is still eligible.
     before_lock = datetime(2026, 9, 20, 19, 0, tzinfo=UTC)
     plan_before = plan_refresh(
         artifacts_root,
@@ -489,11 +456,6 @@ def test_sunday_pick_lock_blocks_monday_night_game_before_its_own_kickoff(
 def test_sunday_pick_lock_is_four_pm_eastern_on_the_weeks_anchor_sunday() -> None:
     kickoffs = pd.Series([TNF_KICKOFF, SUN_EARLY_KICKOFF, SNF_KICKOFF, MNF_KICKOFF])
     assert sunday_pick_lock(kickoffs) == SUNDAY_LOCK
-
-
-# ---------------------------------------------------------------------------
-# 4. Append-only revisions, opt-in recording, no-op refresh
-# ---------------------------------------------------------------------------
 
 
 def test_record_refresh_is_opt_in_and_writes_nothing_by_default(
@@ -517,7 +479,7 @@ def test_record_refresh_is_opt_in_and_writes_nothing_by_default(
     )
     assert result["ledger"]["recorded"] == 0
     assert result["ledger"]["skipped"] is True
-    assert len(result["changed_game_ids"]) > 0  # there WAS something to record
+    assert len(result["changed_game_ids"]) > 0
     assert load_pick_revisions(artifacts_root).empty
     assert not pick_revision_ledger_path(artifacts_root).is_file()
 
@@ -544,7 +506,7 @@ def test_record_refresh_appends_only_new_rows_and_a_second_identical_pass_is_a_n
         record_decisions=True,
     )
     changed = set(first["changed_game_ids"])
-    assert changed  # every game was flipped relative to the (opposite) original
+    assert changed
     assert first["ledger"]["recorded"] == len(changed)
     revisions = load_pick_revisions(artifacts_root)
     assert set(revisions["game_id"]) == changed
@@ -554,12 +516,9 @@ def test_record_refresh_appends_only_new_rows_and_a_second_identical_pass_is_a_n
         assert row["decision_home_spread"] == pytest.approx(ORIGINAL_LINES[game_id])
         assert row["new_home_cover_probability"] == pytest.approx(reference[game_id])
 
-    # The original Tuesday ledger is untouched -- append-only, never rewritten.
     original = original_card(artifacts_root, season=SEASON, week=WEEK)
     assert len(original) == len(GAMES)
 
-    # A second pass with IDENTICAL inputs finds nothing new to change (the
-    # chain-latest pick now already matches the model's own read).
     second = record_refresh(
         artifacts_root,
         data_root,
@@ -581,7 +540,6 @@ def test_record_refresh_no_change_writes_zero_rows_and_exits_clean(
 ) -> None:
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(model_frame, GAMES, ORIGINAL_LINES, season=SEASON, week=WEEK)
-    # flip=False: the original card ALREADY matches what the model would say.
     _write_original_card(artifacts_root, _original_rows(reference, flip=False))
     features_path = data_root / "processed" / "game_features.parquet"
     atomic_parquet(_target_frame(model_frame, GAMES), features_path)
@@ -599,11 +557,6 @@ def test_record_refresh_no_change_writes_zero_rows_and_exits_clean(
     assert result["changed_game_ids"] == []
     assert result["ledger"] == {"recorded": 0, "ledger_rows": 0}
     assert not pick_revision_ledger_path(artifacts_root).is_file()
-
-
-# ---------------------------------------------------------------------------
-# 5. Fail-closed: no original card, model-identity drift
-# ---------------------------------------------------------------------------
 
 
 def test_plan_refresh_fails_closed_with_no_recorded_original_card(
@@ -629,7 +582,6 @@ def test_plan_refresh_fails_closed_on_a_game_missing_its_original_line(
 ) -> None:
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(model_frame, GAMES, ORIGINAL_LINES, season=SEASON, week=WEEK)
-    # Only record 3 of the 4 games -- the 4th has no frozen line.
     rows = _original_rows(reference, flip=True)
     _write_original_card(artifacts_root, rows[:3])
     features_path = data_root / "processed" / "game_features.parquet"
@@ -687,7 +639,6 @@ def test_plan_refresh_accepts_a_new_model_id_with_the_same_configuration(
     assert plan.model_id == "model-1"
     assert len(plan.games) == len(GAMES)
 
-    # The same new id with a changed configuration still fails closed.
     _write_active_manifest(artifacts_root, ridge_alpha=20.0)
     with pytest.raises(ValueError, match="different model identity"):
         plan_refresh(
@@ -732,8 +683,6 @@ def test_record_plan_refuses_a_rehearsal_recording_weeks_before_kickoff(
     features_path = data_root / "processed" / "game_features.parquet"
     atomic_parquet(_target_frame(model_frame, GAMES), features_path)
 
-    # Three weeks before the week's earliest kickoff -- the exact shape of
-    # the 2026-08-18 incident this guard exists to prevent from recurring.
     far_before = datetime(2026, 8, 25, tzinfo=UTC)
     with pytest.raises(ValueError, match="RECORDING_LOCK_WINDOW"):
         record_refresh(
@@ -747,11 +696,6 @@ def test_record_plan_refuses_a_rehearsal_recording_weeks_before_kickoff(
             record_decisions=True,
         )
     assert load_pick_revisions(artifacts_root).empty
-
-
-# ---------------------------------------------------------------------------
-# 6. Ledger contract and final-pick chain resolution
-# ---------------------------------------------------------------------------
 
 
 def test_load_pick_revisions_rejects_a_ledger_missing_columns(tmp_path: Path) -> None:
@@ -784,7 +728,7 @@ def test_final_pick_per_game_reflects_the_latest_revision_while_original_stays_f
     original = original_card(artifacts_root, season=SEASON, week=WEEK)
     final = final_pick_per_game(artifacts_root, season=SEASON, week=WEEK)
     changed_ids = set(load_pick_revisions(artifacts_root)["game_id"])
-    assert changed_ids  # the fixture guarantees at least one flip
+    assert changed_ids
 
     final_by_id = final.set_index("game_id")
     original_by_id = original.set_index("game_id")
@@ -797,13 +741,7 @@ def test_final_pick_per_game_reflects_the_latest_revision_while_original_stays_f
             final_by_id.loc[game_id, "tuesday_pick_side"]
             == original_by_id.loc[game_id, "pick_side"]
         )
-        # Tuesday's own recorded pick is never rewritten by a later revision.
         assert original_by_id.loc[game_id, "pick_side"] == original_by_id.loc[game_id, "pick_side"]
-
-
-# ---------------------------------------------------------------------------
-# 7. CURRENT_PREDICTIONS.md append (additive, idempotent, never touches Tuesday)
-# ---------------------------------------------------------------------------
 
 
 def test_append_refresh_to_card_is_additive_and_idempotent(
@@ -836,8 +774,6 @@ def test_append_refresh_to_card_is_additive_and_idempotent(
     assert "Late-week refresh" in first_text
     assert "thursday_afternoon" in first_text
 
-    # Re-running (e.g. the Saturday pass) replaces the section instead of
-    # duplicating it, and never disturbs the Tuesday content above it.
     later_plan = plan_refresh(
         artifacts_root,
         data_root,
@@ -875,14 +811,6 @@ def test_append_refresh_to_card_fails_closed_without_a_published_card(tmp_path: 
         append_refresh_to_card(tmp_path / "CURRENT_PREDICTIONS.md", empty_plan)
 
 
-# ---------------------------------------------------------------------------
-# 8. Observed-movement pick policy (POL-11 addendum, 2026-08-20)
-# ---------------------------------------------------------------------------
-
-# A dedicated single-game fixture (kept separate from GAMES/ORIGINAL_LINES
-# above, which the earlier sections' helpers -- _original_rows in particular
-# -- iterate as a fixed 4-game list) so these tests can control the movement
-# delta precisely without disturbing any other game's picks.
 MOVEMENT_GAME = {
     "game_id": "2026_02_MOV_TST",
     "season": SEASON,
@@ -890,7 +818,7 @@ MOVEMENT_GAME = {
     "gameday": pd.Timestamp("2026-09-17"),
     "away_team": "MOV",
     "home_team": "TST",
-    "spread_line": 6.5,  # current feature table's line -- must never be used
+    "spread_line": 6.5,
     "kickoff": TNF_KICKOFF,
 }
 MOVEMENT_ORIGINAL_LINE = -1.5
@@ -954,7 +882,7 @@ def test_movement_policy_overrides_the_pick_when_the_market_moves_at_least_one_p
     atomic_parquet(_target_frame(model_frame, [MOVEMENT_GAME]), features_path)
 
     now = datetime(2026, 9, 16, tzinfo=UTC)
-    delta = delta_sign * 2.0  # well clear of the 1.0 threshold
+    delta = delta_sign * 2.0
     current_line = MOVEMENT_ORIGINAL_LINE + delta
     _write_live_quote(
         data_root,
@@ -1006,7 +934,6 @@ def test_movement_policy_overrides_a_disagreeing_model_pick(
     atomic_parquet(_target_frame(model_frame, [MOVEMENT_GAME]), features_path)
 
     now = datetime(2026, 9, 16, tzinfo=UTC)
-    # Move the market AWAY from whatever the model itself picked.
     delta = -2.0 if model_only_side == "HOME" else 2.0
     current_line = MOVEMENT_ORIGINAL_LINE + delta
     _write_live_quote(
@@ -1051,7 +978,7 @@ def test_movement_policy_keeps_the_model_pick_below_threshold(
     atomic_parquet(_target_frame(model_frame, [MOVEMENT_GAME]), features_path)
 
     now = datetime(2026, 9, 16, tzinfo=UTC)
-    delta = 0.4  # inside the 1.0 threshold
+    delta = 0.4
     assert abs(delta) < MOVEMENT_POLICY_THRESHOLD
     current_line = MOVEMENT_ORIGINAL_LINE + delta
     _write_live_quote(
@@ -1076,7 +1003,6 @@ def test_movement_policy_keeps_the_model_pick_below_threshold(
     assert game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
     assert game.new_pick_side == model_only_side
     assert game.movement_delta == pytest.approx(delta)
-    # The candidate side is still computed for transparency, just not applied.
     assert game.movement_pick_side == "HOME"
 
 
@@ -1107,9 +1033,6 @@ def test_movement_policy_is_a_no_op_with_no_market_snapshots(
         assert game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
         assert game.movement_delta is None
         assert game.movement_pick_side == ""
-    # Every game still changed relative to the (deliberately flipped)
-    # Tuesday pick, exactly as the pre-existing (non-movement) test above
-    # already pins -- the movement policy did not disturb that behavior.
     assert len(plan.changed_games) == len(GAMES)
 
 
@@ -1131,8 +1054,6 @@ def test_movement_policy_is_a_no_op_when_the_latest_capture_is_stale(
 
     now = datetime(2026, 9, 16, tzinfo=UTC)
     stale_observed_at = pd.Timestamp(now) - pd.Timedelta(days=3)
-    # A stale quote that WOULD clear the threshold if it were fresh -- proves
-    # the no-op is driven by staleness, not by the delta being too small.
     _write_live_quote(
         data_root,
         snapshot_id="live-stale",
@@ -1206,7 +1127,6 @@ def test_movement_policy_is_a_no_op_per_game_when_that_games_line_is_not_capture
     atomic_parquet(_target_frame(model_frame, games), features_path)
 
     now = datetime(2026, 9, 16, tzinfo=UTC)
-    # Only MOVEMENT_GAME gets a captured quote; "2026_02_UNC_APT" gets none.
     _write_live_quote(
         data_root,
         snapshot_id="live-1",
@@ -1308,7 +1228,7 @@ def test_movement_policy_never_bypasses_the_kickoff_deadline_guard(
         "away_team": "SUN",
         "home_team": "TST",
         "spread_line": 6.5,
-        "kickoff": SUN_EARLY_KICKOFF,  # Sun 1:00pm ET
+        "kickoff": SUN_EARLY_KICKOFF,
     }
     original_line = -1.5
 
@@ -1343,13 +1263,7 @@ def test_movement_policy_never_bypasses_the_kickoff_deadline_guard(
     features_path = data_root / "processed" / "game_features.parquet"
     atomic_parquet(_target_frame(model_frame, [deadline_game]), features_path)
 
-    # Sunday 3:00pm ET: after this game's own 1:00pm ET kickoff (and before
-    # the week-wide 4:00pm ET lock, so this specifically exercises the
-    # KICKOFF guard, not the Sunday-lock guard already covered elsewhere).
     now = datetime(2026, 9, 20, 19, 0, tzinfo=UTC)
-    # A pregame capture from earlier the SAME Sunday (9:00am ET) -- fresh by
-    # the movement policy's same-day rule, and strictly before this game's
-    # own kickoff, so the market store's own pregame filter keeps it.
     observed_at = pd.Timestamp("2026-09-20T13:00:00+00:00")
     _write_live_quote(
         data_root,
@@ -1371,9 +1285,7 @@ def test_movement_policy_never_bypasses_the_kickoff_deadline_guard(
     )
     assert plan.current_line_metadata["fresh"] is True
     game = plan.games[0]
-    # The movement policy still COMPUTES a movement-side override...
     assert game.movement_policy == MOVEMENT_POLICY_MOVEMENT
-    # ...but eligibility and `changed` are governed solely by the deadline.
     assert game.eligible is False
     assert game.ineligible_reason == "kickoff_passed"
     assert game.changed is False
@@ -1474,11 +1386,6 @@ def test_current_captured_home_spread_reads_the_local_store_only(tmp_path: Path)
     assert meta["games_with_current_line"] == 1
 
 
-# ---------------------------------------------------------------------------
-# UI-17 refresh-diff sentences.
-# ---------------------------------------------------------------------------
-
-
 def _revision_frame(rows: list[dict]) -> pd.DataFrame:
     from nfl_ats.pick_refresh import PICK_REVISION_COLUMNS
 
@@ -1545,9 +1452,9 @@ def test_describe_week_revisions_latest_wins_and_scope_filters() -> None:
                 new_pick_side="LV",
                 previous_pick_side="LV",
             ),
-            _revision_row(),  # later stamp supersedes the earlier row
-            _revision_row(game_id="2026_01_NO_DET", week=2),  # wrong week
-            _revision_row(game_id="2026_01_ARI_LAC"),  # game not on this card
+            _revision_row(),
+            _revision_row(game_id="2026_01_NO_DET", week=2),
+            _revision_row(game_id="2026_01_ARI_LAC"),
         ]
     )
     lines = describe_week_revisions(frame, _REFRESH_GAMES, season=2026, week=1)
@@ -1567,19 +1474,11 @@ def test_describe_week_revisions_empty_without_rows() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Promoted late-week follow (MKT-15/CX18, owner order 2026-09-05).
-# ---------------------------------------------------------------------------
-
-# A Saturday pass in September 2025 (fixed past dates: the frozen rule refuses
-# refresh instants later than real time, so fixtures must stay historical):
-# the Tuesday card locked 2025-09-16, the intraday anchor lands Tuesday
-# evening and the Friday move lands before the pass.
 LATE_WEEK_SEASON, LATE_WEEK_WEEK = 2025, 2
 LATE_WEEK_NOW = datetime(2025, 9, 20, 15, tzinfo=UTC)
 LATE_WEEK_ANCHOR_AT = pd.Timestamp("2025-09-16T18:00:00+00:00")
 LATE_WEEK_MOVE_AT = pd.Timestamp("2025-09-19T18:00:00+00:00")
-LATE_WEEK_KICKOFF = pd.Timestamp("2025-09-21T17:00:00+00:00")  # Sun 1:00pm ET
+LATE_WEEK_KICKOFF = pd.Timestamp("2025-09-21T17:00:00+00:00")
 LATE_WEEK_BOOKS = ("bovada", "fanduel")
 LATE_WEEK_GAME = {
     "game_id": "2025_02_LWW_MMV",
@@ -1588,7 +1487,7 @@ LATE_WEEK_GAME = {
     "gameday": pd.Timestamp("2025-09-21"),
     "away_team": "LWW",
     "home_team": "MMV",
-    "spread_line": 6.5,  # CURRENT feature table's line -- must never be used
+    "spread_line": 6.5,
     "kickoff": LATE_WEEK_KICKOFF,
 }
 LATE_WEEK_ORIGINAL_LINE = -1.5
@@ -1751,8 +1650,6 @@ def test_late_week_follow_governs_the_served_pick(
     assert game.late_week_net_move == pytest.approx(move)
     assert game.late_week_pick_side == expected_side
     assert game.late_week_eligible_books == 2
-    # The same market feeds the consensus arm below its 1.0 threshold, so
-    # its counterfactual is preserved, not applied.
     assert game.consensus_delta == pytest.approx(move)
     assert game.consensus_pick_side == expected_side
     assert plan.late_week_metadata["available"] is True
@@ -1803,9 +1700,6 @@ def test_late_week_follow_takes_precedence_over_the_consensus_arm(
         move=late_move,
         books=("bovada",),
     )
-    # A manifest-less single-book quote only the consensus arm reads, pushing
-    # the cross-book median at least a full point the other way (the median
-    # of the two books is their mean, so a -4x counter-offset clears 1.0).
     consensus_line = LATE_WEEK_ORIGINAL_LINE - 4 * late_move
     _write_live_quote(
         data_root,

@@ -186,11 +186,6 @@ def main() -> None:
     n_weeks = int(pr["n_weeks"])
     seasons = screen["window_seasons"]
 
-    # Neither admissible closing ground applies (see docstring): the primary
-    # interval crosses zero (wrong_sign_resolved requires the WHOLE interval
-    # below zero) and the positive control's detected effect is far larger
-    # than the scale being tested (does not bound detectability here). The
-    # only admissible verdict/classification is unresolved.
     verdict = "unresolved"
     classification = "unresolved_below_power"
 

@@ -123,11 +123,6 @@ from nfl_ats.cfb_features import cfb_competitive_plays
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.evidence_conventions import probability_positive_from_draws
 
-# ---------------------------------------------------------------------------
-# Frozen configuration (see docs/qb_dependence.md; fixed before any run that
-# touches ATS outcomes). All flagged in the module docstring above.
-# ---------------------------------------------------------------------------
-
 CFB_QB_STATE_SPAN: int = 12
 CFB_QB_MIN_DROPBACKS: int = 20
 CFB_QB_MIN_GAME_DROPBACKS: int = 5
@@ -143,11 +138,6 @@ CFB_QB_DEPENDENCE_COLUMNS: tuple[str, ...] = tuple(
     f"{side}_{metric}" for metric in CFB_QB_DEPENDENCE_METRICS for side in ("home", "away", "diff")
 )
 
-# Reference points for Step 0's reliability gate (docs/pool_edge_plan.md,
-# "Three kinds of negative"; injury_value_lost sec 3.1; cfb_role_features.md
-# sec "6. Split-half reliability"). Comparisons only -- deliberately not a
-# hardcoded pass/fail bar (the spec forbids picking a single fixed number
-# without derivation).
 RELIABILITY_NO_SPLIT_HALF_EXAMPLES: dict[str, float] = {
     "coach_ats_reputation": 0.063,
     "play_epa_dispersion": 0.014,
@@ -182,11 +172,6 @@ _QB_GAME_COLUMNS: tuple[str, ...] = (
     "qb_dropbacks",
     "qb_epa_per_dropback",
 )
-
-
-# ---------------------------------------------------------------------------
-# 1. QB per-player EPA/dropback state (CFB analogue of quarterbacks.py)
-# ---------------------------------------------------------------------------
 
 
 def build_cfb_qb_game_metrics(pbp: pd.DataFrame) -> pd.DataFrame:
@@ -265,11 +250,6 @@ def build_cfb_qb_states(qb_games: pd.DataFrame, games: pd.DataFrame) -> pd.DataF
     return states.reset_index(drop=True)
 
 
-# ---------------------------------------------------------------------------
-# 2. off_pass_rate team state
-# ---------------------------------------------------------------------------
-
-
 def build_cfb_pass_rate_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
     """Per (game, team) share of competitive offensive plays that are passes.
 
@@ -324,11 +304,6 @@ def build_cfb_pass_rate_states(team_games: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 3. Attach: identity rule + strictly-earlier state lookup + interaction
-# ---------------------------------------------------------------------------
-
-
 def attach_cfb_qb_dependence(
     games: pd.DataFrame,
     qb_games: pd.DataFrame,
@@ -359,10 +334,6 @@ def attach_cfb_qb_dependence(
 
     require_columns(games, ("game_id", "gameday", "home_id", "away_id"), "cfb canonical games")
 
-    # NOTE: ``game_id``'s own dtype is deliberately left untouched (a string
-    # cast here, even reverted later, would still break REG bit-identity if
-    # the sort order or comparison semantics shifted); ``str(...)`` is used
-    # per-row below instead wherever a string key is needed.
     result = games.copy()
     result["gameday"] = pd.to_datetime(result["gameday"], errors="raise")
     result = result.sort_values(["gameday", "game_id"]).reset_index(drop=True)
@@ -460,11 +431,6 @@ def build_and_attach_cfb_qb_dependence(games: pd.DataFrame, pbp: pd.DataFrame) -
     pass_rate_team_games = pass_rate_team_games.loc[pass_rate_team_games["gameday"].notna()].copy()
     pass_rate_states = build_cfb_pass_rate_states(pass_rate_team_games)
     return attach_cfb_qb_dependence(games, qb_games, qb_states, pass_rate_states)
-
-
-# ---------------------------------------------------------------------------
-# 4. Step 0 -- split-half reliability audit (BEFORE any accuracy number)
-# ---------------------------------------------------------------------------
 
 
 def _reshape_team_game_long(features: pd.DataFrame, metric: str) -> pd.DataFrame:

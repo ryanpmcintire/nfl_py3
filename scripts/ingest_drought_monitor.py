@@ -70,17 +70,6 @@ import pandas as pd
 from nfl_ats.io import atomic_json, atomic_parquet
 from nfl_ats.provenance import sha256_file
 
-# **Measured** 2026-08-20: a first ingestion run (Python 3.12, this Windows
-# environment) hard-failed all 34 counties with `[SSL: CERTIFICATE_VERIFY_FAILED]
-# unable to get local issuer certificate` using ssl.create_default_context()'s
-# default (OS trust store) lookup against usdmdataservices.unl.edu -- the SAME
-# host-specific CA-bundle gap the scout doc already found via `curl` (its `-k`
-# workaround), just hitting Python's ssl module too, contradicting this
-# script's own earlier (inferred, unverified) docstring claim that urllib's
-# certifi-backed bundle would sidestep it. Fix: build the SSL context
-# explicitly from certifi's bundle (measured working: a direct urlopen call
-# with `context=ssl.create_default_context(cafile=certifi.where())` returned
-# HTTP 200 for the same host/endpoint) instead of trusting the OS default.
 _SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
 
 REPO = Path(__file__).resolve().parents[1]

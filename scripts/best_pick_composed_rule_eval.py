@@ -84,10 +84,8 @@ from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E4
 
 FAMILY = "pol09_best_pick_composed_v1"
 BOOTSTRAP_SAMPLES = 20_000
-BOOTSTRAP_SEED = 20260817  # predeclared in docs/best_pick_composed_rule.md
+BOOTSTRAP_SEED = 20260817
 
-# Active production recipe for the v1 sweep refit (artifacts/active_ats_model.json,
-# read 2026-09-07): weak_stack / ridge / alpha 10 / gaussian_median mapping.
 V1_FEATURE_PROFILE = "weak_stack"
 V1_REGRESSOR = "ridge"
 V1_RIDGE_ALPHA = 10.0
@@ -130,11 +128,6 @@ def _load_script(name: str) -> ModuleType:
 _ranker = _load_script("best_pick_opener_ranker_eval")
 
 
-# ---------------------------------------------------------------------------
-# 1. Archive frame + production pool (cross-checked against the eval's pool)
-# ---------------------------------------------------------------------------
-
-
 def build_archive_frame(
     source: Path, microstructure_source: Path
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -173,11 +166,6 @@ def attach_production_pool(work: pd.DataFrame) -> pd.DataFrame:
         work.loc[group.index, "pool_fallback"] = pool.fallback
         work.loc[group.index, "pool_fallback_reason"] = pool.fallback_reason or ""
     return work
-
-
-# ---------------------------------------------------------------------------
-# 2. Nominations from the production modules, one row per week
-# ---------------------------------------------------------------------------
 
 
 def _correct(group: pd.DataFrame, game_id: str, column: str) -> float:
@@ -227,8 +215,8 @@ def nominate_composed(work: pd.DataFrame) -> pd.DataFrame:
 
         v2_id, v2_tied, v2_tie_break = select_nominee(eligible)
         v3_id, v3_tied, v3_tie_break = select_nominee_v3(eligible)
-        ch8_id, _, _ = select_nominee(table)  # dispersion tie-break, unfiltered week
-        ch4_id, _, _ = select_nominee_v3(table)  # candidate_dist, unfiltered, game_id ties
+        ch8_id, _, _ = select_nominee(table)
+        ch4_id, _, _ = select_nominee_v3(table)
 
         base = NominationV2Result(
             game_id=v2_id,
@@ -280,11 +268,6 @@ def nominate_composed(work: pd.DataFrame) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows).sort_values(["season", "week"]).reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# 3. v1: sweep_robustness needs a line sweep -- refit the active recipe
-# ---------------------------------------------------------------------------
 
 
 def opener_sweeps(
@@ -420,11 +403,6 @@ def nominate_v1(work: pd.DataFrame, sweep: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# 4. Scoring
-# ---------------------------------------------------------------------------
-
-
 def paired_delta(
     weekly: pd.DataFrame, a_col: str, b_col: str, *, samples: int, seed: int
 ) -> dict[str, Any]:
@@ -537,10 +515,6 @@ def score(
         "tie_break_audit": tie_break_audit(weekly),
     }
 
-
-# ---------------------------------------------------------------------------
-# 5. Registry recording (reads the artifact; no hand-typed numbers)
-# ---------------------------------------------------------------------------
 
 _CELL_TEXT: dict[str, tuple[str, str]] = {
     "v2_as_played_vs_v1_sweep": (
@@ -719,11 +693,6 @@ def record_cells(artifact_path: Path, *, replace: bool, recorded_at: str | None)
             )
 
 
-# ---------------------------------------------------------------------------
-# 6. Week 1 2026 reproduction (read-only)
-# ---------------------------------------------------------------------------
-
-
 def week1_check(artifacts_root: Path, data_root: Path) -> dict[str, Any]:
     """Reproduce the live Week 1 nominee from the active forecast through the
     production modules. Reads only; writes nothing."""
@@ -761,8 +730,6 @@ def week1_check(artifacts_root: Path, data_root: Path) -> dict[str, Any]:
     row = card.loc[card["game_id"].astype(str).eq(result.game_id)].iloc[0]
     prob = float(row["home_cover_probability"])
     side = str(row["home_team"]) if prob >= 0.5 else str(row["away_team"])
-    # nflverse convention: spread_line is the HOME margin, so the home pick's
-    # betting line is -spread_line and the away pick's is +spread_line.
     spread = float(row["spread_line"])
     side_spread = -spread if prob >= 0.5 else spread
     return {
@@ -782,11 +749,6 @@ def week1_check(artifacts_root: Path, data_root: Path) -> dict[str, Any]:
         "big_spread_excluded": list(discount.excluded_game_ids),
         "big_spread_fallback_to_v2": discount.fallback_to_v2,
     }
-
-
-# ---------------------------------------------------------------------------
-# 7. Driver
-# ---------------------------------------------------------------------------
 
 
 def run(
@@ -911,10 +873,10 @@ def main() -> None:
         ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         out_dir = REPO / "artifacts" / "best_pick_composed_rule" / ts
     out_dir.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(summary, out_dir / "summary.json")  # ENG-38
+    write_stamped_artifact(summary, out_dir / "summary.json")
     weekly_path = out_dir / "weekly.parquet"
     weekly.to_parquet(weekly_path)
-    stamp_sidecar(weekly_path)  # ENG-38
+    stamp_sidecar(weekly_path)
     print(f"\nWrote {out_dir}")
 
 

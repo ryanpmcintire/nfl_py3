@@ -93,11 +93,6 @@ def _flags(games: pd.DataFrame, style: pd.DataFrame) -> pd.Series:
     return derived.set_index("game_id")[TEAM_STYLE_PACE_MISMATCH_COLUMN]
 
 
-# ---------------------------------------------------------------------------
-# Leakage half 1: the pace VALUES a season-S flag may read
-# ---------------------------------------------------------------------------
-
-
 def test_pace_values_from_season_s_or_later_cannot_change_a_season_s_flag() -> None:
     """The core leakage regression: an extreme pace value injected into season
     S (or any later season) must leave every season-S flag untouched, because
@@ -133,11 +128,6 @@ def test_a_team_with_no_prior_season_pace_is_missing_not_zero() -> None:
     flags = _flags(games, _style())
     season_2009 = games.loc[games["season"].eq(2009), "game_id"]
     assert flags.loc[season_2009].isna().all()
-
-
-# ---------------------------------------------------------------------------
-# Leakage half 2: the THRESHOLD a season-S flag may be cut against
-# ---------------------------------------------------------------------------
 
 
 def test_the_threshold_ignores_gaps_from_season_s_and_later() -> None:
@@ -229,9 +219,9 @@ def test_the_flag_is_the_top_quartile_of_the_prior_season_gap() -> None:
 
     games = _games()
     flags = _flags(games, _style())
-    assert flags.loc["2012_AAA_BBB"] == 0.0  # gap 1
-    assert flags.loc["2012_AAA_CCC"] == 1.0  # gap 2
-    assert flags.loc["2012_AAA_DDD"] == 1.0  # gap 3
+    assert flags.loc["2012_AAA_BBB"] == 0.0
+    assert flags.loc["2012_AAA_CCC"] == 1.0
+    assert flags.loc["2012_AAA_DDD"] == 1.0
 
 
 def test_the_flag_is_symmetric_in_home_and_away() -> None:
@@ -243,11 +233,6 @@ def test_the_flag_is_symmetric_in_home_and_away() -> None:
     flags = _flags(games, _style())
     for home, away in (("AAA", "DDD"), ("BBB", "CCC")):
         assert flags.loc[f"2012_{away}_{home}"] == flags.loc[f"2012_{home}_{away}"]
-
-
-# ---------------------------------------------------------------------------
-# Additivity and join contracts
-# ---------------------------------------------------------------------------
 
 
 def test_attach_is_purely_additive() -> None:

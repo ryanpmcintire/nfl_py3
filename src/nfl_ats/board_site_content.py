@@ -122,17 +122,9 @@ def _generated_at_text(generated_at: datetime) -> str:
     return generated_at.strftime("%Y-%m-%d %H:%M:%S UTC")
 
 
-#: Strips a trailing UTC-stamped artifact directory name (``"
-#: 20260905T133429Z"``) off a provenance ``detail`` string -- the date
-#: column already renders that stamp as a plain date; the fine print never
-#: shows the raw stamp twice.
 _STAMP_SUFFIX_RE = re.compile(r"\s*\d{8}T\d{6}(?:\d{6})?Z\s*$")
 
 
-#: A UTC-stamped run's own date, ANYWHERE in an artifact directory name --
-#: most directories are bare stamps (``"20260905T133429Z"``), but a weekly
-#: forecast's is prefixed (``"2026-week-01-20260905T141453Z"``), so this
-#: searches rather than anchors at position 0.
 _EMBEDDED_STAMP_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T\d{6}(?:\d{6})?Z")
 
 
@@ -176,9 +168,6 @@ def _number_provenance_rows(
     rows = tuple(
         NumberProvenanceRow(
             label=entry.label,
-            # ``entry.detail`` is e.g. "opener evaluation 20260905T133429Z"
-            # -- strip the raw stamp; the date column already shows it as a
-            # date, and this fine print carries "no hashes" (owner mandate).
             artifact_kind=_STAMP_SUFFIX_RE.sub("", entry.detail).strip(),
             date_text=_artifact_directory_date_text(Path(entry.source).name),
             model_text=model_text,
@@ -186,16 +175,6 @@ def _number_provenance_rows(
         for entry in entries
     )
     return rows, None
-
-
-# ---------------------------------------------------------------------------
-# The Model page -- merges what used to be the Models page (the model
-# ledger: promoted card + every registered challenger, plus the family-
-# weight explanation) and the Track Record page (season-by-season history,
-# grading-rule comparison, the active model's own season-blocked evaluation
-# sample), minus every fact that duplicated the This Week headline strip or
-# the ledger's own richer challenger rows -- see the module docstring.
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -215,26 +194,12 @@ class ModelLedgerRowView:
     accuracy: float | None
     interval_low: float | None
     interval_high: float | None
-    #: ``"accuracy_rate"`` (a proportion, percent-formatted) or
-    #: ``"accuracy_points"`` (a points-effect delta, signed-points-formatted)
-    #: -- copied verbatim from :class:`nfl_ats.model_ledger.TrackRecord`'s
-    #: own field so the renderer never has to guess a unit from magnitude.
-    #: See that field's docstring for the 2026-08-31 browser-QA bug this
-    #: guards: a points interval hitting a percent formatter renders e.g.
-    #: ``[0.29, 2.038]`` as ``[29.0%, 203.8%]``.
     interval_unit: str
     grade: str
     summary_sentence: str
     own_probability_positive: float | None
     evidence: tuple[LedgerEvidenceItem, ...]
     agreement_text: str | None
-    #: The promoted row's own historical-evaluation artifact path, when one
-    #: is recorded. ``model_ledger._promoted_row`` never links a promoted
-    #: row to a registry key (it is not a prospective challenger citing
-    #: outside evidence -- its own track record above IS its evidence), so
-    #: its ``evidence`` tuple is always empty; the renderer uses THIS field
-    #: to give that row a real provenance line instead of the bare "no
-    #: cited evidence" a challenger row would show for a genuine gap.
     artifact_ref: str | None
 
 
@@ -288,7 +253,6 @@ class ModelPageContent:
 
     generated_at_text: str
 
-    # "What we play"
     headline: HeadlineStats
     ceiling_text: str
     ladder_rungs: tuple[str, ...]
@@ -297,24 +261,14 @@ class ModelPageContent:
     long_run_correct: int | None
     long_run_range: tuple[float, float] | None
 
-    # "How it's done"
     seasons: tuple[SeasonRowView, ...]
     seasons_above_coin_flip: int
     seasons_even: tuple[str, ...]
     seasons_below: tuple[tuple[str, float], ...]
 
-    # "What's challenging it"
     ledger_available: bool
     ledger_error: str | None
     rows: tuple[ModelLedgerRowView, ...]
-    #: ``rows`` split and re-sorted for the grouped ledger (owner-approved
-    #: improvement batch, item 9): arms with a prospective/graded record
-    #: (``track_record.games is not None``) vs. arms still "Waiting on the
-    #: season". Within each group, sorted by evidence strength -- see
-    #: :func:`_evidence_strength`, which mirrors
-    #: ``public_board._challenger_evidence_strength`` -- with the promoted
-    #: row pinned first in ``graded_rows``. Only populated when
-    #: ``ledger_available``; empty otherwise.
     graded_rows: tuple[ModelLedgerRowView, ...]
     waiting_rows: tuple[ModelLedgerRowView, ...]
     explanation_available: bool
@@ -322,18 +276,8 @@ class ModelPageContent:
     feature_profile: str | None
     matches_active_feature_table: bool | None
     families: tuple[FamilyWeightRow, ...]
-    #: Shared ticker + command-row content, reused verbatim from This Week
-    #: (owner-approved improvement batch, item 7).
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
-    #: The "where these numbers come from" fine-print block (owner mandate,
-    #: 2026-09-05: "please do not let those percentages get out of date
-    #: anymore") -- one row per headline number
-    #: :func:`nfl_ats.board_content.verify_number_provenance` checked,
-    #: dated and model-labeled, never fingerprinted. Empty with
-    #: ``number_provenance_note`` set when verification itself could not
-    #: run (e.g. this content object was built from a fixture with no
-    #: active model) -- the page still renders, it just says so.
     number_provenance: tuple[NumberProvenanceRow, ...]
     number_provenance_note: str | None
     weak_spots: WeakSpots = field(default_factory=WeakSpots)
@@ -403,12 +347,6 @@ class ChallengerAssessment:
     grading_basis: str
 
 
-#: UI-20(h): plain-English caption for the History page's opener-vs-close
-#: grading table -- a content literal, so it lives here rather than in
-#: ``board_terminal.py`` (see ``board_content.py``'s module docstring on why
-#: that module must stay a pure renderer). States why the two grades differ
-#: and which one the pool actually settles on, per AGENTS.md ("Grade the
-#: decision at the OPENER").
 HISTORY_GRADE_CAPTION = (
     "Opener is the pool's own decision line, locked before kickoff; close is the market "
     "at its sharpest, right before kickoff. They differ because the market keeps moving "
@@ -417,11 +355,6 @@ HISTORY_GRADE_CAPTION = (
     "what gets played."
 )
 
-#: UI-20(h), second pass: the per-week table below the season table now
-#: carries two kinds of row -- weeks recorded live in the paper ledger, and
-#: finished weeks replayed on the opening numbers those weeks actually had
-#: (:func:`_archive_week_grades`).  A reader must be told which is which,
-#: so this sentence is appended to the caption whenever both kinds appear.
 HISTORY_WEEK_REPLAY_CAPTION = (
     "Week by week: the weeks of finished seasons run the model again on the opening "
     "numbers those weeks really had, using only what was known before each week "
@@ -429,15 +362,9 @@ HISTORY_WEEK_REPLAY_CAPTION = (
     "written down before kickoff."
 )
 
-#: The two per-game columns the opener archive grades weeks on: the ones
-#: behind every accuracy already shown on this site (the served picks,
-#: home-side push included), never the unadjusted twins beside them.
 ARCHIVE_OPENER_CORRECT_COLUMN = "correct_at_open_probability_rule"
 ARCHIVE_CLOSE_CORRECT_COLUMN = "correct_at_close_probability_rule"
 
-#: Explicit non-blank cells for :class:`HistoryWeekGrade`/:class:`SeasonGradeRow`
-#: rows where one grade -- or, for a week, neither -- could not be computed.
-#: Never a silent gap: see each builder's docstring for when each applies.
 NO_OPENER_LINE_ARCHIVED_WEEK_NOTE = "No opener line archived for this week."
 NO_CLOSE_LINE_ARCHIVED_WEEK_NOTE = "No close line archived for this week."
 HISTORY_WEEK_NOT_SETTLED_NOTE = "Not yet settled -- these games have not finished."
@@ -549,11 +476,6 @@ class HistoryPageContent:
     challenger_assessments: tuple[ChallengerAssessment, ...]
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
-    #: UI-20(h): per-season and per-week opener-vs-close grading, plus the
-    #: caption explaining the difference -- see :class:`SeasonGradeRow`,
-    #: :class:`HistoryWeekGrade`, :data:`HISTORY_GRADE_CAPTION`. Defaulted so
-    #: every existing direct ``HistoryPageContent(...)`` fixture construction
-    #: keeps working unchanged.
     season_grades: tuple[SeasonGradeRow, ...] = ()
     week_grades: tuple[HistoryWeekGrade, ...] = ()
     grade_caption: str = ""
@@ -623,8 +545,6 @@ def _ledger_row_view(row: LedgerRow) -> ModelLedgerRowView:
         accuracy=track.accuracy if track else None,
         interval_low=track.interval_low if track else None,
         interval_high=track.interval_high if track else None,
-        # Only meaningful when interval_low/high are set (see above); the
-        # default is unused when there is no interval to render.
         interval_unit=track.interval_unit if track else "accuracy_points",
         grade=track.grade if track else "",
         summary_sentence=row.summary_sentence,
@@ -758,10 +678,6 @@ def _load_home_correction(
         sidecar = None
     if sidecar and sidecar.get("served"):
         fit = sidecar.get("fit")
-        # A card built under an earlier version of the push (a policy id that
-        # is not the served one) must not be shown as "this week's push" next
-        # to the served rule's archive record; the archive columns stand alone
-        # until the card is regenerated (Codex lane F, 2026-09-08).
         if isinstance(fit, Mapping) and fit.get("policy") != HOME_SIDE_OFFSET_POLICY:
             fit = None
         if isinstance(fit, Mapping):
@@ -793,7 +709,6 @@ def _load_model_page_content(
     never a raised exception and never rows rendered without validation.
     """
 
-    # "What's challenging it" -- the model ledger.
     challengers_path = artifacts_root / "prospective" / "challengers.json"
     active_manifest_path = artifacts_root / "active_ats_model.json"
     rows: tuple[ModelLedgerRowView, ...] = ()
@@ -816,8 +731,6 @@ def _load_model_page_content(
         tuple(_family_row_view(family) for family in explanation.families) if explanation else ()
     )
 
-    # "How it's done" -- season-by-season history and the grading-rule
-    # comparison.
     grading = _grading_rule_view(opener.metadata)
     historical = active.get("historical_evaluation")
     historical = historical if isinstance(historical, Mapping) else {}
@@ -838,10 +751,6 @@ def _load_model_page_content(
         (row.season, row.opener_accuracy) for row in season_rows if row.opener_accuracy < 0.5
     )
 
-    # "What we play" -- reuse the This Week page's OWN headline object
-    # rather than recompute it (see the class docstring); the ladder rungs
-    # need the underlying fraction, derived from that same object's own
-    # prior-chain percentage rather than a second artifact read.
     played_chain_accuracy = (
         board.headline.prior_chain_pct / 100.0
         if board.headline.prior_chain_pct is not None
@@ -890,31 +799,12 @@ def _load_model_page_content(
     )
 
 
-# ---------------------------------------------------------------------------
-# Findings page -- plain-English findings by verdict, open leads, honesty
-# rules, plus ONE dense secondary section summarizing the weak-signal
-# registry (2026-08-31: replaces the old standalone Signal Ledger page --
-# every recorded signal is still visible via ``nfl-ats weak-signals``; this
-# section is a pointer into that registry, not a restatement of it).
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class FindingItemView:
     question: str
     verdict: str
     plain_answer: str
     detail: str
-    #: Findings trace chip (owner-approved improvement batch, item 2 --
-    #: "the owner hasn't approved this sight-unseen"): the registry signal
-    #: this finding traces to, plus its recorded ``probability_positive``.
-    #: Both ``None`` when the finding cites no registry key, or when none of
-    #: its cited keys carry a measured P+ (e.g. an evergreen finding, or a
-    #: rotation family with no scored window yet). Deliberately ISOLATED to
-    #: these two fields plus one renderer helper
-    #: (``board_terminal._trace_chip_html``) and one delimited CSS block
-    #: (``.trace-chip``) so the whole feature can be removed in one commit
-    #: if the owner vetoes it after seeing it.
     trace_signal_name: str | None = None
     trace_probability_positive: float | None = None
 
@@ -974,14 +864,9 @@ class SignalLedgerSummary:
     total_signals: int
     counts_by_status: Mapping[str, int]
     counts_by_category: Mapping[str, int]
-    #: The registry's own highest-``probability_positive`` entries, capped
-    #: at :data:`_NOTABLE_SIGNAL_LIMIT` -- "notable" means highest recorded
-    #: confidence, nothing more; every entry excluded here is still a real,
-    #: recorded row in the full registry.
     notable: tuple[SignalNotableRow, ...]
 
 
-#: Cap on the compact "notable signals" list -- see :class:`SignalLedgerSummary`.
 _NOTABLE_SIGNAL_LIMIT = 8
 
 
@@ -1021,22 +906,8 @@ class RecentActivityView:
         return self.screened_count == 0
 
 
-#: Shown instead of a raw registry description whenever a rendered row has
-#: no genuine plain-English summary yet (2026-09-05, dashboard humanising
-#: follow-up to lane AH's audit: AH's fix wrapped the raw research prose in
-#: ``<code>`` rather than replacing it, which still reads as machine text to
-#: the owner -- "this is for humans not the opus autist"). Every renderer
-#: that shows registry-sourced free text on the live site (What we're
-#: watching, Research this week, Signal registry) must show this placeholder
-#: rather than ever falling back to a raw ``description``/methodology note.
 PLAIN_SUMMARY_PENDING = "Plain-English summary pending."
 
-#: Plain-English words for the units the weak-signal/rotation registries
-#: store. Kept here (rendering), not in ``findings_registry`` (content
-#: model), mirroring ``public_board._EFFECT_UNIT_WORDS``'s own split
-#: between the two layers -- duplicated rather than imported for the same
-#: reason ``_evidence_strength`` above mirrors
-#: ``public_board._challenger_evidence_strength`` rather than importing it.
 _RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
     "accuracy_points": "accuracy points",
     "ats_points": "line points",
@@ -1060,9 +931,6 @@ def _recent_activity_entry_view(entry: RecentActivityEntry) -> RecentActivityEnt
         else "not yet measured"
     )
     return RecentActivityEntryView(
-        # entry.plain_summary is None whenever no genuine plain-English
-        # summary is recorded (see RecentActivityEntry's docstring) -- never
-        # silently substitute the raw research prose here.
         plain_summary=entry.plain_summary or PLAIN_SUMMARY_PENDING,
         effect_text=effect_text,
         direction_sentence=entry.direction_sentence or "No confidence figure recorded yet.",
@@ -1091,22 +959,11 @@ class FindingsPageContent:
     hero_tiles: tuple[HeroTileView, ...]
     groups: tuple[VerdictGroupView, ...]
     watching_leads: tuple[WatchingLeadView, ...]
-    #: "Research this week" (dashboard queue UI-20(b)): everything recorded
-    #: or screened in the registries' own last-7-days window, straight from
-    #: the live registries with no curation step -- see
-    #: :func:`nfl_ats.findings_registry.recent_registry_activity`.
     recent_activity: RecentActivityView
     honesty_rules: tuple[HonestyRuleView, ...]
     ledger_summary: SignalLedgerSummary
-    #: Shared ticker + command-row content, reused verbatim from This Week
-    #: (owner-approved improvement batch, item 7).
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
-
-
-# ---------------------------------------------------------------------------
-# History -- the primary paper ledger and settled prospective challengers.
-# ---------------------------------------------------------------------------
 
 
 def _history_forecast_probability(artifacts_root: Path, row: Mapping[Any, Any]) -> float | None:
@@ -1210,9 +1067,6 @@ def _history_pick_rows(
                 best_pick=bool(row.get("is_best_pick", False)),
                 status=status,
                 correct=correct,
-                # Do not pass score text through for pending rows.  This is a
-                # second guard against outcome leakage in a partially settled
-                # season, even if an outcomes table contains future rows.
                 score_text=(
                     _history_score_text(outcomes, str(row.get("game_id")))
                     if status in {"settled", "push"}
@@ -1223,8 +1077,6 @@ def _history_pick_rows(
     return tuple(rows)
 
 
-#: UI-20(h): a minimal schedules-shaped frame for
-#: :func:`nfl_ats.clv.live_close_reference`'s ``schedule`` argument.
 _CLOSE_SCHEDULE_COLUMNS: tuple[str, ...] = ("game_id", "spread_line", "result")
 
 
@@ -1500,16 +1352,12 @@ def _prospective_report_grade(
         if isinstance(entry, Mapping) and entry.get("metric") == "decision_line_accuracy"
     ]
     if not candidates:
-        # A short-lived report format omitted the metric label.  Accept its
-        # sole uncertainty row, but never guess among multiple unlabeled rows.
         unlabeled = [
             entry for entry in uncertainty if isinstance(entry, Mapping) and "metric" not in entry
         ]
         if len(unlabeled) != 1:
             return (report_probability, None, None) if report_probability is not None else None
         candidates = unlabeled
-    # The prospective scorer's primary uncertainty is week-blocked.  If an
-    # older report lacks the block tag, its metric row is still usable.
     week_rows = [entry for entry in candidates if entry.get("block") == "week"]
     selected = week_rows[-1] if week_rows else candidates[-1]
     return (
@@ -1585,9 +1433,6 @@ def _history_challenger_assessments(
             probability, low, high = report_grade
         else:
             probability = low = high = None
-        # Registration evidence is not a running prospective result. Keep it
-        # available as explicitly labelled context only when no score report
-        # exists yet; the renderer labels the basis below.
         if report_grade is None:
             probability, low, high = _evidence_values(registry.get(str(challenger_id), {}))
             if probability is not None or low is not None or high is not None:
@@ -1668,10 +1513,6 @@ def _load_history_page_content(
         outcomes,
         _latest_prospective_reports(artifacts_root),
     )
-    # UI-20(h): per-week opener-vs-close grading, read-only over the SAME
-    # ledger/outcomes already loaded above, plus a close-line reference
-    # (nfl_ats.clv.live_close_reference) built from the local capture tree
-    # -- no new network fetch, matching every other artifact on this page.
     close_schedule = _load_close_schedule(data_root)
     close_reference = pd.DataFrame()
     if not close_schedule.empty:
@@ -1684,10 +1525,6 @@ def _load_history_page_content(
     except (ValueError, OSError) as error:
         recorded_week_grades = ()
         primary_error = primary_error or str(error) or "primary ledger could not be settled"
-    # UI-20(h) second pass: the recorded ledger only starts at the first
-    # Tuesday lock, so the finished weeks of the opener archive -- the same
-    # active-model run the season table above is built from -- join it, and
-    # the whole table reads newest week first.
     archived_week_grades = _archive_week_grades(artifacts_root, active)
     week_grades = _combined_week_grades(recorded_week_grades, archived_week_grades)
     season_grades = _season_grade_rows(_season_rows(opener.seasons), active)
@@ -1753,14 +1590,6 @@ def _group_view(group: fc.VerdictGroup, entries: Mapping[str, RegistryEntry]) ->
 def _watching_lead_view(
     lead: WatchingLead, blurbs_by_signal: Mapping[str, fc.LeadBlurb]
 ) -> WatchingLeadView:
-    # Priority: a hand-curated blurb (dashboard/findings_content.LEAD_BLURBS
-    # -- already written in plain English for exactly this card) beats a
-    # registry-recorded plain_summary, which beats showing nothing. NEVER
-    # lead.description: that is the registry's raw research note (2026-09-05
-    # fix, dashboard humanising follow-up to lane AH's audit -- the earlier
-    # `blurb.text if blurb is not None else lead.description` fallback is
-    # exactly how jargon reached this card, and AH's own fix wrapped it in
-    # <code> rather than replacing it).
     blurb = blurbs_by_signal.get(lead.name)
     if blurb is not None:
         description = blurb.text
@@ -1802,11 +1631,6 @@ def _load_signal_ledger_summary(registry_root: Path | None) -> SignalLedgerSumma
             if isinstance(effect, int | float)
             else "--"
         )
-        # row["fallback"] (nfl_ats.signal_ledger._idea_text) is True whenever
-        # the signal has no genuine plain_summary and "idea" is really the
-        # raw registry description -- never show that raw text here (2026-09-05
-        # fix, dashboard humanising follow-up to lane AH's audit; AH's own
-        # fix wrapped the raw text in <code> rather than replacing it).
         idea = (
             PLAIN_SUMMARY_PENDING
             if row.get("fallback")
@@ -1865,9 +1689,6 @@ def _load_findings_content(
     leads = top_open_leads(registry)
     blurbs_by_signal = {blurb.weak_signal_name: blurb for blurb in fc.LEAD_BLURBS}
     ledger_summary = _load_signal_ledger_summary(registry_root)
-    # "Research this week" (dashboard queue UI-20(b)): pure function over the
-    # SAME weak-signal registry plus the rotation registry, no curation --
-    # see recent_registry_activity's own docstring.
     rotation_registry = load_rotation_registry(registry_root)
     recent_activity = _recent_activity_view(
         recent_registry_activity(registry, rotation_registry, generated_at)
@@ -1894,11 +1715,6 @@ def _load_findings_content(
             ),
         ),
     )
-
-
-# ---------------------------------------------------------------------------
-# The full-site bundle.
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)

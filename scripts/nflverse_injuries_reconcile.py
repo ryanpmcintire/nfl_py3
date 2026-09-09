@@ -117,9 +117,6 @@ def load_nflverse_final_state(injuries_path: Path, seasons: tuple[int, ...]) -> 
     ].copy()
     frame["date_modified"] = pd.to_datetime(frame["date_modified"], errors="coerce", utc=True)
     frame["is_illness"] = frame.apply(_has_illness, axis=1)
-    # Rows with a null date_modified sort last under NaT-goes-first ascending
-    # sort unless handled explicitly; put them FIRST (oldest) so a real
-    # timestamped revision always wins the "latest" slot when one exists.
     frame = frame.sort_values(
         ["season", "week", "team", "gsis_id", "date_modified"], na_position="first"
     )
@@ -167,12 +164,9 @@ def run_reconcile(
     nflverse = nflverse_full[v_cols].copy()
     nflcom = nflcom_full[c_cols].copy()
 
-    # Tier 1: exact (season, week, team, normalized name).
     exact_pairs = nflverse.merge(nflcom, on=key4, how="inner", suffixes=("_v", "_c"))
     matched_keys_df = exact_pairs[key4].drop_duplicates()
 
-    # Tier 2: fallback fuzzy (first-initial + last name) match, only when
-    # that key is unique on both remaining sides within (season, week, team).
     nflverse_remaining = _anti_join(nflverse, matched_keys_df, key4)
     nflcom_remaining = _anti_join(nflcom, matched_keys_df, key4)
 
@@ -181,7 +175,7 @@ def run_reconcile(
     fuzzy_keys = sorted(
         key
         for key in (set(v_counts[v_counts == 1].index) & set(c_counts[c_counts == 1].index))
-        if key[4] != ""  # non-empty last name required
+        if key[4] != ""
     )
     fuzzy_keys_df = pd.DataFrame(fuzzy_keys, columns=key5)
 
@@ -274,7 +268,7 @@ def run_reconcile(
         "generated_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     }
     out_dir = artifacts_root / time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
-    write_stamped_artifact(result, out_dir / "agreement.json")  # ENG-38
+    write_stamped_artifact(result, out_dir / "agreement.json")
     print(f"wrote {out_dir / 'agreement.json'}")
     return result
 

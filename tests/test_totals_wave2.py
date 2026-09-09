@@ -42,18 +42,12 @@ from nfl_ats.totals_wave2 import (
 _TARGET = "total_residual"
 
 
-# ---------------------------------------------------------------------------
-# 1. Allowlist enforcement for the extended list
-# ---------------------------------------------------------------------------
-
-
 def test_wave2_drive_features_is_exactly_home_away_cross_drive_state_metrics() -> None:
     assert len(WAVE2_DRIVE_FEATURES) == 24
     expected = tuple(
         f"{side}_{metric}" for metric in DRIVE_STATE_METRICS for side in ("home", "away")
     )
     assert expected == WAVE2_DRIVE_FEATURES
-    # No diff_* and no bare pbp_drives count column snuck in.
     for column in WAVE2_DRIVE_FEATURES:
         assert not column.startswith("diff_")
         assert "pbp_drives" not in column
@@ -62,9 +56,7 @@ def test_wave2_drive_features_is_exactly_home_away_cross_drive_state_metrics() -
 def test_wave2_features_is_wave1_plus_the_24_drive_columns_nothing_else() -> None:
     assert tuple(TOTALS_FEATURES) + WAVE2_DRIVE_FEATURES == WAVE2_FEATURES
     assert len(WAVE2_FEATURES) == 41 + 24 == 65
-    # Every wave-1 column survives unchanged and in its original relative order.
     assert WAVE2_FEATURES[:41] == tuple(TOTALS_FEATURES)
-    # No duplicates between the two halves.
     assert len(set(WAVE2_FEATURES)) == len(WAVE2_FEATURES)
 
 
@@ -115,11 +107,6 @@ def test_a_renamed_drive_column_is_a_hard_error_not_a_substitution() -> None:
     renamed = population.rename(columns={"home_drive_points_per_drive": "home_drive_pts_per_drive"})
     with pytest.raises(TotalsDataError, match="home_drive_points_per_drive"):
         design_matrix(renamed, WAVE2_FEATURES)
-
-
-# ---------------------------------------------------------------------------
-# 2. Join point-in-time proof
-# ---------------------------------------------------------------------------
 
 
 def test_walk_forward_guard_holds_when_a_drive_column_drives_the_signal() -> None:
@@ -175,7 +162,6 @@ def _write_wave2_population_fixture(root: Path) -> tuple[Path, Path]:
     raw.mkdir(parents=True)
     schedules.to_parquet(raw / "schedules.parquet")
 
-    # wave-1 feature table: only the 41-column allowlist.
     wave1_features = pd.DataFrame({"game_id": schedules["game_id"]})
     for column in TOTALS_FEATURES:
         wave1_features[column] = 0.5
@@ -186,9 +172,6 @@ def _write_wave2_population_fixture(root: Path) -> tuple[Path, Path]:
     wave1_path.parent.mkdir(parents=True)
     wave1_features.to_parquet(wave1_path)
 
-    # wave-2 feature table: the 41-column allowlist PLUS the 24 drive columns,
-    # with values distinguishable from wave 1's (0.5) to prove they actually
-    # get selected, plus a diff_* decoy that must never enter the join.
     wave2_features = wave1_features.copy()
     for index, column in enumerate(WAVE2_DRIVE_FEATURES):
         wave2_features[column] = 1.0 + 0.01 * index
@@ -208,19 +191,14 @@ def test_load_population_wave2_matches_wave1s_game_set_and_pulls_drive_values(
     wave1_population = load_population_wave1(tmp_path, wave1_path)
     wave2_population = load_population_wave2(tmp_path, wave2_path)
 
-    # Identical scored game set -- the wider feature table adds columns, not
-    # rows, and drops none of wave 1's.
     assert set(wave2_population["game_id"]) == set(wave1_population["game_id"])
     assert len(wave2_population) == len(wave1_population) == 3
 
-    # Drive-column values came through the join unmolested, and the diff_*
-    # decoy / pbp_drives count column never entered the population frame.
     for index, column in enumerate(WAVE2_DRIVE_FEATURES):
         assert wave2_population[column].tolist() == pytest.approx([1.0 + 0.01 * index] * 3)
     assert "diff_drive_points_per_drive" not in wave2_population.columns
     assert "home_pbp_drives" not in wave2_population.columns
 
-    # The target and market total are computed identically to wave 1's.
     assert wave2_population[_TARGET].tolist() == pytest.approx(wave1_population[_TARGET].tolist())
 
 
@@ -252,11 +230,6 @@ def test_load_population_wave2_on_real_data_matches_wave1_game_set() -> None:
             assert a == pytest.approx(float(b))
 
 
-# ---------------------------------------------------------------------------
-# 3. Wave-vs-wave paired comparison math
-# ---------------------------------------------------------------------------
-
-
 def test_wave_vs_wave_paired_frame_sign_convention_is_wave1_minus_wave2() -> None:
     wave1_predictions = pd.DataFrame(
         {
@@ -268,7 +241,6 @@ def test_wave_vs_wave_paired_frame_sign_convention_is_wave1_minus_wave2() -> Non
             "actual_total": [46.0, 42.0],
         }
     )
-    # wave1 blend at k=0.1 with predicted_residual 0 == market alone -> |error| 2,2
     wave2_predictions = pd.DataFrame(
         {
             "game_id": ["a", "b"],
@@ -279,7 +251,6 @@ def test_wave_vs_wave_paired_frame_sign_convention_is_wave1_minus_wave2() -> Non
             "actual_total": [46.0, 42.0],
         }
     )
-    # wave2 blend at k=1.0: predicted totals 46, 46 -> |error| 0, 4
     paired = wave_vs_wave_paired_frame(wave1_predictions, 0.1, wave2_predictions, 1.0)
     assert paired["wave1_abs_error"].tolist() == pytest.approx([2.0, 2.0])
     assert paired["wave2_abs_error"].tolist() == pytest.approx([0.0, 4.0])
@@ -333,15 +304,7 @@ def test_bootstrap_wave_vs_wave_reports_probability_positive_not_a_binary_read()
 
 
 def test_wave1_chosen_k_is_frozen_at_wave1s_own_operating_point() -> None:
-    # Not re-derived: the paired comparison must grade wave 1 at its own
-    # already-chosen k, never a k re-swept on wave 2's run.
     assert pytest.approx(0.1) == WAVE1_CHOSEN_K
-
-
-# ---------------------------------------------------------------------------
-# 4. Positive-control shape check (light-weight; the full-data run is
-#    produced by scripts/totals_wave2_backtest.py --mode positive-control)
-# ---------------------------------------------------------------------------
 
 
 def test_injecting_the_target_into_a_drive_column_drives_k_toward_one() -> None:
@@ -366,7 +329,6 @@ def test_injecting_the_target_into_a_drive_column_drives_k_toward_one() -> None:
     for column in WAVE2_FEATURES:
         if column not in population.columns:
             population[column] = 0.0
-    # The positive control: one drive column IS the target.
     contaminated = population.copy()
     contaminated["home_drive_points_per_drive"] = contaminated[_TARGET].astype(float)
 
@@ -376,7 +338,6 @@ def test_injecting_the_target_into_a_drive_column_drives_k_toward_one() -> None:
     sweep = blend_sweep(predictions)
     chosen = choose_weight(sweep)
 
-    # A clean run (no injection) should NOT push k toward 1 the same way.
     clean_predictions = walk_forward_predictions(
         population, min_train_games=40, features=WAVE2_FEATURES
     )
@@ -391,44 +352,24 @@ def test_injecting_the_target_into_a_drive_column_drives_k_toward_one() -> None:
     assert contaminated_mae_improvement > 1.0
 
 
-# ---------------------------------------------------------------------------
-# 5. model_total_view_wave2 serving (WP27, 2026-09-01)
-#
-# Mirrors nfl_ats.totals.model_total_view's own test coverage plus the two
-# behaviours specific to wave 2: allowlist enforcement in serving, and the
-# "no PBP row for this game" case. Design choice, stated in the function's
-# own docstring and pinned here: a missing single-game PBP row falls back to
-# MARKET-ONLY (returns None), mirroring model_total_view's exact contract --
-# it does NOT reach across to wave 1 internally. The wave-1-VIEW fallback is
-# a decision made one level up, in nfl_ats.tiebreaker.tiebreaker_report, and
-# fires only when the whole PBP table file is absent, never when a single
-# game's row is merely missing from an existing table.
-# ---------------------------------------------------------------------------
-
-
 def test_model_total_view_wave2_trains_only_on_games_before_the_target_week(
     tmp_path: Path,
 ) -> None:
     _wave1_path, wave2_path = _write_wave2_population_fixture(tmp_path)
-    # Under any realistic floor the three 2020 finals are not enough.
     assert model_total_view_wave2("2026_01_X_Y", tmp_path, wave2_path, min_train_games=500) is None
 
     view = model_total_view_wave2("2026_01_X_Y", tmp_path, wave2_path, min_train_games=3)
     assert view is not None
-    assert view.train_games == 3  # the three 2020 finals, none from 2026
+    assert view.train_games == 3
     assert view.market_total == pytest.approx(44.5)
     assert view.predicted_total == pytest.approx(view.market_total + view.residual)
-    # The report line must say which wave served the number.
     assert "wave 2" in view.source
     assert "65 cols" in view.source
     assert "drive pace" in view.source
 
-    # A game the feature table does not price gets no view rather than a guess.
     assert (
         model_total_view_wave2("2026_01_NO_SUCH", tmp_path, wave2_path, min_train_games=3) is None
     )
-    # No PBP table at all -> None, the same contract wave 1's own
-    # model_total_view has for a missing table.
     assert model_total_view_wave2("2026_01_X_Y", tmp_path, tmp_path / "absent.parquet") is None
 
 
@@ -455,9 +396,6 @@ def test_model_total_view_wave2_serving_enforces_the_65_column_allowlist(
     baseline = model_total_view_wave2("2026_01_X_Y", tmp_path, wave2_path, min_train_games=3)
     assert baseline is not None
 
-    # Decoy columns already in the fixture (diff_drive_points_per_drive,
-    # home_pbp_drives) never enter the fit -- inflating them a thousandfold
-    # must not move the served residual at all.
     doctored = pd.read_parquet(wave2_path)
     doctored["diff_drive_points_per_drive"] *= 1_000.0
     doctored["home_pbp_drives"] *= 1_000.0
@@ -469,8 +407,6 @@ def test_model_total_view_wave2_serving_enforces_the_65_column_allowlist(
     assert doctored_view is not None
     assert doctored_view.residual == pytest.approx(baseline.residual)
 
-    # A renamed allowlist column is a hard error, never a silent substitution
-    # (design_matrix's own guarantee, exercised here through the serving path).
     renamed = pd.read_parquet(wave2_path).rename(columns={"home_off_cpoe": "home_offense_cpoe"})
     renamed_path = tmp_path / "processed" / "game_features_pbp_renamed.parquet"
     renamed.to_parquet(renamed_path)
@@ -523,8 +459,8 @@ def _write_walk_forward_guard_fixture(root: Path) -> Path:
     generator = np.random.default_rng(20260901)
     driver_week1 = generator.uniform(-1.0, 1.0, size=20)
     driver_week3 = generator.uniform(-1.0, 1.0, size=20)
-    residual_week1 = np.zeros(20)  # no signal
-    residual_week3 = 20.0 * driver_week3  # strong signal
+    residual_week1 = np.zeros(20)
+    residual_week3 = 20.0 * driver_week3
 
     rows = []
     for index in range(20):
@@ -600,8 +536,8 @@ def test_model_total_view_wave2_walk_forward_guard_excludes_the_target_week(
         (population["season"] < target_season)
         | ((population["season"] == target_season) & (population["week"] <= target_week))
     ]
-    assert len(honest_train) == 20  # week 1 only
-    assert len(leaky_train) == 40  # week 1 + the 20 non-target week-3 games
+    assert len(honest_train) == 20
+    assert len(leaky_train) == 40
 
     raw_features = pd.read_parquet(features_path)
     target_row = raw_features.loc[raw_features["game_id"] == "2020_03_TARGET"]
@@ -619,8 +555,6 @@ def test_model_total_view_wave2_walk_forward_guard_excludes_the_target_week(
     leaky_prediction = float(
         np.asarray(leaky.predict(design_matrix(target_row, WAVE2_FEATURES)), dtype=float)[0]
     )
-    # The leak is not a rounding difference: the strong week-3 signal moves
-    # the answer by several points.
     assert abs(leaky_prediction - honest_prediction) > 1.0
 
     view = model_total_view_wave2("2020_03_TARGET", tmp_path, features_path, min_train_games=15)

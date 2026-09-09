@@ -34,10 +34,6 @@ from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.pbp import season_scope_mask
 from nfl_ats.players import attach_snap_player_ids, canonicalize_rosters, canonicalize_snaps
 
-#: nflverse's raw per-report free-text columns that
-#: ``nfl_ats.players.canonicalize_injuries`` selects away (see
-#: ``INJURY_REQUIRED_COLUMNS`` there). This module needs them, so it
-#: canonicalizes the raw frame itself instead of reusing that function.
 INJURY_TEXT_REQUIRED_COLUMNS = (
     "season",
     "game_type",
@@ -52,45 +48,13 @@ INJURY_TEXT_REQUIRED_COLUMNS = (
     "date_modified",
 )
 
-#: Exact practice-status string nflverse uses for a Wednesday/Thursday/Friday
-#: "did not practice" designation. Measured
-#: (``data/raw/nflverse_injuries/20260826T122850Z/injuries.parquet``,
-#: REG rows, ``practice_status`` value counts): 24,691 of 90,752 raw rows.
-#: Deliberately distinct from ``"Out (Definitely Will Not Play)"`` (974 raw
-#: rows), which is a separate, stricter designation this module does not
-#: fold in.
 DID_NOT_PARTICIPATE_STATUS = "Did Not Participate In Practice"
 
-#: LEAD-18's predeclared "skill" and literal "OL/DL" line position sets.
-#: Deliberately narrower than ``nfl_ats.availability.position_group``'s
-#: ``_FRONT`` (which folds LB/OLB/ILB in with DE/DT/NT) because LEAD-18's
-#: predeclared hypothesis names "OL/DL" specifically, not "the defensive
-#: front seven" -- widening it to ``_FRONT`` would silently change the
-#: comparison the ROADMAP row promised. ``FB``/``HB`` are included on the
-#: skill side for consistency with ``nfl_ats.players._SKILL`` /
-#: ``nfl_ats.availability._SKILL``, though neither appears in the measured
-#: 2013-2025 concussion+DNP population.
 CONCUSSION_SKILL_POSITIONS = frozenset({"QB", "RB", "WR", "TE", "FB", "HB"})
 CONCUSSION_LINE_POSITIONS = frozenset(
     {"C", "G", "OG", "OL", "OT", "T", "DE", "DL", "DT", "NT", "EDGE"}
 )
 
-#: Frozen, exact-match (lowercased, stripped) non-injury designation
-#: vocabularies. Built by grepping the distinct ``report_primary_injury`` /
-#: ``practice_primary_injury`` values in the 2013-2025 REG rows of
-#: ``data/raw/nflverse_injuries/20260826T122850Z/injuries.parquet`` for
-#: "personal", "not injury", "rest", "illness", "coach", "suspend", "travel",
-#: "discipline", "team decision" and hand-sorting the distinct hits into the
-#: five buckets below (see docs/injury_report_hygiene.md section 2 for the
-#: full grep output). Matching is EXACT against these frozen strings, never
-#: substring: compound entries that mix a body part with a non-injury tag
-#: (e.g. ``"Ankle [Not Injury Related - Personal, Thursday Only]"``,
-#: ``"Knee/Rested"``) and one-off narrative sentences (e.g. "Did not travel
-#: to Brazil due to a personal matter...") are deliberately left OUT of every
-#: bucket -- they fall through to ``"injury"`` in :func:`classify_designation`
-#: rather than being guessed at, which is the conservative direction for an
-#: exclusion audit (it can only shrink the personal-matter population, never
-#: inflate it with an ambiguous compound string).
 PERSONAL_MATTER_DESIGNATIONS = frozenset(
     {"personal matter", "not injury related - personal matter", "personal"}
 )
@@ -127,9 +91,6 @@ OTHER_NON_INJURY_DESIGNATIONS = frozenset(
         "travel after trade",
     }
 )
-#: Union of every frozen non-injury bucket, exposed for callers that just
-#: need "is this a non-injury designation at all" without the per-bucket
-#: split (e.g. building the LEAD-19 "injury" baseline population).
 NON_INJURY_DESIGNATIONS = (
     PERSONAL_MATTER_DESIGNATIONS
     | REST_DAY_DESIGNATIONS

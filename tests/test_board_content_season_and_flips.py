@@ -30,10 +30,6 @@ from nfl_ats.four_overlay_composition import (
 )
 from nfl_ats.retired_four_member_union import INCUMBENT_CHALLENGER_ID
 
-# ---------------------------------------------------------------------------
-# item 1 -- flip member labels and the raw-vs-played flip note
-# ---------------------------------------------------------------------------
-
 
 def test_flip_member_labels_empty_when_view_is_none() -> None:
     assert board_content._flip_member_labels(None, "2026_01_BAL_IND") == ()
@@ -98,8 +94,6 @@ def test_flip_note_is_none_when_raw_probability_unavailable() -> None:
 
 
 def test_flip_note_names_raw_side_vs_played_side() -> None:
-    # Raw model favored the home team (BAL), the played card flips to the
-    # away team (IND) via coach fade.
     game = _dive_game(home="BAL", away="IND", pick_team="IND", flip_member_labels=("coach fade",))
     note = board_content._flip_note(game, raw_home_cover_probability=0.6)
     assert note is not None
@@ -114,11 +108,6 @@ def test_flip_note_is_none_when_raw_side_equals_played_side() -> None:
 
     game = _dive_game(home="BAL", away="IND", pick_team="BAL", flip_member_labels=("coach fade",))
     assert board_content._flip_note(game, raw_home_cover_probability=0.6) is None
-
-
-# ---------------------------------------------------------------------------
-# item 4 -- in-season finals
-# ---------------------------------------------------------------------------
 
 
 def test_game_final_state_is_upcoming_when_result_is_missing() -> None:
@@ -137,9 +126,6 @@ def test_game_final_state_is_upcoming_when_result_is_missing() -> None:
 
 
 def test_game_final_state_win_when_pick_covers() -> None:
-    # market_spread is home-oriented (nflverse convention, ``public_board
-    # .spread_words``): +3.0 means SEA (home) is favored by 3 ("SEA -3.0").
-    # SEA wins 24-13 (home margin +11), well past the +3.0 line -> covers.
     final, cover, score_text = board_content._game_final_state(
         home="SEA",
         away="NE",
@@ -155,8 +141,6 @@ def test_game_final_state_win_when_pick_covers() -> None:
 
 
 def test_game_final_state_loss_when_pick_does_not_cover() -> None:
-    # SEA favored by 3 (market_spread=+3.0); SEA wins by only 1 (home margin
-    # +1), short of the +3.0 line, so the SEA pick does NOT cover.
     final, cover, _ = board_content._game_final_state(
         home="SEA",
         away="NE",
@@ -171,8 +155,6 @@ def test_game_final_state_loss_when_pick_does_not_cover() -> None:
 
 
 def test_game_final_state_loss_for_away_pick_when_home_covers() -> None:
-    # Pick is the AWAY team; home comfortably covers its own +3.0 favorite
-    # line -> the away pick loses.
     final, cover, _ = board_content._game_final_state(
         home="SEA",
         away="NE",
@@ -187,7 +169,6 @@ def test_game_final_state_loss_for_away_pick_when_home_covers() -> None:
 
 
 def test_game_final_state_push_on_exact_margin() -> None:
-    # Home wins by exactly the home-favorite line (+3.0) -> a push.
     final, cover, _ = board_content._game_final_state(
         home="SEA",
         away="NE",
@@ -252,10 +233,9 @@ def test_grade_decisions_counts_win_loss_push_and_pending() -> None:
     )
     outcomes = _outcomes(
         [
-            ("G1", 11.0, 24.0, 13.0),  # HOME pick, margin +8 -> win
-            ("G2", 11.0, 24.0, 13.0),  # AWAY pick, home covers -> loss
-            ("G3", 3.0, 23.0, 20.0),  # push
-            # G4 has no outcome row -> pending
+            ("G1", 11.0, 24.0, 13.0),
+            ("G2", 11.0, 24.0, 13.0),
+            ("G3", 3.0, 23.0, 20.0),
         ]
     )
     wins, losses, pushes, pending = board_content._grade_decisions(decisions, outcomes)
@@ -271,11 +251,6 @@ def test_grade_decisions_empty_inputs_are_zero() -> None:
 def test_record_text_omits_pushes_when_zero() -> None:
     assert board_content._record_text(3, 1, 0) == "3-1"
     assert board_content._record_text(3, 1, 2) == "3-1-2"
-
-
-# ---------------------------------------------------------------------------
-# item 3 -- prospective scoreboard
-# ---------------------------------------------------------------------------
 
 
 def test_prospective_scoreboard_dormant_when_both_ledgers_empty() -> None:
@@ -302,7 +277,6 @@ def test_prospective_scoreboard_reports_paired_record_once_settled() -> None:
                 "decision_home_spread": 3.0,
             },
             {
-                # a game recorded but not yet kicked off
                 "game_id": "2026_01_C",
                 "decision_policy_id": POLICY_ID,
                 "pick_side": "HOME",
@@ -328,8 +302,8 @@ def test_prospective_scoreboard_reports_paired_record_once_settled() -> None:
     )
     outcomes = _outcomes(
         [
-            ("2026_01_A", 11.0, 24.0, 13.0),  # played HOME wins; incumbent AWAY loses
-            ("2026_01_B", 11.0, 24.0, 13.0),  # played AWAY loses; incumbent AWAY loses too
+            ("2026_01_A", 11.0, 24.0, 13.0),
+            ("2026_01_B", 11.0, 24.0, 13.0),
         ]
     )
     scoreboard = board_content._build_prospective_scoreboard(paper, challenger, outcomes)
@@ -369,11 +343,6 @@ def test_prospective_scoreboard_ignores_rows_from_a_different_policy_or_challeng
     assert scoreboard.dormant is True
 
 
-# ---------------------------------------------------------------------------
-# item 4 -- the hero's running record strip
-# ---------------------------------------------------------------------------
-
-
 def test_season_record_is_none_when_ledger_is_empty() -> None:
     empty = pd.DataFrame(columns=["season", "week", "pick_side", "decision_home_spread"])
     record = board_content._build_season_record(empty, _outcomes([]), season=2026, week=1)
@@ -393,7 +362,7 @@ def test_season_record_is_none_when_nothing_this_season_is_graded() -> None:
         ]
     )
     record = board_content._build_season_record(decisions, _outcomes([]), season=2026, week=1)
-    assert record is None  # nothing settled yet -- stay dormant, not "0-0"
+    assert record is None
 
 
 def test_season_record_reports_week_season_and_best_pick_splits() -> None:
@@ -416,7 +385,6 @@ def test_season_record_reports_week_season_and_best_pick_splits() -> None:
                 "is_best_pick": False,
             },
             {
-                # a prior week this season, already graded
                 "game_id": "2025_18_C",
                 "season": 2026,
                 "week": 18,
@@ -428,15 +396,15 @@ def test_season_record_reports_week_season_and_best_pick_splits() -> None:
     )
     outcomes = _outcomes(
         [
-            ("2026_01_A", 11.0, 24.0, 13.0),  # HOME pick wins -> Best Pick win
-            ("2026_01_B", 11.0, 24.0, 13.0),  # AWAY pick loses
-            ("2025_18_C", 11.0, 24.0, 13.0),  # HOME pick wins
+            ("2026_01_A", 11.0, 24.0, 13.0),
+            ("2026_01_B", 11.0, 24.0, 13.0),
+            ("2025_18_C", 11.0, 24.0, 13.0),
         ]
     )
     record = board_content._build_season_record(decisions, outcomes, season=2026, week=1)
     assert record is not None
-    assert "1-1" in record.week_record_text  # this week: A win, B loss
-    assert "2-1" in record.season_record_text  # season to date: A, C win, B loss
+    assert "1-1" in record.week_record_text
+    assert "2-1" in record.season_record_text
     assert record.best_pick_record_text == "Best Pick: 1-0"
 
 

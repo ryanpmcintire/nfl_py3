@@ -41,12 +41,8 @@ from nfl_ats.io import atomic_parquet
 from nfl_ats.prospective_scoring import ACTIVE_CHALLENGER_STATUS, find_challenger
 from nfl_ats.tiebreaker import newest_schedules_path, tiebreaker_report
 
-#: Registered in ``artifacts/prospective/challengers.json``.
 CHALLENGER_ID = "totals_served_method"
 
-#: One row per (challenger, week): the tiebreaker game's market total, both
-#: served-total candidates, which one actually served, and the realised
-#: total once the game is final (``NaN`` while pending).
 LEDGER_COLUMNS: tuple[str, ...] = (
     "recorded_at_utc",
     "challenger_id",

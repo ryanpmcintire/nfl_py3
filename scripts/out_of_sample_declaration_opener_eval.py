@@ -56,11 +56,8 @@ LANE_R_REPLAY = common.REPO / "artifacts/research/laneR/replay.parquet"
 LANE_U_SCORED = common.REPO / "artifacts/research/laneU/scored.parquet"
 LANE_REPRODUCTIONS = ("laneT", "laneR", "laneU")
 
-#: Rule A searches exactly the atoms MOD-05 named and AGENTS.md makes binding.
 KEY_ATOMS: tuple[float, ...] = lane_t.KEY_NUMBERS
-#: Rule B selects a bucket when its slope interval's top sits below this.
 SLOPE_CEILING = 0.5
-#: What the post-hoc lanes chose, for the comparison the question asks for.
 POSTHOC_ATOMS: tuple[float, ...] = (3.0, 7.0)
 POSTHOC_BUCKETS: tuple[str, ...] = ("10.5+",)
 
@@ -72,8 +69,6 @@ ARMS = ("KL", "RS", "BOTH")
 ARM_FAMILY = {
     "KL": "mod18_conditional_margin_v1",
     "RS": "mod18_home_side_location_v1",
-    # The combination serves the key-line read first, so it is filed in that
-    # family; its notes name the other one so the correlation is visible.
     "BOTH": "mod18_conditional_margin_v1",
 }
 ACTIVE_MODEL_ID = "research_laneV_oos1"
@@ -122,11 +117,6 @@ KIND_UNITS = {
 }
 
 
-# ---------------------------------------------------------------------------
-# The two declared arms, built locally from the frozen lanes
-# ---------------------------------------------------------------------------
-
-
 def apply_declaration(
     frame: pd.DataFrame, atoms: tuple[float, ...], buckets: tuple[str, ...]
 ) -> dict[str, np.ndarray]:
@@ -165,11 +155,6 @@ def arm_sets(
     """Which declared sets each arm serves."""
 
     return (atoms if arm in {"KL", "BOTH"} else ()), (buckets if arm in {"RS", "BOTH"} else ())
-
-
-# ---------------------------------------------------------------------------
-# The two declaration rules
-# ---------------------------------------------------------------------------
 
 
 def declare_atoms(frame: pd.DataFrame, seasons: tuple[int, int]) -> list[dict[str, object]]:
@@ -239,11 +224,6 @@ def selected_buckets(rows: list[dict[str, object]]) -> tuple[str, ...]:
     return tuple(str(row["bucket"]) for row in rows if row["selected"])
 
 
-# ---------------------------------------------------------------------------
-# Loading the frozen lanes, with every gate
-# ---------------------------------------------------------------------------
-
-
 def load_frames() -> tuple[pd.DataFrame, Path, dict]:
     """One frame carrying S3, lane K's read and lane R's re-scaled read."""
 
@@ -263,7 +243,6 @@ def load_frames() -> tuple[pd.DataFrame, Path, dict]:
     archive = pd.read_parquet(archive_path / "per_game.parquet").set_index("game_id")
     frame = pd.read_parquet(LANE_T_SCORED)
     served = archive.home_cover_probability_at_open.reindex(frame.game_id).to_numpy()
-    # Lane K's replay gate, imported: fails closed above 1e-9 and on any NaN.
     lane_k.verify_replay(frame.p_S3.to_numpy(), served)
     slope = pd.read_parquet(LANE_R_REPLAY).set_index("game_id").reindex(frame.game_id)
     lane_k.verify_replay(slope.p_S3.to_numpy(), served)
@@ -292,11 +271,6 @@ def reconstruction_gates(frame: pd.DataFrame) -> dict[str, float]:
     if key_gap != 0.0 or slope_gap != 0.0:
         raise ValueError(f"Reconstruction gate failed: atoms {key_gap}, buckets {slope_gap}")
     return {"key_line_gap_vs_laneT_KL1b": key_gap, "rescale_gap_vs_laneU_R2b": slope_gap}
-
-
-# ---------------------------------------------------------------------------
-# Stages
-# ---------------------------------------------------------------------------
 
 
 def declare() -> None:
@@ -471,9 +445,6 @@ def score(archive_path: Path | None = None) -> None:
                     bp = group.p_S3.ge(0.5) if kind == "standalone" else group.card_S3
                     graded = (group.margin_vs_open.ne(0) & group.margin_vs_open.notna()).to_numpy()
                     if not bool((cp.to_numpy() != bp.to_numpy())[graded].any()):
-                        # No graded pick moved, so the paired difference is
-                        # identically zero: a fact for the write-up, never a
-                        # registry row (a bootstrap of zeros reports 0.0).
                         skipped.append(f"{tag}_{label}_{kind}")
                         continue
                     cells[cell_name(window, arm, label, kind)] = common.comparison(
@@ -490,11 +461,6 @@ def score(archive_path: Path | None = None) -> None:
         json.dumps({k: v for k, v in cells.items() if "_overall_" in k}, indent=2),
         flush=True,
     )
-
-
-# ---------------------------------------------------------------------------
-# Record commands (written, never run: the coordinator serialises the registry)
-# ---------------------------------------------------------------------------
 
 
 def cell_name(window: str, arm: str, label: str, kind: str) -> str:
@@ -695,8 +661,6 @@ def main() -> None:
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     os.environ["NFL_ATS_ARTIFACTS_DIR"] = str(OUT)
-    # Never point a research stage at the live registry: the recorder argv is
-    # emitted for serial execution by the coordinator, never run from here.
     os.environ["NFL_ATS_REGISTRY_DIR"] = str(OUT / "registry")
     with threadpool_limits(limits=1):
         if args.stage == "declare":

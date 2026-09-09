@@ -66,7 +66,6 @@ def test_missing_provenance_note_never_exposes_model_identity(tmp_path: Path) ->
     from nfl_ats.board_site_content import _number_provenance_rows
 
     active, _ = _headline_artifacts(tmp_path)
-    # The fixture has no forecast, so verification cannot finish.
     rows, note = _number_provenance_rows(tmp_path, active)
     assert rows == ()
     assert note == "The current model's archive scores have not all been verified yet."

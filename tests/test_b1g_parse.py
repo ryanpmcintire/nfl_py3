@@ -24,8 +24,6 @@ def _load_module() -> ModuleType:
     spec = importlib.util.spec_from_file_location("b1g_parse", SCRIPT_PATH)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
-    # dataclasses resolves its own string annotations via sys.modules; without
-    # registering the module first, @dataclass crashes on load.
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module
@@ -128,7 +126,6 @@ def test_week_mismatch_fails_loudly(b1g: ModuleType) -> None:
 @pytest.mark.parametrize(
     "page_text",
     [
-        # Unknown section header where a designation header belongs.
         """BIG TEN FOOTBALL AVAILABILITY REPORT
 Week 1: Aug. 31 - Sept. 3
 ILLINOIS vs. Toledo
@@ -138,7 +135,6 @@ OUT
 DOUBTFUL
 None
 """,
-        # Missing QUESTIONABLE section entirely.
         """BIG TEN FOOTBALL AVAILABILITY REPORT
 Week 1: Aug. 31 - Sept. 3
 IOWA vs. Utah State
@@ -146,7 +142,6 @@ Noon | FS1
 OUT
 27  Jermari Harris
 """,
-        # Player line without a jersey number.
         """BIG TEN FOOTBALL AVAILABILITY REPORT
 Week 1: Aug. 31 - Sept. 3
 PURDUE vs. Fresno State
@@ -156,7 +151,6 @@ Salim Turner-Muhammad
 QUESTIONABLE
 None
 """,
-        # Unmapped team name.
         """BIG TEN FOOTBALL AVAILABILITY REPORT
 Week 1: Aug. 31 - Sept. 3
 FLORIDA vs. Toledo
@@ -166,7 +160,6 @@ None
 QUESTIONABLE
 None
 """,
-        # Wrong report header entirely.
         """SOME OTHER REPORT
 Week 1: Aug. 31 - Sept. 3
 ILLINOIS vs. Toledo
@@ -175,7 +168,6 @@ None
 QUESTIONABLE
 None
 """,
-        # Bye page missing its BYE line.
         """BIG TEN FOOTBALL AVAILABILITY REPORT
 Week 5: Sept. 30
 OHIO STATE

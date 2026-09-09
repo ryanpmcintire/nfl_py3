@@ -75,9 +75,6 @@ def render(report: dict[str, object]) -> str:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it recomputes the SHA-256s in
-# an already-written lock-day decision package and prints the result (--json prints to stdout),
-# creating nothing under artifacts/.
 
 
 def main(argv: list[str] | None = None) -> int:

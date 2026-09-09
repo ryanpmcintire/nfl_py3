@@ -39,18 +39,10 @@ from scripts import capture_splash_lines
 ET = ZoneInfo("America/New_York")
 REPO = Path(__file__).resolve().parents[1]
 
-#: Byte-for-byte copy of the first real capture,
-#: ``data/splash/2026_week01_20260908_noon.json``, hand-read off the board by
-#: an agent at the 2026-09-08 noon lock. Kept under ``tests/fixtures`` so these
-#: tests hold in a fresh clone, where ``data/`` is empty.
 WEEK1_CAPTURE_FIXTURE = (
     Path(__file__).resolve().parent / "fixtures" / "splash" / "2026_week01_20260908_noon.json"
 )
 
-#: A browser read of the same Week 1 board, in the repeated block shape the
-#: page renders. Two abbreviations here are Splash's rather than nflverse's
-#: ("JAC" for Jacksonville, "LAR" for the Rams) so the parser's alias fold is
-#: exercised by the realistic text, not only by a unit test.
 WEEK1_BOARD_TEXT = """
 NFL Week 1 - Winner (ATS)
 
@@ -176,11 +168,6 @@ def _sample_capture(**overrides: object) -> SplashCapture:
     return SplashCapture(**base)  # type: ignore[arg-type]
 
 
-# ---------------------------------------------------------------------------
-# Load / round trip
-# ---------------------------------------------------------------------------
-
-
 def test_real_week1_capture_round_trips(tmp_path: Path) -> None:
     payload = _week1_payload()
     _write_capture(tmp_path, "2026_week01_20260908_noon.json", payload)
@@ -193,9 +180,7 @@ def test_real_week1_capture_round_trips(tmp_path: Path) -> None:
     assert capture.captured_at_et == datetime(2026, 9, 8, 12, 45, tzinfo=ET)
     assert capture.picks_lock_et == datetime(2026, 9, 13, 16, 0, tzinfo=ET)
     assert capture.contest is not None and capture.contest["channel"] == "EXAMPLE-0000"
-    # The public fixture carries no contest identifiers and no submitted entry.
     assert capture.submitted_entry is None
-    # The schema survives a full round trip, key for key and value for value.
     assert capture.to_dict() == payload
 
 
@@ -214,8 +199,8 @@ def test_decision_lines_are_home_spreads(tmp_path: Path) -> None:
     lines = splash_decision_lines(capture)
 
     assert len(lines) == 16
-    assert lines["2026_01_NE_SEA"] == 3.5  # SEA favored by 3.5
-    assert lines["2026_01_CHI_CAR"] == -2.5  # CHI favored, so the home number is negative
+    assert lines["2026_01_NE_SEA"] == 3.5
+    assert lines["2026_01_CHI_CAR"] == -2.5
     assert lines["2026_01_ARI_LAC"] == 9.5
 
 
@@ -239,8 +224,6 @@ def test_newest_capture_wins_by_capture_time_not_filename(tmp_path: Path) -> Non
     games[0]["home_spread"] = 4.5
     games[0]["away_line"] = 4.5
 
-    # Filenames deliberately sort the newer capture FIRST, so a lexicographic
-    # "newest" would return the stale board.
     _write_capture(tmp_path, "2026_week01_20260908_aaa.json", late)
     _write_capture(tmp_path, "2026_week01_20260908_zzz.json", early)
 
@@ -287,11 +270,6 @@ def test_missing_game_field_raises(tmp_path: Path) -> None:
 
     with pytest.raises(DataContractError, match="missing required keys: home_spread"):
         load_splash_capture(tmp_path, 2026, 1)
-
-
-# ---------------------------------------------------------------------------
-# Validation
-# ---------------------------------------------------------------------------
 
 
 def test_is_half_point() -> None:
@@ -439,11 +417,6 @@ def test_build_game_id_zero_pads_the_week() -> None:
     assert build_game_id(2026, 12, "NE", "SEA") == "2026_12_NE_SEA"
 
 
-# ---------------------------------------------------------------------------
-# Parser
-# ---------------------------------------------------------------------------
-
-
 def test_parses_the_real_week1_board_text() -> None:
     games = parse_splash_board(WEEK1_BOARD_TEXT, 2026, 1)
 
@@ -462,8 +435,8 @@ def test_parses_the_real_week1_board_text() -> None:
 def test_parser_folds_splash_abbreviations() -> None:
     games = {game.game_id: game for game in parse_splash_board(WEEK1_BOARD_TEXT, 2026, 1)}
 
-    assert "2026_01_CLE_JAX" in games  # board printed JAC
-    assert "2026_01_SF_LA" in games  # board printed LAR
+    assert "2026_01_CLE_JAX" in games
+    assert "2026_01_SF_LA" in games
     assert games["2026_01_CLE_JAX"].home == "JAX"
     assert games["2026_01_SF_LA"].home == "LA"
 
@@ -471,8 +444,6 @@ def test_parser_folds_splash_abbreviations() -> None:
 def test_parser_orients_the_home_side() -> None:
     (game,) = parse_splash_board(ONE_GAME_BOARD, 2026, 1)
 
-    # Board printed "CHI -2.5 / CAR +2.5": the road team is favored, so the
-    # home spread is negative under this repository's convention.
     assert game.home_spread == -2.5
     assert game.away_line == -2.5
     assert game.kickoff_et == datetime(2026, 9, 13, 13, 0, tzinfo=ET)
@@ -547,11 +518,6 @@ def test_parser_ignores_page_chrome() -> None:
     assert len(parse_splash_board(noisy, 2026, 1)) == 1
 
 
-# ---------------------------------------------------------------------------
-# Freshness
-# ---------------------------------------------------------------------------
-
-
 def test_capture_age_and_staleness() -> None:
     capture = _sample_capture()
     captured = datetime(2026, 9, 8, 12, 45, tzinfo=ET)
@@ -559,8 +525,6 @@ def test_capture_age_and_staleness() -> None:
     assert capture_age(capture, captured + timedelta(hours=3)) == timedelta(hours=3)
     assert not is_stale(capture, captured + timedelta(days=6, hours=23))
     assert is_stale(capture, captured + timedelta(days=7, seconds=1))
-    # A caller may tighten the horizon; the same-day capture is fresh, the
-    # previous board is not.
     assert not is_stale(capture, captured + timedelta(hours=2), max_age=timedelta(days=1))
     assert is_stale(capture, captured + timedelta(days=2), max_age=timedelta(days=1))
 
@@ -586,11 +550,6 @@ def test_default_picks_lock_is_the_slate_sunday_at_four() -> None:
 
     assert default_picks_lock_et(games) == datetime(2026, 9, 13, 16, 0, tzinfo=ET)
     assert default_picks_lock_et(()) is None
-
-
-# ---------------------------------------------------------------------------
-# Capture CLI
-# ---------------------------------------------------------------------------
 
 
 def test_cli_writes_a_validated_capture(tmp_path: Path) -> None:
@@ -719,12 +678,7 @@ def test_cli_label_defaults() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# The real file on disk (skipped in a fresh clone, where data/ is empty)
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.full  # reads the real on-disk capture rather than a fixture
+@pytest.mark.full
 @pytest.mark.skipif(
     not (REPO / "data" / SPLASH_SUBDIRECTORY).is_dir(),
     reason="no local Splash captures (data/ is not in version control)",

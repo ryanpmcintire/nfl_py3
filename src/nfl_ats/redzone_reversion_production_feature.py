@@ -81,17 +81,11 @@ from scripts.redzone_reversion_screen import (  # noqa: E402
     build_efficiency_panels,
 )
 
-#: The one new column this module adds. Frozen name, matching
-#: ``nfl_ats.constants.REDZONE_THIRD_DOWN_OVER_FADE_ON_PRODUCTION_FEATURE_COLUMNS``.
 REDZONE_THIRD_DOWN_OVER_FADE_COLUMN = "redzone_third_down_over_fade_diff"
 REDZONE_REVERSION_ON_PRODUCTION_FEATURE_COLUMNS = (REDZONE_THIRD_DOWN_OVER_FADE_COLUMN,)
 
-#: The centred trait the frozen screen's C3 cell flags on.
 TRAIT_COLUMN = "third_down_conv_rate_centered"
 
-#: Top-quartile cut, inherited unchanged from the frozen screen's C3 cell
-#: (``prior_third_down_conv_rate_centered >= third_down_q75``). Only the
-#: ESTIMATION population changes (deviation 2), never the quantile.
 TOP_QUARTILE = 0.75
 
 _REQUIRED_COLUMNS = {"game_id", "season", "home_team", "away_team"}

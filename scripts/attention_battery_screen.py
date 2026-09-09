@@ -131,11 +131,6 @@ def _canonical(team: pd.Series) -> pd.Series:
     return team.map(lambda code: TEAM_ABBREVIATION_ALIASES.get(code, code))
 
 
-# --------------------------------------------------------------------------
-# Pageview loading
-# --------------------------------------------------------------------------
-
-
 def load_team_daily_views(scratch: Path) -> dict[str, pd.Series]:
     """Return {canonical_team_code: pd.Series indexed by date (daily views,
     summed across alias articles, 0 where missing)}."""
@@ -162,11 +157,6 @@ def attention_for_window(
 ) -> float:
     sliced = series.loc[(series.index >= window_start) & (series.index <= window_end)]
     return float(sliced.sum())
-
-
-# --------------------------------------------------------------------------
-# Game/team-game table construction
-# --------------------------------------------------------------------------
 
 
 def load_games(schedules_path: Path) -> pd.DataFrame:
@@ -207,7 +197,7 @@ def build_team_game_long(games: pd.DataFrame, team_views: dict[str, pd.Series]) 
         sides.append(side)
     long_df = pd.concat(sides, ignore_index=True)
 
-    weekday = long_df["gameday"].dt.weekday  # Monday=0 ... Sunday=6, Tuesday=1
+    weekday = long_df["gameday"].dt.weekday
     tuesday_offset = (weekday - 1) % 7
     window_end = long_df["gameday"] - pd.to_timedelta(tuesday_offset, unit="D")
     window_start = window_end - pd.Timedelta(days=6)
@@ -243,7 +233,6 @@ def build_team_game_long(games: pd.DataFrame, team_views: dict[str, pd.Series]) 
         long_df["attention_z"] = (long_df["attention"] - trailing_mean) / trailing_std
     long_df.loc[~long_df["has_baseline"], "attention_z"] = np.nan
 
-    # prior in-season game's score margin (needed for hot_after_loss)
     result = pd.to_numeric(
         games.set_index("game_id").reindex(long_df["game_id"])["result"], errors="coerce"
     ).to_numpy()
@@ -279,11 +268,6 @@ def attach_game_level(games: pd.DataFrame, long_df: pd.DataFrame) -> pd.DataFram
     out["favorite_defined"] = is_home_favorite | is_away_favorite
 
     return out.reset_index()
-
-
-# --------------------------------------------------------------------------
-# Bootstrap (verbatim pattern from nfl_bias_battery_screen.py)
-# --------------------------------------------------------------------------
 
 
 def summarize_population(
@@ -348,11 +332,6 @@ def summarize_population(
         "dropped_draws": int(dropped),
         "insufficient_data": False,
     }
-
-
-# --------------------------------------------------------------------------
-# Predeclared cells
-# --------------------------------------------------------------------------
 
 
 def build_cells(game_df: pd.DataFrame) -> dict[str, dict[str, Any]]:
@@ -432,11 +411,6 @@ def build_cells(game_df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     return cells
 
 
-# --------------------------------------------------------------------------
-# Reliability
-# --------------------------------------------------------------------------
-
-
 def split_half_reliability(long_df: pd.DataFrame) -> dict[str, Any]:
     base = long_df.loc[long_df["has_baseline"]].copy()
     base["half"] = np.where(base["week"] % 2 == 0, "even", "odd")
@@ -452,11 +426,6 @@ def split_half_reliability(long_df: pd.DataFrame) -> dict[str, Any]:
         "odd_half_mean_z_by_team": team_half["odd"].round(4).to_dict(),
         "even_half_mean_z_by_team": team_half["even"].round(4).to_dict(),
     }
-
-
-# --------------------------------------------------------------------------
-# Main
-# --------------------------------------------------------------------------
 
 
 def main() -> None:

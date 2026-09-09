@@ -36,10 +36,6 @@ from nfl_ats.per13_durability_production_feature import (
     reproduction_report,
 )
 
-# ---------------------------------------------------------------------------
-# Registration: a REPLACEMENT, so the column count must not move
-# ---------------------------------------------------------------------------
-
 
 def test_weak_stack_durability_profile_swaps_nine_columns_and_adds_none() -> None:
     assert "weak_stack_durability" in MARGIN_FEATURE_PROFILES
@@ -54,8 +50,6 @@ def test_weak_stack_durability_profile_swaps_nine_columns_and_adds_none() -> Non
     assert len(candidate) == len(production)
     assert set(candidate) - set(production) == set(PER13_DURABILITY_ON_PRODUCTION_FEATURE_COLUMNS)
     assert set(production) - set(candidate) == set(PER13_DURABILITY_SWAPPED_BASE_COLUMNS)
-    # Every candidate column is claimed by exactly one declared feature family,
-    # so a group-wise ridge penalty stays comparable between the arms.
     assert len(margin_feature_groups("market_residual", "weak_stack_durability")) == len(candidate)
 
 
@@ -77,11 +71,6 @@ def test_swapped_base_columns_are_exactly_the_availability_derived_ones() -> Non
         tuple(durability_column_name(column) for column in expected)
         == PER13_DURABILITY_ON_PRODUCTION_FEATURE_COLUMNS
     )
-
-
-# ---------------------------------------------------------------------------
-# The odds-ratio severity update
-# ---------------------------------------------------------------------------
 
 
 def test_zero_offset_reproduces_production_severity_exactly() -> None:
@@ -124,7 +113,6 @@ def test_augmented_injury_frame_matches_production_row_by_row_at_zero_offset() -
     assert augmented is not None
     expected = [players._injury_unavailability(row) for _, row in visible.iterrows()]
     assert augmented["_unavailability"].tolist() == expected
-    # The caller's frame is never mutated.
     assert "_unavailability" not in visible.columns
 
 
@@ -134,19 +122,12 @@ def test_augmented_injury_frame_passes_none_and_empty_through() -> None:
     assert augmented_injury_frame(empty, {}).empty
 
 
-# ---------------------------------------------------------------------------
-# The patch touches the two aggregators and nothing else
-# ---------------------------------------------------------------------------
-
-
 def test_durability_severity_patches_only_the_two_aggregators_and_restores_them() -> None:
     original_unavailability = players._injury_unavailability
     original_injury = players._injury_features
     original_value = players._injury_value_features
 
     with durability_severity({(2021, 3, "00-A"): 2.0}):
-        # The quarterback branch reads _injury_unavailability directly; leaving
-        # it untouched is what keeps the swap at nine columns rather than eleven.
         assert players._injury_unavailability is original_unavailability
         assert players._injury_features is not original_injury
         assert players._injury_value_features is not original_value
@@ -183,10 +164,6 @@ def test_durability_severity_moves_the_aggregated_injury_total() -> None:
     assert neutral == unpatched
 
 
-# ---------------------------------------------------------------------------
-# A synthetic panel for the offset model
-# ---------------------------------------------------------------------------
-
 _PLAYERS = [f"00-{index:02d}" for index in range(12)]
 _SEASONS = (2020, 2021, 2022)
 _WEEKS = tuple(range(1, 9))
@@ -206,9 +183,6 @@ def _panel() -> pd.DataFrame:
                         "kickoff": kickoff,
                         "position_group": "skill" if index % 2 else "front",
                         "report_category": "questionable",
-                        # A stable per-player durability difference: the low
-                        # indices miss far more often than the designation cell
-                        # implies, the high indices far less.
                         "unavailable": float((index + week + season) % 12 < index),
                         "cell_probability": 0.35,
                     }
@@ -265,8 +239,6 @@ def test_a_player_with_no_prior_history_gets_exactly_zero() -> None:
     assert not first_week.empty
     assert (first_week["offset"] == 0.0).all()
     assert not first_week["has_history"].any()
-    # ...and the offset does become non-zero once history and a fitted model
-    # exist, so the zero above is a property of the row, not of the harness.
     assert offsets["offset"].abs().max() > 0.0
 
 
@@ -285,7 +257,6 @@ def test_future_outcomes_never_change_an_earlier_offset() -> None:
     np.testing.assert_array_equal(
         changed.loc[earlier, "offset"].to_numpy(), baseline.loc[earlier, "offset"].to_numpy()
     )
-    # The perturbation is not inert: 2022's own offsets read 2022's history.
     assert not np.array_equal(
         changed.loc[~earlier, "offset"].to_numpy(), baseline.loc[~earlier, "offset"].to_numpy()
     )
@@ -315,11 +286,6 @@ def test_durability_columns_are_all_zero_exactly_when_the_offset_is() -> None:
     assert all_zero.any()
     assert (offsets.loc[all_zero, "offset"] == 0.0).all()
     assert set(columns.columns) == set(DURABILITY_COLUMNS)
-
-
-# ---------------------------------------------------------------------------
-# The additive join back onto production
-# ---------------------------------------------------------------------------
 
 
 def _production_table(n: int = 6) -> pd.DataFrame:

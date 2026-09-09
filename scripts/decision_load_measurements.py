@@ -39,7 +39,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 _Z95 = 1.959963984540054
 
-# Column-name pairs tried in order to build a human-readable label for a row.
 _ID_COLUMN_PAIRS = (
     ("baseline_feature_set", "candidate_feature_set"),
     ("baseline_feature_profile", "candidate_feature_profile"),
@@ -145,9 +144,6 @@ def _paired_proportion_se(p_bar: float, n: float | None) -> float | None:
 
     if n is None or (isinstance(n, float) and math.isnan(n)) or n <= 0:
         return None
-    # Var(p1 - p2) ~= Var(p1) + Var(p2) ~= 2 * p_bar * (1 - p_bar) / n when
-    # p1 ~= p2 ~= p_bar and correlation is (conservatively) ignored -- the
-    # same approximation used for penalty_discipline in scripts/decision_apply.py.
     return math.sqrt(2.0 * p_bar * (1.0 - p_bar) / n) * 100.0
 
 
@@ -165,7 +161,6 @@ def deduplicate(raw: pd.DataFrame) -> pd.DataFrame:
 
     usable["_estimate_round"] = usable["estimate"].round(6)
     dedup_keys = ["source", "label", "window", "_estimate_round"]
-    # Keep the row with the wider (more conservative) interval per group.
     usable = usable.sort_values("se", ascending=False)
     deduped = usable.drop_duplicates(subset=dedup_keys, keep="first")
     deduped = deduped.drop(columns=["_estimate_round"]).sort_values(["source", "label"])

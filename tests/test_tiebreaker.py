@@ -46,8 +46,6 @@ _BASE_MARGIN_BANDWIDTH, _BASE_TOTAL_BANDWIDTH = 1.0, 1.5
 
 
 def _schedules() -> pd.DataFrame:
-    # Three finished historical games plus one upcoming week with the
-    # tiebreaker game LAST by (gameday, gametime).
     return pd.DataFrame(
         {
             "game_id": [
@@ -82,7 +80,7 @@ def test_market_implied_scores_positive_margin_favors_home() -> None:
 
 def test_last_game_of_week_uses_gametime_within_the_day() -> None:
     game = last_game_of_week(_schedules(), 2024, 1)
-    assert game["game_id"] == "2024_01_C_D"  # 16:25 beats 13:00 on the same day
+    assert game["game_id"] == "2024_01_C_D"
     assert last_game_of_week(_schedules(), 2026, 1)["game_id"] == "2026_01_DEN_KC"
 
 
@@ -107,11 +105,10 @@ def test_snapshot_consensus_negates_the_home_line_and_takes_medians(tmp_path: Pa
 
     consensus = snapshot_consensus("2026_01_DEN_KC", tmp_path)
     assert consensus is not None
-    assert consensus.home_expected_margin == pytest.approx(2.5)  # negated HOME median
+    assert consensus.home_expected_margin == pytest.approx(2.5)
     assert consensus.total_line == pytest.approx(43.5)
     assert "3 books" in consensus.source
 
-    # A newer snapshot without the game falls back to the older one.
     newer = tmp_path / "market" / "raw" / "20260901T120000Z"
     newer.mkdir(parents=True)
     quotes.assign(nflverse_game_id="2026_01_X_Y").to_parquet(newer / "quotes.parquet")
@@ -123,7 +120,7 @@ def test_snapshot_consensus_negates_the_home_line_and_takes_medians(tmp_path: Pa
 def test_build_report_guess_is_margin_consistent_and_sums_to_the_total() -> None:
     schedules = _schedules()
     finals = lined_finals(schedules)
-    assert len(finals) == 3  # the two 2026 games have no scores
+    assert len(finals) == 3
     game = schedules.iloc[4]
     consensus = MarketConsensus(
         game_id="2026_01_DEN_KC",
@@ -135,7 +132,7 @@ def test_build_report_guess_is_margin_consistent_and_sums_to_the_total() -> None
     assert report.guess_home + report.guess_away == round(report.median_total)
     assert report.home == "KC" and report.away == "DEN"
     assert report.neighborhood_games >= 1
-    assert report.common_scores  # at least one exact final reported
+    assert report.common_scores
     assert report.total_mae > 0
 
 
@@ -182,7 +179,7 @@ def test_active_model_view_reads_the_active_method_row(tmp_path: Path) -> None:
     artifacts = _artifacts_tree(tmp_path)
     view = active_model_view("2026_01_DEN_KC", artifacts)
     assert view is not None
-    assert view.predicted_margin == pytest.approx(4.31)  # market_residual, not market
+    assert view.predicted_margin == pytest.approx(4.31)
     assert view.residual == pytest.approx(1.31)
     assert active_model_view("2026_01_NO_SUCH", artifacts) is None
     assert active_model_view("2026_01_DEN_KC", tmp_path / "empty") is None
@@ -202,27 +199,17 @@ def test_build_report_blends_the_model_residual_at_the_measured_weight() -> None
     report = build_report(game, consensus, finals, view)
     assert report.guess_margin == pytest.approx(2.5 + MODEL_RESIDUAL_WEIGHT * 1.31)
     assert report.implied_home - report.implied_away == pytest.approx(report.guess_margin)
-    # Without a model view the guess margin is the market's alone.
     market_only = build_report(game, consensus, finals)
     assert market_only.guess_margin == pytest.approx(2.5)
     assert market_only.model_view is None
-    # No card pick exists for a market-only guess, so no lattice consistency
-    # machinery ever runs.
     assert market_only.pick_side is None
     assert market_only.consistency_note == ""
-
-
-# ---------------------------------------------------------------------------
-# One lattice, one margin, one total (owner mandate, 2026-09-05: "our project
-# over/under total needs to line up with our spread prediction"). See
-# docs/tiebreaker.md's "one lattice, one margin, one total" section.
-# ---------------------------------------------------------------------------
 
 
 def _den_kc_game_and_consensus() -> tuple[pd.Series, MarketConsensus, pd.DataFrame]:
     schedules = _schedules()
     finals = lined_finals(schedules)
-    game = schedules.iloc[4]  # 2026_01_DEN_KC
+    game = schedules.iloc[4]
     consensus = MarketConsensus(
         game_id="2026_01_DEN_KC", home_expected_margin=2.5, total_line=43.0, source="test"
     )
@@ -274,7 +261,7 @@ def test_build_report_never_produces_a_push_against_a_home_favorite_pick() -> No
     assert report.pick_side == "HOME"
     assert report.pick_spread_line == pytest.approx(3.0)
     margin = report.guess_home - report.guess_away
-    assert margin > 3.0  # strictly favors the pick -- never a push, never the wrong side
+    assert margin > 3.0
     total = report.guess_home + report.guess_away
     assert abs(total - report.guess_total_line) <= 1.0
     assert f"consistent with the {report.home}" in report.consistency_note
@@ -292,7 +279,7 @@ def test_build_report_dog_pick_selects_the_away_side_consistently() -> None:
     report = build_report(game, consensus, finals, view)
     assert report.pick_side == "AWAY"
     margin = report.guess_home - report.guess_away
-    assert margin < 3.0  # strictly favors the away side
+    assert margin < 3.0
     assert f"consistent with the {report.away}" in report.consistency_note
 
 
@@ -384,8 +371,6 @@ def test_tiebreaker_report_uses_the_wave2_totals_view_when_the_pbp_table_exists(
     _schedules().to_parquet(raw / "schedules.parquet")
     processed = tmp_path / "processed"
     processed.mkdir()
-    # Presence is all that matters to the wiring; model_total_view_wave2
-    # itself is stubbed below, so the file's contents are irrelevant.
     pd.DataFrame({"game_id": []}).to_parquet(processed / "game_features_pbp.parquet")
 
     sentinel = TotalsView(
@@ -431,7 +416,6 @@ def test_tiebreaker_report_falls_back_to_the_wave1_totals_view_when_the_pbp_tabl
     _schedules().to_parquet(raw / "schedules.parquet")
     processed = tmp_path / "processed"
     processed.mkdir()
-    # wave 1's table exists; wave 2's (game_features_pbp.parquet) does not.
     pd.DataFrame({"game_id": []}).to_parquet(processed / "game_features.parquet")
 
     sentinel = TotalsView(
@@ -458,7 +442,7 @@ def test_tiebreaker_report_falls_back_to_the_wave1_totals_view_when_the_pbp_tabl
     assert report.totals_view.residual == pytest.approx(0.1)
     assert "wave 1 fallback" in report.totals_view.source
     assert "PBP table absent" in report.totals_view.source
-    assert "totals ridge(alpha=10)" in report.totals_view.source  # original source preserved
+    assert "totals ridge(alpha=10)" in report.totals_view.source
 
 
 def test_tiebreaker_report_fails_closed_when_wave2_input_is_misaligned(
@@ -496,18 +480,6 @@ def test_tiebreaker_report_unknown_game_id_raises(tmp_path: Path) -> None:
     _schedules().to_parquet(raw / "schedules.parquet")
     with pytest.raises(ValueError, match="not in schedules"):
         tiebreaker_report(tmp_path, game_id="2026_01_NO_SUCH")
-
-
-# ---------------------------------------------------------------------------
-# Kernel-weighted calibration neighborhood (WP14, 2026-09-01)
-#
-# Quoted lines are quantized to half points, so a HARD +/-w window is a step
-# function of its centre: a sub-quantum blend nudge can drop a whole bucket
-# and move the published guess -- measured on the live Week 1 board, DOWN two
-# points while the totals model argued the total should be HIGHER. These
-# tests pin the property that replaced it: the neighborhood is continuous in
-# its centre.
-# ---------------------------------------------------------------------------
 
 
 def _bucket_history(buckets: list[tuple[float, int, int]]) -> pd.DataFrame:
@@ -584,7 +556,7 @@ def test_base_bandwidths_are_inherited_from_the_first_schedule_entry() -> None:
     """No new constant: h_m/h_t are the old first window's half-widths."""
 
     assert _NEIGHBORHOOD_WINDOWS[0] == (_BASE_MARGIN_BANDWIDTH, _BASE_TOTAL_BANDWIDTH)
-    assert _NEIGHBORHOOD_WINDOWS[-1] is None  # the "all history" fallback survives
+    assert _NEIGHBORHOOD_WINDOWS[-1] is None
     assert _MIN_NEIGHBORHOOD == 150
 
 
@@ -601,13 +573,13 @@ def test_kernel_weights_are_one_at_the_centre_zero_beyond_the_bandwidth() -> Non
     )
     weights = kernel_weights(finals, 2.5, 43.0, _BASE_MARGIN_BANDWIDTH, _BASE_TOTAL_BANDWIDTH)
     assert weights.min() >= 0.0 and weights.max() <= 1.0
-    assert weights[0] == pytest.approx(1.0)  # the centre itself
-    assert weights[1] == pytest.approx(0.5)  # half a bandwidth up the total axis
-    assert weights[2] == pytest.approx(0.0)  # exactly ON the total bandwidth
-    assert weights[3] == pytest.approx(0.5)  # half a bandwidth along the margin
-    assert weights[4] == pytest.approx(0.0)  # exactly ON the margin bandwidth
-    assert weights[5] == pytest.approx(0.0)  # beyond it -- clipped, never negative
-    assert weights[6] == pytest.approx(0.0)  # far away
+    assert weights[0] == pytest.approx(1.0)
+    assert weights[1] == pytest.approx(0.5)
+    assert weights[2] == pytest.approx(0.0)
+    assert weights[3] == pytest.approx(0.5)
+    assert weights[4] == pytest.approx(0.0)
+    assert weights[5] == pytest.approx(0.0)
+    assert weights[6] == pytest.approx(0.0)
 
 
 def test_effective_sample_size_equals_the_count_for_equal_weights() -> None:
@@ -617,7 +589,6 @@ def test_effective_sample_size_equals_the_count_for_equal_weights() -> None:
     assert effective_sample_size(np.ones(37)) == pytest.approx(37.0)
     assert effective_sample_size(np.full(37, 0.25)) == pytest.approx(37.0)
     assert effective_sample_size(np.zeros(5)) == 0.0
-    # A half-weighted tail counts for less than a whole game.
     mixed = np.array([1.0, 1.0, 0.5, 0.5])
     assert 3.0 < effective_sample_size(mixed) < 4.0
 
@@ -633,7 +604,6 @@ def test_weighted_median_reproduces_pandas_for_uniform_weights() -> None:
         )
     assert math.isnan(weighted_median(np.array([]), np.array([])))
     assert math.isnan(weighted_median(np.array([1.0, 2.0]), np.zeros(2)))
-    # Weight, not count, decides: one heavy low game outvotes two light high ones.
     assert weighted_median(np.array([10.0, 50.0, 60.0]), np.array([9.0, 1.0, 1.0])) == 10.0
 
 
@@ -646,7 +616,6 @@ def test_weighted_score_counts_are_weighted_and_sum_to_the_total_weight() -> Non
     counts = weighted_score_counts(hood.frame, hood.weights)
     assert set(counts) == {(33, 10), (37, 10)}
     assert sum(counts.values()) == pytest.approx(float(hood.weights.sum()))
-    # The 44.0 bucket sits 1.0 of 1.5 bandwidths away -> 1/3 of a vote each.
     assert counts[(33, 10)] == pytest.approx(200.0)
     assert counts[(37, 10)] == pytest.approx(200.0 / 3.0)
 
@@ -670,7 +639,7 @@ def test_neighborhood_does_not_widen_when_the_base_bandwidth_already_clears() ->
 
     finals = lined_finals(_bucket_history([(43.0, 43, 400)]))
     hood = _neighborhood(finals, 2.5, 43.0)
-    assert hood.label == "±1.00 margin, ±1.50 total"  # the base entry, unwidened
+    assert hood.label == "±1.00 margin, ±1.50 total"
     assert hood.effective_size == pytest.approx(400.0)
 
 
@@ -679,21 +648,16 @@ def test_neighborhood_widens_to_the_effective_size_floor_and_stops_there() -> No
     stops at the SMALLEST bandwidth that clears the floor -- so the bandwidth
     is continuous in the centre instead of jumping a whole schedule entry."""
 
-    # 100 games on the centre (ESS 100 < 150) plus a far bucket the base
-    # bandwidth cannot see at all, so the schedule must be walked.
     finals = lined_finals(_bucket_history([(43.0, 43, 100), (45.0, 49, 400)]))
     base = kernel_weights(finals, 2.5, 43.0, _BASE_MARGIN_BANDWIDTH, _BASE_TOTAL_BANDWIDTH)
-    assert effective_sample_size(base) == pytest.approx(100.0)  # below the floor
+    assert effective_sample_size(base) == pytest.approx(100.0)
 
     hood = _neighborhood(finals, 2.5, 43.0)
     assert hood.effective_size >= _MIN_NEIGHBORHOOD
-    # "Stops once it does": the minimal clearing scale lands ON the floor, it
-    # does not overshoot to the next whole schedule entry (which would give
-    # ESS ~279 here).
     assert hood.effective_size == pytest.approx(float(_MIN_NEIGHBORHOOD), abs=0.5)
     margin_bandwidth = float(hood.label.split("±")[1].split(" ")[0])
     total_bandwidth = float(hood.label.split("±")[2].split(" ")[0])
-    assert _BASE_MARGIN_BANDWIDTH < margin_bandwidth < 1.5  # strictly between entries 0 and 1
+    assert _BASE_MARGIN_BANDWIDTH < margin_bandwidth < 1.5
     assert _BASE_TOTAL_BANDWIDTH < total_bandwidth < 2.5
 
 
@@ -727,7 +691,6 @@ def test_kernel_neighborhood_does_not_flip_the_guess_on_a_sub_quantum_nudge() ->
         game_id="2026_01_DEN_KC", home_expected_margin=2.5, total_line=43.0, source="test"
     )
 
-    # The defect, still demonstrable with a local hard-window implementation.
     assert _hard_window_median(finals, 2.5, 43.0) == 43.0
     assert _hard_window_median(finals, 2.5, 43.0421) == 45.0
 
@@ -742,7 +705,7 @@ def test_kernel_neighborhood_does_not_flip_the_guess_on_a_sub_quantum_nudge() ->
         ),
         finals,
     )
-    assert after.guess_total_line > before.guess_total_line  # the centre did move up
+    assert after.guess_total_line > before.guess_total_line
     assert after.median_total == before.median_total == 43.0
     assert (after.guess_home, after.guess_away) == (before.guess_home, before.guess_away)
     assert [(home, away) for home, away, _ in after.common_scores] == [
@@ -786,17 +749,8 @@ def test_weighted_median_total_is_monotone_and_gentle_in_the_centre() -> None:
     for previous, current, centre in zip(medians[:-1], medians[1:], centres[1:], strict=True):
         assert current >= previous, f"weighted median moved DOWN at centre {centre}"
         assert current - previous <= 1.0, f"weighted median jumped >1 point at centre {centre}"
-    assert medians[-1] > medians[0]  # it does track the centre, it is not just flat
+    assert medians[-1] > medians[0]
 
-    # The mechanism itself, on this same history. An evenly populated board is
-    # the FRIENDLY case for a hard window -- its median only wobbles half a
-    # point here -- but the set the median is taken over is still a step
-    # function: a whole 50-game bucket enters or leaves in one 0.05 move
-    # (measured: max |step| 50). The kernel's effective size never moves more
-    # than a few games (measured: max |step| 6.24). The published guess flips
-    # when a bucket-sized step lands on an unevenly populated board, which is
-    # exactly what happened on the live Week 1 card -- see
-    # ``test_kernel_neighborhood_does_not_flip_the_guess_on_a_sub_quantum_nudge``.
     hard_counts = [len(_hard_window_rows(finals, 2.5, centre)) for centre in centres]
     assert max(abs(current - previous) for previous, current in pairwise(hard_counts)) >= 50
 

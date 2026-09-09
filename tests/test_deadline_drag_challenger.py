@@ -34,12 +34,9 @@ from nfl_ats.prospective_scoring import (
     load_challenger_decisions,
 )
 
-TUESDAY = pd.Timestamp("2026-09-08T13:00:00Z")  # a real Tuesday
+TUESDAY = pd.Timestamp("2026-09-08T13:00:00Z")
 KICKOFF = TUESDAY + pd.Timedelta(days=4)
 
-#: A SNAPSHOT of the active model's own configuration, matching the module
-#: docstring's "Declared deviation" note -- this is NOT this challenger's
-#: own fit recipe, only what its recording guard pins against.
 _MODEL_CONFIG = {
     "method": "market_residual",
     "target": "market_residual",
@@ -87,8 +84,6 @@ def _write_active_model_and_card(
     }
 
     kickoffs = [KICKOFF + pd.Timedelta(hours=i) for i in range(n_games)]
-    # Active picks AWAY, HOME, ... (0.40, 0.60, 0.40, 0.60, ...) so the fake
-    # candidate probabilities below can deliberately disagree on every game.
     card = pd.DataFrame(
         {
             "game_id": [f"2026_01_G{i}" for i in range(n_games)],
@@ -182,8 +177,6 @@ def test_record_challenger_decisions_records_every_game_and_flags_diffs(
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
     _forecast, card = _write_active_model_and_card(artifacts, tmp_path, n_games=2)
-    # Active picks AWAY (0.40) then HOME (0.60); the candidate disagrees on
-    # both, so picks_differing_from_active must read 2.
     _patch_fit(monkeypatch, card, {"2026_01_G0": 0.60, "2026_01_G1": 0.40})
     now = KICKOFF - pd.Timedelta(days=3)
 
@@ -198,15 +191,11 @@ def test_record_challenger_decisions_records_every_game_and_flags_diffs(
     assert list(load_challenger_decisions(artifacts).columns) == list(CHALLENGER_DECISION_COLUMNS)
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
-    assert ledger.loc["2026_01_G0", "pick_side"] == "HOME"  # candidate 0.60
-    assert ledger.loc["2026_01_G1", "pick_side"] == "AWAY"  # candidate 0.40
-    # Declared deviation from the tilt-overlay/nomination convention: this
-    # ledger's own feature_profile column is the CANDIDATE's profile, not a
-    # literal copy of the active model's "weak_stack".
+    assert ledger.loc["2026_01_G0", "pick_side"] == "HOME"
+    assert ledger.loc["2026_01_G1", "pick_side"] == "AWAY"
     assert (ledger["feature_profile"] == CANDIDATE_FEATURE_PROFILE).all()
     assert (ledger["decision_home_spread"] == card["spread_line"].to_numpy()).all()
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_deadline_drag_challenger_decisions(artifacts, tmp_path, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -233,9 +222,6 @@ def test_record_challenger_refuses_a_fingerprint_mismatch(
 ) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _forecast, card = _write_active_model_and_card(artifacts, tmp_path, ridge_alpha=1.0)
     _patch_fit(monkeypatch, card, dict.fromkeys(card["game_id"], 0.5))
 

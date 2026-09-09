@@ -129,15 +129,6 @@ def orchestrate_weekly_run(request: WeeklyRunRequest) -> dict[str, Any]:
     place the handler used to (a ``finally`` block, fail-open). The caller
     is responsible only for printing the returned summary."""
 
-    # ENG-01 (docs/lockday_package.md): the real lock (--record-decisions)
-    # additionally writes one immutable decision package linking inputs, model
-    # identity, outputs, recorder results, ledger writes and lockday_verify.
-    # Two contracts. The "before" ledger state must be read BEFORE anything
-    # runs -- that is the only moment it exists. And the package write is
-    # fail-safe: by the time it runs the rows are appended and the card is
-    # published, so it sits in a finally, behind a never-raising writer AND a
-    # local guard, and can never abort or roll back a lock that already
-    # happened.
     artifacts_root = _artifacts_root()
     write_package = bool(request.record_decisions) and not bool(request.no_package)
     ledgers_before = capture_ledger_state(artifacts_root) if write_package else None
@@ -157,12 +148,6 @@ def orchestrate_weekly_run(request: WeeklyRunRequest) -> dict[str, Any]:
             replace_week=request.replace_week,
         )
     except WeeklyRunError as error:
-        # The package below is written from a finally, so on an abort it saw
-        # the empty `summary` initialised above and recorded
-        # `run_summary: null` -- measured on the 2026-09-08 lock, whose
-        # package therefore could not name the failing step. Hand it the
-        # partial summary instead: same fail-safe write, now with which step
-        # failed and why.
         if isinstance(error.summary, dict):
             summary = error.summary
         raise
@@ -183,7 +168,7 @@ def orchestrate_weekly_run(request: WeeklyRunRequest) -> dict[str, Any]:
                     f"lock-day decision package: {package.get('package_directory')}",
                     file=sys.stderr,
                 )
-            except Exception as package_error:  # deliberately broad; see above
+            except Exception as package_error:
                 summary["decision_package"] = {
                     "written": False,
                     "ok": False,

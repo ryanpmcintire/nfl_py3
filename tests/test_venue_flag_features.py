@@ -43,25 +43,19 @@ from nfl_ats.schedule_flag_features import (  # noqa: E402
 def _schedule(rows: list[dict]) -> pd.DataFrame:
     result = pd.DataFrame(rows)
     if "roof" in result:
-        # Explicit venue metadata for construction fixtures, independent of mutations.
         result["venue_default_roof"] = result["roof"]
     return result
-
-
-# ---------------------------------------------------------------------------
-# LEAD-39: new-stadium honeymoon
-# ---------------------------------------------------------------------------
 
 
 def _new_stadium_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            {"game_id": "n1", "season": 2010, "stadium_id": "NYC01"},  # honeymoon yr 1
-            {"game_id": "n2", "season": 2011, "stadium_id": "NYC01"},  # honeymoon yr 2
-            {"game_id": "n3", "season": 2012, "stadium_id": "NYC01"},  # 3rd season, no longer new
-            {"game_id": "n4", "season": 2009, "stadium_id": "NYC01"},  # before first use
-            {"game_id": "n5", "season": 2020, "stadium_id": "LAX01"},  # different venue, honeymoon
-            {"game_id": "n6", "season": 2020, "stadium_id": "PHI00"},  # not a frozen venue at all
+            {"game_id": "n1", "season": 2010, "stadium_id": "NYC01"},
+            {"game_id": "n2", "season": 2011, "stadium_id": "NYC01"},
+            {"game_id": "n3", "season": 2012, "stadium_id": "NYC01"},
+            {"game_id": "n4", "season": 2009, "stadium_id": "NYC01"},
+            {"game_id": "n5", "season": 2020, "stadium_id": "LAX01"},
+            {"game_id": "n6", "season": 2020, "stadium_id": "PHI00"},
         ]
     )
 
@@ -115,22 +109,17 @@ def test_new_stadium_attach_is_purely_additive() -> None:
     pd.testing.assert_frame_equal(features, widened[features.columns], check_exact=True)
 
 
-# ---------------------------------------------------------------------------
-# LEAD-41: dome-shootout favorite archetype
-# ---------------------------------------------------------------------------
-
-
 def _dome_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            {"game_id": "d1", "roof": "dome"},  # home favorite archetype
-            {"game_id": "d2", "roof": "closed"},  # away favorite archetype
-            {"game_id": "d3", "roof": "outdoors"},  # otherwise-qualifying but not dome/closed
-            {"game_id": "d4", "roof": "dome"},  # total too low
-            {"game_id": "d5", "roof": "dome"},  # spread too wide
-            {"game_id": "d6", "roof": "dome"},  # exact pick'em, no favorite
-            {"game_id": "d7", "roof": "dome"},  # missing opener total
-            {"game_id": "d8", "roof": "dome"},  # missing opener spread
+            {"game_id": "d1", "roof": "dome"},
+            {"game_id": "d2", "roof": "closed"},
+            {"game_id": "d3", "roof": "outdoors"},
+            {"game_id": "d4", "roof": "dome"},
+            {"game_id": "d5", "roof": "dome"},
+            {"game_id": "d6", "roof": "dome"},
+            {"game_id": "d7", "roof": "dome"},
+            {"game_id": "d8", "roof": "dome"},
         ]
     )
 
@@ -143,21 +132,20 @@ def _dome_opener_lines() -> pd.DataFrame:
             "tue_open_total_line": [51.0, 49.0, 50.0, 44.0, 52.0, 49.5, 55.0],
         }
     )
-    # d7 deliberately absent entirely -> both fields NaN after the left merge
 
 
 def test_dome_shootout_sign_convention_and_thresholds() -> None:
     derived = derive_dome_shootout_favorite_features(
         _dome_schedule(), _dome_opener_lines()
     ).set_index("game_id")
-    assert derived.loc["d1", DOME_SHOOTOUT_COLUMN] == 1.0  # home favorite, archetype
-    assert derived.loc["d2", DOME_SHOOTOUT_COLUMN] == -1.0  # away favorite, archetype
-    assert derived.loc["d3", DOME_SHOOTOUT_COLUMN] == 0.0  # roof not dome/closed
-    assert derived.loc["d4", DOME_SHOOTOUT_COLUMN] == 0.0  # total < 49
-    assert derived.loc["d5", DOME_SHOOTOUT_COLUMN] == 0.0  # |spread| > 3
-    assert derived.loc["d6", DOME_SHOOTOUT_COLUMN] == 0.0  # pick'em, no favorite
-    assert derived.loc["d7", DOME_SHOOTOUT_COLUMN] == 0.0  # missing opener total/spread entirely
-    assert derived.loc["d8", DOME_SHOOTOUT_COLUMN] == 0.0  # missing opener spread only
+    assert derived.loc["d1", DOME_SHOOTOUT_COLUMN] == 1.0
+    assert derived.loc["d2", DOME_SHOOTOUT_COLUMN] == -1.0
+    assert derived.loc["d3", DOME_SHOOTOUT_COLUMN] == 0.0
+    assert derived.loc["d4", DOME_SHOOTOUT_COLUMN] == 0.0
+    assert derived.loc["d5", DOME_SHOOTOUT_COLUMN] == 0.0
+    assert derived.loc["d6", DOME_SHOOTOUT_COLUMN] == 0.0
+    assert derived.loc["d7", DOME_SHOOTOUT_COLUMN] == 0.0
+    assert derived.loc["d8", DOME_SHOOTOUT_COLUMN] == 0.0
 
 
 def test_dome_shootout_missing_total_never_silently_satisfies_threshold() -> None:
@@ -213,20 +201,15 @@ def test_dome_shootout_attach_accepts_supplied_opener_lines_without_touching_the
     assert widened.set_index("game_id").loc["d1", DOME_SHOOTOUT_COLUMN] == 1.0
 
 
-# ---------------------------------------------------------------------------
-# LEAD-42: low-total divisional home dog
-# ---------------------------------------------------------------------------
-
-
 def _low_total_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            {"game_id": "l1", "div_game": 1},  # qualifies: divisional, low total, home dog
-            {"game_id": "l2", "div_game": 0},  # not divisional
-            {"game_id": "l3", "div_game": 1},  # total too high
-            {"game_id": "l4", "div_game": 1},  # home is favorite, not dog
-            {"game_id": "l5", "div_game": 1},  # pick'em, home not a dog
-            {"game_id": "l6", "div_game": 1},  # missing opener total
+            {"game_id": "l1", "div_game": 1},
+            {"game_id": "l2", "div_game": 0},
+            {"game_id": "l3", "div_game": 1},
+            {"game_id": "l4", "div_game": 1},
+            {"game_id": "l5", "div_game": 1},
+            {"game_id": "l6", "div_game": 1},
         ]
     )
 
@@ -239,7 +222,6 @@ def _low_total_opener_lines() -> pd.DataFrame:
             "tue_open_total_line": [40.0, 40.0, 45.0, 40.0, 40.0],
         }
     )
-    # l6 deliberately absent -> NaN after the left merge
 
 
 def test_low_total_div_dog_sign_convention_and_thresholds() -> None:
@@ -247,11 +229,11 @@ def test_low_total_div_dog_sign_convention_and_thresholds() -> None:
         _low_total_schedule(), _low_total_opener_lines()
     ).set_index("game_id")
     assert derived.loc["l1", LOW_TOTAL_DIV_DOG_COLUMN] == 1.0
-    assert derived.loc["l2", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0  # not divisional
-    assert derived.loc["l3", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0  # total > 42
-    assert derived.loc["l4", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0  # home favored, not a dog
-    assert derived.loc["l5", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0  # pick'em, not a dog
-    assert derived.loc["l6", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0  # missing opener total
+    assert derived.loc["l2", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0
+    assert derived.loc["l3", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0
+    assert derived.loc["l4", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0
+    assert derived.loc["l5", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0
+    assert derived.loc["l6", LOW_TOTAL_DIV_DOG_COLUMN] == 0.0
 
 
 def test_low_total_div_dog_missing_total_never_silently_satisfies_threshold() -> None:
@@ -288,11 +270,6 @@ def test_low_total_div_dog_attach_accepts_supplied_opener_lines() -> None:
     )
     assert sorted(set(widened.columns) - set(features.columns)) == [LOW_TOTAL_DIV_DOG_COLUMN]
     assert widened.set_index("game_id").loc["l1", LOW_TOTAL_DIV_DOG_COLUMN] == 1.0
-
-
-# ---------------------------------------------------------------------------
-# LEAD-35: September heat-humidity home edge
-# ---------------------------------------------------------------------------
 
 
 def _heat_game(
@@ -354,7 +331,7 @@ def test_sept_heat_hou_local_time_conversion() -> None:
 
 
 def test_sept_heat_requires_cold_visitor() -> None:
-    schedule = _schedule([_heat_game("h7", "MIA", "TB")])  # TB is not on the cold list
+    schedule = _schedule([_heat_game("h7", "MIA", "TB")])
     derived = derive_sept_heat_home_features(schedule).set_index("game_id")
     assert derived.loc["h7", SEPT_HEAT_COLUMN] == 0.0
 
@@ -410,10 +387,6 @@ def test_sept_heat_attach_is_purely_additive() -> None:
     assert sorted(set(widened.columns) - set(features.columns)) == [SEPT_HEAT_COLUMN]
     pd.testing.assert_frame_equal(features, widened[features.columns], check_exact=True)
 
-
-# ---------------------------------------------------------------------------
-# Registered candidate profiles: production plus exactly the one column
-# ---------------------------------------------------------------------------
 
 WAVE_2_CANDIDATE_KEYS = ("new_stadium", "dome_shootout", "low_total_div_dog", "sept_heat")
 

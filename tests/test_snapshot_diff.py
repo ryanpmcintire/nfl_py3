@@ -60,25 +60,17 @@ from nfl_ats.snapshot_diff import (
 SEASON = 2024
 WEEK = 1
 
-GAME_A = "2024_01_AAA_BBB"  # away AAA at home BBB, Sunday early window
-GAME_B = "2024_01_CCC_DDD"  # away CCC at home DDD, Sunday early window (later kickoff than A)
+GAME_A = "2024_01_AAA_BBB"
+GAME_B = "2024_01_CCC_DDD"
 
 KICKOFF_A = pd.Timestamp("2024-09-08T17:00:00Z")
 KICKOFF_B = pd.Timestamp("2024-09-08T18:00:00Z")
 
-#: Well before both kickoffs and the week's Sunday 16:00 ET (~20:00 UTC in
-#: September, EDT) pick lock.
 FRIDAY = pd.Timestamp("2024-09-06T12:00:00Z")
 
-#: After both kickoffs AND after the Sunday pick lock.
 SUNDAY_LATE = pd.Timestamp("2024-09-08T20:30:00Z")
 
 FORECAST_DIR_NAME = "2024-week-01-20240903T140000Z"
-
-
-# ---------------------------------------------------------------------------
-# fixture builders
-# ---------------------------------------------------------------------------
 
 
 def _write_artifact(directory: Path, *, created_at_utc: str, games: list[dict[str, Any]]) -> None:
@@ -277,11 +269,6 @@ def _write_evidence_log(artifacts_root: Path, rows: list[dict[str, Any]]) -> Non
     path.write_text("\n".join(json.dumps(row) for row in rows) + "\n", encoding="utf-8")
 
 
-# ---------------------------------------------------------------------------
-# tests
-# ---------------------------------------------------------------------------
-
-
 def test_resolves_via_paper_decision_ledger_and_reads_tuesday_state(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
     _setup_tuesday(artifacts_root)
@@ -295,7 +282,6 @@ def test_resolves_via_paper_decision_ledger_and_reads_tuesday_state(tmp_path: Pa
     assert by_game[GAME_A].pick_side == "AWAY"
     assert by_game[GAME_A].pick_basis == "paper_decision_ledger"
     assert by_game[GAME_A].market_line == -3.0
-    # model_probability always comes from the forecast artifact, never the ledger
     assert by_game[GAME_A].model_probability == 0.40
     assert by_game[GAME_A].overlays_fired == ()
 
@@ -323,7 +309,6 @@ def test_resolve_falls_back_to_earliest_artifact_when_no_ledger(tmp_path: Path) 
     assert lock.basis == "forecast_artifact_earliest"
     assert lock.ledger_rows == 0
     assert len(lock.games) == 1
-    # no ledger row -> overlay knowledge is genuinely unknown, not "none fired"
     assert lock.games[0].overlays_fired is None
     assert lock.games[0].pick_basis == "forecast_artifact_raw"
 
@@ -358,7 +343,6 @@ def test_flipped_pick_and_inferred_unchanged_pick(tmp_path: Path) -> None:
                 trigger_source="injury_report_posted",
                 trigger_observed_at_utc=FRIDAY - pd.Timedelta(hours=1),
             ),
-            # GAME_B intentionally absent: still eligible at FRIDAY -> inferred unchanged.
         ],
     )
 
@@ -377,9 +361,7 @@ def test_flipped_pick_and_inferred_unchanged_pick(tmp_path: Path) -> None:
     assert flipped.pick_state == "flipped_away_to_home"
     assert flipped.probability_delta is not None
     assert flipped.probability_state == STATE_CHANGED
-    # the frozen-line invariant: market line never moves on a pick-revision pass
     assert flipped.market_line_state == STATE_UNCHANGED
-    # overlays are frozen by design for this channel
     assert flipped.overlay_state == STATE_UNCHANGED
 
     unchanged = by_game[GAME_B]
@@ -387,7 +369,6 @@ def test_flipped_pick_and_inferred_unchanged_pick(tmp_path: Path) -> None:
     assert unchanged.refresh_pick_side == "HOME"
     assert unchanged.pick_state == "same"
     assert "inferred_unchanged" in unchanged.refresh_pick_basis
-    # the recomputed probability for an unchanged, absent game is genuinely unrecorded
     assert unchanged.probability_state == STATE_NO_DATA
 
 
@@ -412,7 +393,6 @@ def test_absent_game_ineligible_after_its_own_deadline(tmp_path: Path) -> None:
                 trigger_source="line_move",
                 trigger_observed_at_utc=SUNDAY_LATE,
             ),
-            # GAME_B absent, and by SUNDAY_LATE its own deadline has passed.
         ],
     )
 
@@ -444,7 +424,6 @@ def test_trigger_resolved_from_evidence_log_news_vs_clock_checkpoint(tmp_path: P
                 new_pick_side="HOME",
                 new_home_cover_probability=0.6,
                 revision_recorded_at_utc=run1_time,
-                # blank trigger fields -> must be enriched from the evidence log
             ),
             _revision_row(
                 refresh_run_id="run2",
@@ -592,21 +571,17 @@ def test_forecast_artifact_pass_has_real_deltas_but_no_data_sources_and_overlays
     assert len(forecast_passes) == 1
     refresh_pass = forecast_passes[0]
 
-    # source-timestamp cells: no lineage.json on either side -> every cell no_data,
-    # but never an empty tuple (there's always at least the required fields).
     assert refresh_pass.sources
     assert all(cell.state == STATE_NO_DATA for cell in refresh_pass.sources)
     assert all(cell.source_id for cell in refresh_pass.sources)
 
     by_game = {row.game_id: row for row in refresh_pass.games}
     game_a = by_game[GAME_A]
-    # market line and probability ARE real, comparable data for this channel
-    assert game_a.market_line_state == STATE_UNCHANGED  # -3.0 == -3.0
+    assert game_a.market_line_state == STATE_UNCHANGED
     assert game_a.tuesday_model_probability == 0.40
     assert game_a.refresh_model_probability == 0.60
     assert game_a.probability_state == STATE_CHANGED
     assert game_a.pick_state == "flipped_away_to_home"
-    # overlays are never observable from a margin-predict artifact alone
     assert game_a.overlay_state == STATE_NO_DATA
 
 
@@ -645,7 +620,7 @@ def test_render_markdown_never_leaves_a_blank_cell(tmp_path: Path) -> None:
             continue
         interior = stripped.strip("|")
         if set(interior.replace("-", "").replace(":", "").strip()) == set():
-            continue  # a "|---|---|" separator row
+            continue
         cells = [cell.strip() for cell in interior.split("|")]
         assert all(cells), f"blank cell found in rendered row: {line!r}"
         table_rows_checked += 1

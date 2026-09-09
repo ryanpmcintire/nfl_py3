@@ -45,8 +45,6 @@ def _write_data_root(tmp_path: Path) -> Path:
         },
         raw / "manifest.json",
     )
-    # latest_snapshot() requires the snapshot payload itself, not just a
-    # manifest — real snapshots always carry schedules.parquet.
     (raw / "schedules.parquet").write_bytes(b"")
     processed = data_root / "processed"
     atomic_json(
@@ -121,11 +119,9 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
         "publish-board",
     ]
     assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 8, 13, 14]
-    # RWB-12 drift monitoring is optional telemetry strictly after the publish.
     assert steps[-2].optional is True
     assert steps[-1].name == "publish-board"
     assert steps[-1].optional is False
-    # The synchronization assertion sits strictly between scoring and publish.
     names = [step.name for step in steps]
     assert names.index("assert-synchronized") > names.index("margin-predict")
     assert names.index("assert-synchronized") < names.index("publish-predictions")
@@ -277,7 +273,6 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
         "drift-report",
         "publish-board",
     ]
-    # The plan doubles as the manual fallback, so it prints runnable commands.
     assert payload["steps"][0]["command"][:4] == ["python", "-m", "nfl_ats", "ingest"]
     assert payload["steps"][6]["command"] == []
     assert all("status" not in step for step in payload["steps"])
@@ -558,7 +553,6 @@ def test_the_card_path_follows_the_active_profile_instead_of_reverting_it(
         assert "game_features_weak_stack.parquet" in " ".join(step.command)
         assert PLAYER_FEATURE_PROFILE not in step.command
 
-    # The active profile's table has to be built before it can be scored.
     build = [s for s in steps if s.name == "build-weak-stack-features" and not s.optional]
     assert build, "the card path must build the table the active model scores on"
     assert steps.index(build[0]) < steps.index(scoring[0])
@@ -642,18 +636,11 @@ def test_cli_reports_an_abort_as_a_user_error(
     assert excinfo.value.code == 2
 
 
-# ---------------------------------------------------------------------------
-# POL-10: prospective evidence collection (steps 9-12)
-# ---------------------------------------------------------------------------
-
-
 def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) -> None:
     data_root = _write_data_root(tmp_path)
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
     names = [step.name for step in steps]
 
-    # The SPEC-3 core is untouched, and the evidence steps come strictly after
-    # the publish -- research collection must never delay or endanger the card.
     assert names[:11] == [
         "ingest",
         "build-features",
@@ -691,7 +678,6 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
         "--pbp-snapshot",
         PRODUCTION_PBP_SNAPSHOT,
     )
-    # The challenger is scored on its OWN table and profile, never the player one.
     assert by_name["margin-predict-challenger"].command == (
         "margin-predict",
         "--season",
@@ -733,8 +719,6 @@ def test_record_decisions_defaults_to_false_and_does_not_reach_either_ledger(
     record_step = by_name["prospective-record"]
     assert record_step.skipped is True
     assert record_step.optional is True
-    # The command is still shown (dry-run doubles as the manual fallback),
-    # it is just not executed.
     assert record_step.command[0] == "prospective-record"
     assert "--record-decisions" in record_step.notes[0]
 
@@ -845,15 +829,8 @@ def test_an_optional_step_failure_is_reported_but_never_aborts_the_run(
     statuses = {step["name"]: step["status"] for step in summary["steps"]}
     assert statuses["publish-predictions"] == "ok"
     assert statuses["build-weak-stack-features"] == "failed"
-    # The rest of the tail still runs -- one broken step does not cancel the others.
     assert statuses["prospective-score"] == "ok"
     assert "prospective-score" in calls
-
-
-# ---------------------------------------------------------------------------
-# _cli_runner stdout parsing: progress lines must never break the JSON
-# summary (2026-08-24 rehearsal, step ingest-player-arrests abort).
-# ---------------------------------------------------------------------------
 
 
 def test_final_json_document_parses_a_summary_prefixed_by_progress_lines() -> None:

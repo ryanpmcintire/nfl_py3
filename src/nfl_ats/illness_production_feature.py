@@ -60,10 +60,6 @@ from scripts.illness_battery_screen import (  # noqa: E402
     resolve_asof_team_week,
 )
 
-#: The two new columns this module adds. Frozen names, matching the already
-#: -recorded weak-signal registry cell names 1:1 so the lineage between the
-#: bare-baseline screen and this on-production stacking is legible from the
-#: column name alone.
 ILLNESS_AWAY_ACTIVE_GE1_COLUMN = "illness_away_active_ge1"
 ILLNESS_HOME_GE2_COLUMN = "illness_home_ge2"
 ILLNESS_ON_PRODUCTION_FEATURE_COLUMNS = (
@@ -71,7 +67,6 @@ ILLNESS_ON_PRODUCTION_FEATURE_COLUMNS = (
     ILLNESS_HOME_GE2_COLUMN,
 )
 
-#: Inherited unchanged from ``scripts/illness_battery_screen.py``.
 ILLNESS_COUNT_THRESHOLD = 2
 
 _REQUIRED_COLUMNS = {

@@ -39,9 +39,6 @@ if str(REPO_ROOT / "src") not in sys.path:
 from nfl_ats.ledger_reconcile import load_lockday_verify_module, reconcile, render  # noqa: E402
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it joins recorder summaries,
-# each ledger's own rows, and the published card, and prints the result (--json prints to stdout),
-# creating nothing under artifacts/.
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -107,7 +104,7 @@ def main(argv: list[str] | None = None) -> int:
                     f"{len(verify_report.get('pending_wiring', []))} pending wiring of "
                     f"{verify_report['active_registered']} active"
                 )
-            except Exception as error:  # never let this additive check break the main report
+            except Exception as error:
                 print(f"\n  lockday_verify: could not run ({type(error).__name__}: {error})")
 
     return 0 if report["all_consistent"] else 1

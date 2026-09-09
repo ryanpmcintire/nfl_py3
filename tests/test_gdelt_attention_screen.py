@@ -33,7 +33,6 @@ def _write_weekly_fixture(path: Path) -> pd.DataFrame:
             "is_home": [True, False, True, False],
             "tuesday_z": [-0.75, -0.60, 3.0, -0.80],
             "tuesday_has_baseline": [True, True, False, True],
-            # Extreme Saturday values are a canary: the Tuesday loader must ignore them.
             "saturday_z": [99.0, 99.0, 99.0, 99.0],
             "saturday_has_baseline": [True, True, True, True],
         }

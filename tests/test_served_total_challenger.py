@@ -29,11 +29,6 @@ from nfl_ats.served_total_challenger import (
 )
 from nfl_ats.tiebreaker import MarketConsensus, TiebreakerReport
 
-# ---------------------------------------------------------------------------
-# 0. Registration shape (the fast lockday audit, scripts/lockday_rehearsal.py,
-#    already checks the CLI-dispatch contract separately).
-# ---------------------------------------------------------------------------
-
 
 def test_challenger_is_registered_active_prospective_on_the_publish_path() -> None:
     registry = json.loads(
@@ -46,11 +41,6 @@ def test_challenger_is_registered_active_prospective_on_the_publish_path() -> No
     entry = entries[0]
     assert entry["status"] == "ACTIVE_PROSPECTIVE"
     assert "publish-predictions --record-decisions" in entry["weekly_recording_command"]
-
-
-# ---------------------------------------------------------------------------
-# 1. Fixtures
-# ---------------------------------------------------------------------------
 
 
 def _write_registry(artifacts_root: Path, *, status: str = "ACTIVE_PROSPECTIVE") -> None:
@@ -135,11 +125,6 @@ def _fixed_report(
     )
 
 
-# ---------------------------------------------------------------------------
-# 2. record_totals_served_method_decisions
-# ---------------------------------------------------------------------------
-
-
 def test_record_refuses_when_challenger_is_not_active(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -159,7 +144,7 @@ def test_record_writes_one_row_pre_kickoff(tmp_path: Path, monkeypatch: pytest.M
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
     _write_registry(artifacts_root)
-    _write_schedules(data_root)  # kickoff 2026-09-10 20:15 ET, unplayed
+    _write_schedules(data_root)
     monkeypatch.setattr(challenger_module, "tiebreaker_report", lambda *a, **k: _fixed_report())
 
     result = record_totals_served_method_decisions(
@@ -237,7 +222,7 @@ def test_record_skips_without_writing_once_kickoff_has_passed(
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
     _write_registry(artifacts_root)
-    _write_schedules(data_root)  # kickoff 2026-09-10T20:15 America/New_York
+    _write_schedules(data_root)
     monkeypatch.setattr(challenger_module, "tiebreaker_report", lambda *a, **k: _fixed_report())
 
     result = record_totals_served_method_decisions(
@@ -255,18 +240,13 @@ def test_record_refuses_far_outside_the_recording_lock_window(
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
     _write_registry(artifacts_root)
-    _write_schedules(data_root)  # kickoff 2026-09-10
+    _write_schedules(data_root)
     monkeypatch.setattr(challenger_module, "tiebreaker_report", lambda *a, **k: _fixed_report())
 
     with pytest.raises(ValueError, match="Refusing to record"):
         record_totals_served_method_decisions(
             artifacts_root, data_root, now=datetime(2026, 7, 1, tzinfo=UTC)
         )
-
-
-# ---------------------------------------------------------------------------
-# 3. settle_realised_totals
-# ---------------------------------------------------------------------------
 
 
 def test_settle_realised_totals_backfills_only_pending_rows() -> None:
@@ -300,14 +280,14 @@ def test_settle_realised_totals_backfills_only_pending_rows() -> None:
                 "market_total": 40.0,
                 "served_total_blend_k01": 40.5,
                 "served_total_joint_residual": float("nan"),
-                "realised_total": 47.0,  # already settled -- must not change
+                "realised_total": 47.0,
             },
         ]
     )[list(LEDGER_COLUMNS)]
     schedules = pd.DataFrame(
         {
             "game_id": ["2026_01_DEN_KC", "2025_18_A_B"],
-            "home_score": [24.0, 999.0],  # 999 must be ignored -- already settled
+            "home_score": [24.0, 999.0],
             "away_score": [20.0, 999.0],
         }
     )
@@ -317,7 +297,7 @@ def test_settle_realised_totals_backfills_only_pending_rows() -> None:
     pending_row = settled.loc[settled["game_id"] == "2026_01_DEN_KC"].iloc[0]
     assert pending_row["realised_total"] == pytest.approx(44.0)
     settled_row = settled.loc[settled["game_id"] == "2025_18_A_B"].iloc[0]
-    assert settled_row["realised_total"] == pytest.approx(47.0)  # unchanged
+    assert settled_row["realised_total"] == pytest.approx(47.0)
     assert list(settled.columns) == list(LEDGER_COLUMNS)
 
 

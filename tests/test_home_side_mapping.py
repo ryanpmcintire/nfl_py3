@@ -66,7 +66,6 @@ def test_shift_is_shrunken_cell_mean_toward_zero() -> None:
         [6 * n / (n + 100), -2 * n / (n + 100), 0.0, 0.0]
     )
     assert fitted.rows([-8.0, 0.0]).tolist() == [n, 0]
-    # Ten games shrink far more than four hundred.
     small = fit_home_side_shift(h.loc[h.spread_line.eq(-8.0)].head(10))
     assert small.shifts["home_underdog/7.5-10"] == pytest.approx(60 / 110)
 
@@ -90,7 +89,6 @@ def test_lattice_uses_same_side_when_supported_and_falls_back_otherwise() -> Non
     assert supported.decision_probability(-8.0) == pytest.approx(
         same_only.decision_probability(-8.0)
     )
-    # Home underdog atoms sit at +4 only; the full-history lattice also holds 0 and 1.
     assert set(supported.lattice.margins) == {4.0}
     thin = h.loc[h.spread_line.ge(0) | h.game_id.isin(h.loc[h.spread_line.lt(0)].game_id[:50])]
     fallback = fit_lattice_home_side(thin, -2.0, -8.0)
@@ -123,7 +121,6 @@ def test_future_and_same_week_cannot_move_earlier_shift_or_probability(method: s
     else:
         columns += ["push_probability", "lattice_side_used", "lattice_side_support"]
     pd.testing.assert_frame_equal(expected[columns], got[columns])
-    # And the prior really moved the numbers: an earlier result change does propagate.
     moved = h.copy()
     moved.loc[moved.season.eq(2020) & moved.spread_line.eq(-8.0), "result"] = -30.0
     changed = predict_home_side_mapping(moved, target, method=method)

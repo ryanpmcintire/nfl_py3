@@ -72,10 +72,6 @@ def test_all_nflcom_injury_scheduler_jobs_are_paused() -> None:
 def test_private_raw_policy_rejects_tracked_repo_destination_and_allows_external_root(
     private_raw_root: Path,
 ) -> None:
-    # ENG-30: the external-root arm needs a temp dir outside this repo's
-    # tree regardless of `--basetemp`; plain `tmp_path` does not guarantee
-    # that when `--basetemp` is pointed in-repo. See conftest.py's
-    # `private_raw_root` fixture.
     require_private_raw_destination("the_odds_api", ROOT / "data" / "market" / "raw")
     require_private_raw_destination("the_odds_api", private_raw_root)
 

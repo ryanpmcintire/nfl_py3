@@ -75,8 +75,6 @@ DEFAULT_OPENER_EVAL_ARTIFACT = (
     REPO / "artifacts" / "opener_evaluation" / "20260818T013115Z" / "per_game.parquet"
 )
 
-# 2020 has no earlier archived season to train a leak-free movement model on
-# (BUILD note in the predeclaration). Screened seasons are exactly these five.
 SCREENED_SEASONS: tuple[int, ...] = (2021, 2022, 2023, 2024, 2025)
 EXPANDING_WALK_FORWARD_SEASONS: tuple[int, ...] = (2021, 2022, 2023)
 FROZEN_REUSE_SEASONS: tuple[int, ...] = (2024, 2025)
@@ -183,14 +181,6 @@ def score_rules(scored: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     scored["disagreement"] = scored["movement_pick_home"].ne(scored["pick_home_at_open"])
     scored["abs_predicted"] = scored["predicted_close_minus_open"].abs()
 
-    # The active-model baseline at the close grade must be the SAME decision
-    # the tilt rule modifies (the opener pick), settled at the close line --
-    # NOT `correct_at_close` from the opener-evaluation artifact, which is the
-    # active model independently RE-EVALUATED with the close-time spread as
-    # input (a different decision that already "sees" close-time information
-    # no tilt rule here ever gets). Using that column as the baseline would
-    # let the baseline win on close-time information alone, confounding
-    # whatever the movement tilt itself contributes. This isolates the tilt.
     scored["active_same_decision_correct_at_close"] = pick_correct(
         scored["pick_home_at_open"], scored["margin_vs_close"]
     )

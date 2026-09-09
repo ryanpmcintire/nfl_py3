@@ -95,19 +95,12 @@ _FONT_LINKS = (
     '&display=swap" rel="stylesheet">'
 )
 
-# ---------------------------------------------------------------------------
-# Site page registry -- four pages, at the site root. Deliberately a LOCAL
-# constant, never ``nfl_ats.public_board.SITE_PAGES``: the public-board
-# legacy Track Record entry is retired, while this site's nav is the current
-# four-page shape.
-# ---------------------------------------------------------------------------
 
 PICKS_PAGE = "index.html"
 MODEL_PAGE = "model.html"
 FINDINGS_PAGE = "findings.html"
 HISTORY_PAGE = "history.html"
 
-#: (file name, nav label, browser title) in nav order.
 SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (PICKS_PAGE, "This week", "This week's picks"),
     (MODEL_PAGE, "The model", "The model"),
@@ -115,17 +108,6 @@ SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (FINDINGS_PAGE, "What we've learned", "What we've learned"),
 )
 
-#: Shared script for the This Week page's per-game selector (layout A,
-#: 2026-09-05: the board's own rows, not a separate tab strip -- see
-#: :func:`_inspector_section`'s docstring) and its line-offset adjuster.
-#: One click handler for every ``table.board tr.game`` row plus one
-#: drag/click handler for every ``.ats-adjuster`` widget on the page,
-#: mirroring the erf approximation
-#: ``nfl_ats.spread_explorer.widget_home_cover_probability`` mirrors in
-#: Python (kept in lock-step by that module's own tests) -- the formula is
-#: never invented here, and every widget's ``center``/``mean``/``std``/
-#: ``card-line`` data attribute is a guard-proven field off a
-#: :class:`~nfl_ats.board_content.SpreadAdjusterParams`, never a literal.
 _DIVE_SCRIPT = """
 <script>
 (function () {
@@ -213,12 +195,6 @@ _DIVE_SCRIPT = """
 </script>
 """
 
-#: The board's KICKOFF | CONFIDENCE sort toggle (item 5) -- vanilla JS,
-#: static-safe, no dependency on any other inline script on the page.
-#: "Kickoff" restores the exact original DOM order (group headers and all,
-#: captured once on load); "Confidence" hides the day-group headers (a
-#: confidence sort flattens across days) and re-orders the game rows by
-#: descending ``data-prob``.
 _SORT_SCRIPT = """
 <script>
 (function () {
@@ -253,8 +229,6 @@ _SORT_SCRIPT = """
 </script>
 """
 
-#: Lineup unit filters are progressive enhancement; all players remain in the
-#: HTML and the buttons only change visibility for the current reader.
 _LINEUP_SCRIPT = """
 <script>
 (function () {
@@ -276,17 +250,6 @@ _LINEUP_SCRIPT = """
 </script>
 """
 
-#: Shared ticker-click behaviour for every page (items 6-7): each tick is a
-#: real ``index.html#<game_id>`` link. On This Week itself (where
-#: ``.dive-panel`` inspector panels exist), a click selects that game (via
-#: ``window.atsSelectGame``, defined by :data:`_DIVE_SCRIPT` -- see layout
-#: A, 2026-09-05: the board's own rows are the selector, so there is no
-#: ``.dive-tab`` to click through any more) and scrolls to its panel, and
-#: page load re-selects from ``location.hash`` -- both without a page
-#: reload. On The Model/Findings (no inspector on the page), the click is
-#: left alone and the browser's ordinary anchor navigation carries the
-#: reader to This Week with the hash already set, where the same on-load
-#: handler takes over.
 _TICKER_SCRIPT = """
 <script>
 (function () {
@@ -315,14 +278,6 @@ _TICKER_SCRIPT = """
 })();
 </script>
 """
-
-#: UI-20 (2026-09-05, owner: "i absolutely hate this dynamic page load
-#: thing where elements only appear once you scroll down far enough").
-#: The scroll-gated IntersectionObserver reveal and the KPI number
-#: roll-up (formerly here as ``_MOTION_SCRIPT``) are REMOVED entirely:
-#: every element is visible at load, with no scroll dependency, and every
-#: KPI value renders its final number immediately (it always was already
-#: in the static HTML; only the animation is gone).
 
 
 def _nav_links(page: str) -> str:
@@ -374,7 +329,6 @@ def _ticker(chrome: TickerChrome) -> str:
         )
 
     ticks = "".join(tick(game) for game in chrome.games)
-    # Doubled for the seamless CSS-animation loop, exactly as the mockup does.
     return (
         '<div class="ticker" role="marquee" aria-label="This week\'s board, scrolling summary">'
         f'<div class="ticker-track">{ticks}{ticks}</div></div>'
@@ -639,9 +593,6 @@ def _flip_line_html(game: GameRow) -> str:
     if game.flip_line is None and game.flip_held:
         pinned_by_rule = [label for label in game.flip_member_labels if label != "spread-gap zone"]
         if pinned_by_rule:
-            # A fired pick-conditioned rule (coach fade, division revenge,
-            # arrests) backs this side whichever way the model leans, so the
-            # line alone cannot flip it -- say that, in words.
             reason = (
                 f"The {' + '.join(pinned_by_rule)} rule backs {game.pick_team} whichever side "
                 "the model leans, so no spread between those two lines changes this pick"
@@ -809,21 +760,6 @@ def _why_this_pick_html(explanation_text: str) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
-# Reader-facing number/identifier formatting (owner mandate, 2026-09-05,
-# verbatim on a live panel: "whats the point of showing this anywhere? ...
-# remember when i said this is for humans not the opus autist"). The
-# research registries stay snake_case, hashed, and P+-notated internally --
-# still queryable via ``nfl-ats weak-signals``/``rotation`` -- these three
-# helpers are the ONE place that vocabulary gets translated before it
-# reaches a rendered page. Kept together so every render function below
-# reaches for the same words rather than inventing its own phrasing.
-# ---------------------------------------------------------------------------
-
-#: The weak-signal registry's three closing classifications
-#: (``nfl_ats.weak_signals.POOLABLE_CLASSIFICATION`` /
-#: ``TERMINAL_CLASSIFICATIONS``), in words. Anything else (a rotation-
-#: registry status, etc.) falls back to :func:`humanize_identifier`.
 _CLASSIFICATION_WORDS: dict[str, str] = {
     "unresolved_below_power": "not enough evidence yet",
     "refuted_mechanism": "ruled out",
@@ -1061,7 +997,6 @@ def _game_dive_chart_html(dive: GameDive) -> str:
             '<div class="chart-empty">Cover curve not published for this game on this '
             "artifact tree.</div>"
         )
-    # Plot box matches the mockup's own viewBox exactly (0 0 280 100, x:20-260, y:10-85).
     offsets = [point.offset for point in dive.cover_curve]
     probabilities = [point.probability for point in dive.cover_curve]
     x_min, x_max = min(offsets), max(offsets)
@@ -1154,36 +1089,11 @@ def _attribution_html(dive: GameDive) -> str:
     return "".join(rows_html) + total
 
 
-#: UI-20-AB retirement (2026-09-05): the 2026-09-05 "no designation" marker
-#: hid the percentage for any player without a visible injury designation,
-#: because that number used to be a constant position-level base rate that
-#: carried no information about that specific player. It no longer applies:
-#: ``play_probability`` is now a real per-player, per-game forecast from
-#: ``nfl_ats.play_probability`` (depth-chart rank, this week's own injury
-#: report, recent snaps, roster status) for every scored player, so the
-#: owner's directive -- "it needs to be a forecast about the game and it
-#: needs to consider depth chart" -- is met for every row, designated or
-#: not. Every player with a model probability now shows it as a percentage;
-#: only ``probability_source == "unavailable"`` (no gsis_id / no predictor)
-#: still shows the em dash.
-
-
 def _lineup_team_html(lineup: TeamLineup | None) -> str:
     if lineup is None:
         return '<div class="lineup-empty">Projected lineup artifact not published yet.</div>'
     rows_by_unit: dict[str, list[str]] = {"offense": [], "defense": [], "special_teams": []}
     for player in lineup.players:
-        # UI-20-AB: every player with a model probability shows it as a
-        # percentage (see the retirement note above) -- the em dash stays
-        # reserved for a row the model genuinely could not score at all
-        # (``probability_source == "unavailable"``, i.e. no gsis_id or no
-        # predictor this run). UI-20 colour-coding fix (2026-09-05, owner
-        # complaint: "what is the color coding? green vs red? some aren't
-        # coloured"): the probability cell's tone is AVAILABILITY RISK ON
-        # THE NUMBER ITSELF -- green >=85%, amber 50-85%, red <50% -- never
-        # the sign of the scored QB's matchup impact, which has nothing to
-        # do with whether a player is expected to play (that tone lives on
-        # the name-line impact text instead).
         if player.play_probability is None:
             probability = "—"
             risk_tone = ""
@@ -1196,8 +1106,6 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
                 if player.play_probability < 0.50
                 else "risk-mid"
             )
-        # The play model forecasts a starting slot by playing time for
-        # every position; display it whenever the saved lineup supplies it.
         start_html = ""
         if player.start_probability is not None:
             start_html = (
@@ -1214,9 +1122,6 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
             if player.model_role == "context_only"
             else "model input"
         )
-        # The matchup-impact tone (positive/negative effect on the model's
-        # margin) now lives on the impact-note TEXT, not the probability
-        # cell -- it only ever applies to the model's own scored QB input.
         impact_tone = (
             "impact-pos"
             if player.model_impact_points is not None and player.model_impact_points >= 0
@@ -1266,12 +1171,6 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
     )
 
 
-#: UI-20-AB fine print (rewritten 2026-09-05, owner directive via the
-#: coordinator: "it needs to be a forecast about the game and it needs to
-#: consider depth chart" -- retires the 2026-09-05 "no designation" stopgap
-#: now that every player's percentage is a real forecast, not a position
-#: base rate). States what the number is, where the QB's second number
-#: comes from, and how the colour is chosen.
 _LINEUP_PROBABILITY_LEGEND = (
     "plays = takes at least one snap; starts = fills a starting slot by playing time. "
     "Colour shows availability risk: green is low, amber is medium, red is high. "
@@ -1649,14 +1548,6 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
-# The Model page -- merges what used to be two separate pages (Models,
-# the earlier model-page draft) into one story: what we play, how it's done, what's
-# challenging it. See ``board_site_content.ModelPageContent``'s docstring
-# for exactly which duplicate facts were dropped in the merge.
-# ---------------------------------------------------------------------------
-
-
 def _grading_rule_kpi(label: str, value: float | None) -> str:
     text = f"{value:.1%}" if value is not None else "not yet measured"
     return (
@@ -1717,8 +1608,6 @@ def _ledger_evidence_html(row: ModelLedgerRowView) -> str:
     return chips
 
 
-#: Evidence chips shown inline before collapsing the rest -- see
-#: :func:`_ledger_evidence_html`'s docstring for the layout bug this caps.
 _LEDGER_EVIDENCE_INLINE_LIMIT = 3
 
 
@@ -1748,11 +1637,6 @@ def _model_ledger_row_html(row: ModelLedgerRowView) -> str:
     )
     badge_class = "pill preview" if row.is_promoted else "pill"
     row_class = "game is-best" if row.is_promoted else "game"
-    # ``mono-id``: defensive -- most arms have a short mapped display name,
-    # but a not-yet-mapped challenger falls back to its raw registry id
-    # (``CHALLENGER_DISPLAY_NAMES.get(challenger_id, challenger_id)`` in
-    # model_ledger.py), an unbroken mono identifier the same shape as the
-    # ones this fix's CSS block wraps.
     return (
         f'<tr class="{row_class}">'
         f'<td data-label="Arm"><b class="mono-id">{escape(row.display_name)}</b><br>'
@@ -1966,23 +1850,10 @@ def render_model_page(content: ModelPageContent) -> str:
     )
 
     if content.ledger_available:
-        # Grouped by record status (item 9), each group re-sorted by
-        # evidence strength -- see ``board_site_content._grouped_ledger_rows``.
-        # table-layout:fixed + an explicit colgroup (2026-08-31 browser-QA
-        # fix): auto layout let the Evidence column's long unbreakable
-        # registry-key text squeeze Summary down to a sliver, wrapping its
-        # prose across a dozen one-word lines and making that row several
-        # times taller than any other -- see .ledger-fixed's CSS docstring.
         ledger_body = _grouped_ledger_group_html(
             "Tracked against a record", content.graded_rows
         ) + _grouped_ledger_group_html("Waiting on the season", content.waiting_rows)
     elif content.ledger_error:
-        # ``content.ledger_error`` is a raised validator's own exception
-        # text (e.g. a challenger's registration failing
-        # ``model_ledger.validate_ledger``) -- diagnostic detail for
-        # whoever fixes the registration, not reader prose, so it is
-        # wrapped in ``<code>`` rather than rewritten (owner mandate,
-        # 2026-09-05).
         ledger_body = (
             '<div class="caveat"><span class="caveat-flag">&sect; model ledger unavailable'
             f'</span><p class="game-sub"><code>{escape(content.ledger_error)}</code></p></div>'
@@ -2057,9 +1928,6 @@ def render_model_page(content: ModelPageContent) -> str:
         )
     else:
         weak_spots_html += f'<p class="policy-note">{escape(UNAVAILABLE)}</p>'
-    # Home/away split of the SAME opener evaluation (2026-09-07): a second
-    # small table under the first, same section, same table CSS. It is a
-    # diagnosis for the reader, not a pick rule -- see model_weak_spots.
     weak_spots_html += (
         '<div class="section-head ledger-group-head">'
         '<h3 id="weak-spots-home-h">Home favourite or home underdog</h3>'
@@ -2093,9 +1961,6 @@ def render_model_page(content: ModelPageContent) -> str:
         )
     else:
         weak_spots_html += f'<p class="policy-note">{escape(UNAVAILABLE)}</p>'
-    # The served home-side push (2026-09-08): this week's values by spread
-    # size from the card's own sidecar, beside what the same rule did on the
-    # opener archive. Both reads are shown, never just the flattering one.
     correction = content.weak_spots.home_correction
     weak_spots_html += (
         '<div class="section-head ledger-group-head">'
@@ -2201,11 +2066,6 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
     best = '<span class="best-flag">Best pick</span>' if row.best_pick else ""
     confidence = f"{row.confidence:.1%}" if row.confidence is not None else "--"
     line = f"{row.decision_home_spread:+g}" if row.decision_home_spread is not None else "--"
-    # Wrapped in ``<code>`` (not prose): a raw hash has no natural words to
-    # translate, so this stays a literal, technical identifier for anyone
-    # cross-checking a specific pick against ``artifacts/active_ats_model
-    # .json`` -- shortened so the column doesn't dominate the row (owner
-    # mandate, 2026-09-05: no raw hashes in reader-facing text).
     model_id = f"<code>{escape(row.model_id[:8])}</code>" if row.model_id else "--"
     row_class = "game is-best" if row.best_pick else "game"
     return (
@@ -2312,7 +2172,6 @@ def _history_assessment_html(row: ChallengerAssessment) -> str:
     delta = (
         f"{row.delta_accuracy_points:+.2f} pts" if row.delta_accuracy_points is not None else "--"
     )
-    # Reader wording, not the research token: AGENTS.md "The board is for humans".
     if row.probability_positive is not None:
         uncertainty = f"{row.probability_positive:.0%} likely better"
     elif row.interval_low is not None and row.interval_high is not None:
@@ -2412,14 +2271,6 @@ def render_history_page(content: HistoryPageContent) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
-# What We've Learned -- plain-English findings by verdict, open leads,
-# honesty rules, then ONE dense secondary section summarizing the weak-
-# signal registry (2026-08-31: replaces the old standalone Signal Ledger
-# page -- see ``board_site_content.SignalLedgerSummary``'s docstring).
-# ---------------------------------------------------------------------------
-
-
 def _trace_chip_html(finding: FindingItemView) -> str:
     """The findings trace chip (owner-approved improvement batch, item 2):
     the registry signal a finding traces to, plus its recorded P+ -- e.g.
@@ -2461,15 +2312,6 @@ def _findings_group_html(group: VerdictGroupView) -> str:
 
 
 def _watching_lead_html(lead: WatchingLeadView) -> str:
-    # ``lead.description`` is ALREADY a genuine plain-English summary by the
-    # time it reaches this view (a curated blurb, a recorded
-    # WeakSignal.plain_summary, or the PLAIN_SUMMARY_PENDING placeholder --
-    # see ``board_site_content._watching_lead_view``), never the registry's
-    # raw research note; rendered as plain prose, not wrapped in ``<code>``
-    # (2026-09-05 fix, dashboard humanising follow-up to lane AH's audit:
-    # AH's own fix wrapped the raw text in ``<code>`` rather than replacing
-    # it, which still reads as machine text -- "this is for humans not the
-    # opus autist").
     return (
         '<div class="attr-row"><div><span class="chan">'
         f"Open question &middot; {escape(lead.league)} &middot; "
@@ -2534,16 +2376,6 @@ def _recent_activity_section_html(activity: RecentActivityView) -> str:
 
 
 def _notable_signal_row_html(row: SignalNotableRow) -> str:
-    # ``row.name`` is the registry's own machine id, still queryable via
-    # ``nfl-ats weak-signals``; ``humanize_identifier`` keeps it out of the
-    # rendered text (owner mandate, 2026-09-05). ``row.idea`` is ALREADY a
-    # genuine plain-English summary (or the PLAIN_SUMMARY_PENDING
-    # placeholder) by the time it reaches this view --
-    # ``board_site_content._load_signal_ledger_summary`` never passes the
-    # raw registry description any more (2026-09-05 fix, dashboard
-    # humanising follow-up to lane AH's audit: AH's own fix wrapped that raw
-    # text in ``<code>`` rather than replacing it), so it renders as plain
-    # prose, not ``<code>``.
     return (
         '<tr class="game">'
         f'<td data-label="Signal"><b class="mono-id">{escape(humanize_identifier(row.name))}</b>'

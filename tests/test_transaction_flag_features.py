@@ -43,10 +43,6 @@ from nfl_ats.transaction_flag_features import (
 )
 from nfl_ats.transaction_wire_features import classify_transaction_slug
 
-# ---------------------------------------------------------------------------
-# Fixture builders
-# ---------------------------------------------------------------------------
-
 
 def _game(
     game_id: str,
@@ -106,17 +102,12 @@ def _snaps(rows: list[dict]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Shared: player-name substring matching
-# ---------------------------------------------------------------------------
-
-
 def test_distinct_player_slugs_sorted_longest_first_and_deduped() -> None:
     snaps = _snaps(
         [
             _snap_row("Ryan Fake", "AAA", 2020, 1, 0.5),
             _snap_row("Bryant Longname", "AAA", 2020, 1, 0.5),
-            _snap_row("Ryan Fake", "AAA", 2020, 2, 0.6),  # duplicate name
+            _snap_row("Ryan Fake", "AAA", 2020, 2, 0.6),
         ]
     )
     slugs = distinct_player_slugs(snaps)
@@ -141,11 +132,6 @@ def test_confirm_player_team_gate() -> None:
     assert not _confirm_player_team("Nobody Here", "WAS", snaps)
 
 
-# ---------------------------------------------------------------------------
-# Shared: additive-merge helper
-# ---------------------------------------------------------------------------
-
-
 def test_attach_qualifying_sides_empty_population_is_all_zero() -> None:
     schedule = _schedule([_game("g1", 2020, 1, "2020-09-13", "AAA", "BBB")])
     derived = _attach_qualifying_sides(
@@ -157,9 +143,9 @@ def test_attach_qualifying_sides_empty_population_is_all_zero() -> None:
 def test_attach_qualifying_sides_sign_convention() -> None:
     schedule = _schedule(
         [
-            _game("g_away", 2020, 2, "2020-09-20", "HHH", "AAA"),  # AAA away qualifies
-            _game("g_home", 2020, 2, "2020-09-20", "AAA", "ZZZ"),  # AAA home qualifies
-            _game("g_both", 2020, 2, "2020-09-20", "AAA", "BBB"),  # both qualify
+            _game("g_away", 2020, 2, "2020-09-20", "HHH", "AAA"),
+            _game("g_home", 2020, 2, "2020-09-20", "AAA", "ZZZ"),
+            _game("g_both", 2020, 2, "2020-09-20", "AAA", "BBB"),
             _game("g_neither", 2020, 2, "2020-09-20", "CCC", "DDD"),
         ]
     )
@@ -191,11 +177,6 @@ def test_attach_preserves_existing_columns_bit_identical() -> None:
     assert merged["existing"].tolist() == [1.0, 2.0]
     assert merged["flag"].tolist() == [1.0, -1.0]
     assert len(merged) == len(features)
-
-
-# ---------------------------------------------------------------------------
-# Retrospective-post exclusion (shared loader)
-# ---------------------------------------------------------------------------
 
 
 def test_default_transactions_index_excludes_retrospective_posts(tmp_path: Path) -> None:
@@ -232,11 +213,6 @@ def test_default_transactions_index_excludes_retrospective_posts(tmp_path: Path)
     assert "category" in result.columns
 
 
-# ---------------------------------------------------------------------------
-# LEAD-12: holdout slow-start fade
-# ---------------------------------------------------------------------------
-
-
 def test_holdout_end_regex_positive_matches() -> None:
     for slug in (
         "commanders-wr-terry-mclaurin-reports-to-camp-no-extension-in-place",
@@ -251,11 +227,7 @@ def test_holdout_end_regex_rejects_measured_false_positives() -> None:
     """Regression for two real semantic traps measured against the PFR
     corpus: naive substring matching would wrongly fire on both."""
 
-    # "extended" contains "ended" as a raw substring; hyphen-anchoring must
-    # reject it since there is no hyphen immediately before "ended" here.
     assert HOLDOUT_END_RE.search("chiefs-dt-chris-jones-hints-at-extended-holdout") is None
-    # Bare infinitive "report-to-camp" (a PREDICTION) must not match; only
-    # "reports-to-camp"/"reported-to-camp" (confirmed tense) may.
     assert (
         HOLDOUT_END_RE.search(
             "jamal-adams-seahawks-not-close-at-all-on-extension-adams-expected-to-report-to-camp"
@@ -279,19 +251,15 @@ def test_holdout_ending_transactions_filters_correctly() -> None:
 def _holdout_snap_counts() -> pd.DataFrame:
     return _snaps(
         [
-            # Week-1 fallback: prior season (2024) last recorded week, high share.
             _snap_row("Terry Mclaurin", "WAS", 2024, 17, 0.70),
-            # In-season weeks: week W's row is checked as "prior week" for W+1.
             _snap_row("Terry Mclaurin", "WAS", 2025, 1, 0.65),
             _snap_row("Terry Mclaurin", "WAS", 2025, 2, 0.55),
-            # Week 3 share drops below threshold -> week 4 should NOT qualify.
             _snap_row("Terry Mclaurin", "WAS", 2025, 3, 0.40),
         ]
     )
 
 
 def _holdout_schedule(week1_gameday: str = "2025-09-07") -> pd.DataFrame:
-    # WAS alternates home/away across weeks 1-4 to exercise the sign convention.
     return _schedule(
         [
             _game("h1", 2025, 1, week1_gameday, "WAS", "OPP1"),
@@ -308,13 +276,9 @@ def test_holdout_slow_start_started_rule_and_sign_convention() -> None:
         _holdout_schedule(), index, _holdout_snap_counts()
     ).set_index("game_id")
 
-    # Week 1: home WAS qualifies via prior-season (2024) fallback (0.70 >= 0.5) -> -1.
     assert derived.loc["h1", HOLDOUT_SLOW_START_COLUMN] == -1.0
-    # Week 2: away WAS qualifies via week-1 share 0.65 >= 0.5 -> +1.
     assert derived.loc["h2", HOLDOUT_SLOW_START_COLUMN] == 1.0
-    # Week 3: home WAS qualifies via week-2 share 0.55 >= 0.5 -> -1.
     assert derived.loc["h3", HOLDOUT_SLOW_START_COLUMN] == -1.0
-    # Week 4: week-3 share is 0.40 (< 0.5) -> does not qualify -> 0.
     assert derived.loc["h4", HOLDOUT_SLOW_START_COLUMN] == 0.0
 
 
@@ -332,9 +296,6 @@ def test_holdout_slow_start_leakage_guard_per_week() -> None:
     week's own kickoff must not flag that week, even though it may still
     flag a later week."""
 
-    # Report is late (September) so its month-end (Sep 30) is not before
-    # week 1/2's kickoff (both in September) but IS before week 3/4's
-    # kickoff (moved to October here specifically to exercise the guard).
     late_index = _transactions(
         [_txn_row("commanders-wr-terry-mclaurin-reports-to-camp-x", 2025, 9)]
     )
@@ -349,9 +310,9 @@ def test_holdout_slow_start_leakage_guard_per_week() -> None:
     derived = derive_holdout_slow_start_features(
         schedule, late_index, _holdout_snap_counts()
     ).set_index("game_id")
-    assert derived.loc["h1", HOLDOUT_SLOW_START_COLUMN] == 0.0  # leakage-guarded out
-    assert derived.loc["h2", HOLDOUT_SLOW_START_COLUMN] == 0.0  # leakage-guarded out
-    assert derived.loc["h3", HOLDOUT_SLOW_START_COLUMN] == -1.0  # still qualifies
+    assert derived.loc["h1", HOLDOUT_SLOW_START_COLUMN] == 0.0
+    assert derived.loc["h2", HOLDOUT_SLOW_START_COLUMN] == 0.0
+    assert derived.loc["h3", HOLDOUT_SLOW_START_COLUMN] == -1.0
 
 
 def test_holdout_slow_start_only_one_team_resolution_required() -> None:
@@ -391,11 +352,6 @@ def test_describe_holdout_population_diagnostic() -> None:
     assert diag["n_resolved_player_and_team"] == 1
 
 
-# ---------------------------------------------------------------------------
-# LEAD-23: trade-deadline integration drag
-# ---------------------------------------------------------------------------
-
-
 def test_acquisition_regex_positive_and_exclusions() -> None:
     assert ACQUISITION_RE.search("eagles-to-acquire-desean-jackson-from-buccaneers")
     assert ACQUISITION_RE.search("patriots-acquire-brandin-cooks")
@@ -410,10 +366,10 @@ def test_acquisition_regex_positive_and_exclusions() -> None:
 def test_confirmed_acquisition_transactions_filters_pick_speculative_and_window() -> None:
     index = _transactions(
         [
-            _txn_row("eagles-acquire-fake-player-from-old", 2020, 10),  # confirmed, in-window
-            _txn_row("bills-acquire-no-23-select-cb-kaiir-elam", 2022, 4),  # draft pick
-            _txn_row("saints-tried-to-acquire-giants-wr-darius-slayton", 2019, 10),  # speculative
-            _txn_row("eagles-acquire-offseason-guy-from-old", 2020, 4),  # offseason, out of window
+            _txn_row("eagles-acquire-fake-player-from-old", 2020, 10),
+            _txn_row("bills-acquire-no-23-select-cb-kaiir-elam", 2022, 4),
+            _txn_row("saints-tried-to-acquire-giants-wr-darius-slayton", 2019, 10),
+            _txn_row("eagles-acquire-offseason-guy-from-old", 2020, 4),
         ]
     )
     confirmed = confirmed_acquisition_transactions(index)
@@ -429,10 +385,10 @@ def test_deadline_integration_drag_sign_and_window() -> None:
     index = _transactions([_txn_row("eagles-acquire-fake-player-from-old", 2020, 10)])
     schedule = _schedule(
         [
-            _game("d9", 2020, 9, "2020-11-01", "OPP", "PHI"),  # away PHI -> +1
-            _game("d10", 2020, 10, "2020-11-08", "PHI", "OPP"),  # home PHI -> -1
-            _game("d11", 2020, 11, "2020-11-15", "OPP", "PHI"),  # away PHI -> +1 (3rd game)
-            _game("d12", 2020, 12, "2020-11-22", "OPP", "PHI"),  # 4th game, excluded
+            _game("d9", 2020, 9, "2020-11-01", "OPP", "PHI"),
+            _game("d10", 2020, 10, "2020-11-08", "PHI", "OPP"),
+            _game("d11", 2020, 11, "2020-11-15", "OPP", "PHI"),
+            _game("d12", 2020, 12, "2020-11-22", "OPP", "PHI"),
         ]
     )
     derived = derive_deadline_integration_drag_features(
@@ -441,7 +397,7 @@ def test_deadline_integration_drag_sign_and_window() -> None:
     assert derived.loc["d9", DEADLINE_INTEGRATION_DRAG_COLUMN] == 1.0
     assert derived.loc["d10", DEADLINE_INTEGRATION_DRAG_COLUMN] == -1.0
     assert derived.loc["d11", DEADLINE_INTEGRATION_DRAG_COLUMN] == 1.0
-    assert derived.loc["d12", DEADLINE_INTEGRATION_DRAG_COLUMN] == 0.0  # only first 3 games
+    assert derived.loc["d12", DEADLINE_INTEGRATION_DRAG_COLUMN] == 0.0
 
 
 def test_deadline_integration_drag_high_snap_gate() -> None:
@@ -475,8 +431,6 @@ def test_deadline_integration_drag_leakage_guard() -> None:
     latest-possible (month-end) date."""
 
     index = _transactions([_txn_row("eagles-acquire-fake-player-from-old", 2020, 10)])
-    # Week 9 game kicks off BEFORE the October report's month-end (Oct 31) --
-    # even though week (9) > last_prior_week (8), it must not be flagged.
     schedule = _schedule([_game("d9", 2020, 9, "2020-10-15", "OPP", "PHI")])
     derived = derive_deadline_integration_drag_features(
         schedule, index, _deadline_snap_counts()
@@ -496,18 +450,10 @@ def test_describe_deadline_acquisition_population_diagnostic() -> None:
     assert diag["n_resolved_player_and_high_snap"] == 1
 
 
-# ---------------------------------------------------------------------------
-# LEAD-14: suspension-return rust
-# ---------------------------------------------------------------------------
-
-
 def test_reinstated_regex_positive_and_semantic_trap_exclusions() -> None:
     assert REINSTATED_RE.search("aldon-smith-reinstated-suspension")
     assert REINSTATED_RE.search("broncos-dl-x-reinstated-from-gambling-suspension")
-    # "reinstatement" (the noun, a petition) must never match "reinstated".
     assert REINSTATED_RE.search("josh-gordon-files-reinstatement-suspension") is None
-    # "suspension reinstated" (the SUSPENSION itself reimposed) is the
-    # opposite of a player returning.
     assert REINSTATED_RE.search("tom-bradys-suspension-reinstated-by-appeals-court") is None
 
 
@@ -537,7 +483,7 @@ def _suspension_schedule() -> pd.DataFrame:
     """
 
     rows = []
-    for i, month in enumerate(range(3, 13)):  # months 3..12 inclusive
+    for i, month in enumerate(range(3, 13)):
         gameday = f"2020-{month:02d}-15"
         home, away = ("STL", "OPP") if i % 2 == 0 else ("OPP", "STL")
         rows.append(_game(f"s{month}", 2020, i + 1, gameday, home, away))
@@ -556,7 +502,7 @@ def test_suspension_return_rust_measures_duration_and_flags_return_plus_one() ->
         schedule, index, _suspension_snap_counts()
     ).set_index("game_id")
     nonzero = derived.loc[derived[SUSPENSION_RETURN_RUST_COLUMN] != 0.0]
-    assert len(nonzero) == 2  # return game plus one
+    assert len(nonzero) == 2
 
 
 def test_suspension_return_rust_below_six_games_excluded() -> None:
@@ -611,7 +557,6 @@ def test_suspension_return_rust_leakage_guard() -> None:
     schedule = _schedule(
         [
             *_suspension_schedule().to_dict("records"),
-            # A game BEFORE the reinstatement's own month-end must never flag.
             _game("s_early", 2020, 8, "2020-10-05", "STL", "OPP"),
         ]
     )

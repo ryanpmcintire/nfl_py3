@@ -40,11 +40,7 @@ from nfl_ats.play_probability import (
     predict_play_probabilities,
 )
 
-#: ``nfl_ats.lineup_availability.depth_chart_position_group`` buckets that
-#: count as "offense" for this construct (the QB row is pulled out of
-#: "skill" and counted separately -- see the module docstring / predeclaration).
 OFFENSE_POSITION_GROUPS: tuple[str, ...] = ("offensive_line", "skill")
-#: ... and "defense".
 DEFENSE_POSITION_GROUPS: tuple[str, ...] = ("front", "secondary")
 
 LINEUP_GROUPS: tuple[str, ...] = ("qb", "offense", "defense")
@@ -179,7 +175,6 @@ def _visible_panel(panel: pd.DataFrame) -> pd.DataFrame:
     )
     legacy = panel["source_schema"].eq("legacy_week")
     visible = decision.notna() & (legacy | observed.lt(decision))
-    # When precise timestamps exist they take precedence over a legacy proxy.
     visible &= observed.isna() | observed.lt(decision)
     result = panel.loc[visible].copy()
     if "depth_observed_at" in result:

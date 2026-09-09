@@ -89,7 +89,6 @@ def test_pair_is_frozen_and_settled_on_later_pass(inputs):
     pd.testing.assert_frame_equal(original, shade.load_decisions(artifacts))
     schedules.loc[schedules["game_id"].eq("last"), ["home_score", "away_score"]] = [23, 20]
     schedules.to_parquet(snapshot)
-    # Settlement precedes missing-current-publication handling.
     result = shade.record_tiebreaker_shade_decisions(
         artifacts, data, now=datetime.fromisoformat("2026-09-15T16:00:00+00:00")
     )

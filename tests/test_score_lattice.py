@@ -64,19 +64,12 @@ def _finals(rows: list[tuple[float, float, int, int]]) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# The feasible score set is read off the data, never written down
-# ---------------------------------------------------------------------------
-
-
 def test_feasible_scores_come_from_the_data_and_exclude_what_never_happened() -> None:
     finals = _finals([(3.0, 43.0, 24, 21), (-2.5, 47.0, 20, 17), (0.0, 41.0, 3, 0)])
     assert feasible_team_scores(finals).tolist() == [0, 3, 17, 20, 21, 24]
 
 
 def test_impossible_nfl_scores_are_absent_from_the_real_history() -> None:
-    # 1 and 4 are unreachable under NFL scoring and the finals say so on their
-    # own -- this test exists so a future hand-written support list would fail.
     finals = _finals([(3.0, 43.0, 1, 4), (0.0, 40.0, 24, 20)])
     assert feasible_team_scores(finals).tolist() == [1, 4, 20, 24]
     without = _finals([(0.0, 40.0, 24, 20), (0.0, 40.0, 21, 17)])
@@ -87,11 +80,6 @@ def test_impossible_nfl_scores_are_absent_from_the_real_history() -> None:
 def test_feasible_scores_reject_an_empty_history() -> None:
     with pytest.raises(ValueError, match="feasible score set"):
         feasible_team_scores(_finals([]))
-
-
-# ---------------------------------------------------------------------------
-# Known-answer fixtures for the interpolation
-# ---------------------------------------------------------------------------
 
 
 def test_a_single_game_at_the_target_market_lands_entirely_on_its_own_final() -> None:
@@ -113,12 +101,9 @@ def test_a_half_point_offset_splits_mass_over_exactly_four_cells() -> None:
     equal quarters.
     """
 
-    finals = _finals(
-        [(3.0, 43.0, 24, 21), (0.0, 40.0, 20, 20), (0.0, 40.0, 25, 25)]  # support filler
-    )
+    finals = _finals([(3.0, 43.0, 24, 21), (0.0, 40.0, 20, 20), (0.0, 40.0, 25, 25)])
     neighborhood = _neighborhood(finals, 4.0, 43.0)
     support = np.array([20, 21, 24, 25], dtype=np.int64)
-    # Only the first row carries the residual under test; weight it alone.
     weights = np.array([1.0, 0.0, 0.0])
     built = build_lattice(neighborhood.frame, weights, 4.0, 43.0, support, recentre=True)
     for home, away in ((24, 20), (24, 21), (25, 20), (25, 21)):
@@ -159,11 +144,6 @@ def test_interpolation_preserves_mass_when_every_cell_is_feasible() -> None:
     assert grid.sum() == pytest.approx(10.0)
 
 
-# ---------------------------------------------------------------------------
-# The lattice's own products
-# ---------------------------------------------------------------------------
-
-
 def test_push_probability_is_exactly_zero_at_a_half_point_line() -> None:
     finals = _finals([(3.0, 43.0, 24, 21), (3.0, 43.0, 20, 17), (3.0, 43.0, 27, 20)])
     built = score_lattice(finals, 3.0, 43.0)
@@ -199,16 +179,9 @@ def test_conditioning_on_a_total_keeps_only_that_total() -> None:
     finals = _finals([(0.0, 40.0, 20, 20), (0.0, 40.0, 24, 17), (0.0, 40.0, 21, 20)])
     built = score_lattice(finals, 0.0, 40.0).condition_on_total(41)
     assert built.probabilities.sum() == pytest.approx(1.0)
-    # 21-20 and 24-17 both total 41 and each carried one game, so the
-    # conditioned lattice renormalises them to a half apiece.
     assert built.probability(21, 20) == pytest.approx(0.5)
     assert built.probability(24, 17) == pytest.approx(0.5)
     assert built.probability(20, 20) == 0.0
-
-
-# ---------------------------------------------------------------------------
-# The two arms must stay the same experiment
-# ---------------------------------------------------------------------------
 
 
 def test_the_lattice_reuses_the_shipped_tiebreaker_neighborhood(monkeypatch) -> None:  # type: ignore[no-untyped-def]
@@ -272,11 +245,6 @@ def test_ranked_modes_breaks_ties_by_score_like_the_shipped_report() -> None:
     assert ranked_modes(counts, 3) == ((13, 10, 3.0), (20, 17, 3.0), (24, 21, 3.0))
 
 
-# ---------------------------------------------------------------------------
-# Leakage: the walk-forward evaluator may never see the target week
-# ---------------------------------------------------------------------------
-
-
 def test_walk_forward_training_is_a_strict_chronological_prefix() -> None:
     module = _load_eval_script()
     seasons, weeks = [], []
@@ -305,12 +273,9 @@ def test_walk_forward_training_is_a_strict_chronological_prefix() -> None:
     )
     scored = module.walk_forward(finals, 2021, 2021, with_oracle=False)
     assert len(scored) == 12
-    # Week (2021, w) may see everything before it and nothing else: 12 games
-    # from 2020 plus 4 per already-played 2021 week.
     expected = {1: 12, 2: 16, 3: 20}
     for week, games in scored.groupby("week"):
         assert set(games["training_games"]) == {expected[int(week)]}
-    # And the target game itself can never be in its own training slice.
     assert scored["training_games"].max() < len(finals)
 
 
@@ -336,20 +301,9 @@ def test_walk_forward_support_never_uses_a_future_score() -> None:
     )
     scored = module.walk_forward(finals, 2021, 2021, with_oracle=False)
     first, second = scored.iloc[0], scored.iloc[1]
-    # 2021 week 1 has only 2020 behind it: scores {17, 20, 24}.
     assert first["support_scores"] == 3
-    assert first["realised_in_support"] == 0  # its own 62 is not yet knowable
-    # 2021 week 2 has 62 and 3 behind it now.
+    assert first["realised_in_support"] == 0
     assert second["support_scores"] == 5
-
-
-# ---------------------------------------------------------------------------
-# Owner mandate (2026-09-05): "our project over/under total needs to line up
-# with our spread prediction". pick_consistent_top_score / pick_cover_probability
-# select the served tiebreaker score off ONE lattice, excluding pushes and
-# wrong-side finals -- see nfl_ats.tiebreaker.build_report's "one lattice,
-# one margin, one total" step.
-# ---------------------------------------------------------------------------
 
 
 def _hand_lattice(scores: list[int], probabilities: np.ndarray) -> ScoreLattice:
@@ -375,8 +329,8 @@ def test_pick_consistent_top_score_never_selects_a_push_even_when_nearest_and_he
 
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
-    probs[1, 0] = 1.0  # home 20, away 17 -> margin 3, EXACTLY the centre, all the mass
-    probs[2, 0] = 0.0  # home 23, away 17 -> margin 6, total 40, zero mass but admissible
+    probs[1, 0] = 1.0
+    probs[2, 0] = 0.0
     lattice = _hand_lattice(scores, probs)
 
     chosen = pick_consistent_top_score(
@@ -388,7 +342,7 @@ def test_pick_consistent_top_score_never_selects_a_push_even_when_nearest_and_he
     )
     assert chosen is not None
     home_score, away_score, _probability, _tolerance = chosen
-    assert (home_score, away_score) == (23, 17)  # never the push at (20, 17)
+    assert (home_score, away_score) == (23, 17)
 
 
 def test_pick_consistent_top_score_excludes_a_final_too_far_from_the_served_total() -> None:
@@ -399,9 +353,9 @@ def test_pick_consistent_top_score_excludes_a_final_too_far_from_the_served_tota
 
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
-    probs[1, 0] = 0.5  # push, excluded regardless
-    probs[2, 0] = 0.3  # home 23, away 17 -> margin 6, total 40
-    probs[0, 0] = 0.2  # wrong side
+    probs[1, 0] = 0.5
+    probs[2, 0] = 0.3
+    probs[0, 0] = 0.2
     lattice = _hand_lattice(scores, probs)
 
     assert (
@@ -434,9 +388,6 @@ def test_pick_consistent_top_score_dog_pick_picks_the_nearest_candidate_not_the_
     lattice = build_lattice(
         neighborhood, weights, guess_margin, guess_total_line, scores, recentre=False
     )
-    # The scattered 26-point outlier (5 raw votes at 10-16) truly outweighs
-    # the near-centre cluster (3 votes at 20-24), and the wrong (HOME) side
-    # carries the single biggest vote of all -- neither wins.
     assert lattice.probability(10, 16) > lattice.probability(20, 24)
     assert lattice.probability(24, 20) > lattice.probability(10, 16)
 
@@ -475,11 +426,6 @@ def test_pick_consistent_top_score_kc_regression_matches_the_real_centre_exactly
     lattice = build_lattice(
         neighborhood, weights, guess_margin, guess_total_line, scores, recentre=False
     )
-    # The reproduction: the scattered 26-point outlier (5 raw votes) truly
-    # outweighs the fragmented near-centre cluster (3 votes at 24-20, 1 at
-    # 25-19) -- an argmax-of-mass rule (even restricted to a total window
-    # that excludes the 26-point cell) can still land on a tail score. An
-    # even bigger vote sits on the wrong (AWAY) side entirely.
     assert lattice.probability(16, 10) > lattice.probability(24, 20)
     assert lattice.probability(20, 24) > lattice.probability(16, 10)
 
@@ -502,8 +448,8 @@ def test_pick_consistent_top_score_near_tie_broken_by_lattice_mass() -> None:
     scores = [17, 19, 20, 24, 25]
     probs = np.zeros((5, 5))
     index = {value: position for position, value in enumerate(scores)}
-    probs[index[24], index[20]] = 0.2  # home 24, away 20 -> margin 4, total 44
-    probs[index[25], index[19]] = 0.6  # home 25, away 19 -> margin 6, total 44
+    probs[index[24], index[20]] = 0.2
+    probs[index[25], index[19]] = 0.6
     lattice = _hand_lattice(scores, probs)
 
     chosen = pick_consistent_top_score(
@@ -528,9 +474,9 @@ def test_pick_consistent_top_score_can_select_a_zero_mass_candidate() -> None:
 
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
-    probs[1, 0] = 1.0  # home 20, away 17 -> margin 3, a PUSH -- inadmissible regardless of mass
+    probs[1, 0] = 1.0
     lattice = _hand_lattice(scores, probs)
-    assert lattice.probability(23, 17) == 0.0  # the only admissible cell carries no mass at all
+    assert lattice.probability(23, 17) == 0.0
 
     chosen = pick_consistent_top_score(
         lattice,
@@ -551,11 +497,8 @@ def test_pick_consistent_top_score_hard_guard_refuses_a_final_too_far_from_the_c
 
     scores = [17, 20, 30]
     probs = np.zeros((3, 3))
-    probs[2, 0] = 1.0  # home 30, away 17 -> margin 13, total 47
+    probs[2, 0] = 1.0
     lattice = _hand_lattice(scores, probs)
-    # total 47 is within 2 of served_total 45.5 (the widened tolerance), but
-    # the only admissible cell's margin (13) is 9 points from centre_margin
-    # (4.0) -- the hard guard refuses it outright.
     assert (
         pick_consistent_top_score(
             lattice,
@@ -613,11 +556,10 @@ def test_pick_consistent_top_score_rejects_a_bad_pick_side() -> None:
 def test_pick_cover_probability_sums_only_the_admissible_side() -> None:
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
-    probs[2, 0] = 0.3  # margin 6 -- admissible for HOME at spread_line=3
-    probs[1, 0] = 0.5  # margin 3 -- push, excluded from EITHER side
-    probs[0, 1] = 0.2  # margin -3 -- admissible for AWAY, not HOME
+    probs[2, 0] = 0.3
+    probs[1, 0] = 0.5
+    probs[0, 1] = 0.2
     lattice = _hand_lattice(scores, probs)
     assert pick_cover_probability(lattice, pick_side="HOME", spread_line=3.0) == pytest.approx(0.3)
     assert pick_cover_probability(lattice, pick_side="AWAY", spread_line=3.0) == pytest.approx(0.2)
-    # The push cell (0.5) never counts toward either side.
     assert lattice.push_probability(3.0) == pytest.approx(0.5)

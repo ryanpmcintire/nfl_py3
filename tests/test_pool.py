@@ -69,14 +69,6 @@ def test_straight_up_card_selects_named_method_and_ranks() -> None:
     assert "Straight-up pool card: 2022 week 1" in straight_up_pool_markdown(card, 2022, 1)
 
 
-# ---------------------------------------------------------------------------
-# POL-05 contest simulator
-#
-# Every test below is a case whose answer is known before the simulator runs.
-# A Monte Carlo that has never been pinned to a closed form is a random number
-# generator with a plot attached.
-# ---------------------------------------------------------------------------
-
 SEASON = PoolFormat(weekly_games=(16,) * 17 + (14,), best_pick_bonus=1.0)
 
 
@@ -88,13 +80,9 @@ def test_format_arithmetic_matches_the_pool() -> None:
 
 
 def test_head_to_head_closed_form_on_hand_computable_cases() -> None:
-    # One disagreement: we win it exactly as often as we are right.
     assert head_to_head_win_probability(1, 0.6) == pytest.approx(0.6)
-    # Two disagreements at a coin flip: we only lead by sweeping both.
     assert head_to_head_win_probability(2, 0.5) == pytest.approx(0.25)
-    # Three at a coin flip: no ties are possible, so it is symmetric.
     assert head_to_head_win_probability(3, 0.5) == pytest.approx(0.5)
-    # Agreeing on everything can never produce a lead.
     assert head_to_head_win_probability(0, 0.9) == 0.0
 
 
@@ -135,7 +123,7 @@ def test_simulator_reproduces_the_head_to_head_closed_form() -> None:
     """One deterministic opponent: the margin is decided only by disagreements."""
 
     fmt = PoolFormat(weekly_games=(10,) * 3, best_pick_bonus=0.0)
-    public = np.array([True] * 21 + [False] * 9)  # we differ on nine games
+    public = np.array([True] * 21 + [False] * 9)
     entry = build_entry(fmt, cover_probability=0.55, public_agreement=public)
     result = simulate_pool_finish(
         entry, FieldModel(entrants=1, public_lean=1.0), fmt, samples=60_000, seed=17
@@ -148,7 +136,6 @@ def test_expected_score_matches_the_stated_probabilities() -> None:
     fmt = PoolFormat(weekly_games=(16,) * 4, best_pick_bonus=2.0)
     entry = build_entry(fmt, cover_probability=0.525, public_agreement=0.5, seed=3)
     result = simulate_pool_finish(entry, FieldModel(entrants=5), fmt, samples=20_000, seed=9)
-    # 64 forced picks at 0.525 plus a 2-point bonus on four nominated games.
     assert result["expected_score"] == pytest.approx(64 * 0.525 + 4 * 2.0 * 0.525, abs=0.15)
 
 
@@ -170,7 +157,7 @@ def test_deviating_flips_both_the_probability_and_the_public_flag() -> None:
     flipped = deviate(entry, np.array([0, 2]))
     assert flipped.cover_probability.tolist() == pytest.approx([0.44, 0.56, 0.44, 0.56])
     assert flipped.on_public_side.tolist() == [False, True, False, True]
-    assert entry.cover_probability.tolist() == [0.56] * 4  # original untouched
+    assert entry.cover_probability.tolist() == [0.56] * 4
 
 
 def test_strategy_comparison_ranks_by_probability_first() -> None:

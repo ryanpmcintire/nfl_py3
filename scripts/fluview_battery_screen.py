@@ -75,8 +75,6 @@ SEASON_START = 2010
 SEASON_END = 2025
 DECILE_THRESHOLD = 0.90
 
-# docs/fluview_battery.md section 4 -- measured, predictor-distribution-only,
-# frozen before any cover-rate sign was examined.
 PEAK_WEEKS = frozenset({1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 51, 52, 53})
 
 
@@ -90,7 +88,7 @@ def _week_start(x: _dt.date) -> _dt.date:
     than re-deriving it.
     """
 
-    dow_sun0 = (x.weekday() + 1) % 7  # Sun=0, Mon=1, ..., Sat=6
+    dow_sun0 = (x.weekday() + 1) % 7
     return x - _dt.timedelta(days=dow_sun0)
 
 
@@ -152,41 +150,22 @@ def default_schedules() -> Path:
 DEFAULT_FLUVIEW: Path | None = None
 
 
-# ---------------------------------------------------------------------------
-# 1. As-of checkpoint construction (docs/fluview_battery.md section 3)
-# ---------------------------------------------------------------------------
-
-
 def build_checkpoint_tables(fluview: pd.DataFrame) -> dict[str, pd.DataFrame]:
     """Per-state monotone-in-``known_epiweek`` checkpoint table, indexed by
     real calendar ``release_date``, ready for ``merge_asof``."""
 
     tables: dict[str, pd.DataFrame] = {}
     for region, group in fluview.groupby("region"):
-        # Measured this session: Delphi returns release_date=null for EVERY
-        # row of the "ny" region (verified live, not a parsing artifact) --
-        # an upstream data gap, not something this script can recover from.
-        # Rows with no release_date carry no point-in-time information, so
-        # they are dropped here; a region left with zero rows falls through
-        # to attach_asof_ili's existing empty-checkpoint fallback (known_ili
-        # = NaN for every game mapped to that state, i.e. genuinely missing,
-        # not leaked and not silently defaulted).
         group = group.dropna(subset=["release_date"])
         if group.empty:
             tables[region] = pd.DataFrame(columns=["release_date", "known_epiweek", "known_ili"])
             continue
-        # Collapse same-release_date rows to the max epiweek released at that
-        # instant (the freshest content available at that exact checkpoint):
-        # sort ascending by epiweek within each release_date, keep the last.
         collapsed = (
             group.sort_values(["release_date", "epiweek"])
             .drop_duplicates(subset="release_date", keep="last")
             .sort_values("release_date")
             .reset_index(drop=True)
         )
-        # Running max epiweek -- carries forward whichever (epiweek, ili) pair
-        # is freshest as release_date advances (revisions to OLD epiweeks
-        # that arrive late must never override a newer epiweek already known).
         running_max_idx = collapsed["epiweek"].cummax()
         is_new_max = collapsed["epiweek"] >= running_max_idx.shift(1).fillna(-1)
         checkpoint = collapsed.loc[is_new_max, ["release_date", "epiweek", "ili"]].reset_index(
@@ -215,11 +194,6 @@ def asof_lookup(checkpoint: pd.DataFrame, cutoff_dates: pd.Series) -> pd.DataFra
     return merged.sort_values("_orig_order").reset_index(drop=True)
 
 
-# ---------------------------------------------------------------------------
-# 2. Population + feature construction
-# ---------------------------------------------------------------------------
-
-
 def load_schedules(path: Path) -> pd.DataFrame:
     raw = pd.read_parquet(path)
     df = raw.loc[raw["game_type"] == "REG"].copy()
@@ -234,7 +208,7 @@ def load_schedules(path: Path) -> pd.DataFrame:
     pushes_or_missing = n_before_push_drop - len(df)
 
     df["gameday"] = pd.to_datetime(df["gameday"], errors="raise")
-    weekday = df["gameday"].dt.weekday  # Monday=0 ... Sunday=6, Tuesday=1
+    weekday = df["gameday"].dt.weekday
     tuesday_offset = (weekday - 1) % 7
     df["cutoff_date"] = df["gameday"] - pd.to_timedelta(tuesday_offset, unit="D")
     df["week_block"] = df["season"] * 100 + df["week"]
@@ -248,10 +222,6 @@ def load_schedules(path: Path) -> pd.DataFrame:
             f"{sorted(set(unmapped['home_team']) | set(unmapped['away_team']))}"
         )
 
-    # National-mean-week-of-year classification for the peak-week cells
-    # (docs/fluview_battery.md section 4) -- derived from the game's own
-    # gameday via the CDC epiweek convention (matching how PEAK_WEEKS was
-    # itself measured from Delphi's "nat" series), no point-in-time concern.
     game_epiweek_of_year = df["gameday"].apply(lambda d: cdc_epiweek(d) % 100)
     df["is_peak_week"] = game_epiweek_of_year.isin(PEAK_WEEKS)
 
@@ -326,7 +296,7 @@ def compute_state_thresholds(panel: pd.DataFrame) -> dict[str, float]:
     thresholds: dict[str, float] = {}
     for state, group in panel.groupby("state"):
         values = group["ili"].dropna()
-        if len(values) >= 10:  # floor for a stable decile estimate
+        if len(values) >= 10:
             thresholds[state] = float(values.quantile(DECILE_THRESHOLD))
     return thresholds
 
@@ -344,11 +314,6 @@ def attach_elevated_flags(df: pd.DataFrame, thresholds: dict[str, float]) -> pd.
         df["away_missing"], False, df["away_ili"] >= df["away_threshold"]
     )
     return df
-
-
-# ---------------------------------------------------------------------------
-# 3. Cells (docs/fluview_battery.md section 5)
-# ---------------------------------------------------------------------------
 
 
 def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
@@ -411,11 +376,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     expected = 5
     assert len(cells) == expected, f"expected {expected} predeclared cells, got {len(cells)}"
     return cells
-
-
-# ---------------------------------------------------------------------------
-# 4. Bootstrap (algorithm-identical to nfl_weather_battery_screen.py)
-# ---------------------------------------------------------------------------
 
 
 def summarize(
@@ -503,23 +463,10 @@ def score_cell(
     }
 
 
-# ---------------------------------------------------------------------------
-# 5. Reliability check (docs/fluview_battery.md section 6)
-# ---------------------------------------------------------------------------
-
-
 def compute_reliability(panel: pd.DataFrame) -> dict[str, Any]:
     long = panel.dropna(subset=["ili"]).copy()
     long["team_id"] = long["state"]
-    # "week" is already the NFL week number carried through from the
-    # schedules join -- reused directly for the odd/even parity split
-    # (same convention as every other split-half precedent in the repo).
     return split_half_reliability(long, "ili", seed=BOOTSTRAP_SEED)
-
-
-# ---------------------------------------------------------------------------
-# 6. Main
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:

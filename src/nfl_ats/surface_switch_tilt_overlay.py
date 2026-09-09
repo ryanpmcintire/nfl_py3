@@ -120,25 +120,13 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "surface_switch_tilt_overlay"
 
-#: Ported verbatim from scripts/nfl_weather_battery_screen.py's own module
-#: constants -- the same surface-name normalization the registry measurement
-#: used. Kept exactly, not re-derived.
 GRASS_SURFACES = frozenset({"grass", "dessograss"})
 TURF_SURFACES = frozenset(
     {"fieldturf", "sportturf", "matrixturf", "astroturf", "a_turf", "astroplay"}
 )
 
-#: The merged-in flag travels under this module-private name. The model's own
-#: feature table now carries ``surface_switch_flag`` as an input (features.py
-#: ports this exact derivation), so the predictions frame can arrive with a
-#: same-named column -- a bare left-merge would suffix both copies to
-#: ``_x``/``_y`` and the old ``merged["surface_switch_flag"]`` read raised
-#: KeyError on both production call sites (2026-08-24 rehearsal). This module
-#: always derives its own flag from the schedules snapshot; a foreign column
-#: of the same name is neither consumed nor overwritten.
 OVERLAY_FLAG_COLUMN = "_surface_switch_tilt_flag"
 
 
@@ -312,8 +300,6 @@ def apply_surface_switch_tilt_overlay(
         validate="one_to_one",
     )
     if OVERLAY_FLAG_COLUMN not in merged.columns:
-        # Absence path: nothing to read means nothing flips -- the documented
-        # no-op (missing surface data never flips), never a KeyError.
         merged[OVERLAY_FLAG_COLUMN] = False
     merged[OVERLAY_FLAG_COLUMN] = merged[OVERLAY_FLAG_COLUMN].fillna(False).astype(bool)
 

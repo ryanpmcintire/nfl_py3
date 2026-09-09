@@ -145,27 +145,17 @@ def run_backtest(
     )
     predictions = build_predictions_frame(per_game, schedules)
 
-    # The six already-registered ACTIVE_PROSPECTIVE overlays, OR-combined --
-    # the "production proxy" this script stacks on top of (see module
-    # docstring for why this is a proxy, not a literal publishing.py replay).
     results = run_overlays(predictions, schedules, player_features)
     flip_sets = {name: {flip.game_id for flip in result.flips} for name, result in results.items()}
     verify_no_direction_conflicts(predictions, results, flip_sets)
     eval_frame = build_eval_frame(predictions, per_game, flip_sets)
     eval_frame = eval_frame.rename(columns={"correct_combined": "correct_production"})
 
-    # The turnover-luck rebound tilt: independently evaluated against the
-    # SAME unflipped baseline, exactly like every member of the six-overlay
-    # stack.
     pbp_snapshot = latest_pbp_snapshot(data_root / "pbp" / "raw")
     pbp = load_pbp_snapshot(pbp_snapshot)
     my_result = apply_turnover_luck_rebound_tilt_overlay(predictions, schedules, pbp)
     my_flip_ids = {flip.game_id for flip in my_result.flips}
 
-    # Direction-agreement check, mirroring verify_no_direction_conflicts:
-    # every game MY overlay flips must set home_cover_probability to exactly
-    # 1 - baseline, the same complement convention the six-member stack uses,
-    # so the OR-union below is well-defined.
     baseline_probability = predictions.set_index("game_id")["home_cover_probability"]
     if my_flip_ids:
         overlaid = my_result.overlaid_predictions.set_index("game_id")["home_cover_probability"]

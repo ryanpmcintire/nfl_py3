@@ -187,10 +187,6 @@ def _write_public_site(destination: Path) -> dict[str, Any]:
     """
 
     directory = _site_directory(destination)
-    # Fail closed, not degraded (owner, 2026-09-05, verbatim: "please do not
-    # let those percentages get out of date anymore") -- raises
-    # NumberProvenanceError, uncaught here on purpose, naming exactly which
-    # artifact needs recomputing, before a single page is written.
     verify_number_provenance(_artifacts_root())
     pages = build_site(_artifacts_root(), require_fresh_arrest_overlay=True)
     written = []
@@ -204,8 +200,6 @@ def _write_public_site(destination: Path) -> dict[str, Any]:
     return {
         "site_destination": str(directory),
         "pages_written": written,
-        # Retained for callers that parsed the single-page output -- the
-        # redirect page still lives at exactly this path.
         "board_destination": str(directory / "index.html"),
         "nojekyll": str(nojekyll),
     }
@@ -251,12 +245,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
     and never un-publishes the card."""
 
     publish_instant = datetime.now(UTC)
-    # Fail closed, not degraded (owner, 2026-09-05, verbatim: "please do not
-    # let those percentages get out of date anymore") -- runs even when
-    # ``--no-board`` skips the site build below, since the published card's
-    # own headline prose (``publishing._composition_note``) quotes the same
-    # played-policy figures. Raises NumberProvenanceError, uncaught here on
-    # purpose, naming exactly which artifact needs recomputing.
     verify_number_provenance(_artifacts_root())
     result = publish_active_predictions(
         _artifacts_root(),
@@ -267,27 +255,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         registry_root=_registry_root(),
     )
     if request.with_board:
-        # Default-on since 2026-08-19: the public site is THE dashboard, and a
-        # publish that skips regeneration is how docs/ served picks that
-        # disagreed with the published card (owner-observed: the site showed
-        # the pre-overlay BAL pick and the v1 ARI Best Pick for hours). A
-        # rehearsal publish that must not touch docs/ passes --no-board.
-        # Fail-open like the ledger recorders below: a site-build failure must
-        # stay visible in the result but never un-publish the card.
         try:
-            # cast only: --board-destination always has a Path default, so the
-            # `or` can never actually yield None on the real CLI path.
             site_destination = cast(Path, request.site_destination or request.board_destination)
             result.update(_write_public_site(site_destination))
         except (ValueError, FileNotFoundError) as error:
             result["public_site"] = {"written": False, "error": str(error)}
     if request.record_decisions:
-        # MKT-04 routine wiring: every published card's pre-kickoff picks are
-        # appended to the paper-decision CLV ledger. A failure here must stay
-        # visible but not un-publish the files already written above.
-        # ``record_paper_decisions`` itself refuses to write when this week's
-        # earliest kickoff is more than RECORDING_LOCK_WINDOW away, so passing
-        # this flag on a rehearsal run still does not reach the ledger.
         try:
             result["clv_ledger"] = record_paper_decisions(
                 _artifacts_root(),
@@ -310,50 +283,24 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             ),
             now=publish_instant,
         )
-        # The year-1-coach fade overlay arm (PER-07,
-        # docs/coach_fade_overlay.md): the paper ledger stores both the raw
-        # model side and the final played policy side; this appends the
-        # coach-only arm for every game to the SEPARATE prospective ledger.
-        # ``prospective-score`` derives the raw-model control from the frozen
-        # ``model_pick_side`` column. A failure here must not un-publish the
-        # card either.
         try:
             result["overlay_challenger_ledger"] = record_overlay_challenger_decisions(
                 _artifacts_root(), _data_root()
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["overlay_challenger_ledger"] = {"recorded": 0, "error": str(error)}
-        # POL-09's v2 Best Pick nomination rule (nfl_ats.best_pick_nomination):
-        # v1's nomination is already in clv_ledger above (unchanged, via the
-        # active model's own is_best_pick flag); this appends v2's weekly
-        # nominee to the SEPARATE prospective challenger ledger, so the
-        # season scores v1 against v2 weekly. A failure here must not
-        # un-publish the card either.
         try:
             result["nomination_challenger_ledger"] = record_nomination_challenger_decisions(
                 _artifacts_root(), _data_root()
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["nomination_challenger_ledger"] = {"recorded": 0, "error": str(error)}
-        # POL-09's v3 Best Pick nomination challenger (docs/best_pick_ranker.md
-        # "v3 audit", 2026-08-19): SIDE-LEDGER-ONLY, never read by publishing.py
-        # and never touches NOMINATION_V2_ENABLED or is_best_pick. Same filter
-        # and primary ranking as v2, but ties break on game_id alone (no
-        # dispersion tie-break) -- the historical head-to-head against v2 leaned
-        # positive (P+ 0.631) but traced to a single diverging week of 103, so
-        # this accrues independent 2026 evidence rather than resting on that.
-        # A failure here must not un-publish the card either.
         try:
             result["nomination_v3_challenger_ledger"] = record_nomination_v3_challenger_decisions(
                 _artifacts_root(), _data_root()
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["nomination_v3_challenger_ledger"] = {"recorded": 0, "error": str(error)}
-        # Prospective-only 10+ point spread eligibility screen for Best Pick
-        # (docs/best_pick_big_spread_challenger.md). It composes with v2 and
-        # records one alternative nominee; publishing.py never imports it, so
-        # the played/published Best Pick remains untouched. A failure here
-        # must not un-publish the card either.
         try:
             result["big_spread_nomination_challenger_ledger"] = (
                 record_big_spread_nomination_challenger_decisions(_artifacts_root(), _data_root())
@@ -363,22 +310,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Injury value-lost tilt overlay (docs/injury_value_lost_tilt_overlay.md):
-        # a parameter-free pick-level nudge, dual-tracked against the active
-        # model in the SEPARATE prospective challenger ledger only -- it is
-        # never applied to the published card. A failure here must not
-        # un-publish the card either.
         try:
             result["injury_value_tilt_challenger_ledger"] = (
                 record_injury_value_tilt_challenger_decisions(_artifacts_root(), _data_root())
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["injury_value_tilt_challenger_ledger"] = {"recorded": 0, "error": str(error)}
-        # Division-revenge tilt overlay (docs/division_revenge_tilt_overlay.md):
-        # a parameter-free pick-level nudge, dual-tracked against the active
-        # model in the SEPARATE prospective challenger ledger only -- it is
-        # never applied to the published card. A failure here must not
-        # un-publish the card either.
         try:
             result["division_revenge_tilt_challenger_ledger"] = (
                 record_division_revenge_tilt_challenger_decisions(_artifacts_root(), _data_root())
@@ -388,33 +325,18 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Backup-QB fade overlay (docs/backup_qb_fade_overlay.md): a
-        # parameter-free pick-level nudge, dual-tracked against the active
-        # model in the SEPARATE prospective challenger ledger only -- it is
-        # never applied to the published card. A failure here must not
-        # un-publish the card either.
         try:
             result["backup_qb_fade_challenger_ledger"] = record_backup_qb_fade_challenger_decisions(
                 _artifacts_root(), _data_root()
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["backup_qb_fade_challenger_ledger"] = {"recorded": 0, "error": str(error)}
-        # Surface-switch tilt overlay (docs/surface_switch_tilt_overlay.md): a
-        # parameter-free pick-level nudge, dual-tracked against the active
-        # model in the SEPARATE prospective challenger ledger only -- it is
-        # never applied to the published card. A failure here must not
-        # un-publish the card either.
         try:
             result["surface_switch_tilt_challenger_ledger"] = (
                 record_surface_switch_tilt_challenger_decisions(_artifacts_root(), _data_root())
             )
         except (ValueError, FileNotFoundError, DataContractError) as error:
             result["surface_switch_tilt_challenger_ledger"] = {"recorded": 0, "error": str(error)}
-        # Spread-gap-zone fade overlay (docs/spread_gap_zone_fade_overlay.md):
-        # a parameter-free pick-level nudge, dual-tracked against the active
-        # model in the SEPARATE prospective challenger ledger only -- it is
-        # never applied to the published card. A failure here must not
-        # un-publish the card either.
         try:
             result["spread_gap_zone_fade_challenger_ledger"] = (
                 record_spread_gap_zone_fade_challenger_decisions(_artifacts_root(), _data_root())
@@ -436,13 +358,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             )
         except (ValueError, FileNotFoundError) as error:
             result["deadline_drag_challenger_ledger"] = {"recorded": 0, "error": str(error)}
-        # Low-total divisional home-dog challenger (LEAD-42,
-        # docs/schedule_flag_battery.md Wave 2): a parameter-free pick-level
-        # nudge, dual-tracked against the active model in the SEPARATE
-        # prospective challenger ledger only -- it is never applied to the
-        # published card. Reads only the card's own div_game/total_line/
-        # spread_line columns, no external data source. A failure here must
-        # not un-publish the card either.
         try:
             result["low_total_div_home_dog_challenger_ledger"] = (
                 record_low_total_div_home_dog_challenger_decisions(_artifacts_root(), _data_root())
@@ -452,10 +367,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # The six 2026-09-01 parameter-free overlays are prospective-only.
-        # Each records its own forced-pick arm and cannot affect the published
-        # card; preserve an individual failure in the result without undoing
-        # the publish that already completed above.
         try:
             result["bye_edge_fade_challenger_ledger"] = record_bye_edge_fade_challenger_decisions(
                 _artifacts_root(), _data_root()
@@ -513,16 +424,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # PBP-08 protection-mismatch tilt (docs/pbp08_matchup_screen.md): back
-        # the defense when one side's offense carries a top-quartile four-game
-        # pressure-allowed window against a top-quartile pressure-generating
-        # defense. The strongest mined mean-edge cell in the project (+0.336
-        # points, both blockings excluding zero, mirror controls clean), wired
-        # as a dual-tracked challenger only -- never applied to the published
-        # card, and costing no rotation-registry window. The flag build is
-        # FAIL-OPEN (absent snapshot -> zero flags), but this outer try/except
-        # still guards every other failure mode so a failure here must not
-        # un-publish the card either.
         try:
             result["pbp08_protection_mismatch_tilt_challenger_ledger"] = (
                 record_pbp08_protection_mismatch_tilt_challenger_decisions(
@@ -534,8 +435,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Paired incumbent for the four-member production policy: record the
-        # exact former coach->arrests chain frozen by the primary ledger.
         try:
             result["four_overlay_incumbent_challenger_ledger"] = (
                 record_former_production_incumbent_decisions(
@@ -547,7 +446,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Retired four-member union, paired with the primary ledger's frozen inputs.
         try:
             result["retired_four_member_union_challenger_ledger"] = (
                 record_retired_four_member_union_decisions(
@@ -559,17 +457,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # ECDF-mapping-incumbent overlay (docs/smooth_cdf_mapping.md, MOD-08
-        # promotion, 2026-08-19): the published card's own probability read
-        # IS now the Gaussian mapping (score_outcome_week's promoted
-        # default); this challenger tracks the FORMER production ECDF read
-        # off the SAME out-of-time residual sample, dual-tracked against the
-        # active model in the SEPARATE prospective challenger ledger only --
-        # it is never applied to the published card. Supersedes the retired
-        # smooth_cdf_mapping challenger (artifacts/prospective/challengers.json),
-        # which tracked the mapping in the opposite direction while the
-        # published card was still ECDF-native. A failure here must not
-        # un-publish the card either.
         try:
             result["ecdf_mapping_incumbent_challenger_ledger"] = (
                 record_ecdf_mapping_incumbent_challenger_decisions(_artifacts_root(), _data_root())
@@ -590,10 +477,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Home-side offset promotion (MOD-18 lane S, 2026-09-07,
-        # docs/home_side_offset_promotion.md): the uncorrected point read is
-        # the paired challenger, read verbatim from the forecast's sidecar.
-        # A failure here must not un-publish the card either.
         try:
             result["home_side_offset_off_incumbent_challenger_ledger"] = (
                 record_home_side_offset_incumbent_challenger_decisions(
@@ -605,10 +488,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Key-line pick read promotion (MOD-18 lane T, 2026-09-08,
-        # docs/key_line_pick_read.md): the smooth-everywhere two-way read is
-        # the paired challenger, read verbatim from the forecast's sidecar.
-        # A failure here must not un-publish the card either.
         try:
             result["key_line_pick_read_off_incumbent_challenger_ledger"] = (
                 record_key_line_pick_read_incumbent_challenger_decisions(
@@ -620,12 +499,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Era-weighted (half-life 8) challenger (docs/era_weighting_screen.md,
-        # MOD-14): refits the active recipe weekly with exponential
-        # season-decay sample weights, dual-tracked against the active model
-        # in the SEPARATE prospective challenger ledger only -- it is never
-        # applied to the published card. A failure here must not un-publish
-        # the card either.
         try:
             result["era_weighted_half_life_8_challenger_ledger"] = (
                 record_era_weighted_half_life_8_challenger_decisions(
@@ -637,15 +510,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Forecast cold-visitor tilt overlay (docs/forecast_weather_screen.md,
-        # ENV-01): a parameter-free pick-level nudge using the live
-        # Tuesday-noon GFS-MOS forecast, dual-tracked against the active
-        # model in the SEPARATE prospective challenger ledger only -- it is
-        # never applied to the published card. The live forecast fetch is
-        # FAIL-OPEN (network/station-mapping failures fold into zero flags,
-        # never an exception), but this outer try/except still guards
-        # against every other failure mode (registry/fingerprint/ledger
-        # errors) so a failure here must not un-publish the card either.
         try:
             result["forecast_cold_visitor_tilt_challenger_ledger"] = (
                 record_forecast_cold_visitor_tilt_challenger_decisions(
@@ -657,14 +521,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Interim head-coach first-game tilt overlay (docs/interim_coach_screen.md):
-        # a parameter-free pick-level nudge, dual-tracked against the active
-        # model in the SEPARATE prospective challenger ledger only -- it is
-        # never applied to the published card. The interim-coach join is
-        # FAIL-OPEN (missing/unavailable source data folds into zero flags,
-        # never an exception), but this outer try/except still guards against
-        # every other failure mode (registry/fingerprint/ledger errors) so a
-        # failure here must not un-publish the card either.
         try:
             result["interim_hc_first_game_tilt_challenger_ledger"] = (
                 record_interim_hc_first_game_tilt_challenger_decisions(
@@ -676,26 +532,9 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Shared live kickoff-nearest GFS-MOS fetch (docs/forecast_weather_screen.md,
-        # "Wiring recommendations": "one fetch, several consumers") for the two
-        # challengers below -- fetched ONCE here and passed to both via their
-        # forecasts= parameter, rather than each making its own outbound
-        # network call for the identical (game, station, cutoff) set. Never
-        # raises (see its own docstring); None just means each recorder falls
-        # back to fetching for itself.
         shared_kn_forecasts = fetch_shared_kickoff_nearest_forecasts_fail_open(
             _artifacts_root(), _data_root(), _registry_root()
         )
-        # Forecast (kickoff-nearest) warm-team-cold-late tilt overlay
-        # (docs/forecast_weather_screen.md, highest-EV wiring recommendation
-        # after the archive's 2009-2025 fetch completed -- both windows'
-        # registered intervals exclude zero): a parameter-free pick-level
-        # nudge using a LIVE kickoff-nearest GFS-MOS forecast, dual-tracked
-        # against the active model in the SEPARATE prospective challenger
-        # ledger only -- it is never applied to the published card. The live
-        # forecast fetch is FAIL-OPEN, but this outer try/except still guards
-        # against every other failure mode so a failure here must not
-        # un-publish the card either.
         try:
             result["forecast_weather_kn_warm_team_cold_late_tilt_challenger_ledger"] = (
                 record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions(
@@ -710,15 +549,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Forecast (kickoff-nearest) precip-high-total tilt overlay
-        # (docs/forecast_weather_screen.md): a parameter-free pick-level
-        # nudge sharing the SAME live kickoff-nearest GFS-MOS fetch as the
-        # warm-team-cold-late challenger above (one fetch, several
-        # consumers), dual-tracked against the active model in the SEPARATE
-        # prospective challenger ledger only -- it is never applied to the
-        # published card. The live forecast fetch is FAIL-OPEN, but this
-        # outer try/except still guards against every other failure mode so
-        # a failure here must not un-publish the card either.
         try:
             result["forecast_weather_kn_precip_high_total_tilt_challenger_ledger"] = (
                 record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions(
@@ -733,14 +563,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Rain-on-grass underdog challenger (LEAD-37, docs/weather_venue_leads.md):
-        # a parameter-free pick-level nudge sharing the SAME live
-        # kickoff-nearest GFS-MOS fetch as the two challengers above (one
-        # fetch, several consumers), dual-tracked against the active model in
-        # the SEPARATE prospective challenger ledger only -- it is never
-        # applied to the published card. The live forecast fetch is FAIL-OPEN,
-        # but this outer try/except still guards against every other failure
-        # mode so a failure here must not un-publish the card either.
         try:
             result["rain_on_grass_dog_challenger_ledger"] = (
                 record_rain_on_grass_dog_challenger_decisions(
@@ -755,13 +577,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # Movement-rule-on-composed-chain challenger (2026-08-22 registration,
-        # docs/movement_composition_eval.md): flips the PLAYED chain pick to the
-        # market side whenever the latest captured line moved >=1.0 pt off the
-        # frozen Tuesday line, reusing nfl_ats.pick_refresh's own read-only
-        # captured-line read. Dual-tracked only -- never applied to the
-        # published card. Runs after record_paper_decisions above, whose rows
-        # are its base card. A failure here must not un-publish the card.
         try:
             result["movement_rule_composed_challenger_ledger"] = (
                 record_movement_rule_composed_challenger_decisions(
@@ -773,12 +588,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # NFL.com Friday out>=2-starters refresh fade on the chain (2026-08-22
-        # registration, docs/nflcom_friday_refresh.md frozen rule text):
-        # freshness-gated injury-page flags flip the PLAYED chain pick,
-        # dual-tracked only. FAIL-OPEN by design: absent/stale inputs come back
-        # as a skipped week, and any other failure is caught here so it must
-        # not un-publish the card either.
         try:
             result["nflcom_refresh_out2_starters_challenger_ledger"] = (
                 record_nflcom_refresh_out2_starters_challenger_decisions(
@@ -790,19 +599,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # weak_stack_qb_revenge_deadline_drag prospective challenger (lane T,
-        # docs/promotion_eval_20260905.md): NOT a pick-level tilt -- genuinely
-        # refits its own weak_stack_qb_revenge_deadline_drag margin model each
-        # week, walk-forward, attaching qb_revenge_flag and
-        # deadline_integration_drag_flag onto the active model's own base
-        # feature table at record time. The archive read is confounded by
-        # multiplicity (best of three correlated arms on one reused window,
-        # both components read AGAINST the candidate on that same
-        # population), so the coordinator decision is do-not-promote on
-        # SELECTION grounds, not a threshold; this SEPARATE prospective
-        # challenger ledger is the no-window-cost way to keep testing it.
-        # Never applied to the published card. A failure here must not
-        # un-publish the card either.
         try:
             result["qb_revenge_deadline_drag_stack_challenger_ledger"] = (
                 record_qb_revenge_deadline_drag_stack_challenger_decisions(
@@ -814,16 +610,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
-        # MOD-17 served-total side-ledger challenger (docs/mod17_joint_residual_model.md,
-        # docs/tiebreaker.md "one lattice, one margin, one total"): records the
-        # week's tiebreaker game under BOTH served-total methods
-        # (nfl_ats.served_total.served_total_blend_k01 and
-        # served_total_joint_residual) plus which one actually served, so the
-        # 2026-09-05 EV promotion of the joint model's total output keeps
-        # accruing paired prospective evidence at no rotation-registry cost.
-        # Never affects the published tiebreaker guess itself -- that already
-        # reads nfl_ats.served_total.SERVED_TOTAL_METHOD directly. A failure
-        # here must not un-publish the card either.
         try:
             result["totals_served_method_challenger_ledger"] = (
                 record_totals_served_method_decisions(
@@ -836,7 +622,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "error": str(error),
             }
     else:
-        # Safe by default: an ordinary publish does not touch the ledger.
         result["best_pick_tuesday_ledger"] = {
             "recorded": 0,
             "skipped": True,
@@ -847,10 +632,6 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions",
         }
-        # Recording is a deliberate act (--record-decisions), because an
-        # ordinary command silently reaching the real ledger during
-        # rehearsal/testing is exactly how it was contaminated on 2026-08-18
-        # (docs/prospective_evidence.md, "Known divergence").
         result["clv_ledger"] = {
             "recorded": 0,
             "skipped": True,
@@ -1077,10 +858,6 @@ def _cmd_publish_board(args: argparse.Namespace) -> None:
 
 
 def _cmd_refresh_picks(args: argparse.Namespace) -> None:
-    # The scheduled passes (scripts/capture_scheduler.py refresh_*) pass no
-    # --season/--week: the week is the one the Tuesday publish locked, read
-    # off the active manifest. Measured 2026-09-06: every Sunday refresh job
-    # died on the argparse usage line because the pair used to be required.
     season, week = _resolve_active_forecast_season_week(args, _artifacts_root())
     plan = plan_refresh(
         _artifacts_root(),
@@ -1105,13 +882,6 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     result["injury_signal_refresh_tilt"] = record_injury_signal_refresh_tilt(
         _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
     )
-    # NFL.com Friday out>=2-starters fade (docs/nflcom_friday_refresh.md frozen
-    # rule), CHALLENGER-TRACKED at refresh time: computes the WOULD-BE pick on
-    # top of the post-market-follow played side and records it to a SEPARATE
-    # append-only ledger. It can never alter the played pick -- plan is
-    # consumed read-only -- and every absent-input path inside the recorder is
-    # a documented no-op; this guard additionally keeps any unexpected failure
-    # here from breaking the production refresh pass.
     try:
         result["nflcom_refresh_out2_starters_overlay"] = record_nflcom_refresh_overlay(
             _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
@@ -1121,20 +891,12 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
             "recorded": 0,
             "error": str(error),
         }
-    # Official T-90 inactives are a prospective challenger only. This recorder
-    # consumes `plan` read-only and writes its separate ledger; it cannot alter
-    # the refresh ledger, published card, or played pick.
     try:
         result["inactives_refresh_overlay"] = record_inactives_refresh_overlay(
             _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
         )
     except (ValueError, FileNotFoundError, DataContractError) as error:
         result["inactives_refresh_overlay"] = {"recorded": 0, "error": str(error)}
-    # Officiating crews are published after Tuesday, so this prospective arm
-    # belongs to each late refresh rather than the Tuesday publish. It consumes
-    # the plan read-only and writes only its own ledger; unexpected recorder
-    # failures remain visible but cannot break a production refresh or card
-    # append.
     try:
         result["crew_tilt_refresh_overlay"] = record_crew_tilt_refresh_overlay(
             _artifacts_root(),
@@ -1145,14 +907,6 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         )
     except (ValueError, FileNotFoundError, DataContractError) as error:
         result["crew_tilt_refresh_overlay"] = {"recorded": 0, "error": str(error)}
-    # Specialist (long-snapper/punter) absence fade (LEAD-17,
-    # docs/schedule_flag_battery.md "Wave 7"): the weekly injury report is
-    # filed Wednesday-Friday, strictly after the Tuesday lock, so this
-    # prospective arm belongs to each late refresh rather than the Tuesday
-    # publish. It consumes the plan read-only and writes only its own
-    # ledger, graded at the frozen Tuesday line; unexpected recorder
-    # failures remain visible but cannot break a production refresh or card
-    # append.
     try:
         result["specialist_absence_fade_refresh_overlay"] = (
             record_specialist_absence_fade_refresh_overlay(

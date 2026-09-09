@@ -76,13 +76,9 @@ import scripts.capture_scheduler as capture_scheduler  # noqa: E402
 import scripts.refresh_now as refresh_now  # noqa: E402
 import scripts.tuesday_line_gap as tuesday_line_gap  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# Fixtures: one Week 1 game, Tuesday 2026-09-08 (EDT, so the lock is 16:00Z)
-# ---------------------------------------------------------------------------
-
 TUESDAY = date(2026, 9, 8)
 GAME_ID = "2026_01_NE_SEA"
-KICKOFF = pd.Timestamp("2026-09-10T00:20:00Z")  # Thursday night, own-week Tuesday = 09-08
+KICKOFF = pd.Timestamp("2026-09-10T00:20:00Z")
 SCHEDULE = pd.DataFrame(
     {"game_id": [GAME_ID], "home_team": ["SEA"], "away_team": ["NE"], "kickoff": [KICKOFF]}
 )
@@ -92,18 +88,15 @@ def _et(hour: int, minute: int = 0, day: date = TUESDAY) -> datetime:
     return datetime.combine(day, time(hour, minute), tzinfo=POOL_TIMEZONE)
 
 
-EARLY = _et(9, 0)  # the legacy task's capture (13:00Z), quarantined on lock day
-LOCK_CAPTURE = _et(12, 5)  # the scheduler's odds_tue_open (16:05Z)
-LATER = _et(15, 0)  # an afternoon capture (19:00Z)
-MONDAY_EVENING = _et(21, 0, date(2026, 9, 7))  # Tuesday 01:00Z, but Monday in the pool's zone
-TUESDAY_LATE_EVENING = _et(20, 30)  # Wednesday 00:30Z, but Tuesday in the pool's zone
+EARLY = _et(9, 0)
+LOCK_CAPTURE = _et(12, 5)
+LATER = _et(15, 0)
+MONDAY_EVENING = _et(21, 0, date(2026, 9, 7))
+TUESDAY_LATE_EVENING = _et(20, 30)
 
-# Week 1 2026 as the schedule has it (read from the 2026-09-08 16:05:46Z
-# capture): Thursday night, Friday night, thirteen Sunday games, Sunday
-# night and Monday night. Every one has the same own-week Tuesday, 09-08.
 WEEK_1_KICKOFFS = {
-    "2026_01_NE_SEA": "2026-09-10T00:20:00Z",  # Thu 20:20 ET
-    "2026_01_SF_LA": "2026-09-11T00:35:00Z",  # Fri 20:35 ET
+    "2026_01_NE_SEA": "2026-09-10T00:20:00Z",
+    "2026_01_SF_LA": "2026-09-11T00:35:00Z",
     "2026_01_ATL_PIT": "2026-09-13T17:00:00Z",
     "2026_01_BAL_IND": "2026-09-13T17:00:00Z",
     "2026_01_BUF_HOU": "2026-09-13T17:00:00Z",
@@ -116,8 +109,8 @@ WEEK_1_KICKOFFS = {
     "2026_01_GB_MIN": "2026-09-13T20:25:00Z",
     "2026_01_MIA_LV": "2026-09-13T20:25:00Z",
     "2026_01_WAS_PHI": "2026-09-13T20:25:00Z",
-    "2026_01_DAL_NYG": "2026-09-14T00:20:00Z",  # Sun 20:20 ET
-    "2026_01_DEN_KC": "2026-09-15T00:15:00Z",  # Mon 20:15 ET = Tuesday 00:15Z
+    "2026_01_DAL_NYG": "2026-09-14T00:20:00Z",
+    "2026_01_DEN_KC": "2026-09-15T00:15:00Z",
 }
 MONDAY_NIGHT_GAME = "2026_01_DEN_KC"
 MONDAY_NIGHT_KICKOFF = pd.Timestamp(WEEK_1_KICKOFFS[MONDAY_NIGHT_GAME])
@@ -170,7 +163,6 @@ def _payload(books: dict[str, float]) -> bytes:
                                 "key": "spreads",
                                 "last_update": "2026-09-08T12:00:00Z",
                                 "outcomes": [
-                                    # The parser standardizes home_spread_line = -point.
                                     {"name": "Seattle Seahawks", "price": -110, "point": -line},
                                     {"name": "New England Patriots", "price": -110, "point": line},
                                 ],
@@ -194,18 +186,10 @@ def _write_live_capture(root: Path, observed_at: datetime, books: dict[str, floa
     )
 
 
-# ---------------------------------------------------------------------------
-# 1. One declared lock, in the pool's zone, DST-correct
-# ---------------------------------------------------------------------------
-
-
 def test_the_pool_lock_is_declared_once_and_every_reader_uses_that_name() -> None:
     assert time(12, 0) == POOL_SPREAD_LOCK_ET
     assert POOL_TIMEZONE.key == "America/New_York"
-    # The scheduler's clock and the pool's clock are the same zone.
     assert capture_scheduler.ET.key == POOL_TIMEZONE.key
-    # The one-click refresh guard and the line-gap report import the constant
-    # rather than restating "12:00" locally.
     assert refresh_now.POOL_SPREAD_LOCK_ET is POOL_SPREAD_LOCK_ET
     assert POOL_SPREAD_LOCK_ET.strftime("%H:%M") == tuesday_line_gap.DEFAULT_LOCK
     assert not hasattr(refresh_now, "OPENER_HOUR")
@@ -214,14 +198,14 @@ def test_the_pool_lock_is_declared_once_and_every_reader_uses_that_name() -> Non
 @pytest.mark.parametrize(
     ("day", "expected_utc"),
     [
-        (date(2026, 9, 8), "2026-09-08T16:00:00Z"),  # EDT: UTC-4
-        (date(2026, 11, 10), "2026-11-10T17:00:00Z"),  # EST after the 2026-11-01 fall-back
-        (date(2027, 3, 9), "2027-03-09T17:00:00Z"),  # EST, the Tuesday before spring-forward
-        (date(2027, 3, 16), "2027-03-16T16:00:00Z"),  # EDT again after 2027-03-14
+        (date(2026, 9, 8), "2026-09-08T16:00:00Z"),
+        (date(2026, 11, 10), "2026-11-10T17:00:00Z"),
+        (date(2027, 3, 9), "2027-03-09T17:00:00Z"),
+        (date(2027, 3, 16), "2027-03-16T16:00:00Z"),
     ],
 )
 def test_lock_instant_follows_daylight_saving(day: date, expected_utc: str) -> None:
-    assert day.weekday() == 1  # every case is a real Tuesday
+    assert day.weekday() == 1
     assert pool_spread_lock_utc(day) == pd.Timestamp(expected_utc)
 
 
@@ -229,11 +213,6 @@ def test_scheduler_opener_capture_lands_after_the_pool_lock() -> None:
     schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
     start = capture_scheduler.occurrence(schedule["odds_tue_open"], _et(15, 0))
     assert pd.Timestamp(start) > pool_spread_lock_utc(TUESDAY)
-
-
-# ---------------------------------------------------------------------------
-# 2. The live opener rule
-# ---------------------------------------------------------------------------
 
 
 def test_opener_is_the_first_capture_at_or_after_the_lock_per_book() -> None:
@@ -246,12 +225,12 @@ def test_opener_is_the_first_capture_at_or_after_the_lock_per_book() -> None:
     assert len(opener) == 1
     row = opener.iloc[0]
     assert row["nflverse_game_id"] == GAME_ID
-    assert row["opener_home_spread"] == pytest.approx(3.75)  # median of the 12:05 lines
+    assert row["opener_home_spread"] == pytest.approx(3.75)
     assert (row["opener_min"], row["opener_max"]) == (3.5, 4.0)
     assert row["bookmakers"] == 2
     assert row["observed_at_utc"] == pd.Timestamp("2026-09-08T16:05:00Z")
     assert row["opener_basis"] == OPENER_BASIS_POST_LOCK
-    assert list(opener.columns)[-1] == "opener_basis"  # additive: appended last
+    assert list(opener.columns)[-1] == "opener_basis"
 
 
 def test_a_quote_exactly_at_the_lock_counts_as_post_lock() -> None:
@@ -276,7 +255,7 @@ def test_monday_evening_capture_is_monday_and_never_an_opener() -> None:
     all -- not the opener beside a post-lock capture, and not the fallback
     when it stands alone."""
 
-    assert MONDAY_EVENING.astimezone(UTC).weekday() == 1  # 01:00Z Tuesday
+    assert MONDAY_EVENING.astimezone(UTC).weekday() == 1
     with_lock = _history((MONDAY_EVENING, {"book_a": 2.5}), (LOCK_CAPTURE, {"book_a": 3.5}))
     row = tuesday_opener_quotes(with_lock).iloc[0]
     assert row["opener_home_spread"] == 3.5
@@ -299,25 +278,19 @@ def test_tuesday_evening_capture_after_20_et_is_still_tuesday_and_post_lock() ->
     assert tuesday_opener_quotes(both).iloc[0]["opener_home_spread"] == 3.5
 
 
-# ---------------------------------------------------------------------------
-# 2b. The game's own week is keyed to the kickoff's Eastern date
-# ---------------------------------------------------------------------------
-
-
 def test_own_week_tuesday_is_the_kickoffs_eastern_date_not_its_utc_day() -> None:
     kickoffs = pd.Series(
         [
-            pd.Timestamp("2026-09-10T00:20:00Z"),  # Thu 20:20 ET (Thursday in UTC too)
-            pd.Timestamp("2026-09-13T17:00:00Z"),  # Sunday 13:00 ET
-            pd.Timestamp("2026-09-14T00:20:00Z"),  # Sun 20:20 ET (Monday in UTC)
-            pd.Timestamp("2026-09-15T00:15:00Z"),  # Mon 20:15 ET (TUESDAY in UTC)
-            pd.Timestamp("2026-09-15T16:00:00Z"),  # a Tuesday noon kickoff belongs to that day
+            pd.Timestamp("2026-09-10T00:20:00Z"),
+            pd.Timestamp("2026-09-13T17:00:00Z"),
+            pd.Timestamp("2026-09-14T00:20:00Z"),
+            pd.Timestamp("2026-09-15T00:15:00Z"),
+            pd.Timestamp("2026-09-15T16:00:00Z"),
         ]
     )
     tuesdays = own_week_tuesday(kickoffs)
     assert tuesdays.tolist() == [pd.Timestamp("2026-09-08")] * 4 + [pd.Timestamp("2026-09-15")]
-    assert tuesdays.dt.tz is None  # calendar days, not instants
-    # The same calendar-day convention for the observation side.
+    assert tuesdays.dt.tz is None
     days = pool_calendar_day(
         pd.Series([pd.Timestamp(MONDAY_EVENING), pd.Timestamp(TUESDAY_LATE_EVENING)])
     )
@@ -351,14 +324,13 @@ def test_sunday_and_thursday_games_key_to_the_same_tuesday() -> None:
         game_id="2026_01_GB_MIN",
         kickoff=pd.Timestamp(WEEK_1_KICKOFFS["2026_01_GB_MIN"]),
     )
-    thursday = _quotes(LOCK_CAPTURE, {"book_a": 3.0})  # NE at SEA, two days after its Tuesday
+    thursday = _quotes(LOCK_CAPTURE, {"book_a": 3.0})
     by_game = tuesday_opener_quotes(pd.concat([sunday, thursday], ignore_index=True)).set_index(
         "nflverse_game_id"
     )
     assert by_game.loc["2026_01_GB_MIN", "opener_basis"] == OPENER_BASIS_POST_LOCK
     assert by_game.loc[GAME_ID, "opener_basis"] == OPENER_BASIS_POST_LOCK
     assert by_game["observed_at_utc"].eq(pd.Timestamp("2026-09-08T16:05:00Z")).all()
-    # The week before's Tuesday is never this week's opener (lane AC's finding, kept).
     previous_week = _quotes(_et(12, 5, date(2026, 9, 1)), {"book_a": 9.0})
     assert tuesday_opener_quotes(previous_week).empty
 
@@ -366,16 +338,8 @@ def test_sunday_and_thursday_games_key_to_the_same_tuesday() -> None:
 @pytest.mark.parametrize(
     ("kickoff_utc", "tuesday", "pre_lock_utc", "post_lock_utc"),
     [
-        # Monday night 2026-11-02 20:20 EST (the week the clocks fell back on
-        # 11-01): its Tuesday, 10-27, is still EDT, so the lock is 16:00Z.
         ("2026-11-03T01:20:00Z", "2026-10-27", "2026-10-27T15:30:00Z", "2026-10-27T16:05:00Z"),
-        # Monday night 2026-11-09 20:15 EST: Tuesday 11-03 is EST, lock 17:00Z;
-        # a 16:30Z quote (11:30 EST) is pre-lock even though it would have
-        # been post-lock a week earlier.
         ("2026-11-10T01:15:00Z", "2026-11-03", "2026-11-03T16:30:00Z", "2026-11-03T17:05:00Z"),
-        # Monday 2027-03-15 20:15 EDT, the week after spring-forward: its
-        # Tuesday is 03-09 (EST, lock 17:00Z). Absolute-time day arithmetic
-        # on the zone-aware kickoff would land on 03-08.
         ("2027-03-16T00:15:00Z", "2027-03-09", "2027-03-09T16:30:00Z", "2027-03-09T17:05:00Z"),
     ],
 )
@@ -383,7 +347,7 @@ def test_own_week_across_daylight_saving(
     kickoff_utc: str, tuesday: str, pre_lock_utc: str, post_lock_utc: str
 ) -> None:
     kickoff = pd.Timestamp(kickoff_utc)
-    assert kickoff.tz_convert(POOL_TIMEZONE).weekday() == 0  # Monday night in the pool's zone
+    assert kickoff.tz_convert(POOL_TIMEZONE).weekday() == 0
     assert own_week_tuesday(pd.Series([kickoff])).iloc[0] == pd.Timestamp(tuesday)
     pre = pd.Timestamp(pre_lock_utc).to_pydatetime()
     post = pd.Timestamp(post_lock_utc).to_pydatetime()
@@ -427,7 +391,6 @@ def test_lock_day_capture_yields_all_sixteen_openers_including_monday_night() ->
     capture = datetime(2026, 9, 8, 16, 5, 46, tzinfo=UTC)
     history = _week_1_history(capture, 3.0)
     assert history["nflverse_game_id"].nunique() == 16
-    # The shared filter keeps every row: all sixteen are own-week Tuesday quotes.
     assert len(own_week_tuesday_quotes(history)) == len(history)
     opener = tuesday_opener_quotes(history)
     assert len(opener) == 16
@@ -521,7 +484,7 @@ def test_both_live_readers_agree_game_for_game(tmp_path: Path) -> None:
     assert MONDAY_NIGHT_GAME in live.index
     assert live["opener_basis"].eq(OPENER_BASIS_POST_LOCK).all()
     assert live["opener_observed_at_utc"].eq(pd.Timestamp("2026-09-08T16:05:00Z")).all()
-    assert live["tue_open_home_spread"].eq(3.25).all()  # the 12:05 median, not 09:00's 2.75
+    assert live["tue_open_home_spread"].eq(3.25).all()
     pd.testing.assert_frame_equal(live, free_form[live.columns], check_dtype=False)
 
 
@@ -551,11 +514,6 @@ def test_games_are_judged_independently() -> None:
     by_game = tuesday_opener_quotes(history).set_index("nflverse_game_id")
     assert by_game.loc[GAME_ID, "opener_basis"] == OPENER_BASIS_PRE_LOCK_FALLBACK
     assert by_game.loc["2026_01_KC_LAC", "opener_basis"] == OPENER_BASIS_POST_LOCK
-
-
-# ---------------------------------------------------------------------------
-# 3. The store: a restored early snapshot cannot displace the locked line
-# ---------------------------------------------------------------------------
 
 
 def test_restored_early_snapshot_cannot_displace_the_locked_line(tmp_path: Path) -> None:
@@ -609,15 +567,9 @@ def test_forecast_frame_carries_the_basis_beside_the_observation_instant(tmp_pat
     assert result.loc[0, MARKET_OBSERVED_AT_COLUMN] == pd.Timestamp("2026-09-08T16:05:00Z")
     assert result.loc[0, MARKET_OPENER_BASIS_COLUMN] == OPENER_BASIS_POST_LOCK
     assert pd.isna(result.loc[1, MARKET_OPENER_BASIS_COLUMN])
-    assert result["spread_line"].tolist() == [3.5, 1.5]  # provenance only, never the line
-    # Null-safe like the instant beside it.
+    assert result["spread_line"].tolist() == [3.5, 1.5]
     bare = attach_market_observed_at(frame)
     assert bare[MARKET_OPENER_BASIS_COLUMN].isna().all()
-
-
-# ---------------------------------------------------------------------------
-# 4. The historical archive is a different path and is unchanged
-# ---------------------------------------------------------------------------
 
 
 def _historical_two_game_store(root: Path) -> pd.DataFrame:
@@ -730,7 +682,6 @@ def test_historical_tue_open_archive_never_routes_through_the_live_rule(
     assert tue.loc["2024_02_NE_SEA", "home_spread"] == pytest.approx(2.5)
     assert tue.loc["2024_02_NE_SEA", "spread_books"] == 3
     assert tue.loc["2024_02_CIN_KC", "home_spread"] == pytest.approx(1.5)
-    # The 09:00 ET snapshot is BEFORE the pool lock; the archive keeps it regardless.
     assert tue.loc["2024_02_NE_SEA", "snapshot_timestamp_utc"] < pool_spread_lock_utc(
         date(2024, 9, 10)
     )
@@ -748,20 +699,15 @@ def test_historical_tue_open_archive_never_routes_through_the_live_rule(
     pd.testing.assert_frame_equal(without_live_rule, baseline)
 
 
-# ---------------------------------------------------------------------------
-# 5. The one-click refresh guard and the line-gap report read the constant
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     ("now", "skipped"),
     [
-        (_et(11, 59), True),  # Tuesday, pool not yet locked
-        (_et(12, 0), False),  # the lock instant itself: a capture now IS the locked line
-        (_et(12, 4), False),  # between the lock and the 12:05 job: still the locked line
-        (MONDAY_EVENING, False),  # Monday to the pool's clock: can never be an opener
-        (TUESDAY_LATE_EVENING, False),  # Tuesday evening, after the lock
-        (_et(8, 30, date(2026, 9, 9)), False),  # Wednesday
+        (_et(11, 59), True),
+        (_et(12, 0), False),
+        (_et(12, 4), False),
+        (MONDAY_EVENING, False),
+        (TUESDAY_LATE_EVENING, False),
+        (_et(8, 30, date(2026, 9, 9)), False),
     ],
 )
 def test_refresh_guard_skips_a_spread_capture_only_before_the_pool_lock(
@@ -793,9 +739,9 @@ def test_line_gap_report_compares_earliest_pre_lock_with_first_post_lock() -> No
 
     history = _history(
         (EARLY, {"book_a": 3.0, "book_b": 3.0}),
-        (_et(11, 0), {"book_a": 3.5, "book_b": 3.5}),  # a later pre-lock capture: not the one
+        (_et(11, 0), {"book_a": 3.5, "book_b": 3.5}),
         (LOCK_CAPTURE, {"book_a": 3.5, "book_b": 4.0}),
-        (LATER, {"book_a": 4.5, "book_b": 4.5}),  # a later post-lock capture: not the one
+        (LATER, {"book_a": 4.5, "book_b": 4.5}),
     )
     table = tuesday_line_gap.tuesday_gap(history, TUESDAY, POOL_SPREAD_LOCK_ET)
     assert list(table.columns) == tuesday_line_gap.COLUMNS
@@ -813,8 +759,6 @@ def test_line_gap_report_compares_earliest_pre_lock_with_first_post_lock() -> No
 def test_line_gap_report_says_when_there_is_nothing_to_compare(
     capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # Only the post-lock capture (the normal day now): no pre-lock line, no
-    # move -- null, never a fabricated 0.0.
     post_only = tuesday_line_gap.tuesday_gap(
         _history((LOCK_CAPTURE, {"book_a": 3.5})), TUESDAY, POOL_SPREAD_LOCK_ET
     )
@@ -822,8 +766,6 @@ def test_line_gap_report_says_when_there_is_nothing_to_compare(
     assert pd.isna(row["pre_lock"]) and pd.isna(row["move"])
     assert row["post_lock"] == 3.5
     assert row["opener_basis"] == OPENER_BASIS_POST_LOCK
-    # Only a pre-lock capture (the 12:05 job has not landed): the opener is
-    # the fallback and there is no post-lock line yet.
     pre_only = tuesday_line_gap.tuesday_gap(
         _history((EARLY, {"book_a": 3.0})), TUESDAY, POOL_SPREAD_LOCK_ET
     )
@@ -832,7 +774,6 @@ def test_line_gap_report_says_when_there_is_nothing_to_compare(
     assert pd.isna(row["post_lock"]) and pd.isna(row["move"])
     assert row["opener_basis"] == OPENER_BASIS_PRE_LOCK_FALLBACK
 
-    # The command prints the plain-words reason instead of a table of zeros.
     monkeypatch.setattr(
         tuesday_line_gap,
         "load_decision_quotes",

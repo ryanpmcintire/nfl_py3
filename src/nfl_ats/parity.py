@@ -105,22 +105,11 @@ PUSH_RULE = (
     "nfl_ats.clv.pick_correct)"
 )
 
-#: The hard floor every real fitting path in this codebase enforces
-#: (``fit_cover_model``'s literal 50, ``margin.MIN_FITTABLE_TRAIN_GAMES``) --
-#: not a suite-local choice. Below this, ``fit_cover_model``/``fit_margin_model``
-#: raise regardless of what a caller passes as ``min_train_games``.
 MIN_TRAIN_GAMES = MIN_FITTABLE_TRAIN_GAMES
 
 SIMPLE_MODEL_FEATURE_SET = "market"
 ACTIVE_MODEL_FEATURE_SET = "market_context"
 
-#: The real production configuration (ENG-28), not a stand-in: matches
-#: ``artifacts/active_ats_model.json`` (feature_profile "weak_stack",
-#: regressor "ridge", ridge_alpha 10.0, method "market_residual") as read
-#: 2026-09-04. Frozen here rather than read live so this suite's claims do
-#: not silently drift if the active artifact is retrained -- the module
-#: docstring for ``nfl_ats.clv.resolve_active_model_config`` describes the
-#: same freeze-on-read pattern for its own fallback.
 PRODUCTION_FEATURE_PROFILE: MarginFeatureProfile = "weak_stack"
 PRODUCTION_MODEL_CONFIG: dict[str, object] = {
     "feature_profile": PRODUCTION_FEATURE_PROFILE,
@@ -129,16 +118,6 @@ PRODUCTION_MODEL_CONFIG: dict[str, object] = {
     "target": "market_residual",
 }
 
-#: The weak_stack profile's feature contract carries 32 columns (injury
-#: sub-splits, QB, roster-continuity, bias terms) that are not in
-#: ``MODEL_FEATURE_COLUMNS`` -- the 60-row fixture zero-fills them exactly
-#: like ``_features_for_line`` already zero-fills ``MODEL_FEATURE_COLUMNS``
-#: (see ``_production_features`` below). A constant zero column is a
-#: legitimate, if uninformative, ridge input: ``StandardScaler`` defines
-#: scale 1.0 for zero variance rather than dividing by it, and the frozen
-#: production ridge pipeline (``nfl_ats.margin.make_margin_estimator``) never
-#: uses the group-wise penalty path that would otherwise require every
-#: column to resolve to a known ``FEATURE_FAMILIES`` block.
 PRODUCTION_FEATURE_COLUMNS: tuple[str, ...] = margin_feature_columns(
     "market_residual", PRODUCTION_FEATURE_PROFILE
 )
@@ -366,9 +345,6 @@ def _grade_overlay(frame: pd.DataFrame, line: Line, min_train_games: int) -> Pat
     active_result, predictions = _grade_walk_forward(
         frame, line, ACTIVE_MODEL_FEATURE_SET, min_train_games, "active_model_for_overlay"
     )
-    # The FULL fixture (every season), not just the graded weeks: year-1
-    # detection needs each team's PRIOR-season modal coach, which for a 2022
-    # graded game lives in the 2021 training-only rows.
     schedules = frame[
         ["game_id", "season", "game_type", "home_team", "away_team", "home_coach", "away_coach"]
     ].copy()
@@ -520,10 +496,6 @@ def _grade_overlay_production(
     predictions["game_id"] = predictions["game_id"].astype(str)
     predictions["home_cover_probability"] = scored[f"home_cover_probability_at_{suffix}"].to_numpy()
     predictions["spread_line"] = scored[spread_column].to_numpy()
-    # Carried through untouched by the overlay (only home_cover_probability is
-    # ever complemented), so it can be read back after composition to grade
-    # the overlaid picks against the SAME settle margin the production path
-    # used, without a second lookup.
     margin_column = f"margin_vs_{suffix}"
     predictions["settle_margin"] = scored[margin_column].to_numpy()
     predictions = predictions.merge(

@@ -48,9 +48,6 @@ REPO = Path(__file__).resolve().parents[1]
 DEFAULT_FEATURES = REPO / "data/processed/game_features_weak_stack.parquet"
 DEFAULT_MARKET_ROOT = REPO / "data/market/raw"
 
-# Production recipe, artifacts/active_ats_model.json (2026-08-19) -- identical
-# to scripts/smooth_cdf_mapping_measurement.py and docs/opener_evaluation.md's
-# "weak_stack profile, the ACTIVE model" run.
 FEATURE_PROFILE = "weak_stack"
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
@@ -166,9 +163,6 @@ def run_opener_walk_forward(
         base["home_cover_close"] = np.select(
             [margin_close > 0, margin_close < 0], [1.0, 0.0], default=np.nan
         )
-        # Sign-rule pick is a pure function of the fitted centre vs. zero --
-        # it never calls the probability-mapping function, so it is identical
-        # for the ecdf and gaussian arms by construction at a fixed line.
         base["sign_pick_home_open"] = residual_open > 0.0
         base["sign_pick_home_close"] = residual_close > 0.0
         base["distribution_rows"] = model.distribution_rows

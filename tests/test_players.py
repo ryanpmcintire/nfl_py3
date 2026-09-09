@@ -250,9 +250,6 @@ def _player_stats() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-# nflverse injuries, weekly rosters, and snap counts spell the postseason with
-# the per-round game_type codes (WC/DIV/CON/SB); weekly player stats use a
-# season_type column whose only postseason value is POST.
 def _postseason_injuries() -> pd.DataFrame:
     frame = _injuries()
     frame["game_type"] = "WC"
@@ -316,7 +313,6 @@ def test_canonicalize_player_sources_reject_unknown_codes_when_widened() -> None
     injuries.loc[0, "game_type"] = "PLAYOFF"
     with pytest.raises(DataContractError, match="unrecognized season codes"):
         canonicalize_injuries(injuries, include_postseason=True)
-    # The default path keeps its historical, silent "== REG" comparison.
     assert len(canonicalize_injuries(injuries)) == 1
 
     stats = _player_stats()
@@ -378,9 +374,6 @@ def test_postseason_player_snapshot_reads_back_as_regular_season_only(tmp_path: 
         load_player_value_snapshot(postseason_values, include_postseason=True)["season_type"]
     ) == {"REG", "POST"}
 
-    # The invariant: identical feature-build inputs produce identical features,
-    # and enrich_with_player_features re-canonicalizes to REG even when handed
-    # postseason-inclusive frames directly.
     baseline = enrich_with_player_features(
         _games(),
         *load_player_snapshot(regular_snapshot),
@@ -500,13 +493,11 @@ def test_returning_snap_prior_is_isolated_and_point_in_time_safe() -> None:
     away_columns = [f"away_{metric}" for metric in ROSTER_RETURNING_SNAP_STATE_METRICS]
     diff_columns = [f"diff_{metric}" for metric in ROSTER_RETURNING_SNAP_STATE_METRICS]
 
-    # Week 1 cannot use its undated Week-1 roster; Week 2 may use that row.
     assert baseline.loc[0, home_columns + away_columns + diff_columns].isna().all()
     assert baseline.loc[1, home_columns].to_list() == pytest.approx([0.8, 0.4, 0.1])
     assert baseline.loc[1, away_columns].to_list() == pytest.approx([0.5, 0.2, 0.0])
     assert baseline.loc[1, diff_columns].to_list() == pytest.approx([0.3, 0.2, 0.1])
 
-    # A target-game roster revision is not visible until the following week.
     changed_rosters = rosters.copy()
     changed_rosters.loc[
         changed_rosters["season"].eq(2022)
@@ -523,8 +514,6 @@ def test_returning_snap_prior_is_isolated_and_point_in_time_safe() -> None:
         baseline.loc[2, "home_returning_offense_snap_share"]
     )
 
-    # Future rosters and every target-season snap outcome are structurally
-    # excluded from the prior-season numerator and denominator.
     future_rosters = rosters.copy()
     future_rosters.loc[future_rosters["week"].eq(4), "gsis_id"] = "FUTURE"
     target_snaps = snaps.copy()
@@ -549,8 +538,6 @@ def test_injury_cutoff_uses_latest_visible_revision_and_delays_rosters() -> None
     enriched = enrich_with_player_features(
         _games(), _injuries(), _rosters(), _snaps(), _pbp(), qb_min_dropbacks=1
     )
-    # The questionable Friday report is visible 24 hours before Sunday kickoff;
-    # the out designation posted 30 minutes before kickoff is not.
     assert enriched.loc[1, "home_qb_start_probability"] == pytest.approx(0.65)
     assert enriched.loc[1, "home_injury_skill_unavailability"] > 0
     assert enriched.loc[1, "home_injury_observed_at"] == pd.Timestamp("2022-09-16T12:00:00Z")
@@ -823,14 +810,8 @@ def test_position_prior_shrinkage_falls_back_to_zero_below_pool_minimum_and_diff
         qb_min_dropbacks=1,
         value_prior_snaps=200.0,
     )
-    # WR2-A's own career_offense_snaps (3) is thin and their only recorded
-    # receiving_epa is 0.0, so the shrink-to-zero target's contribution is
-    # exactly zero at week 3 (index 2).
     assert zero_target.loc[2, "home_injury_skill_epa_value_lost"] == pytest.approx(0.0)
 
-    # With the pool minimum set above the two-player experienced pool that
-    # exists by week 3, position_prior must fall back to the same 0.0 target
-    # -- bit-identical to shrink-to-zero on this row.
     prior_below_minimum = enrich_with_player_features(
         _games(),
         injuries,
@@ -847,11 +828,6 @@ def test_position_prior_shrinkage_falls_back_to_zero_below_pool_minimum_and_diff
         zero_target.loc[2, "home_injury_skill_epa_value_lost"]
     )
 
-    # With the pool minimum small enough to admit WR-A and WR-B (both
-    # "experienced" -- career_offense_snaps=300 >= 200 -- by the week-3
-    # snapshot, built from state through week 2), the thin, never-productive
-    # WR2-A should be shrunk toward that positive pool prior instead of zero:
-    # strictly positive, and different from the shrink-to-zero reading.
     prior_above_minimum = enrich_with_player_features(
         _games(),
         injuries,
@@ -868,11 +844,6 @@ def test_position_prior_shrinkage_falls_back_to_zero_below_pool_minimum_and_diff
     assert prior_above_minimum.loc[2, "home_injury_skill_epa_value_lost"] != pytest.approx(
         zero_target.loc[2, "home_injury_skill_epa_value_lost"]
     )
-    # The week-2 injury (index 1) sees an EMPTY pool -- WR-A/WR-B only clear
-    # career_offense_snaps=150 by their own week-1 snapshot, still below the
-    # prior_snaps=200 experienced threshold -- so it must fall back to 0.0
-    # exactly like the shrink-to-zero target, even with a lenient pool
-    # minimum.
     assert prior_above_minimum.loc[1, "home_injury_skill_epa_value_lost"] == pytest.approx(
         zero_target.loc[1, "home_injury_skill_epa_value_lost"]
     )
@@ -906,9 +877,6 @@ def test_position_prior_shrinkage_uses_only_prior_game_stats() -> None:
     assert baseline.loc[2, "home_injury_skill_epa_value_lost"] > 0.0
 
     changed_stats = player_stats.copy()
-    # Week 3 is the SAME week as the checked injury row (index 2): the
-    # channel prior consumed there was already snapshotted from state
-    # through week 2, strictly before this update is applied.
     changed_stats.loc[
         changed_stats["game_id"].eq("2022_03_B_A") & changed_stats["player_id"].eq("WR-A"),
         "receiving_epa",
@@ -919,10 +887,6 @@ def test_position_prior_shrinkage_uses_only_prior_game_stats() -> None:
     assert changed.loc[2, "home_injury_skill_epa_value_lost"] == pytest.approx(
         baseline.loc[2, "home_injury_skill_epa_value_lost"]
     )
-    # Week 4's (index 3) channel prior IS built from state through week 3,
-    # so WR2-A's week-4 "Out" injury feature -- which reads that prior --
-    # moves. This confirms the modification was actually visible to the
-    # pipeline, not silently no-op'd.
     assert changed.loc[3, "home_injury_skill_epa_value_lost"] != pytest.approx(
         baseline.loc[3, "home_injury_skill_epa_value_lost"]
     )

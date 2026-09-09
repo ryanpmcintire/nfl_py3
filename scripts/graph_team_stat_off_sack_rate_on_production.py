@@ -82,11 +82,6 @@ DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_graph_sa
 ROTATION_FAMILY = "graph_off_sack_rate_on_production"
 
 
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
-
-
 def run_window(
     features: pd.DataFrame,
     seasons: tuple[int, ...],
@@ -294,11 +289,6 @@ def summarize_pair(paired: pd.DataFrame, samples: int, seed: int) -> dict[str, A
         "n_weeks": int(paired[["season", "week"]].drop_duplicates().shape[0]),
         "n_seasons": int(paired["season"].nunique()),
     }
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

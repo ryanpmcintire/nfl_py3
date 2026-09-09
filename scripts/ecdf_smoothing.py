@@ -232,8 +232,6 @@ def flip_report(predictions: pd.DataFrame, *, candidate_method: str) -> dict[str
         flipped_games.groupby("line_bucket").size() / all_games.groupby("line_bucket").size()
     ).fillna(0.0)
 
-    # Distance-to-threshold proxy: |predicted_market_residual| for flipped vs all games,
-    # when that column is available (NFL run only).
     magnitude_summary: dict[str, float] = {}
     if "predicted_market_residual" in baseline.columns:
         flipped_abs = flipped_games["predicted_market_residual"].abs()
@@ -260,9 +258,6 @@ def flip_report(predictions: pd.DataFrame, *, candidate_method: str) -> dict[str
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:

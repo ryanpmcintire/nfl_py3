@@ -39,12 +39,9 @@ from nfl_ats.pick_refresh import (
 
 SEASON = 2026
 WEEK = 2
-# Sunday 1:00 PM ET kickoff: late enough in its Tue..Mon week that a FINAL
-# Friday injury page can legitimately precede it (a Thursday-night week
-# cannot, and correctly gates to a documented skip).
 KICKOFF = pd.Timestamp("2026-09-20T17:00:00+00:00")
 SATURDAY_PASS = pd.Timestamp("2026-09-19T15:00:00+00:00")
-FINAL_PAGE_FETCHED = "2026-09-18T21:00:00+00:00"  # Friday ~5:00 PM ET
+FINAL_PAGE_FETCHED = "2026-09-18T21:00:00+00:00"
 TUESDAY_RECORD = pd.Timestamp("2026-09-15T16:00:00+00:00")
 
 
@@ -109,7 +106,6 @@ def _write_nflcom_snapshot(data_root: Path, *, fetched_at_utc: str) -> Path:
     snapshot.mkdir(parents=True)
     pd.DataFrame(
         [
-            # g_flip's picked team TST: exactly two starter-caliber Outs.
             {
                 "player": "Alpha One",
                 "game_status": "Out",
@@ -124,7 +120,6 @@ def _write_nflcom_snapshot(data_root: Path, *, fetched_at_utc: str) -> Path:
                 "week": WEEK,
                 "team": "TST",
             },
-            # g_tie: BOTH sides carry two starter-caliber Outs -> frozen tie rule keeps.
             {
                 "player": "Gamma Three",
                 "game_status": "Out",
@@ -230,8 +225,6 @@ def _write_original_card(artifacts_root: Path, kickoff: pd.Timestamp = KICKOFF) 
 def _default_games() -> tuple[RefreshedGame, ...]:
     return (
         _game(game_id="g_flip", home_team="TST", away_team="MOV", new_pick_side="HOME"),
-        # Played AWAY so the picked (flagged) team is BBB and the tie rule,
-        # not the flip rule, is what keeps the pick unchanged.
         _game(game_id="g_tie", home_team="AAA", away_team="BBB", new_pick_side="AWAY"),
         _game(game_id="g_keep", home_team="CCC", away_team="DDD", new_pick_side="HOME"),
         _game(
@@ -250,11 +243,6 @@ def _rows_for(data_root: Path) -> pd.DataFrame:
     )
     assert diagnostics["skipped"] is False
     return rows
-
-
-# ---------------------------------------------------------------------------
-# 1. Flag computation
-# ---------------------------------------------------------------------------
 
 
 def test_two_starter_outs_on_picked_team_and_none_on_opponent_flips(tmp_path: Path) -> None:
@@ -305,8 +293,6 @@ def test_no_flagged_team_keeps_the_played_pick_and_week1_proxy_is_unavailable(
     assert row["nflcom_would_be_pick_side"] == "HOME"
     assert bool(row["nflcom_flip"]) is False
 
-    # Week 1 has no prior-week snaps, so the starter proxy cannot flag anyone:
-    # every count must come out 0 and every pick must keep.
     plan = RefreshResult(
         season=SEASON,
         week=1,
@@ -320,7 +306,7 @@ def test_no_flagged_team_keeps_the_played_pick_and_week1_proxy_is_unavailable(
         missing_from_features_game_ids=(),
     )
     week1_rows, diagnostics = build_nflcom_refresh_overlay_rows(plan, data_root=data_root)
-    assert diagnostics["skipped"] is True  # manifest has no (2026, week 1) page
+    assert diagnostics["skipped"] is True
     assert week1_rows.empty
 
 
@@ -330,11 +316,6 @@ def test_ineligible_games_are_excluded_from_the_challenger_record(tmp_path: Path
 
     rows = _rows_for(data_root)
     assert set(rows["game_id"].astype(str)) == {"g_flip", "g_tie", "g_keep"}
-
-
-# ---------------------------------------------------------------------------
-# 2. Documented NO-OPs (fail-open; never an error, never a flip)
-# ---------------------------------------------------------------------------
 
 
 def test_noop_when_no_injuries_snapshot_exists(tmp_path: Path) -> None:
@@ -403,8 +384,8 @@ def test_a_thursday_game_no_longer_silences_the_whole_week(tmp_path: Path) -> No
 
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
-    thursday = pd.Timestamp("2026-09-17T00:15:00+00:00")  # Thu 8:15 PM ET
-    assert thursday < pd.Timestamp(FINAL_PAGE_FETCHED)  # the page post-dates it
+    thursday = pd.Timestamp("2026-09-17T00:15:00+00:00")
+    assert thursday < pd.Timestamp(FINAL_PAGE_FETCHED)
     games = (
         _game(
             game_id="g_thursday",
@@ -452,7 +433,7 @@ def test_page_absent_from_manifest_is_a_documented_noop(tmp_path: Path) -> None:
 
     plan = RefreshResult(
         season=SEASON,
-        week=3,  # not in the manifest
+        week=3,
         refresh_run_id="20260926T150000Z",
         computed_at_utc=pd.Timestamp("2026-09-26T15:00:00+00:00"),
         model_id="model-1",
@@ -468,11 +449,6 @@ def test_page_absent_from_manifest_is_a_documented_noop(tmp_path: Path) -> None:
     assert "absent from snapshot manifest" in diagnostics["reason"]
 
 
-# ---------------------------------------------------------------------------
-# 3. Played-pick invariance (pinned)
-# ---------------------------------------------------------------------------
-
-
 def test_overlay_can_never_alter_the_played_pick_or_the_revision_ledger(
     tmp_path: Path,
 ) -> None:
@@ -486,14 +462,10 @@ def test_overlay_can_never_alter_the_played_pick_or_the_revision_ledger(
 
     result = record_nflcom_refresh_overlay(artifacts_root, data_root, plan, record_decisions=True)
 
-    # The plan object itself is untouched...
     assert {game.game_id: game.new_pick_side for game in plan.games} == sides_before
     assert all(game.changed is False for game in plan.games)
-    # ...the production revision ledger is untouched...
     pd.testing.assert_frame_equal(load_pick_revisions(artifacts_root), revisions_before)
     assert not (artifacts_root / "prospective" / "pick_revisions.parquet").is_file()
-    # ...and the overlay ledger records would-be picks that differ from the
-    # played side ONLY as separate challenger rows.
     assert result["recorded"] == 3
     ledger = load_nflcom_refresh_overlay_decisions(artifacts_root)
     by_game = ledger.set_index("game_id")
@@ -501,11 +473,6 @@ def test_overlay_can_never_alter_the_played_pick_or_the_revision_ledger(
     assert by_game.loc["g_flip", "nflcom_would_be_pick_side"] == "AWAY"
     assert by_game.loc["g_tie", "nflcom_would_be_pick_side"] == sides_before["g_tie"]
     assert set(ledger.columns) == set(NFLCOM_REFRESH_OVERLAY_COLUMNS)
-
-
-# ---------------------------------------------------------------------------
-# 4. Challenger record emission (opt-in, append-only)
-# ---------------------------------------------------------------------------
 
 
 def test_record_skips_the_ledger_write_by_default(tmp_path: Path) -> None:

@@ -67,7 +67,7 @@ from nfl_ats.cfb_benchmark import (
 from nfl_ats.cfb_features import (
     CFB_MODEL_FEATURE_COLUMNS,
     CFB_STATE_METRICS,
-    _filtered_schedule,  # private helper; precedented reuse, see cfb_opponent_adjustment_screen.py
+    _filtered_schedule,
     attach_cfb_team_states,
     build_cfb_game_features,
     build_cfb_team_game_metrics,
@@ -93,12 +93,6 @@ ROUTE_MIN_TRANSITIONS = 20
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260817
 EVALUATION_WINDOWS = ("clean_core", "thin_2006_2011", "regime_2020", "all")
-
-
-# ---------------------------------------------------------------------------
-# Step 1: estimate a per-metric retention vector from CFB's own history
-# (the NFL "Route 1" methodology, re-implemented for CFB team-game metrics).
-# ---------------------------------------------------------------------------
 
 
 def _season_team_means(
@@ -198,13 +192,6 @@ def estimate_per_metric_retention(
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Step 2: build the per-metric feature table by splicing single-metric state
-# columns (each built at its own scalar retention via the unmodified
-# production functions) onto a copy of the baseline (0.67) feature table.
-# ---------------------------------------------------------------------------
-
-
 def build_state_input(
     schedules: pd.DataFrame, pbp: pd.DataFrame, start_season: int, end_season: int
 ) -> pd.DataFrame:
@@ -243,9 +230,6 @@ def build_per_metric_features(
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:

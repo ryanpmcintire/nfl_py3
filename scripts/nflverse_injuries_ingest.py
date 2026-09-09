@@ -102,19 +102,6 @@ RELEASE_URL_TEMPLATE = (
     "https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_{season}.parquet"
 )
 SEASON_START = 2009
-# Kept as a literal upper bound (not a live call to get_current_season() at
-# import time) so a snapshot's season range is reproducible from this
-# script's own text, matching every other ingest script's
-# SEASON_START/SEASON_END convention in this repo.
-#
-# Was 2025, chosen on 2026-08-26 as "one past the last season nflreadpy's own
-# get_current_season() resolved to". That reasoning imported nflreadpy's
-# rollover rule -- the Thursday after Labor Day -- into this repo's data
-# coverage, and for 2026 that Thursday (09-10) falls AFTER Week 1 opens on
-# Wednesday 09-09. Measured 2026-09-08: injuries_2026.parquet was already
-# published (11 rows, the NE/SEA opener) while every snapshot taken under the
-# old bound held zero 2026 rows, so the refresh overlays that read the newest
-# snapshot saw no injuries for the season's first game.
 SEASON_END = 2026
 
 
@@ -136,11 +123,8 @@ def fetch_season(season: int) -> dict[str, Any]:
     t0 = time.time()
     url = RELEASE_URL_TEMPLATE.format(season=season)
     try:
-        # Not nfl.load_injuries: its season guard refuses the current season
-        # until the Thursday after Labor Day. See
-        # nfl_ats.nflverse_current_season for the measurement.
         polars_frame = load_season_frame("injuries", season)
-    except Exception as exc:  # record the failure, keep going
+    except Exception as exc:
         return {
             "season": season,
             "url": url,
@@ -197,10 +181,6 @@ def run_ingest(output_dir: Path) -> None:
             "no seasons fetched successfully -- aborting, not writing an empty snapshot"
         )
 
-    # Union of columns across seasons (2025 lacks date_modified but has
-    # season_type; 2009-2024 is the reverse) -- outer-join the column sets so
-    # every season's real columns survive; missing columns for a given
-    # season's rows become NaN, not silently dropped.
     combined = pd.concat(frames, ignore_index=True, sort=False)
     combined["season"] = pd.to_numeric(combined["season"], errors="raise").astype(int)
 

@@ -116,13 +116,8 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "spread_gap_zone_fade_overlay"
 
-#: Frozen BEFORE the 2011-2017 pre-2018 replication ran
-#: (registry/weak_signals.json:pick_conditioned_spread_gap_zone_pre2018's own
-#: description states the bucket bounds were predeclared). Not free
-#: parameters of this overlay -- kept exactly as measured.
 SPREAD_GAP_LOWER_BOUND = 7.5
 SPREAD_GAP_UPPER_BOUND = 10.0
 
@@ -289,7 +284,7 @@ def record_spread_gap_zone_fade_challenger_decisions(
     only, never a fabricated paper-bet edge for the post-fade side.
     """
 
-    del data_root  # unused -- see docstring; kept for call-signature parity
+    del data_root
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

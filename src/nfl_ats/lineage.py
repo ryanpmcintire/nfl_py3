@@ -82,8 +82,6 @@ from nfl_ats.quarterbacks import QB_FEATURE_VERSION
 
 LINEAGE_SCHEMA_VERSION = 1
 
-#: Version of *this* module's record-construction rules.  Bumping it means a
-#: previously emitted ``lineage.json`` was built by different logic.
 BUILDER_VERSION = "v1"
 
 LINEAGE_FILENAME = "lineage.json"
@@ -96,10 +94,6 @@ OVERLAY_FIELD_PREFIX = "overlay:"
 TIEBREAKER_FIELD_PREFIX = "tiebreaker:"
 MODEL_INPUT_FIELD_PREFIX = "model_input:"
 
-#: Decision-bearing fields that must exist on every card, whatever else did or
-#: did not fire.  Overlay and tiebreaker fields are conditional by nature (an
-#: overlay that never fired has nothing to justify) and so are not listed here;
-#: when present they are still validated in full.
 REQUIRED_DECISION_BEARING_FIELDS: tuple[str, ...] = (
     FIELD_PICK,
     FIELD_MODEL_PROBABILITY,
@@ -121,11 +115,6 @@ def is_decision_bearing(card_field: str) -> bool:
     return card_field in REQUIRED_DECISION_BEARING_FIELDS or card_field.startswith(
         (OVERLAY_FIELD_PREFIX, TIEBREAKER_FIELD_PREFIX, MODEL_INPUT_FIELD_PREFIX)
     )
-
-
-# ---------------------------------------------------------------------------
-# Small conversions
-# ---------------------------------------------------------------------------
 
 
 def _optional_text(value: Any) -> str | None:
@@ -165,10 +154,6 @@ def _iso(instant: datetime) -> str:
     return instant.astimezone(UTC).isoformat()
 
 
-#: ENG-23: per-game columns a forecast frame may carry for the
-#: ``player_injuries`` family -- see the identical mechanism for
-#: :data:`nfl_ats.market_observation.MARKET_OBSERVED_AT_COLUMN` on the
-#: ``market_line`` record in :func:`build_card_lineage`.
 INJURY_OBSERVED_AT_COLUMNS: tuple[str, ...] = ("home_injury_observed_at", "away_injury_observed_at")
 
 
@@ -215,20 +200,12 @@ def parse_snapshot_capture(snapshot_id: str | None) -> str | None:
     return instant.replace(tzinfo=UTC).isoformat()
 
 
-# ---------------------------------------------------------------------------
-# Records
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class LineageRecord:
     """One card field's path back to a source snapshot and a builder."""
 
     card_field: str
     feature_family: str
-    #: Snapshot directory name, snapshot id, or artifact identity -- whatever
-    #: names the immutable source that was read.  ``None`` is permitted only
-    #: when ``unknown_source_reason`` says why.
     source_snapshot: str | None
     source_captured_at: str | None
     effective_timestamp: str
@@ -365,31 +342,18 @@ class CardLineage:
         return replace(self, entries=self.entries + tuple(entries))
 
 
-# ---------------------------------------------------------------------------
-# Feature family -> builder / snapshot mapping
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class FamilyBuilder:
     """Which module builds a feature family, and where its source is recorded."""
 
     builder_module: str
     builder_version: str
-    #: Key in the feature-table manifest naming the immutable source snapshot.
     manifest_snapshot_key: str | None = None
     unknown_source_reason: str | None = None
 
 
 NFLVERSE_SNAPSHOT_KEY = "source_snapshot"
 
-#: Why a base-table family usually cannot name its snapshot: the derived
-#: manifests (``game_features_weak_stack.manifest.json`` and every other
-#: enrichment step) record ``source_features`` -- a *path* to the parquet they
-#: enriched -- but do not propagate the nflverse ``source_snapshot`` id that
-#: the base ``game_features`` build recorded.  Read 2026-09-04 from
-#: ``data/processed/*.manifest.json``: only ``game_features.manifest.json``
-#: carries ``source_snapshot``.
 BASE_SNAPSHOT_UNRECORDED = (
     "derived feature-table manifests record source_features (a path) but do not "
     "propagate the base nflverse source_snapshot id; see docs/feature_lineage.md"
@@ -479,11 +443,6 @@ DEFAULT_FAMILY_BUILDER = FamilyBuilder(
     "there to record its builder module and source snapshot",
 )
 
-#: Families whose builder version the feature-table manifest already records.
-#: Preferring the manifest means the record reports what actually built the
-#: table rather than whatever the importing process happens to have on disk --
-#: the production weak-stack table says ``player_feature_version:
-#: "v3-availability-v1"`` while ``players.PLAYER_FEATURE_VERSION`` is ``"v2"``.
 MANIFEST_VERSION_KEYS: dict[str, str] = {
     "pbp": "pbp_feature_version",
     "pbp_opponent_adjusted": "pbp_feature_version",
@@ -524,11 +483,6 @@ def families_for_columns(columns: Iterable[str]) -> tuple[str, ...]:
     if wanted.difference(claimed):
         families.append("unassigned")
     return tuple(families)
-
-
-# ---------------------------------------------------------------------------
-# Non-model sources supplied by the caller
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -586,9 +540,6 @@ class TiebreakerSource:
         )
 
 
-#: Overlay members whose decision reads the point-in-time arrest snapshot.
-#: Every other member of the played policy reads only the schedules table and
-#: the incoming card, both already covered by the model-input records.
 ARREST_SNAPSHOT_MEMBERS = frozenset({"player_arrests_back_side_policy"})
 
 
@@ -644,11 +595,6 @@ def overlay_sources_from_composition(
             )
         )
     return tuple(sources)
-
-
-# ---------------------------------------------------------------------------
-# Building the card lineage
-# ---------------------------------------------------------------------------
 
 
 def feature_table_manifest(metadata: Mapping[str, Any]) -> Mapping[str, Any]:
@@ -750,20 +696,9 @@ def _family_record(
         if snapshot is not None:
             captured = parse_snapshot_capture(snapshot)
         else:
-            # ENG-22: this manifest carries no direct key for the family
-            # (true of every derived feature table for the base nflverse
-            # source_snapshot -- see inherit_source_snapshots), but it may
-            # have inherited one transitively. Prefer that real snapshot id
-            # over the feature-table digest fallback below; a legacy
-            # manifest with no source_snapshots block simply gets (None,
-            # None) here and falls through exactly as it did before ENG-22.
             snapshot, captured = _inherited_snapshot(builder.manifest_snapshot_key, manifest)
 
     if frame_captured_at is not None:
-        # ENG-23: the frame's own per-game observed-at (e.g. INJURY_OBSERVED_AT_COLUMNS
-        # on player_injuries) is a real, game-level capture instant -- prefer it over
-        # the whole-table manifest value above for source_captured_at/effective_timestamp
-        # only; source_snapshot (WHICH snapshot) is unaffected either way.
         captured = _iso(frame_captured_at)
 
     captured_instant = as_utc(captured)
@@ -798,10 +733,6 @@ def _family_record(
     )
 
 
-#: Display-only fields the published Markdown card renders (see
-#: ``publishing._published_card``), each with the reason it carries no lineage.
-#: Passed to :func:`build_card_lineage` so a reader of ``lineage.json`` sees the
-#: whole card, not only the parts that happen to be traceable.
 PUBLISHED_DISPLAY_FIELDS: dict[str, str] = {
     "Date": "formatted from the card's own gameday column; introduces no new source",
     "Matchup": "formatted from home_team/away_team, already covered by model_input:market",
@@ -880,26 +811,10 @@ def build_card_lineage(
     market_snapshot = _optional_text(manifest.get(NFLVERSE_SNAPSHOT_KEY))
     market_captured = parse_snapshot_capture(market_snapshot)
     if market_snapshot is None:
-        # ENG-22: same inheritance preference as _family_record -- a derived
-        # manifest that never recorded source_snapshot directly may still
-        # name it via an inherited source_snapshots block.
         market_snapshot, market_captured = _inherited_snapshot(NFLVERSE_SNAPSHOT_KEY, manifest)
-    # ENG-23: the frame's own market_observed_at_utc (the point-in-time odds
-    # capture's observation instant, joined by nfl_ats.market_observation) is
-    # a real per-card capture instant -- prefer it over the manifest-derived
-    # value above for captured_at/effective_timestamp only; source_snapshot
-    # (WHICH snapshot) is unaffected, same rule as _family_record below.
     market_frame_captured = _frame_observed_at(forecast, (MARKET_OBSERVED_AT_COLUMN,))
     if market_frame_captured is not None:
         market_captured = _iso(market_frame_captured)
-    # The pool grades on the spread printed on its own contest board, and the
-    # feature build applies that number as the decision line for any week it
-    # captured (docs/splash_lines.md, nfl_ats.features.apply_decision_lines).
-    # When this card's week is one of them, the board capture IS the market
-    # line's source -- so it wins over both the nflverse snapshot the rest of
-    # the schedules table came from and the odds-consensus observation above,
-    # neither of which the pick was graded against. Weeks with no capture are
-    # untouched and keep resolving exactly as they did before.
     decision_line = decision_line_week(
         manifest, _optional_int(metadata.get("season")), _optional_int(metadata.get("week"))
     )
@@ -932,8 +847,6 @@ def build_card_lineage(
         ),
         CardLineageEntry(FIELD_MARKET_LINE, True, market_record),
     ]
-    # ENG-23: same per-family override as the market_line record above, for
-    # the one other family with a per-game observed-at column on the frame.
     injury_frame_captured = _frame_observed_at(forecast, INJURY_OBSERVED_AT_COLUMNS)
     entries.extend(
         CardLineageEntry(
@@ -1036,10 +949,6 @@ def extend_card_lineage_for_publication(
         updates["prediction_timestamp"] = _iso(resolved_prediction_instant)
     return replace(extended, **updates)
 
-
-# ---------------------------------------------------------------------------
-# Validation -- the release-blocking half
-# ---------------------------------------------------------------------------
 
 LINEAGE_CHECKS: tuple[str, ...] = (
     "lineage_schema",

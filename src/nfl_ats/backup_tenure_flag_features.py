@@ -116,17 +116,13 @@ from nfl_ats.players import canonicalize_rosters
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: The one new column this candidate profile adds. Frozen name.
 BACKUP_TENURE_GAP_COLUMN = BACKUP_TENURE_GAP_ON_PRODUCTION_FEATURE_COLUMNS[0]
 
-#: Pinned, not "newest" -- see module docstring.
 DEFAULT_WEEKLY_ROSTERS_PATH = REPO_ROOT / "data/players/raw/20260817T184901Z/weekly_rosters.parquet"
 
-#: Frozen population restriction, per the fleet task's explicit instruction.
 BACKUP_TENURE_POPULATION_SEASON_START = 2013
 BACKUP_TENURE_POPULATION_SEASON_END = 2025
 
-#: "system-tenured" threshold: prior seasons with the SAME franchise.
 BACKUP_TENURE_SYSTEM_TENURED_MIN_SEASONS = 2
 
 _REQUIRED_SCHEDULE_COLUMNS = {
@@ -179,11 +175,6 @@ def _canonical_team(codes: pd.Series) -> pd.Series:
     return codes.astype(str).replace(TEAM_ABBREVIATION_ALIASES)
 
 
-# ---------------------------------------------------------------------------
-# Starter identity + backup-start detection
-# ---------------------------------------------------------------------------
-
-
 def _qb_start_long_table(schedule: pd.DataFrame) -> pd.DataFrame:
     """One row per (game, side) with a resolved starter: ``team``, ``qb_id``,
     that team's own PRECEDING archived-game starter (``prev_qb_id``, no
@@ -212,21 +203,12 @@ def _qb_start_long_table(schedule: pd.DataFrame) -> pd.DataFrame:
     long_df = pd.concat(sides, ignore_index=True)
     long_df = long_df.sort_values(["team", "gameday_dt", "game_id"]).reset_index(drop=True)
 
-    # Deliberately grouped by team ONLY (no season) -- the presumed starter
-    # carries across the offseason, the declared proxy for a "preseason"
-    # depth-chart QB1 the archive has no direct feed for. See module
-    # docstring.
     grouped = long_df.groupby("team", sort=False)
     long_df["prev_qb_id"] = grouped["qb_id"].shift(1)
     long_df["is_backup_start"] = long_df["prev_qb_id"].notna() & long_df["qb_id"].ne(
         long_df["prev_qb_id"]
     )
     return long_df
-
-
-# ---------------------------------------------------------------------------
-# Tenure lookup
-# ---------------------------------------------------------------------------
 
 
 def _prior_season_tenure(long_df: pd.DataFrame, rosters: pd.DataFrame) -> pd.DataFrame:
@@ -246,20 +228,12 @@ def _prior_season_tenure(long_df: pd.DataFrame, rosters: pd.DataFrame) -> pd.Dat
     roster_pairs = roster_pairs.drop_duplicates(["gsis_id", "team", "season"]).sort_values(
         ["gsis_id", "team", "season"]
     )
-    # Cumulative count of this player's OWN distinct (gsis_id, team) seasons
-    # up to and including each row -- at the row for season S this equals
-    # the number of distinct seasons <= S for that (gsis_id, team) pair.
     roster_pairs["seasons_through_row"] = (
         roster_pairs.groupby(["gsis_id", "team"], sort=False).cumcount() + 1
     )
 
     known_ids = set(roster_pairs["gsis_id"].unique())
 
-    # ``merge_asof`` requires BOTH frames sorted globally by the ``on`` key
-    # (season) -- sorting only within each (gsis_id, team) group is not
-    # sufficient and raises "left/right keys must be sorted" (verified
-    # 2026-09-05 against a synthetic two-group case where group order and
-    # global season order disagree).
     query = long_df.loc[:, ["qb_id", "team", "season"]].rename(columns={"qb_id": "gsis_id"})
     query = query.reset_index().sort_values("season")
     matched = pd.merge_asof(
@@ -317,11 +291,6 @@ def describe_backup_tenure_population(schedule: pd.DataFrame, rosters: pd.DataFr
         "n_unresolved_tenure_backup_sides": len(unresolved),
         "flagged_games_by_season": {int(cast(int, k)): int(v) for k, v in by_season.items()},
     }
-
-
-# ---------------------------------------------------------------------------
-# Signed flag
-# ---------------------------------------------------------------------------
 
 
 def derive_backup_tenure_gap_features(
@@ -383,8 +352,6 @@ def derive_backup_tenure_gap_features(
     flag = np.where(favor_home & ~favor_away, 1.0, np.where(favor_away & ~favor_home, -1.0, 0.0))
     result[BACKUP_TENURE_GAP_COLUMN] = flag
 
-    # Frozen population restriction (see module docstring): 0.0 outside
-    # 2013-2025 regardless of what the computation above would say.
     season_by_game = (
         schedule.assign(game_id=schedule["game_id"].astype(str))
         .loc[:, ["game_id", "season"]]

@@ -85,7 +85,6 @@ def main() -> int:
     path = rotation.default_registry_path()
     registry = rotation.load_registry(path)
 
-    # --- (1) CFB declared_for_coverage stubs -> no_rotation_needed ---------
     cfb_stub_families = sorted(
         (
             family
@@ -108,7 +107,6 @@ def main() -> int:
         )
     print(f"no_rotation_needed records added: {len(cfb_stub_families)}")
 
-    # --- (2) pbp_drive_bundle: grandfather the pre-validator width ---------
     pbp = registry.families[GRANDFATHER_FAMILY]
     if len(pbp.windows) != 1:
         raise SystemExit(

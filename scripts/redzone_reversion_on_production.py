@@ -94,15 +94,7 @@ RIDGE_ALPHA = 10.0
 DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_redzone_third_down.parquet"
 ROTATION_FAMILY = "redzone_reversion_on_production"
 
-# Rotation-assigned window (docs/redzone_reversion_on_production.md section 7);
-# overridable via --seasons. The instrument checks run on the same window as
-# the screen, for comparability with the sibling on-production runners.
 DEFAULT_SEASONS = "2011-2013"
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_window(
@@ -337,11 +329,6 @@ def column_distribution(features: pd.DataFrame, seasons: tuple[int, ...]) -> dic
         "share_plus_one": float((covered == 1.0).mean()) if len(covered) else float("nan"),
         "share_non_zero": float((covered != 0.0).mean()) if len(covered) else float("nan"),
     }
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

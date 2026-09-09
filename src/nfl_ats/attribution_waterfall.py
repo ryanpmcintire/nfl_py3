@@ -50,7 +50,6 @@ from nfl_ats.provenance import sha256_file
 
 WATERFALL_SCHEMA_VERSION = 1
 
-# Steps-sum-to-final tolerance, in points. Same order as market_decomposition.
 WATERFALL_RECONCILIATION_ATOL = 1e-6
 
 ARTIFACT_DIRNAME = "attribution_waterfall"

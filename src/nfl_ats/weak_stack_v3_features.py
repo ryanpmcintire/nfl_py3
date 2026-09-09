@@ -76,11 +76,9 @@ from nfl_ats.constants import (
 from nfl_ats.features import add_ats_outcomes
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot
 
-# Predeclared, round thresholds reused verbatim from the registry constructs
-# these columns are named after -- never re-fit to this session's data.
-BLOWOUT_MARGIN_POINTS = 17.0  # scripts/nfl_bias_battery_screen.py
-LONG_DISTANCE_MI = 1500.0  # scripts/nfl_travel_rest_battery_screen.py
-RETURN_TRIP_MAX_HOME_REST_DAYS = 8  # scripts/nfl_travel_rest_battery_screen.py
+BLOWOUT_MARGIN_POINTS = 17.0
+LONG_DISTANCE_MI = 1500.0
+RETURN_TRIP_MAX_HOME_REST_DAYS = 8
 EARTH_RADIUS_MI = 3958.8
 
 POSTSEASON_GAME_TYPES = ("WC", "DIV", "CON", "SB")
@@ -113,11 +111,6 @@ def latest_schedules_snapshot(repo_root: Path) -> Path:
     if not candidates:
         raise FileNotFoundError(f"no data/raw/*/schedules.parquet snapshot found under {repo_root}")
     return candidates[-1]
-
-
-# ---------------------------------------------------------------------------
-# gap_v3_bias: division revenge, sandwich spot, post-blowout letdown/bounce
-# ---------------------------------------------------------------------------
 
 
 def _team_long_table(schedules: pd.DataFrame) -> pd.DataFrame:
@@ -169,10 +162,6 @@ def _team_long_table(schedules: pd.DataFrame) -> pd.DataFrame:
 def _add_gap_bias_flags(long_df: pd.DataFrame) -> pd.DataFrame:
     long_df = long_df.copy()
 
-    # division_revenge: 2nd+ meeting THIS SEASON vs the SAME opponent, and
-    # the team LOST the first meeting (team_score_margin < 0). Mirrors
-    # nfl_ats.experiment_runner._flag_division_revenge_game exactly (same
-    # (team, opponent, season) grouping, cumcount + transform("first")).
     ordered = long_df.sort_values(["team", "opponent", "season", "gameday"]).copy()
     grouped = ordered.groupby(["team", "opponent", "season"], sort=False)
     meeting_rank = grouped.cumcount()
@@ -182,20 +171,11 @@ def _add_gap_bias_flags(long_df: pd.DataFrame) -> pd.DataFrame:
         ordered[["game_id", "team", "gap_division_revenge"]], on=["game_id", "team"], how="left"
     )
 
-    # sandwich_spot: non-division game flanked by a division game the week
-    # before AND the week after, WITHIN the same team-season. This reads only
-    # div_game, a structural full-season schedule fact fixed before Week 1
-    # (like surface_switch_flag's modal-surface aggregate) -- never an
-    # outcome column. Mirrors FLAG_BUILDERS["sandwich_spot"].
     grouped = long_df.groupby(["team", "season"], sort=False)
     prior_div = grouped["div_game"].shift(1)
     next_div = grouped["div_game"].shift(-1)
     long_df["gap_sandwich_spot"] = (long_df["div_game"] == 0) & (prior_div == 1) & (next_div == 1)
 
-    # post_blowout_win_letdown / loss_bounce: team's IMMEDIATELY PRECEDING
-    # game this season (strictly prior by gameday, via shift(1) on a
-    # gameday-sorted group) was a >=17-raw-point win / loss. Mirrors
-    # scripts/nfl_bias_battery_screen.py's identically-named hypotheses.
     grouped = long_df.groupby(["team", "season"], sort=False)
     prior_margin = grouped["team_score_margin"].shift(1)
     long_df["gap_post_blowout_win_letdown"] = prior_margin >= BLOWOUT_MARGIN_POINTS
@@ -226,11 +206,6 @@ def build_gap_bias_features(schedules: pd.DataFrame) -> pd.DataFrame:
     for metric in GAP_V3_BIAS_METRICS:
         wide[f"{metric}_diff"] = wide[f"{metric}_home"] - wide[f"{metric}_away"]
     return wide.reset_index()
-
-
-# ---------------------------------------------------------------------------
-# gap_v3_penalty: diff_penalty_rate_prior
-# ---------------------------------------------------------------------------
 
 
 def team_season_penalty_rate(pbp: pd.DataFrame) -> pd.DataFrame:
@@ -285,11 +260,6 @@ def build_gap_penalty_feature(pbp: pd.DataFrame, schedules: pd.DataFrame) -> pd.
         result["home_penalty_rate_prior"] - result["away_penalty_rate_prior"]
     )
     return result[["game_id", "diff_penalty_rate_prior"]]
-
-
-# ---------------------------------------------------------------------------
-# gap_v3_travel: thursday_pure, return_trip_hangover
-# ---------------------------------------------------------------------------
 
 
 def load_stadium_coordinates(path: Path) -> dict[str, dict[str, Any]]:
@@ -385,11 +355,6 @@ def build_gap_travel_rest_features(
     )
     result["gap_return_trip_hangover_flag"] = hangover.fillna(False).astype(float)
     return result[["game_id", "gap_thursday_pure_flag", "gap_return_trip_hangover_flag"]]
-
-
-# ---------------------------------------------------------------------------
-# Orchestrator
-# ---------------------------------------------------------------------------
 
 
 def attach_weak_stack_v3_gap_features(base: pd.DataFrame, *, repo_root: Path) -> pd.DataFrame:

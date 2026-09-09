@@ -27,8 +27,6 @@ from key_line_lattice_opener_eval import (
     units_for,
 )
 
-#: Lines either side of every atom, plus the quarter-point lines the archive
-#: really carries inside the 7 bucket (2023_07_SF_MIN is quoted at -6.75).
 LINES = pd.Series(
     [
         0.0,
@@ -82,11 +80,9 @@ def test_key_line_mask_selects_only_lines_quoted_on_an_atom():
     mask = key_line_mask(LINES, KEY_NUMBERS)
     selected = set(LINES[mask])
     assert selected == EXPECTED_KL1
-    # A quarter-point line inside the 7 bucket is NOT on the atom.
     assert not mask[list(LINES).index(6.75)]
     assert not mask[list(LINES).index(-6.75)]
     assert not mask[list(LINES).index(7.25)]
-    # Neither is a pick'em or any half-point line.
     assert not mask[list(LINES).index(0.0)]
     assert not mask[list(LINES).index(3.5)]
 
@@ -107,7 +103,6 @@ def test_non_key_lines_reproduce_the_served_read_bit_for_bit():
         applied = restrict(LINES, served, served_push, mapped, mapped_push, keys)
         untouched = ~applied["touched"]
         assert untouched.any()
-        # Bit-for-bit, not approximately: no tolerance is allowed here.
         assert list(applied["probability"][untouched]) == list(served[untouched])
         assert list(applied["push"][untouched]) == list(served_push[untouched])
 
@@ -194,7 +189,6 @@ def test_recorder_argv_is_admissible_and_carries_a_plain_summary():
     summary = argv[argv.index("--plain-summary") + 1]
     assert summary and not any(token in summary.lower() for token in JARGON)
     assert argv[argv.index("--probability-positive") + 1] == "0.126300000000"
-    # Scientific notation would be read by argparse as a flag; fixed point is not.
     assert "e" not in argv[argv.index("--effect") + 1]
     assert "--replace" in argv
 

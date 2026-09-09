@@ -27,10 +27,6 @@ if str(ROOT / "scripts") not in sys.path:
 
 import officials_coverage_report as ocr  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# Fixture builders
-# ---------------------------------------------------------------------------
-
 FULL_CREW = [
     ("Referee", "John Smith"),
     ("Umpire", "Ann Ump"),
@@ -128,11 +124,6 @@ def _write_schedule(path: Path, rows: list[dict[str, object]]) -> None:
     frame.to_parquet(path)
 
 
-# ---------------------------------------------------------------------------
-# Unit-level: position normalization, failure classification
-# ---------------------------------------------------------------------------
-
-
 def test_normalize_position_aliases_down_judge_to_head_linesman() -> None:
     assert ocr.normalize_position("Down Judge") == "Head Linesman"
     assert ocr.normalize_position("Referee") == "Referee"
@@ -140,11 +131,6 @@ def test_normalize_position_aliases_down_judge_to_head_linesman() -> None:
 
 def test_core_crew_positions_has_exactly_seven_entries() -> None:
     assert len(ocr.CORE_CREW_POSITIONS) == 7
-
-
-# ---------------------------------------------------------------------------
-# Manifest loading, defensively
-# ---------------------------------------------------------------------------
 
 
 def test_load_run_manifest_missing_directory_has_no_manifest(tmp_path: Path) -> None:
@@ -208,11 +194,6 @@ def test_read_json_with_retry_gives_up_after_exhausting_attempts() -> None:
     assert error is not None and "OSError" in error
 
 
-# ---------------------------------------------------------------------------
-# Per-game record building: the four required scenarios
-# ---------------------------------------------------------------------------
-
-
 def test_build_game_record_complete_crew(tmp_path: Path) -> None:
     run_dir = tmp_path / "run_a"
     _write_html(run_dir, "html/aaa1.html", _officials_html(FULL_CREW))
@@ -273,7 +254,7 @@ def test_build_game_record_tolerates_html_file_named_but_not_yet_on_disk(tmp_pat
         game_id="2009_01_ZZZ_YYY",
         pfr_id="zzz1",
         season=2009,
-        html_file="html/zzz1.html",  # never actually written in this test
+        html_file="html/zzz1.html",
         outcome="fetched",
     )
     record = ocr.build_game_record(run_dir, "run_a", row)
@@ -300,11 +281,6 @@ def test_failed_outcome_label_with_a_kept_page_still_counts_as_captured(tmp_path
     record = ocr.build_game_record(run_dir, "run_a", row)
     assert ocr.is_captured(record) is True
     assert ocr.is_failed(record) is False
-
-
-# ---------------------------------------------------------------------------
-# Cross-run duplicate resolution
-# ---------------------------------------------------------------------------
 
 
 def test_resolve_canonical_games_prefers_the_newest_captured_duplicate() -> None:
@@ -371,11 +347,6 @@ def test_resolve_canonical_games_no_conflict_for_a_single_run() -> None:
     canonical, conflicts = ocr.resolve_canonical_games([solo])
     assert conflicts == []
     assert set(canonical) == {"2009_01_AAA_BBB"}
-
-
-# ---------------------------------------------------------------------------
-# End-to-end: build_summary over two synthetic run directories
-# ---------------------------------------------------------------------------
 
 
 @pytest.fixture
@@ -508,14 +479,14 @@ def test_build_summary_per_run_season_buckets(two_run_archive: tuple[Path, Path]
     assert run_a_2009["failed"] == 1
     assert run_a_2009["failed_fetch"] == 1
     assert run_a_2009["no_capture_found"] == 0
-    assert run_a_2009["pending"] == 1  # 5 expected - 4 attempted
-    assert run_a_2009["distinct_referees"] == 2  # John Smith, Old Ref
+    assert run_a_2009["pending"] == 1
+    assert run_a_2009["distinct_referees"] == 2
 
     run_b_2009 = buckets[("run_b", 2009)]
     assert run_b_2009["attempted"] == 1
     assert run_b_2009["captured"] == 1
     assert run_b_2009["complete_crew"] == 1
-    assert run_b_2009["pending"] == 4  # 5 expected - 1 attempted
+    assert run_b_2009["pending"] == 4
     assert run_b_2009["distinct_referees"] == 1
 
 
@@ -538,8 +509,6 @@ def test_build_summary_canonical_coverage_collapses_the_duplicate(
     raw_root, schedule_path = two_run_archive
     summary = ocr.build_summary(raw_root, schedule_path=schedule_path)
 
-    # 4 distinct game_ids total (aaa1, ccc1, eee1, ggg1); the duplicate
-    # collapses to one canonical row, so 4, not 5.
     assert summary["n_canonical_games"] == 4
 
     season_row = next(
@@ -547,10 +516,10 @@ def test_build_summary_canonical_coverage_collapses_the_duplicate(
     )
     assert season_row["expected_games"] == 5
     assert season_row["games_present_any_run"] == 4
-    assert season_row["captured"] == 3  # aaa1, ccc1 captured, ggg1(canonical) captured; eee1 failed
-    assert season_row["complete_crew"] == 2  # aaa1 and ggg1(canonical); ccc1 missing referee
+    assert season_row["captured"] == 3
+    assert season_row["complete_crew"] == 2
     assert season_row["complete_crew_pct_of_expected"] == pytest.approx(2 / 5)
-    assert season_row["distinct_referees"] == 2  # John Smith, New Ref (canonical winner)
+    assert season_row["distinct_referees"] == 2
 
 
 def test_build_summary_referee_coverage_uses_the_canonical_winner(
@@ -562,7 +531,7 @@ def test_build_summary_referee_coverage_uses_the_canonical_winner(
     coverage = summary["referee_coverage"]
     assert coverage["n_distinct_referees"] == 2
     assert coverage["games_per_referee"] == {"John Smith": 1, "New Ref": 1}
-    assert "Old Ref" not in coverage["games_per_referee"]  # superseded duplicate, not canonical
+    assert "Old Ref" not in coverage["games_per_referee"]
 
 
 def test_crew_tilt_consumer_status_reports_no_consumer_and_no_stated_bar() -> None:
@@ -578,11 +547,6 @@ def test_render_text_report_smoke(two_run_archive: tuple[Path, Path]) -> None:
     assert "Cross-run duplicate games: 1" in text
     assert "Referee-name coverage overall" in text
     assert "Crew-tilt feature consumer status" in text
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 
 def test_main_writes_a_stamped_json_artifact(
@@ -611,7 +575,7 @@ def test_main_writes_a_stamped_json_artifact(
 
     captured = capsys.readouterr()
     assert "wrote" in captured.out
-    assert "Run directories discovered" not in captured.out  # --quiet suppressed the text report
+    assert "Run directories discovered" not in captured.out
 
 
 def test_main_never_writes_outside_the_requested_out_path(

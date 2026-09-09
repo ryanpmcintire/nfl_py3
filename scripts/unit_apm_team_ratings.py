@@ -87,7 +87,6 @@ def correlation_summary(frame: pd.DataFrame, x: str, y: str) -> dict:
     if len(frame) < 3 or not a.std() or not b.std():
         return {"pairs": len(frame), "pearson": None, "ci95": None}
     r = float(np.corrcoef(a, b)[0, 1])
-    # Sufficient statistics make 20,000 cluster draws inexpensive.
     stats = (
         pd.DataFrame(
             {

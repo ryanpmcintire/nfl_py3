@@ -37,11 +37,6 @@ def _load(name: str) -> bytes:
     return (FIXTURES / name).read_bytes()
 
 
-# ---------------------------------------------------------------------------
-# Pre-existing formats: must still parse exactly as before (regression guard)
-# ---------------------------------------------------------------------------
-
-
 def test_era_a_4bracket_still_parses_all_four_methods() -> None:
     parsed = parse_capture_html(_load("era_a_4bracket_snippet.html"))
 
@@ -49,9 +44,6 @@ def test_era_a_4bracket_still_parses_all_four_methods() -> None:
     assert parsed.era_format == ERA_SAGARIN_COM
     assert parsed.home_edge_rating == 2.74
     assert parsed.home_edge_methods == [2.73, 2.74, 2.74]
-    # Fixtures are trimmed to 3 of 32 real team rows, so parse_error is the
-    # expected "too few rows" flag -- not one of the genuine failure modes
-    # (no_header_match / no_team_rows) that would indicate a real bug.
     assert parsed.parse_error == "only_3_teams"
 
     teams = {row["team_name_raw"]: row for row in parsed.team_rows}
@@ -71,9 +63,6 @@ def test_era_b_1bracket_still_parses_single_home_edge() -> None:
     assert parsed.era_format == ERA_USATODAY
     assert parsed.home_edge_rating == 2.52
     assert parsed.home_edge_methods == []
-    # Fixtures are trimmed to 3 of 32 real team rows, so parse_error is the
-    # expected "too few rows" flag -- not one of the genuine failure modes
-    # (no_header_match / no_team_rows) that would indicate a real bug.
     assert parsed.parse_error == "only_3_teams"
 
     teams = {row["team_name_raw"]: row for row in parsed.team_rows}
@@ -81,11 +70,6 @@ def test_era_b_1bracket_still_parses_single_home_edge() -> None:
     assert steelers["team_code"] == "PIT"
     assert steelers["elo_chess_value"] == 28.40
     assert steelers["pure_points_value"] == 28.88
-
-
-# ---------------------------------------------------------------------------
-# WP19 fix: the transitional 3-bracket and comma-separated formats
-# ---------------------------------------------------------------------------
 
 
 def test_transitional_3bracket_home_advantage_now_parses(_load=_load) -> None:
@@ -97,18 +81,9 @@ def test_transitional_3bracket_home_advantage_now_parses(_load=_load) -> None:
 
     assert parsed.season == 2012
     assert parsed.header_week_number == 8
-    assert parsed.era_format == ERA_USATODAY  # 2-method column shape, not 3
+    assert parsed.era_format == ERA_USATODAY
     assert parsed.home_edge_rating == 2.02
-    # Per-method values are deliberately NOT written into the
-    # golden_mean/pure_points/elo_score slots (those assume a fixed
-    # GOLDEN_MEAN/PURE_POINTS/ELO_SCORE order); this era's real methods are
-    # ELO_CHESS/PURE POINTS, so home_edge_methods stays empty rather than
-    # mislabeling data -- only home_edge_rating (what the join needs) is
-    # recovered.
     assert parsed.home_edge_methods == []
-    # Fixtures are trimmed to 3 of 32 real team rows, so parse_error is the
-    # expected "too few rows" flag -- not one of the genuine failure modes
-    # (no_header_match / no_team_rows) that would indicate a real bug.
     assert parsed.parse_error == "only_3_teams"
 
     teams = {row["team_name_raw"]: row for row in parsed.team_rows}
@@ -130,9 +105,6 @@ def test_transitional_3bracket_preseason_starting_ratings_variant() -> None:
     assert parsed.era_format == ERA_USATODAY
     assert parsed.home_edge_rating == 2.53
     assert parsed.home_edge_methods == []
-    # Fixtures are trimmed to 3 of 32 real team rows, so parse_error is the
-    # expected "too few rows" flag -- not one of the genuine failure modes
-    # (no_header_match / no_team_rows) that would indicate a real bug.
     assert parsed.parse_error == "only_3_teams"
     assert len(parsed.team_rows) == 3
 
@@ -149,9 +121,6 @@ def test_transitional_comma_home_edge_now_parses() -> None:
     assert parsed.era_format == ERA_USATODAY
     assert parsed.home_edge_rating == 3.04
     assert parsed.home_edge_methods == []
-    # Fixtures are trimmed to 3 of 32 real team rows, so parse_error is the
-    # expected "too few rows" flag -- not one of the genuine failure modes
-    # (no_header_match / no_team_rows) that would indicate a real bug.
     assert parsed.parse_error == "only_3_teams"
 
     teams = {row["team_name_raw"]: row for row in parsed.team_rows}
@@ -169,12 +138,6 @@ def test_transitional_formats_never_leave_home_edge_rating_null() -> None:
     ):
         parsed = parse_capture_html(_load(name))
         assert parsed.home_edge_rating is not None, name
-
-
-# ---------------------------------------------------------------------------
-# enumerate_cached_captures: reparse-only mode used to rebuild the alignment
-# view from disk without any new network calls (WP19 addition).
-# ---------------------------------------------------------------------------
 
 
 def test_enumerate_cached_captures_walks_pages_dir(tmp_path: Path) -> None:

@@ -31,10 +31,6 @@ from scripts.playcaller_change_screen import (
     team_game_table,
 )
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
 
 def _games(weeks: int = 6) -> pd.DataFrame:
     rows = []
@@ -78,13 +74,7 @@ def _history_rows(team: str, names: dict[int, str], *, sample_mode: str = "prese
     ]
 
 
-# ---------------------------------------------------------------------------
-# games_after_coordinator_change
-# ---------------------------------------------------------------------------
-
-
 def test_games_after_change_numbers_games_and_restarts_at_second_event() -> None:
-    # Week 3 kicks off 2024-09-22; week 5 kicks off 2024-10-06.
     events = pd.DataFrame(
         [
             _event("e1", "2024-09-17T15:00:00Z"),
@@ -143,7 +133,6 @@ def test_later_revision_cannot_change_earlier_rows() -> None:
         baseline.loc[baseline["game_id"].isin(earlier_rows["game_id"])].reset_index(drop=True),
         check_exact=True,
     )
-    # And the late revision only ever numbers games after its own instant.
     late_rows = with_later.loc[with_later["event_id"].eq("late_correction")]
     assert set(late_rows["game_id"]) == {"2024_06_B_A"}
     assert late_rows["game_number_after_change"].tolist() == [1]
@@ -176,11 +165,6 @@ def test_events_only_number_their_own_season_and_team() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# oc_tenure_at_season_start
-# ---------------------------------------------------------------------------
-
-
 def test_oc_tenure_buckets_and_unknowns() -> None:
     history = pd.DataFrame(
         _history_rows("A", {2019: "X", 2020: "X", 2021: "X", 2022: "Y"})
@@ -190,12 +174,11 @@ def test_oc_tenure_buckets_and_unknowns() -> None:
     assert list(result.columns) == list(OC_TENURE_COLUMNS)
     tenure = {(row.season, row.team): row.oc_tenure_years for row in result.itertuples()}
     assert tenure == {
-        (2021, "A"): 3,  # X in 2019, 2020, 2021
-        (2022, "A"): 1,  # Y replaces X
-        (2021, "B"): 1,  # Q replaces P
-        (2022, "B"): 2,  # Q kept; 2020 differed (parenthetical stripped)
+        (2021, "A"): 3,
+        (2022, "A"): 1,
+        (2021, "B"): 1,
+        (2022, "B"): 2,
     }
-    # 2019/2020 A and 2020 B need history that does not exist: unknown, never guessed.
     assert (2020, "A") not in tenure
     assert (2019, "A") not in tenure
     assert (2020, "B") not in tenure
@@ -236,11 +219,6 @@ def test_oc_tenure_ambiguous_team_season_is_unknown() -> None:
     )
     result = oc_tenure_at_season_start(ambiguous)
     assert result.empty
-
-
-# ---------------------------------------------------------------------------
-# Script pieces
-# ---------------------------------------------------------------------------
 
 
 def test_load_counted_events_keeps_only_supported_adjudications(tmp_path: Path) -> None:
@@ -329,14 +307,13 @@ def _features(n_weeks: int = 14) -> pd.DataFrame:
 def test_r1_flags_use_kickoff_boundary_and_first_game_only() -> None:
     features = _features()
     table = team_game_table(features, (2024, 2024))
-    events = pd.DataFrame([_event("e1", "2024-09-24T15:00:00Z")])  # between weeks 3 and 4
+    events = pd.DataFrame([_event("e1", "2024-09-24T15:00:00Z")])
     flagged = r1_flags(table, features, events)
     first = flagged.loc[flagged["first_game_after_change"]]
     assert first["game_id"].tolist() == ["2024_04_B_A"]
     assert first["team"].tolist() == ["A"]
     assert flagged.loc[flagged["games_2_to_4_after_change"], "week"].tolist() == [5, 6, 7]
 
-    # A revision landing after week 4's kickoff can never flag week 4.
     late = pd.DataFrame([_event("e1", "2024-09-29T17:00:00Z")])
     later = r1_flags(table, features, late)
     assert later.loc[later["first_game_after_change"], "game_id"].tolist() == ["2024_05_B_A"]
@@ -354,9 +331,6 @@ def test_opener_grading_replaces_line_and_drops_pushes() -> None:
     graded = opener_graded_features(features, per_game)
     assert len(graded) == 4
     assert graded["spread_line"].tolist() == [7.0, -7.0, 10.0, -1.0]
-    # Two games per week: rows are wk1 (result +7, +7) then wk2 (-7, -7).
-    # Row 0 lands exactly on its opener (push -> NaN, dropped by the team-game
-    # table); row 1 beats -7 by 14; rows 2-3 miss their openers.
     covers = graded["home_cover"].tolist()
     assert np.isnan(covers[0])
     assert covers[1:] == [1.0, 0.0, 0.0]

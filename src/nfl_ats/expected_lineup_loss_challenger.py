@@ -45,12 +45,8 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file
 from nfl_ats.quarterbacks import latest_depth_snapshot, load_depth_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "weak_stack_expected_lineup_loss"
 
-#: The profile this challenger's OWN weekly refit actually uses -- distinct
-#: from the active model's registered "weak_stack" (see module docstring's
-#: "Declared deviation" note).
 CANDIDATE_FEATURE_PROFILE = cast(MarginFeatureProfile, "weak_stack_expected_lineup_loss")
 
 

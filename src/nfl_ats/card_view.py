@@ -72,10 +72,6 @@ from nfl_ats.player_arrests_back_side_overlay import (
 from nfl_ats.prospective_scoring import artifact_model_config
 from nfl_ats.snapshots import latest_snapshot, load_snapshot, load_verified_snapshot
 
-# ---------------------------------------------------------------------------
-# The coach-fade overlay: which side actually gets picked
-# ---------------------------------------------------------------------------
-
 
 def _disabled_overlay(predictions: pd.DataFrame) -> OverlayResult:
     """A no-op overlay result, bypassing ``apply_coach_fade_overlay``'s own
@@ -159,11 +155,6 @@ def resolve_player_arrests_overlay(
         return _disabled_arrest_overlay(predictions)
 
 
-# ---------------------------------------------------------------------------
-# Best Pick nomination: which GAME gets the week's bonus pick
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class BestPickNomination:
     """Both rules' weekly nominations, plus which one is actually played.
@@ -179,7 +170,7 @@ class BestPickNomination:
     v1_game_id: str | None
     v1_tie_note: str
     v2_result: NominationV2Result | None
-    active_rule: str  # "v1" | "v2"
+    active_rule: str
     active_game_id: str | None
     active_tie_note: str
     method_note: str
@@ -352,17 +343,12 @@ def resolve_nomination(
     )
 
 
-# ---------------------------------------------------------------------------
-# Both levers together -- the convenience entry point
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class CardView:
     """What actually gets submitted for one weekly forecast: overlay-applied
     picks, the Best Pick nomination, and disclosure notes."""
 
-    predictions: pd.DataFrame  # overlay.overlaid_predictions, for convenience
+    predictions: pd.DataFrame
     overlay: OverlayResult
     arrest_overlay: ArrestOverlayResult
     nomination: BestPickNomination

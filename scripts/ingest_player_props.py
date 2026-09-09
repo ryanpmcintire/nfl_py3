@@ -123,9 +123,6 @@ DEFAULT_QUOTA_FLOOR = 1200
 DEFAULT_SLEEP_SECONDS = 0.4
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 
-# Same team-name map nfl_ats.market_data.NFL_TEAM_NAMES uses (kept standalone
-# here per this script's brief: no src/nfl_ats changes, no new dependency on
-# that module -- copied, not imported).
 NFL_TEAM_NAMES = {
     "Arizona Cardinals": "ARI",
     "Atlanta Falcons": "ATL",
@@ -427,11 +424,6 @@ def _fetch_json(
     raise ApiAbort(f"{_redact(full_url)} failed after {retries} attempts: {last_error}")
 
 
-# Offset in days to subtract from the week's anchor Sunday to land on a given
-# weekday, at noon UTC, within the same Tue..Mon NFL week cycle. Tranche 1
-# used Tuesday (offset 5) exclusively; tranche 2 added Saturday (offset 1) to
-# test whether a later-in-week snapshot captures a denser props board (see
-# docs/player_props_sourcing.md tranche-2 section for the measured result).
 SNAPSHOT_WEEKDAY_OFFSET_FROM_SUNDAY = {
     "sunday": 0,
     "monday": 6,
@@ -448,7 +440,7 @@ class WeekPlan:
     season: int
     week: int
     snapshot_utc: datetime
-    games: pd.DataFrame  # columns: home_team, away_team, gameday, game_id
+    games: pd.DataFrame
 
 
 def build_week_plans(
@@ -806,8 +798,6 @@ def run_pilot(
 
     ledger = Ledger()
 
-    # The very first plan's events-list call doubles as the run's live quota
-    # check. Every invocation owns a new immutable snapshot directory.
     first_plan = plans[0]
     print(
         f"Quota-check call (doubles as week 1's events list): season {first_plan.season} "
@@ -859,8 +849,6 @@ def run_pilot(
         _atomic_replace_json(out_dir / "manifest.json", manifest)
         return manifest
 
-    # Cache of (season, week) -> matched [(event, game_id), ...] so a phase-B
-    # pass over the same weeks never re-spends on the events-list call.
     matched_cache: dict[tuple[int, int], list[tuple[dict[str, Any], str]]] = {}
     matched_total_cache: dict[tuple[int, int], int] = {}
 
@@ -963,8 +951,6 @@ def run_pilot(
         )
         return summary
 
-    # Phase A: primary markets across every week in season order. The first
-    # plan's events list was already fetched above (dual-purpose quota check).
     stop_reason = None
     phase_a_complete_weeks: list[WeekPlan] = []
     for index, plan in enumerate(plans):
@@ -1010,8 +996,6 @@ def run_pilot(
             if spend_would_breach(CREDITS_PER_MARKET_REGION * len(phase_b_markets)):
                 stop_reason = "budget_or_floor_phase_b"
                 break
-            # pull_week re-derives `matched` from matched_cache using the same
-            # (season, week) key, so passing an empty events_list is safe here.
             phase_b_ran = True
             pull_week(plan, [], phase_b_markets)
 

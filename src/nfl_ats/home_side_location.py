@@ -26,23 +26,12 @@ from scipy import stats
 
 from nfl_ats.spread_regime import BUCKETS, spread_bucket
 
-#: S1 -- spread size above seven points, whichever side the home team is on.
 HOME_SIDE_HINGE_COLUMNS = ("home_side_hinge_7",)
 HINGE_POINTS = 7.0
 
-#: S2 regularisation and exclusion rules, all declared before scoring.
 PRIOR_WEIGHT_GAMES = 100.0
 TRAILING_SEASONS = 5
 COMPLETION_ALLOWANCE_DAYS = 1
-#: S3 (2026-09-08, lane E): the offset is SERVED only where the home-side
-#: location error was diagnosed -- spreads of seven points or more (lanes
-#: L/P/Q/S: 10.5+ home favourites +2.41 pts, 10.5+ home underdogs +4.50, the
-#: 7.5-10 home-underdog gap). The 0-3 and 3.5-6.5 buckets showed no such error
-#: and S2's correction there ran negative through 2023 and cost -1.99 pts
-#: (P+ 0.028); with the small buckets left uncorrected the read is +0.80 pts
-#: standalone (P+ 0.93) and +0.33 through the played card (P+ 0.74), with
-#: better Brier and log loss (P+ 0.98). Fitted counts are still reported for
-#: every bucket; only the served value is zero outside these.
 HOME_SIDE_OFFSET_BUCKETS = ("7", "7.5-10", "10.5+")
 
 
@@ -162,19 +151,8 @@ def gaussian_median_cover_probability(
     )
 
 
-# ---------------------------------------------------------------------------
-# Production: the promoted S2 offset served on the weekly card
-# (docs/home_side_offset_promotion.md, 2026-09-07). Everything below reads
-# only artifacts that already exist at forecast time and never refits.
-# ---------------------------------------------------------------------------
-
-#: Named served policy, so the served forecast and the paired challenger
-#: (``home_side_offset_off_incumbent``) stay correct by construction.
 HOME_SIDE_OFFSET_POLICY = "home_side_offset_big_spreads_v2"
-#: Flip to ``False`` to serve the uncorrected read again; the challenger
-#: recorder keeps working either way because the forecast carries both reads.
 HOME_SIDE_OFFSET_SERVED = True
-#: Sidecar written next to ``predictions.csv`` with both reads per game.
 HOME_SIDE_OFFSET_FILENAME = "home_side_offset.json"
 
 

@@ -40,8 +40,6 @@ SEED = 20260904
 PERMUTATIONS = 200
 ERAS: tuple[tuple[str, int, int], ...] = (("2012_2019", 2012, 2019), ("2021_2025", 2021, 2025))
 
-#: Permanent triple-option programs, plus Georgia Tech for the Paul
-#: Johnson era (2008-2018). Frozen by the predeclaration, never fitted.
 ALWAYS_OPTION = frozenset({"Army", "Navy", "Air Force"})
 
 

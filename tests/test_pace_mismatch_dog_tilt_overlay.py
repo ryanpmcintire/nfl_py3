@@ -48,18 +48,6 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# Prior-season (2025) team pace-centered values, chosen to straddle the
-# frozen threshold (PACE_DIFF_ABS_THRESHOLD ~= 2.1685):
-#
-#   FAST / SLOW    -> |2.0 - (-1.185)| = 3.185              >= threshold (flagged)
-#   MID1 / MID2    -> |0.5 - 0.3|      = 0.2                <  threshold (not flagged)
-#   EDGEHI/EDGELO  -> exactly PACE_DIFF_ABS_THRESHOLD                      (boundary, flagged)
-#   NEWX has a NaN prior-season pace value; ROOKIE has no 2025 row at all.
-
 
 def _team_season_style() -> pd.DataFrame:
     half = PACE_DIFF_ABS_THRESHOLD / 2.0
@@ -126,11 +114,6 @@ def _predictions() -> pd.DataFrame:
 
 def _flags() -> pd.DataFrame:
     return pace_mismatch_flag_by_game(_schedule(), _team_season_style())
-
-
-# ---------------------------------------------------------------------------
-# 1. pace_mismatch_flag_by_game: the trait, quartile cut, and its leakage
-# ---------------------------------------------------------------------------
 
 
 def test_frozen_threshold_matches_the_measured_screen_cut() -> None:
@@ -251,9 +234,6 @@ def test_flag_uses_only_the_prior_season_never_the_current_seasons_data() -> Non
                 {
                     "season": [2026, 2026],
                     "team": ["FAST", "SLOW"],
-                    # Current-season values that would ERASE the mismatch
-                    # (diff 0.0) if the current season were ever read instead
-                    # of the prior one.
                     "seconds_per_play_pace_centered": [0.0, 0.0],
                 }
             ),
@@ -264,11 +244,6 @@ def test_flag_uses_only_the_prior_season_never_the_current_seasons_data() -> Non
 
     pd.testing.assert_frame_equal(changed, baseline, check_exact=True)
     assert bool(changed.loc["2026_05_HOMEFAV", "pace_mismatch_flag"]) is True
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_pace_mismatch_dog_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_a_home_favourite_pick_to_the_underdog() -> None:
@@ -414,11 +389,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_pace_mismatch_dog_tilt_overlay(pd.DataFrame({"game_id": ["G1"]}), _flags())
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     not_flagged_only = _predictions().loc[lambda frame: frame["game_id"].eq("2026_05_NOTFLAGGED")]
     result = apply_pace_mismatch_dog_tilt_overlay(not_flagged_only, _flags())
@@ -436,11 +406,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "FAST -> SLOW" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_pace_mismatch_dog_tilt_challenger_decisions: dual-tracked, no
-#    window, fingerprint/status gates
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -523,13 +488,9 @@ def test_record_pace_mismatch_challenger_decisions_records_the_tilt_arm(tmp_path
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The tilt's own arm diverges from the active model's raw pick (0.62 ->
-    # HOME): the pace mismatch flips it to the underdog AWAY.
     assert ledger.loc["2026_05_HOMEFAV", "pick_side"] == "AWAY"
-    # The not-flagged game keeps the model's own HOME pick untouched.
     assert ledger.loc["2026_05_NOTFLAGGED", "pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_pace_mismatch_dog_tilt_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -538,9 +499,6 @@ def test_record_pace_mismatch_challenger_decisions_records_the_tilt_arm(tmp_path
 def test_record_pace_mismatch_challenger_refuses_a_fingerprint_mismatch(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = tmp_path / "data"
 

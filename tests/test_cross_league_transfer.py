@@ -137,11 +137,6 @@ def auxiliary_frame() -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# The aligned contract is real, not a private assumption
-# ---------------------------------------------------------------------------
-
-
 def test_aligned_columns_are_a_true_subset_of_both_leagues_contracts() -> None:
     cfb_columns = set(CFB_MODEL_FEATURE_COLUMNS)
     nfl_columns = set(FEATURE_SETS["full"])
@@ -149,11 +144,6 @@ def test_aligned_columns_are_a_true_subset_of_both_leagues_contracts() -> None:
     missing_from_nfl = set(ALIGNED_TRANSFER_FEATURE_COLUMNS) - nfl_columns
     assert not missing_from_cfb, missing_from_cfb
     assert not missing_from_nfl, missing_from_nfl
-
-
-# ---------------------------------------------------------------------------
-# Prior-mean ridge: closed-form identity and degenerate limits
-# ---------------------------------------------------------------------------
 
 
 def test_prior_mean_closed_form_matches_direct_linear_algebra() -> None:
@@ -166,8 +156,6 @@ def test_prior_mean_closed_form_matches_direct_linear_algebra() -> None:
     delta = _fit_theta(design, target - design @ theta0, alpha)
     closed_form = theta0 + delta
 
-    # Direct minimizer of ||y - X theta||^2 + alpha ||theta - theta0||^2:
-    # theta = (X'X + alpha I)^-1 (X'y + alpha theta0).
     gram = design.T @ design + alpha * np.eye(design.shape[1])
     rhs = design.T @ target + alpha * theta0
     manual = np.linalg.solve(gram, rhs)
@@ -207,11 +195,6 @@ def test_prior_mean_ridge_converges_to_target_only_as_alpha_shrinks(
     )
 
 
-# ---------------------------------------------------------------------------
-# Hierarchical shrinkage: derived weights are bounded and blend correctly
-# ---------------------------------------------------------------------------
-
-
 def test_shrinkage_weights_are_bounded_and_derived(
     target_frame: pd.DataFrame, auxiliary_frame: pd.DataFrame
 ) -> None:
@@ -223,8 +206,6 @@ def test_shrinkage_weights_are_bounded_and_derived(
     assert np.all(derivation.weights >= 0.0)
     assert np.all(derivation.weights <= 1.0)
     assert derivation.tau_squared >= 0.0
-    # Recompute the DerSimonian-Laird tau^2 independently from the reported
-    # pieces to pin the formula itself, not just its output shape.
     diff_sq = np.square(derivation.theta_target - derivation.theta_aux)
     q_stat = float(np.sum(diff_sq / derivation.target_variance))
     k = len(derivation.theta_target)
@@ -256,14 +237,7 @@ def test_hierarchical_blend_lies_between_the_two_anchors(
     blended = _coefficients(hierarchical)
     assert np.all(blended >= lower - 1e-9)
     assert np.all(blended <= upper + 1e-9)
-    # A weight of exactly 1 everywhere would make hierarchical == target_only;
-    # since the two leagues' generating coefficients differ here, it should not.
     assert not np.allclose(blended, _coefficients(target_only))
-
-
-# ---------------------------------------------------------------------------
-# Joint fitting and the mismatch report
-# ---------------------------------------------------------------------------
 
 
 def test_joint_model_runs_and_differs_from_target_only(
@@ -315,19 +289,7 @@ def test_measure_league_mismatch_reports_sane_bounds(
     assert -1.0 - 1e-9 <= report.cosine_similarity <= 1.0 + 1e-9
     assert report.residual_std_ratio > 0.0
     assert set(report.per_feature["feature"]) == set(ALIGNED_TRANSFER_FEATURE_COLUMNS)
-    # Both leagues share the same generating mechanism (only the signal's
-    # magnitude differs), so the two coefficient vectors should point in
-    # roughly the same overall direction. Per-component sign agreement is NOT
-    # asserted: home/away/diff triples are collinear by construction (``diff
-    # = home - away``), exactly as in both leagues' real feature contracts,
-    # so ridge can trade weight between them noisily at low signal-to-noise --
-    # the whole-vector cosine similarity is the robust summary.
     assert report.cosine_similarity > 0.0
-
-
-# ---------------------------------------------------------------------------
-# Leakage regression (release-blocking)
-# ---------------------------------------------------------------------------
 
 
 def test_benchmark_predictions_do_not_depend_on_future_rows(

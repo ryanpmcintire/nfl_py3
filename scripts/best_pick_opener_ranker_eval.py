@@ -90,17 +90,10 @@ PRIMARY_CHOOSERS: tuple[ChooserSpec, ...] = (
         False,
     ),
 )
-# Diagnostic only -- not one of the five predeclared choosers. Exists solely so
-# chooser 4 (candidate arm) has a same-arm blind floor, since chooser 2 is
-# graded on the baseline arm.
 DIAGNOSTIC_CHOOSER = ChooserSpec(
     "alphabetical_floor_candidate_arm", None, None, "candidate_correct_open", True
 )
 
-# Addendum choosers 6-8 (dispersion-filtered / tie-broken). 6 and 7 share the
-# same eligibility pool ("dispersion_pool_pass", built by
-# ``build_dispersion_pool`` -- a property of the game/market, not of either
-# model arm); 8 is a tie-break enhancement over the full week, no filter.
 DISPERSION_CHOOSERS: tuple[ChooserSpec, ...] = (
     ChooserSpec(
         "dispersion_filtered_candidate",
@@ -126,11 +119,6 @@ DISPERSION_CHOOSERS: tuple[ChooserSpec, ...] = (
         False,
     ),
 )
-
-
-# ---------------------------------------------------------------------------
-# 1. Load + build the working frame
-# ---------------------------------------------------------------------------
 
 
 def load_working_frame(source: Path) -> pd.DataFrame:
@@ -160,9 +148,6 @@ def load_working_frame(source: Path) -> pd.DataFrame:
             f"residual merge dropped rows: paired={len(paired)} baseline-merged={len(work)}"
         )
 
-    # Structural check from the predeclaration: pushes (correct_at_open NaN)
-    # must be the SAME games in both arms, because margin_vs_open does not
-    # depend on the model. Fail loudly if that ever stops being true.
     baseline_push = set(work.loc[work["baseline_correct_open"].isna(), "game_id"])
     candidate_push = set(work.loc[work["candidate_correct_open"].isna(), "game_id"])
     if baseline_push != candidate_push:
@@ -267,11 +252,6 @@ def build_dispersion_pool(
     return work, summary
 
 
-# ---------------------------------------------------------------------------
-# 2. Per-week nomination
-# ---------------------------------------------------------------------------
-
-
 def _week_average(group: pd.DataFrame, correct_col: str) -> float:
     valid = group[correct_col].dropna()
     return float(valid.mean()) if len(valid) else float("nan")
@@ -315,7 +295,7 @@ def nominate(
             )
         if alphabetical_only:
             ordered = candidates.sort_values("game_id", ascending=True)
-            n_tied_at_max = 1  # no ranking signal, no ties to speak of
+            n_tied_at_max = 1
         else:
             sort_cols = [primary]
             ascending = [False]
@@ -328,9 +308,6 @@ def nominate(
             top_value = candidates[primary].max()
             n_tied_at_max = int((candidates[primary] == top_value).sum())
         nominee = ordered.iloc[0]
-        # Baseline always uses the FULL week, not the filtered candidate set --
-        # see the docstring: this keeps filtered choosers on the same scale as
-        # their unfiltered parents.
         week_avg = _week_average(group, correct_col)
         nominee_correct = nominee[correct_col]
         nominee_correct = float(nominee_correct) if pd.notna(nominee_correct) else float("nan")
@@ -339,9 +316,6 @@ def nominate(
             if pd.notna(nominee_correct) and pd.notna(week_avg)
             else float("nan")
         )
-        # Tie-agnostic recompute: average correctness over ALL candidates tied
-        # at the max primary signal (only meaningful when n_tied_at_max > 1;
-        # otherwise identical to the recorded nominee).
         if not alphabetical_only and n_tied_at_max > 1:
             tied = candidates.loc[candidates[primary] == top_value]
             tied_correct = tied[correct_col].dropna()
@@ -368,11 +342,6 @@ def nominate(
             }
         )
     return pd.DataFrame(rows).sort_values(["season", "week"]).reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# 3. Bootstrap
-# ---------------------------------------------------------------------------
 
 
 def _bootstrap_series(
@@ -425,11 +394,6 @@ def _paired_delta(
     stats = _bootstrap_series(merged, "delta", samples=samples, seed=seed)
     stats["n_weeks_paired"] = stats.pop("n_weeks")
     return stats
-
-
-# ---------------------------------------------------------------------------
-# 4. Driver
-# ---------------------------------------------------------------------------
 
 
 def evaluate_chooser(
@@ -502,7 +466,6 @@ def run(
             comparisons[f"{name}_vs_status_quo_residual"] = _paired_delta(
                 weekly, status_quo, "lift", samples=samples, seed=seed
             )
-    # Same-arm diagnostic comparison for chooser 4.
     comparisons["candidate_prob_distance_vs_alphabetical_floor_candidate_arm"] = _paired_delta(
         results["candidate_prob_distance"]["weekly_frame"],
         candidate_floor,
@@ -518,8 +481,6 @@ def run(
         filtered_status_quo = results["dispersion_filtered_status_quo"]["weekly_frame"]
         tiebreak = results["dispersion_tiebreak"]["weekly_frame"]
 
-        # The incremental question: does the filter/tie-break ADD anything on
-        # top of the SAME unfiltered signal, on the SAME yardstick.
         comparisons["dispersion_filtered_candidate_vs_candidate_prob_distance"] = _paired_delta(
             filtered_candidate, candidate_weekly, "lift", samples=samples, seed=seed
         )
@@ -529,7 +490,6 @@ def run(
         comparisons["dispersion_tiebreak_vs_candidate_prob_distance"] = _paired_delta(
             tiebreak, candidate_weekly, "lift", samples=samples, seed=seed
         )
-        # Same primary/secondary comparisons the original five choosers got.
         comparisons["dispersion_filtered_candidate_vs_alphabetical_floor_candidate_arm"] = (
             _paired_delta(filtered_candidate, candidate_floor, "lift", samples=samples, seed=seed)
         )
@@ -604,11 +564,11 @@ def main() -> None:
         ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         out_dir = REPO / "artifacts" / "best_pick_opener_ranker" / ts
     out_dir.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(summary, out_dir / "summary.json")  # ENG-38
+    write_stamped_artifact(summary, out_dir / "summary.json")
     for name, payload in results.items():
         weekly_path = out_dir / f"{name}.weekly.parquet"
         payload["weekly_frame"].to_parquet(weekly_path)
-        stamp_sidecar(weekly_path)  # ENG-38
+        stamp_sidecar(weekly_path)
     print(f"\nWrote {out_dir}")
 
 

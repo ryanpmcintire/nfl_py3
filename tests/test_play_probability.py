@@ -76,15 +76,6 @@ def _build_synthetic_sources(
         for team in TEAMS:
             for week in WEEKS:
                 key = (season, team, week)
-                # Always draw, even when about to override the result --
-                # otherwise overriding one (season, team, week)'s draw
-                # consumes a different number of `rng` calls than the
-                # baseline run, desyncing the RNG stream for every LATER
-                # team/season and changing rows the mutation was never
-                # meant to touch (measured this session: a naive
-                # short-circuited draw made 42% of week<4 rows differ,
-                # which looked exactly like a leakage bug but was a test
-                # fixture bug instead).
                 baseline_draw = bool(rng.random() < 0.3)
                 qb1_out = bool(extra_week[key]) if key in extra_week else baseline_draw
                 for position, rank in _ROLES:
@@ -163,11 +154,6 @@ def _build_synthetic_sources(
     return depth_history, rosters, snaps, injuries
 
 
-# ---------------------------------------------------------------------------
-# Depth-chart history canonicalization: both nflverse schemas.
-# ---------------------------------------------------------------------------
-
-
 def test_canonicalize_depth_chart_history_legacy_schema() -> None:
     frame = pd.DataFrame(
         [
@@ -215,9 +201,6 @@ def test_canonicalize_depth_chart_history_legacy_schema() -> None:
     result = canonicalize_depth_chart_history(frame, schedule)
     assert set(result.columns) == set(DEPTH_CHART_HISTORY_OUTPUT_COLUMNS)
     assert (result["source_schema"] == "legacy_week").all()
-    # The Special-Teams-only KR row is dropped in favour of wr1's real
-    # Offense/WR row (depth rank 2) -- a return-specialist listing must
-    # never stand in for a receiver's real depth rank.
     wr_row = result.loc[result["gsis_id"].eq("wr1")]
     assert len(wr_row) == 1
     assert int(wr_row.iloc[0]["depth_rank"]) == 2
@@ -271,16 +254,8 @@ def test_canonicalize_depth_chart_history_daily_schema_aligns_to_weeks_by_kickof
     assert (result["source_schema"] == "daily_dt").all()
     week1 = result.loc[result["week"].eq(1)]
     week2 = result.loc[result["week"].eq(2)]
-    # Week 1's kickoff (2025-09-07) is before the Sep-10 depth-chart update
-    # (qb2) -- only the Sep-1 snapshot (qb1) was visible.
     assert week1["gsis_id"].tolist() == ["qb1"]
-    # Week 2's kickoff (2025-09-14) is after the Sep-10 update.
     assert week2["gsis_id"].tolist() == ["qb2"]
-
-
-# ---------------------------------------------------------------------------
-# Feature construction on the synthetic panel.
-# ---------------------------------------------------------------------------
 
 
 def test_build_player_week_panel_produces_every_feature_and_label_column() -> None:
@@ -291,30 +266,19 @@ def test_build_player_week_panel_produces_every_feature_and_label_column() -> No
     for column in (*FEATURE_COLUMNS, LABEL_PLAYED, LABEL_STARTED):
         assert column in panel.columns
 
-    # QB1 should play close to 70% of the time (not marked "Out" ~70% of
-    # team-weeks, by construction).
     qb1_rate = panel.loc[panel["position"].eq("QB") & panel["depth_rank"].eq(1), "played"].mean()
     assert 0.55 < qb1_rate < 0.85
 
-    # QB3 never plays by construction.
     qb3_rate = panel.loc[panel["position"].eq("QB") & panel["depth_rank"].eq(3), "played"].mean()
     assert qb3_rate == 0.0
 
-    # Non-QB rows carry the "not applicable" QB1-status sentinel.
     wr_rows = panel.loc[panel["position"].eq("WR")]
     assert (wr_rows["qb1_report_category"] == QB1_NOT_APPLICABLE).all()
     assert (wr_rows["qb1_practice_category"] == QB1_NOT_APPLICABLE).all()
 
-    # QB rows see a real (non-"not_applicable") QB1 status -- "out" on the
-    # team-weeks QB1 was actually marked out, "none" otherwise.
     qb_rows = panel.loc[panel["position"].eq("QB")]
     assert set(qb_rows["qb1_report_category"].unique()) <= {"out", "none"}
     assert (qb_rows["qb1_report_category"] == "out").any()
-
-
-# ---------------------------------------------------------------------------
-# Depth-rank ordering monotonicity for healthy players.
-# ---------------------------------------------------------------------------
 
 
 def test_depth_rank_bucket_orders_1_2_3plus() -> None:
@@ -346,22 +310,8 @@ def test_healthy_player_probability_decreases_with_depth_rank() -> None:
     )
     predictions = predict_play_probabilities(model, features)
     probabilities = predictions["play_probability"].to_numpy()
-    # Non-increasing with depth rank, and strictly lower at rank 3 than
-    # rank 1. Not a strict `>` at every step: isotonic calibration fit on
-    # this test's small calibration season can plateau at 1.0 across a
-    # range of raw scores that are themselves strictly ordered (measured
-    # this session -- the RAW booster scores are 0.99/0.84/0.09, correctly
-    # ordered, but the calibrator maps both of the first two to 1.0). A
-    # real production calibration set (hundreds of thousands of rows) does
-    # not saturate this way -- see docs/play_probability_model.md's
-    # measured 2026 Week 1 distribution.
     assert probabilities[0] >= probabilities[1] >= probabilities[2]
     assert probabilities[0] > probabilities[2]
-
-
-# ---------------------------------------------------------------------------
-# QB2's probability rises when QB1 is out.
-# ---------------------------------------------------------------------------
 
 
 def test_qb2_probability_rises_when_qb1_is_out() -> None:
@@ -400,13 +350,7 @@ def test_qb2_probability_rises_when_qb1_is_out() -> None:
     qb2_when_qb1_out = with_qb1_out.loc[1, "play_probability"]
     assert qb2_when_qb1_out > qb2_healthy
 
-    # And QB1's own probability drops when he is the one marked "Out".
     assert with_qb1_out.loc[0, "play_probability"] < healthy.loc[0, "play_probability"]
-
-
-# ---------------------------------------------------------------------------
-# Calibration table shape.
-# ---------------------------------------------------------------------------
 
 
 def test_calibration_slot_covers_the_named_slots() -> None:
@@ -448,22 +392,10 @@ def test_season_blocked_bootstrap_reports_probability_positive() -> None:
     assert result["interval_low"] <= result["point_estimate"] <= result["interval_high"]
 
 
-# ---------------------------------------------------------------------------
-# Leakage: a later week's snap/injury/depth revision never changes an
-# earlier week's feature row.
-# ---------------------------------------------------------------------------
-
-
 def test_a_later_weeks_outcome_never_changes_an_earlier_weeks_features() -> None:
     baseline_sources = _build_synthetic_sources(seed=1)
     baseline_panel = build_player_week_panel(*baseline_sources)
 
-    # Mutate ONLY the very last chronological week in the whole synthetic
-    # dataset (week 4 of the final season) -- every row strictly before it,
-    # by (season, week) ORDER rather than by the "week" column's own value
-    # (which resets to 1 every season, so "week < 4" alone would wrongly
-    # include season 2021's week 1-3 even though those come AFTER season
-    # 2020's week 4), must come out byte-identical.
     last_season = max(SEASONS)
     mutated = {(last_season, team, 4): True for team in TEAMS}
     mutated_sources = _build_synthetic_sources(seed=1, extra_week=mutated)
@@ -484,9 +416,6 @@ def test_a_later_weeks_outcome_never_changes_an_earlier_weeks_features() -> None
     )
     pd.testing.assert_frame_equal(earlier_baseline, earlier_mutated)
 
-    # Confirm the mutation actually changed something in the mutated week --
-    # a leakage test that passes because nothing changed anywhere proves
-    # nothing.
     later_baseline = baseline_panel.loc[
         baseline_panel["season"].eq(last_season) & baseline_panel["week"].eq(4)
     ]
@@ -499,12 +428,9 @@ def test_a_later_weeks_outcome_never_changes_an_earlier_weeks_features() -> None
 def test_serving_player_history_only_uses_strictly_earlier_weeks() -> None:
     _depth_history, rosters, snaps, _injuries = _build_synthetic_sources()
     history_before_week1 = serving_player_history(rosters, snaps, as_of_season=2020, as_of_week=1)
-    # Nobody has played yet as of week 1 of the very first synthetic season.
     assert history_before_week1 == {}
 
     history_before_week3 = serving_player_history(rosters, snaps, as_of_season=2020, as_of_week=3)
-    # Anyone with a recorded snap in week 1 or 2 of 2020 appears; nobody's
-    # value can depend on week 3 itself or later.
     some_gsis_id = f"{TEAMS[0]}-WR1"
     if some_gsis_id in history_before_week3:
         assert history_before_week3[some_gsis_id]["weeks_since_last_snap"] >= 1.0
@@ -666,7 +592,6 @@ def test_panel_builder_resolves_newest_injuries_and_accepts_pin(tmp_path: Path) 
     for path in (new, old):
         path.parent.mkdir()
         pd.DataFrame({"season": [2025]}).to_parquet(path)
-    # A newer incomplete snapshot must not shadow a usable archive.
     (tmp_path / "20260906T000000Z").mkdir()
     assert resolve() == new
     assert resolve(old) == old

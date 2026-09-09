@@ -36,7 +36,6 @@ def test_norm_ppf_rejects_out_of_range() -> None:
 
 
 def test_se_from_interval_matches_known_95_percent_width() -> None:
-    # A 95% CI of [-1.96, 1.96] around 0 is exactly +/- 1 standard error.
     se = se_from_interval(-1.959963984540054, 1.959963984540054)
     assert se == pytest.approx(1.0, abs=1e-9)
 
@@ -47,7 +46,6 @@ def test_se_from_interval_rejects_inverted_bounds() -> None:
 
 
 def test_se_from_probability_positive_matches_interval_derived_se() -> None:
-    # A measurement at effect=1.0 with se=1.0 has probability_positive = Phi(1.0).
     effect, se = 1.0, 1.0
     pp = norm_cdf(effect / se)
     recovered = se_from_probability_positive(effect, pp)
@@ -116,7 +114,7 @@ def test_fit_empirical_prior_gives_zero_tau_when_homogeneous() -> None:
         for i in range(300)
     ]
     prior = fit_empirical_prior(measurements)
-    assert prior.sd < 0.3  # should be small; exact value depends on the draw
+    assert prior.sd < 0.3
     assert prior.mean == pytest.approx(true_effect, abs=0.2)
 
 
@@ -146,9 +144,7 @@ def test_evaluate_candidate_shrinks_toward_the_prior_mean() -> None:
     prior = EmpiricalPrior(mean=0.0, variance=0.25, n_measurements=100)
     noisy_measurement = EffectMeasurement(label="x", estimate=2.0, standard_error=2.0)
     result = evaluate_candidate(noisy_measurement, prior)
-    # Posterior mean must lie strictly between the prior mean and the raw estimate.
     assert 0.0 < result.posterior_mean < 2.0
-    # Posterior sd must be smaller than either input sd.
     assert result.posterior_sd < prior.sd
     assert result.posterior_sd < noisy_measurement.standard_error
     assert result.verdict == "use"
@@ -228,7 +224,6 @@ def test_model_average_blend_weights_sum_to_one() -> None:
     ]
     result = model_average(candidates, mode="blend", weight_by="probability_positive")
     assert sum(result.weights.values()) == pytest.approx(1.0)
-    # Combined value must be a weighted average, hence bounded by the inputs.
     assert min(c.posterior_mean for c in candidates) <= result.combined_expected_gain
     assert result.combined_expected_gain <= max(c.posterior_mean for c in candidates)
 

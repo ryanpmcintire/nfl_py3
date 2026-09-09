@@ -72,13 +72,9 @@ from nfl_ats.transaction_wire_features import match_transaction_teams
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: The one new column each candidate profile adds. Frozen names.
 ROOKIE_WALL_DEPENDENCE_COLUMN = ROOKIE_WALL_DEPENDENCE_ON_PRODUCTION_FEATURE_COLUMNS[0]
 KICKER_CHANGE_COLUMN = KICKER_CHANGE_UNDERDOG_ON_PRODUCTION_FEATURE_COLUMNS[0]
 
-# ---------------------------------------------------------------------------
-# LEAD-24 stage 2: rookie-wall dependence fade, weeks 12-17
-# ---------------------------------------------------------------------------
 
 _ROOKIE_WALL_DEP_REQUIRED_SCHEDULE_COLUMNS = {
     "game_id",
@@ -235,58 +231,16 @@ def attach_rookie_wall_dependence_fade_features(
     return _attach(features, schedule, _derive, (ROOKIE_WALL_DEPENDENCE_COLUMN,))
 
 
-# ---------------------------------------------------------------------------
-# LEAD-16: midweek kicker change -> take the underdog
-# ---------------------------------------------------------------------------
-
 KICKER_POSITION = "K"
-#: A signing/waiver-claim/practice-squad-elevation/IR-activation event only
-#: -- release/waive/trade/suspension categories never represent a team
-#: ACQUIRING a kicker, so they are excluded from this population regardless
-#: of headline wording (a genuinely two-sided "swap" slug, e.g.
-#: "saints-to-swap-kickers-by-signing-cade-york-waiving-k-blake-grupe",
-#: still classifies "signing" under
-#: ``nfl_ats.transaction_wire_features.classify_transaction_slug``'s own
-#: priority order -- trade is checked after signing there but the SIGN verb
-#: is what this construct keys on, matching the roadmap's own "a placekicker
-#: signing/activation" framing literally).
 KICKER_ACQUIRE_CATEGORIES = frozenset(
     {"signing", "waiver_claim", "practice_squad_elevation", "ir_activation"}
 )
-#: Only the SINGLE game immediately following a confirmed kicker-acquisition
-#: event qualifies -- the roadmap's own mechanism ("week-of kicker swaps
-#: inject PAT/FG variance the Tuesday line cannot contain") is a one-week
-#: disruption, unlike LEAD-14's multi-game suspension-return rust window.
 KICKER_CHANGE_GAMES = 1
 
-#: Confirmed (present/past-tense) acquisition-direction verb, hyphen-token-
-#: anchored on both sides (the same anchoring discipline as HOLDOUT_END_RE/
-#: ACQUISITION_RE/REINSTATED_RE in ``nfl_ats.transaction_flag_features``),
-#: covering: sign/signs/signed/signing, re-sign/re-signs/re-signed
-#: (resign/resigns/resigned without the hyphen), claim/claims/claimed,
-#: elevate*, activate*.
 KICKER_ACQUIRE_RE = re.compile(
     r"(?:^|-)(?:signs?|signed|signing|re-signs?|re-signed|resigns?|resigned|"
     r"claims?|claimed|elevat\w*|activat\w*)(?:-|$)"
 )
-#: Excludes NEGATED or SPECULATIVE signing language -- measured against the
-#: real corpus (31 slugs mentioning "kicker" literally, 2026-09-05 snapshot):
-#: "cowboys-wont-sign-kicker-this-week" and "cowboys-not-signing-kicker" are
-#: explicit negations; "lions-expected-to-sign-ufl-kicker-jake-bates" is a
-#: prediction, not a confirmation (same class HOLDOUT_END_RE already
-#: excludes for "expected-to-report-to-camp"); "giants-ben-mcadoo-on-
-#: signing-another-kicker-never-say-never" is a QUOTE about a hypothetical,
-#: matched via the general "-on-signing-" pattern (a person speaking ABOUT
-#: signing, not a team actually doing it) plus the slug's own unique
-#: "never-say-never" marker. The remaining alternatives (could/would/might/
-#: looking-to/in-talks-to/interested-in/hopes-to/hoping-to/wants-to) are NOT
-#: observed in this specific 31-slug sample -- they are a disclosed,
-#: precautionary generalization from ``ACQUISITION_RE``'s own
-#: ``SPECULATIVE_ACQUISITION_RE`` sibling pattern for the "acquire" verb,
-#: applied here to "sign" for the same reason. Claim/elevate/activate have
-#: no analogous speculative form excluded here -- none was observed or is a
-#: precedented risk for those smaller, near-always-retrospective categories
-#: (a disclosed simplification, not an oversight).
 KICKER_ACQUIRE_SPECULATIVE_RE = re.compile(
     r"wont-sign|won-t-sign|not-sign|not-signing|expected-to-sign|expected-to-target|"
     r"hopes-to-sign|hoping-to-sign|wants-to-sign|could-sign|would-sign|might-sign|"

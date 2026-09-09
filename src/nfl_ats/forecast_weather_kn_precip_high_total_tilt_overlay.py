@@ -145,11 +145,8 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "forecast_weather_kn_precip_high_total_tilt"
 
-#: Reused verbatim from src/nfl_ats/experiment_runner.py's
-#: _FORECAST_PRECIP_PROB_THRESHOLD_PCT / _FORECAST_HIGH_TOTAL_THRESHOLD.
 PRECIP_PROB_THRESHOLD_PCT = 60.0
 HIGH_TOTAL_THRESHOLD = 47.0
 

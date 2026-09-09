@@ -77,8 +77,8 @@ PFR_SAMPLE_DIR = PFR_SNAPSHOT / "sample_articles"
 PLAYER_SNAPSHOT_ID = "20260817T184901Z"
 
 Q1_SEASONS = (2022, 2025)
-Q2_SEASONS = (2022, 2024)  # injuries table cap, measured this session
-LOOKBACK_DAYS = 9.0  # matches injury_tuesday_cutoff_experiment.py's default
+Q2_SEASONS = (2022, 2024)
+LOOKBACK_DAYS = 9.0
 TARGET_DATE_SEASONS = (2022, 2023, 2024, 2025)
 
 _CURLY_APOSTROPHE = chr(0x2019)
@@ -91,12 +91,6 @@ def _normalize_name(name: object) -> str:
     text = NAME_PUNCTUATION.sub("", text)
     text = NAME_NONALNUM.sub(" ", text)
     return " ".join(text.split())
-
-
-# ---------------------------------------------------------------------------
-# Cutoffs: own-week Tuesday noon ET, own-week Saturday-refresh (owner
-# correction) capped at kickoff.
-# ---------------------------------------------------------------------------
 
 
 def team_week_cutoffs(games: pd.DataFrame) -> pd.DataFrame:
@@ -115,9 +109,6 @@ def team_week_cutoffs(games: pd.DataFrame) -> pd.DataFrame:
     long["tuesday_noon_utc"] = tuesday_noon_et.dt.tz_convert("UTC")
     saturday_noon_utc = saturday_noon_et.dt.tz_convert("UTC")
     long["kickoff_utc"] = long["kickoff"]
-    # Owner-corrected 2026-08-20 refresh cutoff: min(kickoff, own-week Saturday
-    # noon ET). For Thursday games own-week Saturday is AFTER kickoff, so this
-    # collapses to kickoff -- still a genuinely pregame bound, just a tighter one.
     long["saturday_refresh_utc"] = long[["kickoff_utc"]].assign(sat=saturday_noon_utc).min(axis=1)
     return long[
         [
@@ -130,12 +121,6 @@ def team_week_cutoffs(games: pd.DataFrame) -> pd.DataFrame:
             "saturday_refresh_utc",
         ]
     ]
-
-
-# ---------------------------------------------------------------------------
-# Generic headline matcher: earliest match timestamp within
-# [cutoff - lookback, cutoff], literal full-name substring, last-name inverted index.
-# ---------------------------------------------------------------------------
 
 
 def build_last_name_index(headlines_norm: np.ndarray) -> dict[str, list[int]]:
@@ -329,9 +314,6 @@ def main() -> None:
         "q2_seasons": list(Q2_SEASONS),
     }
 
-    # -----------------------------------------------------------------
-    # Question 1: PFR-vs-PFT additivity, roster population, seasons 2022-2025
-    # -----------------------------------------------------------------
     print("\n=== Question 1: PFR-vs-PFT additivity (roster population) ===")
     q1_rosters = rosters.loc[rosters["season"].between(*Q1_SEASONS) & rosters["week"].le(18)]
     q1_rosters = q1_rosters.drop_duplicates(["season", "week", "team", "gsis_id"])
@@ -405,10 +387,6 @@ def main() -> None:
 
     results["question_1_pfr_vs_pft_additivity"] = q1_results
 
-    # -----------------------------------------------------------------
-    # Question 2: foreshadowing official state, injuries population,
-    # seasons 2022-2024 (injuries-table cap)
-    # -----------------------------------------------------------------
     print("\n=== Question 2: foreshadowing official state (injuries population) ===")
     q2_injuries = injuries.loc[injuries["season"].between(*Q2_SEASONS) & injuries["week"].le(18)]
     q2_pop = q2_injuries.merge(cutoffs, on=["season", "week", "team"], how="inner")

@@ -39,10 +39,6 @@ from nfl_ats.modeling import regular_season_rows
 from nfl_ats.provenance import sha256_file, write_stamped_artifact
 from nfl_ats.public_board import find_matching_opener_evaluation
 
-# The construction now lives in ``nfl_ats.mass_preserving_lattice`` (lane S,
-# docs/discrete_push_read.md), which serves the card's push read; this script
-# imports it so the frozen research numbers replay bit-for-bit (pinned by
-# tests/test_discrete_push_read.py against artifacts/research/laneK).
 __all__ = [
     "ARMS",
     "BAND_STEP",
@@ -56,7 +52,6 @@ __all__ = [
 ]
 
 OUT = common.REPO / "artifacts/research/laneK"
-#: MP1 reuses the frozen lane-K bandwidth; MP1b is the one predeclared sibling.
 ARMS = {"MP1": BAND_HALF_WIDTH, "MP1b": 2.0 * BAND_HALF_WIDTH}
 FAMILY = "mod18_conditional_margin_v1"
 DISCOUNT = (
@@ -281,7 +276,6 @@ def score(archive_path: Path) -> None:
                 )
             for kind, metrics in loss_cells(group, f"p_{arm}").items():
                 cells[f"mp1_{arm.lower()}_{label}_{kind}"] = metrics
-        # Declared diagnostic: the push-renormalised read, overall only.
         diagnostic = loss_cells(frame, f"conditional_cover_probability_{arm}")
         for kind, metrics in diagnostic.items():
             cells[f"mp1_{arm.lower()}_overall_conditional_{kind}"] = metrics
@@ -496,8 +490,6 @@ def main() -> None:
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     os.environ["NFL_ATS_ARTIFACTS_DIR"] = str(OUT)
-    # Never point a research stage at the live registry: the recorder argv is
-    # emitted for serial execution by the coordinator, never run from here.
     os.environ["NFL_ATS_REGISTRY_DIR"] = str(OUT / "registry")
     active = json.loads((common.REPO / "artifacts/active_ats_model.json").read_text())
     match = find_matching_opener_evaluation(common.REPO / "artifacts", active)

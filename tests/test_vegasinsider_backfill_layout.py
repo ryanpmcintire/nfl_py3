@@ -33,10 +33,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import scripts.backfill_vegasinsider as biv
 
-# ---------------------------------------------------------------------------
-# classify_line_tokens: token-level regression coverage
-# ---------------------------------------------------------------------------
-
 
 def test_total_first_plus_signed_no_price_is_classified_as_total_not_spread() -> None:
     """ENG-40's exact bug shape: measured verbatim from the DAL@NO book cell
@@ -106,12 +102,6 @@ def test_positive_signed_token_never_becomes_spread_even_when_seen_first() -> No
     for tokens in (["+54", "-7 -110"], ["+41.5", "-6.5-110"], ["+.5", "-9.5 -110"]):
         spread, _total = biv.classify_line_tokens(tokens)
         assert spread is None or spread <= 0
-
-
-# ---------------------------------------------------------------------------
-# Full HTML fixture: the real "modern" board layout, one game row per cell
-# order, mirroring the exact markup measured in the cached snapshot
-# ---------------------------------------------------------------------------
 
 
 def _game_row_html(
@@ -188,8 +178,6 @@ def test_board_parse_total_first_book_cell_is_not_misfiled_as_spread() -> None:
     assert consensus.total_line == 54.5
     assert book.spread_line == -7.0
     assert book.total_line == 54.0
-    # The archive-wide invariant this bug violated (docs/vegasinsider_pilot.md):
-    # spread_line is a favorite-side quote and must never be positive.
     for cell in game.cells:
         assert cell.spread_line is None or cell.spread_line <= 0
 
@@ -254,14 +242,10 @@ def test_build_tidy_end_to_end_never_produces_a_positive_or_oversized_spread() -
     parsed = biv.parse_board("20091216095259", html)
     book_maps = {"20091216095259": {"J": "HILTON"}}
     tidy = biv.build_tidy([parsed], book_maps)
-    # The unanchored consensus cell in each row is excluded by build_tidy
-    # (no anchor and no book_name) -- only the two named-book cells (one per
-    # game) survive into the tidy table.
     assert len(tidy) == 2
     assert (tidy["book"] == "HILTON").all()
     assert (tidy["spread_line"] > 0).sum() == 0
     assert (tidy["spread_line"].abs() > 30).sum() == 0
-    # And the totals this fix recovers are present, not silently dropped.
     assert tidy["total_line"].notna().all()
     assert set(tidy["spread_line"]) == {-7.0, -2.5}
     assert set(tidy["total_line"]) == {54.0, 41.5}

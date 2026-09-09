@@ -146,10 +146,6 @@ def run_arm(
 ) -> pd.DataFrame:
     source = features.copy() if leak else features
     if leak:
-        # The only permitted treatment leak, used solely by
-        # --mode positive-control. Replaces EVERY column this arm adds
-        # (one for qb_revenge/deadline_drag, two for both) with the
-        # realized ats_margin.
         for column in arm.columns:
             source[column] = pd.to_numeric(source["ats_margin"], errors="raise")
     return opener_pick_evaluation(

@@ -56,29 +56,14 @@ from nfl_ats.lineup_view import TeamLineup
 if TYPE_CHECKING:
     from nfl_ats.board_assistant import AssistantAnswer
 
-#: How long a published lineups.json snapshot is treated as current. The
-#: scheduled refresh runs once a day (docs/projected_lineups.md,
-#: scripts/refresh_lineup_forecast.py: noon Eastern, every day of the week),
-#: so one missed day of slack (48h) is the line between "normal daily
-#: cadence" and "the scheduler stopped running" -- mirrors the
-#: MAX_SNAPSHOT_AGE pattern in player_arrests_back_side_overlay.py (36h
-#: there, for a source with a different documented cadence).
 LINEUP_STALE_BUDGET_HOURS = 48.0
 
-#: Words that route a team question to the QB-starter intent rather than the
-#: existing team-pick/confidence/schedule branches in board_assistant.answer.
 QB_WORDS: frozenset[str] = frozenset(
     {"qb", "quarterback", "quarterbacks", "starter", "starters", "starting"}
 )
 
-#: Words that route a QB question to the "which games have a backup QB"
-#: intent instead of a single-team QB-starter question.
 BACKUP_WORDS: frozenset[str] = frozenset({"backup", "backups"})
 
-#: Cue words required (alongside a resolved player name) before a bare name
-#: mention is treated as an availability question -- keeps a stray shared
-#: token from a player's name ("Cook", "Hill", ...) from hijacking an
-#: unrelated question that happens to contain it.
 AVAILABILITY_WORDS: frozenset[str] = frozenset(
     {
         "playing",
@@ -420,13 +405,6 @@ def player_availability_answer(
         anchor = _anchor_text(player)
         probability = player.get("play_probability")
         source = player.get("probability_source")
-        # UI-20-AB (2026-09-05): the owner's directive -- "it needs to be a
-        # forecast about the game and it needs to consider depth chart" --
-        # retires the 2026-09-05 "no designation" stopgap. Every player with
-        # a model probability now carries a real per-player, per-game
-        # forecast (nfl_ats.play_probability), designated or not, so the
-        # percentage is always quoted when present; only a genuinely
-        # unscored row (no gsis_id / no predictor this run) says otherwise.
         if probability is None:
             probability_text = "not published"
         else:

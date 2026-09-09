@@ -70,24 +70,8 @@ from nfl_ats.cfb_features import CFB_MODEL_FEATURE_COLUMNS
 from nfl_ats.data import DataContractError, require_columns
 from nfl_ats.margin import MarginModel, fit_market_baseline
 
-# ---------------------------------------------------------------------------
-# Contamination-span measurement (EWMA team-state decay)
-# ---------------------------------------------------------------------------
-
-#: The frozen CFB base benchmark's only rolling-window feature family. Pinned
-#: here as a constant instead of re-deriving it, and guarded by
-#: ``tests/test_purged_cv.py::test_team_state_span_matches_source`` against
-#: ``cfb_features.build_cfb_team_states``'s own default so the two cannot
-#: silently drift apart.
 TEAM_STATE_SPAN = 8
 
-#: Declared spans for the OTHER rolling-window families in the wider
-#: pipeline. Neither is part of the frozen CFB base-benchmark feature
-#: contract (``CFB_MODEL_FEATURE_COLUMNS``) this module validates against, so
-#: they do not feed ``DEFAULT_PURGE_WEEKS``/``DEFAULT_EMBARGO_WEEKS`` below --
-#: they are recorded so a future purged-CV run against the "graph" or
-#: "player_*" margin feature profiles knows to widen the window, and guarded
-#: against drift the same way as ``TEAM_STATE_SPAN``.
 OPPONENT_ADJUSTMENT_HALF_LIFE_WEEKS = 16.0
 GRAPH_RATING_HALF_LIFE_WEEKS = 8.0
 
@@ -110,12 +94,6 @@ def half_life_contamination_weeks(half_life_weeks: float, weight_threshold: floa
     return half_life_weeks * math.log2(1.0 / weight_threshold)
 
 
-#: Materiality thresholds for "how much of an EWMA's weight must remain
-#: before we call a game contaminated". Purge removes training rows where a
-#: shared game could still hold >=5% of an EWMA update's weight; embargo
-#: extends that to the 1% tail as an extra margin of safety, matching this
-#: project's convention of separating a primary control from a safety buffer
-#: (compare ``DEFAULT_OFFSEASON_RETENTION``'s own worked derivation).
 PURGE_WEIGHT_THRESHOLD = 0.05
 EMBARGO_WEIGHT_THRESHOLD = 0.01
 
@@ -155,23 +133,11 @@ def ewma_contamination_games(span: int, weight_threshold: float) -> int:
     return math.ceil(games)
 
 
-#: Measured, not guessed: 12 weeks is where a span-8 EWMA's per-game weight
-#: falls below 5%; purge removes training rows within that many weeks of a
-#: test block on EITHER side (a shared-team feature window can reach forward
-#: or backward).
 DEFAULT_PURGE_WEEKS = ewma_contamination_games(TEAM_STATE_SPAN, PURGE_WEIGHT_THRESHOLD)
 
-#: The additional forward-only buffer needed to reach the stricter 1% tail,
-#: applied only AFTER a test block (Lopez de Prado's embargo is one-sided by
-#: convention -- purge already covers both sides at the primary threshold).
 DEFAULT_EMBARGO_WEEKS = (
     ewma_contamination_games(TEAM_STATE_SPAN, EMBARGO_WEIGHT_THRESHOLD) - DEFAULT_PURGE_WEEKS
 )
-
-
-# ---------------------------------------------------------------------------
-# Chronological block partitioning
-# ---------------------------------------------------------------------------
 
 
 def assign_week_order(frame: pd.DataFrame) -> pd.DataFrame:
@@ -216,11 +182,6 @@ def partition_week_blocks(n_weeks: int, n_blocks: int) -> npt.NDArray[np.int64]:
     for block_id, chunk in enumerate(chunks):
         block_of_week[chunk] = block_id
     return block_of_week
-
-
-# ---------------------------------------------------------------------------
-# Purged + embargoed fold generation
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -315,10 +276,6 @@ def purged_embargoed_folds(
     return folds
 
 
-# ---------------------------------------------------------------------------
-# Fit + score each fold, reusing the frozen CFB benchmark's own estimator
-# ---------------------------------------------------------------------------
-
 _PASSTHROUGH_COLUMNS = (
     "game_id",
     "season",
@@ -358,8 +315,6 @@ def _score_fold(
         batch["train_max_gameday"] = model.training_max_gameday
         batch["path_id"] = fold.path_id
         batch["test_blocks"] = str(fold.test_blocks)
-        # A forced-pick instrument, not a wagering policy -- mirrors
-        # cfb_benchmark._score_week so downstream summaries are compatible.
         batch["bet_side"] = "PASS"
         batch["bet_odds"] = np.nan
         batches.append(batch)
@@ -479,11 +434,6 @@ def purged_cv_backtest(
         "folds_skipped_insufficient_training": skipped,
     }
     return PurgedCVResult(predictions=predictions, fold_summary=fold_summary, config=config)
-
-
-# ---------------------------------------------------------------------------
-# Negative and positive controls
-# ---------------------------------------------------------------------------
 
 
 def permute_target(frame: pd.DataFrame, *, seed: int) -> pd.DataFrame:

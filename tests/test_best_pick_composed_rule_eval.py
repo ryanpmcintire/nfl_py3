@@ -75,16 +75,9 @@ def _work(*weeks: pd.DataFrame, evaluator: ModuleType) -> pd.DataFrame:
     return evaluator.attach_production_pool(pd.concat(weeks, ignore_index=True))
 
 
-# ---------------------------------------------------------------------------
-# 1. Reproduction of the production nominee
-# ---------------------------------------------------------------------------
-
-
 def test_v2_nominee_is_the_production_select_nominee_on_the_production_pool(
     evaluator: ModuleType,
 ) -> None:
-    # std: a=0.0, b=0.5, c=1.0, d=2.0 -> median 0.75 -> pool {a, b}. d has the
-    # largest distance but is OUT of the pool; b wins inside it.
     week = _week(
         2021,
         3,
@@ -103,14 +96,11 @@ def test_v2_nominee_is_the_production_select_nominee_on_the_production_pool(
     assert row["v2_game_id"] == "2021_03_C_D"
     assert row["v2_n_tied"] == 1
     assert row["v2_tie_break"] == "none"
-    # Scored on the ACTIVE model's pick, never the candidate arm's.
     assert row["v2_correct"] == 0.0
     assert row["v2_correct_candidate_arm"] == 1.0
-    # The unfiltered choosers take the out-of-pool game.
     assert row["ch4_game_id"] == "2021_03_G_H"
     assert row["ch8_game_id"] == "2021_03_G_H"
     assert row["n_pool"] == 2
-    # Direct cross-check against the production function on the same pool.
     pool = work.loc[work["pool_pass"], ["game_id", "candidate_dist", "spread_std"]]
     assert bpn.select_nominee(pool)[0] == row["v2_game_id"]
 
@@ -118,9 +108,6 @@ def test_v2_nominee_is_the_production_select_nominee_on_the_production_pool(
 def test_big_spread_discount_excludes_ten_plus_and_falls_back_when_empty(
     evaluator: ModuleType,
 ) -> None:
-    # std 0.0/0.5/2.0/3.0 -> median 1.25 -> pool {A_B (spread 10.0), C_D
-    # (spread 9.5)}. A_B is the v2 nominee but sits exactly on the 10-point
-    # boundary, so the discount moves to C_D.
     week = _week(
         2022,
         5,
@@ -139,7 +126,6 @@ def test_big_spread_discount_excludes_ten_plus_and_falls_back_when_empty(
     assert not row["u2_fallback_to_v2"]
     assert row["u2_correct"] == 0.0
 
-    # Every pool game ({A_B, C_D}) is 10+: fall back to the unmodified v2 pool.
     week = _week(
         2022,
         6,
@@ -164,7 +150,6 @@ def test_v1_comes_from_the_frozen_select_best_pick_on_the_sweep(evaluator: Modul
             ("2023_01_C_D", 0.20, 0.5, 6.5, 1.0),
         ],
     )
-    # A_B's pick survives a 2-point run around the quote; C_D only 1 point.
     offsets = [-2.0, -1.0, 0.0, 1.0, 2.0]
     sweep = pd.DataFrame(
         [
@@ -184,16 +169,9 @@ def test_v1_comes_from_the_frozen_select_best_pick_on_the_sweep(evaluator: Modul
     assert v1.iloc[0]["v1_correct"] == 0.0
 
 
-# ---------------------------------------------------------------------------
-# 2. Tie detection
-# ---------------------------------------------------------------------------
-
-
 def test_a_tie_at_the_top_of_the_pool_is_reported_with_the_deciding_tie_break(
     evaluator: ModuleType,
 ) -> None:
-    # std 0.5/0.0/1.0/2.0/3.0 -> median 1.0 -> pool {A_B, C_D}, which tie on
-    # candidate_dist; C_D has the lower dispersion, A_B the earlier game_id.
     week = _week(
         2024,
         9,
@@ -208,16 +186,14 @@ def test_a_tie_at_the_top_of_the_pool_is_reported_with_the_deciding_tie_break(
     row = evaluator.nominate_composed(_work(week, evaluator=evaluator)).iloc[0]
     assert row["v2_n_tied"] == 2
     assert row["v2_tie_break"] == "dispersion"
-    assert row["v2_game_id"] == "2024_09_C_D"  # lower spread_std wins the tie
-    assert row["v3_game_id"] == "2024_09_A_B"  # alphabetical fallback
+    assert row["v2_game_id"] == "2024_09_C_D"
+    assert row["v3_game_id"] == "2024_09_A_B"
     assert row["v3_tie_break"] == "game_id"
     audit = evaluator.tie_break_audit(evaluator.nominate_composed(_work(week, evaluator=evaluator)))
     assert audit["weeks_tied_at_top_of_pool"] == 1
     assert audit["weeks_dispersion_decided"] == 1
     assert audit["weeks_dispersion_nominee_differs_from_alphabetical"] == 1
 
-    # Same dispersion on both tied games (and an empty strict filter, so the
-    # whole week is the pool): falls through to game_id.
     week = _week(
         2024,
         10,
@@ -233,11 +209,6 @@ def test_a_tie_at_the_top_of_the_pool_is_reported_with_the_deciding_tie_break(
     assert row["v2_game_id"] == row["v3_game_id"] == "2024_10_A_B"
 
 
-# ---------------------------------------------------------------------------
-# 3. Leakage: later weeks cannot move an earlier nominee
-# ---------------------------------------------------------------------------
-
-
 def test_a_later_weeks_rows_cannot_change_an_earlier_weeks_nominee(evaluator: ModuleType) -> None:
     early = _week(
         2025,
@@ -250,7 +221,6 @@ def test_a_later_weeks_rows_cannot_change_an_earlier_weeks_nominee(evaluator: Mo
         ],
     )
     before = evaluator.nominate_composed(_work(early, evaluator=evaluator))
-    # A later week with extreme values in every column the rule reads.
     late = _week(
         2025,
         3,
@@ -263,16 +233,9 @@ def test_a_later_weeks_rows_cannot_change_an_earlier_weeks_nominee(evaluator: Mo
     after = evaluator.nominate_composed(_work(early, late, evaluator=evaluator))
     first = after.loc[(after["season"] == 2025) & (after["week"] == 2)].reset_index(drop=True)
     pd.testing.assert_frame_equal(first, before)
-    # And the pool itself was built week-by-week (the later week's zero-std
-    # games did not drag the earlier week's median down).
     work = _work(early, late, evaluator=evaluator)
     early_pool = set(work.loc[(work["week"] == 2) & work["pool_pass"], "game_id"])
     assert early_pool == {"2025_02_A_B", "2025_02_C_D"}
-
-
-# ---------------------------------------------------------------------------
-# 4. The factored-out pool helper matches production's pool
-# ---------------------------------------------------------------------------
 
 
 def test_dispersion_pool_from_frame_matches_week_dispersion_pool(
@@ -300,7 +263,6 @@ def test_dispersion_pool_from_frame_matches_week_dispersion_pool(
     assert direct.n_pool_pass == production.n_pool_pass
     pd.testing.assert_frame_equal(direct.frame, production.frame)
 
-    # No missing data: strict below-median filter.
     frame = pd.DataFrame({"game_id": ["a", "b", "c"], "spread_std": [0.0, 0.5, 1.0]})
     pool = dispersion_pool_from_frame(frame)
     assert pool.fallback is False

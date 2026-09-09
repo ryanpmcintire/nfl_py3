@@ -349,9 +349,6 @@ def _cmd_drift_report(args: argparse.Namespace) -> None:
     history_entries = [entry for entry in cards if entry is not current_entry]
     history: pd.DataFrame | None = None
     if history_entries:
-        # Oldest first so per-game dedupe keeps each game's FIRST published
-        # probability -- the ledger convention: a republished or re-tuned card
-        # never rewrites what an earlier card already said.
         history = pd.concat(
             [pd.read_csv(path) for _, path in history_entries], ignore_index=True
         ).drop_duplicates(subset=["game_id"], keep="first")
@@ -388,7 +385,6 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
     if probability_method is not None:
         active_model_config = dict(active_model_config)
         if probability_method != active_model_config.get("probability_method", "ecdf"):
-            # A comparison must not identify itself as the unchanged active model.
             active_model_config["comparison_baseline_model_id"] = active_model_config.pop(
                 "model_id", None
             )
@@ -407,7 +403,6 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
     without_offset = bool(getattr(args, "no_home_side_offset", False))
     serve_offset = HOME_SIDE_OFFSET_SERVED and not without_offset
     if without_offset and HOME_SIDE_OFFSET_SERVED and "model_id" in active_model_config:
-        # A raw-model comparison must not identify itself as the served policy.
         active_model_config = dict(active_model_config)
         active_model_config["comparison_baseline_model_id"] = active_model_config.pop("model_id")
     scored = opener_pick_evaluation(

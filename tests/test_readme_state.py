@@ -90,7 +90,7 @@ def test_active_model_block_reports_both_grades(tmp_path: Path) -> None:
     _write_opener_evaluation(artifacts_root)
 
     text = render_active_model_block(artifacts_root)
-    assert "`d1f07d773475dc58`" not in text  # sanity: fixture uses model-abc, not the real id
+    assert "`d1f07d773475dc58`" not in text
     assert "`model-abc`" in text
     assert "**53.36%** on **1,537 paired games**" in text
     assert "week-blocked 95% interval [50.70%, 56.09%]" in text
@@ -100,7 +100,6 @@ def test_active_model_block_reports_both_grades(tmp_path: Path) -> None:
 def test_active_model_block_without_matching_opener_run_says_unavailable(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
     _write_active_model(artifacts_root)
-    # No opener_evaluation/ directory at all.
     text = render_active_model_block(artifacts_root)
     assert "unavailable in local artifacts" in text
     assert "opener-evaluation" in text
@@ -227,7 +226,6 @@ def test_apply_generated_state_blocks_bootstraps_missing_markers(tmp_path: Path)
     assert updated.count(README_ACTIVE_MODEL_END) == 1
     assert updated.count(README_RESEARCH_STATE_START) == 1
     assert updated.count(README_RESEARCH_STATE_END) == 1
-    # Untouched surrounding prose survives the bootstrap insert.
     assert "# Project" in updated
     assert "## Details" in updated
 

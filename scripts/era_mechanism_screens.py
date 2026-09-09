@@ -96,7 +96,6 @@ CELL_SAGARIN = "sagarin_battery_large_divergence_coverage_matched_era"
 CELL_SAGARIN_LATE = "sagarin_battery_large_divergence_coverage_matched_era_late"
 ALL_CELLS = (CELL_BYE, CELL_PT, CELL_SAGARIN)
 
-# Frozen in docs/era_mechanism_screens_20260901.md section 1.
 PRIMARY_SAMPLES = 20_000
 NULL_DRAWS = 200
 CONTROL_REPLICATES = 25
@@ -123,11 +122,6 @@ MINED_WINDOW_DISCOUNT = (
 
 def _log(message: str) -> None:
     print(message, flush=True)
-
-
-# ---------------------------------------------------------------------------
-# Shared uncertainty plumbing (frozen: clv.week_blocked_bootstrap, 20k draws)
-# ---------------------------------------------------------------------------
 
 
 def _n_blocks(frame: pd.DataFrame, block: str) -> int:
@@ -293,11 +287,6 @@ def _injection_control(
             }
         )
     return results
-
-
-# ---------------------------------------------------------------------------
-# Cell 1: bye_overval_install_need_moderator
-# ---------------------------------------------------------------------------
 
 
 def _canonical_team(series: pd.Series) -> pd.Series:
@@ -626,10 +615,6 @@ def run_bye_positive_control(schedules_path: Path, *, samples: int, seed: int) -
     }
 
 
-# ---------------------------------------------------------------------------
-# Cell 2: pt_post_mnf_sunday_changepoint
-# ---------------------------------------------------------------------------
-
 PT_SIGN = -1
 
 
@@ -865,11 +850,6 @@ def run_pt_positive_control(schedules_path: Path, *, samples: int, seed: int) ->
     }
 
 
-# ---------------------------------------------------------------------------
-# Cell 3: sagarin coverage-matched eras
-# ---------------------------------------------------------------------------
-
-
 def sagarin_coverage_table(schedules_path: Path, sagarin_root: Path) -> tuple[pd.DataFrame, Any]:
     """Per-season screen-population coverage, the convention docs/sagarin_backfill.md 9.3 uses."""
 
@@ -1067,11 +1047,6 @@ def run_sagarin_positive_control(
             "above is the detectability statement",
         },
     }
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 
 def _run_one(cell: str, mode: str, args: argparse.Namespace) -> dict[str, Any]:

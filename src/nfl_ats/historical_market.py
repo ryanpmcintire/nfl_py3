@@ -50,7 +50,6 @@ SCORES_REQUIRED_COLUMNS = (
 )
 TEAMS_REQUIRED_COLUMNS = ("team_name", "team_id")
 
-# nflverse uses LA/LV while Spreadspoke's stable franchise IDs use LAR/LVR.
 TEAM_ID_ALIASES = {"LAR": "LA", "LVR": "LV"}
 
 

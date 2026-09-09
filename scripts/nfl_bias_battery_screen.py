@@ -202,7 +202,6 @@ def add_history_features(long_df: pd.DataFrame) -> pd.DataFrame:
     long_df = long_df.sort_values(["team", "season", "gameday"]).reset_index(drop=True)
     grouped = long_df.groupby(["team", "season"], sort=False)
 
-    # --- cumulative win pct, strictly prior games this season ---
     win = (long_df["team_score_margin"] > 0).astype(float)
     prior_games = grouped.cumcount()
     long_df["_win"] = win
@@ -214,7 +213,6 @@ def add_history_features(long_df: pd.DataFrame) -> pd.DataFrame:
     )
     long_df = long_df.drop(columns=["_win"])
 
-    # --- opponent's own prior win pct this season/week (self-join) ---
     opp_stats = long_df[["team", "season", "week", "prior_win_pct", "prior_games"]].rename(
         columns={
             "team": "opponent",
@@ -224,29 +222,24 @@ def add_history_features(long_df: pd.DataFrame) -> pd.DataFrame:
     )
     long_df = long_df.merge(opp_stats, on=["opponent", "season", "week"], how="left")
 
-    # --- prior game's own score margin (blowout letdown/bounce triggers) ---
     grouped = long_df.groupby(["team", "season"], sort=False)
     long_df["prior_score_margin"] = grouped["team_score_margin"].shift(1)
 
-    # --- backup QB flag (loop per group; ~9,300 rows total, small groups) ---
     long_df["backup_qb_flag"] = np.nan
     for _, group in long_df.groupby(["team", "season"], sort=False):
         long_df.loc[group.index, "backup_qb_flag"] = _qb_backup_flag(group).to_numpy()
 
-    # --- consecutive true road games (this + previous 2, same team/season) ---
     long_df["is_true_road"] = (~long_df["is_home"]) & (long_df["neutral_site"] == 0)
     grouped = long_df.groupby(["team", "season"], sort=False)
     prev1 = grouped["is_true_road"].shift(1).fillna(False)
     prev2 = grouped["is_true_road"].shift(2).fillna(False)
     long_df["three_plus_road_flag"] = long_df["is_true_road"] & prev1 & prev2
 
-    # --- sandwich spot: not div this week, div last week, div next week ---
     grouped = long_df.groupby(["team", "season"], sort=False)
     prior_div = grouped["div_game"].shift(1)
     next_div = grouped["div_game"].shift(-1)
     long_df["sandwich_flag"] = (long_df["div_game"] == 0) & (prior_div == 1) & (next_div == 1)
 
-    # --- division revenge: 2nd+ meeting this season vs same opponent, lost 1st ---
     long_df = long_df.sort_values(["team", "opponent", "season", "gameday"]).reset_index(drop=True)
     grouped = long_df.groupby(["team", "opponent", "season"], sort=False)
     meeting_rank = grouped.cumcount()
@@ -577,7 +570,7 @@ def main() -> None:
         "ranked_by_abs_full_slate_effect": [cell["name"] for cell in ranked],
     }
     output_path = output_dir / "results.json"
-    write_stamped_artifact(payload, output_path)  # ENG-38
+    write_stamped_artifact(payload, output_path)
     print(f"\nwrote {output_path}")
 
 

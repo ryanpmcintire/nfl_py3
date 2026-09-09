@@ -63,11 +63,6 @@ SATURDAY_PASS = pd.Timestamp("2026-09-19T15:00:00+00:00")
 TUESDAY_RECORD = pd.Timestamp("2026-09-15T16:00:00+00:00")
 
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
-
 def _game(
     *,
     game_id: str,
@@ -147,11 +142,6 @@ def _out_row(*, season: int, week: int, team: str, position: str = "LS") -> dict
         "game_type": "REG",
         "full_name": f"{team} {position} Player",
     }
-
-
-# ---------------------------------------------------------------------------
-# 1. live_specialist_out_qualifying -- the disclosed, un-capped deviation
-# ---------------------------------------------------------------------------
 
 
 def test_refresh_ignores_a_future_injury_capture(tmp_path: Path) -> None:
@@ -258,11 +248,6 @@ def test_latest_nflverse_injuries_snapshot_is_none_when_absent(tmp_path: Path) -
     assert latest_nflverse_injuries_snapshot(tmp_path / "data") is None
 
 
-# ---------------------------------------------------------------------------
-# 2. build_specialist_absence_fade_refresh_rows
-# ---------------------------------------------------------------------------
-
-
 def test_fades_the_away_team_missing_its_specialist(tmp_path: Path) -> None:
     data_root = tmp_path / "data"
     games = (_game(game_id="g1", new_pick_side="HOME", probability=0.55),)
@@ -280,7 +265,7 @@ def test_fades_the_away_team_missing_its_specialist(tmp_path: Path) -> None:
     assert bool(row["away_specialist_out"]) is True
     assert bool(row["home_specialist_out"]) is False
     assert row["specialist_would_be_pick_side"] == "HOME"
-    assert bool(row["specialist_fade_flip"]) is False  # already HOME
+    assert bool(row["specialist_fade_flip"]) is False
     assert row["overlay_status"] == OVERLAY_STATUS_APPLIED
     assert row["played_pick_side"] == "HOME"
 
@@ -353,7 +338,6 @@ def test_no_report_for_the_exact_week_is_a_documented_skip(tmp_path: Path) -> No
     data_root = tmp_path / "data"
     games = (_game(game_id="g1"),)
     plan = _plan(games)
-    # A real report exists, but for a DIFFERENT week -- must not leak across.
     _write_injuries_snapshot(
         data_root,
         snapshot_id="20260901T000000Z",
@@ -378,8 +362,6 @@ def test_a_malformed_snapshot_is_fail_open_not_an_exception(tmp_path: Path) -> N
     data_root = tmp_path / "data"
     games = (_game(game_id="g1"),)
     plan = _plan(games)
-    # Missing required columns -> DataContractError inside, caught, folded
-    # into a documented skip.
     snapshot = data_root / "raw" / "nflverse_injuries" / "20260901T000000Z"
     snapshot.mkdir(parents=True)
     pd.DataFrame({"season": [2026]}).to_parquet(snapshot / "injuries.parquet", index=False)
@@ -388,11 +370,6 @@ def test_a_malformed_snapshot_is_fail_open_not_an_exception(tmp_path: Path) -> N
     assert frame.empty
     assert diagnostics["skipped"] is True
     assert diagnostics["reason"] == OVERLAY_STATUS_NO_SNAPSHOT
-
-
-# ---------------------------------------------------------------------------
-# 3. record_specialist_absence_fade_refresh_overlay
-# ---------------------------------------------------------------------------
 
 
 def test_recording_is_opt_in(tmp_path: Path) -> None:
@@ -463,15 +440,9 @@ def test_recording_writes_a_row_recording_both_arms(
     ledger = load_specialist_absence_fade_refresh_decisions(artifacts_root)
     assert len(ledger) == 1
     row = ledger.iloc[0]
-    # Both arms in one row.
     assert row["played_pick_side"] == "AWAY"
     assert row["specialist_would_be_pick_side"] == "HOME"
     assert bool(row["specialist_fade_flip"]) is True
-
-
-# ---------------------------------------------------------------------------
-# 4. Registration: fingerprint stability, refresh-path recording command
-# ---------------------------------------------------------------------------
 
 
 def _registered_entry() -> dict:

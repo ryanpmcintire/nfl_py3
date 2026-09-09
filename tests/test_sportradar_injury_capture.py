@@ -71,10 +71,6 @@ def _payload(
 def test_capture_is_immutable_complete_and_does_not_persist_secret(
     private_raw_root: Path,
 ) -> None:
-    # ENG-30: `capture()` enforces `source_policy.require_private_raw_destination`
-    # on its output root before writing anything -- plain `tmp_path` trips that
-    # guard when `--basetemp` is pointed in-repo. See conftest.py's
-    # `private_raw_root` fixture.
     now = datetime(2026, 9, 2, 16, tzinfo=UTC)
     schedule = _schedule(private_raw_root / "schedule.parquet")
     calls: list[tuple[str, str]] = []
@@ -108,9 +104,6 @@ def test_capture_is_immutable_complete_and_does_not_persist_secret(
 def test_missing_credential_fails_before_output_and_network(
     private_raw_root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # ENG-30: `capture()` checks `require_private_raw_destination` before the
-    # credential check, so this needs the out-of-repo fixture too, or an
-    # in-repo `--basetemp` raises the wrong error before "is required" is hit.
     monkeypatch.delenv(capture_module.API_KEY_ENV, raising=False)
     called = False
 
@@ -137,7 +130,6 @@ def test_missing_credential_fails_before_output_and_network(
 def test_bad_response_leaves_failed_manifest_without_canonical_table(
     private_raw_root: Path, payload: bytes, message: str
 ) -> None:
-    # ENG-30: see test_capture_is_immutable_complete_and_does_not_persist_secret.
     schedule = _schedule(private_raw_root / "schedule.parquet")
     out = private_raw_root / "captures"
     with pytest.raises(capture_module.SportradarInjuryCaptureError, match=message):
@@ -157,7 +149,6 @@ def test_bad_response_leaves_failed_manifest_without_canonical_table(
 def test_decision_loader_ignores_later_revision_and_verifies_hashes(
     private_raw_root: Path,
 ) -> None:
-    # ENG-30: see test_capture_is_immutable_complete_and_does_not_persist_secret.
     schedule = _schedule(private_raw_root / "schedule.parquet")
     out = private_raw_root / "captures"
     first = capture_module.capture(

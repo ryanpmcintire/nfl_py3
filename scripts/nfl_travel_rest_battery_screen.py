@@ -96,7 +96,6 @@ SEASON_END = 2025
 
 EARTH_RADIUS_MI = 3958.8
 
-# Predeclared, round, externally-justified thresholds (docs/travel_rest_battery.md).
 LONG_DISTANCE_MI = 1500.0
 EASTBOUND_HOURS = 2.0
 RETURN_TRIP_MI = 1500.0
@@ -144,7 +143,7 @@ def load_population(schedules_path: Path, coords: dict[str, dict[str, Any]]) -> 
     df["week"] = pd.to_numeric(df["week"], errors="raise").astype(int)
     df = df.loc[df["season"].between(SEASON_START, SEASON_END)].reset_index(drop=True)
 
-    df = add_ats_outcomes(df)  # adds ats_margin, home_cover (reused verbatim)
+    df = add_ats_outcomes(df)
     n_before_push_drop = len(df)
     df = df.loc[df["home_cover"].notna()].reset_index(drop=True)
     pushes_or_missing = n_before_push_drop - len(df)
@@ -154,9 +153,6 @@ def load_population(schedules_path: Path, coords: dict[str, dict[str, Any]]) -> 
     df["week_block"] = df["season"] * 100 + df["week"]
     df["gameday_dt"] = pd.to_datetime(df["gameday"], errors="coerce")
 
-    # Away team's own modal home stadium THAT SEASON, same convention as
-    # away_modal_roof/away_modal_surface in the weather batteries -- resolves
-    # relocations (STL->LA, SD->LAC, OAK->LV) automatically from the schedule.
     home_rows = df.loc[df["location"] == "Home"]
     modal_stadium = (
         home_rows.groupby(["home_team", "season"])["stadium"]
@@ -203,10 +199,6 @@ def load_population(schedules_path: Path, coords: dict[str, dict[str, Any]]) -> 
         away_offset.at[idx] = away_utc.total_seconds() / 3600.0
     df["tz_delta_eastbound"] = venue_offset - away_offset
 
-    # Team-perspective long table for the return-trip-hangover cell: each
-    # team's OWN travel distance in EACH of its games this season, shifted
-    # by 1 within (team, season) to get "previous game's own travel", then
-    # joined back onto the HOME side of each game.
     def team_home_coord(team: str, season: int) -> dict[str, Any] | None:
         name = modal_stadium.get((team, season))
         return coords.get(name) if isinstance(name, str) else None
@@ -263,7 +255,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
             "description": f"{mechanism} (pregame-safe schedule/geometry fact, no leakage caveat).",
         }
 
-    # 1. long_distance_road
     dist_missing = df["away_travel_mi"].isna()
     add(
         "travel_rest_long_distance_road",
@@ -274,7 +265,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "season) -- predicted positive home_cover edge (away travel fatigue)",
     )
 
-    # 2. eastbound_multizone
     tz_missing = df["tz_delta_eastbound"].isna()
     add(
         "travel_rest_eastbound_multizone",
@@ -285,7 +275,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "gameday) -- predicted positive home_cover edge",
     )
 
-    # 3. international_game
     add(
         "travel_rest_international_game",
         df["location"] == "Neutral",
@@ -295,7 +284,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "negative home_cover edge",
     )
 
-    # 4. return_trip_hangover
     return_missing = df["prev_own_travel_mi"].isna() | df["home_rest"].isna()
     add(
         "travel_rest_return_trip_hangover",
@@ -308,7 +296,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "negative home_cover edge (fatigue hangover from the team's own prior trip)",
     )
 
-    # 5. home_off_bye
     home_bye_missing = df["home_rest"].isna()
     add(
         "travel_rest_home_off_bye",
@@ -319,7 +306,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "predicted positive home_cover edge",
     )
 
-    # 6. away_off_bye
     away_bye_missing = df["away_rest"].isna()
     add(
         "travel_rest_away_off_bye",
@@ -329,7 +315,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "mirror of cell 5 on the away side) -- predicted negative home_cover edge",
     )
 
-    # 7. short_week_road
     short_week_missing = df["away_rest"].isna()
     add(
         "travel_rest_short_week_road",
@@ -340,7 +325,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "predicted positive home_cover edge",
     )
 
-    # 8. thursday_pure
     add(
         "travel_rest_thursday_pure",
         df["weekday"] == "Thursday",

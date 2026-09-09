@@ -144,18 +144,12 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
     assert "separate opener-graded accuracy rule" in first_readme
     assert "**Production policy active:**" in first_readme
     assert "three situational rules" in first_readme
-    # Pins the SUBSTANCE of the disclosure, not one phrasing: the archive
-    # score must disclose archive reuse, and the card must carry the same
-    # de-inflated planning estimate the rest of the site publishes rather
-    # than a second number of its own.
     assert "archive comparison reuses 127 similar combinations" in first_readme
     assert "not independent evidence of future accuracy" in first_readme
     assert findings_content.PLAYED_CARD_EXPECTATION_HERO in first_readme
     assert first_readme.index("SF at LA") < first_readme.index("ARI at LAC")
     assert "SF -3.5" in first_readme
     assert "ARI +10.5" in first_readme
-    # No raw model id/hash in the card's own header (owner mandate,
-    # 2026-09-05) -- the humanized method label instead.
     assert "Published from the synchronized player model" in destination.read_text(encoding="utf-8")
 
 
@@ -211,8 +205,6 @@ def test_publish_active_predictions_also_refreshes_readme_state_blocks(tmp_path:
     assert readme_text.count("<!-- ACTIVE_MODEL_STATE:START -->") == 1
     assert readme_text.count("<!-- RESEARCH_STATE:START -->") == 1
     assert "`model-123`" in readme_text
-    # No registry files exist under registry_root in this fixture, so the
-    # research-state block must degrade honestly rather than fabricate counts.
     assert "0 results recorded yet" in readme_text
 
 
@@ -238,7 +230,6 @@ def test_published_card_marks_the_week_best_pick(tmp_path: Path) -> None:
     assert f"{BEST_PICK_MARK}ARI +10.5" in card
     assert "Best Pick of the week" in card
     assert "ARI +10.5 in ARI at LAC" in card
-    # Exactly one row is marked (the other occurrence is the note's legend).
     assert card.count(BEST_PICK_MARK) == 1
     assert card.count(BEST_PICK_MARK.strip()) == 2
 
@@ -251,7 +242,6 @@ def test_published_card_discloses_a_tied_best_pick(tmp_path: Path) -> None:
     """
 
     forecast, readme = _write_active_publication_fixture(tmp_path)
-    # "later" and "earlier" both hold to the same width -- a two-way tie.
     _write_line_sweep(forecast, {"later": 3.0, "earlier": 3.0})
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
 
@@ -356,7 +346,6 @@ def _write_overlay_publication_fixture(root: Path) -> tuple[Path, Path, Path]:
             "away_team": ["YR1", "OTHER2"],
             "home_team": ["KEEP", "OTHER1"],
             "spread_line": [-3.5, 2.5],
-            # KEEP (home, kept coach) is NOT picked -- YR1 (away, year-1) is.
             "home_cover_probability": [0.35, 0.55],
             "bet_side": ["AWAY", "HOME"],
             "edge": [0.15, 0.05],
@@ -662,11 +651,6 @@ def test_publish_rejects_weekly_model_id_mismatch(tmp_path: Path) -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# POL-09 2026-08-18: the v2 Best Pick nomination rule
-# ---------------------------------------------------------------------------
-
-
 def _write_v2_capable_fixture(root: Path) -> tuple[Path, Path, Path, list[str]]:
     """A real, walk-forward-fittable feature table plus a matching card and
     a local Tuesday-opener market snapshot with genuinely DIFFERENT
@@ -762,8 +746,6 @@ def _write_v2_capable_fixture(root: Path) -> tuple[Path, Path, Path, list[str]]:
     snapshot_dir.mkdir(parents=True)
     tuesday = pd.Timestamp("2026-08-18T13:00:00Z")
     kickoff = pd.Timestamp("2026-09-10T17:00:00Z")
-    # Genuinely different dispersion per game, so the filter is real, not a
-    # missing-data fallback.
     book_lines = {
         game_ids[0]: [2.5, 2.5],
         game_ids[1]: [-2.5, -3.0],
@@ -805,11 +787,7 @@ def test_published_card_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
     assert result["best_pick_nomination_v2_available"] is True
     assert result["best_pick_nomination_v2_game_id"] in game_ids
     assert result["best_pick_game_id"] == result["best_pick_nomination_v2_game_id"]
-    # v1's own (unchanged) nomination is still reported for the old-vs-new
-    # audit even though it is not the one marked on the card this week.
-    assert (
-        result["best_pick_nomination_v1_game_id"] is None
-    )  # no line_sweep.parquet in this fixture
+    assert result["best_pick_nomination_v1_game_id"] is None
 
     card = destination.read_text(encoding="utf-8")
     assert NOMINATION_V2_METHOD_SENTENCE in card
@@ -845,12 +823,10 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
     exists. Best Pick selection runs on the UN-overlaid card either way."""
 
     forecast, readme, data_root, game_ids = _write_v2_capable_fixture(tmp_path)
-    # Overwrite the card so ONE game is a clean year-1-coach fade candidate,
-    # distinct from every game v2 will ever be told to nominate.
     predictions = pd.read_csv(forecast / "recommendations.csv")
     predictions["home_team"] = ["KEEP", "HME2", "HME3"]
     predictions["away_team"] = ["YR1", "AWY2", "AWY3"]
-    predictions["home_cover_probability"] = [0.35, 0.60, 0.45]  # KEEP@home is NOT picked -> flips
+    predictions["home_cover_probability"] = [0.35, 0.60, 0.45]
     predictions.to_csv(forecast / "recommendations.csv", index=False)
 
     schedules = pd.DataFrame(
@@ -917,24 +893,14 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
         data_root=data_root,
     )
 
-    # v2 nominated its own game, unmoved by the overlay flipping a different one.
     assert result["best_pick_nomination_v2_game_id"] == game_ids[2]
     assert result["best_pick_game_id"] == game_ids[2]
-    # The overlay flipped the year-1-coach game, unmoved by v2 existing.
     assert result["overlay_flip_count"] == 1
     assert result["overlay_flipped_game_ids"] == [game_ids[0]]
 
     card = destination.read_text(encoding="utf-8")
     assert "Production policy active" in card
     assert NOMINATION_V2_METHOD_SENTENCE in card
-
-
-# ---------------------------------------------------------------------------
-# POL-12 (2026-09-05 owner mandate): "our project over/under total needs to
-# line up with our spread prediction" -- tiebreaker.json persistence and the
-# CURRENT_PREDICTIONS.md card line, both read straight off the SAME
-# TiebreakerReport publish_active_predictions computes once.
-# ---------------------------------------------------------------------------
 
 
 def _fixed_tiebreaker_report() -> object:
@@ -1004,15 +970,9 @@ def test_publish_active_predictions_writes_tiebreaker_json_and_card_line(
     assert forecast_block["away"] == "ARI"
     assert forecast_block["guess_home"] == 23
     assert forecast_block["guess_away"] == 19
-    # implied_margin is guess_home - guess_away (the SCORE's own margin),
-    # never the pre-lattice guess_margin (3.19) -- the whole point of the
-    # fix is that the two can never disagree once persisted.
     assert forecast_block["implied_margin"] == 4
     assert forecast_block["market_total"] == pytest.approx(43.0)
     assert forecast_block["blended_total"] == pytest.approx(43.0421)
-    # MOD-17 (docs/tiebreaker.md "one lattice, one margin, one total";
-    # nfl_ats.served_total): the JSON also names WHICH method served and
-    # always carries the comparison arm's own number.
     assert forecast_block["served_total"] == pytest.approx(43.0421)
     assert forecast_block["served_total_method"] == "blend_k01"
     assert forecast_block["comparison_total_blend_k01"] == pytest.approx(43.0421)
@@ -1069,7 +1029,6 @@ def test_publish_active_predictions_refuses_tiebreaker_artifacts_on_consistency_
     ).recorded
     card = destination.read_text(encoding="utf-8")
     assert "Tiebreaker (last game" not in card
-    # The card itself still published -- a refused tiebreaker never blocks it.
     assert result["games"] == 2
 
 
@@ -1116,7 +1075,6 @@ def test_published_tiebreaker_passes_final_card_side_and_exact_row(
         "predicted_market_residual": 0.19,
         "home_cover_probability": 0.49,
     }
-    # This is the resolved overlay-flipped card: raw residual HOME, final probability AWAY.
     frame = pd.DataFrame([row])
     raw = tmp_path / "raw" / "fixture"
     raw.mkdir(parents=True)

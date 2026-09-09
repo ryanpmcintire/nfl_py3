@@ -76,9 +76,6 @@ OUTDOOR_ROOFS = frozenset({"outdoors", "open"})
 HIGH_WIND_MPH = 15.0
 QUARTILE = 0.75
 
-# All 9 clear PER-07's own +0.320 "genuinely reliable" bar or sit with a 95%
-# CI entirely above zero (docs/team_style.md reliability table); zero
-# dimensions are excluded on reliability grounds.
 RELIABLE_DIMENSIONS = STYLE_DIMENSIONS
 
 SCHEDULE_COLUMNS = [
@@ -108,7 +105,7 @@ def load_schedules(path: Path) -> pd.DataFrame:
     df["home_team"] = df["home_team"].replace(TEAM_ABBREVIATION_ALIASES)
     df["away_team"] = df["away_team"].replace(TEAM_ABBREVIATION_ALIASES)
 
-    df = add_ats_outcomes(df)  # ats_margin, home_cover (reused verbatim)
+    df = add_ats_outcomes(df)
     n_before_push_drop = len(df)
     df = df.loc[df["home_cover"].notna()].reset_index(drop=True)
     df.attrs["n_before_push_drop"] = n_before_push_drop
@@ -119,9 +116,6 @@ def load_schedules(path: Path) -> pd.DataFrame:
     df["spread_line"] = pd.to_numeric(df["spread_line"], errors="coerce")
     df["outdoor"] = df["roof"].isin(OUTDOOR_ROOFS)
     df["week_block"] = df["season"] * 100 + df["week"]
-    # Verified convention (scripts/nfl_weather_battery_screen.py comment,
-    # cross-checked against add_ats_outcomes's ats_margin=result-spread_line):
-    # spread_line > 0 -> HOME favored; spread_line < 0 -> AWAY favored.
     df["dog_cover"] = np.select(
         [df["spread_line"] < 0.0, df["spread_line"] > 0.0],
         [df["home_cover"], 1.0 - df["home_cover"]],
@@ -388,7 +382,6 @@ def main() -> None:
 
     cells: list[dict[str, Any]] = []
 
-    # A1: distinct identity vs field (unsigned)
     flag_a1 = long_df["prior_identity_l2_distance"] >= thresholds["identity_l2_distance"]
     missing_a1 = long_df["prior_identity_l2_distance"].isna()
     cells.append(
@@ -409,7 +402,6 @@ def main() -> None:
         )
     )
 
-    # A2: short-game identity vs field (unsigned)
     flag_a2 = long_df["prior_short_pass_share_centered"] >= thresholds["short_pass_share_centered"]
     missing_a2 = long_df["prior_short_pass_share_centered"].isna()
     cells.append(
@@ -430,7 +422,6 @@ def main() -> None:
         )
     )
 
-    # B1: short-game offense (away) vs pressure-style defense (home)
     flag_b1 = (
         game["prior_short_pass_share_centered"] >= thresholds["short_pass_share_centered"]
     ) & (game["prior_shotgun_rate_faced_centered"] >= thresholds["shotgun_rate_faced_centered"])
@@ -460,12 +451,6 @@ def main() -> None:
         )
     )
 
-    # B2: pace mismatch -> underdog cover. dog_cover is undefined for true
-    # pick'ems (spread_line==0) -- analogous to a push, this is a POPULATION
-    # restriction for this cell's value column, not just a flag-input gap, so
-    # those rows are dropped from the population passed to score_cell (not
-    # merely flagged False with a NaN value, which would corrupt the
-    # bootstrap's weighted sums into NaN across every draw).
     game_b2 = game.loc[game["dog_cover"].notna()].reset_index(drop=True)
     n_pickem_dropped = int(game["dog_cover"].isna().sum())
     flag_b2 = game_b2["pace_diff_abs"] >= pace_threshold
@@ -490,7 +475,6 @@ def main() -> None:
         )
     )
 
-    # B3: deep-ball offense (away) outdoors in high wind
     flag_b3 = (
         game["outdoor"]
         & (game["wind"] >= HIGH_WIND_MPH)

@@ -24,11 +24,6 @@ _SEASON = 2020
 _WEEK = 4
 
 
-# ---------------------------------------------------------------------------
-# 1. MarginModel.predict: default unchanged, explicit gaussian differs
-# ---------------------------------------------------------------------------
-
-
 def test_predict_default_is_ecdf_and_matches_explicit_ecdf(model_frame: pd.DataFrame) -> None:
     model = fit_margin_model(
         model_frame.loc[model_frame["gameday"] < model_frame["gameday"].quantile(0.8)],
@@ -66,11 +61,6 @@ def test_predict_gaussian_changes_only_home_cover_probability(model_frame: pd.Da
     )
 
 
-# ---------------------------------------------------------------------------
-# 2. outcomes.py: production defaults to gaussian, backtests stay ecdf
-# ---------------------------------------------------------------------------
-
-
 def test_score_outcome_week_defaults_to_gaussian_median(model_frame: pd.DataFrame) -> None:
     """The sole production weekly-forecast entry point's promoted default."""
 
@@ -106,8 +96,6 @@ def test_score_outcome_week_defaults_to_gaussian_median(model_frame: pd.DataFram
         ats["home_cover_probability"].to_numpy(dtype=float),
         ats_ecdf["home_cover_probability"].to_numpy(dtype=float),
     )
-    # "market" method is unaffected by probability_method (it reads book
-    # odds, never the residual sample) -- an invariant, not a loophole.
     market = default_run.loc[default_run["method"].eq("market")]
     market_ecdf = explicit_ecdf.loc[explicit_ecdf["method"].eq("market")]
     pd.testing.assert_series_equal(
@@ -140,11 +128,6 @@ def test_walk_forward_outcomes_default_is_still_ecdf(model_frame: pd.DataFrame) 
     )
 
 
-# ---------------------------------------------------------------------------
-# 3. CLI defaults
-# ---------------------------------------------------------------------------
-
-
 def test_margin_predict_cli_default_is_gaussian_median() -> None:
     parser = cli.build_parser()
     args = parser.parse_args(["margin-predict", "--season", "2026", "--week", "1"])
@@ -155,11 +138,6 @@ def test_margin_backtest_cli_default_is_ecdf() -> None:
     parser = cli.build_parser()
     args = parser.parse_args(["margin-backtest"])
     assert args.probability_method == "ecdf"
-
-
-# ---------------------------------------------------------------------------
-# 4. active_model identity: probability_method must match to synchronize
-# ---------------------------------------------------------------------------
 
 
 def _forecast_metadata(probability_method: str | None) -> dict[str, object]:

@@ -93,11 +93,6 @@ from nfl_ats.graph_team_stat_cfb_feature import (  # noqa: E402
     cfb_graph_column,
 )
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
-
-# WP8 is complete and frozen; everything reusable is imported from it rather
-# than re-implemented, so the two experiments cannot drift apart on the shared
-# machinery (table load, paired metric, week blocks, permutation, bootstrap
-# summary, seed, era boundaries).
 from scripts.graph_team_stat_cfb_replication import (  # noqa: E402
     BOOTSTRAP_SAMPLES,
     DEFAULT_PERMUTATIONS,
@@ -118,17 +113,11 @@ PREDECLARATION = "docs/graph_team_stat_cfb_replacement.md"
 
 ARM_NAMES = ("benchmark", "replacement", "ablation")
 
-#: ``(label, reference_arm, candidate_arm)``. The first is the headline.
 COMPARISONS: tuple[tuple[str, str, str], ...] = (
     ("primary_replacement_vs_benchmark", "benchmark", "replacement"),
     ("secondary_ablation_vs_benchmark", "benchmark", "ablation"),
     ("secondary_replacement_vs_ablation", "ablation", "replacement"),
 )
-
-
-# ---------------------------------------------------------------------------
-# The contract substitution -- the whole point of this work package
-# ---------------------------------------------------------------------------
 
 
 def raw_cell_columns(cell: str) -> tuple[str, str, str]:
@@ -175,11 +164,6 @@ def arm_feature_columns(cell: str, *, leak: bool = False) -> dict[str, tuple[str
     }
 
 
-# ---------------------------------------------------------------------------
-# The evaluator (WP8's walk-forward, three arms instead of five)
-# ---------------------------------------------------------------------------
-
-
 def run_window(
     features: pd.DataFrame,
     cell: str,
@@ -221,8 +205,6 @@ def run_window(
             continue
 
         at_close = group.copy()
-        # A game with no opener quote is unscorable at the opener grade, not a
-        # zero: it is left NaN and drops out of the opener comparison only.
         open_available = pd.to_numeric(group["spread_open"], errors="coerce").notna().to_numpy()
         at_open = group.loc[open_available].copy()
         at_open["spread_line"] = pd.to_numeric(at_open["spread_open"], errors="coerce")
@@ -463,8 +445,6 @@ def main() -> int:
             f"{primary_null['observed_percentile_of_null']:.1f}th percentile of its own null"
         )
 
-        # Era MAGNITUDES, per the owner rule -- a weaker era is a smaller
-        # number, never an absence. Report only, no extra registry rows.
         era_results: dict[str, Any] = {}
         for era_label, (start, end) in (("2012_2019", ERA_1), ("2021_2025", ERA_2)):
             era_frame = graded_close.loc[graded_close["season"].between(start, end)]

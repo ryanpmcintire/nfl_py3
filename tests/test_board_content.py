@@ -258,13 +258,11 @@ def test_cover_curve_falls_back_to_gaussian_when_sweep_is_empty() -> None:
     curve = board_content._build_cover_curve(pd.DataFrame(), game, params)
     assert len(curve) > 2
     zero_point = next(point for point in curve if point.offset == 0.0)
-    # Pick is the home team, so the curve's own home-oriented published
-    # probability should reproduce card_home_cover_probability at offset 0.
     assert zero_point.probability == pytest.approx(params[game.game_id].card_home_cover_probability)
 
 
 def test_cover_curve_gaussian_fallback_orients_to_away_pick() -> None:
-    game = _game("NE", home="SEA", away="NE")  # pick is the AWAY team
+    game = _game("NE", home="SEA", away="NE")
     params = {game.game_id: _params()}
     curve = board_content._build_cover_curve(pd.DataFrame(), game, params)
     zero_point = next(point for point in curve if point.offset == 0.0)
@@ -303,9 +301,7 @@ def test_assert_spread_explorer_matches_card_guard_fires_on_mismatch() -> None:
     on the page."""
 
     params = {"2026_01_TEST": _params()}
-    predictions = pd.DataFrame(
-        {"game_id": ["2026_01_TEST"], "home_cover_probability": [0.999]}
-    )  # deliberately wrong vs. the widget's own computed probability
+    predictions = pd.DataFrame({"game_id": ["2026_01_TEST"], "home_cover_probability": [0.999]})
     with pytest.raises(DataContractError):
         assert_spread_explorer_matches_card(params, predictions)
 
@@ -319,7 +315,7 @@ def test_assert_spread_explorer_matches_card_guard_passes_on_match() -> None:
             "home_cover_probability": [game_params.card_home_cover_probability],
         }
     )
-    assert_spread_explorer_matches_card(params, predictions)  # must not raise
+    assert_spread_explorer_matches_card(params, predictions)
 
 
 def test_guard_fires_for_any_game_in_a_multi_game_week() -> None:
@@ -345,7 +341,7 @@ def test_guard_fires_for_any_game_in_a_multi_game_week() -> None:
             "game_id": [good_game_params.game_id, bad_game_params.game_id],
             "home_cover_probability": [
                 good_game_params.card_home_cover_probability,
-                0.999,  # deliberately wrong for the SECOND game only
+                0.999,
             ],
         }
     )
@@ -363,13 +359,6 @@ def test_cover_curve_fallback_offsets_match_sweep_half_width_and_step() -> None:
     assert math.isclose(min(offsets), -board_content.SWEEP_HALF_WIDTH)
     assert math.isclose(max(offsets), board_content.SWEEP_HALF_WIDTH)
     assert offsets == tuple(sorted(offsets))
-
-
-# ---------------------------------------------------------------------------
-# ENG-34: the ENG-14 ``source_policy`` block, read from the synchronized
-# forecast's own ``metadata.json`` (see ``nfl_ats.publishing``'s
-# ``SourcePolicyReport.to_metadata()`` shape).
-# ---------------------------------------------------------------------------
 
 
 def test_load_source_policy_view_absent_block_is_not_recorded() -> None:
@@ -421,7 +410,6 @@ def test_load_source_policy_view_reads_full_block() -> None:
     by_id = {row.source_id: row for row in view.rows}
     assert by_id["odds_opener"].state == "complete"
     assert by_id["odds_opener"].budget_minutes == 180
-    # evaluated_at_utc minus this row's own age_minutes (30.0).
     assert by_id["odds_opener"].observed_at == "2026-09-03T13:30:00+00:00"
     assert by_id["odds_opener"].observed_at_text == "as-of 2026-09-03 13:30 UTC"
     assert by_id["injuries_nflverse"].state == "degraded"
@@ -474,10 +462,9 @@ def test_load_source_policy_view_prefers_the_persisted_file_over_metadata(
     }
     view = board_content._load_source_policy_view(metadata_with_a_different_block, tmp_path)
     assert view.recorded is True
-    assert view.card_state == "complete"  # the FILE's state, not metadata's "blocked"
+    assert view.card_state == "complete"
     assert [row.source_id for row in view.rows] == ["odds_opener"]
 
-    # No file on disk -- falls back to metadata's own key.
     empty_dir = tmp_path / "no_file_here"
     empty_dir.mkdir()
     fallback_view = board_content._load_source_policy_view(
@@ -485,14 +472,7 @@ def test_load_source_policy_view_prefers_the_persisted_file_over_metadata(
     )
     assert fallback_view.card_state == "blocked"
 
-    # Neither -- the explicit not-recorded view.
     assert board_content._load_source_policy_view({}, empty_dir).recorded is False
-
-
-# ---------------------------------------------------------------------------
-# UI-20(c): the ENG-14 report computed live at build time when nothing was
-# persisted (dashboard improvement queue, ROADMAP.md).
-# ---------------------------------------------------------------------------
 
 
 def test_load_source_policy_view_without_data_root_stays_not_recorded(tmp_path: Path) -> None:
@@ -533,10 +513,8 @@ def test_load_source_policy_view_computes_live_report_when_nothing_persisted(
     assert view.recorded is False
     assert view.computed_live is True
     assert view.card_state == "degraded"
-    assert view.rows  # real per-source rows, never empty
+    assert view.rows
     by_id = {row.source_id: row for row in view.rows}
-    # player_arrests was never passed a snapshot instant -- unobserved, not
-    # falsely blocked (report_for_publication's own fail-open contract).
     assert by_id.pop("player_arrests").state == "unobserved"
     assert by_id.pop("injuries_sportradar").state == "not_configured"
     assert all(row.state == "degraded" for row in by_id.values())
@@ -561,11 +539,6 @@ def test_load_source_policy_view_prefers_persisted_over_live(tmp_path: Path) -> 
 def test_game_row_explanation_text_defaults_to_not_recorded() -> None:
     game = _game("SEA", home="SEA", away="NE")
     assert game.explanation_text == board_content.EXPLANATION_NOT_RECORDED_TEXT
-
-
-# ---------------------------------------------------------------------------
-# ENG-12 wiring (UI-20(a)): per-pick "Why this pick" explanation text.
-# ---------------------------------------------------------------------------
 
 
 def test_load_pick_explanations_returns_empty_when_forecast_dir_is_none() -> None:
@@ -608,7 +581,7 @@ def test_load_pick_explanations_reads_real_file(tmp_path: Path) -> None:
                 "count": 2,
                 "explanations": [
                     {"game_id": "2026_01_SEA_NE", "text": "SEA at NE: the market line is -3."},
-                    {"game_id": "2026_01_KC_DEN", "text": ""},  # empty text -- excluded
+                    {"game_id": "2026_01_KC_DEN", "text": ""},
                 ],
             }
         ),
@@ -616,11 +589,6 @@ def test_load_pick_explanations_reads_real_file(tmp_path: Path) -> None:
     )
     texts = board_content._load_pick_explanations(tmp_path)
     assert texts == {"2026_01_SEA_NE": "SEA at NE: the market line is -3."}
-
-
-# ---------------------------------------------------------------------------
-# UI-20(g): _load_tiebreaker_view
-# ---------------------------------------------------------------------------
 
 
 def test_load_tiebreaker_view_not_published_when_forecast_dir_is_none() -> None:
@@ -635,7 +603,6 @@ def test_load_tiebreaker_view_not_published_when_file_and_metadata_absent(
     view = board_content._load_tiebreaker_view(tmp_path, {})
     assert view.recorded is False
     assert view.note == board_content.TIEBREAKER_NOT_PUBLISHED_TEXT
-    # Never a fabricated matchup/number when nothing was published.
     assert view.matchup_text == ""
     assert view.market_total_text == "--"
 
@@ -699,7 +666,6 @@ def test_load_tiebreaker_view_falls_back_to_a_metadata_block(tmp_path: Path) -> 
     assert view.recorded is True
     assert view.matchup_text == "NE at SEA"
     assert view.implied_margin_text == "NE by 3.00"
-    # No guess score supplied -- optional, never fabricated.
     assert view.guess_score_text == ""
 
 
@@ -830,9 +796,6 @@ def test_injury_pick_note_requires_saved_feature_evidence() -> None:
             injury_pick_note({}, source)
             == "Whether injury reports informed these picks was not recorded."
         )
-    # 2026-09-07: the evidenced "reports not published yet" state (Week 1
-    # locks Monday; the league's first report lands Wednesday) reads as
-    # absence, never as a stale or broken feed.
     not_yet = {
         "prediction_safety": {
             "checks_passed": ["injury_feature_presence"],
@@ -860,20 +823,15 @@ def test_injury_pick_note_requires_saved_feature_evidence() -> None:
     assert injury_pick_note(empty, live).startswith("Injury reports were not available")
 
 
-# ---------------------------------------------------------------------------
-# Per-game pick lock time (UI-20 standing lane, 2026-09-07)
-# ---------------------------------------------------------------------------
-
-
 def _week1_kickoffs() -> pd.DataFrame:
     return pd.DataFrame(
         {
             "game_id": ["2026_01_SF_LA", "2026_01_ATL_PIT", "2026_01_GB_MIN", "2026_01_DEN_KC"],
             "kickoff": [
-                "2026-09-11 00:35:00+00:00",  # Thu 8:35 PM ET
-                "2026-09-13 17:00:00+00:00",  # Sun 1:00 PM ET
-                "2026-09-13 20:25:00+00:00",  # Sun 4:25 PM ET
-                "2026-09-15 00:15:00+00:00",  # Mon 8:15 PM ET
+                "2026-09-11 00:35:00+00:00",
+                "2026-09-13 17:00:00+00:00",
+                "2026-09-13 20:25:00+00:00",
+                "2026-09-15 00:15:00+00:00",
             ],
         }
     )
@@ -902,7 +860,6 @@ def test_pick_lock_label_is_none_when_no_kickoff_instant_is_known() -> None:
     assert pick_lock_label(None, sunday_lock) == (None, False)
     assert pick_lock_label("not a time", sunday_lock) == (None, False)
     assert pick_lock_label("2026-09-13 17:00:00+00:00", None) == (None, False)
-    # A frame with no kickoff column at all (older fixtures) anchors nothing.
     assert _week_sunday_lock(pd.DataFrame({"game_id": ["x"]})) is None
     assert _week_sunday_lock(pd.DataFrame({"game_id": ["x"], "kickoff": [None]})) is None
 
@@ -965,11 +922,6 @@ def test_scoreboard_pairs_new_played_policy_with_retired_union() -> None:
     assert "played policy 1-0 vs. prior chain 0-1" in result.headline_text
 
 
-# ---------------------------------------------------------------------------
-# UI-20(f): the injury STATE behind the injury sentence
-# ---------------------------------------------------------------------------
-
-
 def test_injury_report_state_covers_every_sentence_injury_pick_note_can_produce() -> None:
     """The chip is keyed off the sentence, so a reworded sentence must not
     silently fall through to NOT RECORDED.
@@ -1017,7 +969,6 @@ def test_injury_report_state_covers_every_sentence_injury_pick_note_can_produce(
         (injury_pick_note(passed, view("blocked")), "NOT AVAILABLE", "blocked"),
         (injury_pick_note(passed, view("degraded")), "OLDER COPY", "degraded"),
         (injury_pick_note(passed, view("complete")), "REPORTS USED", "complete"),
-        # The "complete, but no report time recorded" branch is still USED.
         (injury_pick_note(passed, view("complete", observed=None)), "REPORTS USED", "complete"),
     ]
     for note, expected_label, expected_state in cases:
@@ -1038,11 +989,6 @@ def test_board_content_injury_chip_reads_off_its_own_sentence() -> None:
     content = replace(build_fixture_content(), injury_note=INJURY_NOTE_OLDER_COPY)
     assert content.injury_state_label == "OLDER COPY"
     assert content.injury_state_class == "degraded"
-
-
-# ---------------------------------------------------------------------------
-# UI-20(e): rival rules recorded beside the played card
-# ---------------------------------------------------------------------------
 
 
 def _rival_ledgers() -> tuple[pd.DataFrame, pd.DataFrame]:

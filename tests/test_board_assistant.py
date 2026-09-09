@@ -47,11 +47,6 @@ def test_assistant_generation_time_is_human_and_answers_have_no_utc() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Corpus shape and determinism (A1).
-# ---------------------------------------------------------------------------
-
-
 def test_corpus_is_deterministic_with_sorted_keys_and_provenance() -> None:
     first = _knowledge()
     second = _knowledge()
@@ -95,10 +90,6 @@ def test_game_body_carries_pick_line_probability_and_flip() -> None:
     bal = bodies["2026_01_BAL_IND"]
     assert "Policy flip: coach fade." in bal
 
-
-# ---------------------------------------------------------------------------
-# Core routing (the wide battery lives in test_assistant_battery.py).
-# ---------------------------------------------------------------------------
 
 _CORE_ROUTING: tuple[tuple[str, str, str], ...] = (
     ("Why MIA?", "team_pick", "MIA +3.5"),
@@ -180,11 +171,6 @@ def test_nickname_prefers_the_exact_team_over_a_fragment() -> None:
     assert "DEN at KC" in resolved.text
 
 
-# ---------------------------------------------------------------------------
-# Guardrails (A4): never emit a number absent from the corpus.
-# ---------------------------------------------------------------------------
-
-
 def _corpus_numbers(knowledge) -> set[str]:
     return set(re.findall(r"\d+(?:\.\d+)?%?", json.dumps(knowledge)))
 
@@ -196,11 +182,6 @@ def test_deflect_bodies_carry_no_invented_numbers() -> None:
         if str(entry["id"]).startswith("deflect:"):
             for number in re.findall(r"\d+(?:\.\d+)?%?", str(entry["body"])):
                 assert number in allowed
-
-
-# ---------------------------------------------------------------------------
-# Rendered panel contract (A3): inline JSON, escape, no-JS fallback.
-# ---------------------------------------------------------------------------
 
 
 def _embedded_corpus(section: str) -> dict:
@@ -238,7 +219,6 @@ def test_panel_never_embeds_raw_markup() -> None:
     section = assistant_section(knowledge)
     assert "<tag>" not in section
     assert section.count("</script>") == 1
-    # The payload still decodes back verbatim for the reader.
     embedded = _embedded_corpus(section)
     bodies = [entry["body"] for entry in embedded["entries"]]
     assert any('Quote "x" & <tag>' in body for body in bodies)

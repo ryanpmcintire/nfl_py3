@@ -144,34 +144,19 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "forecast_cold_visitor_tilt"
 
-#: Ported verbatim from scripts/nfl_forecast_weather_screen.py's own module
-#: constants -- the same normalization/threshold the registry measurement used.
 OUTDOOR_ROOFS = frozenset({"outdoors", "open"})
-TEMP_GAP_THRESHOLD_F = 25.0  # weather_followup_temp_gap_cold_visitor's threshold, reused verbatim
+TEMP_GAP_THRESHOLD_F = 25.0
 
-# ---------------------------------------------------------------------------
-# Live-fetch constants and helpers, ported from scripts/ingest_forecast_archive.py
-# -- same MOS API, same tuesday_noon cutoff, same model (MEX), same
-# point-in-time walk-backward discipline. Only wind/knots handling is
-# dropped: this overlay only needs forecast temperature.
-# ---------------------------------------------------------------------------
 
 MOS_API = "https://mesonet.agron.iastate.edu/api/1/mos.json"
-#: MEX (GFS MOS Extended) matches the registered forecast archive's own
-#: tuesday_noon cutoff (docs/forecast_archive_build.md), not the
-#: kickoff_nearest pilot's GFS model -- this overlay's evidence and its live
-#: cutoff must use the same model.
 MOS_MODEL = "MEX"
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 DELAY_SECONDS_DEFAULT = 0.3
-MAX_LOOKBACK_STEPS_DEFAULT = 10  # 10 * 12h = 5 days back from the Tuesday-noon-ET cutoff
+MAX_LOOKBACK_STEPS_DEFAULT = 10
 ET = ZoneInfo("America/New_York")
 
-#: registry/reference/stadium_station_map.csv is keyed on the schedules
-#: parquet's own `stadium` display string (registry_root-relative).
 STATION_MAP_RELATIVE_PATH = Path("reference") / "stadium_station_map.csv"
 
 
@@ -244,7 +229,7 @@ def fetch_mos_bulletin(
                 payload = json.load(resp)
             if "data" in payload:
                 return list(payload["data"])
-            return []  # "no results" detail response -> no bulletin, not an error
+            return []
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
             last_exc = exc
             time.sleep(1.0 * (attempt + 1))
@@ -340,11 +325,6 @@ def _fetch_tuesday_noon_forecast_temps(
     merged = games[["game_id", "stadium", "kickoff"]].merge(
         station_map[["stadium", "icao_station", "mappable"]], on="stadium", how="left"
     )
-    # A stadium genuinely absent from the reference table leaves BOTH
-    # icao_station and mappable null; a deliberately unmappable international
-    # stadium is present with icao_station null but mappable=False (not
-    # null) -- only the former is an error to fail on (mirrors
-    # scripts/ingest_forecast_archive.py::load_population exactly).
     unmapped = sorted(
         merged.loc[merged["mappable"].isna(), "stadium"].astype(str).unique().tolist()
     )
@@ -414,12 +394,6 @@ def fetch_tuesday_noon_forecast_temps_fail_open(
         )
 
 
-# ---------------------------------------------------------------------------
-# Pregame-safe climatology + flag (see module docstring for why this is a
-# strictly-prior-games construction, not the registered within-season one).
-# ---------------------------------------------------------------------------
-
-
 def _canonical_team(team: pd.Series) -> pd.Series:
     return team.astype(str).map(lambda code: TEAM_ABBREVIATION_ALIASES.get(code, code))
 
@@ -468,16 +442,8 @@ def team_climate_temp_by_away_game(schedules: pd.DataFrame) -> pd.DataFrame:
     )
     outdoor_temp = home["temp"].where(home["outdoor"])
     valid = outdoor_temp.notna()
-    # Cumulative sum/count computed with explicit fill (not pandas cumsum's
-    # own skipna semantics) so a non-outdoor/missing-temp home game simply
-    # carries the running total forward instead of injecting a NaN gap.
     cum_sum = outdoor_temp.fillna(0.0).groupby(home["home_team"]).cumsum()
     cum_count = valid.groupby(home["home_team"]).cumsum()
-    # climate_temp_after INCLUDES the current row's own home game -- correct,
-    # because the as-of join below only ever looks up a home game strictly
-    # BEFORE the target away game, so "including this home game" is exactly
-    # "including every home game up to and including the most recent one
-    # strictly prior to the away game".
     home = home.assign(climate_temp_after=(cum_sum / cum_count.replace(0, np.nan)).to_numpy())
 
     climate_timeline = (
@@ -538,9 +504,6 @@ def forecast_cold_visitor_flag_by_game(
     reg["game_id"] = reg["game_id"].astype(str)
     reg["outdoor"] = reg["roof"].isin(OUTDOOR_ROOFS)
 
-    # team_climate_temp_by_away_game validates its own (larger) required
-    # column set -- season/gameday/home_team/away_team/temp -- and raises
-    # the same DataContractError shape if any are missing.
     climate = team_climate_temp_by_away_game(schedules)
     frame = reg[["game_id", "outdoor"]].merge(climate, on="game_id", how="left")
 

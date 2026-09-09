@@ -56,30 +56,6 @@ from nfl_ats.special_teams_return_tilt_overlay import (
     special_teams_return_flag_by_game_fail_open,
 )
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# A 10-row 2025 team-season panel (n picked to avoid the (n-1)*0.75 == integer
-# coincidence that would land a boundary team exactly ON the quantile cut).
-# Top quartile (>= the 0.75 quantile of return_composite_z): FILLER, TEAMD,
-# TEAMA -- verified empirically before writing this file, not hand-derived.
-#
-#   TEAMA=10, TEAMD=8, FILLER=5   -> top quartile
-#   TEAMC=0.5, OPPW=0, OPPZ=-1, TEAMB=-2, OPPX=-3, OPPY=-4 -> NOT top quartile
-#   TEAME=-10 -> NOT top quartile (used for the "current season not used as
-#     its own prior" leak test: TEAME gets an EXTREME season-2026 row too)
-#
-# 2026 REG games (each team's PRIOR season is 2025, so these consult the
-# panel above via the shift-by-one join):
-#   2026_01_TEAMA_OPPX  -- home flagged only  -> flip-to-home candidate
-#   2026_02_OPPY_TEAMD  -- away flagged only  -> "already on flagged" case
-#   2026_03_TEAMA_TEAMD -- both flagged       -> never flips
-#   2026_04_TEAMB_TEAMC -- neither flagged    -> no effect
-#   2026_05_NEWTEAM_OPPW -- NEWTEAM has no 2025 row at all -> missing data
-#   2026_06_TEAME_OPPW  -- TEAME's 2025 value is deeply negative -> not
-#     flagged, even if a season-2026 row for TEAME is added to the panel
-
 
 def _team_season_rows() -> list[tuple[int, str, float, float]]:
     return [
@@ -135,19 +111,6 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["OPPX", "TEAMD", "TEAMD", "TEAMC", "OPPW", "OPPW"],
             "kickoff": ["2026-09-24T17:00:00+00:00"] * 6,
             "spread_line": [-3.0, 2.0, -1.0, 1.0, 0.5, 2.5],
-            # G01: model picks AWAY (OPPX) -- home (TEAMA) is the ONLY flagged
-            #   side -> should flip to HOME.
-            # G02: model picks AWAY (TEAMD) -- TEAMD IS the flagged side, so
-            #   the model is already on it -> no flip.
-            # G03: both TEAMA and TEAMD flagged -> never flips regardless of
-            #   the model's pick.
-            # G04: neither TEAMB nor TEAMC flagged -> no effect regardless of
-            #   the model's pick.
-            # G05: NEWTEAM has no prior-season row -> flag False, no flip,
-            #   never an error.
-            # G06: TEAME's actual (2025) prior is deeply negative -> not
-            #   flagged, even though a leak-test variant adds an extreme
-            #   season-2026 row for TEAME to the panel (see the leak test).
             "home_cover_probability": [0.30, 0.20, 0.55, 0.45, 0.50, 0.30],
         }
     )
@@ -166,11 +129,6 @@ def _write_data_root(tmp_path: Path, *, team_season_rows: list | None = None) ->
     ts_dir.mkdir(parents=True)
     _team_season(team_season_rows).to_parquet(ts_dir / "team_season.parquet", index=False)
     return data_root
-
-
-# ---------------------------------------------------------------------------
-# 1. return_composite_z_with_threshold: reproduces the screen's own cut
-# ---------------------------------------------------------------------------
 
 
 def test_quartile_top_matches_the_screens_own_constant() -> None:
@@ -214,11 +172,6 @@ def test_return_composite_reproduces_the_live_registry_threshold() -> None:
 def test_return_composite_requires_its_columns() -> None:
     with pytest.raises(DataContractError, match="return composite"):
         return_composite_z_with_threshold(pd.DataFrame({"season": [2025], "team": ["TEAMA"]}))
-
-
-# ---------------------------------------------------------------------------
-# 2. special_teams_return_flag_by_game: derived, prior-season-only, fail-open
-# ---------------------------------------------------------------------------
 
 
 def test_flag_fires_on_the_top_quartile_prior_season_team_only() -> None:
@@ -266,9 +219,6 @@ def test_flag_excludes_non_reg_games() -> None:
     postseason["game_type"] = "POST"
     flags = special_teams_return_flag_by_game(postseason, _team_season())
     assert flags.empty
-
-
-# --- leakage regression tests -----------------------------------------------
 
 
 def test_flag_never_uses_the_current_seasons_own_row_as_its_own_prior() -> None:
@@ -328,9 +278,6 @@ def test_flag_never_reads_outcome_columns() -> None:
     pd.testing.assert_frame_equal(changed[flag_columns], baseline[flag_columns], check_exact=True)
 
 
-# --- fail-open ---------------------------------------------------------------
-
-
 def test_fail_open_with_no_special_teams_snapshot_at_all(tmp_path: Path) -> None:
     empty_data_root = tmp_path / "empty_data"
     with pytest.warns(RuntimeWarning, match=CHALLENGER_ID):
@@ -352,11 +299,6 @@ def test_fail_open_finds_the_latest_snapshot(tmp_path: Path) -> None:
 
     flags = special_teams_return_flag_by_game_fail_open(data_root, _schedule())
     assert not flags.empty
-
-
-# ---------------------------------------------------------------------------
-# 3. apply_special_teams_return_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_onto_the_sole_flagged_side(tmp_path: Path) -> None:
@@ -485,11 +427,6 @@ def test_overlay_requires_its_prediction_columns(tmp_path: Path) -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# 4. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped(tmp_path: Path) -> None:
     data_root = _write_data_root(tmp_path)
     matched_only = _predictions().loc[lambda frame: frame["game_id"].eq("2026_04_TEAMB_TEAMC")]
@@ -513,10 +450,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production(
     assert "OPPX -> TEAMA" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 5. record_special_teams_return_tilt_challenger_decisions: dual-tracked
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -585,13 +518,9 @@ def test_record_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -> Non
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The tilt's own arm diverges from the active model's raw pick
-    # (0.30 -> AWAY): the tilt flips it to HOME (TEAMA), the flagged side.
     assert ledger.loc["2026_01_TEAMA_OPPX", "pick_side"] == "HOME"
-    # The no-signal game keeps the model's own pick (0.45 -> AWAY).
     assert ledger.loc["2026_04_TEAMB_TEAMC", "pick_side"] == "AWAY"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_special_teams_return_tilt_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -648,9 +577,6 @@ def test_record_challenger_decisions_refuses_outside_recording_lock_window(
 def test_record_challenger_decisions_refuses_a_fingerprint_mismatch(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion, or a foreign
-    # config) since this challenger was pinned -- recording must refuse, not
-    # silently switch base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = _write_data_root(tmp_path)
 
@@ -689,8 +615,4 @@ def test_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
         },
     }
     assert config_fingerprint(artifact_model_config(metadata)) == config_fingerprint(_MODEL_CONFIG)
-    # This is the SAME shared fingerprint the other three live pick-level
-    # tilt overlays (surface_switch, interim_hc_first_game,
-    # pbp08_protection_mismatch) are registered against, since they are all
-    # pinned to the identical active-model configuration snapshot.
     assert config_fingerprint(_MODEL_CONFIG) == "bc77638d47e2748c"

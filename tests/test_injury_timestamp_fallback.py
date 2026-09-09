@@ -42,10 +42,6 @@ from nfl_ats.prediction_safety import (
     validate_prediction_card,
 )
 
-# ---------------------------------------------------------------------------
-# Default "drop" mode: byte-identical to the pre-ENG-39 behaviour
-# ---------------------------------------------------------------------------
-
 
 def _hash_pin_fixture() -> pd.DataFrame:
     """A small multi-season, multi-revision, deliberately out-of-order frame.
@@ -66,7 +62,7 @@ def _hash_pin_fixture() -> pd.DataFrame:
             [("Questionable", "2011-09-08T20:00:00Z"), ("Out", "2011-09-06T12:00:00Z")],
         ),
         (2011, 1, "B", "P2", [("Doubtful", "2011-09-07T15:30:00Z")]),
-        (2024, 17, "C", "P3", [("Questionable", "2024-12-27T10:00:00Z")] * 2),  # exact duplicate
+        (2024, 17, "C", "P3", [("Questionable", "2024-12-27T10:00:00Z")] * 2),
         (2024, 17, "D", "P4", [("Out", "2024-12-28T18:45:00Z")]),
     ):
         for status, timestamp in revisions:
@@ -83,8 +79,6 @@ def _hash_pin_fixture() -> pd.DataFrame:
                     "date_modified": timestamp,
                 }
             )
-    # Reversed insertion order: the output must be determined by the sort
-    # key, not by row order in the source frame.
     return pd.DataFrame(rows).iloc[::-1].reset_index(drop=True)
 
 
@@ -95,7 +89,6 @@ def test_week_proxy_default_drop_mode_is_byte_identical_to_pre_eng39() -> None:
     explicit_result = canonicalize_injuries(fixture, timestamp_fallback="drop")
     pd.testing.assert_frame_equal(default_result, explicit_result)
 
-    # No new columns in "drop" mode -- exactly the pre-ENG-39 schema.
     assert "effective_observed_at" not in default_result.columns
     assert "observed_at_basis" not in default_result.columns
 
@@ -103,11 +96,6 @@ def test_week_proxy_default_drop_mode_is_byte_identical_to_pre_eng39() -> None:
         pd.util.hash_pandas_object(default_result, index=True).to_numpy().tobytes()
     ).hexdigest()
     assert digest == "f4495befd1961cc9556bee59efef564f09d7e62d68a102bce10c64aac5043d3d"
-
-
-# ---------------------------------------------------------------------------
-# week_proxy: schema-tolerant, leakage-safe, never overwrites a real revision
-# ---------------------------------------------------------------------------
 
 
 def _injury_row(**overrides: object) -> dict[str, object]:
@@ -139,32 +127,25 @@ def _schedule_row(**overrides: object) -> dict[str, object]:
 
 
 def test_week_proxy_clamps_to_the_games_own_week_tuesday_including_a_thursday_game() -> None:
-    # A Thursday game: kickoff Thu 2024-09-12 20:15 ET = 2024-09-13T00:15Z.
-    # kickoff-24h lands Wednesday, still after that week's Tuesday floor --
-    # this only pins the floor is computed correctly for a Thursday game,
-    # not that it clamps (a Thursday game structurally never can: kickoff
-    # minus 24h cannot precede a Tuesday two calendar days earlier).
     thursday_kickoff = pd.Timestamp("2024-09-13T00:15:00Z")
     schedule = pd.DataFrame([_schedule_row(kickoff=thursday_kickoff)])
     result = canonicalize_injuries(
         pd.DataFrame([_injury_row()]), timestamp_fallback="week_proxy", schedule=schedule
     )
     naive_proxy = thursday_kickoff - pd.Timedelta(hours=24)
-    tuesday_floor = pd.Timestamp("2024-09-10T04:00:00Z")  # Tue 2024-09-10 00:00 ET (EDT, UTC-4)
-    assert naive_proxy > tuesday_floor  # sanity: this case does not need the clamp
+    tuesday_floor = pd.Timestamp("2024-09-10T04:00:00Z")
+    assert naive_proxy > tuesday_floor
     assert result.loc[0, "effective_observed_at"] == naive_proxy
     assert result.loc[0, "observed_at_basis"] == "week_proxy"
 
-    # An adversarial synthetic Tuesday kickoff: kickoff-24h (Monday evening)
-    # DOES precede that week's own Tuesday floor, so the clamp must engage.
-    tuesday_kickoff = pd.Timestamp("2024-09-10T22:00:00Z")  # Tue 2024-09-10 18:00 ET
+    tuesday_kickoff = pd.Timestamp("2024-09-10T22:00:00Z")
     schedule2 = pd.DataFrame([_schedule_row(kickoff=tuesday_kickoff)])
     result2 = canonicalize_injuries(
         pd.DataFrame([_injury_row()]), timestamp_fallback="week_proxy", schedule=schedule2
     )
     naive_proxy2 = tuesday_kickoff - pd.Timedelta(hours=24)
     tuesday_floor2 = pd.Timestamp("2024-09-10T04:00:00Z")
-    assert naive_proxy2 < tuesday_floor2  # would precede the floor unclamped
+    assert naive_proxy2 < tuesday_floor2
     assert result2.loc[0, "effective_observed_at"] == tuesday_floor2
     assert result2.loc[0, "effective_observed_at"] < tuesday_kickoff
 
@@ -203,7 +184,6 @@ def test_week_proxy_survives_a_2025_shaped_frame_with_no_date_modified_column() 
                 "position": "QB",
                 "report_status": "Questionable",
                 "practice_status": "Limited Participation in Practice",
-                # No "date_modified" column at all -- the real 2025 nflverse shape.
             }
         ]
     )
@@ -214,8 +194,6 @@ def test_week_proxy_survives_a_2025_shaped_frame_with_no_date_modified_column() 
     assert result.loc[0, "observed_at_basis"] == "week_proxy"
     assert result.loc[0, "effective_observed_at"] == kickoff - pd.Timedelta(hours=24)
 
-    # The default mode still requires a real date_modified column -- this is
-    # exactly the production failure mode (M1), reproduced and pinned.
     with pytest.raises(DataContractError):
         canonicalize_injuries(injuries)
 
@@ -225,24 +203,6 @@ def test_week_proxy_rejects_bad_arguments() -> None:
         canonicalize_injuries(pd.DataFrame([_injury_row()]), timestamp_fallback="invented")
     with pytest.raises(ValueError, match="requires a schedule"):
         canonicalize_injuries(pd.DataFrame([_injury_row()]), timestamp_fallback="week_proxy")
-
-
-# ---------------------------------------------------------------------------
-# Idempotency: re-canonicalizing an already-canonical (week_proxy) frame
-#
-# THE GAP this closes (measured by lane S, docs/injury_timestamp_fallback.md):
-# a feature-build step reads a snapshot's own injuries.parquet back off disk
-# -- already carrying effective_observed_at/observed_at_basis from the
-# week_proxy fallback applied once at ingest -- and calls
-# canonicalize_injuries on it a SECOND time with the function's own default
-# ("drop"). The pre-fix "drop" branch re-derives visibility from the
-# still-null date_modified column and silently drops every proxied row,
-# even though the caller never asked for "drop" mode to override anything;
-# it simply never passed a fallback at all. These tests pin that a frame
-# already carrying the snapshot's basis survives re-canonicalization
-# regardless of the argument, while a frame that never had that basis
-# (every pre-ENG-39 snapshot) is completely unaffected.
-# ---------------------------------------------------------------------------
 
 
 def _week_proxy_snapshot_fixture() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -268,14 +228,11 @@ def _week_proxy_snapshot_fixture() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 def test_canonicalize_injuries_default_mode_is_idempotent_on_a_week_proxy_snapshot() -> None:
     once_canonicalized, _schedule = _week_proxy_snapshot_fixture()
-    assert len(once_canonicalized) == 2  # sanity: both rows survived the first pass
+    assert len(once_canonicalized) == 2
 
-    # The exact call the production feature-build steps make: no
-    # timestamp_fallback argument at all, so the function's own "drop"
-    # default applies -- and no schedule, since none was passed either.
     recanonicalized = canonicalize_injuries(once_canonicalized)
 
-    assert len(recanonicalized) == 2  # both rows, including the proxied one, survive
+    assert len(recanonicalized) == 2
     pd.testing.assert_frame_equal(
         recanonicalized.reset_index(drop=True), once_canonicalized.reset_index(drop=True)
     )
@@ -291,10 +248,6 @@ def test_canonicalize_injuries_week_proxy_snapshot_ignores_the_argument_and_need
 ):
     once_canonicalized, _schedule = _week_proxy_snapshot_fixture()
 
-    # Explicitly requesting "week_proxy" with schedule=None would normally
-    # raise ("requires a schedule frame") -- but since the frame already
-    # carries the snapshot's own basis, no schedule is needed and the
-    # request is honoured from the existing columns instead.
     recanonicalized = canonicalize_injuries(once_canonicalized, timestamp_fallback="week_proxy")
     pd.testing.assert_frame_equal(
         recanonicalized.reset_index(drop=True), once_canonicalized.reset_index(drop=True)
@@ -347,9 +300,6 @@ def test_enrich_with_player_features_default_mode_survives_a_week_proxy_snapshot
         _pbp(),
         qb_min_dropbacks=1,
         decision_hours_before_kickoff=1,
-        # No injury_timestamp_fallback passed -- this is the default "drop"
-        # production used before this fix, on an already-week_proxy'd
-        # snapshot frame.
     )
     row = enriched.loc[enriched["week"].eq(2)].iloc[0]
     assert row["home_injury_offense_unavailability"] > 0
@@ -381,17 +331,11 @@ def test_qb_availability_canonicalization_is_idempotent_on_a_week_proxy_snapshot
     )
     assert len(once) == 2
 
-    # Default mode, no schedule: mirrors the players.py case exactly.
     twice = _canonicalize_qb_availability(once)
     assert len(twice) == 2
     pd.testing.assert_frame_equal(twice.reset_index(drop=True), once.reset_index(drop=True))
     proxy_row = twice.loc[twice["gsis_id"].eq("WR-A")].iloc[0]
     assert proxy_row["observed_at_basis"] == "week_proxy"
-
-
-# ---------------------------------------------------------------------------
-# Leakage pin: a proxied row is invisible before its own proxy time
-# ---------------------------------------------------------------------------
 
 
 def test_week_proxy_proxied_row_is_invisible_before_its_own_proxy_time() -> None:
@@ -442,8 +386,6 @@ def test_week_proxy_proxied_row_is_invisible_before_its_own_proxy_time() -> None
     assert row_visible["home_injury_observed_at"] == proxy_at
     assert row_visible["home_injury_observed_at_basis"] == "week_proxy"
 
-    # The default "drop" mode never sees this row at all, at either cutoff --
-    # only the opt-in fallback unlocks it.
     still_blind = enrich_with_player_features(
         games,
         injuries,
@@ -457,10 +399,6 @@ def test_week_proxy_proxied_row_is_invisible_before_its_own_proxy_time() -> None
     assert pd.isna(row_blind["home_injury_offense_unavailability"])
     assert pd.isna(row_blind["home_injury_observed_at"])
 
-
-# ---------------------------------------------------------------------------
-# prediction_safety: injury_feature_presence
-# ---------------------------------------------------------------------------
 
 _INJURY_COLUMNS = (
     "home_injury_offense_unavailability",
@@ -488,8 +426,6 @@ def test_outcome_card_injury_feature_presence_fails_all_zero_and_passes_healthy(
             prospective=True,
         )
 
-    # A non-prospective (e.g. backtest) call never runs the check -- the
-    # exact same all-zero card passes without it.
     non_prospective_audit = validate_outcome_prediction_card(
         zeroed,
         min_edge=0.02,
@@ -499,7 +435,6 @@ def test_outcome_card_injury_feature_presence_fails_all_zero_and_passes_healthy(
     )
     assert "injury_feature_presence" not in non_prospective_audit.checks_passed
 
-    # The explicit escape hatch suppresses the failure but still records it.
     allowed_audit = validate_outcome_prediction_card(
         zeroed,
         min_edge=0.02,
@@ -553,8 +488,6 @@ def test_direct_ats_card_injury_feature_presence_fails_all_zero_and_passes_healt
             feature_columns=["diff_injury_offense_unavailability"],
         )
 
-    # margin-predict never sets allow_empty_injury_block; a non-prospective
-    # call (e.g. a research backtest) never runs the check at all.
     non_prospective_audit = validate_prediction_card(
         zeroed,
         min_edge=0.02,
@@ -702,7 +635,6 @@ def test_outcome_card_empty_injury_block_passes_when_reports_are_proven_absent(
     assert any(reason in warning for warning in audit.warnings)
     assert audit.status == "PASS_WITH_WARNINGS"
 
-    # An empty reason string is no reason: the check still fails closed.
     with pytest.raises(PredictionSafetyError, match="injury_feature_presence"):
         validate_outcome_prediction_card(
             zeroed,
@@ -738,7 +670,6 @@ def test_injury_reports_absent_reason_reads_the_newest_snapshot(tmp_path: Path) 
     from nfl_ats.players import injury_reports_absent_reason
 
     raw_root = tmp_path / "players" / "raw"
-    # No snapshot at all: no evidence, no reason (the check stays strict).
     assert injury_reports_absent_reason(raw_root, season=2026, week=1) is None
 
     older = pd.DataFrame({"season": [2025, 2025], "week": [17, 18], "team": ["KC", "KC"]})
@@ -747,11 +678,8 @@ def test_injury_reports_absent_reason_reads_the_newest_snapshot(tmp_path: Path) 
     assert reason is not None
     assert "no injury report rows exist yet for 2026 week 1" in reason
     assert "20260905T000000Z" in reason
-    # Rows for another week of the same season do not count for this week.
     assert injury_reports_absent_reason(raw_root, season=2025, week=17) is None
 
-    # A NEWER snapshot that carries the week's rows removes the reason: an
-    # all-zero block would then be a defect again.
     newer = pd.DataFrame({"season": [2026], "week": [1], "team": ["KC"]})
     _write_player_snapshot(raw_root, "20260909T000000Z", newer)
     assert injury_reports_absent_reason(raw_root, season=2026, week=1) is None

@@ -156,17 +156,6 @@ def test_availability_outcomes_use_cutoff_and_missing_snap_as_unavailable() -> N
     assert covered_only["season"].eq(2022).all()
 
 
-# ---------------------------------------------------------------------------
-# ENG-39 follow-up: build_availability_outcomes must use the same
-# effective_observed_at-else-date_modified visibility rule as
-# nfl_ats.players._injury_rows_asof, so a season only made visible via the
-# leakage-safe week_proxy fallback (e.g. 2025, where nflverse drops
-# date_modified entirely) is not silently excluded from the learned
-# availability rates this function feeds. See
-# docs/injury_timestamp_fallback.md and the lane S2 report referenced there.
-# ---------------------------------------------------------------------------
-
-
 def _proxy_schedule(**overrides: object) -> pd.DataFrame:
     row: dict[str, object] = {
         "season": 2025,
@@ -202,8 +191,6 @@ def _2025_shaped_injury_row(**overrides: object) -> dict[str, object]:
         "position": "WR",
         "report_status": "Questionable",
         "practice_status": "Limited Participation in Practice",
-        # No "date_modified" column at all -- the real 2025 nflverse shape
-        # (docs/injury_timestamp_fallback.md M1).
     }
     row.update(overrides)
     return row
@@ -255,7 +242,7 @@ def test_availability_outcomes_plain_frame_is_byte_identical_to_pre_eng39() -> N
     )
     assert "effective_observed_at" not in injuries.columns
     outcomes = build_availability_outcomes(injuries, snaps, games)
-    assert len(outcomes) == 2  # unchanged from the pre-existing cutoff test above
+    assert len(outcomes) == 2
 
     digest = hashlib.sha256(
         pd.util.hash_pandas_object(outcomes, index=True).to_numpy().tobytes()
@@ -294,11 +281,8 @@ def test_availability_outcomes_prefers_effective_observed_at_for_a_proxied_2025_
     )
     assert len(outcomes) == 1
     assert outcomes.loc[0, "gsis_id"] == "P1"
-    assert bool(outcomes.loc[0, "unavailable"])  # zero snaps logged -> unavailable
+    assert bool(outcomes.loc[0, "unavailable"])
 
-    # The default "drop" mode never sees this row: canonicalize_injuries
-    # itself already raises before build_availability_outcomes is reached
-    # (M1's exact failure mode), reproduced here for contrast.
     with pytest.raises(DataContractError):
         canonicalize_injuries(raw_injuries)
 
@@ -338,7 +322,7 @@ def test_availability_outcomes_leakage_proxied_row_invisible_before_its_proxy_ti
 
     visible = build_availability_outcomes(canonical, snaps, games, decision_hours_before_kickoff=1)
     assert len(visible) == 1
-    assert not bool(visible.loc[0, "unavailable"])  # logged snaps -> played
+    assert not bool(visible.loc[0, "unavailable"])
 
 
 def test_availability_outcomes_never_overwrites_a_real_date_modified() -> None:
@@ -373,8 +357,6 @@ def test_availability_outcomes_never_overwrites_a_real_date_modified() -> None:
             "st_snaps": [0],
         }
     )
-    # cutoff = kickoff - 25h = 2025-09-14T16:00:00Z: after the real
-    # timestamp (12:00) but before the would-be proxy time (17:00).
     outcomes = build_availability_outcomes(
         canonical, snaps, games, decision_hours_before_kickoff=25
     )
@@ -407,8 +389,6 @@ def test_fixed_unavailability_is_bit_faithful_to_the_original_heuristic() -> Non
     assert fixed_unavailability(None, "Limited Participation in Practice") == 0.10
     assert fixed_unavailability(None, "Full Participation in Practice") == 0.0
 
-    # Regression: the categorized parser recognizes these; the original
-    # heuristic never did, and the frozen model's features depend on that.
     assert fixed_unavailability(None, "Out") == 0.0
     assert fixed_unavailability(None, "Out (Definitely Will Not Play)") == 0.0
     assert fixed_unavailability(None, "DNP") == 0.0

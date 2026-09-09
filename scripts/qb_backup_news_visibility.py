@@ -74,17 +74,11 @@ SEASONS = (2015, 2025)
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260819
 
-# Task's ~15-minute politeness budget, mirroring ingest_transaction_news.py's
-# own Crawl-delay: 1 (measured, docs/pfr_transactions_sourcing.md sec 1).
 PFR_CRAWL_DELAY_SECONDS = 1.0
 PFR_FETCH_WALLCLOCK_BUDGET_SECONDS = 12 * 60
 PFR_MAX_FETCHES = 700
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 
-# Frozen in docs/qb_news_channel.md sec 3 BEFORE any cover rate was computed.
-# Matches against the raw, hyphenated slug text (same convention
-# ingest_injury_news.py / ingest_transaction_news.py already use for their
-# own keyword flags).
 QB_NEWS_KEYWORDS: tuple[str, ...] = (
     "injured-reserve",
     "-on-ir",
@@ -154,12 +148,6 @@ QB_NEWS_KEYWORDS: tuple[str, ...] = (
 )
 QB_NEWS_KEYWORD_RE = re.compile("|".join(re.escape(kw) for kw in QB_NEWS_KEYWORDS))
 
-# docs/qb_news_channel.md sec 3 addendum: a match only counts within
-# [deadline - LOOKBACK_DAYS, deadline), where deadline = min(kickoff, that
-# week's Sunday 16:00 ET) (owner-corrected 2026-08-20). Without this bound
-# a journeyman
-# backup QB's own name recurs across his whole career against these generic
-# keywords, producing a name-collision artifact, not foreshadowing.
 LOOKBACK_DAYS = 10.0
 
 _CURLY_APOSTROPHE = chr(0x2019)
@@ -174,11 +162,6 @@ def _normalize_name(name: object) -> str:
     text = NAME_PUNCTUATION.sub("", text)
     text = NAME_NONALNUM.sub(" ", text)
     return " ".join(text.split())
-
-
-# ---------------------------------------------------------------------------
-# Ground truth: reuse the bias battery's own construct, not re-derived.
-# ---------------------------------------------------------------------------
 
 
 def ground_truth_long_table() -> pd.DataFrame:
@@ -236,9 +219,6 @@ def game_cutoffs(kickoffs: pd.DataFrame) -> pd.DataFrame:
     tuesday_date_et = kickoff_et.dt.normalize() - pd.to_timedelta(days_since_tuesday, unit="D")
     tuesday_noon_et = tuesday_date_et + pd.Timedelta(hours=12)
     friday_et = tuesday_date_et + pd.Timedelta(days=3, hours=23, minutes=59, seconds=59)
-    # The week's own Sunday (Tuesday + 5 days), NOT the game's own calendar
-    # date -- for a Monday game this is the day BEFORE kickoff, which is the
-    # whole point of the owner's correction.
     sunday_date_et = tuesday_date_et + pd.Timedelta(days=5)
     sunday_10am_et = sunday_date_et + pd.Timedelta(hours=10)
     sunday_1600_et = sunday_date_et + pd.Timedelta(hours=16)
@@ -263,7 +243,7 @@ def assign_bucket(match_utc: pd.Timestamp, row: pd.Series) -> str:
     if pd.isna(match_utc):
         return "never"
     if match_utc >= row["deadline_utc"]:
-        return "never"  # not pregame-safe (past the pool's own deadline); must not count
+        return "never"
     if match_utc <= row["T_utc"]:
         return "by_tuesday_noon"
     if match_utc <= row["F_utc"]:
@@ -271,12 +251,6 @@ def assign_bucket(match_utc: pd.Timestamp, row: pd.Series) -> str:
     if match_utc <= row["S_utc"]:
         return "by_sunday_10am_or_kickoff"
     return "before_deadline"
-
-
-# ---------------------------------------------------------------------------
-# PFT matching (pure local computation, no fetch: lastmod is already a real
-# per-article UTC timestamp, docs/injury_news_sourcing.md sec 3).
-# ---------------------------------------------------------------------------
 
 
 def build_last_name_index(headlines_norm: pd.Series) -> dict[str, list[int]]:
@@ -303,9 +277,6 @@ def match_pft(backup_rows: pd.DataFrame, pft: pd.DataFrame) -> pd.Series:
     ].copy()
     candidates["headline_norm"] = candidates["headline_guess"].map(_normalize_name)
     headlines = candidates["headline_norm"].to_numpy()
-    # Naive UTC datetime64[ns] throughout, matching
-    # injury_tuesday_cutoff_experiment.py's own convention (avoids tz-aware
-    # object-array pitfalls while staying an exact UTC instant comparison).
     lastmods = (
         candidates["lastmod"]
         .dt.tz_convert("UTC")
@@ -347,11 +318,6 @@ def match_pft(backup_rows: pd.DataFrame, pft: pd.DataFrame) -> pd.Series:
         if best is not None:
             results[row_pos] = best
     return pd.Series(pd.to_datetime(results, utc=True), index=backup_rows.index)
-
-
-# ---------------------------------------------------------------------------
-# PFR candidate identification (local) + budgeted per-article fetch.
-# ---------------------------------------------------------------------------
 
 
 def pfr_candidates(backup_rows: pd.DataFrame, pfr: pd.DataFrame) -> pd.DataFrame:
@@ -455,11 +421,6 @@ def fetch_pfr_dates(
         match = DATE_PUBLISHED_RE.search(raw)
         out[url] = pd.Timestamp(match.group(1)) if match else None
     return out
-
-
-# ---------------------------------------------------------------------------
-# Full-slate scaled week-blocked bootstrap (nfl_bias_battery_screen.py convention)
-# ---------------------------------------------------------------------------
 
 
 def block_bootstrap_two_group(
@@ -590,13 +551,6 @@ def main() -> None:
     n_fetch_ok = sum(1 for v in fetched.values() if v is not None)
     print(f"Fetched OK: {n_fetch_ok}/{len(fetched)}")
 
-    # Earliest PFR match per backup row: only candidates with a successfully
-    # fetched JSON-LD datePublished, strictly inside
-    # [deadline - LOOKBACK_DAYS, deadline), count as a match, where
-    # deadline = min(kickoff, that week's Sunday 16:00 ET) (owner-corrected
-    # 2026-08-20). Month-only (unfetched) candidates are dropped -- no date
-    # evidence precise enough to place them in a bucket or even confirm they
-    # are in-window.
     pfr_match_utc = pd.Series(pd.NaT, index=backup_rows.index, dtype="datetime64[ns, UTC]")
     if len(candidates):
         lookback = pd.Timedelta(days=LOOKBACK_DAYS)

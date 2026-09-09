@@ -63,11 +63,6 @@ POSITIVE_CONTROL_BRIER_CEILING = 0.02
 PROBABILITY_FLOOR = 1e-6
 
 
-# ---------------------------------------------------------------------------
-# Data assembly
-# ---------------------------------------------------------------------------
-
-
 def load_frames() -> dict[str, Any]:
     """Reproduce the incumbent learned-availability pipeline exactly, then extend it."""
 
@@ -156,11 +151,6 @@ def target_rows(frames: dict[str, Any]) -> pd.DataFrame:
     return rows.sort_values(["season", "week", "game_id", "team", "gsis_id"]).reset_index(drop=True)
 
 
-# ---------------------------------------------------------------------------
-# Metrics
-# ---------------------------------------------------------------------------
-
-
 def brier(probability: np.ndarray, outcome: np.ndarray) -> float:
     return float(np.square(probability - outcome).mean())
 
@@ -181,11 +171,6 @@ def paired_bootstrap(frame: pd.DataFrame, columns: list[str], block: str) -> pd.
         samples=BOOTSTRAP_SAMPLES,
         seed=BOOTSTRAP_SEED,
     )
-
-
-# ---------------------------------------------------------------------------
-# The fold loop
-# ---------------------------------------------------------------------------
 
 
 def run_folds(
@@ -251,11 +236,6 @@ def run_folds(
     return pd.concat(predictions, ignore_index=True), calibrations
 
 
-# ---------------------------------------------------------------------------
-# Feasibility (history depth and trait reliability)
-# ---------------------------------------------------------------------------
-
-
 def feasibility(
     frames: dict[str, Any], rows: pd.DataFrame, aggregates: pd.DataFrame
 ) -> dict[str, Any]:
@@ -294,11 +274,6 @@ def feasibility(
             for minimum in (5, 10, 20)
         },
     }
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def summarize(predictions: pd.DataFrame, baseline: str, candidate: str) -> dict[str, Any]:

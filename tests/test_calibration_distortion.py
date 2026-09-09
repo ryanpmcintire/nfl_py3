@@ -146,7 +146,6 @@ def test_additive_plant_preserves_the_real_target_underneath() -> None:
     np.testing.assert_allclose(planted["result"].to_numpy(), [2.0, -5.5, 9.0, 3.0])
     np.testing.assert_allclose(planted["home_cover"].to_numpy(), [1.0, 0.0, 1.0, 0.0])
     np.testing.assert_allclose(planted["planted"].to_numpy(), carrier)
-    # The source frame is untouched.
     np.testing.assert_allclose(frame["ats_margin"].to_numpy(), [2.0, -4.0, 6.0, -1.0])
 
 

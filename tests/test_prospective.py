@@ -89,8 +89,6 @@ def test_freeze_forecast_writes_immutable_record(tmp_path) -> None:
     assert str(stored["kickoff"].dt.tz) == "UTC"
     assert verify_frozen_forecast(frozen.directory)["games"] == 2
 
-    # Revalidation catches internally corrupt data even if an attacker or bug
-    # also recomputes the file digest in the manifest.
     stored.loc[0, "edge"] = 0.99
     prediction_path = frozen.directory / "predictions.parquet"
     stored.to_parquet(prediction_path, index=False)
@@ -252,8 +250,6 @@ def test_nflcom_team_starter_out_counts_aggregates_per_canonical_team_week(
                 "week": 5,
                 "team": "AAA",
             },
-            # A non-starter-caliber Out (no prior-week snap share >=50%) must not
-            # count -- but its team-week still appears in the mapping, at 0.
             {
                 "player": "Nobody Four",
                 "game_status": "Out",
@@ -499,7 +495,6 @@ def test_nflcom_recorder_skips_week_when_page_fails_the_freshness_gate(tmp_path)
                     {
                         "season": 2026,
                         "week": 1,
-                        # Tuesday of game week: before the Friday 16:00 ET gate.
                         "fetched_at_utc": "2026-09-08T12:00:00Z",
                         "http_status": 200,
                     }
@@ -613,8 +608,6 @@ def test_a_weekly_capture_does_not_hide_the_historical_archive(tmp_path: Path) -
     assert historical is not None, "the archive must stay reachable after a weekly capture"
     assert historical[0].name == "20260821T222602Z"
 
-    # A week nobody holds falls back to the newest snapshot, so the caller
-    # still reports its own "absent from snapshot manifest" skip.
     missing = latest_nflcom_injuries_snapshot(tmp_path, week_key=(2019, 3))
     assert missing is not None and (2019, 3) not in missing[1]
 
@@ -653,7 +646,7 @@ def test_a_thursday_game_no_longer_silences_the_whole_week(tmp_path) -> None:
 
     artifacts = tmp_path / "artifacts"
     data = tmp_path / "data"
-    thursday = pd.Timestamp("2026-09-11T00:15:00Z")  # Thu 8:15 PM ET, before the Friday page
+    thursday = pd.Timestamp("2026-09-11T00:15:00Z")
     _write_registry(artifacts)
     _write_active_model_card_and_paper_ledger(artifacts, kickoffs=[thursday, KICKOFF])
     _write_friday_page_and_snaps(data)

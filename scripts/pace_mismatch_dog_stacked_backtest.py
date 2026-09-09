@@ -139,8 +139,6 @@ DEFAULT_DATA_ROOT = REPO / "data"
 DEFAULT_TEAM_SEASON_STYLE = team_season_style_path(DEFAULT_DATA_ROOT)
 DEFAULT_OUTPUT_ROOT = REPO / "artifacts" / "pace_mismatch_dog_stacked"
 SAMPLES = 20_000
-#: A fresh, recorded seed for this study -- not reused from a sibling
-#: overlay-stack study, but fixed here so a re-run reproduces exactly.
 SEED = 20260901
 CONFIDENCE = 0.95
 SPREAD_GAP_MEMBER = "spread_gap_zone_fade_overlay"
@@ -186,9 +184,6 @@ def run_backtest(
     )
     predictions = build_predictions_frame(per_game, schedules)
 
-    # Established push-handling correct_baseline extraction, reused rather
-    # than re-implemented (see module docstring). The six-overlay solo/loo/
-    # combined columns this also computes are unused here.
     six_overlay_results = run_overlays(predictions, schedules, player_features)
     six_flip_sets = {
         name: {flip.game_id for flip in six_overlay_results[name].flips} for name in OVERLAY_NAMES
@@ -212,10 +207,6 @@ def run_backtest(
     spread_gap_ids = production_flip_sets[SPREAD_GAP_MEMBER]
     overlap_with_spread_gap_zone_fade = sorted(my_flip_set & spread_gap_ids)
 
-    # Games where the pace-mismatch flag fires but the PLAYED union has
-    # already flipped the same game for another reason: adding this member
-    # cannot move accuracy on those games (the pick is already flipped), so
-    # only the NET-NEW games determine the candidate-vs-production delta.
     net_new_ids = sorted(my_flip_set - production_ids)
 
     frame = baseline_eval_frame[["game_id", "season", "week", "correct_baseline"]].copy()

@@ -103,11 +103,6 @@ def _feature_arm_spec_payload(**overrides: object) -> dict[str, object]:
     return payload
 
 
-# ---------------------------------------------------------------------------
-# Spec validation
-# ---------------------------------------------------------------------------
-
-
 def test_valid_spec_parses_and_round_trips() -> None:
     spec = experiment_spec_from_payload(_spec_payload())
     assert spec.name == "example_subset_bias"
@@ -223,11 +218,6 @@ def test_load_experiment_spec_reads_a_valid_file(tmp_path: Path) -> None:
     assert spec.name == "example_subset_bias"
 
 
-# ---------------------------------------------------------------------------
-# feature_arm construct schema
-# ---------------------------------------------------------------------------
-
-
 def test_feature_arm_spec_parses_and_round_trips() -> None:
     spec = experiment_spec_from_payload(_feature_arm_spec_payload())
     assert spec.experiment_type == "feature_arm"
@@ -294,13 +284,7 @@ def test_feature_arm_spec_endpoints_secondary_may_be_non_empty() -> None:
     assert spec.endpoint_secondary == ("brier", "logloss")
 
 
-# ---------------------------------------------------------------------------
-# scale_subset_effect: the one 100x-fraction-vs-points scaling function
-# ---------------------------------------------------------------------------
-
-
 def test_scale_subset_effect_matches_hand_arithmetic() -> None:
-    # 2 raw points of gap, firing on 25% of the slate -> 0.5 scaled points.
     assert scale_subset_effect(0.02, sign=1, fraction_of_slate=0.25) == pytest.approx(0.5)
     assert scale_subset_effect(0.02, sign=-1, fraction_of_slate=0.25) == pytest.approx(-0.5)
 
@@ -312,24 +296,13 @@ def test_scale_subset_effect_rejects_bad_sign_and_fraction() -> None:
         scale_subset_effect(0.02, sign=1, fraction_of_slate=1.5)
 
 
-# ---------------------------------------------------------------------------
-# Mechanical classification: the runner's one auto-computed terminal verdict
-# ---------------------------------------------------------------------------
-
-
 def test_widening_factor_matches_the_registered_mod06_precedent() -> None:
-    # registry/weak_signals.json mod06_js_shrinkage_position_prior_cfb: "re-crossing
-    # zero requires only a 1.082x widening (centre -0.53, upper -0.04)". The exact
-    # (unrounded) inputs give 1.089, which is what the module docstring cites.
     factor = widening_factor_to_recross_zero(-0.526, -0.043)
     assert factor == pytest.approx(1.089, abs=0.005)
     assert factor < HONEST_REFIT_WIDENING_UPPER_BOUND
 
 
 def test_classification_stays_unresolved_inside_the_honest_band() -> None:
-    # Same mod06-shaped inputs: interval is entirely negative, but the widening
-    # needed to re-cross zero (~1.089x) sits INSIDE the honest 1.099x band, so
-    # AGENTS.md says this must not become a terminal refutation.
     result = classify_subset_bias_result(estimate=-0.526, lower=-1.019, upper=-0.043)
     assert result.classification == "unresolved_below_power"
     assert result.closing_ground is None
@@ -345,7 +318,6 @@ def test_classification_refutes_only_past_the_honest_band() -> None:
 
 
 def test_classification_never_closes_on_an_interval_crossing_zero() -> None:
-    # AGENTS.md binding rule: crossing zero is never grounds for rejection.
     result = classify_subset_bias_result(estimate=0.4, lower=-0.6, upper=1.4)
     assert result.classification == "unresolved_below_power"
     assert result.closing_ground is None
@@ -353,8 +325,6 @@ def test_classification_never_closes_on_an_interval_crossing_zero() -> None:
 
 
 def test_classification_never_produces_bounded_by_control() -> None:
-    # Sweep a range of shapes; the runner must never emit a closing ground
-    # outside its one documented mechanical path.
     for estimate, lower, upper in (
         (-0.1, -5.0, 5.0),
         (-2.0, -3.0, -1.0),
@@ -373,11 +343,6 @@ def test_widening_factor_requires_a_negative_upper_and_a_lower_estimate() -> Non
         widening_factor_to_recross_zero(-0.01, -0.02)
 
 
-# ---------------------------------------------------------------------------
-# The shared team-game long table and the named flag builders
-# ---------------------------------------------------------------------------
-
-
 def _synthetic_features() -> pd.DataFrame:
     return pd.DataFrame(
         {
@@ -386,19 +351,17 @@ def _synthetic_features() -> pd.DataFrame:
             "week": [1, 1, 2, 1],
             "home_team": ["NE", "OAK", "NE", "NE"],
             "away_team": ["BUF", "KC", "BUF", "BUF"],
-            "home_cover": [1.0, 0.0, np.nan, 1.0],  # g3 is a push
+            "home_cover": [1.0, 0.0, np.nan, 1.0],
             "spread_line": [-3.0, 4.0, -3.0, 6.5],
-            "game_type": ["REG", "REG", "REG", "POST"],  # g4 is postseason
+            "game_type": ["REG", "REG", "REG", "POST"],
         }
     )
 
 
 def test_base_team_game_table_drops_pushes_and_postseason_and_canonicalizes() -> None:
     table = _base_team_game_table(_synthetic_features())
-    # g3 (push) and g4 (POST) must be gone; g1/g2 each contribute a home+away row.
     assert len(table) == 4
     assert set(table["game_id"]) == {"g1", "g2"}
-    # OAK canonicalizes to LV (nfl_ats.constants.TEAM_ABBREVIATION_ALIASES).
     assert "OAK" not in set(table["team"])
     assert "LV" in set(table["team"])
     home_rows = table.loc[table["is_home"]]
@@ -422,7 +385,6 @@ def test_flag_home_underdog_matches_hand_computation() -> None:
     construct = _flag_home_underdog(features, (2009, 2025), {}, REPO_ROOT)
     table = construct.table.reset_index(drop=True)
     flag = construct.flag.reset_index(drop=True)
-    # Only g1's home row (is_home=True, spread_line=-3.0<0) is flagged.
     expected = (table["game_id"] == "g1") & table["is_home"]
     assert (flag == expected).all()
     assert construct.sign == 1
@@ -501,8 +463,6 @@ def test_recent_player_arrest_is_strictly_pregame_and_canonicalizes_teams(
             "record_id": [1, 2, 3, 4],
             "incident_date": ["2024-09-03", "2024-09-17", "2024-09-02", "2024-09-18"],
             "team": ["JAC", "DEN", "IN", "BUF"],
-            # Retrospective fields may exist in a mistakenly supplied full index,
-            # but the builder selects only the safe schema and cannot read them.
             "outcome_archive_only": ["a", "b", "c", "d"],
         }
     )
@@ -580,20 +540,6 @@ def test_recent_player_arrest_category_filter_is_safe_and_declarative(tmp_path: 
     pd.testing.assert_series_equal(construct.flag, mutated.flag)
 
 
-# ---------------------------------------------------------------------------
-# Interim head-coach builders (2026-08-20, docs/interim_coach_screen.md)
-# ---------------------------------------------------------------------------
-#
-# Synthetic 4-team, 3-season repo exercising every branch of the join:
-# AAA: direct schedules.parquet coach-name match (the common case), predecessor
-#      NOT year-1 (coached AAA in both 2013 and 2014).
-# BBB: direct match, predecessor IS year-1 (new to BBB in 2014, fired in 2015).
-# CCC: direct match, predecessor tenure UNKNOWN (2013 not in the data at all).
-# DDD: schedules.parquet's coach field never updates (stays OLDD all season) --
-#      exercises the takeover-date fallback join.
-# EEE: predecessor_status == "suspended", for the exclude_suspension_cases param.
-
-
 def _interim_game(
     *,
     game_id: str,
@@ -623,7 +569,6 @@ def _interim_game(
 
 def _write_interim_coach_repo(tmp_path: Path) -> tuple[Path, Path]:
     games = [
-        # AAA: 2013-2014 placeholder seasons (coach continuity for year-1 calc).
         _interim_game(
             game_id="aaa2013",
             season=2013,
@@ -644,7 +589,6 @@ def _write_interim_coach_repo(tmp_path: Path) -> tuple[Path, Path]:
             home_coach="OLD_COACH",
             away_coach="OPP_COACH",
         ),
-        # AAA 2015: OLD_COACH weeks 1-2, interim NEW_COACH weeks 3-4 (direct match).
         _interim_game(
             game_id="aaa2015w1",
             season=2015,
@@ -685,8 +629,6 @@ def _write_interim_coach_repo(tmp_path: Path) -> tuple[Path, Path]:
             home_coach="NEW_COACH",
             away_coach="OPP_COACH",
         ),
-        # BBB: 2013 coach W, 2014 coach Y (Y is year-1 in 2014), 2015 Y fired
-        # week 3, interim Z takes over -- predecessor Y WAS year-1 when fired.
         _interim_game(
             game_id="bbb2013",
             season=2013,
@@ -727,8 +669,6 @@ def _write_interim_coach_repo(tmp_path: Path) -> tuple[Path, Path]:
             home_coach="Z",
             away_coach="OPP_COACH",
         ),
-        # CCC: no 2013 row at all -- 2015's predecessor-tenure lookup must be
-        # UNKNOWN, not silently treated as "not year 1".
         _interim_game(
             game_id="ccc2014",
             season=2014,
@@ -759,8 +699,6 @@ def _write_interim_coach_repo(tmp_path: Path) -> tuple[Path, Path]:
             home_coach="Q",
             away_coach="OPP_COACH",
         ),
-        # DDD: schedules.parquet's coach field NEVER updates (stays OLDD) --
-        # must fall back to the takeover-date range.
         _interim_game(
             game_id="ddd2015w1",
             season=2015,
@@ -791,7 +729,6 @@ def _write_interim_coach_repo(tmp_path: Path) -> tuple[Path, Path]:
             home_coach="OLDD",
             away_coach="OPP_COACH",
         ),
-        # EEE: predecessor SUSPENDED, not fired -- exclude_suspension_cases.
         _interim_game(
             game_id="eee2015w1",
             season=2015,
@@ -887,7 +824,7 @@ def _write_interim_coach_repo(tmp_path: Path) -> tuple[Path, Path]:
             },
             {
                 "entry_id": 4,
-                "interim_coach_name": "NEWD",  # never appears in schedules -> fallback
+                "interim_coach_name": "NEWD",
                 "team_abbr": "DDD",
                 "predecessor_coach_name": "OLDD",
                 "predecessor_status": "fired",
@@ -941,10 +878,8 @@ def test_interim_coach_join_matches_by_name_and_falls_back_to_takeover_date(
     table, trait_data = _interim_coach_team_game_table(features, repo_root)
 
     assert trait_data.n_entries_total == 6
-    assert trait_data.n_entries_joinable == 5  # entry_id 6 is pre-2009, excluded
+    assert trait_data.n_entries_joinable == 5
 
-    # AAA: name-match join. Weeks 1-2 (OLD_COACH) NOT flagged; weeks 3-4
-    # (NEW_COACH) flagged, week 3 is first_game, interim_game_number 1 then 2.
     aaa = table.loc[table["team"] == "AAA"].sort_values("week")
     assert aaa.set_index("week")["under_interim"].to_dict() == {
         1: False,
@@ -957,8 +892,6 @@ def test_interim_coach_join_matches_by_name_and_falls_back_to_takeover_date(
     assert w3["first_game_under_interim"] and w3["interim_game_number"] == 1
     assert (not w4["first_game_under_interim"]) and w4["interim_game_number"] == 2
 
-    # DDD: schedules.parquet's coach field never changes -- must have used the
-    # takeover-date fallback (gameday >= 2015-09-27), not the (absent) name match.
     ddd = table.loc[table["team"] == "DDD"].sort_values("week")
     assert ddd.set_index("week")["under_interim"].to_dict() == {1: False, 3: True, 4: True}
 
@@ -974,20 +907,14 @@ def test_interim_coach_fired_year_one_known_and_unknown_cases(tmp_path: Path) ->
         assert rows["fired_coach_year_one_known"].nunique() == 1
         return rows.iloc[0]
 
-    # AAA: OLD_COACH coached AAA in both 2013 and 2014 -> NOT year-1 when fired
-    # in 2015, and the predecessor's tenure is fully KNOWN (2013 observed).
     aaa = _under_interim_row("AAA")
     assert bool(aaa["fired_coach_year_one_known"])
     assert not aaa["fired_coach_was_year_one"]
 
-    # BBB: Y is new to BBB in 2014 (W coached in 2013) -> Y WAS in his own
-    # year 1 when fired in 2015.
     bbb = _under_interim_row("BBB")
     assert bbb["fired_coach_year_one_known"]
     assert bbb["fired_coach_was_year_one"]
 
-    # CCC: no 2013 data at all -> predecessor tenure is UNKNOWN, must not be
-    # silently treated as "not year 1" (known=False, not flag=False).
     ccc = _under_interim_row("CCC")
     assert not ccc["fired_coach_year_one_known"]
     assert not ccc["fired_coach_was_year_one"]
@@ -1009,7 +936,6 @@ def test_flag_interim_hc_active_exclude_suspension_param(tmp_path: Path) -> None
     excluded_table = excluded.table.reset_index(drop=True)
     excluded_flag = excluded.flag.reset_index(drop=True)
     assert "EEE" not in set(excluded_table.loc[excluded_flag, "team"])
-    # AAA/BBB/CCC/DDD (all predecessor_status='fired') are unaffected.
     assert {"AAA", "BBB", "CCC", "DDD"}.issubset(set(excluded_table.loc[excluded_flag, "team"]))
 
 
@@ -1021,7 +947,7 @@ def test_flag_interim_hc_first_game_flags_only_the_first_stint_game(tmp_path: Pa
     flag = construct.flag.reset_index(drop=True)
     aaa_flagged_weeks = set(table.loc[flag & (table["team"] == "AAA"), "week"])
     assert aaa_flagged_weeks == {3}
-    assert construct.eligible is None  # one-sided design, vs. the whole population
+    assert construct.eligible is None
     assert construct.sign == 1
 
 
@@ -1047,15 +973,15 @@ def test_flag_interim_hc_fired_year_one_eligible_requires_known_tenure(tmp_path:
     flag = construct.flag.reset_index(drop=True)
 
     ccc_rows = table["team"] == "CCC"
-    assert not eligible.loc[ccc_rows].any()  # CCC's predecessor tenure is unknown
+    assert not eligible.loc[ccc_rows].any()
 
     bbb_eligible_flagged = table.loc[eligible & (table["team"] == "BBB"), :]
     assert not bbb_eligible_flagged.empty
-    assert flag.loc[bbb_eligible_flagged.index].all()  # BBB's predecessor WAS year-1
+    assert flag.loc[bbb_eligible_flagged.index].all()
 
     aaa_eligible_flagged = table.loc[eligible & (table["team"] == "AAA"), :]
     assert not aaa_eligible_flagged.empty
-    assert not flag.loc[aaa_eligible_flagged.index].any()  # AAA's predecessor was NOT
+    assert not flag.loc[aaa_eligible_flagged.index].any()
     assert construct.sign == -1
 
 
@@ -1066,18 +992,10 @@ def test_interim_coach_join_raises_loudly_on_an_unmatched_entry(tmp_path: Path) 
         repo_root / "data" / "raw" / "interim_coaches" / "20200101T000000Z" / "parsed_table.csv"
     )
     parsed = pd.read_csv(interim_path)
-    # Move entry 4's takeover date past every game DDD plays -- neither the
-    # name match nor the date fallback can find a row, so the join must raise
-    # rather than silently drop the entry.
     parsed.loc[parsed["entry_id"] == 4, "takeover_date_iso"] = "2015-12-31"
     parsed.to_csv(interim_path, index=False)
     with pytest.raises(ExperimentRunnerError, match="matched NEITHER"):
         _interim_coach_team_game_table(features, repo_root)
-
-
-# ---------------------------------------------------------------------------
-# Forecast-weather builders (2026-08-20 backward-extension family)
-# ---------------------------------------------------------------------------
 
 
 def _fc_game(
@@ -1164,7 +1082,6 @@ def _fc_forecast(
 
 def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: Path) -> None:
     games = [
-        # Establishes DEN's modal home roof (2009) = dome.
         _fc_game(
             game_id="g_dome1",
             week=1,
@@ -1189,7 +1106,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=68.0,
             wind=4.0,
         ),
-        # Establishes KC's own outdoor-home climatological baseline (2009) = 80F.
         _fc_game(
             game_id="g_kc_home",
             week=3,
@@ -1202,7 +1118,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=80.0,
             wind=6.0,
         ),
-        # dome_cold_windy: away=DEN (modal roof=dome), outdoor, cold+windy forecast -> True.
         _fc_game(
             game_id="g_test_dome_cold_windy",
             week=10,
@@ -1215,8 +1130,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=25.0,
             wind=20.0,
         ),
-        # Control: away=KC (modal roof=outdoors, from g_kc_home) -> dome_cold_windy False
-        # even though the forecast itself is just as cold/windy.
         _fc_game(
             game_id="g_test_dome_cold_windy_control",
             week=11,
@@ -1229,7 +1142,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=60.0,
             wind=5.0,
         ),
-        # temp_gap_cold_visitor: away=KC, climate_temp(KC)=80, forecast=40 -> gap=40>=25 -> True.
         _fc_game(
             game_id="g_test_temp_gap",
             week=12,
@@ -1242,7 +1154,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=55.0,
             wind=5.0,
         ),
-        # precip_high_total: outdoor, precip>=60, total>=47 -> True.
         _fc_game(
             game_id="g_test_precip",
             week=13,
@@ -1255,7 +1166,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=50.0,
             wind=5.0,
         ),
-        # Control: same precip, total below 47 -> False.
         _fc_game(
             game_id="g_test_precip_control",
             week=14,
@@ -1268,7 +1178,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=50.0,
             wind=5.0,
         ),
-        # warm_team_cold_late: away=MIA (warm metro), week>=13, forecast<=35 -> True.
         _fc_game(
             game_id="g_test_warm_late",
             week=15,
@@ -1281,7 +1190,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=30.0,
             wind=5.0,
         ),
-        # Control: same away team/forecast, but week<13 -> False.
         _fc_game(
             game_id="g_test_warm_early",
             week=5,
@@ -1294,9 +1202,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
             temp=30.0,
             wind=5.0,
         ),
-        # temp_swing_prior_week: DEN's immediately preceding game (by gameday) is
-        # g_test_precip_control (week 14, DEN away, actual temp 50); this game's
-        # forecast (90) swings |90-50|=40 >= 30 -> True.
         _fc_game(
             game_id="g_test_temp_swing",
             week=16,
@@ -1333,7 +1238,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
     assert "g_test_dome_cold_windy" in flagged
     assert "g_test_dome_cold_windy_control" not in flagged
     assert dome.sign == 1
-    # team_covered mirrors home_cover directly (one row per game, not team-long).
     row = dtable.loc[dtable["game_id"] == "g_test_dome_cold_windy"].iloc[0]
     assert row["team_covered"] == pytest.approx(1.0)
     assert bool(row["outdoor"]) is True
@@ -1359,11 +1263,6 @@ def test_forecast_weather_game_table_and_cells_match_hand_computation(tmp_path: 
     )
     stable, sflag = swing.table.reset_index(drop=True), swing.flag.reset_index(drop=True)
     assert "g_test_temp_swing" in set(stable.loc[sflag, "game_id"])
-
-
-# ---------------------------------------------------------------------------
-# Bias-battery builders, ported from scripts/nfl_bias_battery_screen.py
-# ---------------------------------------------------------------------------
 
 
 def _game(
@@ -1460,7 +1359,6 @@ def test_bias_battery_team_game_table_requires_schedules_snapshot(tmp_path: Path
         tmp_path,
         [_game(game_id="g1", season=2020, week=1, home_team="AAA", away_team="BBB", result=3.0)],
     )
-    # Point at a repo root with no data/raw/*/schedules.parquet snapshot.
     empty_root = tmp_path / "empty"
     empty_root.mkdir()
     with pytest.raises(ExperimentRunnerError, match=r"No data/raw/\*/schedules\.parquet snapshot"):
@@ -1477,7 +1375,7 @@ def test_flag_division_revenge_game_matches_hand_computation(tmp_path: Path) -> 
             away_team="AAA",
             result=7.0,
             div_game=1,
-        ),  # AAA away, loses by 7 -> AAA's first meeting margin is negative.
+        ),
         _game(
             game_id="g2",
             season=2020,
@@ -1486,7 +1384,7 @@ def test_flag_division_revenge_game_matches_hand_computation(tmp_path: Path) -> 
             away_team="CCC",
             result=3.0,
             div_game=1,
-        ),  # 2nd meeting: AAA should be flagged (lost 1st), CCC should not (won 1st).
+        ),
     ]
     features_path = _write_bias_battery_repo(tmp_path, games)
     construct = _flag_division_revenge_game(
@@ -1522,15 +1420,15 @@ def test_flag_extra_rest_edge_and_short_week_match_hand_computation(tmp_path: Pa
     rest_construct = _flag_extra_rest_edge(features, (2009, 2025), {}, tmp_path)
     rt = rest_construct.table.reset_index(drop=True)
     rf = rest_construct.flag.reset_index(drop=True)
-    assert bool(rf.loc[rt["team"] == "AAA"].iloc[0]) is True  # 10 - 3 = 7 >= 4
-    assert bool(rf.loc[rt["team"] == "BBB"].iloc[0]) is False  # 3 - 10 = -7
+    assert bool(rf.loc[rt["team"] == "AAA"].iloc[0]) is True
+    assert bool(rf.loc[rt["team"] == "BBB"].iloc[0]) is False
     assert rest_construct.sign == 1
 
     short_construct = _flag_short_week(features, (2009, 2025), {}, tmp_path)
     st = short_construct.table.reset_index(drop=True)
     sf = short_construct.flag.reset_index(drop=True)
-    assert bool(sf.loc[st["team"] == "AAA"].iloc[0]) is False  # own_rest 10 > 5
-    assert bool(sf.loc[st["team"] == "BBB"].iloc[0]) is True  # own_rest 3 <= 5
+    assert bool(sf.loc[st["team"] == "AAA"].iloc[0]) is False
+    assert bool(sf.loc[st["team"] == "BBB"].iloc[0]) is True
     assert short_construct.sign == -1
 
 
@@ -1544,7 +1442,7 @@ def test_flag_west_coast_early_kickoff_matches_hand_computation(tmp_path: Path) 
             away_team="SEA",
             result=3.0,
             gametime="09:30",
-        ),  # SEA away, early kickoff, non-PT opponent -> flagged.
+        ),
         _game(
             game_id="g2",
             season=2020,
@@ -1553,7 +1451,7 @@ def test_flag_west_coast_early_kickoff_matches_hand_computation(tmp_path: Path) 
             away_team="NYJ",
             result=3.0,
             gametime="09:30",
-        ),  # SEA home this time -> never flagged regardless of kickoff time.
+        ),
         _game(
             game_id="g3",
             season=2020,
@@ -1562,7 +1460,7 @@ def test_flag_west_coast_early_kickoff_matches_hand_computation(tmp_path: Path) 
             away_team="SEA",
             result=3.0,
             gametime="16:00",
-        ),  # SEA away, but a late kickoff -> not flagged.
+        ),
     ]
     features_path = _write_bias_battery_repo(tmp_path, games)
     construct = _flag_west_coast_early_kickoff(
@@ -1607,7 +1505,6 @@ def test_flag_sandwich_spot_matches_hand_computation(tmp_path: Path) -> None:
             result=3.0,
             div_game=1,
         ),
-        # BBB never has a div game either side -> never a sandwich candidate.
         _game(
             game_id="g4",
             season=2020,
@@ -1681,7 +1578,6 @@ def test_flag_backup_qb_start_matches_hand_computation(tmp_path: Path) -> None:
             result=3.0,
             home_qb_name="QB1",
         ),
-        # >=3 prior starts now established (all QB1) -> week 4's backup is detectable.
         _game(
             game_id="g4",
             season=2020,
@@ -1716,19 +1612,18 @@ def test_flag_backup_qb_start_matches_hand_computation(tmp_path: Path) -> None:
 
     for game_id in ("g1", "g2", "g3"):
         elig, _ = _row(game_id)
-        assert elig is False  # fewer than 3 prior starts -> excluded from both arms
+        assert elig is False
     elig4, flagged4 = _row("g4")
     assert elig4 is True
-    assert flagged4 is True  # QB2 != modal QB1
+    assert flagged4 is True
     elig5, flagged5 = _row("g5")
     assert elig5 is True
-    assert flagged5 is False  # QB1 is still the modal QB (3 of 4 prior starts)
+    assert flagged5 is False
     assert construct.sign == 1
 
 
 def test_flag_motivation_mismatch_matches_hand_computation(tmp_path: Path) -> None:
     games = []
-    # MMH: 10 games weeks 1-10, 5 wins (odd weeks) -> prior_win_pct entering week 11 = 0.5.
     for week in range(1, 11):
         win = week % 2 == 1
         games.append(
@@ -1741,7 +1636,6 @@ def test_flag_motivation_mismatch_matches_hand_computation(tmp_path: Path) -> No
                 result=10.0 if win else -10.0,
             )
         )
-    # BADT: 9 games weeks 1-9, 2 wins -> prior_win_pct entering week 11 ~= 0.222.
     for week in range(1, 10):
         win = week in (1, 2)
         games.append(
@@ -1754,7 +1648,6 @@ def test_flag_motivation_mismatch_matches_hand_computation(tmp_path: Path) -> No
                 result=10.0 if win else -10.0,
             )
         )
-    # The target matchup: week 11 (in [11, 18]), MMH (competitive) hosts BADT (bad_team_late).
     games.append(
         _game(game_id="target", season=2020, week=11, home_team="MMH", away_team="BADT", result=3.0)
     )
@@ -1767,32 +1660,9 @@ def test_flag_motivation_mismatch_matches_hand_computation(tmp_path: Path) -> No
     badt_target = flag.loc[(table["game_id"] == "target") & (table["team"] == "BADT")]
     mmh_week5 = flag.loc[(table["game_id"] == "mmh5") & (table["team"] == "MMH")]
     assert bool(mmh_target.iloc[0]) is True
-    assert bool(badt_target.iloc[0]) is False  # BADT's own prior_win_pct is too low
-    assert bool(mmh_week5.iloc[0]) is False  # week not in [11, 18]
+    assert bool(badt_target.iloc[0]) is False
+    assert bool(mmh_week5.iloc[0]) is False
     assert construct.sign == 1
-
-
-# ---------------------------------------------------------------------------
-# Referee-battery builders (docs/referee_battery.md)
-# ---------------------------------------------------------------------------
-#
-# Synthetic fixture: four referees REF_A/B/C/D each work one game in season
-# 2020 (the PRIOR season, supplying the lag) and one in season 2021 (the
-# season under test). Their 2020 total-penalty and away-minus-home penalty
-# differential are constructed to be strictly increasing (A < B < C < D), so
-# a clean qcut(4) over EXACTLY these four lagged values puts A in quartile 1
-# and D in quartile 4 on BOTH traits (`_referee_quartile_games`, used by the
-# two quartile tests and the leakage test -- kept separate from the
-# rookie/veteran officials below so their own lagged penalty values don't
-# shift the A-D quartile boundaries; `_build_referee_trait_data` computes
-# quartiles over the WHOLE population it is handed).
-#
-# REF_ROOKIE only appears in 2021 (0 prior seasons). REF_VETERAN appears in
-# 2019 and 2020 (2 distinct prior seasons before 2021) plus 2021 itself, so
-# `veteran_threshold=2` in the test flags exactly REF_VETERAN's 2021 game
-# (`_referee_battery_games`, the full population, used for the
-# experience-based tests, which don't assert on quartile assignment so
-# sharing the population with A-D is fine).
 
 
 def _referee_game(
@@ -2025,21 +1895,15 @@ def test_flag_referee_penalty_rate_quartiles_use_the_prior_season_lag(tmp_path: 
     table, flag = top.table.reset_index(drop=True), top.flag.reset_index(drop=True)
     home_2021 = table["is_home"] & (table["season"] == 2021)
     flagged_games = set(table.loc[home_2021 & flag, "game_id"])
-    assert flagged_games == {"g_d21"}  # REF_D's 2020 total (19) is the top quartile
+    assert flagged_games == {"g_d21"}
     assert top.sign == 1
-    # 4 year-over-year pairs: A/B/C/D's 2020->2021. The 2021 "next" totals
-    # (99/50/50/99, deliberately unrelated to the 2020 ranking -- chosen to
-    # prove the flag doesn't read them, see the leakage test below) happen
-    # to correlate at exactly 0.0 with the strictly-increasing 2020 totals.
     assert top.reliability_pairs == 4
     assert top.reliability == pytest.approx(0.0)
 
     bottom = _flag_referee_penalty_rate_bottom_quartile(features, (2009, 2025), {}, tmp_path)
     btable, bflag = bottom.table.reset_index(drop=True), bottom.flag.reset_index(drop=True)
     bhome_2021 = btable["is_home"] & (btable["season"] == 2021)
-    assert set(btable.loc[bhome_2021 & bflag, "game_id"]) == {
-        "g_a21"
-    }  # REF_A's 2020 total (10) is bottom
+    assert set(btable.loc[bhome_2021 & bflag, "game_id"]) == {"g_a21"}
     assert bottom.sign == -1
 
 
@@ -2050,14 +1914,12 @@ def test_flag_referee_home_penalty_tilt_quartiles_use_the_prior_season_lag(tmp_p
     top = _flag_referee_home_penalty_tilt_top_quartile(features, (2009, 2025), {}, tmp_path)
     table, flag = top.table.reset_index(drop=True), top.flag.reset_index(drop=True)
     home_2021 = table["is_home"] & (table["season"] == 2021)
-    # REF_D's 2020 diff (away 15 - home 4 = 11) is the most home-protective.
     assert set(table.loc[home_2021 & flag, "game_id"]) == {"g_d21"}
     assert top.sign == 1
 
     bottom = _flag_referee_home_penalty_tilt_bottom_quartile(features, (2009, 2025), {}, tmp_path)
     btable, bflag = bottom.table.reset_index(drop=True), bottom.flag.reset_index(drop=True)
     bhome_2021 = btable["is_home"] & (btable["season"] == 2021)
-    # REF_A's 2020 diff (away 4 - home 6 = -2) is the least home-protective.
     assert set(btable.loc[bhome_2021 & bflag, "game_id"]) == {"g_a21"}
     assert bottom.sign == -1
 
@@ -2071,8 +1933,6 @@ def test_flag_referee_veteran_and_rookie_home_cover_match_hand_computation(tmp_p
     )
     vtable, vflag = veteran.table.reset_index(drop=True), veteran.flag.reset_index(drop=True)
     vhome_2021 = vtable["is_home"] & (vtable["season"] == 2021)
-    # Only REF_VETERAN has 2 distinct prior seasons (2019, 2020) by 2021;
-    # REF_A/B/C/D each have exactly 1 (2020); REF_ROOKIE has 0.
     assert set(vtable.loc[vhome_2021 & vflag, "game_id"]) == {"g_vet21"}
     assert veteran.sign == -1
     assert veteran.reliability is None
@@ -2108,8 +1968,6 @@ def test_referee_flags_do_not_use_this_games_own_penalty_count(tmp_path: Path) -
     mutated_games = [dict(g) for g in games]
     for g in mutated_games:
         if g["game_id"] == "g_d21":
-            # Same game, wildly different OWN penalty count -- would be the
-            # bottom quartile if this game's own number leaked into its flag.
             g["penalties_total"] = 1.0
             g["penalties_on_home"] = 0.0
             g["penalties_on_away"] = 0.0
@@ -2121,7 +1979,7 @@ def test_referee_flags_do_not_use_this_games_own_penalty_count(tmp_path: Path) -
     mtable = mutated.table.reset_index(drop=True)
     mflag = mutated.flag.reset_index(drop=True)
     mutated_flag = bool(mflag.loc[(mtable["game_id"] == "g_d21") & mtable["is_home"]].iloc[0])
-    assert mutated_flag is True  # unchanged: still driven by REF_D's 2020 total (19)
+    assert mutated_flag is True
 
 
 def _write_game_penalty_types_fixture(
@@ -2164,9 +2022,9 @@ def test_referee_type_trait_uses_the_prior_season_lag(tmp_path: Path) -> None:
 
     trait = _build_referee_type_trait_data(tmp_path, "Offensive Holding")
     row = trait.game_trait.loc[trait.game_trait["game_id"] == "g_d21"].iloc[0]
-    assert int(row["lag_type_quartile"]) == 4  # REF_D's 2020 total (19) is the top quartile
+    assert int(row["lag_type_quartile"]) == 4
     row_a = trait.game_trait.loc[trait.game_trait["game_id"] == "g_a21"].iloc[0]
-    assert int(row_a["lag_type_quartile"]) == 1  # REF_A's 2020 total (10) is the bottom quartile
+    assert int(row_a["lag_type_quartile"]) == 1
     assert trait.reliability_pairs == 4
     assert trait.penalty_type == "Offensive Holding"
 
@@ -2195,8 +2053,6 @@ def test_referee_type_trait_does_not_use_this_games_own_penalty_type_count(
     mutated_games = [dict(g) for g in games]
     for g in mutated_games:
         if g["game_id"] == "g_d21":
-            # Same game, wildly different OWN penalty-TYPE count -- would be
-            # the bottom quartile if this game's own number leaked into the lag.
             g["penalties_total"] = 1.0
             g["penalties_on_home"] = 0.0
             g["penalties_on_away"] = 0.0
@@ -2205,17 +2061,10 @@ def test_referee_type_trait_does_not_use_this_games_own_penalty_type_count(
     _write_game_penalty_types_fixture(mutated_officials_dir, mutated_games, "Offensive Holding")
     mutated = _build_referee_type_trait_data(mutated_root, "Offensive Holding")
     mutated_row = mutated.game_trait.loc[mutated.game_trait["game_id"] == "g_d21"].iloc[0]
-    assert int(mutated_row["lag_type_quartile"]) == 4  # unchanged
-
-
-# ---------------------------------------------------------------------------
-# The generic joint block bootstrap
-# ---------------------------------------------------------------------------
+    assert int(mutated_row["lag_type_quartile"]) == 4
 
 
 def test_block_bootstrap_subset_gap_recovers_a_known_gap() -> None:
-    # Two blocks; flag always covers, complement never does -> every resample
-    # (however the blocks are drawn) must read exactly a 100-point gap.
     df = pd.DataFrame(
         {
             "week_block": [1, 1, 2, 2],
@@ -2230,11 +2079,6 @@ def test_block_bootstrap_subset_gap_recovers_a_known_gap() -> None:
     assert np.allclose(draws, 100.0)
 
 
-# ---------------------------------------------------------------------------
-# run_subset_bias_experiment: validation-time errors
-# ---------------------------------------------------------------------------
-
-
 def test_run_subset_bias_experiment_rejects_unknown_builder(tmp_path: Path) -> None:
     spec = experiment_spec_from_payload(
         _spec_payload(construct={"flag_builder": "not_a_real_builder", "params": {}})
@@ -2246,11 +2090,6 @@ def test_run_subset_bias_experiment_rejects_unknown_builder(tmp_path: Path) -> N
 def test_run_subset_bias_experiment_opener_grade_rejects_non_nfl_league(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # No CFB flag_builder is registered today, so the opener/league check is
-    # otherwise unreachable through the public builder registry; register a
-    # throwaway CFB builder for the duration of this test to prove the check
-    # fires on its own (rather than being shadowed by the earlier
-    # builder.leagues check, which would raise first for any real spec).
     fake_builder = FlagBuilder(
         name="cfb_test_builder",
         leagues=("cfb",),
@@ -2295,8 +2134,6 @@ def test_opener_graded_features_overwrites_spread_line_and_home_cover(
         root: Path, *, capture_kind: str, labels: tuple[str, ...], schedule: pd.DataFrame
     ) -> pd.DataFrame:
         del root, capture_kind, labels, schedule
-        # g1: opener + close both present. g2: opener present but NO close
-        # (must be dropped). g4 (POST-filtered out already) never appears.
         return pd.DataFrame(
             {
                 "game_id": ["g1", "g1", "g2"],
@@ -2317,11 +2154,9 @@ def test_opener_graded_features_overwrites_spread_line_and_home_cover(
 
     graded, note = _opener_graded_features(features, repo_root=tmp_path, market_root=tmp_path)
 
-    # Only g1 survives: g2 has an opener but no resolvable close, g3 is POST,
-    # g4 has no result.
     assert list(graded["game_id"]) == ["g1"]
     row = graded.iloc[0]
-    assert row["spread_line"] == pytest.approx(-2.0)  # the OPENER line, not the -3.0 close
+    assert row["spread_line"] == pytest.approx(-2.0)
     assert row["ats_margin"] == pytest.approx(10.0 - (-2.0))
     assert row["home_cover"] == pytest.approx(1.0)
     assert "Opener-grade population" in note
@@ -2341,9 +2176,6 @@ def test_run_subset_bias_experiment_opener_grade_matches_close_when_lines_agree(
     features["gameday"] = pd.Timestamp("2020-09-01") + pd.to_timedelta(
         7 * (features["week"] - 1), unit="D"
     )
-    # Recover a `result`/`ats_margin` pair that reproduces the fixture's own
-    # `home_cover` exactly once opener grading recomputes it from `result -
-    # spread_line` (spread_line is unchanged when opener == close).
     features["ats_margin"] = np.where(features["home_cover"] == 1.0, 1.0, -1.0)
     features["result"] = features["spread_line"] + features["ats_margin"]
     features_path = tmp_path / "features.parquet"
@@ -2469,11 +2301,6 @@ def test_run_experiment_dispatches_feature_arm_through_run_experiment(
     assert run_experiment(spec, repo_root=tmp_path) == "sentinel"
 
 
-# ---------------------------------------------------------------------------
-# A deterministic end-to-end subset_bias run on a small synthetic feature table
-# ---------------------------------------------------------------------------
-
-
 def _deterministic_features(n_weeks: int = 10) -> pd.DataFrame:
     """One home-underdog game per week that covers 80% of the time; the rest
     of the slate (three games/week, both non-favoured directions) covers
@@ -2493,10 +2320,8 @@ def _deterministic_features(n_weeks: int = 10) -> pd.DataFrame:
     for week in range(1, n_weeks + 1):
         for pair in range(4):
             game += 1
-            home_dog = pair == 0  # exactly one home-underdog game per week
+            home_dog = pair == 0
             spread_line = -3.0 if home_dog else 3.0
-            # home dogs cover 8/10 weeks; the other three games/week split
-            # evenly between the two sides so the complement nets to 50%.
             if home_dog:
                 home_cover = 1.0 if week % 5 != 0 else 0.0
             else:
@@ -2524,29 +2349,20 @@ def test_run_subset_bias_experiment_end_to_end_on_synthetic_data(tmp_path: Path)
     spec = experiment_spec_from_payload(_spec_payload(samples=2000))
     result = run_subset_bias_experiment(spec, repo_root=tmp_path, features_path=features_path)
 
-    # Deterministic pieces: hand-computable exactly.
     home_dog_rows = features.loc[features["spread_line"] < 0]
     expected_subset_cover = float(home_dog_rows["home_cover"].mean())
     assert expected_subset_cover == pytest.approx(0.8)
-    assert result.n_total == 80  # 10 weeks * 4 games * 2 sides
-    assert result.n_flag == 10  # one flagged (home) row per week
+    assert result.n_total == 80
+    assert result.n_flag == 10
     assert result.fraction_of_slate == pytest.approx(result.n_flag / result.n_total)
     assert result.effect == pytest.approx(result.raw_gap_pct * result.fraction_of_slate, abs=1e-9)
-    # The flagged side genuinely covers more, and the sign convention (+1 for
-    # home_underdog) must carry that through to raw_gap_pct unflipped.
     assert result.raw_gap_pct > 0.0
     assert result.sign == 1
 
-    # Bootstrap-derived pieces: sanity only.
     assert 0.0 <= result.primary.probability_positive <= 1.0
     assert result.primary.lower <= result.primary.estimate <= result.primary.upper
     assert result.secondary is not None
     assert result.classification.classification in ("unresolved_below_power", "refuted_mechanism")
-
-
-# ---------------------------------------------------------------------------
-# A deterministic end-to-end feature_arm run, walk_forward_outcomes mocked
-# ---------------------------------------------------------------------------
 
 
 def test_run_feature_arm_experiment_end_to_end_on_synthetic_data(
@@ -2567,9 +2383,6 @@ def test_run_feature_arm_experiment_end_to_end_on_synthetic_data(
     game_ids = [f"g{i}" for i in range(1, 9)]
     seasons = [2020] * 4 + [2021] * 4
     weeks = [1, 1, 2, 2, 1, 1, 2, 2]
-    # 6 of 8 games the home side covers; baseline always "predicts" home
-    # (prob 0.5 >= 0.5) so it is right exactly on those 6; the candidate
-    # matches the actual outcome exactly on every game.
     home_cover = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0]
 
     def fake_walk_forward_outcomes(
@@ -2595,9 +2408,9 @@ def test_run_feature_arm_experiment_end_to_end_on_synthetic_data(
             methods,
         )
         if ridge_alpha == 10.0:
-            probability = [0.5] * 8  # baseline: always "predicts" home
+            probability = [0.5] * 8
         else:
-            probability = [0.9 if c == 1.0 else 0.1 for c in home_cover]  # candidate: always right
+            probability = [0.9 if c == 1.0 else 0.1 for c in home_cover]
         predictions = pd.DataFrame(
             {
                 "game_id": game_ids,
@@ -2620,20 +2433,14 @@ def test_run_feature_arm_experiment_end_to_end_on_synthetic_data(
     result = run_feature_arm_experiment(spec, repo_root=tmp_path, features_path=features_path)
 
     assert result.paired_games == 8
-    # accuracy_improvement = candidate_correct - baseline_correct, hand-computed:
-    # 6 games both sides right (improvement 0), 2 games only the candidate is
-    # right (improvement 1 each) -> mean 2/8 = 0.25 fraction -> *100 = 25 pts.
     assert result.accuracy_primary.estimate == pytest.approx(25.0)
     assert result.accuracy_secondary is not None
     assert result.accuracy_secondary.estimate == pytest.approx(25.0)
-    # brier_improvement = (0.5-actual)^2 - (candidate_prob-actual)^2 = 0.25 -
-    # 0.01 = 0.24 for EVERY game (unscaled -- brier/log_loss are recorded raw,
-    # not *100).
     assert result.brier_primary is not None
     assert result.brier_primary.estimate == pytest.approx(0.24, abs=1e-9)
     assert result.brier_secondary is not None
     assert result.logloss_primary is not None
-    assert result.logloss_primary.estimate > 0.0  # candidate strictly better
+    assert result.logloss_primary.estimate > 0.0
     assert result.logloss_secondary is not None
     assert result.classification.classification in ("unresolved_below_power", "refuted_mechanism")
 
@@ -2716,10 +2523,6 @@ def test_run_feature_arm_experiment_reuses_an_identical_deterministic_fit(
     assert result.accuracy_primary.estimate == pytest.approx(0.0)
 
 
-# ---------------------------------------------------------------------------
-# Validation anchor: bit-for-bit reproduction of the penalty_discipline entry
-# ---------------------------------------------------------------------------
-
 _PBP_ROOT = REPO_ROOT / "data" / "pbp" / "raw"
 _FEATURES_PATH = REPO_ROOT / "data" / "processed" / "game_features.parquet"
 _LOCAL_DATA_AVAILABLE = _PBP_ROOT.is_dir() and _FEATURES_PATH.is_file()
@@ -2728,7 +2531,7 @@ _LOCAL_DATA_AVAILABLE = _PBP_ROOT.is_dir() and _FEATURES_PATH.is_file()
 @pytest.mark.skipif(
     not _LOCAL_DATA_AVAILABLE, reason="local PBP/feature data not present in this checkout"
 )
-@pytest.mark.full  # ENG-11: full-fidelity (samples=20000) reproduction on real local data
+@pytest.mark.full
 def test_penalty_discipline_reproduces_the_recorded_registry_entry() -> None:
     """Full fidelity (samples=20000, seed=20260818) against
     ``registry/weak_signals.json``'s ``penalty_discipline`` entry (effect
@@ -2777,40 +2580,9 @@ def test_penalty_discipline_reproduces_the_recorded_registry_entry() -> None:
     assert result.primary.standard_error == pytest.approx(0.6938, abs=1e-3)
     assert result.reliability == pytest.approx(0.261, abs=2e-3)
     assert result.reliability_pairs == 512
-    # This entry is recorded unresolved_below_power in the registry: the
-    # interval crosses zero, so the mechanical classifier must agree.
     assert result.classification.classification == "unresolved_below_power"
     assert result.classification.closing_ground is None
 
-
-# ---------------------------------------------------------------------------
-# Validation anchor: feature_arm, real data, an algebraic identity
-# ---------------------------------------------------------------------------
-#
-# No feature_arm-shaped entry in registry/weak_signals.json is reproducible
-# the way penalty_discipline is above: every player_family_base_vs_* entry
-# (the obvious candidates -- profile-vs-profile, market_residual method) is
-# recorded UNCONFIRMED in its own `notes` field -- "sample_blocks=141
-# UNCONFIRMED -- derived by analogy to participation_offense_defense_rapm's
-# registered value on the identical 2018-2025/2075-game universe, not
-# independently recomputed for this arm. probability_positive DERIVED via
-# normal approximation from the CSV's own interval, not re-bootstrapped."
-# (read directly from registry/weak_signals.json this session). There is
-# nothing recorded to check a fresh run against.
-#
-# Anchoring on a synthetic fixture (as the fast test above does) proves the
-# GLUE is correct but never touches `outcomes.walk_forward_outcomes` or
-# `margin.fit_margin_model` for real. This test instead anchors on an
-# algebraic identity that must hold for ANY correctly-wired feature_arm run,
-# checked on REAL data: `fit_margin_model`'s ridge fit is fully
-# deterministic (closed-form solver, no bootstrap/shuffling, fixed
-# random_state default) and the calibration-distribution split is a
-# deterministic ordered slice, so two arms with an IDENTICAL feature_profile
-# and ridge_alpha produce BIT-IDENTICAL predictions on the same training
-# data -- every paired accuracy/brier/log_loss improvement must be exactly
-# 0.0 for every game, so the estimate, interval, and probability_positive
-# must all measure exactly 0.0 (0.0 is not > 0.0). One season of `base`
-# profile (the cheapest fit) keeps this fast.
 
 _GAME_FEATURES_PATH = REPO_ROOT / "data" / "processed" / "game_features.parquet"
 _GAME_FEATURES_AVAILABLE = _GAME_FEATURES_PATH.is_file()
@@ -2819,7 +2591,7 @@ _GAME_FEATURES_AVAILABLE = _GAME_FEATURES_PATH.is_file()
 @pytest.mark.skipif(
     not _GAME_FEATURES_AVAILABLE, reason="local game_features.parquet not present in this checkout"
 )
-@pytest.mark.full  # ENG-11: reads real game_features.parquet under data/
+@pytest.mark.full
 def test_feature_arm_identical_arms_measure_exactly_zero_on_real_data() -> None:
     spec = experiment_spec_from_payload(
         {
@@ -2858,14 +2630,8 @@ def test_feature_arm_identical_arms_measure_exactly_zero_on_real_data() -> None:
         assert block_result.estimate == pytest.approx(0.0, abs=1e-9)
         assert block_result.lower == pytest.approx(0.0, abs=1e-9)
         assert block_result.upper == pytest.approx(0.0, abs=1e-9)
-        # Two identically-configured arms are a dead heat. This assertion pinned 0.0 until.
         assert block_result.probability_positive == pytest.approx(0.5)
     assert result.classification.classification == "unresolved_below_power"
-
-
-# ---------------------------------------------------------------------------
-# The registry lock
-# ---------------------------------------------------------------------------
 
 
 def test_registry_lock_is_exclusive_and_cleans_up(tmp_path: Path) -> None:
@@ -2876,13 +2642,7 @@ def test_registry_lock_is_exclusive_and_cleans_up(tmp_path: Path) -> None:
         _RegistryLock(registry_path, timeout=0.2, poll=0.02),
     ):
         pass
-    # Lock file must be removed once the holder exits.
     assert not registry_path.with_suffix(".json.lock").exists()
-
-
-# ---------------------------------------------------------------------------
-# run_experiment_cli: dry-run, real-run, single-writer, replace
-# ---------------------------------------------------------------------------
 
 
 def test_run_experiment_cli_dry_run_writes_nothing(tmp_path: Path) -> None:
@@ -2919,12 +2679,6 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
     spec_path = tmp_path / "spec.json"
     spec_path.write_text(json.dumps(_spec_payload(samples=500)), encoding="utf-8")
     registry_path = tmp_path / "weak_signals.json"
-    # `registry_root` isolates the *other* write this call makes -- the
-    # `registry/experiments/<command>/<stamp>.json` provenance row -- which is
-    # a separate root from `registry_path` (the weak-signals ledger). Passing
-    # only `registry_path` and leaving `registry_root` to its default once
-    # leaked three provenance rows into the real, git-tracked `registry/`
-    # tree; both roots must be pinned under `tmp_path` here.
     registry_root = tmp_path / "registry"
     artifacts_root = tmp_path / "artifacts"
 
@@ -2951,7 +2705,6 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
     experiment_rows = sorted((registry_root / "experiments" / "experiment-run").glob("*.json"))
     assert [path.name for path in experiment_rows] == ["20260818T000000Z.json"]
 
-    # A second, non-replacing run must refuse to silently overwrite.
     with pytest.raises(WeakSignalError, match="already recorded"):
         run_experiment_cli(
             spec_path,
@@ -2978,9 +2731,6 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
     assert second.registry_record is not None
     assert second.registry_record["recorded"] == "example_subset_bias"
 
-    # The rejected middle run still stamps a provenance row (write happens
-    # before the registry-write raises), so all three runs' rows should be
-    # present -- and, critically, still confined to `registry_root`.
     experiment_rows = sorted((registry_root / "experiments" / "experiment-run").glob("*.json"))
     assert [path.name for path in experiment_rows] == [
         "20260818T000000Z.json",

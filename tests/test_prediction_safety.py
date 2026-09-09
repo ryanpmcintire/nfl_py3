@@ -346,8 +346,6 @@ def test_outcome_card_validates_three_way_split(model_frame: pd.DataFrame) -> No
 def test_outcome_card_fails_closed_on_corrupt_three_way_fields(model_frame: pd.DataFrame) -> None:
     predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
     margin_row = predictions.index[predictions["method"].eq("fair_margin")][0]
-    # The fixture's spread_line is always a half-point (2.5 or -2.5), so any
-    # fair_margin row exercises the push-half-point invariant.
 
     out_of_bounds = predictions.copy()
     out_of_bounds.loc[margin_row, "push_probability"] = 1.5
@@ -443,7 +441,6 @@ def test_served_pool_lines_fail_closed_on_a_whole_number(
     message = str(failure.value)
     assert "pool_line_source" in message
     assert "did not come from the pool" in message
-    # Names the offending games, so the fix is obvious from the message alone.
     assert "2026_01_NO_DET" in message and "3 served games" in message
 
     mixed = pool.copy()
@@ -451,15 +448,11 @@ def test_served_pool_lines_fail_closed_on_a_whole_number(
     with pytest.raises(PredictionSafetyError, match="1 served games"):
         validate_pool_lines(mixed)
 
-    # Missing and non-finite lines are caught here too, not silently skipped.
     broken = pool.copy()
     broken.loc[0, "spread_line"] = np.nan
     with pytest.raises(PredictionSafetyError, match="must be finite"):
         validate_pool_lines(broken)
 
-    # Empty frames and an explicit opt-out (fixtures that ARE whole-number
-    # weeks on purpose) pass; the opt-out is read at call time, never frozen
-    # into a default, so a monkeypatched constant really takes effect.
     assert validate_pool_lines(pool.iloc[0:0]) == ("pool_line_source",)
     assert validate_pool_lines(feed, enforced=False) == ("pool_line_source",)
     monkeypatch.setattr(prediction_safety, "POOL_QUOTES_HALF_POINT_LINES", False)
@@ -488,7 +481,6 @@ def test_served_pool_line_check_is_scoped_to_the_served_card() -> None:
         prediction_cli.orchestrate_margin_predict
     )
 
-    # The historical three-way path keeps a real push on a whole-number line.
     archive = pd.DataFrame(
         {
             "spread_line": [3.0, 7.0, -3.0],
@@ -518,7 +510,6 @@ def test_live_margin_command_refuses_zero_injury_inputs(
     features.loc[
         features["season"].eq(2020) & features["week"].eq(1), "diff_injury_offense_unavailability"
     ] = 0.0
-    # Historical nonzero rows must not mask the live week's zero block.
     scored = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
     monkeypatch.setattr(prediction, "_load_features", lambda _: features)
     monkeypatch.setattr(prediction, "_active_model_for_compatibility", lambda: None)

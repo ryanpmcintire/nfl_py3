@@ -134,9 +134,6 @@ ROBOTS_URL = "https://www.footballzebras.com/robots.txt"
 USER_AGENT = "nfl-ats-research-snapshot/1.0 (private research; contact: local repo owner)"
 DEFAULT_DELAY_SECONDS = 2.5
 
-# MEASURED this session (2026-09-01): 16 of 17 referees on Football Zebras'
-# 2026 crew-roster page match officials.parquet's `official_name` verbatim;
-# this is the lone documented exception. See module docstring.
 REFEREE_NAME_ALIASES: dict[str, str] = {
     "ron torbert": "Ronald Torbert",
 }
@@ -161,9 +158,6 @@ PARQUET_COLUMNS = [
     "source_url",
 ]
 
-# Both quote styles are real: measured double-quoted on the week-10 2025
-# fixture, single-quoted on week-18's. `b_post-time` divs are captured but
-# discarded -- kickoff time/network is not part of this module's schema.
 SUP_TAG = re.compile(r"<sup>.*?</sup>", re.DOTALL)
 DAY_HEADER = re.compile(r"<h3>(.*?)</h3>", re.DOTALL)
 BLOCK = re.compile(

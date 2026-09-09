@@ -69,22 +69,11 @@ from nfl_ats.tiebreaker import (
     tiebreaker_report,
 )
 
-#: Filename for the persisted tiebreaker guess -- read by
-#: ``nfl_ats.board_content._load_tiebreaker_view`` (UI-20(g)) and by the
-#: board assistant's tiebreaker intent. Written BOTH beside the linked
-#: forecast artifact (``forecast_dir``, matching ``explanations.json`` /
-#: ``source_policy.json``) and beside the published card
-#: (``destination.parent``, matching ``lineage.json``), so a reader of
-#: either location finds the SAME number.
 TIEBREAKER_ARTIFACT_FILENAME = "tiebreaker.json"
 
 README_PREDICTIONS_START = "<!-- CURRENT_PREDICTIONS:START -->"
 README_PREDICTIONS_END = "<!-- CURRENT_PREDICTIONS:END -->"
 
-#: Marks the one game per regular-season week the pool scores as the Best Pick.
-#: The card is what the user reads at pick time, so the nomination has to be
-#: visible on it -- persisting it in the ledger (POL-10) answers "what did we
-#: choose?" months later, but only this answers "what do I enter today?".
 BEST_PICK_MARK = "★ "
 
 
@@ -161,13 +150,6 @@ def _publication_context(
         raise ValueError("Weekly recommendations contain a method other than the active method")
     sweep_path = forecast / "line_sweep.parquet"
     sweep = pd.read_parquet(sweep_path) if sweep_path.is_file() else pd.DataFrame()
-    # Best Pick is selected on the UN-overlaid predictions (both rules) -- the
-    # overlay must never influence which game is nominated, only which side a
-    # game's forced pick lands on. Both levers are resolved through the one
-    # shared implementation every surface uses (see nfl_ats.card_view);
-    # ``nominate_v2_fn`` threads THIS module's own (patchable) ``nominate_v2``
-    # name through rather than card_view's, so tests that monkeypatch
-    # ``publishing.nominate_v2`` keep working unchanged.
     view = resolve_card_view(
         predictions,
         sweep,
@@ -186,11 +168,6 @@ def _publication_context(
         view.overlay,
         view.arrest_overlay,
         view.production_overlay,
-        # ENG-12: the raw (overlay-applied but display-unformatted) per-game
-        # frame -- publish_active_predictions needs game_id/home_team/
-        # away_team/spread_line/home_cover_probability to build each pick's
-        # explanation, none of which survive _published_card's own
-        # Date/Matchup/ATS-prediction/Decision-score projection.
         view.predictions,
     )
 
@@ -274,13 +251,6 @@ def _tiebreaker_json_payload(
         "projected_total": guess.guess_home + guess.guess_away,
         "market_total": guess.consensus.total_line,
         "blended_total": guess.guess_total_line,
-        # MOD-17 (docs/tiebreaker.md "one lattice, one margin, one total";
-        # nfl_ats.served_total): "blended_total" above IS the served total
-        # (same value, kept for readers that predate this switch);
-        # "served_total"/"served_total_method" name it explicitly, and
-        # "comparison_total_blend_k01" always reports today's blend
-        # arithmetic regardless of which method served, so a report never
-        # hides the arm it did not serve.
         "served_total": guess.served_total,
         "served_total_method": guess.served_total_method,
         "comparison_total_blend_k01": guess.comparison_total_blend_k01,
@@ -455,12 +425,6 @@ def publish_active_predictions(
         published_at=publish_instant,
         require_fresh_arrest_overlay=True,
     )
-    # ENG-14 source outage / degraded-mode policy (docs/source_freshness_policy.md).
-    # Read-only over the local tree, evaluated AFTER `_publication_context` so the
-    # arrest gate that already refuses a missing/stale/unverified snapshot has run
-    # first and this layer reports its verified instant rather than re-deriving one.
-    # It refuses only for a source whose consumer is ALREADY fail-closed, so no
-    # currently-permitted publish path becomes newly blockable here.
     source_report = report_for_publication(
         data_root=data_root,
         artifacts_root=artifacts_root,
@@ -470,31 +434,12 @@ def publish_active_predictions(
     )
     if source_report.state == SOURCE_STATE_BLOCKED:
         raise SourceFreshnessError(source_report.block_message())
-    # ENG-09: refuse to publish a card built on a feature table whose stamped
-    # version contradicts what the active model was fit on, or on a forecast
-    # carrying an unrecognized schema version. Evaluated after the arrest and
-    # source gates above so an already-blocked publish still reports THAT
-    # reason first. legacy_unversioned (either artifact predates this
-    # contract layer) stays a warning, not a refusal -- see
-    # nfl_ats.artifact_contracts.
     publish_compatibility = check_compatible(
         active, feature_table_manifest(metadata), forecast_metadata=metadata
     )
     publish_compatibility.refuse_if_incompatible(action="publish this card")
     timestamp = publish_instant.astimezone(UTC).isoformat()
 
-    # POL-12 (2026-09-05 owner mandate: "our project over/under total needs
-    # to line up with our spread prediction"). Computed HERE, before the
-    # card markdown is assembled, so the SAME guess object backs the card's
-    # tiebreaker line, `tiebreaker.json`, and the lineage records further
-    # below -- never three independently-computed numbers that could
-    # silently disagree (`docs/tiebreaker.md`'s "one lattice, one margin,
-    # one total"). A ``TiebreakerConsistencyError`` -- the projected margin
-    # contradicts the card's own pick, or the projected total drifted more
-    # than a point from the served total -- degrades to "not published"
-    # for the tiebreaker ONLY, the same fail-open contract every other
-    # optional artifact on this publish path already follows; it never
-    # blocks the pool's card itself, which must publish regardless.
     tiebreaker_guess: TiebreakerReport | None = None
     tiebreaker_skip_reason: str | None = None
     if data_root is not None:
@@ -520,11 +465,6 @@ def publish_active_predictions(
     tiebreaker_card_line = (
         _tiebreaker_card_line(tiebreaker_guess) if tiebreaker_guess is not None else ""
     )
-    # Beside the card (destination.parent, matching lineage.json's own
-    # location) -- written unconditionally on a real guess, whether or not
-    # a forecast directory resolves below, so the reader closest to the
-    # published card (the This Week panel / the board assistant) never has
-    # to know which forecast produced it.
     tiebreaker_json_path: str | None = None
     if tiebreaker_guess is not None:
         tiebreaker_payload = _tiebreaker_json_payload(
@@ -555,9 +495,6 @@ def publish_active_predictions(
         f"Published from the synchronized "
         f"{humanize_identifier(str(active['feature_profile']))} model, "
         f"{published_at_text}.\n\n"
-        # Machine-readable publication record for ``nfl_ats.handoff`` (an HTML
-        # comment: invisible when the Markdown renders, so the reader-facing
-        # sentence above stays free of ids and ISO timestamps).
         f"<!-- publication: model_id={active['model_id']} "
         f"published_at_utc={publish_instant.astimezone(UTC).isoformat()} -->\n\n"
         + header.removeprefix(heading)
@@ -571,21 +508,6 @@ def publish_active_predictions(
         "probability for that side; it is also not historical accuracy.\n"
     )
 
-    # ENG-12: card-level explanation contract (nfl_ats.card_explanation).
-    # Additive only -- explanations.json is a NEW file written beside the
-    # forecast artifact; the inline card line is gated behind
-    # ``include_pick_explanation_lines`` (default False) so the existing
-    # card-writer tests need no changes. ``lineage.json`` and the
-    # pick-revision ledger are both OPTIONAL artifacts read read-only here
-    # and degraded from when absent, matching every other optional artifact
-    # already on this publish path.
-    # ENG-24: the played card's own lineage -- the forecast's lineage.json (or,
-    # when absent, a fresh equivalent built from the same inputs margin-predict/
-    # predict would have used) extended with the overlay and tiebreaker records
-    # that only exist at publish time. Declared here (rather than only inside
-    # the ``forecast_dir is not None`` block below) so the publish summary can
-    # report it either way -- ``None``/``()`` on the unreachable path where no
-    # forecast artifact resolves, matching ``pick_explanations_path`` below.
     played_card_lineage_path: str | None = None
     played_card_lineage_checks: tuple[str, ...] = ()
     played_card_overlay_lineage_count = 0
@@ -593,9 +515,6 @@ def publish_active_predictions(
 
     forecast_dir = active_artifact_path(artifacts_root, active, "weekly_forecast")
     if forecast_dir is not None:
-        # Beside the forecast too (matching explanations.json / source_policy.json),
-        # so nfl_ats.board_content._load_tiebreaker_view's first, preferred
-        # read location has the SAME payload just written beside the card.
         if tiebreaker_guess is not None:
             atomic_json(
                 _tiebreaker_json_payload(
@@ -613,11 +532,6 @@ def publish_active_predictions(
         except (FileNotFoundError, OSError, ValueError, KeyError):
             lineage_obj = None
 
-        # ENG-24: fall back to a freshly built lineage when the forecast never
-        # got one (an artifact predating the ENG-16 wiring, or a legacy path) --
-        # same inputs and feature contract margin-predict/predict use, so the
-        # played card is never left with NO base lineage to extend just because
-        # its forecast file happens to lack one.
         played_base_lineage = lineage_obj
         if played_base_lineage is None:
             feature_profile = metadata.get("feature_profile") or active.get("feature_profile")
@@ -641,15 +555,6 @@ def publish_active_predictions(
                     fallback_effective_timestamp=played_base_lineage.prediction_timestamp,
                 )
 
-            # The pool's tiebreaker game is identifiable from data alone (the
-            # week's last REG kickoff -- nfl_ats.tiebreaker.last_game_of_week,
-            # used by tiebreaker_report whenever season/week are given). Reuses
-            # the SAME ``tiebreaker_guess`` already computed above (never a
-            # second, independently-timed computation that could disagree
-            # with the card's own tiebreaker line / ``tiebreaker.json``); a
-            # ``None`` guess (see ``tiebreaker_skip_reason`` above) degrades
-            # to no tiebreaker lineage records, same fail-open contract as
-            # the coach-fade snapshot fallback above.
             tiebreaker_sources: tuple[TiebreakerSource, ...] = (
                 tiebreaker_lineage_sources(
                     tiebreaker_guess,
@@ -666,24 +571,12 @@ def publish_active_predictions(
                 prediction_timestamp=publish_instant,
                 generated_at=publish_instant,
             )
-            # Fail closed: a played card whose overlay/tiebreaker records are
-            # malformed, or whose decision-bearing fields are incomplete, must
-            # never reach the artifact directory (mirrors the artifact-contract
-            # and source-freshness gates already enforced above in this
-            # function).
             played_card_lineage_checks = validate_card_lineage(played_card_lineage)
             write_card_lineage(played_card_lineage, destination.parent)
             played_card_lineage_path = str(destination.parent / LINEAGE_FILENAME)
             played_card_overlay_lineage_count = len(overlay_sources)
             played_card_tiebreaker_lineage_count = len(tiebreaker_sources)
 
-        # Every game gets an entry -- not only the flipped ones -- so an
-        # unflipped pick reads as "evaluated, none fired" (measured, an
-        # empty tuple) rather than "overlay evaluation not supplied" (no_data).
-        # ``production_overlay.games``/``*_overlay.flips`` list ONLY the
-        # flipped subset by construction (see nfl_ats.four_overlay_composition
-        # / nfl_ats.coach_fade_overlay), so seeding every game id first is
-        # required, not defensive padding.
         all_game_ids = raw_predictions["game_id"].astype(str).tolist()
         overlays_by_game: dict[str, tuple[OverlayFiring, ...]] = dict.fromkeys(all_game_ids, ())
         if production_overlay is not None:
@@ -724,12 +617,6 @@ def publish_active_predictions(
                 if adapted is not None:
                     refresh_changes_by_game[str(revision_row["game_id"])] = adapted
 
-        # UI-20 explanation rewrite (2026-09-05): the "what tips it" sentence
-        # names the biggest football-terms factors off the SAME real
-        # attribution-waterfall feed the site's own dive panels read
-        # (public_board.load_waterfall_feed) -- fail-open to an empty map
-        # (every game then simply omits that one sentence) like every other
-        # optional artifact on this publish path.
         explanations = explain_card(
             cast(list[dict[str, Any]], raw_predictions.to_dict("records")),
             lineage=lineage_obj,
@@ -737,29 +624,13 @@ def publish_active_predictions(
             overlays_by_game=overlays_by_game,
             refresh_changes_by_game=refresh_changes_by_game,
             waterfall_by_game=load_waterfall_feed(artifacts_root),
-            # docs/key_line_pick_read.md: the games whose side was read off
-            # the key-number lattice say so in the "Why this pick" text.
             key_line_games=key_line_touched_games(metadata),
         )
         atomic_json(explanations_to_dict(explanations), forecast_dir / "explanations.json")
         if include_pick_explanation_lines:
             detail = detail + "\n\n" + render_explanations_markdown(explanations)
-        # ENG-34: persist the ENG-14 source-policy block beside the forecast
-        # artifact, additively -- `source_report.to_metadata()` was already
-        # computed above and embedded in `source_report.summary_line()`
-        # further down; this is the SAME object, written verbatim so a
-        # later reader (nfl_ats.board_content._load_source_policy_view)
-        # never has to re-derive it or re-run publish. Never touches
-        # metadata.json: that file's digest is recorded by the lock-day
-        # package and replay, so it must stay exactly as margin-predict
-        # wrote it.
         atomic_json(source_report.to_metadata(), forecast_dir / "source_policy.json")
 
-    # ENG-34: the same block, also written beside the PUBLISHED card next to
-    # lineage.json (ENG-24, destination.parent) -- unconditional on
-    # forecast_dir/lineage above, since source_report is computed
-    # unconditionally near the top of this function and this copy is what a
-    # reader of the published card (not the forecast artifact) opens.
     atomic_json(source_report.to_metadata(), destination.parent / "source_policy.json")
 
     atomic_text(detail, destination)
@@ -795,11 +666,6 @@ def publish_active_predictions(
             ),
         },
         "best_pick_tied": bool(nomination.active_tie_note),
-        # POL-09 2026-08-18: both rules' nominations, so the season can be
-        # audited old-vs-new even though only `best_pick_nomination_rule`'s
-        # rule is actually marked on the card. v2 is pinned/tracked
-        # separately, in full, via the challenger ledger (see
-        # nfl_ats.best_pick_nomination.record_nomination_challenger_decisions).
         "best_pick_nomination_rule": nomination.active_rule,
         "best_pick_nomination_v1_game_id": nomination.v1_game_id,
         "best_pick_nomination_v2_game_id": (
@@ -810,7 +676,6 @@ def publish_active_predictions(
         "destination": str(destination),
         "readme": str(readme_path),
         "published_at_utc": timestamp,
-        # ENG-14: which sources this card was built from, and in what state.
         "source_policy": source_report.to_metadata(),
         "overlay_enabled": overlay.enabled,
         "overlay_flip_count": overlay.flip_count,
@@ -832,32 +697,13 @@ def publish_active_predictions(
         "production_overlay_overlap_game_ids": (
             list(production_overlay.overlapping_game_ids) if production_overlay else []
         ),
-        # ENG-09: this publish summary's own schema/builder-version contract,
-        # plus the compatibility report the publish path already refused on
-        # above -- surfaced here (rather than only raising) so a caller can
-        # see legacy_unversioned warnings without them ever blocking a publish.
         **stamp(KIND_CARD, {}),
         "artifact_contract_compatibility": publish_compatibility.to_dict(),
-        # ENG-12: where the per-pick explanation contract was written, or
-        # None on the (validation-blocked) path where no forecast artifact
-        # could be resolved.
         "pick_explanations_path": (
             str(forecast_dir / "explanations.json") if forecast_dir is not None else None
         ),
-        # ENG-24: the PLAYED card's own lineage.json -- fired overlays and
-        # tiebreaker inputs on top of the forecast's own decision-bearing
-        # fields -- written beside this publish's own ``destination``, never
-        # overwriting the forecast's file. ``None``/``()``/``0`` on the
-        # (validation-blocked) path where no forecast artifact resolves, or
-        # where neither the forecast's own lineage.json nor a fresh equivalent
-        # could be built.
         "played_card_lineage_path": played_card_lineage_path,
         "played_card_lineage_checks_passed": list(played_card_lineage_checks),
-        # POL-12 (2026-09-05): the persisted tiebreaker guess -- ``None``
-        # path / a non-``None`` ``tiebreaker_skip_reason`` means the
-        # consistency check refused (or the guess was otherwise
-        # unavailable) and neither ``tiebreaker.json`` nor the card line
-        # was written; the pool's card itself still published regardless.
         "tiebreaker_json_path": tiebreaker_json_path,
         "tiebreaker_skip_reason": tiebreaker_skip_reason,
         "card_metadata": {

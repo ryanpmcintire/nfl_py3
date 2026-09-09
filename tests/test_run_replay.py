@@ -89,11 +89,6 @@ def _base_manifest(
     return manifest
 
 
-# ---------------------------------------------------------------------------
-# manifest-kind detection
-# ---------------------------------------------------------------------------
-
-
 def test_unrecognized_manifest_reports_unknown_kind_and_fails(tmp_path: Path) -> None:
     manifest_path = tmp_path / "metadata.json"
     manifest_path.write_text(json.dumps({"nothing": "recognizable"}), encoding="utf-8")
@@ -103,11 +98,6 @@ def test_unrecognized_manifest_reports_unknown_kind_and_fails(tmp_path: Path) ->
     assert report.manifest_kind == KIND_UNKNOWN
     assert report.ok is False
     assert any("Unrecognized manifest shape" in note for note in report.notes)
-
-
-# ---------------------------------------------------------------------------
-# digest verification
-# ---------------------------------------------------------------------------
 
 
 def test_feature_table_digest_match(tmp_path: Path) -> None:
@@ -131,8 +121,6 @@ def test_feature_table_digest_mismatch_is_reported_and_fails(tmp_path: Path) -> 
     feature_table_path = tmp_path / "game_features.parquet"
     _write_feature_table(feature_table_path)
     recorded_digest = sha256_file(feature_table_path)
-    # Mutate the file after the digest was recorded, exactly the tamper case
-    # this whole command exists to catch.
     pd.DataFrame({"game_id": ["DIFFERENT"], "season": [2099]}).to_parquet(
         feature_table_path, index=False
     )
@@ -160,17 +148,11 @@ def test_feature_table_missing_from_disk_is_reported(tmp_path: Path) -> None:
 
     assert report.digest_verification["ok"] is False
     assert len(report.digest_verification["missing"]) == 1
-    # Recompute must refuse to run from unverified inputs.
-    assert report.recompute is None  # recompute=False in this test
+    assert report.recompute is None
     report2 = replay_manifest(manifest_path, output_root=tmp_path / "out2", recompute=True)
     assert report2.recompute is not None
     assert report2.recompute["attempted"] is False
     assert "digest verification failed" in str(report2.recompute["reason"])
-
-
-# ---------------------------------------------------------------------------
-# environment comparison: cosmetic vs. reproducibility-affecting
-# ---------------------------------------------------------------------------
 
 
 def test_cosmetic_environment_difference_does_not_fail_replay(tmp_path: Path) -> None:
@@ -179,7 +161,6 @@ def test_cosmetic_environment_difference_does_not_fail_replay(tmp_path: Path) ->
     digest = sha256_file(feature_table_path)
 
     recorded_env = copy.deepcopy(environment_report())
-    # platform.release is on environment_report's own cosmetic allow-list.
     recorded_env["platform"]["release"] = str(recorded_env["platform"].get("release")) + "-modified"
 
     manifest = _base_manifest(
@@ -204,9 +185,6 @@ def test_reproducibility_affecting_environment_difference_fails_replay(tmp_path:
     digest = sha256_file(feature_table_path)
 
     recorded_env = copy.deepcopy(environment_report())
-    # python.minor is NOT on the cosmetic allow-list, so it defaults to
-    # reproducibility_affecting -- a different interpreter minor version can
-    # change which code path runs.
     recorded_env["python"]["minor"] = int(recorded_env["python"]["minor"]) + 1
 
     manifest = _base_manifest(
@@ -238,13 +216,7 @@ def test_manifest_with_no_environment_block_skips_comparison(tmp_path: Path) -> 
 
     assert report.environment_comparison["available"] is False
     assert any("environment comparison skipped" in note for note in report.notes)
-    # Vacuously true: nothing to compare, so this alone never fails replay.
     assert report.environment_comparison["reproducibility_affecting"] is False
-
-
-# ---------------------------------------------------------------------------
-# git revision
-# ---------------------------------------------------------------------------
 
 
 def test_git_revision_match_is_reported(tmp_path: Path) -> None:
@@ -285,15 +257,7 @@ def test_git_revision_mismatch_is_reported_but_does_not_gate_ok(tmp_path: Path) 
 
     assert report.git_revision["revision_match"] is False
     assert any("git revision mismatch" in note for note in report.notes)
-    # Per the CLI exit-code contract: digests verify, no environment block to
-    # compare, recompute not requested -- a revision mismatch alone must not
-    # flip ok to False.
     assert report.ok is True
-
-
-# ---------------------------------------------------------------------------
-# recompute round-trip
-# ---------------------------------------------------------------------------
 
 
 def _recorded_predictions() -> pd.DataFrame:
@@ -333,8 +297,6 @@ def test_recompute_matches_when_regeneration_is_identical(tmp_path: Path) -> Non
     manifest_path = _recompute_manifest(tmp_path, recorded)
 
     def mock_generate(feature_table: pd.DataFrame, configuration: dict[str, Any]) -> pd.DataFrame:
-        # Ignores its inputs on purpose: this is a mock of the fitted model,
-        # not a re-implementation of score_outcome_week.
         return recorded.copy()
 
     report = replay_manifest(
@@ -350,7 +312,6 @@ def test_recompute_matches_when_regeneration_is_identical(tmp_path: Path) -> Non
     assert report.recompute["metadata_comparison"]["match"] is True
     assert report.recompute["match"] is True
     assert report.ok is True
-    # Never written outside output_root.
     assert (tmp_path / "out" / "regenerated_predictions.csv").is_file()
     assert not (tmp_path / "regenerated_predictions.csv").is_file()
 

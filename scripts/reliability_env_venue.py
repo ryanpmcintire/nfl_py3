@@ -89,11 +89,6 @@ from nfl_ats.experiment_runner import _opener_graded_features  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 from nfl_ats.weak_signals import default_registry_path, load_registry  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# The 27-entry manifest, grouped by builder family (read from
-# <scratchpad>/orchD_manifest.json, key groups.env_venue.entries, 2026-09-01).
-# ---------------------------------------------------------------------------
-
 ALTITUDE_ENTRIES = [
     "altitude_deficit_4000ft",
     "altitude_deficit_4000ft_division",
@@ -157,12 +152,6 @@ def target_entries() -> dict[str, dict[str, Any]]:
             "source": signal.source,
         }
     return out
-
-
-# ---------------------------------------------------------------------------
-# Hazard (ii) probe: does a negative METHOD_EXPOSURE reliability survive a
-# random (non-chronological) within-unit half split?
-# ---------------------------------------------------------------------------
 
 
 def random_half_probe(
@@ -265,20 +254,12 @@ def roof_open_frame(frame: pd.DataFrame, *, retractable_teams: frozenset[str]) -
     return retract
 
 
-# ---------------------------------------------------------------------------
-# Altitude family
-# ---------------------------------------------------------------------------
-
-
 def altitude_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     schedules = default_schedules()
     elevations = altitude_screen.load_elevations(altitude_screen.DEFAULT_ELEVATIONS_PATH)
     df = altitude_screen.load_population(schedules, elevations)
     cells = {c["name"]: c for c in altitude_screen.build_cells(df)}
 
-    # --- hazard (i) diagnostic: raw venue elevation is constant within a
-    # venue-season by construction (a stadium's elevation never changes
-    # week to week). Measured once, never recorded.
     elev_diag = force_diagnostic(
         rlib.measure_reliability(
             df, "venue_elev_ft", method=rlib.METHOD_VENUE, unit_col="stadium", seasons=(2009, 2025)
@@ -293,11 +274,6 @@ def altitude_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
         ),
     )
 
-    # --- recorded quantity: altitude_deficit_ft (venue elevation minus that
-    # week's visitor's own modal home elevation), unit = stadium ("venue" per
-    # the group's METHOD_VENUE convention -- SAID here: stadium, available on
-    # this frame). Windows shared across cells whose registry season range
-    # matches, per the attention_battery/graph_team_stat family precedent.
     windows = sorted(
         {entries[n]["seasons"] for n in entries if n.startswith("altitude_deficit_4000ft")}
     )
@@ -322,8 +298,6 @@ def altitude_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
         entries["altitude_deficit_4000ft_era_2018_2025"]["seasons"]
     ]
 
-    # --- den_home_vs_own_conference / mexico_city_neutral: categorical
-    # scheduling flags with no continuous parent -> EXPOSURE, team-season unit.
     for name in ("den_home_vs_own_conference", "mexico_city_neutral"):
         lo, hi = entries[name]["seasons"]
         flag = cells[name]["flag"]
@@ -345,8 +319,6 @@ def altitude_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
         measured["random_half_probe"] = probe
         entry_measurements[name] = measured
 
-    # --- half-season effect replication + battery correlation, per cell,
-    # reported only (never recorded) per reliability_lib.half_season_replication.
     half_season: dict[str, Any] = {}
     for name, cell in cells.items():
         games = df.loc[cell["population"]]
@@ -354,8 +326,6 @@ def altitude_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
         half_season[name] = rlib.half_season_replication(games, flag, outcome_col="home_cover")
     battery_corr = rlib.battery_replication_correlation(half_season)
 
-    # --- positive controls: venue-unit (all 32 team stadiums) + the
-    # den/mexico team-week frame as a small-N team-unit sanity check.
     controls = {
         "venue_unit_all_stadiums_2009_2025": rlib.positive_control(df, unit_col="stadium"),
     }
@@ -376,11 +346,6 @@ def altitude_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
-# Roof family
-# ---------------------------------------------------------------------------
-
-
 def roof_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     schedules = default_schedules()
     merged = roof_decision_screen.load_merged(roof_decision_screen.DEFAULT_FEATURES, schedules)
@@ -394,19 +359,10 @@ def roof_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     opener_merged, opener_note = _opener_graded_features(merged, repo_root=REPO, market_root=None)
     opener_long = roof_decision_screen.build_long_table(opener_merged, dome_seasons)
 
-    # --- recorded quantity: roof_open (this venue's own retractable-roof
-    # state this week), unit = home_team ("venue" -- SAID here: home_team,
-    # because build_long_table carries no separate stadium column and every
-    # one of the 5 retractable teams held one venue for the whole window).
     retract_close = roof_open_frame(long_df, retractable_teams=RETRACTABLE_TEAMS)
     windows = sorted({entries[n]["seasons"] for n in ROOF_ENTRIES})
     roof_by_window: dict[tuple[int, int], dict[str, Any]] = {}
     for w in windows:
-        # 2020-2025 cells actually score OPENER-grade population for two of
-        # the three; the roof_open TRAIT itself (a stadium fact) is
-        # unaffected by opener vs close grading, so one measurement per
-        # SEASON WINDOW on the close-grade population covers both grades --
-        # documented explicitly, not silently assumed.
         roof_by_window[w] = rlib.measure_reliability(
             retract_close, "roof_open", method=rlib.METHOD_VENUE, unit_col="home_team", seasons=w
         )
@@ -465,18 +421,10 @@ def roof_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
-# Surface familiarity family
-# ---------------------------------------------------------------------------
-
-
 def surface_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     schedules = default_schedules()
     df = surface_screen.load_population(schedules)
 
-    # --- hazard (i) diagnostic: raw venue playing surface (turf vs grass) is
-    # constant within a home team's venue-season by construction. Measured
-    # once, never recorded.
     diag_frame = df.assign(is_turf=(df["surface_norm"] == "turf").astype(float))
     surface_diag = force_diagnostic(
         rlib.measure_reliability(
@@ -495,9 +443,6 @@ def surface_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
         ),
     )
 
-    # --- recorded quantity 1: within TURF-venue games, is this week's visitor
-    # grass-modal (arm_mismatched from build_pair) -- varies weekly via the
-    # opponent on the schedule. Unit = home_team (venue).
     r1_pair_full = surface_screen.build_pair(df, venue_surface="turf", mismatch_surface="grass")
     r2_pair_full = surface_screen.build_pair(df, venue_surface="grass", mismatch_surface="turf")
 
@@ -544,15 +489,6 @@ def surface_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
         "surface_familiarity_r3_era_2018_2025": turf_by_window[
             entries["surface_familiarity_r3_era_2018_2025"]["seasons"]
         ],
-        # These three registry cells score a MODEL feature / an opener-grade
-        # accuracy delta, not a flag-vs-complement gap directly -- but their
-        # feature IS, byte-for-byte, surface_switch_flag ==
-        # (away_modal_surface=='grass') & (surface_norm=='turf'), which on the
-        # turf-venue population is exactly arm_mismatched above (verified:
-        # src/nfl_ats/surface_switch_tilt_overlay.py:169-227, ported verbatim
-        # from this same screen's build). Reliability is inherited from that
-        # shared construct, not independently re-measured on a model-accuracy
-        # column (there is no "trait" behind an accuracy delta to split).
         "surface_switch_feature_arm": turf_by_window[
             entries["surface_switch_feature_arm"]["seasons"]
         ],
@@ -623,11 +559,6 @@ def surface_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
             "identical construct. Read 2026-09-01."
         ),
     }
-
-
-# ---------------------------------------------------------------------------
-# Environmental exposure family
-# ---------------------------------------------------------------------------
 
 
 def environmental_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
@@ -728,11 +659,6 @@ def environmental_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
-# Venue milestone family
-# ---------------------------------------------------------------------------
-
-
 def milestone_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
     schedules = default_schedules()
     df = venue_milestone_screen.load_population(schedules)
@@ -784,11 +710,6 @@ def milestone_family(entries: dict[str, dict[str, Any]]) -> dict[str, Any]:
             "Read 2026-09-01."
         ),
     }
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 
 def _clean(obj: Any) -> Any:

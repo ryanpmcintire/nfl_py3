@@ -117,10 +117,6 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-# ---------------------------------------------------------------------------
-# Retention classes
-# ---------------------------------------------------------------------------
-
 
 class RetentionClass(StrEnum):
     """The four retention classes ENG-19 asks for. See module docstring."""
@@ -136,7 +132,6 @@ class RetentionClassSpec:
     name: RetentionClass
     description: str
     prunable: bool
-    # None: scratch (any age) / evidence & point-in-time-capture (never -- see `prunable`)
     min_age_days: int | None
 
 
@@ -180,26 +175,8 @@ SCRATCH_PATH_SEGMENTS = frozenset(
 
 POINT_IN_TIME_TREES = frozenset({"data/raw", "data/market", "data/players"})
 
-# Individual artifacts/ families that are point-in-time-capture even though
-# they carry no literal "raw" path segment and live in the mixed `artifacts`
-# tree. `refresh_triggers` (ENG-08, src/nfl_ats/refresh_triggers.py, added
-# concurrently this session) records exactly when/why a late-week pick
-# refresh fired -- that record cannot be reconstructed after the fact any
-# more than a market snapshot can, so it gets the same never-prune guarantee
-# as data/market/raw. Ancestor-inclusive: any run whose `rel` equals one of
-# these or starts with it plus "/" matches, the same shape as the doc-
-# reference protection check (`_protection_for`) in scripts/artifact_retention.py.
 POINT_IN_TIME_ARTIFACT_PREFIXES = frozenset({"artifacts/refresh_triggers"})
 
-# By contrast, `artifacts/prospective_scorecards/` (ENG-06,
-# src/nfl_ats/prospective_scorecard.py, also added concurrently this
-# session) is deliberately NOT listed here or in ALWAYS_PROTECTED: it holds
-# derived summary scorecards computed FROM the evidence-protected
-# `artifacts/prospective/` ledgers, so it is re-derivable from those ledgers
-# at any time -- the textbook `reproducible` case. No code change was needed
-# for it to classify that way; `classify` already falls through to
-# `reproducible` for anything that is not evidence, a point-in-time capture,
-# or scratch. Named here only so the omission reads as a decision, not a gap.
 
 _reproducible_min_age = RETENTION_CLASSES[RetentionClass.REPRODUCIBLE].min_age_days
 assert _reproducible_min_age is not None
@@ -260,13 +237,6 @@ def classify(tree: str, rel: str, *, protected: bool) -> RetentionClass:
     return RetentionClass.REPRODUCIBLE
 
 
-# ---------------------------------------------------------------------------
-# Disk budget
-# ---------------------------------------------------------------------------
-
-# Measured 2026-09-04 (`python scripts/artifact_retention.py --report --json`;
-# see the dated section in docs/artifact_retention.md this was copied from).
-# A dated snapshot, not a formula -- recompute when this policy is revisited.
 BUDGET_BASELINE_BYTES: dict[str, int] = {
     "artifacts": 2_532_357_848,
     "data/raw": 841_161_362,
@@ -276,7 +246,6 @@ BUDGET_BASELINE_BYTES: dict[str, int] = {
     "data/other": 1_785_502_457,
 }
 
-# See module docstring, "Disk budget", for the derivation.
 DEFAULT_BUDGET_MULTIPLIER = 5.0
 
 
@@ -287,11 +256,6 @@ def budget_bytes_for_tree(tree: str, multiplier: float = DEFAULT_BUDGET_MULTIPLI
     if baseline is None:
         return None
     return round(baseline * multiplier)
-
-
-# ---------------------------------------------------------------------------
-# Read-only filesystem probes
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -316,14 +280,6 @@ def measure_free_space(path: Path) -> DiskUsage | None:
     return DiskUsage(int(usage.total), int(usage.used), int(usage.free))
 
 
-# The off-device mirror `scripts/backup_data.py` writes to by default
-# (`DEFAULT_DESTS[0]` in that script) and the manifest file name it writes on
-# every apply-mode run (`MANIFEST_NAME` in that script). Duplicated here
-# rather than imported because `scripts/` is not part of the installed
-# `nfl_ats` package `src/` can import from (same constraint documented by
-# several `[[tool.mypy.overrides]]` entries in pyproject.toml for the reverse
-# direction); kept as two named constants, not inlined, so a future rename in
-# `backup_data.py` is a one-line fix here, not a re-derivation.
 MIRROR_DEST_DEFAULT = Path(r"E:\nfl_data_backup")
 MIRROR_MANIFEST_NAME = "backup_manifest.json"
 

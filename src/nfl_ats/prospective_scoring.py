@@ -77,11 +77,6 @@ from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.provenance import sha256_file
 
-# ---------------------------------------------------------------------------
-# 1. Settlement
-# ---------------------------------------------------------------------------
-
-#: Columns any ledger must provide before it can be settled.
 SETTLEMENT_REQUIRED_COLUMNS: tuple[str, ...] = (
     "game_id",
     "season",
@@ -92,7 +87,6 @@ SETTLEMENT_REQUIRED_COLUMNS: tuple[str, ...] = (
     "decision_home_spread",
 )
 
-#: The grade the pool actually scores, and its secondary companion.
 DECISION_GRADE = "decision_line"
 CLOSE_GRADE = "close_line"
 
@@ -205,8 +199,6 @@ def settle_prospective_picks(
     ):
         margin = scored["result"] - line
         scored[f"ats_margin_at_{grade}"] = margin
-        # ``pick_correct`` treats only a ZERO margin as a push; an unsettled NaN
-        # margin would come back 0.0/1.0, so mask it explicitly here.
         scored[f"correct_at_{grade}"] = pick_correct(pick_home, margin).where(margin.notna())
         scored[f"status_at_{grade}"] = _settlement_status(margin)
     return scored.reset_index(drop=True)
@@ -346,15 +338,6 @@ def prospective_week_summary(settled: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# 2. The challenger ledger
-# ---------------------------------------------------------------------------
-
-#: One row per (challenger, game). ``config_fingerprint`` and ``source_sha256``
-#: pin the row to the exact configuration and card it came from, which is what
-#: makes silent mid-season retuning of a challenger detectable rather than
-#: invisible (see ``margin-predict --freeze`` note in the module docstring of
-#: ``docs/mod07_stack.md``).
 CHALLENGER_DECISION_COLUMNS: tuple[str, ...] = (
     "recorded_at_utc",
     "challenger_id",
@@ -376,22 +359,8 @@ CHALLENGER_DECISION_COLUMNS: tuple[str, ...] = (
     "edge",
 )
 
-#: Only challengers in this status have weekly picks recorded. Everything else
-#: in the registry (``CLOSED_BEFORE_ACTIVATION`` and friends) is deliberately
-#: inert -- a closed lead has no prospective role.
 ACTIVE_CHALLENGER_STATUS = "ACTIVE_PROSPECTIVE"
 
-#: The configuration fields that define a challenger. Two cards agreeing on all
-#: of these are the same model on the same table; disagreeing on any one is a
-#: different hypothesis and must not accumulate under one challenger id.
-#:
-#: ``feature_table`` is deliberately compared by FILE NAME, not by content
-#: digest. The tables are rebuilt every Tuesday to include the new week, so the
-#: digest changes weekly by design -- pinning it would reject every week after
-#: the first, and pinning nothing would let a challenger silently move to a
-#: different table under the same id. The observed digest is still recorded on
-#: every ledger row (``feature_table_sha256``) so the actual input to each
-#: week's picks stays auditable.
 CONFIG_FINGERPRINT_KEYS: tuple[str, ...] = (
     "method",
     "target",
@@ -426,8 +395,6 @@ def _normalise_config(config: Mapping[str, Any]) -> dict[str, Any]:
         elif key in ("ridge_alpha", "min_edge"):
             normalised[key] = round(float(value), 10)
         elif key == "feature_table":
-            # Registrations carry a repo-relative path, artifacts an absolute
-            # one; only the file name is comparable across both and machines.
             normalised[key] = PurePath(str(value).replace("\\", "/")).name
         else:
             normalised[key] = str(value)

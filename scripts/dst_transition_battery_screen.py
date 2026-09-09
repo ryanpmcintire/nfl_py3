@@ -84,9 +84,9 @@ BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260826
 SEASON_START = 2009
 SEASON_END = 2025
-EASTBOUND_HOURS = 2.0  # matches travel_rest_eastbound_multizone's own threshold
-WINDOW_DAYS = 7  # [0, 6] inclusive -- a true calendar week starting at the transition
-PLACEBO_OFFSET_DAYS = 21  # 3 weeks before the real transition, zero overlap (measured)
+EASTBOUND_HOURS = 2.0
+WINDOW_DAYS = 7
+PLACEBO_OFFSET_DAYS = 21
 
 
 def _latest_schedules() -> Path:
@@ -97,11 +97,6 @@ def _latest_schedules() -> Path:
 
 
 DEFAULT_SCHEDULES = _latest_schedules()
-
-
-# ---------------------------------------------------------------------------
-# 1. Transition dates (measured via zoneinfo, docs/dst_transition_battery.md sec 1)
-# ---------------------------------------------------------------------------
 
 
 def _scan_transition(year: int, start: date, end: date) -> date:
@@ -153,14 +148,9 @@ def latest_postseason_gameday_by_season(schedules_path: Path) -> pd.Series:
     return post.groupby("season")["gameday"].max()
 
 
-# ---------------------------------------------------------------------------
-# 2. Population + derived DST columns
-# ---------------------------------------------------------------------------
-
-
 def build_population(schedules_path: Path, coords_path: Path) -> pd.DataFrame:
     coords = load_coords(coords_path)
-    df = load_population(schedules_path, coords)  # REG SEASON_START-SEASON_END, home_cover, etc.
+    df = load_population(schedules_path, coords)
     df = df.loc[df["season"].between(SEASON_START, SEASON_END)].reset_index(drop=True)
 
     seasons = sorted(int(s) for s in df["season"].unique())
@@ -182,11 +172,6 @@ def build_population(schedules_path: Path, coords_path: Path) -> pd.DataFrame:
     df.attrs["fall_by_season"] = {str(k): v.isoformat() for k, v in fall_by_season.items()}
     df.attrs["spring_by_season"] = {str(k): v.isoformat() for k, v in spring_by_season.items()}
     return df
-
-
-# ---------------------------------------------------------------------------
-# 3. Cells (docs/dst_transition_battery.md section 4)
-# ---------------------------------------------------------------------------
 
 
 def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
@@ -274,11 +259,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     expected = 5
     assert len(cells) == expected, f"expected {expected} predeclared cells, got {len(cells)}"
     return cells
-
-
-# ---------------------------------------------------------------------------
-# 4. Bootstrap (algorithm-identical to prior batteries in this family)
-# ---------------------------------------------------------------------------
 
 
 def summarize_cell(
@@ -371,11 +351,6 @@ def score_cell(
     }
 
 
-# ---------------------------------------------------------------------------
-# 5. Main
-# ---------------------------------------------------------------------------
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--schedules", type=Path, default=DEFAULT_SCHEDULES)
@@ -402,11 +377,6 @@ def main() -> None:
         )
 
     print("\n=== section 2 diagnostic: spring-transition/postseason overlap ===")
-    # A season's postseason plays out in Jan/Feb of the FOLLOWING calendar
-    # year, so the relevant spring transition is spring_transition_date of
-    # the postseason game's own calendar year -- not the season number's own
-    # (pre-season) March date, which would compare against a transition that
-    # already passed before that season even started.
     latest_post = latest_postseason_gameday_by_season(args.schedules)
     n_overlap = 0
     for season in sorted(int(s) for s in df["season"].unique()):

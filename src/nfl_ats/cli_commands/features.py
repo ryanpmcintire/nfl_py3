@@ -106,12 +106,6 @@ def _add_injury_timestamp_fallback_arg(parser: argparse.ArgumentParser) -> None:
 def _cmd_build_features(args: argparse.Namespace) -> None:
     snapshot = _resolve_snapshot(args.snapshot)
     schedules, team_stats = load_snapshot(snapshot)
-    # The pool grades on the spread printed on its own contest board, not on
-    # nflverse's close (docs/splash_lines.md). Applying it HERE -- to the
-    # schedules frame, before a single feature is derived -- is what makes
-    # every downstream table (game_features_pbp, _player, _weak_stack and the
-    # research tables cut from them) inherit the graded number without a
-    # change of its own. Weeks with no capture keep nflverse's line exactly.
     applied: tuple[AppliedDecisionLines, ...] = ()
     if args.splash_decision_lines == "auto":
         schedules, applied = apply_decision_lines(
@@ -149,14 +143,7 @@ def _cmd_build_features(args: argparse.Namespace) -> None:
         "destination": str(destination),
     }
     if applied:
-        # Rides the ENG-22 inheritance chain: inherit_source_snapshots copies
-        # this block into every derived table's source_snapshots block, so the
-        # card -- built several enrichment steps downstream -- can still say
-        # which board its line came from.
         metadata[DECISION_LINES_KEY] = decision_lines_manifest_block(applied)
-    # ENG-09: stamp the manifest with this contract layer's schema/builder
-    # version so a later check_compatible() call has something to compare
-    # against; additive, never changes an existing manifest key.
     metadata = stamp(KIND_FEATURE_TABLE, metadata)
     atomic_json(metadata, destination.with_name("game_features.manifest.json"))
     _print_json(metadata)
@@ -193,13 +180,9 @@ def _cmd_build_pbp_features(args: argparse.Namespace) -> None:
         "pbp_rows": len(pbp),
         "destination": str(destination),
     }
-    # ENG-22: carry the base nflverse source_snapshot (and anything else
-    # game_features.manifest.json already inherited) forward, since this
-    # manifest otherwise only records source_features -- a path.
     source_snapshots = inherit_source_snapshots([manifest_path_for(args.features)])
     if source_snapshots:
         metadata["source_snapshots"] = source_snapshots
-    # ENG-09: see the comment at _cmd_build_features's stamp() call.
     metadata = stamp(KIND_FEATURE_TABLE, metadata)
     atomic_json(metadata, destination.with_name("game_features_pbp.manifest.json"))
     _print_json(metadata)
@@ -276,11 +259,9 @@ def _cmd_build_qb_features(args: argparse.Namespace) -> None:
         ),
         "destination": str(destination),
     }
-    # ENG-22: see the comment at _cmd_build_pbp_features's inherit_source_snapshots call.
     source_snapshots = inherit_source_snapshots([manifest_path_for(args.features)])
     if source_snapshots:
         metadata["source_snapshots"] = source_snapshots
-    # ENG-09: see the comment at _cmd_build_features's stamp() call.
     metadata = stamp(KIND_FEATURE_TABLE, metadata)
     atomic_json(metadata, destination.with_name("game_features_qb.manifest.json"))
     _print_json(metadata)
@@ -314,8 +295,6 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         offseason_retention=args.offseason_retention,
         value_span=args.value_span,
         value_prior_snaps=args.value_prior_snaps,
-        # ENG-23: fills {side}_injury_observed_at when no team-specific
-        # revision is visible, instead of leaving it null forever.
         injury_snapshot_captured_at=parse_snapshot_capture(player_snapshot.snapshot_id),
         injury_timestamp_fallback=args.injury_timestamp_fallback,
     )
@@ -357,11 +336,9 @@ def _cmd_build_player_features(args: argparse.Namespace) -> None:
         "games_with_both_player_value_states": int(both_player_values.sum()),
         "destination": str(destination),
     }
-    # ENG-22: see the comment at _cmd_build_pbp_features's inherit_source_snapshots call.
     source_snapshots = inherit_source_snapshots([manifest_path_for(args.features)])
     if source_snapshots:
         metadata["source_snapshots"] = source_snapshots
-    # ENG-09: see the comment at _cmd_build_features's stamp() call.
     metadata = stamp(KIND_FEATURE_TABLE, metadata)
     atomic_json(metadata, destination.with_name(f"{destination.stem}.manifest.json"))
     _print_json(metadata)
@@ -405,7 +382,6 @@ def _cmd_build_participation_features(args: argparse.Namespace) -> None:
         offseason_retention=args.offseason_retention,
         value_span=args.value_span,
         value_prior_snaps=args.value_prior_snaps,
-        # ENG-23: see the identical comment at _cmd_build_player_features's call.
         injury_snapshot_captured_at=parse_snapshot_capture(player_snapshot.snapshot_id),
         injury_timestamp_fallback=args.injury_timestamp_fallback,
     )
@@ -457,11 +433,9 @@ def _cmd_build_participation_features(args: argparse.Namespace) -> None:
             "total_seconds": perf_counter() - command_started,
         },
     }
-    # ENG-22: see the comment at _cmd_build_pbp_features's inherit_source_snapshots call.
     source_snapshots = inherit_source_snapshots([manifest_path_for(args.features)])
     if source_snapshots:
         metadata["source_snapshots"] = source_snapshots
-    # ENG-09: see the comment at _cmd_build_features's stamp() call.
     metadata = stamp(KIND_FEATURE_TABLE, metadata)
     atomic_json(metadata, args.destination.with_name(f"{args.destination.stem}.manifest.json"))
     _print_json(metadata)
@@ -481,14 +455,6 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         depth_snapshot = None
         depth_charts = None
     injuries, rosters, snaps = load_player_snapshot(player_snapshot)
-    # ENG-39: forward the requested fallback here too, not just to the
-    # enrich_with_player_features call below -- build_availability_outcomes
-    # (fed by canonical_injury_rows) is a separate consumer of the injuries
-    # frame and would otherwise silently keep training the learned
-    # availability rates on the "drop" default's zeroed-out 2025+ rows. A
-    # schedule is only built (and only needed) when "week_proxy" is
-    # requested on a frame that doesn't already carry the snapshot's own
-    # basis -- canonicalize_injuries is idempotent on a frame that does.
     availability_injury_schedule = (
         features.loc[:, ["season", "week", "home_team", "away_team", "kickoff"]].copy()
         if args.injury_timestamp_fallback == "week_proxy"
@@ -534,7 +500,6 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         offseason_retention=args.offseason_retention,
         value_span=args.value_span,
         value_prior_snaps=args.value_prior_snaps,
-        # ENG-23: see the identical comment at _cmd_build_player_features's call.
         injury_snapshot_captured_at=parse_snapshot_capture(player_snapshot.snapshot_id),
         injury_timestamp_fallback=args.injury_timestamp_fallback,
     )
@@ -580,11 +545,9 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
             "total_seconds": perf_counter() - command_started,
         },
     }
-    # ENG-22: see the comment at _cmd_build_pbp_features's inherit_source_snapshots call.
     source_snapshots = inherit_source_snapshots([manifest_path_for(args.features)])
     if source_snapshots:
         metadata["source_snapshots"] = source_snapshots
-    # ENG-09: see the comment at _cmd_build_features's stamp() call.
     metadata = stamp(KIND_FEATURE_TABLE, metadata)
     atomic_json(metadata, args.destination.with_name(f"{args.destination.stem}.manifest.json"))
     _print_json(metadata)

@@ -30,17 +30,7 @@ PYPROJECT = REPO_ROOT / "pyproject.toml"
 SRC_DIR = REPO_ROOT / "src"
 SCRIPTS_DIR = REPO_ROOT / "scripts"
 
-# ---------------------------------------------------------------------------
-# (a) No dependency matches a known wagering-client package name.
-# ---------------------------------------------------------------------------
 
-# inferred: plausible PyPI/package names for wagering clients of the major
-# US sportsbooks and exchanges, plus generic wagering-client names, guessed
-# from the brand/product names themselves -- none of these packages is
-# claimed to exist on PyPI or to have ever been considered as a dependency.
-# The point of the denylist is to fail loudly the day a dependency matching
-# one of these names is EVER added, not to prove today's absence of
-# something nobody proposed.
 WAGER_CLIENT_DENYLIST = {
     "draftkings",
     "fanduel",
@@ -94,9 +84,6 @@ def _dependency_names() -> set[str]:
 
     normalized: set[str] = set()
     for spec in raw_specs:
-        # PEP 508 requirement string: keep the bare distribution name, drop
-        # any version specifier/marker/extras, fold - and _ together (PyPI
-        # treats them as equivalent).
         name = re.split(r"[<>=!~\[; ]", spec, maxsplit=1)[0].strip()
         normalized.add(name.lower().replace("_", "-"))
     return normalized
@@ -113,23 +100,11 @@ def test_no_dependency_matches_a_known_wagering_client_name() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# (b) No wager-PLACEMENT verb outside the read-only odds client.
-# ---------------------------------------------------------------------------
-
 WAGER_PLACEMENT_PATTERN = re.compile(
     r"\bplace_bet\b|\bplace_wager\b|\bsubmit_bet\b|\bplace_order\b"
     r"""|['"]/bets['"]|\.post\([^)]*['"]/bets"""
 )
 
-# nfl_ats.odds: pure payout/vig ARITHMETIC on paper decisions (`choose_bet`,
-# `settle_bet`, `implied_probability`) -- no network call anywhere in the
-# module [read, src/nfl_ats/odds.py].
-# nfl_ats.odds_backfill / nfl_ats.market_data: The Odds API historical/live
-# quote FETCH only -- `urllib.request.Request` with no `data=` argument,
-# i.e. always a GET, never a POST [read, src/nfl_ats/odds_backfill.py:224-226,
-# src/nfl_ats/market_data.py:249-251]. This project's only odds integration
-# is read-only market quotes; it never places a wager.
 ALLOWLISTED_READONLY_ODDS_MODULES = {
     SRC_DIR / "nfl_ats" / "odds.py",
     SRC_DIR / "nfl_ats" / "odds_backfill.py",
@@ -176,10 +151,6 @@ def test_allowlisted_odds_modules_actually_exist_and_stay_read_only() -> None:
             "wager-placement verb; re-audit before keeping it allowlisted"
         )
 
-
-# ---------------------------------------------------------------------------
-# (c) A paper-only/limitations statement exists in docs/.
-# ---------------------------------------------------------------------------
 
 RESPONSIBLE_USE_DOC = REPO_ROOT / "docs" / "responsible_use.md"
 

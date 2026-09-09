@@ -16,10 +16,6 @@ from nfl_ats.novig import (
 )
 from nfl_ats.odds import market_hold, no_vig_probabilities
 
-# ---------------------------------------------------------------------------
-# spread_novig_probabilities / moneyline_novig_probabilities
-# ---------------------------------------------------------------------------
-
 
 def test_spread_novig_probabilities_matches_odds_module_row_by_row() -> None:
     frame = pd.DataFrame(
@@ -35,7 +31,6 @@ def test_spread_novig_probabilities_matches_odds_module_row_by_row() -> None:
         expected_hold = market_hold(row["home_spread_price"], row["away_spread_price"])
         assert result.loc[index, "no_vig_home_cover_probability"] == pytest.approx(expected_home)
         assert result.loc[index, "spread_hold"] == pytest.approx(expected_hold)
-    # Original columns pass through unchanged.
     assert result["game_id"].tolist() == ["G1", "G2", "G3"]
 
 
@@ -87,11 +82,6 @@ def test_moneyline_novig_probabilities_rejects_malformed_prices() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# calibration_bucket_edges
-# ---------------------------------------------------------------------------
-
-
 def test_calibration_bucket_edges_widens_outer_edges_to_infinity() -> None:
     edges = calibration_bucket_edges(pd.Series([0.1, 0.3, 0.5, 0.7, 0.9]), buckets=5)
     assert edges[0] == -np.inf
@@ -120,11 +110,6 @@ def test_calibration_bucket_edges_requires_positive_integer_bucket_count(
 def test_calibration_bucket_edges_rejects_invalid_probabilities(probability: object) -> None:
     with pytest.raises((DataContractError, ValueError), match=r"probabilit|non-numeric"):
         calibration_bucket_edges(pd.Series([0.2, 0.8, probability]))
-
-
-# ---------------------------------------------------------------------------
-# favourite_longshot_calibration -- synthetic frame with a known injected bias
-# ---------------------------------------------------------------------------
 
 
 def _injected_bias_frame(weeks: int = 4, season: int = 2024) -> pd.DataFrame:
@@ -174,7 +159,6 @@ def test_favourite_longshot_calibration_excludes_pushes_and_missing_probability(
         }
     )
     table = favourite_longshot_calibration(frame, "probability", "outcome", buckets=2)
-    # Only the (0.3, 1.0) and (0.7, 0.0) rows survive the NaN/push exclusion.
     assert int(table["n"].sum()) == 2
 
 
@@ -231,11 +215,6 @@ def test_explicit_precomputed_edges_are_never_reestimated(
     assert table["bucket_upper"].tolist() == [0.5, np.inf]
 
 
-# ---------------------------------------------------------------------------
-# calibration_gap_metric_fn / bootstrap_calibration_gaps
-# ---------------------------------------------------------------------------
-
-
 def test_calibration_gap_metric_fn_matches_point_estimate() -> None:
     frame = _injected_bias_frame()
     edges = calibration_bucket_edges(frame["probability"], buckets=2)
@@ -272,9 +251,6 @@ def test_bootstrap_calibration_gaps_is_deterministic_when_every_block_is_identic
         frame, "probability", "outcome", edges, block="week", samples=50, seed=7
     )
     by_metric = bootstrap.set_index("metric")
-    # Every week block has an identical composition, so every resample
-    # reproduces the same estimate -- lower == estimate == upper, exactly
-    # the pattern nfl_ats.clv's own deterministic bootstrap test uses.
     for metric_name, expected in (("bucket_0_gap", 0.2), ("bucket_1_gap", -0.2)):
         row = by_metric.loc[metric_name]
         assert row["estimate"] == pytest.approx(expected)

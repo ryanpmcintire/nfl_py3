@@ -82,23 +82,10 @@ BootstrapBlock = Literal["week", "season"]
 
 DECISION_LABEL_ORDER: dict[str, int] = {label: index for index, label in enumerate(DECISION_LABELS)}
 
-# The store's own two Sunday-close labels are the project's "close" proxy, as
-# specified in the market-data report (section 2/5): prefer the later Sunday
-# checkpoint, fall back to the earlier one, and only then fall back to the
-# nflverse schedule's recorded closing spread. ``mon_pre_mnf`` is deliberately
-# excluded even though it postdates both Sunday labels, matching the literal
-# instruction this module was built against.
 CLOSE_LABEL_PRIORITY: tuple[str, ...] = ("sun_late_close", "sun_early_close")
 
 KEY_NUMBERS: tuple[float, ...] = (3.0, 7.0)
 
-# The currently active market-residual model's configuration, read from
-# ``artifacts/active_ats_model.json`` on 2026-08-16 (feature_profile="player",
-# regressor="ridge", ridge_alpha defaults to 10.0 when absent from the
-# manifest, target="market_residual"). Used only as a fallback when a live
-# manifest is not present in this worktree's own artifacts root (it is a
-# generated, gitignored artifact and may legitimately be absent -- see
-# AGENTS.md); :func:`resolve_active_model_config` prefers the live manifest.
 _ACTIVE_MODEL_FALLBACK_CONFIG: dict[str, Any] = {
     "feature_profile": "player",
     "regressor": "ridge",
@@ -106,8 +93,6 @@ _ACTIVE_MODEL_FALLBACK_CONFIG: dict[str, Any] = {
     "target": "market_residual",
 }
 
-# The pilot's frozen, five-feature list (BUILD item 3). Order is fixed so a
-# trained estimator's coefficients stay meaningfully positioned.
 FROZEN_PILOT_FEATURES: tuple[str, ...] = (
     "tue_open_home_spread",
     "tue_open_key_number_distance",
@@ -135,15 +120,9 @@ class PilotSplit:
     test_season: int
 
 
-# Predeclared before any 2024/2025 pairing was inspected (BUILD item 3).
 FROZEN_PILOT_PROTOCOL = PilotSplit(
     train_start_season=2020, train_end_season=2023, validate_season=2024, test_season=2025
 )
-
-
-# ---------------------------------------------------------------------------
-# 1. Snapshot manifest index and decision-label quote loading
-# ---------------------------------------------------------------------------
 
 
 def load_snapshot_manifest_index(root: Path) -> pd.DataFrame:
@@ -195,9 +174,6 @@ def load_snapshot_manifest_index(root: Path) -> pd.DataFrame:
         return index
     index["season"] = pd.to_numeric(index["season"], errors="coerce").astype("Int64")
     index["week"] = pd.to_numeric(index["week"], errors="coerce").astype("Int64")
-    # Live manifests carry microsecond-precision timestamps while historical-
-    # backfill manifests do not; ISO8601 parsing tolerates both formats in one
-    # column instead of pandas inferring (and locking to) just one of them.
     index["snapshot_timestamp_utc"] = pd.to_datetime(
         index["snapshot_timestamp_utc"], utc=True, format="ISO8601"
     )
@@ -261,10 +237,6 @@ def load_decision_quotes(
     return combined
 
 
-# ---------------------------------------------------------------------------
-# 2. Consensus, pairing table, and the monotone-timeline contract
-# ---------------------------------------------------------------------------
-
 _CONSENSUS_REQUIRED_COLUMNS = (
     "nflverse_game_id",
     "season",
@@ -325,10 +297,6 @@ def decision_market_consensus(quotes: pd.DataFrame) -> pd.DataFrame:
         working["home_spread_line"],
         working["line"],
     )
-    # A book should contribute one quote per (game, label, market, side); keep
-    # its latest if a capture ever contained more than one (defensive only --
-    # the backfill executor's own collision guard already prevents duplicate
-    # (season, week, label) snapshots).
     deduped = (
         working.sort_values("observed_at_utc")
         .groupby(
@@ -351,14 +319,6 @@ def decision_market_consensus(quotes: pd.DataFrame) -> pd.DataFrame:
         consensus_price=("price", "median"),
         snapshot_timestamp_utc=("snapshot_timestamp_utc", "max"),
     )
-    # Sportsbooks routinely post a game's board more than a week ahead of
-    # kickoff, so a backfill request for an EARLIER week can also capture a
-    # LATER week's game (an "early sighting"): the same game and decision
-    # label can then appear twice, tagged under two different (season, week)
-    # requests. A game's true (season, week) request is always the larger one
-    # (NFL weeks only look forward), so keep only that one per (game, label,
-    # market, side) -- this also keeps every group a single row, which is what
-    # both the pairing table and the monotone-timeline contract assume.
     grouped = (
         grouped.sort_values(["season", "week"])
         .groupby(
@@ -657,10 +617,6 @@ def spread_price_consensus_table(
     )
 
 
-# ---------------------------------------------------------------------------
-# 3. CLV metric harness
-# ---------------------------------------------------------------------------
-
 _PICK_REQUIRED_COLUMNS = ("game_id", "side", "decision_label")
 
 
@@ -774,19 +730,12 @@ def week_blocked_bootstrap(
             "estimate": [estimate[name] for name in metric_names],
             "lower": lower,
             "upper": upper,
-            # Continuous evidence alongside the interval endpoints: the
-            # fraction of blocked resamples in which the metric is positive.
             "probability_positive": probability_positive_from_draws(draws, axis=0),
             "confidence": confidence,
             "block": block,
             "samples": samples,
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 4. Predeclared MKT-06 pilot: frozen feature construction
-# ---------------------------------------------------------------------------
 
 
 def key_number_distance(
@@ -1183,11 +1132,6 @@ def run_predeclared_pilot(
     }
 
 
-# ---------------------------------------------------------------------------
-# 5. The sign test (report Pilot B)
-# ---------------------------------------------------------------------------
-
-
 def sign_test_pilot_b(
     root: Path,
     features: pd.DataFrame,
@@ -1252,11 +1196,6 @@ def sign_test_pilot_b(
         "per_season": per_season,
         "confidence": confidence,
     }
-
-
-# ---------------------------------------------------------------------------
-# 6. Production wiring: predicted close for an upcoming week (MKT-06)
-# ---------------------------------------------------------------------------
 
 
 class ClosePredictionUnavailable(ValueError):
@@ -1377,9 +1316,6 @@ def predict_close_for_week(
     if missing:
         raise DataContractError(f"Feature table is missing columns: {', '.join(missing)}")
 
-    # The opener check comes first: "no Tuesday capture yet" is the expected
-    # resting state most of every week, and it must not pay for the training
-    # rebuild (seasons of weekly active-model refits) just to find that out.
     schedule = features[["game_id", "season", "week", "rest_diff"]].drop_duplicates("game_id")
     target_games = schedule.loc[schedule["season"].eq(season) & schedule["week"].eq(week)]
     target = target_games.merge(live_tuesday_openers(root), on="game_id", how="inner")
@@ -1455,24 +1391,6 @@ def predict_close_for_week(
     }
 
 
-# ---------------------------------------------------------------------------
-# 7. Routine paper-decision CLV ledger (MKT-04)
-# ---------------------------------------------------------------------------
-
-# One row per published, pre-kickoff paper decision. ``decision_home_spread``
-# is the spread the published card was priced against; CLV is later measured
-# from exactly that number, so a republished card never rewrites an anchor --
-# the ledger keeps the FIRST recorded decision per game.
-#
-# ``is_best_pick`` (POL-10) marks the ONE game per regular-season week the pool
-# scores as the Best Pick. It lives here rather than only on the rendered card
-# because ``docs/index.html`` is a single current-week page that every publish
-# overwrites: without a durable row, week 1's Best Pick stops existing the
-# moment week 2 publishes, and the ``sweep_robustness`` ranker -- unresolved,
-# not confirmed; its naive +8.68-point delta was mostly tie-break luck and
-# the honest edge is ~+0.9 (86 top-1 picks, `docs/best_pick_ranker.md`) --
-# never accumulates prospective evidence. See :func:`record_paper_decisions`
-# for the write rules.
 PAPER_DECISION_COLUMNS: tuple[str, ...] = (
     "recorded_at_utc",
     "forecast_artifact",
@@ -1509,9 +1427,6 @@ PAPER_DECISION_COLUMNS: tuple[str, ...] = (
     "is_best_pick",
 )
 
-# Ledgers written before POL-10 have every column above except ``is_best_pick``.
-# They are read back with the flag defaulted to False, which is also its true
-# value: no Best Pick had been recorded when they were written.
 _LEGACY_PAPER_DECISION_DEFAULTS: dict[str, Any] = {
     "is_best_pick": False,
     "decision_policy_id": "legacy_model_only",
@@ -1531,10 +1446,6 @@ _LEGACY_PAPER_DECISION_DEFAULTS: dict[str, Any] = {
 }
 
 _FOUR_OVERLAY_POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
-#: 2026-09-07 (owner: no unexplained threshold flips): the played composition
-#: dropped the spread-gap zone member. Rows under either id keep the same
-#: OR-union invariant over THEIR members; the ledger keeps the
-#: ``spread_gap_zone_flip`` column for the retired rows' history.
 _THREE_OVERLAY_POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_v2"
 _COMPOSITION_POLICY_MEMBER_FLIPS: dict[str, tuple[str, ...]] = {
     _FOUR_OVERLAY_POLICY_ID: (
@@ -1618,24 +1529,6 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
     return ledger[list(PAPER_DECISION_COLUMNS)]
 
 
-#: How close to a week's earliest kickoff a recording call is allowed to be.
-#: The pool locks Tuesday noon ET and the earliest game of a week kicks off
-#: Thursday night -- at most a few days later -- so 7 days comfortably covers
-#: every real weekly recording (including a Monday catch-up run) while
-#: excluding anything that looks like a rehearsal weeks in advance. This is
-#: the guard for the 2026-08-18 incident: a rehearsal/test run of the
-#: ordinary ``publish-predictions`` command recorded 16 real Week 1 rows on
-#: 2026-08-18T01:24:56Z, three weeks before the games it recorded picks for
-#: even kick off (docs/prospective_evidence.md, "Known divergence"). Deleting
-#: those rows was not a fix -- nothing stopped the exact same command from
-#: repopulating the ledger the same way before the real 2026-09-08 lock. This
-#: constant is that fix: it is checked inside the recording functions
-#: themselves (not only at the CLI layer), so it protects every caller --
-#: ``publish-predictions --record-decisions``, ``clv-ledger``, and
-#: ``prospective-record`` alike -- regardless of which flag did or did not
-#: gate the call. There is deliberately no override; if a legitimate
-#: recording somehow needs the window widened, that is a considered change to
-#: this constant, not a per-call bypass.
 RECORDING_LOCK_WINDOW = timedelta(days=7)
 
 
@@ -1782,7 +1675,6 @@ def record_paper_decisions(
     recorded_at = _record_instant(now)
     sweep_path = forecast / "line_sweep.parquet"
     sweep = pd.read_parquet(sweep_path) if sweep_path.is_file() else pd.DataFrame()
-    # Local import avoids clv -> card_view -> player_arrests -> clv at import time.
     from nfl_ats.card_view import resolve_card_view
 
     view = resolve_card_view(
@@ -1850,6 +1742,18 @@ def record_paper_decisions(
     if replace_week and not existing.empty:
         dropping = existing["season"].astype(int).eq(season) & existing["week"].astype(int).eq(week)
         replaced_rows = int(dropping.sum())
+        started = (
+            existing.loc[dropping, "game_id"]
+            .astype(str)
+            .isin(set(card.loc[~pre_kickoff, "game_id"].astype(str)))
+        )
+        if bool(started.any()):
+            raise ValueError(
+                "Refusing --replace-week: "
+                f"{int(started.sum())} recorded game(s) for {season} week {week} have already "
+                "kicked off, and a replaced row cannot be re-recorded after kickoff. Replace "
+                "only while every recorded game is still in the future."
+            )
         if replaced_rows:
             ledger_path = paper_decision_ledger_path(artifacts_root)
             backup = ledger_path.with_name(
@@ -1925,9 +1829,6 @@ def record_paper_decisions(
         combined = decisions
     else:
         combined = pd.concat([existing, decisions], ignore_index=True)
-    # Rule 1's other half: the nomination can land on a row an earlier run
-    # appended, which is still a pre-kickoff write because every game on this
-    # card is verified to be in the future above.
     best_pick_recorded = False
     flag_written = False
     if best_pick_id is not None and not combined.empty:
@@ -2076,17 +1977,6 @@ def score_paper_ledger(decisions: pd.DataFrame, close_reference: pd.DataFrame) -
     return scored
 
 
-# ---------------------------------------------------------------------------
-# 8. Opener-graded evaluation of the frozen active model (the pool goal)
-# ---------------------------------------------------------------------------
-
-# The primary project goal is beating the OPENING line a pool grades against,
-# not the close (see docs/opener_evaluation.md). This section measures the
-# frozen active model at both lines on every archived game with a paired
-# Tuesday opener and close: one weekly-refit model per week, its residual
-# evaluated at each line, each forced pick settled against its own line.
-
-
 def pick_correct(pick_home: pd.Series, settle_margin: pd.Series) -> pd.Series:
     """1.0 correct / 0.0 wrong / NaN push, for a HOME-pick flag vs a settle margin.
 
@@ -2155,8 +2045,6 @@ def opener_pick_evaluation(
     (all zero when the policy is off, in which case served equals raw).
     """
 
-    # Resolve before reading snapshots or fitting: missing provenance is an error.
-    # An explicit challenger mapping must never consult or depend on the manifest.
     apply_offset = HOME_SIDE_OFFSET_SERVED if home_side_offset is None else bool(home_side_offset)
     config = active_model_config or dict(_ACTIVE_MODEL_FALLBACK_CONFIG)
     if config.get("calibration_method", "none") != "none":
@@ -2181,8 +2069,6 @@ def opener_pick_evaluation(
     missing = sorted(required.difference(features.columns))
     if missing:
         raise DataContractError(f"Opener evaluation is missing columns: {', '.join(missing)}")
-    # The predeclared opener metric is regular-season only; postseason rows in
-    # the feature table must never widen its game set or its training data.
     features = regular_season_rows(features)
 
     pairing = build_pairing_table(
@@ -2210,10 +2096,6 @@ def opener_pick_evaluation(
     completed = frame.loc[frame["result"].notna()].copy()
 
     scored_weeks: list[pd.DataFrame] = []
-    # The RAW out-of-time opener points of every week scored so far: exactly
-    # the archive stream ``fit_production_home_side_offsets`` reads on lock
-    # day, so the offsets applied to week W here are the ones the card would
-    # have served for week W.
     stream_columns = ["game_id", "season", "week", "spread_line", "point_incumbent", "result"]
     archive_stream = pd.DataFrame(columns=stream_columns)
     for (season, week), group in paired.groupby(["season", "week"], sort=True):
@@ -2248,27 +2130,12 @@ def opener_pick_evaluation(
         predicted_at_close = model.predict(at_close, probability_method=probability_method)
         scored["residual_at_open"] = predicted_at_open["predicted_market_residual"].to_numpy()
         scored["residual_at_close"] = predicted_at_close["predicted_market_residual"].to_numpy()
-        # Production (``pool.py``/``backtest.py``) grades picks with the
-        # PROBABILITY rule (``home_cover_probability >= 0.5``), not the sign
-        # rule above (``residual > 0``). They usually agree but can diverge:
-        # Under ECDF, ``home_cover_probability`` is the fraction of the model's
-        # out-of-time residual distribution landing above the line, so a rule
-        # keyed on its 0.5 crossing is really keyed on that distribution's
-        # MEDIAN sitting at the line, while the sign rule is keyed on its MEAN
-        # (via the point prediction) doing so -- the two coincide only when
-        # the residual distribution is symmetric. Captured here purely as an
-        # additional, non-destructive read; the sign-rule columns above are
-        # unchanged (see docs/opener_evaluation.md, dated addendum).
         scored["home_cover_probability_at_open_raw"] = predicted_at_open[
             "home_cover_probability"
         ].to_numpy()
         scored["home_cover_probability_at_close_raw"] = predicted_at_close[
             "home_cover_probability"
         ].to_numpy()
-        # Served read: the walk-forward home-side offset by the OPENER's
-        # spread bucket, fitted on prior scored weeks only, applied at both
-        # lines exactly as the card (opener) and the late-week refresh (the
-        # frozen Tuesday line) apply the same per-game shift.
         if apply_offset and not archive_stream.empty:
             fitted = fit_home_side_offsets(
                 prior_rows_before(archive_stream, int(str(season)), int(str(week)))
@@ -2333,11 +2200,6 @@ def opener_pick_evaluation(
     result["correct_at_close"] = pick_correct(
         result["pick_home_at_close"], result["margin_vs_close"]
     )
-    # Additive: production's actual pick rule (``pool.py``/``backtest.py``),
-    # graded alongside the predeclared sign rule above -- see the comment on
-    # ``home_cover_probability_at_open``/``_at_close`` above. Never replaces
-    # or renumbers the sign-rule fields; the sign rule remains the
-    # predeclared historical record (docs/opener_evaluation.md).
     result["pick_home_at_open_probability_rule"] = result["home_cover_probability_at_open"].ge(0.5)
     result["pick_home_at_close_probability_rule"] = result["home_cover_probability_at_close"].ge(
         0.5
@@ -2348,8 +2210,6 @@ def opener_pick_evaluation(
     result["correct_at_close_probability_rule"] = pick_correct(
         result["pick_home_at_close_probability_rule"], result["margin_vs_close"]
     )
-    # The uncorrected model's own probability-rule picks, kept beside the
-    # served read so the offset's contribution stays visible in every artifact.
     result["pick_home_at_open_probability_rule_raw"] = result[
         "home_cover_probability_at_open_raw"
     ].ge(0.5)

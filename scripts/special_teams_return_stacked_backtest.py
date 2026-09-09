@@ -117,10 +117,6 @@ def run_backtest(
     tilt = apply_special_teams_return_tilt_overlay(predictions, schedules, data_root)
     my_flip_ids = {flip.game_id for flip in tilt.flips}
 
-    # build_eval_frame iterates OVERLAY_NAMES internally to add each sibling
-    # overlay's own solo/leave-one-out columns; none of the six is applied in
-    # this script (see module docstring), so every sibling flip set is empty
-    # and only its `correct_baseline` column is actually consumed below.
     empty_sibling_flip_sets: dict[str, set[str]] = {name: set() for name in OVERLAY_NAMES}
     eval_frame = build_eval_frame(predictions, per_game, empty_sibling_flip_sets)
 

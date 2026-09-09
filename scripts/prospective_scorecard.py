@@ -108,11 +108,6 @@ def main(argv: list[str] | None = None) -> int:
     if out_dir is None:
         out_dir = args.artifacts_root / "prospective_scorecards" / f"{args.season}_{run_id()}"
     out_dir.mkdir(parents=True, exist_ok=True)
-    # ENG-29: write_stamped_artifact(), not write_experiment_artifact() -- this
-    # scorecard is explicitly not an experiment (module docstring; every row's
-    # classification is the fixed unresolved_below_power), and the latter
-    # always creates a registry/experiments/ row, which this script's own
-    # contract forbids.
     write_stamped_artifact(
         {
             "schema_version": SCORECARD_SCHEMA_VERSION,

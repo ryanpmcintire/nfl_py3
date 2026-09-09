@@ -72,11 +72,6 @@ FULL_SEASONS = (2009, 2025)
 DOC = "docs/playcaller_change_leads.md"
 
 
-# ---------------------------------------------------------------------------
-# Inputs
-# ---------------------------------------------------------------------------
-
-
 def latest_coordinator_snapshot(repo_root: Path) -> Path:
     candidates = sorted(
         (repo_root / "data" / "raw" / "coordinators").glob("*/coordinator_history.parquet")
@@ -160,11 +155,6 @@ def team_game_table(features: pd.DataFrame, seasons: tuple[int, int]) -> pd.Data
     return table.reset_index(drop=True)
 
 
-# ---------------------------------------------------------------------------
-# Flags
-# ---------------------------------------------------------------------------
-
-
 def r1_flags(table: pd.DataFrame, features: pd.DataFrame, events: pd.DataFrame) -> pd.DataFrame:
     games = features.loc[features["game_type"].eq("REG")][
         ["game_id", "season", "kickoff", "home_team", "away_team"]
@@ -207,11 +197,6 @@ def r2_flags(table: pd.DataFrame, history: pd.DataFrame, schedules: pd.DataFrame
     merged["new_oc"] = known & merged["oc_tenure_years"].le(NEW_OC_MAX_TENURE)
     merged["veteran_oc"] = known & merged["oc_tenure_years"].gt(NEW_OC_MAX_TENURE)
     return merged
-
-
-# ---------------------------------------------------------------------------
-# Scoring
-# ---------------------------------------------------------------------------
 
 
 def score_cell(
@@ -319,11 +304,6 @@ def score_cell(
     }
 
 
-# ---------------------------------------------------------------------------
-# Record-command emission (the registry write stays an explicit CLI step)
-# ---------------------------------------------------------------------------
-
-
 def _fmt(value: float) -> str:
     return f"{value:+.4f}"
 
@@ -422,11 +402,6 @@ def _summary_line(cell: dict[str, Any]) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-
 def _interim_overlap(repo_root: Path, first_games: pd.DataFrame) -> dict[str, Any]:
     """Descriptive: how many R1 first games are ALSO an interim-HC first game
     (the live dual-tracked challenger's own flag)."""
@@ -476,7 +451,6 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     close_2020 = team_game_table(close_features, OPENER_SEASONS)
     opener = team_game_table(opener_features, OPENER_SEASONS)
 
-    # R1 ------------------------------------------------------------------
     r1_open = r1_flags(opener, opener_features, events)
     r1_close = r1_flags(close_2020, close_features, events)
     first_open = r1_open.loc[r1_open["first_game_after_change"]]
@@ -553,7 +527,6 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         .rename(columns={"count": "games", "sum": "covers", "mean": "cover_rate"})
     )
 
-    # R2 ------------------------------------------------------------------
     r2_full = r2_flags(close_full, history, schedules)
     r2_open = r2_flags(opener, history, schedules)
 
@@ -599,7 +572,6 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     )
     tenure_coverage["known"] = tenure_coverage["known"].astype(int)
 
-    # Report --------------------------------------------------------------
     print("R1 first-game events (opener grade):")
     print(first_game_rows.to_string(index=False))
     print()

@@ -78,9 +78,6 @@ REPO = Path(__file__).resolve().parents[1]
 DEFAULT_FEATURES = REPO / "data/processed/game_features_weak_stack.parquet"
 DEFAULT_MARKET_ROOT = REPO / "data/market/raw"
 
-# Production recipe, identical to docs/opener_evaluation.md and
-# scripts/smooth_cdf_mapping_opener_measurement.py's "weak_stack profile,
-# the ACTIVE model" run.
 FEATURE_PROFILE = "weak_stack"
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
@@ -97,10 +94,6 @@ assert {arm.name for arm in READ_ARMS} == {BASELINE_ARM_NAME, CANDIDATE_ARM_NAME
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260819
 
-# docs/opener_evaluation.md "Addendum, 2026-08-19": production-rule opener
-# accuracy on the frozen 1,537-paired-game archive. Read this session from
-# artifacts/opener_evaluation/20260819T174244Z/metadata.json
-# ("metrics" -> "opener_accuracy_probability_rule").
 PRODUCTION_OPENER_ACCURACY_PROBABILITY_RULE = 0.5335994677312043
 SELF_CHECK_TOLERANCE = 1e-6
 
@@ -225,11 +218,6 @@ def run_opener_walk_forward(
             at_open["spread_line"] = at_open["tue_open_home_spread"]
             at_close = scoring.copy()
             at_close["spread_line"] = at_close["close_home_spread"]
-            # probability_method left at its default ("ecdf") deliberately --
-            # matches nfl_ats.clv.opener_pick_evaluation's own call exactly,
-            # so this is the same probability mapping behind the production
-            # 53.36% number, not the MOD-08 Gaussian default (which only
-            # nfl_ats.outcomes.score_outcome_week passes explicitly).
             predicted_open = model.predict(at_open)
             predicted_close = model.predict(at_close)
 

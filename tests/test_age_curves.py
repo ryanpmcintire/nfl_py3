@@ -42,11 +42,6 @@ from nfl_ats.age_curves import (
 )
 from nfl_ats.players import write_player_snapshot, write_player_value_snapshot
 
-# ---------------------------------------------------------------------------
-# Small raw-frame builders (canonicalize_* coerces dtypes, so plain python
-# values are fine here -- same convention as tests/test_players.py).
-# ---------------------------------------------------------------------------
-
 
 def _roster_row(
     gsis_id: str,
@@ -148,11 +143,6 @@ def _pbp_row(
         "passer_player_id": passer_player_id,
         "epa": epa,
     }
-
-
-# ---------------------------------------------------------------------------
-# Panel construction
-# ---------------------------------------------------------------------------
 
 
 def test_position_group_mapping_and_metric_labels_agree() -> None:
@@ -259,11 +249,6 @@ def test_qb_week_without_a_linked_dropback_row_is_excluded_not_zeroed() -> None:
     assert math.isnan(week2["metric_denominator"])
 
 
-# ---------------------------------------------------------------------------
-# Point-in-time / leakage safety
-# ---------------------------------------------------------------------------
-
-
 def _build_multi_season_sources(
     *, include_future_rows: bool
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, dict[int, pd.DataFrame]]:
@@ -364,11 +349,6 @@ def test_player_age_cells_collapses_weeks_within_a_season() -> None:
     assert row["n_weeks"] == 2
 
 
-# ---------------------------------------------------------------------------
-# Cross-sectional curve
-# ---------------------------------------------------------------------------
-
-
 def test_cross_sectional_curve_is_snap_weighted() -> None:
     cells = pd.DataFrame(
         [
@@ -417,11 +397,6 @@ def test_cross_sectional_curve_is_snap_weighted() -> None:
     assert math.isnan(ol["raw_rate"])
     assert ol["snaps"] == pytest.approx(80.0)
     assert ol["coverage_status"] == "no_local_metric"
-
-
-# ---------------------------------------------------------------------------
-# Empirical-Bayes shrinkage
-# ---------------------------------------------------------------------------
 
 
 def _dispersed_wr_cells() -> pd.DataFrame:
@@ -499,11 +474,6 @@ def test_no_local_metric_groups_are_never_shrunk() -> None:
     assert math.isnan(row["shrinkage_k"])
 
 
-# ---------------------------------------------------------------------------
-# Local-linear smooth
-# ---------------------------------------------------------------------------
-
-
 def test_local_linear_smooth_returns_the_point_itself_when_isolated() -> None:
     ages = np.array([0.0, 5.0])
     rates = np.array([0.02, 0.09])
@@ -537,16 +507,10 @@ def test_smooth_curve_skips_no_local_metric_groups() -> None:
     assert math.isnan(ol_curve["smoothed_rate"].iloc[0])
 
 
-# ---------------------------------------------------------------------------
-# Delta-method curve
-# ---------------------------------------------------------------------------
-
-
 def test_delta_curve_only_pairs_strictly_consecutive_ages_above_the_floor() -> None:
     floor = DELTA_METHOD_SNAP_FLOOR
     cells = pd.DataFrame(
         [
-            # Player A: ages 0, 1, 3 (age 2 missing) -- only 0->1 is a valid pair.
             {
                 "gsis_id": "A",
                 "pos_group": "WR",
@@ -571,7 +535,6 @@ def test_delta_curve_only_pairs_strictly_consecutive_ages_above_the_floor() -> N
                 "metric_numerator": 0.05 * floor,
                 "metric_denominator": floor,
             },
-            # Player B: age 0 below the snap floor -- excluded even though age 1 exists.
             {
                 "gsis_id": "B",
                 "pos_group": "WR",
@@ -602,14 +565,7 @@ def test_delta_curve_only_pairs_strictly_consecutive_ages_above_the_floor() -> N
     row = delta.iloc[0]
     assert row["n_pairs"] == 1
     assert row["mean_delta"] == pytest.approx(0.02 * floor / floor)
-    # career_age 0 is the modal entry age here (2 players), so its own
-    # cumulative delta is the zero baseline.
     assert row["cumulative_delta"] == pytest.approx(0.0)
-
-
-# ---------------------------------------------------------------------------
-# Split-half reliability
-# ---------------------------------------------------------------------------
 
 
 def _synthetic_reliability_cells(seed: int = 7, n_players: int = 40) -> pd.DataFrame:
@@ -667,11 +623,6 @@ def test_split_half_reliability_detects_a_real_age_signal() -> None:
 
     wr_rows = reliability.loc[reliability["pos_group"] == "WR"]
     assert len(wr_rows) == 2
-    # A clean, strongly age-dependent signal should show up as a strongly
-    # positive probability_positive under BOTH schemes -- never rejected for
-    # "containing zero" (it should not even come close in this synthetic
-    # case), but this is a power check on the machinery, not a claim about
-    # any real position group.
     assert (wr_rows["probability_positive"] > 0.9).all()
     assert (wr_rows["pearson_r"] > 0.5).all()
 
@@ -685,7 +636,7 @@ def test_split_half_reliability_never_scores_no_local_metric_groups() -> None:
                 "pos_group": "OL",
                 "season": 2020,
                 "career_age": 0,
-                "metric_numerator": 5.0,  # deliberately non-null: exclusion must be structural
+                "metric_numerator": 5.0,
                 "metric_denominator": 50.0,
                 "primary_snaps": 50.0,
                 "n_weeks": 4,
@@ -696,11 +647,6 @@ def test_split_half_reliability_never_scores_no_local_metric_groups() -> None:
     curve = cross_sectional_curve(combined)
     reliability = split_half_reliability(combined, curve, samples=50, seed=1)
     assert "OL" not in set(reliability["pos_group"])
-
-
-# ---------------------------------------------------------------------------
-# End-to-end orchestrator (small, real snapshots on disk)
-# ---------------------------------------------------------------------------
 
 
 def _write_pbp_snapshot(root: Path, frames: dict[int, pd.DataFrame]) -> None:

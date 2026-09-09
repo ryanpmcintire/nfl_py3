@@ -188,15 +188,6 @@ def build_availability_outcomes(
 
     visible = injuries.copy()
     visible["date_modified"] = pd.to_datetime(visible["date_modified"], errors="coerce", utc=True)
-    # ENG-39 follow-up: prefer "effective_observed_at" (the real
-    # date_modified where present, else the leakage-safe week_proxy) when
-    # nfl_ats.players.canonicalize_injuries(..., timestamp_fallback=
-    # "week_proxy") added it -- same rule, same column-presence check, as
-    # nfl_ats.players._injury_rows_asof. A real date_modified is never
-    # overwritten here (that column is untouched either way); a frame
-    # without "effective_observed_at" (every pre-ENG-39 snapshot, and any
-    # frame built with the default "drop" mode) keeps filtering on
-    # "date_modified" exactly as before -- byte-identical default behaviour.
     visibility_column = "date_modified"
     if "effective_observed_at" in visible.columns:
         visible["effective_observed_at"] = pd.to_datetime(

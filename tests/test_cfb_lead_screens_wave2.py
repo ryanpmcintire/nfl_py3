@@ -118,11 +118,6 @@ def _schedule_row(
     }
 
 
-# ---------------------------------------------------------------------------
-# Shared starter-identification helpers
-# ---------------------------------------------------------------------------
-
-
 def test_leading_passer_per_game_team_picks_max_dropbacks_and_drops_thin_rows() -> None:
     pbp = pd.concat(
         [
@@ -146,7 +141,7 @@ def test_leading_passer_per_game_team_picks_max_dropbacks_and_drops_thin_rows() 
                 home_team_id=10,
                 away_team_id=20,
                 is_home=True,
-                n=3,  # below the 5-dropback floor: dropped entirely
+                n=3,
             ),
         ],
         ignore_index=True,
@@ -258,20 +253,13 @@ def test_attach_previous_game_starter_is_strictly_earlier_and_carries_forward() 
     )
     leading = leading_passer_per_game_team(pbp)
     walked = attach_previous_game_starter(leading, schedules).set_index("game_id")
-    assert pd.isna(walked.loc["101", "prev_game_starter_id"])  # no earlier known game
-    assert walked.loc["102", "prev_game_starter_id"] == "701"  # continuity
-    assert walked.loc["103", "prev_game_starter_id"] == "701"  # still P1, before P2 started
+    assert pd.isna(walked.loc["101", "prev_game_starter_id"])
+    assert walked.loc["102", "prev_game_starter_id"] == "701"
+    assert walked.loc["103", "prev_game_starter_id"] == "701"
 
     agreement = starter_agreement_rate(walked.reset_index())
-    # game 102 (prev P1, actual P1) agrees; game 103 (prev P1, actual P2) disagrees;
-    # game 101 has no comparable previous starter and is excluded.
     assert agreement["n_comparable"] == 2
     assert agreement["agreement_rate"] == 0.5
-
-
-# ---------------------------------------------------------------------------
-# LEAD-47: true_freshman_road_qb
-# ---------------------------------------------------------------------------
 
 
 def _lead47_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -289,7 +277,6 @@ def _lead47_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
     pbp = pd.concat(
         [
-            # G1 9001: away team 20 starter F1 -> true freshman (roster: 2024 only)
             _pbp_rows(
                 game_id=9001,
                 season=2024,
@@ -300,7 +287,6 @@ def _lead47_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
                 away_team_id=20,
                 is_home=False,
             ),
-            # G2 9002: away team 30 starter F2 -> NOT true freshman (roster: 2023 & 2024)
             _pbp_rows(
                 game_id=9002,
                 season=2024,
@@ -311,7 +297,6 @@ def _lead47_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
                 away_team_id=30,
                 is_home=False,
             ),
-            # G3 9003: home team 40 starter F3 -> true freshman but HOME side (diagnostic only)
             _pbp_rows(
                 game_id=9003,
                 season=2024,
@@ -322,7 +307,6 @@ def _lead47_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
                 away_team_id=20,
                 is_home=True,
             ),
-            # G3 9003: away team 20 starter V1 -> NOT true freshman (roster: 2022 & 2024)
             _pbp_rows(
                 game_id=9003,
                 season=2024,
@@ -333,7 +317,6 @@ def _lead47_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
                 away_team_id=20,
                 is_home=False,
             ),
-            # G4 9004: away team 60 has NO pbp coverage at all (unidentified starter)
         ],
         ignore_index=True,
     )
@@ -344,7 +327,6 @@ def _lead47_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
             "season": [2024, 2024, 2023, 2024, 2024, 2022, 2024],
         }
     )
-    # Map passer string ids to athlete_ids used above: F1->1, F2->2, F3->3, V1->4
     id_map = {"F1": "1", "F2": "2", "F3": "3", "V1": "4"}
     pbp["passer_player_id"] = pbp["passer_player_id"].map(id_map).fillna(pbp["passer_player_id"])
     return features, pbp, rosters
@@ -355,15 +337,15 @@ def test_true_freshman_road_qb_flag_hand_computed_cases() -> None:
     attached, diagnostics = attach_true_freshman_road_qb_flag(features, pbp=pbp, rosters=rosters)
     attached = attached.set_index("game_id")
 
-    assert attached.loc[9001, FRESHMAN_COLUMN] == 1.0  # away true freshman F1
-    assert attached.loc[9002, FRESHMAN_COLUMN] == 0.0  # away starter F2 not a true freshman
-    assert attached.loc[9003, FRESHMAN_COLUMN] == 0.0  # away starter V1 not true freshman
-    assert attached.loc[9003, "_lead47_home_true_freshman_starter"]  # home F3 counted, not pooled
-    assert attached.loc[9004, FRESHMAN_COLUMN] == 0.0  # unidentified away starter -> 0, not error
+    assert attached.loc[9001, FRESHMAN_COLUMN] == 1.0
+    assert attached.loc[9002, FRESHMAN_COLUMN] == 0.0
+    assert attached.loc[9003, FRESHMAN_COLUMN] == 0.0
+    assert attached.loc[9003, "_lead47_home_true_freshman_starter"]
+    assert attached.loc[9004, FRESHMAN_COLUMN] == 0.0
 
     assert diagnostics["away_true_freshman_starter_count"] == 1
     assert diagnostics["home_true_freshman_starter_count"] == 1
-    assert diagnostics["away_starter_identified"] == 3  # 9001, 9002, 9003 (not 9004)
+    assert diagnostics["away_starter_identified"] == 3
 
 
 def test_true_freshman_road_qb_flag_never_takes_a_third_value() -> None:
@@ -381,11 +363,6 @@ def test_true_freshman_road_qb_flag_is_pregame_safe_under_outcome_permutation() 
     np.testing.assert_array_equal(
         before[FRESHMAN_COLUMN].to_numpy(), after[FRESHMAN_COLUMN].to_numpy()
     )
-
-
-# ---------------------------------------------------------------------------
-# LEAD-49: portal_qb_early
-# ---------------------------------------------------------------------------
 
 
 def test_resolve_team_name_map_matches_home_and_away_columns() -> None:
@@ -430,7 +407,6 @@ def test_match_portal_qbs_to_athletes_disclosed_join_stages() -> None:
             "last_name": ["Rivers", "Other", "Licate"],
         }
     )
-    # Add a genuine ambiguous key: two athletes sharing (team, season, name).
     rosters = pd.concat(
         [
             rosters,
@@ -453,8 +429,6 @@ def test_match_portal_qbs_to_athletes_disclosed_join_stages() -> None:
             "lastName": ["Rivers", "Home", "Licate"],
             "position": ["QB", "QB", "QB"],
             "origin": ["Old", "Old", "Old"],
-            # row 0: resolves cleanly; row 1: destination doesn't exist in schedules;
-            # row 2: name is ambiguous on the roster (ties to two athlete_ids)
             "destination": ["PortalHome", "NowhereState", "PortalHome"],
         }
     )
@@ -464,7 +438,7 @@ def test_match_portal_qbs_to_athletes_disclosed_join_stages() -> None:
     assert diagnostics["unresolved_destination_rows"] == 1
     assert diagnostics["matched_portal_qb_rows"] == 1
     assert diagnostics["ambiguous_roster_name_keys"] == 1
-    assert diagnostics["unmatched_name_rows"] == 1  # the ambiguous "Dup Licate" row
+    assert diagnostics["unmatched_name_rows"] == 1
 
 
 def test_build_season_game_index_orders_chronologically_regular_completed_only() -> None:
@@ -488,7 +462,6 @@ def test_build_season_game_index_orders_chronologically_regular_completed_only()
                 away_team="T200",
                 start_date="2022-09-08",
             ),
-            # postseason row for the same team: must NOT count toward the index
             _schedule_row(
                 game_id=3,
                 season=2022,
@@ -513,8 +486,8 @@ def test_build_season_game_index_orders_chronologically_regular_completed_only()
     index = build_season_game_index(schedules)
     assert index[(200, 2022, "1")] == 1
     assert index[(200, 2022, "2")] == 2
-    assert (200, 2022, "3") not in index  # postseason excluded
-    assert index[(200, 2022, "4")] == 3  # third REGULAR game, not fourth
+    assert (200, 2022, "3") not in index
+    assert index[(200, 2022, "4")] == 3
 
 
 def _lead49_fixture() -> tuple[
@@ -652,16 +625,9 @@ def test_portal_qb_early_signed_hand_computed_cases() -> None:
     )
     attached = attached.set_index("game_id")
 
-    # Game index 1: the portal QB cannot yet be "the previous game's starter"
-    # for his own new team -- structurally can never flag, even though he IS
-    # this game's own (post-hoc) starter. Disclosed in the predeclaration doc.
     assert attached.loc[9101, PORTAL_COLUMN] == 0.0
-    # Game index 2, team 200 AWAY: prior game's starter (9001) is the portal
-    # QB -> away fires -> signed +1 (favours home).
     assert attached.loc[9102, PORTAL_COLUMN] == 1.0
-    # Game index 3, team 200 HOME: mirror -> signed -1.
     assert attached.loc[9103, PORTAL_COLUMN] == -1.0
-    # Game index 4: outside the first-three-games window -> 0.
     assert attached.loc[9104, PORTAL_COLUMN] == 0.0
 
     assert diagnostics["matched_portal_qb_rows"] == 1

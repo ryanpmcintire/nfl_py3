@@ -59,10 +59,6 @@ from nfl_ats.surgical_gating import (  # noqa: E402
     raw_value_magnitude,
 )
 
-# The reproduction target: docs/injury_value_lost.md section 4's D-A contrast,
-# already independently reproduced once this session
-# (scratchpad clean_value_lost_arm_report.json) and matching the document
-# exactly. Re-asserted here so this script is self-checking on its own.
 RECORDED = {
     "paired_games": 456,
     "weeks": 35,
@@ -119,11 +115,8 @@ def main() -> None:
     if not all(checks.values()):
         raise SystemExit(f"Reproduction of docs/injury_value_lost.md section 4 FAILED: {checks}")
 
-    # --- Reproduction confirmed against already-published numbers. Now drop
-    # every correctness/outcome column and never touch one again: everything
-    # below reads only picks (pregame-timestamped) and the injury covariate. --
     paired = abl.paired_frame(arm_a, arm_d)[["game_id", "left_pick_home", "right_pick_home"]].copy()
-    del arm_a, arm_d  # both carried correct_at_open; do not let it leak into scope below
+    del arm_a, arm_d
 
     magnitude = raw_value_magnitude(player_value_features.set_index("game_id"))
     paired = paired.merge(

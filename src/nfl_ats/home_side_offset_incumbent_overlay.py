@@ -39,7 +39,6 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "home_side_offset_off_incumbent"
 
 

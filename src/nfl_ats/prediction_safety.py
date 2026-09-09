@@ -313,12 +313,6 @@ def validate_three_way_split(
     return ("three_way_probabilities", "three_way_sum", "push_half_point")
 
 
-#: The owner's pool (Splash Sports NFL Pick'Em) quotes EVERY line as a half
-#: point. Measured 2026-09-08 on all sixteen Week 1 games of the contest the
-#: card is played into (``data/splash/2026_week01_20260908_noon.json``:
-#: 3.5, 3.5, -2.5, 8.5, 6.5, 3.5, 1.5, 3.5, -3.5, -1.5, 1.5, 9.5, 3.5, 5.5,
-#: -2.5, 2.5). Set ``False`` only if the pool is ever observed posting a
-#: whole number; that is a change in the pool, not a way past a failing card.
 POOL_QUOTES_HALF_POINT_LINES = True
 
 
@@ -498,15 +492,6 @@ def _feature_checks(
     return ["model_inputs"], warnings
 
 
-#: ENG-39: matches the injury MAGNITUDE sub-block
-#: ``nfl_ats.players.enrich_with_player_features`` writes -- ``home_injury_*``,
-#: ``away_injury_*``, ``diff_injury_*`` -- but excludes the lineage metadata
-#: columns of the same prefix, ``{side}_injury_observed_at`` and
-#: ``{side}_injury_observed_at_basis`` (ENG-23/ENG-39). Those are timestamps
-#: and provenance labels, not model inputs: ``pd.to_numeric`` silently turns
-#: a tz-aware timestamp into a large nonzero int64 (nanosecond epoch)
-#: instead of raising or returning null, which would make a real
-#: all-zero magnitude block look nonzero and defeat this check entirely.
 _INJURY_FEATURE_COLUMN_PATTERN = re.compile(r"^(?:home_|away_|diff_)injury_(?!observed_at)")
 
 

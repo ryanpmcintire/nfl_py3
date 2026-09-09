@@ -41,20 +41,6 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.surgical_gating import VALUE_LOST_DIFF_COLUMNS
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# G1: home lost strictly more value, model picks home -> clean disagreement,
-#     flips to away.
-# G2: away lost strictly more value, model picks away -> clean disagreement,
-#     flips to home.
-# G3: tie (zero differential), model picks home -> no signal, no flip.
-# G4: home lost strictly more value, model ALREADY picks away -> agrees,
-#     no flip.
-# G5: same shape as G1 but POST season -> the REG-only gate blocks it.
-# G6: no feature row at all (missing from the merge) -> treated as a tie.
-
 
 def _features() -> pd.DataFrame:
     return pd.DataFrame(
@@ -82,11 +68,6 @@ def _predictions() -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 1. raw_value_lost_diff: derived, pregame-safe
-# ---------------------------------------------------------------------------
-
-
 def test_raw_value_lost_diff_sums_the_two_diff_columns() -> None:
     diff = raw_value_lost_diff(_features()).set_index("game_id")
     assert diff.loc["G1", "value_lost_diff"] == pytest.approx(4.0)
@@ -106,11 +87,6 @@ def test_raw_value_lost_diff_uses_the_shared_surgical_gating_columns() -> None:
 def test_raw_value_lost_diff_requires_its_columns() -> None:
     with pytest.raises(DataContractError, match="value-lost columns"):
         raw_value_lost_diff(pd.DataFrame({"game_id": ["G1"]}))
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_injury_value_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_when_home_lost_strictly_more_and_model_picked_home() -> None:
@@ -210,11 +186,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_injury_value_tilt_overlay(pd.DataFrame({"game_id": ["G1"]}), _features())
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     ties_only = _predictions().loc[lambda frame: frame["game_id"].eq("G3")]
     result = apply_injury_value_tilt_overlay(ties_only, _features())
@@ -233,10 +204,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "AW2 -> HM2" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_injury_value_tilt_challenger_decisions: dual-tracked, no window
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -313,13 +280,9 @@ def test_record_tilt_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # G1's tilt arm diverges from the active model's own raw pick (0.7 ->
-    # HOME): the tilt flips it to AWAY, since home lost strictly more value.
     assert ledger.loc["G1", "pick_side"] == "AWAY"
-    # G3 (a tie) keeps the model's own HOME pick.
     assert ledger.loc["G3", "pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_injury_value_tilt_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -341,9 +304,6 @@ def test_record_tilt_challenger_refuses_outside_recording_lock_window(tmp_path: 
 def test_record_tilt_challenger_refuses_a_fingerprint_mismatch(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_tilt_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = _write_data_root(tmp_path)
 

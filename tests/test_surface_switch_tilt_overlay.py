@@ -43,35 +43,9 @@ from nfl_ats.surface_switch_tilt_overlay import (
     surface_switch_flag_by_game,
 )
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# GRASSAWAY hosts two games on grass (weeks 1-2) -- its 2026 modal home
-#   surface is grass. It then plays THREE road games:
-#     - week 3, at TURFHOST (fieldturf): the flagged case (grass-modal
-#       visitor on turf).
-#     - week 4, at GRASSHOST (grass): NOT flagged (this game's own surface
-#       is grass, not turf -- no switch).
-#     - week 6, at MISSHOST (empty surface string): NOT flagged (this
-#       game's own surface is unresolved).
-# TURFAWAY hosts two games on turf (weeks 1-2) -- its 2026 modal home
-#   surface is turf. It plays one road game (week 3, at TURFHOST2, turf):
-#   NOT flagged (surfaces match -- no switch).
-# NOSURF hosts one game with an empty surface string (week 1) -- its modal
-#   home surface is UNRESOLVED (None). It plays one road game (week 5, at
-#   TURFHOST3, turf): NOT flagged (missing surface data on the visitor
-#   side).
-# GRASSAWAY2 mirrors GRASSAWAY's home-surface setup (grass-modal) and plays
-#   one road game (week 7, at TURFHOST4, turf) -- flagged, used only for the
-#   "asymmetric design" case where the model ALREADY picks the home side.
-# A POST-season game (week 20, POSTHOST vs. GRASSAWAY, turf) has the same
-#   flagged shape as week 3 -- used for the REG-only gate.
-
 
 def _surface_schedule() -> pd.DataFrame:
     rows = [
-        # game_id, season, game_type, week, home_team, away_team, surface
         ("2026_01_GRASSAWAY_OPP1", 2026, "REG", 1, "GRASSAWAY", "OPP1", "grass"),
         ("2026_02_GRASSAWAY_OPP2", 2026, "REG", 2, "GRASSAWAY", "OPP2", "grass"),
         ("2026_03_TURFHOST_GRASSAWAY", 2026, "REG", 3, "TURFHOST", "GRASSAWAY", "fieldturf"),
@@ -131,29 +105,9 @@ def _predictions() -> pd.DataFrame:
             ],
             "kickoff": ["2026-09-24T17:00:00+00:00"] * 8,
             "spread_line": [-3.0, 2.0, -1.5, 1.0, -2.5, -4.0, -3.0, 1.0],
-            # G-flag: model picks AWAY (GRASSAWAY, grass-modal onto turf) --
-            #   flagged -- should flip to HOME.
-            # G-match: model picks AWAY (TURFAWAY, turf-modal onto turf) --
-            #   not flagged (no switch) -- no flip.
-            # G-grassvenue: model picks AWAY (GRASSAWAY onto GRASS) -- not
-            #   flagged (this game's own surface is grass, not turf).
-            # G-nosurf: model picks AWAY (NOSURF, undefined modal surface)
-            #   -- not flagged (missing visitor surface data).
-            # G-missgame: model picks AWAY (GRASSAWAY onto an unresolved
-            #   surface) -- not flagged (this game's own surface missing).
-            # G-asym: model picks HOME already (flagged game, but the
-            #   asymmetric rule never flips a home pick).
-            # G-post: same flagged shape as G-flag, POST season -- REG-only
-            #   gate blocks it.
-            # G-missing: no schedule row at all -- treated as no signal.
             "home_cover_probability": [0.35, 0.40, 0.45, 0.42, 0.38, 0.60, 0.30, 0.50],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. surface_switch_flag_by_game: derived, structural (never outcome-based)
-# ---------------------------------------------------------------------------
 
 
 def test_surface_switch_flag_fires_on_a_grass_modal_visitor_onto_turf() -> None:
@@ -232,11 +186,6 @@ def test_surface_switch_flag_is_leak_safe_across_the_season_boundary() -> None:
         baseline.loc[baseline["season"].le(2026)].reset_index(drop=True),
         check_exact=True,
     )
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_surface_switch_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_an_away_pick_on_the_flagged_side() -> None:
@@ -354,14 +303,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_surface_switch_tilt_overlay(pd.DataFrame({"game_id": ["G1"]}), _surface_schedule())
 
 
-# ---------------------------------------------------------------------------
-# 2b. The flag column collision (2026-08-24 rehearsal KeyError): the feature
-# table now carries ``surface_switch_flag`` as a model input, so the
-# predictions frame can arrive with a same-named column. Absent AND present
-# must both work; this module's own schedules-derived flag always wins.
-# ---------------------------------------------------------------------------
-
-
 def test_overlay_survives_predictions_that_already_carry_the_flag_column() -> None:
     """The exact production crash shape: recommendations.csv now contains
     ``surface_switch_flag``, so the old bare left-merge suffixed both copies
@@ -378,7 +319,6 @@ def test_overlay_survives_predictions_that_already_carry_the_flag_column() -> No
     assert overlaid.loc["2026_03_TURFHOST_GRASSAWAY", "home_cover_probability"] == pytest.approx(
         0.65
     )
-    # The incoming column passes through byte-identical -- never overwritten.
     assert list(result.overlaid_predictions.columns) == list(predictions.columns)
     assert (result.overlaid_predictions["surface_switch_flag"] == False).all()  # noqa: E712
 
@@ -389,9 +329,7 @@ def test_overlay_ignores_a_misleading_preexisting_flag_column() -> None:
 
     predictions = _predictions()
     predictions["surface_switch_flag"] = [
-        # The flagged away-pick game: foreign column says NOT flagged...
         False,
-        # ...and this matched-surface game: foreign column says flagged.
         True,
         *([False] * 6),
     ]
@@ -429,11 +367,6 @@ def test_record_surface_switch_challenger_survives_a_card_carrying_the_flag_colu
     assert result["flipped_game_ids"] == ["2026_03_TURFHOST_GRASSAWAY"]
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     matched_only = _predictions().loc[
         lambda frame: frame["game_id"].eq("2026_03_TURFHOST2_TURFAWAY")
@@ -453,10 +386,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "GRASSAWAY -> TURFHOST" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_surface_switch_tilt_challenger_decisions: dual-tracked, no window
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -538,14 +467,9 @@ def test_record_surface_switch_challenger_decisions_records_the_tilt_arm(
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The tilt's own arm diverges from the active model's raw pick (0.35 ->
-    # AWAY): the tilt flips it to HOME (TURFHOST), away from the grass-modal
-    # visitor on turf.
     assert ledger.loc["2026_03_TURFHOST_GRASSAWAY", "pick_side"] == "HOME"
-    # The no-signal (matched-surface) game keeps the model's own AWAY pick.
     assert ledger.loc["2026_03_TURFHOST2_TURFAWAY", "pick_side"] == "AWAY"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_surface_switch_tilt_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -571,9 +495,6 @@ def test_record_surface_switch_challenger_refuses_a_fingerprint_mismatch(
 ) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = _write_data_root(tmp_path)
 

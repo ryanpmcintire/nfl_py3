@@ -107,12 +107,9 @@ def declaration_frame() -> pd.DataFrame:
     """2020 declares; 2021 is held out and would flip the 3 atom if it leaked."""
 
     rows: list[dict] = []
-    # Atom 3: the incumbent is right three times in four -> negative delta.
     rows += _atom_rows(2020, 1, 3.0, "S3", 3)
     rows += _atom_rows(2020, 4, 3.0, "MP1", 1)
-    # Atom 7: lane K's read is right twice -> strictly positive delta.
     rows += _atom_rows(2020, 1, 7.0, "MP1", 2)
-    # Atom 10: the reads agree, so no pick moves -> delta exactly zero.
     rows += [
         {
             "season": 2020,
@@ -125,12 +122,9 @@ def declaration_frame() -> pd.DataFrame:
         }
         for index in range(2)
     ]
-    # Atom 14: one pick gained, one lost -> delta exactly zero, not positive.
     rows += _atom_rows(2020, 1, 14.0, "MP1", 1)
     rows += _atom_rows(2020, 2, 14.0, "S3", 1)
-    # Untouched padding on a half-point line.
     rows += _atom_rows(2020, 1, 4.5, "S3", 4)
-    # The held-out season, where the 3 atom goes the other way.
     rows += _atom_rows(2021, 1, 3.0, "MP1", 8)
     return _frame(rows)
 
@@ -153,13 +147,8 @@ def slope_stream() -> pd.DataFrame:
                 }
             )
     frame = pd.DataFrame(rows)
-    frame.loc[frame.season.eq(2023), :]  # no-op guard: 2023 rows are never built
+    frame.loc[frame.season.eq(2023), :]
     return frame
-
-
-# ---------------------------------------------------------------------------
-# Rule A: the atom set
-# ---------------------------------------------------------------------------
 
 
 def test_rule_a_selects_exactly_the_atoms_with_a_strictly_positive_delta():
@@ -168,8 +157,6 @@ def test_rule_a_selects_exactly_the_atoms_with_a_strictly_positive_delta():
     assert set(by_atom) == set(KEY_ATOMS)
     assert by_atom[3.0]["delta"] < 0.0 and not by_atom[3.0]["selected"]
     assert by_atom[7.0]["delta"] > 0.0 and by_atom[7.0]["selected"]
-    # An atom whose reads agree, and an atom that gains one pick and loses one,
-    # both score exactly zero. Zero is not positive, so neither is selected.
     assert by_atom[10.0]["delta"] == 0.0 and not by_atom[10.0]["selected"]
     assert by_atom[10.0]["flips"] == 0
     assert by_atom[14.0]["delta"] == 0.0 and not by_atom[14.0]["selected"]
@@ -181,7 +168,6 @@ def test_rule_a_never_reads_a_held_out_season():
     frame = declaration_frame()
     declared = declare_atoms(frame, (2020, 2020))
     leaked = declare_atoms(frame, (2020, 2021))
-    # The held-out season alone would carry the 3 atom into the declared set.
     assert selected_atoms(declared) == (7.0,)
     assert selected_atoms(leaked) == (3.0, 7.0)
 
@@ -191,17 +177,10 @@ def test_both_rules_hold_only_their_own_declaration_seasons():
     for seasons in ((2020, 2020), (2020, 2021)):
         block = frame.loc[frame.season.between(*seasons)]
         assert set(block.season) <= set(range(seasons[0], seasons[1] + 1))
-    # An empty declaration block is refused rather than silently selecting
-    # nothing, which would look identical to a rule that found nothing.
     with pytest.raises(ValueError, match="holds no games"):
         declare_atoms(frame, (2019, 2019))
     with pytest.raises(ValueError, match="holds no completed games"):
         declare_buckets(slope_stream(), (2030, 2031))
-
-
-# ---------------------------------------------------------------------------
-# Rule B: the bucket set
-# ---------------------------------------------------------------------------
 
 
 def test_rule_b_selects_exactly_the_buckets_wholly_below_the_ceiling():
@@ -209,12 +188,10 @@ def test_rule_b_selects_exactly_the_buckets_wholly_below_the_ceiling():
     by_bucket = {row["bucket"]: row for row in rows}
     assert by_bucket["0-3"]["upper"] == pytest.approx(1.0)
     assert not by_bucket["0-3"]["selected"]
-    # Exactly at the ceiling is NOT wholly below it.
     assert by_bucket["3.5-6.5"]["upper"] == pytest.approx(SLOPE_CEILING)
     assert not by_bucket["3.5-6.5"]["selected"]
     assert by_bucket["10.5+"]["upper"] == pytest.approx(-1.0)
     assert by_bucket["10.5+"]["selected"]
-    # A bucket with no games has no estimable slope and is never selected.
     assert by_bucket["7"]["n"] == 0 and not by_bucket["7"]["selected"]
     assert selected_buckets(rows) == ("10.5+",)
 
@@ -230,11 +207,6 @@ def test_rule_b_never_reads_a_held_out_season():
     assert {row["bucket"] for row in declared if row["selected"]} == {"10.5+"}
     by_bucket = {row["bucket"]: row for row in declared}
     assert by_bucket["10.5+"]["upper"] == pytest.approx(-1.0)
-
-
-# ---------------------------------------------------------------------------
-# The declared arms
-# ---------------------------------------------------------------------------
 
 
 def test_untouched_games_reproduce_the_incumbent_bit_for_bit():
@@ -263,7 +235,6 @@ def test_the_key_line_read_takes_precedence_over_the_bucket_read():
     assert list(both["in_bucket"]) == [False, True]
     assert both["probability"][0] == frame.p_MP1.iloc[0]
     assert both["probability"][1] == frame.p_R1.iloc[1]
-    # The bucket read alone would take the 14 game instead.
     bucket_only = apply_declaration(frame, (), ("10.5+",))
     assert bucket_only["probability"][0] == frame.p_R1.iloc[0]
 
@@ -296,11 +267,6 @@ def test_the_s3_replay_gate_fails_closed():
         lane_k.verify_replay(np.array([0.5, 0.6 + 1e-6]), served)
     with pytest.raises(ValueError, match="missing probabilities"):
         lane_k.verify_replay(np.array([0.5, np.nan]), served)
-
-
-# ---------------------------------------------------------------------------
-# The held-out restriction and the research artifact
-# ---------------------------------------------------------------------------
 
 
 def test_held_out_groups_cover_the_seasons_and_the_touched_games():
@@ -369,11 +335,6 @@ def test_the_research_artifact_never_claims_the_active_identity(tmp_path):
     assert metadata["active_model_config"]["model_id"] == ACTIVE_MODEL_ID
 
 
-# ---------------------------------------------------------------------------
-# Registry rows
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     ("name", "window", "arm", "label", "kind"),
     [
@@ -404,7 +365,6 @@ def test_a_cell_is_stamped_with_the_seasons_it_was_graded_on():
     assert seasons_for("W2", "overall") == (2023, 2025)
     assert seasons_for("W1", "season_2024") == (2024, 2024)
     assert seasons_for("W2", "touched") == (2023, 2025)
-    # No held-out block may reach back into its own declaration seasons.
     for window, spec in WINDOWS.items():
         assert spec["holdout"][0] > spec["declare"][1]
         assert seasons_for(window, "overall")[0] > spec["declare"][1]
@@ -445,7 +405,6 @@ def test_recorder_argv_is_admissible_and_carries_a_plain_summary():
     assert argv[argv.index("--season-start") + 1] == "2024"
     summary = argv[argv.index("--plain-summary") + 1]
     assert summary and not any(token in summary.lower() for token in JARGON)
-    # Scientific notation would be read by argparse as a flag; fixed point is not.
     for flag in ("--effect", "--interval-low", "--interval-high", "--probability-positive"):
         assert "e" not in argv[argv.index(flag) + 1]
     assert "--replace" in argv
@@ -466,7 +425,6 @@ def test_the_slope_arm_is_recorded_in_the_other_family():
     assert ARM_FAMILY["RS"] != ARM_FAMILY["KL"]
     assert ARM_FAMILY["BOTH"] == ARM_FAMILY["KL"]
     assert argv[argv.index("--classification") + 1] == "unresolved_below_power"
-    # A negative reading is still unresolved: no closing ground is ever claimed.
     assert "--closing-ground" not in argv
 
 

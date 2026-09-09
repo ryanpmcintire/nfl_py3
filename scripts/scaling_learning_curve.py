@@ -42,9 +42,6 @@ REPO = Path(__file__).resolve().parents[1]
 DEFAULT_CFB_FEATURES = REPO / "data/processed/cfb_game_features.parquet"
 DEFAULT_NFL_FROZEN_PREDICTIONS = REPO / "artifacts/margins/20260818T012407Z/predictions.parquet"
 
-# Doubling grid: the standard scaling-law convention, easy to reason about on
-# a log axis. "full" means no truncation -- every completed game strictly
-# before the cutoff, i.e. the frozen benchmark's own behavior.
 CFB_TRAIN_SIZE_GRID: tuple[int | str, ...] = (100, 200, 400, 800, 1600, 3200, 6400, "full")
 CFB_TEST_START_SEASON = 2023
 CFB_TEST_END_SEASON = 2025
@@ -186,9 +183,6 @@ def nfl_frozen_reslice(
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -222,8 +216,6 @@ def main() -> None:
     )
     intervals.to_csv(output / "cfb_learning_curve_intervals.csv", index=False)
 
-    # Actual mean train_rows realized per arm (may be < the nominal K for the
-    # earliest scored weeks if fewer than K games were available yet).
     train_rows_by_method = predictions.groupby("method")["train_rows"].mean()
     k_methods = [m for m in summary["method"] if m.startswith("k_")]
     curve_points = (

@@ -128,20 +128,10 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file, stamp_sidecar
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "bye_edge_fade_overlay"
 
-#: Ported verbatim from scripts/bye_overvaluation_screen.py:58 -- the STRICT
-#: bye definition: a >=12-calendar-day gap to a team's own immediately
-#: preceding REG-season game. Kept exactly, not re-derived.
 POST_BYE_GAP_DAYS = 12
 
-#: The merged-in flags travel under these module-private names -- a
-#: collision-safety measure mirroring surface_switch_tilt_overlay's
-#: OVERLAY_FLAG_COLUMN: a predictions frame that happens to already carry a
-#: same-named ``home_off_bye``/``away_off_bye`` column collides silently
-#: instead of crashing, and this module's own schedules-derived flag always
-#: wins.
 HOME_OFF_BYE_COLUMN = "_bye_edge_fade_home_off_bye"
 AWAY_OFF_BYE_COLUMN = "_bye_edge_fade_away_off_bye"
 
@@ -321,8 +311,6 @@ def apply_bye_edge_fade_overlay(
     )
     for column in (HOME_OFF_BYE_COLUMN, AWAY_OFF_BYE_COLUMN):
         if column not in merged.columns:
-            # Absence path: nothing to read means nothing flips -- the
-            # documented no-op, never a KeyError.
             merged[column] = False
         merged[column] = merged[column].fillna(False).astype(bool)
 
@@ -514,8 +502,6 @@ def record_bye_edge_fade_challenger_decisions(
         )
         ledger_path = challenger_ledger_path(artifacts_root)
         atomic_parquet(combined[list(CHALLENGER_DECISION_COLUMNS)], ledger_path)
-        # ENG-38: stamp which commit appended these rows -- a JSON sidecar,
-        # not a rewrite of the parquet ledger itself.
         stamp_sidecar(
             ledger_path, extra={"challenger_id": CHALLENGER_ID, "rows_appended": len(decisions)}
         )

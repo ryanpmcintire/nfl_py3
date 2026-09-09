@@ -68,15 +68,11 @@ def build_recruit_to_nfl_crosswalk(
         & draft["_college_espn_id"].ne("0")
     )
     draft = draft.loc[draft_valid].copy()
-    # CFBD's NFL id is never a join key here, but conflicting values for one
-    # college identity still indicate an ambiguous source crosswalk.
     draft["_cfbd_nfl_id"] = draft["nflAthleteId"].astype("string").str.strip()
     draft_conflict_counts = draft.groupby("_college_espn_id", sort=False)["_cfbd_nfl_id"].nunique(
         dropna=False
     )
     ambiguous_draft_ids = set(draft_conflict_counts[draft_conflict_counts.gt(1)].index)
-    # Historical CFBD rows reuse some collegeAthleteId values for different
-    # people.  Exclude those keys rather than allowing a false identity join.
     draft = draft.loc[~draft["_college_espn_id"].isin(ambiguous_draft_ids)].copy()
     draft["nfl_espn_id"] = draft["_college_espn_id"]
     draft = draft.drop_duplicates(subset=["_college_espn_id", "nfl_espn_id"]).reset_index(drop=True)

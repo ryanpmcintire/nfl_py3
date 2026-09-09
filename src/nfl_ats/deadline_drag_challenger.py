@@ -37,10 +37,8 @@ from nfl_ats.transaction_flag_features import (
     default_transactions_index,
 )
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "weak_stack_deadline_drag"
 
-#: The candidate refits production plus the deadline flag alone.
 CANDIDATE_FEATURE_PROFILE: MarginFeatureProfile = "weak_stack_deadline_drag"
 
 

@@ -81,51 +81,22 @@ import reliability_map as relmap  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 from nfl_ats.weak_signals import default_registry_path, load_registry  # noqa: E402
 
-# --------------------------------------------------------------------------
-# Feature tables each group's cells were actually scored on (read from the
-# cells' own artifact metadata, not guessed from the name).
-# --------------------------------------------------------------------------
-
-#: artifacts/player_experiments/20260813T122348Z/metadata.json,
-#: provenance.feature_table.path -- the exact table the player-family ablation
-#: ladder was fitted on (manifest decision_hours_before_kickoff=24, Saturday).
 PLAYER_VALUE_TABLE = REPO / "data" / "processed" / "game_features_player_value.parquet"
 
-#: artifacts/participation_experiments/20260813T132030Z/metadata.json,
-#: provenance.feature_table.path.
 PARTICIPATION_TABLE = REPO / "data" / "processed" / "game_features_player_participation.parquet"
 
-#: The injury-channel experiments' own game-level input table.
 PBP_TABLE = REPO / "data" / "processed" / "game_features_pbp.parquet"
 
-#: MEASURED 2026-09-01: of the three snapshots under data/raw/nflcom_injuries,
-#: only 20260821T222602Z holds rows (17,483, seasons 2022-2024); both
-#: 20260825T* snapshots hold ZERO rows. The screens select their snapshot with
-#: ``latest()`` = lexicographically newest, so running them unpinned today
-#: would silently produce all-zero Out-counts. This is the snapshot the
-#: registry cells were actually measured on (their source artifact is
-#: artifacts/nflcom_friday_designation_screen/20260821T224931Z, 2026-08-21).
 NFLCOM_SNAPSHOT = REPO / "data" / "raw" / "nflcom_injuries" / "20260821T222602Z"
 
-#: The frozen QB-news artifact. The screen's PFR phase needs a live, budget-
-#: truncated network fetch, so its flag is NOT deterministically rebuildable;
-#: this artifact is the run the registry cell was recorded from.
 QB_NEWS_ARTIFACT = REPO / "artifacts" / "qb_news_channel" / "20260820T093852Z"
 
 STATUS_NEAR_CONSTANT = "not_informative_near_constant"
 STATUS_NO_TRAIT = "no_underlying_trait"
 STATUS_DATA_MISSING = "data_not_present_locally"
 
-#: A parent column with fewer than this many distinct values, or with fewer
-#: than this share of non-zero rows, is reported as
-#: ``not_informative_near_constant`` rather than recorded.
 NEAR_CONSTANT_MIN_DISTINCT = 3
 NEAR_CONSTANT_NONZERO_SHARE = 0.02
-
-
-# --------------------------------------------------------------------------
-# Small shared helpers
-# --------------------------------------------------------------------------
 
 
 def _clean(value: Any) -> Any:
@@ -198,13 +169,6 @@ def _near_constant(series: pd.Series, *, binary_flag: bool = False) -> tuple[boo
         return True, stats
     stats["sparse_event_flag"] = bool(stats["nonzero_share"] < NEAR_CONSTANT_NONZERO_SHARE)
     if binary_flag:
-        # A sparse flag is a CAVEAT, not a veto. Its split-half is carried by
-        # "does this unit have any exposure at all", which is inflated when one
-        # event spans both halves -- reported loudly, and EXPOSURE is not an
-        # admissible closing ground either way. It is only treated as an
-        # artifact when the value actually behaves like one, i.e. flips with
-        # the season window; every sparse flag here was measured on two
-        # disjoint windows and none flipped (see the artifact's era slices).
         return False, stats
     degenerate = (
         stats["n_distinct"] < NEAR_CONSTANT_MIN_DISTINCT
@@ -370,46 +334,6 @@ def target_entries(names: list[str]) -> dict[str, dict[str, Any]]:
         }
     return out
 
-
-# ==========================================================================
-# Group 1 -- injury_value_lost_* (8 cells)
-# ==========================================================================
-#
-# The construct behind all eight is ``injury_value_lost_narrowed``'s D-A
-# contrast: the ``player_value`` arm minus the ``player`` arm, i.e. the
-# marginal feature block ``FEATURE_FAMILIES["player_values"]`` =
-# ``diff_injury_skill_epa_value_lost`` + ``diff_injury_defense_disruption_
-# value_lost`` (read: src/nfl_ats/constants.py FEATURE_FAMILIES, and
-# src/nfl_ats/margin.py:113-118 where ``player_injury_value`` / ``player_value``
-# add exactly that family). The parent team-week quantities are therefore
-# ``injury_skill_epa_value_lost`` and ``injury_defense_disruption_value_lost``.
-#
-# DOES THE UNDERLYING QUANTITY CHANGE ACROSS THE VARIANTS? Two answers, and
-# they must not be merged:
-#
-#  * ``tuesday_cutoff_official`` / ``tuesday_cutoff_pft_augmented`` and the two
-#    ``tuesday_saturday_channel_*`` deltas: NO. Read
-#    scripts/injury_tuesday_cutoff_experiment.py:24-40 -- the arm pre-filters
-#    the INJURIES DATAFRAME to rows whose own ``date_modified`` is at or before
-#    that game's Tuesday noon and then calls the unmodified
-#    ``enrich_with_player_features``; "every other piece of accumulated state
-#    ... is built from strictly prior COMPLETED games and is untouched by this
-#    parameter". Same construct, read at a different report timestamp, so by
-#    the registry's own ``attention_battery_*`` precedent they would inherit
-#    the Saturday trait's number -- EXCEPT that the Tuesday filter leaves so
-#    few visible rows that the arm's own column can be degenerate, which is
-#    itself decision-relevant, so each arm is measured on its own table.
-#  * ``prior_week_absence`` / ``prior_week_report`` and their
-#    ``_saturday_channel`` deltas: YES. Read
-#    scripts/injury_prior_week_variant_experiment.py:169-250 -- these replace
-#    the injuries table with a SYNTHETIC one keyed at the current week but
-#    built only from last week's zero-snap players (severity fixed at 1.0 for
-#    the absence arm). Same functional form and column names, a DIFFERENT
-#    input population. They do not inherit the Saturday number.
-#
-# The four ``*_channel`` cells are PAIRED DELTAS between two arms on the same
-# games, so their parent is both arms' columns and the reported number is the
-# minimum over all four, the same conservative rule the feature blocks use.
 
 INJURY_VALUE_COLUMNS = ("injury_skill_epa_value_lost", "injury_defense_disruption_value_lost")
 
@@ -655,17 +579,6 @@ def _member_summary(measured: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-# ==========================================================================
-# Group 2 -- player_family_base_vs_* (8) and participation (1)
-# ==========================================================================
-#
-# Each cell is a feature-BLOCK ablation: profile X vs the ``base`` profile.
-# The block a cell adds is exactly the FEATURE_FAMILIES difference between the
-# two profiles' FEATURE_SETS entries (read: src/nfl_ats/constants.py lines
-# 686-775, and src/nfl_ats/margin.py:96-121 which maps each profile name to
-# its ("football_*", "full_*") feature-set pair). The member columns are
-# ``diff_<metric>``; the parent team-week quantity is ``<metric>``.
-
 PLAYER_FAMILY_BLOCKS: dict[str, tuple[str, ...]] = {
     "player_family_base_vs_qb": ("player_qb",),
     "player_family_base_vs_injuries": ("player_injuries",),
@@ -779,22 +692,6 @@ def measure_block_group(
         )
     return rows, long
 
-
-# ==========================================================================
-# Group 3 -- nflcom_* (7 cells)
-# ==========================================================================
-#
-# Parent quantities are the NFL.com FINAL Friday/Saturday league injury page's
-# own per-(season, week, team) counts, a distinct external source from the
-# nflverse ``injury_*`` family measured in Group 1. Read:
-#   scripts/nflcom_friday_designation_screen.py:239-250 (attach_flags's
-#   groupby(["season","week","team"]).agg -> q_or_worse_any / out_count /
-#   starter_q_or_worse / new_vs_tuesday, then left-merged onto the team-game
-#   population and ZERO-FILLED), and :257-259 for the three thresholds;
-#   scripts/nflcom_friday_refresh_feature.py:116-144 (build_out_counts ->
-#   total_out / starter_out on the same key) and :222-226 for the thresholds.
-# The counts are measured on the zero-filled team-game population, matching the
-# builder's own analysis frame rather than the raw report rows.
 
 NFLCOM_CELL_PARENTS: dict[str, tuple[str, str, str]] = {
     "nflcom_friday_out_count_ge2": (
@@ -945,27 +842,6 @@ def measure_nflcom_group(
     return rows, {"inputs": info, "replications": replications}, work
 
 
-# ==========================================================================
-# Group 4 -- interim_hc_* (7) and player_arrests_* (5): EXPOSURE
-# ==========================================================================
-#
-# Every one of these cells is a per-team-game FLAG with no continuous parent
-# in its builder. Read: src/nfl_ats/experiment_runner.py -- ``_flag_interim_hc_
-# active`` (2707), ``_flag_interim_hc_first_game`` (2738), ``_flag_interim_hc_
-# home`` (2764), ``_flag_interim_hc_fired_year_one`` (2791) and
-# ``_flag_recent_player_arrest`` (643), each of which hard-declares
-# ``reliability=None`` with a ``reliability_note`` saying the construct is "a
-# one-off situational event ... there is nothing to split-half" / "a per-game
-# event exposure, not a persistent team trait". Each cell's own spec under
-# registry/experiment_specs/ repeats that as ``reliability_check.method =
-# "not_applicable"``.
-#
-# METHOD_EXPOSURE measures a strictly different thing from what those notes
-# decline: not "is this a persistent trait" but "does the flag mark stable
-# team-season structure, or pure event churn". A low value here is NOT an
-# admissible ``no_split_half_reliability`` ground, and nothing here reclassifies
-# any cell.
-
 FLAG_CELLS: dict[str, dict[str, Any]] = {
     "interim_hc_active": {
         "builder": "interim_hc_active",
@@ -996,13 +872,6 @@ FLAG_CELLS: dict[str, dict[str, Any]] = {
         "builder": "interim_hc_home",
         "params": {},
         "flag_column": "is_home",
-        # The hazard the sweep doc names, in its purest form: every team plays
-        # almost exactly half its games at home, so the home-exposure rate has
-        # essentially NO cross-team variance, and the odd/even split-half is
-        # forced negative by the balance constraint (a home-heavy odd half
-        # forces a road-heavy even half). Any |r| here is a property of the
-        # schedule, not of the world. Reported with the number shown, never
-        # recorded.
         "structural": (
             "structurally_balanced_by_schedule: is_home exposure is ~0.5 for every team-season "
             "by schedule construction, so the odd/even split-half is forced negative by the "
@@ -1137,22 +1006,6 @@ def measure_flag_group(
     return rows, control_long
 
 
-# ==========================================================================
-# Group 5 -- fluview_* (2 cells)
-# ==========================================================================
-#
-# Parent: the CDC/Delphi FluView regional influenza-like-illness index ``ili``,
-# read point-in-time-safe as of each game's own Tuesday cutoff. Read:
-# scripts/fluview_battery_screen.py:159-196 (build_checkpoint_tables),
-# :262-300 (attach_asof_ili -> home_ili/away_ili) and :303-318
-# (build_state_week_panel). The registry's screen-stage siblings
-# fluview_home_market_elevated / fluview_away_market_elevated already carry
-# reliability 0.98144757 measured on the STATE-season panel over the full
-# 2010-2025 archive (read: registry/weak_signals.json). The two cells here are
-# opener-graded confirmations on much narrower windows, so both the team-season
-# number (which is what METHOD_TRAIT's unit means) and the state-season number
-# (comparable to the recorded 0.98) are measured on the cell's OWN seasons.
-
 FLUVIEW_CELLS = (
     "fluview_home_market_elevated_opener_confirmation",
     "fluview_home_market_elevated_opener_confirmation_2022_2023",
@@ -1246,30 +1099,6 @@ def measure_fluview_group(
     return rows, info, team_long
 
 
-# ==========================================================================
-# Group 6 -- season-constant parents: ffc_adp_* (6) and hc_year_one_fade (1)
-# ==========================================================================
-#
-# ffc_adp: MEASURED 2026-09-01 -- artifacts/ffc_adp/20260822T004750Z/
-# team_top8_feasibility.parquet has NO ``week`` column and is unique on
-# (year, scoring, franchise_code), and the screen's own disclosure
-# (scripts/ffc_adp_divergence_screen.py:422-426) says "ADP is a preseason
-# covariate with NO in-season refresh". ``residual_z`` (145-175) is a
-# deterministic within-season transform of it. So every ADP quantity is
-# CONSTANT within a team-season, and its odd/even-week split-half is exactly
-# +1.0 by construction -- an artifact of the degeneracy, not a trait.
-#
-# hc_year_one_fade: the ``year_one`` flag is built per (team, season) at
-# scripts/hc_year_one_fade.py:120-135 from ``team_season_primary_coach``
-# (107-117, the modal coach over the whole REG season) and broadcast to every
-# week (:193). Same degeneracy.
-#
-# Both are reported with the degenerate number SHOWN, never recorded, plus a
-# reported-only cross-SEASON diagnostic (does a team's value in odd seasons
-# predict its value in even seasons) which is a legitimate question about the
-# same quantity but is not one of the sweep's three methods and so is never
-# written to the registry.
-
 FFC_CELLS: dict[str, str] = {
     "ffc_adp_cellA_highadp_underdog_back_ppr_w14": "ppr",
     "ffc_adp_cellB_adpwins_residual_pos_back_ppr_w14": "ppr",
@@ -1328,7 +1157,6 @@ def measure_ffc_group(
         scoring: ffc.add_residual_z(ffc.load_adp(adp_root, scoring), prior_wins)
         for scoring in ("ppr", "standard")
     }
-    # The screen's own population clip: weeks 1-4 (:313, WEEK_BLOCK_MAX).
     games = schedule.loc[schedule["week"] <= ffc.WEEK_BLOCK_MAX]
     weeks = pd.concat(
         [
@@ -1459,23 +1287,6 @@ def measure_hc_year_one(
     }
 
 
-# ==========================================================================
-# Group 7 -- qb_news_backup_visible_by_deadline_screen (1 cell)
-# ==========================================================================
-#
-# The cell's flag is ``_news_visible_flag`` (read:
-# scripts/qb_backup_news_visibility.py:684-692): a backup-QB start whose
-# earliest PFT/PFR news match lands in a pre-Sunday visibility bucket, joined
-# onto the eligible population on ``game_id|team``. The eligible population
-# (:550-552) is deterministic and is rebuilt here by importing the screen's own
-# ``ground_truth_long_table``; the PFR half of the match, however, needs a live
-# network fetch that the script itself budget-truncates
-# (PFR_MAX_FETCHES / PFR_FETCH_WALLCLOCK_BUDGET_SECONDS, :436-444), so the
-# BUCKET column is taken from the frozen artifact the registry cell was
-# recorded from rather than re-fetched. No continuous parent exists: match_pft
-# (:290-348) keeps only the earliest timestamp and never a headline count.
-
-
 def measure_qb_news(
     entries: dict[str, dict[str, Any]], *, n_boot: int
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -1554,11 +1365,6 @@ def measure_qb_news(
         "backup_rows_in_artifact": len(detail),
         "pre_sunday_visible": int(pre_sunday.sum()),
     }
-
-
-# ==========================================================================
-# Driver
-# ==========================================================================
 
 
 def main() -> int:
@@ -1680,7 +1486,6 @@ def main() -> int:
     if len(rows) != len(entries):
         raise SystemExit(f"produced {len(rows)} rows for {len(entries)} entries")
 
-    # ---- battery-level replication correlations -------------------------
     batteries = {
         "nflcom_friday_designation": [
             "nflcom_friday_out_count_ge2",
@@ -1707,7 +1512,6 @@ def main() -> int:
         }
         battery_replication[battery] = rlib.battery_replication_correlation(cells)
 
-    # ---- positive control at each distinct unit structure ---------------
     controls: dict[str, Any] = {}
     windows = sorted({tuple(row["seasons"]) for row in rows})
     for label, (frame, unit_col) in control_frames.items():

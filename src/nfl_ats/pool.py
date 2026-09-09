@@ -150,34 +150,6 @@ def straight_up_pool_markdown(card: pd.DataFrame, season: int, week: int) -> str
     )
 
 
-# ---------------------------------------------------------------------------
-# Contest simulator (POL-05): probability of finishing first
-# ---------------------------------------------------------------------------
-#
-# Model, stated in full because every conclusion drawn from it is only as good
-# as these assumptions:
-#
-# * **Games are independent.** Each game resolves ATS with no push (Splash posts
-#   half-point numbers, so a push cannot occur), and our side covers with a
-#   stated probability. Cross-game correlation in ATS residuals is small; the
-#   simulator does not model it, and any conclusion sensitive to it is flagged.
-# * **The field is correlated but uninformed.** Every entrant independently
-#   takes the *public* side of each game with probability ``public_lean``. The
-#   public side is a property of the game, not of the outcome, so a field entrant
-#   is a 50% ATS picker by construction while entrants still resemble each other
-#   -- which is what makes a pool hard to win. ``public_lean = 0.5`` gives an
-#   uncorrelated random field; ``1.0`` gives a monolithic one.
-# * **Field Best Picks are uniform** over the week's games and drawn independently
-#   of the rest of that entrant's card. The dependence ignored there is one game
-#   out of ~285; our own Best Pick is handled exactly.
-#
-# Conditional on the outcome vector the entrants are i.i.d., and each entrant's
-# per-game correctness probability takes only two distinct values. That is why
-# the field is drawn as a sum of two binomials rather than a
-# (samples x entrants x games) array of coin flips: it is exact, not an
-# approximation, and it is what makes a parameter sweep affordable.
-
-
 @dataclass(frozen=True)
 class PoolFormat:
     """Scoring rules of a forced-pick ATS pool.

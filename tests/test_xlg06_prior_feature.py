@@ -31,9 +31,6 @@ def _linked() -> pd.DataFrame:
 
 def _panel_rows() -> pd.DataFrame:
     rows = []
-    # AAA (HOME): two 2020 weeks then a loud 2021 week. BBB (AWAY): one 2020
-    # week plus a quiet 2021 week, interleaved after AAA's rows. CCC: never
-    # plays (no rows) -> cannot move any team value.
     for season, week, snaps, epa in (
         (2020, 1, 50.0, 5.0),
         (2020, 2, 50.0, 5.0),
@@ -110,18 +107,14 @@ def test_wiring_is_additive_and_guarded() -> None:
 def test_g1_uses_only_strictly_prior_weeks() -> None:
     out = derive_prior_expectations(_games(), _panel_rows(), _linked(), PARAMS)
     g1 = out.loc[out["game_id"].eq("G1")].iloc[0]
-    # AAA at G1 (2020w3): career 100 snaps / 10 EPA over 2 games.
     expected_home = blend_prior(0.90, 5.0, 100.0, intercept=0.0, slope=1.0, n0=300.0)
     assert g1["home_rookie_prior_skill"] == pytest.approx(expected_home)
-    # BBB at G1: career 40 snaps / 2 EPA over 1 game.
     expected_away = blend_prior(0.80, 2.0, 40.0, intercept=0.0, slope=1.0, n0=300.0)
     assert g1["away_rookie_prior_skill"] == pytest.approx(expected_away)
     assert g1["diff_rookie_prior_skill"] == pytest.approx(expected_home - expected_away)
 
 
 def test_post_cutoff_rows_cannot_move_a_prior() -> None:
-    # A row dated after BOTH games (2021w7) is post-cutoff for each and must
-    # move nothing; a row between the games would legitimately enter G2.
     panel = _panel_rows()
     future = pd.DataFrame(
         [
@@ -143,8 +136,6 @@ def test_post_cutoff_rows_cannot_move_a_prior() -> None:
 
 
 def test_cross_player_state_never_leaks() -> None:
-    # AAA's loud 2021 week (600 EPA) must not move BBB's G2 prior: BBB's
-    # career is its own 70 snaps / 3.0 EPA over 2 games.
     out = derive_prior_expectations(_games(), _panel_rows(), _linked(), PARAMS)
     g2 = out.loc[out["game_id"].eq("G2")].iloc[0]
     expected_away = blend_prior(0.80, 1.5, 70.0, intercept=0.0, slope=1.0, n0=300.0)

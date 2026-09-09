@@ -439,7 +439,6 @@ def record_player_arrests_no_overlay_incumbent_decisions(
     if kickoffs.isna().any():
         raise DataContractError("Active forecast card has games without a kickoff timestamp")
 
-    # Imported lazily to avoid the intentional card_view -> this module edge.
     from nfl_ats.card_view import resolve_overlay
 
     incumbent = resolve_overlay(card, data_root)

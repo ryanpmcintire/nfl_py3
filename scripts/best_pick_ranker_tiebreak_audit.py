@@ -58,19 +58,6 @@ from nfl_ats.provenance import write_stamped_artifact
 REPO = Path(__file__).resolve().parents[1]
 ART = REPO / "artifacts" / "best_pick_ranker"
 
-# Empirical width-inflation factors as first measured in
-# docs/estimation_variance.md Part I (naive-vs-honest, refit-aware bootstrap):
-# two synthetic ground-truth DGPs (null: 1.575x, real effect: 1.176x) and two
-# real CFB comparisons (A, large disagreement fraction f: 1.037x; B, small f:
-# 1.330x). That measured range, 1.037x-1.575x ("17-58% too narrow"), is RETRACTED
-# by Part II of the same document (2026-08-18): it double-counted a
-# training-by-game interaction the game bootstrap already carries. The honest
-# refit factor is 1.003x, one-sided 95% upper bound 1.099x -- the real defect
-# was D4 (too few blocks), not D2. These four factors are kept exactly as
-# measured, unchanged, so the sweep below still functions as a sensitivity
-# bound: even the most generous of them (1.575x, the retracted ceiling) barely
-# moves probability_positive, so the corrected, much smaller 1.003x-1.099x
-# factor moves it even less.
 D2_INFLATION_FACTORS = {
     "min_measured_1.037x_comparisonA_large_f": 1.037,
     "headline_floor_1.17x_17pct": 1.17,
@@ -127,12 +114,6 @@ def analyse(
     n_weeks = len(weekly_df)
     n_ties = int((weekly_df["n_tied_at_max"] > 1).sum())
 
-    # Monte Carlo over uniformly-random tie-breaks: for each of `mc_draws`
-    # replicate "seasons", draw one nomination per week uniformly among that
-    # week's tied maximum, and record the resulting season top-1 accuracy.
-    # This places the recorded alphabetical result within the distribution of
-    # accuracies an arbitrary (but not alphabetical) tie-break could have
-    # produced -- how much of the recorded number is tie-break luck.
     mc_rng = np.random.default_rng(seed + 1)
     mc_accs = np.empty(mc_draws)
     for d in range(mc_draws):
@@ -244,18 +225,11 @@ def main() -> None:
         seed=args.seed,
     )
 
-    # D2 sensitivity applied to the RECORDED opener-confirmation numbers, read
-    # from artifacts/best_pick_ranker/opener_2020_2021.json: estimate
-    # 0.08684210526315783, bootstrap_lower -0.06997804357245584,
-    # bootstrap_upper 0.2288232557466831.
     d2_recorded = d2_sensitivity(
         naive_lower=-0.06997804357245584,
         naive_upper=0.2288232557466831,
         estimate=0.08684210526315783,
     )
-    # Same sensitivity applied to the honest tie-break-agnostic delta
-    # recomputed above -- the actually-defensible estimate once both defects
-    # (D2 narrowness and the alphabetical artifact) are corrected together.
     tba = opener["week_blocked_bootstrap_recompute"]["tie_agnostic"]
     d2_tie_agnostic = d2_sensitivity(
         naive_lower=tba["lower"], naive_upper=tba["upper"], estimate=opener["tie_agnostic_delta"]
@@ -268,7 +242,7 @@ def main() -> None:
         "d2_sensitivity_tie_break_agnostic": d2_tie_agnostic,
     }
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(results, args.out)  # ENG-38
+    write_stamped_artifact(results, args.out)
     print(json.dumps(results, indent=2))
 
 

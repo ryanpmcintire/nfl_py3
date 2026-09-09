@@ -42,7 +42,6 @@ def _predictions(**per_game: float) -> pd.DataFrame:
 
 
 def test_width_is_the_contiguous_run_around_the_quote() -> None:
-    # Holds >= 0.5 from offset -1.0 through +2.0, i.e. a three-point run.
     probabilities = np.where((OFFSETS >= -1.0) & (OFFSETS <= 2.0), 0.6, 0.4)
     picks = pd.DataFrame({"game_id": ["g"], "pick": ["HOME"]})
     widths = sweep_robustness(_sweep(g=probabilities), picks)
@@ -53,7 +52,7 @@ def test_a_run_is_contiguous_not_a_total_count() -> None:
     """An island of support away from the quote must not inflate the width."""
 
     probabilities = np.where((OFFSETS >= -0.5) & (OFFSETS <= 0.5), 0.6, 0.4)
-    probabilities[OFFSETS >= 3.0] = 0.9  # detached island, must be ignored
+    probabilities[OFFSETS >= 3.0] = 0.9
     picks = pd.DataFrame({"game_id": ["g"], "pick": ["HOME"]})
     assert sweep_robustness(_sweep(g=probabilities), picks)["g"] == 1.0
 
@@ -68,8 +67,8 @@ def test_away_picks_use_the_complement() -> None:
     away = sweep_robustness(
         _sweep(g=probabilities), pd.DataFrame({"game_id": ["g"], "pick": ["AWAY"]})
     )
-    assert home["g"] == 0.0  # home is behind at the quote
-    assert away["g"] == 2.0  # away leads across the two-point run
+    assert home["g"] == 0.0
+    assert away["g"] == 2.0
 
 
 def test_best_pick_takes_the_widest_run() -> None:
@@ -85,7 +84,6 @@ def test_ties_break_on_game_id_so_the_choice_is_reproducible() -> None:
     predictions = _predictions(b_game=0.6, a_game=0.6)
     sweep = _sweep(b_game=same, a_game=same)
     assert select_best_pick(predictions, sweep) == "a_game"
-    # Row order of the card must not change the nomination.
     assert select_best_pick(predictions.iloc[::-1], sweep) == "a_game"
 
 

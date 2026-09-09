@@ -88,7 +88,6 @@ def score(output: Path) -> dict[str, Any]:
     union = arrest_ids | {flip.game_id for result in overlays for flip in result.flips}
     games = pd.read_parquet(output / "games.parquet")
     events = pd.read_parquet(output / "events.parquet")
-    # Recompute cutoff/flags from events so DST fixes cannot leave cached flags stale.
     games = attach_midweek_steam(games, events)
     exposure_ids = set(events.loc[events["before_cutoff"], "game_id"])
     games["any_steam_exposure"] = games["game_id"].isin(exposure_ids).astype(float)
@@ -207,8 +206,6 @@ def score(output: Path) -> dict[str, Any]:
         table = output / f"{name}.parquet"
         frame.to_parquet(table, index=False)
         stamp_sidecar(table)
-    # Keep experiment provenance within this lane's writable artifact tree;
-    # the shared weak-signal registry is written separately via its record CLI.
     write_experiment_artifact(
         output,
         "results.json",

@@ -84,36 +84,10 @@ import pandas as pd
 from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.margin import make_margin_estimator
 
-#: MDE80 = coefficient * sqrt(f / n), points of forced-pick accuracy. Derived
-#: in the evaluator-power audit this module acts on; declared once so every
-#: caller reports the same constant instead of retyping it.
 DEFAULT_MDE80_COEFFICIENT = 280.0
 
-#: Below this many bootstrap blocks the percentile block-bootstrap interval is
-#: not a 95% interval and must not be reported as one. MEASURED, not adopted
-#: from prose: ``scripts/estvar_refit_intervals.py --study degeneracy`` sweeps
-#: the block count against the project's OWN estimand (paired forced-pick
-#: accuracy delta, per-game values in {-1, 0, +1}, zero on the games where both
-#: arms pick the same side) at f = 0.10 / 0.20 / 0.55, 2,000 replicates each,
-#: and takes the smallest k whose coverage of a known truth is not
-#: statistically below 0.90 -- the point at which the miss rate stops being
-#: MORE than double the nominal 5%. Measured mean coverage:
-#:
-#:     k       1     2     3     4     5     6     8    10    13    17
-#:     cov  0.000 0.466 0.705 0.760 0.817 0.845 0.882 0.896 0.913 0.921
-#:
-#: k=8 is 4.6 standard errors below 0.90; k=10 is 1.0 below, i.e. the first
-#: block count that is not demonstrably worse. ``docs/anytime_valid.md`` sec 6's
-#: "~4-5 blocks" floor is far too generous: coverage at 4 blocks is 0.76.
 MIN_BLOCKS_FOR_INTERVAL = 10
 
-#: Above this the coverage curve has plateaued (0.944 at 50 blocks, 0.947 at
-#: 199); between the two constants it is usable but measurably narrow (0.90 to
-#: 0.94). Same measurement. Note the plateau is at ~0.945, NOT 0.95: even with
-#: hundreds of blocks a percentile bootstrap of this skewed, zero-inflated
-#: statistic runs about half a point anti-conservative. That is a third,
-#: smaller source of narrowness on top of D2 and D4, and it does not go away
-#: with more blocks.
 RELIABLE_BLOCKS_FOR_INTERVAL = 50
 
 OnDegenerate = Literal["raise", "warn", "ignore"]
@@ -127,11 +101,6 @@ class BootstrapDegeneracyError(ValueError):
 
 class BootstrapDegeneracyWarning(UserWarning):
     """Warned when a block bootstrap's interval is reported below the floor."""
-
-
-# ---------------------------------------------------------------------------
-# D4: the degeneracy guard
-# ---------------------------------------------------------------------------
 
 
 def distinct_block_resamples(block_count: int) -> int:
@@ -160,13 +129,8 @@ class BlockCountVerdict:
 
     block_count: int
     distinct_resamples: int
-    #: True when the resampling distribution is too coarse for the reported
-    #: nominal coverage to be even approximately right.
     degenerate: bool
-    #: True when the interval is usable but measurably narrower than nominal.
     marginal: bool
-    #: The single worst case: exactly one achievable resample, so the interval
-    #: collapses to a point and excludes zero unless the estimate is exactly 0.
     collapses_to_point: bool
     message: str
 
@@ -244,11 +208,6 @@ def guard_block_count(
         if on_degenerate == "warn":
             warnings.warn(message, BootstrapDegeneracyWarning, stacklevel=3)
     return verdict
-
-
-# ---------------------------------------------------------------------------
-# Refitting the mean model under resampled training rows
-# ---------------------------------------------------------------------------
 
 
 def bootstrap_row_indices(n: int, *, n_boot: int, seed: int) -> npt.NDArray[np.int64]:
@@ -354,11 +313,6 @@ def bagged_values(refit_values: FloatArray) -> FloatArray:
     return np.asarray(np.mean(refit_values, axis=0), dtype=np.float64)
 
 
-# ---------------------------------------------------------------------------
-# Turning a predicted centre into a cover probability (mirrors margin.py)
-# ---------------------------------------------------------------------------
-
-
 def home_cover_probability_from_center(
     predicted_margin: FloatArray,
     lines: FloatArray,
@@ -402,11 +356,6 @@ def shrink_predicted_margin(
     )
 
 
-# ---------------------------------------------------------------------------
-# Paired intervals: naive (currently reported) vs. refit-aware (honest)
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class PairedInterval:
     estimate: float
@@ -414,15 +363,8 @@ class PairedInterval:
     upper: float
     probability_positive: float
     samples: int
-    #: 'naive' resamples games only (today's standard); 'refit_aware' also
-    #: resamples training rows and refits, once per outer draw.
     kind: str
-    #: How many bootstrap blocks the interval was built from. ``None`` when the
-    #: constructor did not record it (kept for backward compatibility).
     block_count: int | None = None
-    #: True when ``block_count`` is below the measured coverage floor, so the
-    #: bounds are NOT a valid interval. Downstream reporting must not render a
-    #: degenerate interval as a normal one.
     degenerate: bool = False
 
 
@@ -559,11 +501,6 @@ def refit_aware_paired_interval(
     )
 
 
-# ---------------------------------------------------------------------------
-# D2: paired refits, the variance decomposition, and the honest interval
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class PairedRefits:
     """Two arms refit on the SAME resampled training rows, scored on the SAME games.
@@ -576,8 +513,6 @@ class PairedRefits:
     row_indices: npt.NDArray[np.int64]
     baseline: FloatArray
     candidate: FloatArray
-    #: False only when built deliberately unpaired, which inflates the interval
-    #: by adding independent noise to each arm. Kept so the error is testable.
     paired: bool = True
 
 
@@ -707,18 +642,9 @@ def block_bootstrap_means(
 class RefitCommonVariance:
     """Training-side variance, split into the part the game bootstrap already carries and the part it does not."""  # noqa: E501
 
-    #: ``Var(a)``: the honest additive term, clamped at zero.
     common: float
-    #: ``Var(a)`` before clamping. Negative values are informative -- they mean
-    #: the true common variance is at or below the estimator's resolution.
     common_raw: float
-    #: Standard error of ``common_raw``. The covariance is estimated from
-    #: ``n_boot`` draws, so it is intrinsically noisier than either variance it
-    #: is built from; quoting the point estimate without this is how a number
-    #: indistinguishable from zero gets reported as a correction.
     common_se: float
-    #: ``Var(a) + Var(e)``: the raw spread of refit deltas on the fixed test
-    #: games. What the 2026-08-18 estimators used as the additive term.
     fixed_games: float
     draws: int
 
@@ -783,9 +709,6 @@ def refit_common_variance(
         covariances[index] = float(moments[0, 1])
         half_variances[index] = float(0.5 * (moments[0, 0] + moments[1, 1]))
     raw = float(np.mean(covariances))
-    # Standard error of a covariance from n paired draws. The split-to-split
-    # spread understates it badly (every split reuses the same draws), so it is
-    # computed from the moments instead.
     variance_product = float(np.mean(half_variances)) ** 2
     standard_error = math.sqrt(max(0.0, variance_product + raw * raw) / max(1, n_boot - 1))
     return RefitCommonVariance(
@@ -809,32 +732,15 @@ class VarianceDecomposition:
     ``refit_fixed_games_sd`` below for the size of the difference.
     """
 
-    #: SD of the delta from resampling GAMES around one fit -- what is reported.
     conditional_sd: float
-    #: The honest additive training term: ``sqrt(Var(a))``, the part of the
-    #: refit spread the game bootstrap does NOT already carry.
     refit_sd: float
-    #: Diagnostic: the raw SD of refit deltas on the fixed test games, i.e.
-    #: ``sqrt(Var(a) + Var(e))``. This is what the 2026-08-18 estimators added,
-    #: and the gap between it and ``refit_sd`` is the double-counted
-    #: interaction. Never use it as the additive term.
     refit_fixed_games_sd: float
-    #: sqrt(conditional_sd**2 + refit_sd**2).
     total_sd: float
-    #: total_sd / conditional_sd. 1.0 means refitting adds nothing.
     inflation_factor: float
-    #: One-sided 95% UPPER bound on ``inflation_factor``, from the standard
-    #: error of the common-variance estimate. When the point estimate sits
-    #: below its own standard error -- which is what happens on real CFB -- this
-    #: bound is the honest number to quote, and the point estimate alone is not.
     inflation_factor_upper: float
-    #: What the factor would have been under the double-counting decomposition,
-    #: kept so any re-reading of the published 17-58% band is reproducible.
     interaction_double_counted_factor: float
     refit_draws: int
     block_count: int
-    #: Fraction of (draw, game) cells where the two arms' refits pick opposite
-    #: sides -- the ``f`` that drives how large the inflation is.
     paired_refit_flip_fraction: float
     paired: bool
 
@@ -1186,11 +1092,6 @@ def _normal_quantile(p: float) -> float:
         u = error / density
         x = x - u / (1.0 + 0.5 * x * u)
     return x
-
-
-# ---------------------------------------------------------------------------
-# The f lever: MDE80 = 280 * sqrt(f / n), and gating a candidate's influence
-# ---------------------------------------------------------------------------
 
 
 def picks_differ_fraction(baseline_prob: FloatArray, candidate_prob: FloatArray) -> float:

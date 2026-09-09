@@ -76,22 +76,9 @@ MANIFEST_SCHEMA = "officials_pfr_wayback_manifest/1"
 DEFAULT_RAW_ROOT = REPO / "data" / "raw" / "officials_pfr_wayback"
 DEFAULT_OUTPUT = REPO / "artifacts" / "research" / "laneN" / "officials_coverage_report.json"
 
-#: A resumed manifest read can transiently collide with the sweep's own
-#: atomic ``manifest.json`` replace (measured once, 2026-09-07, WinError 5
-#: on Windows -- see the module docstring). A handful of near-instant
-#: retries clears a same-process-generation race without ever blocking a
-#: real user meaningfully.
 _MANIFEST_READ_ATTEMPTS = 5
 _MANIFEST_READ_RETRY_SECONDS = 0.05
 
-#: The seven on-field officiating positions actually observed in this
-#: archive (measured: ``data/processed/officials_pfr_wayback/20260907T140309Z/
-#: officials_2009_2014.parquet``'s ``position`` column has exactly these
-#: seven values across all 1,787 parsed rows -- Referee and Back Judge each
-#: 256/256 parsed games, the other five 255/256; no "Replay Official" row
-#: was ever parsed despite the sweep module's docstring naming it as a
-#: possible eighth position). A game counts as a COMPLETE crew here when
-#: every one of these seven labels is present at least once.
 CORE_CREW_POSITIONS = frozenset(
     {
         "Referee",
@@ -104,11 +91,6 @@ CORE_CREW_POSITIONS = frozenset(
     }
 )
 
-#: The NFL renamed "Head Linesman" to "Down Judge" for the 2017 season, well
-#: after this archive's 2009-2014 window; no live capture has ever produced
-#: "Down Judge" (measured: ``grep`` over every fetched page found none), but
-#: this alias keeps the completeness check correct if a future run's window
-#: ever moves past 2016.
 _POSITION_ALIASES: dict[str, str] = {"Down Judge": "Head Linesman"}
 
 _FAILURE_OUTCOMES = frozenset({"cdx_fetch_failed", "replay_fetch_failed", "no_capture_found"})
@@ -118,17 +100,12 @@ def normalize_position(position: str) -> str:
     return _POSITION_ALIASES.get(position, position)
 
 
-# ---------------------------------------------------------------------------
-# Manifest discovery and defensive loading
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class ManifestLoad:
     """The outcome of trying to read one run directory's ``manifest.json``."""
 
     run_dir: Path
-    status: str  # "ok" | "missing" | "busy" | "not_a_sweep_manifest"
+    status: str
     payload: dict[str, Any] | None
     detail: str | None = None
 
@@ -190,11 +167,6 @@ def load_run_manifest(
             "-- e.g. one of this run's own ad hoc diagnostic-probe manifests, a different shape",
         )
     return ManifestLoad(run_dir, "ok", payload, None)
-
-
-# ---------------------------------------------------------------------------
-# Per-game records
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -286,11 +258,6 @@ def failure_kind(record: GameRecord) -> str | None:
     return "unknown_failure" if record.outcome is not None else "never_attempted"
 
 
-# ---------------------------------------------------------------------------
-# Per (run, season) bucket table
-# ---------------------------------------------------------------------------
-
-
 @dataclass
 class SeasonBucket:
     run_id: str
@@ -376,11 +343,6 @@ def build_season_buckets(
     return buckets
 
 
-# ---------------------------------------------------------------------------
-# Cross-run duplicate / canonical resolution
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class DuplicateConflict:
     game_id: str
@@ -423,10 +385,6 @@ def resolve_canonical_games(
             timestamp = rec.wayback_capture_timestamp or ""
             return (captured_rank, timestamp)
 
-        # ``max`` with a key returns the FIRST maximal element on a tie, so
-        # ties (same captured state, same timestamp) resolve to whichever
-        # run directory was discovered first (``discover_run_dirs`` sorts by
-        # name, i.e. chronologically for timestamp-shaped run ids).
         winner = max(group, key=rank_key)
         canonical[game_id] = winner
         conflicts.append(
@@ -439,11 +397,6 @@ def resolve_canonical_games(
             )
         )
     return canonical, conflicts
-
-
-# ---------------------------------------------------------------------------
-# Referee-name coverage and complete-crew coverage, from the canonical view
-# ---------------------------------------------------------------------------
 
 
 def referee_coverage(canonical: dict[str, GameRecord]) -> dict[str, Any]:
@@ -491,12 +444,6 @@ def canonical_coverage_by_season(
     return rows
 
 
-# ---------------------------------------------------------------------------
-# Crew-tilt consumer status: does anything read this archive, and is there a
-# stated completeness bar?
-# ---------------------------------------------------------------------------
-
-
 def crew_tilt_consumer_status() -> dict[str, Any]:
     """What the crew-tilt feature builders actually read, read from source.
 
@@ -541,11 +488,6 @@ def crew_tilt_consumer_status() -> dict[str, Any]:
             "be made explicitly"
         ),
     }
-
-
-# ---------------------------------------------------------------------------
-# Top-level summary assembly
-# ---------------------------------------------------------------------------
 
 
 def build_summary(
@@ -634,11 +576,6 @@ def build_summary(
     return summary
 
 
-# ---------------------------------------------------------------------------
-# Text rendering
-# ---------------------------------------------------------------------------
-
-
 def render_text_report(summary: dict[str, Any]) -> str:
     lines: list[str] = []
     lines.append(f"officials coverage report -- generated {summary['generated_at_utc']}")
@@ -706,11 +643,6 @@ def render_text_report(summary: dict[str, Any]) -> str:
     lines.append(f"  stated completeness threshold: {consumer['stated_completeness_threshold']}")
     lines.append(f"  note: {consumer['note']}")
     return "\n".join(lines)
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 
 def main(argv: list[str] | None = None) -> int:

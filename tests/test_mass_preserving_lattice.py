@@ -63,10 +63,8 @@ def test_tilt_moves_weight_not_positions():
     mass, theta = tilted_atoms(margins, counts, line=3.0, target=6.0)
     assert np.isclose((margins * mass).sum(), 6.0)
     assert theta > 0.0
-    # The support is untouched: every base atom keeps its position and mass.
     assert mass.shape == margins.shape
     assert (mass > 0).all()
-    # The key-number spikes are still AT the key numbers, not beside them.
     for key in (3.0, 7.0, 10.0, 14.0):
         index = int(np.flatnonzero(margins == key)[0])
         assert mass[index] > mass[index - 1]
@@ -134,7 +132,6 @@ def test_future_same_week_and_old_seasons_cannot_leak():
     poisoned = pd.concat(
         [
             pool,
-            # Same week as the target, a later week, and a sixth season back.
             pd.DataFrame(
                 {
                     "game_id": ["same", "later", "ancient"],
@@ -181,9 +178,6 @@ def test_a_prior_game_completed_before_the_cutoff_does_enter():
     )
     after = mass_preserving(pd.concat([pool, extra], ignore_index=True), targets, 2.5)
     assert after.prior_rows.iloc[0] == before.prior_rows.iloc[0] + 1
-    # A margin of 40 is not in the fixture's support, so the completed earlier
-    # game adds an atom and the read moves. (It need not move UP: the tilt holds
-    # the mean fixed, so a new high atom is paid for by a more negative theta.)
     assert after.atoms.iloc[0] == before.atoms.iloc[0] + 1
     assert after.cover.iloc[0] != before.cover.iloc[0]
 
@@ -197,7 +191,6 @@ def test_build_pool_prefers_the_archived_opener_line(tmp_path, monkeypatch):
             "gameday": [pd.Timestamp("2020-09-10")] * 4,
             "game_type": ["REG", "REG", "REG", "WC"],
             "spread_line": [1.0, 2.0, 3.0, 4.0],
-            # The unplayed game and the postseason row must both drop out.
             "result": [7.0, -3.0, np.nan, 5.0],
         }
     )
@@ -234,7 +227,6 @@ def test_recorder_argv_is_admissible_and_names_no_closing_ground():
     assert argv[argv.index("--classification") + 1] == "unresolved_below_power"
     assert "--closing-ground" not in argv
     assert argv[argv.index("--probability-positive") + 1] == "0.126300000000"
-    # Scientific notation would be read by argparse as a flag; fixed point is not.
     assert "e" not in argv[argv.index("--effect") + 1]
 
 

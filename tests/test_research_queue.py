@@ -30,10 +30,6 @@ import scripts.research_queue as research_queue_cli
 from nfl_ats import research_queue, rotation, weak_signals
 from scripts.capture_scheduler import Job
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
 ROADMAP_TEXT = """\
 ## Phase 1 — other work
 
@@ -95,10 +91,6 @@ ROTATION_PAYLOAD = {
     "version": 1,
     "notes": [],
     "families": {
-        # One spent window, one block still eligible in the close pool
-        # ([2011, 2013], [2014, 2016] are the only two non-mined close-grade
-        # blocks given MIN_ELIGIBLE_START_SEASON=2011 and MINED_SEASONS
-        # (2018, 2025)) -> run_unspent_window.
         "alpha_family": {
             "declared_at": "2026-07-01",
             "description": "Alpha family screen only, not yet tested on production.",
@@ -108,8 +100,6 @@ ROTATION_PAYLOAD = {
             "acknowledges_mined_2018_2025": False,
             "windows": [_rotation_window((2011, 2013))],
         },
-        # Both non-mined close blocks spent, description has no "production"
-        # word -> test_on_top_of_production.
         "beta_family": {
             "declared_at": "2026-07-01",
             "description": "Beta family, screened but never measured on top of anything.",
@@ -122,8 +112,6 @@ ROTATION_PAYLOAD = {
                 _rotation_window((2014, 2016)),
             ],
         },
-        # Both blocks spent, name says on_production, latest verdict
-        # unresolved, no positive-control note -> run_positive_control.
         "beta_family_on_production": {
             "declared_at": "2026-07-01",
             "description": "Beta measured on top of the production weak_stack chain.",
@@ -136,8 +124,6 @@ ROTATION_PAYLOAD = {
                 _rotation_window((2014, 2016)),
             ],
         },
-        # Same shape, but a positive control was already sized ->
-        # run_reused_window_with_discount.
         "gamma_family_on_production": {
             "declared_at": "2026-07-01",
             "description": "Gamma measured on top of the production weak_stack chain.",
@@ -153,7 +139,6 @@ ROTATION_PAYLOAD = {
                 ),
             ],
         },
-        # An assigned, not-yet-recorded window -> record_pending_look.
         "delta_family": {
             "declared_at": "2026-07-01",
             "description": "Delta family, look drawn but not yet recorded.",
@@ -163,7 +148,6 @@ ROTATION_PAYLOAD = {
             "acknowledges_mined_2018_2025": False,
             "windows": [_rotation_window((2011, 2013), state="assigned", verdict=None)],
         },
-        # Admissible closed_negative -> closed.
         "epsilon_family": {
             "declared_at": "2026-07-01",
             "description": "Epsilon family, resolved wrong sign.",
@@ -252,31 +236,20 @@ def _row(rows_list, item_id: str):
     return matches[0]
 
 
-# ---------------------------------------------------------------------------
-# Row selection
-# ---------------------------------------------------------------------------
-
-
 def test_selects_phase_12_rows_regardless_of_status(rows) -> None:
     ids = {row.item_id for row in rows}
-    assert "LEAD-06" in ids  # ✅ status, still a Phase 12 lead
+    assert "LEAD-06" in ids
 
 
 def test_selects_non_phase_12_rows_only_when_they_name_a_declared_family(rows) -> None:
     ids = {row.item_id for row in rows}
-    assert "OTH-01" in ids  # 🚧, names alpha_family
-    assert "OTH-02" not in ids  # 🔬, names no family
-    assert "OTH-03" not in ids  # ✅ status outside Phase 12: excluded even though it names one
+    assert "OTH-01" in ids
+    assert "OTH-02" not in ids
+    assert "OTH-03" not in ids
 
 
 def test_row_count_matches_selection_rule(rows) -> None:
-    # OTH-01 + nine Phase 12 leads.
     assert len(rows) == 10
-
-
-# ---------------------------------------------------------------------------
-# Joins
-# ---------------------------------------------------------------------------
 
 
 def test_rotation_family_and_weak_signal_joins(rows) -> None:
@@ -296,20 +269,14 @@ def test_rows_without_a_matched_family_report_none(rows) -> None:
 def test_windows_used_and_unspent_reflect_the_rotation_registry(rows) -> None:
     alpha = _row(rows, "LEAD-01")
     assert alpha.windows_used == ("[2011, 2013]:unresolved",)
-    # rotation.eligible_blocks scans every start season, not just a fixed
-    # tiling, so both [2014, 2016] and [2015, 2017] are independently
-    # eligible (neither touches alpha_family's own spent [2011, 2013] nor
-    # the mined 2018-2025 seasons).
     assert alpha.windows_unspent == 2
 
     beta = _row(rows, "LEAD-02")
-    assert beta.windows_unspent == 0  # both non-mined close blocks spent
+    assert beta.windows_unspent == 0
 
 
 def test_last_attempt_prefers_the_later_of_rotation_and_weak_signal_dates(rows) -> None:
     alpha = _row(rows, "LEAD-01")
-    # rotation window spent_at=2026-07-15, weak signal recorded_at=2026-07-20: the
-    # signal is later and must win.
     assert alpha.last_attempt == "2026-07-20"
     assert alpha.last_attempt_source == "weak_signal"
     assert alpha.last_attempt_classification == "unresolved_below_power"
@@ -325,16 +292,11 @@ def test_never_attempted_row_reports_never_not_a_guess(rows) -> None:
 def test_required_source_keyword_match_and_captured_today(rows) -> None:
     lead07 = _row(rows, "LEAD-07")
     assert lead07.required_source == "injuries"
-    assert lead07.source_captured_today == "no"  # fixture injuries job is disabled
+    assert lead07.source_captured_today == "no"
 
     alpha = _row(rows, "LEAD-01")
     assert alpha.required_source == "unknown"
     assert alpha.source_captured_today == "unknown"
-
-
-# ---------------------------------------------------------------------------
-# next_admissible_action: every value in the fixed vocabulary, never "wait".
-# ---------------------------------------------------------------------------
 
 
 def test_next_admissible_action_run_unspent_window(rows) -> None:
@@ -391,11 +353,6 @@ def test_no_row_ever_needs_a_games_needed_field(rows) -> None:
         assert "games needed" not in row.next_admissible_action_detail.lower()
 
 
-# ---------------------------------------------------------------------------
-# Circular-run guard
-# ---------------------------------------------------------------------------
-
-
 def test_is_circular_true_when_family_reuses_its_own_seasons_without_disclosure() -> None:
     family = rotation.Family(
         name="solo_family",
@@ -441,8 +398,6 @@ def test_is_circular_false_with_no_overlap() -> None:
 
 
 def test_cross_family_reuse_true_without_disclosure(rotation_registry: rotation.Registry) -> None:
-    # beta_family and beta_family_on_production both spent [2011, 2013];
-    # neither window's notes disclose the overlap in this fixture.
     beta = rotation_registry.families["beta_family"]
     window = beta.windows[0]
     assert research_queue.cross_family_reuse(rotation_registry, "beta_family", window) is True
@@ -461,12 +416,7 @@ def test_cross_family_reuse_false_when_disclosed(rotation_registry: rotation.Reg
 
 def test_reuse_flag_is_exposed_on_the_row(rows) -> None:
     beta = _row(rows, "LEAD-02")
-    assert beta.reuse_flag is True  # shares its seasons with two other undisclosed families
-
-
-# ---------------------------------------------------------------------------
-# Capture-source mapping helpers
-# ---------------------------------------------------------------------------
+    assert beta.reuse_flag is True
 
 
 def test_capture_job_families_collapses_day_and_slot_suffixes() -> None:
@@ -489,11 +439,6 @@ def test_guess_required_source_matches_keywords() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Generated output never contains banned phrases; JSON/Markdown round-trip.
-# ---------------------------------------------------------------------------
-
-
 def test_generated_output_never_contains_banned_phrases(rows) -> None:
     payload = research_queue.queue_payload(rows)
     markdown = research_queue.queue_markdown(rows)
@@ -514,11 +459,6 @@ def test_markdown_header_says_generated(rows) -> None:
     markdown = research_queue.queue_markdown(rows)
     assert "Generated by `scripts/research_queue.py`" in markdown
     assert "Do not hand-edit" in markdown
-
-
-# ---------------------------------------------------------------------------
-# CLI --check contract
-# ---------------------------------------------------------------------------
 
 
 def _write_cli_fixture(tmp_path: Path) -> dict[str, Path]:

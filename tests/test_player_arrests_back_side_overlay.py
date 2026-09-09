@@ -41,16 +41,14 @@ def _safe_incidents() -> pd.DataFrame:
         {
             "record_id": ["r1", "r2", "r3", "r4", "r5", "r6"],
             "incident_date": [
-                "2024-09-03",  # JAX: 14 days before Tuesday, included.
-                "2024-09-02",  # BUF: 15 days before Tuesday, excluded.
-                "2024-09-17",  # IND: same Tuesday, excluded.
-                "2024-09-18",  # CHI: after Tuesday, excluded.
-                "2024-09-10",  # IND: seven days before Tuesday, included.
-                "2024-09-12",  # PIT: five days before Tuesday, included.
+                "2024-09-03",
+                "2024-09-02",
+                "2024-09-17",
+                "2024-09-18",
+                "2024-09-10",
+                "2024-09-12",
             ],
             "team": ["JAC", "BUF", "IN", "CHI", "IN", "PIT"],
-            # Retrospective source fields are intentionally present. The
-            # transformer must neither require nor inspect them.
             "outcome_archive_only": ["x"] * 6,
             "description_archive_only": ["private retrospective text"] * 6,
         }
@@ -68,8 +66,6 @@ def _predictions() -> pd.DataFrame:
             "home_team": ["BUF", "IND", "PIT", "CHI"],
             "away_team": ["JAX", "BUF", "IND", "BUF"],
             "spread_line": [3.0, -2.5, 1.5, 2.0],
-            # sole_flip opposes affected away JAX; sole_hold already backs
-            # affected home IND; both and neither are frozen no-ops.
             "home_cover_probability": [0.60, 0.60, 0.55, 0.45],
         }
     )

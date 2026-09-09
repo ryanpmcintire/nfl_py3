@@ -96,12 +96,6 @@ def _cfb_like_games(team_count: int = 16, weeks: int = 6) -> pd.DataFrame:
                 "result": float((home_id - away_id) % 7) - 3.0,
                 "spread_line": 1.5,
             }
-            # Each metric gets its OWN team ordering, not a constant offset of
-            # the other: the edge signal is home minus away, so a shift applied
-            # to both sides would cancel and the two graph columns would come
-            # back identical -- which is exactly what
-            # ``test_the_two_graph_columns_are_not_the_same_numbers`` exists to
-            # rule out.
             for offset, metric in enumerate(offense.OFFENCE_METRICS):
                 home_column, away_column = cfb_cell_columns(metric)
                 for column, team_id in ((home_column, home_id), (away_column, away_id)):
@@ -113,11 +107,6 @@ def _cfb_like_games(team_count: int = 16, weeks: int = 6) -> pd.DataFrame:
                     )
             rows.append(row)
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# 1. The joint substitution is exact
-# ---------------------------------------------------------------------------
 
 
 def test_both_offence_triples_are_gone_and_both_graph_columns_are_in() -> None:
@@ -136,11 +125,6 @@ def test_offence_raw_columns_are_exactly_six_names() -> None:
     assert len(raw) == 6
     assert len(set(raw)) == 6
     assert set(raw) < set(CFB_MODEL_FEATURE_COLUMNS)
-
-
-# ---------------------------------------------------------------------------
-# 2. The defence triple is intact and nothing else moves
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -189,11 +173,6 @@ def test_the_other_team_state_triples_are_untouched() -> None:
                 assert column in contract
 
 
-# ---------------------------------------------------------------------------
-# 3. The ablation arm adds nothing
-# ---------------------------------------------------------------------------
-
-
 def test_ablation_is_the_benchmark_minus_six_and_nothing_more() -> None:
     ablation = offense.offence_ablation_feature_columns()
 
@@ -218,11 +197,6 @@ def test_the_single_metric_arms_are_wp24s_own_contracts() -> None:
     for metric in offense.OFFENCE_METRICS:
         assert arms[f"replacement_{metric}"] == replacement_feature_columns(metric)
         assert len(arms[f"replacement_{metric}"]) == 33
-
-
-# ---------------------------------------------------------------------------
-# 4. The FITTED design matrix agrees with the declared contract
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -271,11 +245,6 @@ def test_fitted_benchmark_design_matrix_is_the_frozen_contract() -> None:
     assert len(CFB_MODEL_FEATURE_COLUMNS) == 35
 
 
-# ---------------------------------------------------------------------------
-# 5. Chaining the two builders is order-preserving
-# ---------------------------------------------------------------------------
-
-
 def test_chaining_both_builders_adds_two_columns_and_keeps_row_order() -> None:
     games = _cfb_like_games()
     widened = offense.add_offence_graph_columns(games)
@@ -304,11 +273,6 @@ def test_the_two_graph_columns_are_not_the_same_numbers() -> None:
 
     assert both.any(), "the synthetic schedule must clear the min_games warm-up gate"
     assert not np.allclose(first[both].to_numpy(), second[both].to_numpy())
-
-
-# ---------------------------------------------------------------------------
-# 6. The positive control touches exactly one column
-# ---------------------------------------------------------------------------
 
 
 def test_positive_control_leaks_exactly_one_swapped_column() -> None:
@@ -344,11 +308,6 @@ def test_positive_control_leaves_the_unleaked_arms_identical() -> None:
     assert leaked[f"replacement_{offense.LEAK_METRIC}"][-1] == "ats_margin"
 
 
-# ---------------------------------------------------------------------------
-# 7. Undeclared metrics are refused (WP8's cell gate, tightened to offence)
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize("metric", ["def_epa_per_play", "off_explosive_rate", "spread_line"])
 def test_a_metric_outside_the_declared_offence_pair_is_refused(metric: str) -> None:
     with pytest.raises(ValueError):
@@ -365,11 +324,6 @@ def test_the_defence_cell_is_deliberately_excluded() -> None:
 
     assert DEFENCE_CELL not in offense.OFFENCE_METRICS
     assert cfb_graph_column(DEFENCE_CELL) not in offense.offence_replacement_feature_columns()
-
-
-# ---------------------------------------------------------------------------
-# 8. The declared cell list matches the predeclaration
-# ---------------------------------------------------------------------------
 
 
 def test_cell_one_is_the_primary_and_the_diagnostic_is_not_a_cell() -> None:

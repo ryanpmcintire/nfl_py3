@@ -52,7 +52,6 @@ OUT_ROOT = REPO / "artifacts" / "unit_apm"
 SOURCE_SEASONS = (2019, 2020, 2021, 2022, 2023, 2024)
 MIN_PLAYS_PER_HALF = 50
 
-#: Frozen roster-position to unit mapping (docs/unit_apm_ratings.md §2).
 UNIT_BY_POSITION = {
     **dict.fromkeys(["C", "G", "T", "OT", "OG", "OC", "OL"], "OFF_OL"),
     **dict.fromkeys(["QB", "RB", "FB", "HB", "WR", "TE"], "OFF_SKILL"),

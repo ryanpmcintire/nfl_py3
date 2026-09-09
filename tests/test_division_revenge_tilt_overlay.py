@@ -42,31 +42,10 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# REV/WIN meet twice: G1 (week 1) REV loses at home to WIN; G2 (week 10) the
-#   rematch, WIN hosting -- REV (away in G2) is the unique revenge side.
-# REV2/WIN2 meet twice with the revenge side on the HOME side instead: G3
-#   (week 1) REV2 loses on the road to WIN2; G4 (week 10) REV2 hosts the
-#   rematch -- REV2 (home in G4) is the revenge side.
-# REV3/WIN3 meet twice, mirroring G1/G2's shape, used only for the
-#   "already agrees" no-flip case.
-# TIE1/TIE2 meet twice but their first meeting (G5) is an exact tie -- G6 (the
-#   rematch) has no revenge side for either team.
-# SOLO1/SOLO2 meet exactly once (G7) -- a single meeting is never a "2nd
-#   meeting" and is never flagged.
-# G8 is the SAME shape as G2 but POST season -- the REG-only gate must block
-#   it.
-# G9 is a THIRD meeting between REV and WIN (week 15), used only by the
-#   leakage regression: mutating it must not move G2's already-computed flag.
-
 
 def _revenge_schedule() -> pd.DataFrame:
     rows = [
-        # game_id, season, game_type, week, gameday, home_team, away_team, result
-        ("2026_01_REV_WIN", 2026, "REG", 1, "2026-09-10", "REV", "WIN", -10.0),  # REV loses home
+        ("2026_01_REV_WIN", 2026, "REG", 1, "2026-09-10", "REV", "WIN", -10.0),
         (
             "2026_10_WIN_REV",
             2026,
@@ -76,7 +55,7 @@ def _revenge_schedule() -> pd.DataFrame:
             "WIN",
             "REV",
             3.0,
-        ),  # rematch; REV away = revenge
+        ),
         (
             "2026_01_WIN2_REV2",
             2026,
@@ -86,7 +65,7 @@ def _revenge_schedule() -> pd.DataFrame:
             "WIN2",
             "REV2",
             15.0,
-        ),  # REV2 loses on the road
+        ),
         (
             "2026_10_REV2_WIN2",
             2026,
@@ -96,7 +75,7 @@ def _revenge_schedule() -> pd.DataFrame:
             "REV2",
             "WIN2",
             -1.0,
-        ),  # rematch; REV2 home = revenge
+        ),
         (
             "2026_01_REV3_WIN3",
             2026,
@@ -106,7 +85,7 @@ def _revenge_schedule() -> pd.DataFrame:
             "REV3",
             "WIN3",
             -7.0,
-        ),  # REV3 loses at home
+        ),
         (
             "2026_10_WIN3_REV3",
             2026,
@@ -116,8 +95,8 @@ def _revenge_schedule() -> pd.DataFrame:
             "WIN3",
             "REV3",
             2.0,
-        ),  # rematch; REV3 away = revenge
-        ("2026_01_TIE1_TIE2", 2026, "REG", 1, "2026-09-10", "TIE1", "TIE2", 0.0),  # exact tie
+        ),
+        ("2026_01_TIE1_TIE2", 2026, "REG", 1, "2026-09-10", "TIE1", "TIE2", 0.0),
         (
             "2026_10_TIE2_TIE1",
             2026,
@@ -127,7 +106,7 @@ def _revenge_schedule() -> pd.DataFrame:
             "TIE2",
             "TIE1",
             4.0,
-        ),  # rematch; no revenge side
+        ),
         (
             "2026_01_SOLO1_SOLO2",
             2026,
@@ -137,7 +116,7 @@ def _revenge_schedule() -> pd.DataFrame:
             "SOLO1",
             "SOLO2",
             6.0,
-        ),  # only meeting all season
+        ),
         (
             "2026_20_WIN_REV",
             2026,
@@ -147,7 +126,7 @@ def _revenge_schedule() -> pd.DataFrame:
             "WIN",
             "REV",
             3.0,
-        ),  # same shape as G2, POST
+        ),
         (
             "2026_15_REV_WIN",
             2026,
@@ -157,7 +136,7 @@ def _revenge_schedule() -> pd.DataFrame:
             "REV",
             "WIN",
             -2.0,
-        ),  # 3rd REV/WIN meeting
+        ),
     ]
     return pd.DataFrame(
         rows,
@@ -193,24 +172,9 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["REV", "WIN2", "TIE1", "SOLO2", "REV", "REV3", "MISS_A"],
             "kickoff": ["2026-11-08T18:00:00+00:00"] * 7,
             "spread_line": [-3.0, 2.5, -1.0, -4.0, -3.0, -2.0, 1.0],
-            # G2 (WIN home, REV away, revenge): model picks HOME (WIN) -- against
-            # the revenge side -- should flip to AWAY (REV).
-            # G4 (REV2 home, revenge): model picks AWAY (WIN2) -- against the
-            # revenge side -- should flip to HOME (REV2).
-            # G6 (tie -> no revenge side): untouched regardless of the pick.
-            # G7 (single meeting -> never flagged): untouched.
-            # G8 (POST, same shape as G2): REG-only gate blocks the flip.
-            # G-WIN3-REV3 rematch: model already picks AWAY (REV3, the revenge
-            # side) -- already agrees, no flip needed.
-            # G-MISSING: no schedule row at all -- treated as no signal.
             "home_cover_probability": [0.70, 0.25, 0.60, 0.55, 0.70, 0.20, 0.50],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. division_revenge_side_by_game: derived, pregame-safe
-# ---------------------------------------------------------------------------
 
 
 def test_revenge_flag_fires_on_the_away_side_of_the_rematch() -> None:
@@ -290,11 +254,6 @@ def test_revenge_flag_is_leak_safe_across_the_season_boundary() -> None:
         baseline.loc[baseline["season"].le(2026)].reset_index(drop=True),
         check_exact=True,
     )
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_division_revenge_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_to_the_away_revenge_side() -> None:
@@ -409,11 +368,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_division_revenge_tilt_overlay(pd.DataFrame({"game_id": ["G1"]}), _revenge_schedule())
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     tie_only = _predictions().loc[lambda frame: frame["game_id"].eq("2026_10_TIE2_TIE1")]
     result = apply_division_revenge_tilt_overlay(tie_only, _revenge_schedule())
@@ -434,10 +388,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "WIN2 -> REV2" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_division_revenge_tilt_challenger_decisions: dual-tracked, no window
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -517,13 +467,9 @@ def test_record_tilt_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The tilt's own arm diverges from the active model's raw pick (0.70 ->
-    # HOME): the tilt flips it to AWAY (REV), the revenge side.
     assert ledger.loc["2026_10_WIN_REV", "pick_side"] == "AWAY"
-    # The tied-first-meeting game keeps the model's own HOME pick.
     assert ledger.loc["2026_10_TIE2_TIE1", "pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_division_revenge_tilt_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -545,9 +491,6 @@ def test_record_tilt_challenger_refuses_outside_recording_lock_window(tmp_path: 
 def test_record_tilt_challenger_refuses_a_fingerprint_mismatch(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = _write_data_root(tmp_path)
 

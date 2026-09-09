@@ -64,9 +64,6 @@ def build_late_week_move_follow_refresh_rows(
     if not games:
         return empty, {"skipped": True, "reason": "No games remain before their pick deadline."}
     q = quotes.loc[quotes.nflverse_game_id.isin([g["game_id"] for g in games])].copy()
-    # The frozen follow rule itself (quote time-guard, exposure, Tuesday
-    # baseline, 0.5-point follow) is shared with the served refresh pick so
-    # the paired challenger and the played card can never drift apart.
     exposure, refused = late_week_follow_frame(
         q,
         pd.DataFrame(games),

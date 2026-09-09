@@ -84,36 +84,13 @@ from nfl_ats.spread_gap_zone_fade_overlay import TiltFlip as SpreadGapFlip
 
 CARD_EXPLANATION_SCHEMA_VERSION = 1
 
-# ---------------------------------------------------------------------------
-# Provenance -- "label how you know it" (AGENTS.md), stated per component.
-# ---------------------------------------------------------------------------
 
 MEASURED_FROM_ARTIFACT = "measured_from_artifact"
 COMPUTED_NOW = "computed_now"
 NO_DATA = "no_data"
 PROVENANCE_VALUES: tuple[str, ...] = (MEASURED_FROM_ARTIFACT, COMPUTED_NOW, NO_DATA)
 
-# ---------------------------------------------------------------------------
-# Language contract
-# ---------------------------------------------------------------------------
 
-#: Compliance/legalese boilerplate (2026-09-05, owner, verbatim: "ive told
-#: you repeatedly to drop these fucking legal bullshit words"), as its OWN
-#: shared constant: every reader-facing surface -- this module's rendered
-#: text, the published card, and every site page -- must never carry these
-#: phrases. Named "BANNED_BOILERPLATE" (not "board_content.BANNED_BOILERPLATE"
-#: as first suggested) because it lives here, where :func:`check_language`
-#: already is; ``nfl_ats.board_content`` imports and re-exports it instead
-#: of the reverse, since ``board_content.py`` already imports FROM this
-#: module and the reverse import would cycle. A plain, honest fact
-#: ("historically 53% at the opener") is not legalese and stays allowed;
-#: only the boilerplate phrasing below is banned.
-#: Deliberately the full phrase ("wagering recommendation"), not the bare
-#: word "wagering"/"wager" -- measured 2026-09-05: a bare-word ban false-
-#: positives against both this corpus's own internal entry id
-#: ("deflect:wager") and real, unrelated weak-signal registry text that
-#: legitimately discusses "a motion or wagering claim" as a DIFFERENT
-#: finding's scope. The full phrase never collides with either.
 BANNED_BOILERPLATE: tuple[str, ...] = (
     "wagering recommendation",
     "descriptive research summary",
@@ -124,9 +101,6 @@ BANNED_BOILERPLATE: tuple[str, ...] = (
     "1-800-gambler",
 )
 
-#: Case-insensitive forbidden substrings. The template below is written to
-#: avoid every one of these outright (never negated in a sentence), because
-#: a substring check cannot distinguish "not profitable" from "profitable".
 LANGUAGE_CONTRACT: tuple[str, ...] = (
     "will win",
     "lock",
@@ -145,11 +119,6 @@ LANGUAGE_CONTRACT: tuple[str, ...] = (
     *BANNED_BOILERPLATE,
 )
 
-#: Hard structural rules (2026-09-05, owner: reader text must never carry
-#: the machinery's own bookkeeping -- no snapshot ids, no raw timestamps,
-#: no content hashes, and not even the WORDS for these plumbing concepts).
-#: Checked by regex/substring separately from the phrase list above because
-#: these are patterns and bare words, not fixed phrases.
 _SNAPSHOT_ID_RE = re.compile(r"\d{8}T\d{6}Z")
 _ISO_TIMESTAMP_RE = re.compile(r"\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}")
 _SHA_LIKE_RE = re.compile(r"\b[0-9a-f]{12,}\b", re.IGNORECASE)
@@ -185,11 +154,6 @@ def check_language(text: str) -> None:
         raise LanguageContractError(
             "text uses forbidden phrase(s): " + ", ".join(sorted(set(violations)))
         )
-
-
-# ---------------------------------------------------------------------------
-# Small conversions -- mirrors the discipline nfl_ats.lineage already uses.
-# ---------------------------------------------------------------------------
 
 
 def _optional_str(value: Any) -> str | None:
@@ -257,11 +221,6 @@ def _pick_side_and_probability(row: Mapping[str, Any]) -> tuple[str | None, floa
         return pick_team, None
     probability = home_probability if pick_team == home_team else 1.0 - home_probability
     return pick_team, probability
-
-
-# ---------------------------------------------------------------------------
-# Components
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -418,7 +377,6 @@ class FreshnessComponent:
         )
 
 
-#: Tuesday-to-refresh change vocabulary (fixed shape, per ENG-12's DoD).
 REFRESH_NONE = "none"
 REFRESH_FLIPPED = "pick_flipped"
 REFRESH_LINE_MOVED = "line_moved"
@@ -537,15 +495,6 @@ def refresh_change_from_pick_revision(
     )
 
 
-# ---------------------------------------------------------------------------
-# Overlay adapters -- from each overlay module's own flip record, or the
-# generic four-overlay composition result, to one normalized OverlayFiring.
-# ---------------------------------------------------------------------------
-
-#: Plain-English member labels, duplicated (not imported) from
-#: ``nfl_ats.board_content``'s own private ``_MEMBER_LABELS`` -- the same
-#: "duplicate a tiny private mapping rather than reach into another
-#: module's underscore-prefixed name" discipline that module already uses.
 _MEMBER_LABELS: dict[str, str] = {
     COACH_FADE: "coach fade",
     DIVISION_REVENGE_TILT: "division revenge",
@@ -613,11 +562,6 @@ def overlay_firings_from_composition(
     return tuple(firings)
 
 
-# ---------------------------------------------------------------------------
-# Freshness
-# ---------------------------------------------------------------------------
-
-
 def _freshness_component(source_report: SourcePolicyReport | None) -> FreshnessComponent:
     if source_report is None:
         return FreshnessComponent(sources=(), provenance=NO_DATA)
@@ -631,11 +575,6 @@ def _freshness_component(source_report: SourcePolicyReport | None) -> FreshnessC
     for source_id in source_report.unobserved:
         entries.append(SourceFreshnessEntry(source_id=source_id, as_of=None, state=NO_DATA))
     return FreshnessComponent(sources=tuple(entries), provenance=MEASURED_FROM_ARTIFACT)
-
-
-# ---------------------------------------------------------------------------
-# The fixed-shape record
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -682,27 +621,12 @@ class PickExplanation:
         )
 
 
-# ---------------------------------------------------------------------------
-# Text template
-# ---------------------------------------------------------------------------
-
-
-#: Reader-facing confidence phrase per :func:`nfl_ats.public_board
-#: .confidence_word` band. "lean" needs its own entry (not "a {word}
-#: lean") because the middle band's OWN NAME is "lean" -- appending the
-#: noun would read "a lean lean".
 _CONFIDENCE_PHRASES: dict[str, str] = {
     "slight": "a slight lean",
     "lean": "a lean",
     "strong": "a strong lean",
 }
 
-#: source_id substring -> the plain category name a fan would recognise,
-#: in priority order. Only these three categories are ever named in the
-#: freshness clause (2026-09-05 owner instruction); every other source
-#: (referee assignments, transactions, player-arrest checks, ...) is real
-#: but not something a reader is asking about, so it is counted, never
-#: individually named.
 _FRESHNESS_FAN_CATEGORIES: tuple[tuple[str, str], ...] = (
     ("odds", "lines"),
     ("injur", "injuries"),
@@ -746,12 +670,6 @@ def _lead_sentence(
         return f"{lead} No model probability is recorded for this pick."
     word = confidence_word(model_probability.probability)
     phrase = _CONFIDENCE_PHRASES.get(word, word)
-    # One decimal, matching the board's own Decision score column. It used
-    # to round to whole percent, which let two picks print the SAME number
-    # with different words: Week 1 2026 showed "ATL a 56% cover, a lean"
-    # beside "MIA a 56% cover, a strong lean" (0.559 and 0.561 -- either
-    # side of confidence_word's 0.56 band edge). A reader cannot be shown
-    # one number described two ways.
     return (
         f"{lead} The model makes {pick_side or 'the pick'} a "
         f"{model_probability.probability:.1%} cover, {phrase}."
@@ -802,7 +720,6 @@ def _freshness_clause(freshness: FreshnessComponent) -> str:
             if entry.state != "complete":
                 other_stale += 1
             continue
-        # Worst-wins if two sources share a category (e.g. two injury feeds).
         rank = {"complete": 0, "degraded": 1, NO_DATA: 1, "blocked": 2}
         if category not in fan_state or rank.get(entry.state, 1) > rank.get(fan_state[category], 0):
             fan_state[category] = entry.state
@@ -825,8 +742,6 @@ def _freshness_clause(freshness: FreshnessComponent) -> str:
     return joined[:1].upper() + joined[1:] + "."
 
 
-#: Short refresh clauses (2026-09-05: one plain clause, not a restated
-#: detail sentence).
 _REFRESH_SHORT_CLAUSES: dict[str, str] = {
     REFRESH_NOT_YET: "Not refreshed since Tuesday.",
     REFRESH_NONE: "Confirmed unchanged on refresh.",
@@ -858,12 +773,6 @@ def _render_text(
     sentences = [
         _lead_sentence(market_line, model_probability, matchup),
         (
-            # A half point is what the owner's pool posts on every game, and
-            # nothing can land on it -- so the reader is told there is no tie
-            # here, rather than shown a 0% chance of one as if it had been
-            # measured. Only a whole-number line gets a push number at all.
-            # This routes the TIE sentence only; the cover chance beside it
-            # is still the discrete read (docs/key_line_pick_read.md).
             _no_push_sentence(market_line.home_spread_line)
             if is_half_point_line(market_line.home_spread_line)
             else (
@@ -880,7 +789,6 @@ def _render_text(
     return " ".join(sentence for sentence in sentences if sentence)
 
 
-#: Whole-number lines football finals pile up on (docs/discrete_push_read.md).
 _KEY_NUMBER_LINES: frozenset[int] = frozenset({3, 7, 10, 14})
 
 
@@ -961,11 +869,6 @@ def _key_line_sentence(home_spread_line: float | None, push_probability: float |
             "are counted in that chance."
         )
     return f"{lead}."
-
-
-# ---------------------------------------------------------------------------
-# Public entry points
-# ---------------------------------------------------------------------------
 
 
 def family_contributions_from_waterfall_entry(
@@ -1100,8 +1003,6 @@ def explain_pick(
         freshness_component,
         refresh_component,
         game_explanation,
-        # The card's own served push chance (docs/discrete_push_read.md);
-        # absent on a row without it, and never shown at a half-point line.
         _finite_float(row.get("push_probability")),
         key_line_read=bool(key_line_read),
     )

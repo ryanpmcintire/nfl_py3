@@ -332,6 +332,23 @@ on a Tuesday) had no test and were interactions no pin would have caught.
 - The cut itself (which of the 367 files survive) is a separate owner
   decision; propose the list, do not delete unasked.
 
+## No code comments (binding, owner, 2026-09-09)
+
+Owner, verbatim: "you also arent allowed to write code comments anymore. im
+serious... comments are banned and i actually want you to methodically delete
+existing comments." Measured the same day: 21,515 comment tokens in 780 files,
+24,821 lines, stripped in one pass (`scripts/strip_comments.py`).
+
+- No `#` comments in any `.py`, `.ps1`, `.sh` or `.cmd` file. Pragmas
+  (`# noqa`, `# type:`, `# pragma`, the shebang) are the only exception.
+- Enforced twice: `.claude/hooks/guard_comments.py` denies any Edit/Write
+  that adds one, and `.githooks/pre-commit` refuses a commit whose staged
+  `.py` files contain one (`scripts/strip_comments.py --check`).
+- Subagents never see the hook on shell-written files; every subagent prompt
+  says "no code comments" and the pre-commit check is the backstop.
+- Rationale belongs in the commit message, the ROADMAP row, or a doc, not
+  beside the code. Keep docstrings to one line.
+
 ## Repository hygiene
 
 - Use Python 3.12 and the locked uv environment.

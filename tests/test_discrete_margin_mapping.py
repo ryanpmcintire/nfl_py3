@@ -80,11 +80,6 @@ def _pool(seed: int = 11, rows: int = 900) -> tuple[np.ndarray, np.ndarray]:
     return lines, margins
 
 
-# ---------------------------------------------------------------------------
-# The predicate and the arms
-# ---------------------------------------------------------------------------
-
-
 def test_distance_and_neighbourhood_use_the_absolute_line() -> None:
     distance = distance_to_nearest_atom([-3.5, 3.5, -7.0, 5.0], SERVED_ATOMS)
     np.testing.assert_allclose(distance, [0.5, 0.5, 0.0, 2.0])
@@ -96,7 +91,6 @@ def test_half_point_only_is_disjoint_from_the_served_exact_atom_read() -> None:
     adjacent = key_neighbourhood_mask(LINE_GRID, SERVED_ATOMS, half_point_only=True)
     served = key_line_mask(pd.Series(LINE_GRID))
     assert not bool((adjacent & served).any())
-    # And together they are exactly the whole neighbourhood.
     np.testing.assert_array_equal(
         adjacent | served, key_neighbourhood_mask(LINE_GRID, SERVED_ATOMS)
     )
@@ -137,11 +131,6 @@ def test_apply_arm_rejects_a_ragged_input() -> None:
         apply_arm([3.0, 3.5], np.zeros(2), np.zeros(2), np.zeros(3), np.zeros(3), "G1")
 
 
-# ---------------------------------------------------------------------------
-# The distribution: discrete, multimodal, and the push out of the same object
-# ---------------------------------------------------------------------------
-
-
 def test_push_falls_out_of_the_same_object_and_is_empty_at_a_half_point() -> None:
     lines, margins = _pool()
     integer = discrete_side_read(lines, margins, 3.0, 1.0)
@@ -177,11 +166,6 @@ def test_discrete_side_read_is_lane_ks_core_and_lane_ts_decision_number() -> Non
     theirs = band_read(lines, margins, 7.0, 2.5)
     assert mine == theirs
     assert key_line_decision_probability(mine) == mine.home_cover_probability
-
-
-# ---------------------------------------------------------------------------
-# Leakage regression
-# ---------------------------------------------------------------------------
 
 
 def _target_frame() -> pd.DataFrame:
@@ -243,11 +227,6 @@ def test_the_window_helper_excludes_the_target_week_and_later_games() -> None:
     assert eligible.season.eq(2023).all()
     assert not eligible.game_id.isin({"t1", "t2"}).any()
     assert len(eligible) == 400
-
-
-# ---------------------------------------------------------------------------
-# The calibration plug-in point
-# ---------------------------------------------------------------------------
 
 
 def _history() -> pd.DataFrame:
@@ -334,11 +313,6 @@ def test_the_incumbent_smooth_read_is_untouched_by_this_family() -> None:
     np.testing.assert_array_equal(actual, np.clip(expected, 1e-9, 1 - 1e-9))
 
 
-# ---------------------------------------------------------------------------
-# Degenerate cells: floored, not trusted and not dropped
-# ---------------------------------------------------------------------------
-
-
 def _reference_family() -> list[tuple[float, int]]:
     """An honest family: standard error scaling as sigma / sqrt(n)."""
 
@@ -349,9 +323,7 @@ def _reference_family() -> list[tuple[float, int]]:
 def test_the_floor_tracks_the_familys_own_sigma_over_root_n_curve() -> None:
     floor = plausible_standard_error_floor(_reference_family(), 15)
     assert floor is not None
-    # Three robust sigmas BELOW a curve with no scatter is the curve itself.
     assert floor == pytest.approx(28.0 / np.sqrt(15), rel=1e-9)
-    # And it widens as the cell shrinks, which is the whole point.
     bigger = plausible_standard_error_floor(_reference_family(), 1503)
     assert bigger is not None and bigger < floor
 

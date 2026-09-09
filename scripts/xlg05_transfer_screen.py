@@ -106,17 +106,9 @@ DEFAULT_NFL_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack.parq
 DEFAULT_CFB_FEATURES = REPO_ROOT / "data/processed/cfb_game_features.parquet"
 
 BASELINE_ARM = "nfl_only"
-#: Recorded to the weak-signal registry, one entry each, all vs the baseline.
 CANDIDATE_ARMS: tuple[str, ...] = ("naive_pooled", "cfb_prior", "partial_pooled")
-#: Reported in the write-up, deliberately NOT recorded (correlated decomposition
-#: of the same window / a level rather than a paired comparison).
 REPORTED_ARMS: tuple[str, ...] = ("prior_market_only", "production")
 ALL_ARMS: tuple[str, ...] = (BASELINE_ARM, *CANDIDATE_ARMS, *REPORTED_ARMS)
-
-
-# ---------------------------------------------------------------------------
-# Frames
-# ---------------------------------------------------------------------------
 
 
 def _completed(frame: pd.DataFrame, *, regular_only: bool) -> pd.DataFrame:
@@ -135,11 +127,6 @@ def _leaked(frame: pd.DataFrame) -> pd.DataFrame:
     leaked = frame.copy()
     leaked[LEAK_COLUMN] = pd.to_numeric(leaked["ats_margin"], errors="coerce")
     return leaked
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def arm_names(frame: pd.DataFrame) -> tuple[str, ...]:
@@ -193,9 +180,6 @@ def run_window(
         raise ValueError("Not enough pre-window history in both leagues to fit a preprocessor")
 
     shared_imputer, shared_scaler = fit_pooled_preprocessor(nfl_pre, cfb_pre, XLG05_FEATURE_COLUMNS)
-    # Identical to the shared pair in every mode except positive-control, where
-    # the baseline arm's design carries the leaked column and needs its own
-    # honest standardisation.
     baseline_imputer, baseline_scaler = fit_pooled_preprocessor(
         baseline_pre, cfb_pre, XLG05_FEATURE_COLUMNS
     )
@@ -294,9 +278,7 @@ def run_window(
         )
         coefficient_shift.append(_coefficient_shift(baseline_model, partial_model, quality_mask))
 
-        baseline_scoring = (
-            _leaked(group.copy()) if leak_treatment else group  # leak only the baseline arm
-        )
+        baseline_scoring = _leaked(group.copy()) if leak_treatment else group
         probabilities = {
             arm: model.predict(baseline_scoring if arm == BASELINE_ARM else group)[
                 "home_cover_probability"
@@ -362,11 +344,6 @@ def _coefficient_shift(baseline: Any, candidate: Any, quality_mask: np.ndarray) 
     }
 
 
-# ---------------------------------------------------------------------------
-# Grading, null, bootstrap
-# ---------------------------------------------------------------------------
-
-
 def grade(frame: pd.DataFrame, margins: pd.Series | None = None) -> pd.DataFrame:
     """Attach ``<arm>_correct`` for every arm, graded against ``margins``."""
 
@@ -401,15 +378,6 @@ def permuted_margins(
     return pd.Series(values, index=frame.index)
 
 
-# Two arms that make the SAME picks produce a paired delta of exactly zero in
-# every resample, and ``week_blocked_bootstrap``'s ``probability_positive`` is
-# ``mean(draws > 0)``, which reports that dead heat as 0.000 -- indistinguishable
-# from a certain loss, and materially misleading for an EV decision where a tie
-# is neither better nor worse. ``delta_is_tie`` exists so the same tool's own
-# ``mean(draws > 0)`` machinery also returns the fraction of resamples that are
-# exact ties, from which a tie-aware ``P+ = P(better) + 0.5 * P(tie)`` follows.
-# The smallest non-zero |delta| this metric can take is 1/n (>= 1.3e-3 here), so
-# the exact-zero test needs no tolerance argument.
 _TIE_TOLERANCE = 1e-12
 
 
@@ -469,10 +437,6 @@ def null_distribution(
             "null_q975": float(np.quantile(finite, 0.975)),
             "observed_delta": float(observed),
             "fraction_of_null_below_observed": float((finite < observed).mean()),
-            # A percentile is meaningless against a point mass at zero (two arms
-            # that make the same picks tie under every permutation too), so the
-            # tie share is reported beside it rather than left to be inferred
-            # from a 0.0 percentile that looks like an extreme tail.
             "fraction_of_null_tied_with_observed": float(
                 (np.abs(finite - observed) < _TIE_TOLERANCE).mean()
             ),
@@ -509,9 +473,6 @@ def summarize_pair(
     week_low, week_high, week_better, week_tied = _rows(week)
     season_low, season_high, season_better, season_tied = _rows(season)
 
-    # Deterministic sign-test counts, no resampling: how often the two arms
-    # actually disagreed about a game. For near-identical arms these are the
-    # honest read and the bootstrap interval is nearly a point mass.
     differing_picks = int(
         (
             usable[f"{arm}_probability"].ge(0.5) != usable[f"{BASELINE_ARM}_probability"].ge(0.5)
@@ -526,8 +487,6 @@ def summarize_pair(
         "week_blocked_ci95": [week_low, week_high],
         "week_blocked_probability_positive": week_better,
         "week_blocked_probability_tie": week_tied,
-        # A dead heat is neither better nor worse, so it splits: an exactly tied
-        # arm reads 0.500 (EV-neutral) rather than 0.000 (a certain loss).
         "week_blocked_probability_positive_tie_aware": week_better + 0.5 * week_tied,
         "season_blocked_ci95": [season_low, season_high],
         "season_blocked_probability_positive": season_better,
@@ -540,11 +499,6 @@ def summarize_pair(
         "n_weeks": int(paired[["season", "week"]].drop_duplicates().shape[0]),
         "n_seasons": int(paired["season"].nunique()),
     }
-
-
-# ---------------------------------------------------------------------------
-# Window resolution -- read from the ledger, never hand-picked
-# ---------------------------------------------------------------------------
 
 
 def assigned_seasons(family: str = ROTATION_FAMILY) -> tuple[int, ...]:
@@ -566,11 +520,6 @@ def assigned_seasons(family: str = ROTATION_FAMILY) -> tuple[int, ...]:
     if window is None:
         raise SystemExit(f"Rotation family {family!r} has no assigned window yet.")
     return tuple(window.covered_seasons)
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

@@ -122,7 +122,6 @@ from nfl_ats.clv import pick_correct  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 from nfl_ats.weak_signals import default_registry_path, load_registry  # noqa: E402
 
-# --- Persisted per-game outputs of the four builders (their own artifacts) ---
 ANCHOR_TUE_CLOSE = (
     REPO / "artifacts/observed_movement_channel/20260820T093426Z/per_game_tue_close.parquet"
 )
@@ -141,11 +140,6 @@ PRODUCTION_CORRECT = "correct_at_open_probability_rule"
 
 SIGNED_METRIC = "move_toward_team"
 ABS_METRIC = "abs_move"
-
-
-# ---------------------------------------------------------------------------
-# Movement quantity + team-week frames
-# ---------------------------------------------------------------------------
 
 
 def checkpoint_move(current_home_spread: pd.Series, tue_open_home_spread: pd.Series) -> pd.Series:
@@ -230,11 +224,6 @@ def non_push(frame: pd.DataFrame) -> pd.DataFrame:
     return frame.loc[frame[PRODUCTION_CORRECT].notna()].reset_index(drop=True)
 
 
-# ---------------------------------------------------------------------------
-# Near-constant diagnostics (pre-stated; see the module docstring)
-# ---------------------------------------------------------------------------
-
-
 def constancy_diagnostics(
     long: pd.DataFrame, metric: str, seasons: tuple[int, int]
 ) -> dict[str, Any]:
@@ -282,11 +271,6 @@ def near_constant(diagnostics: dict[str, Any]) -> bool:
     return any((not np.isfinite(s)) or s <= 0.0 for s in spreads)
 
 
-# ---------------------------------------------------------------------------
-# Populations, each built from its own screen's persisted per-game artifact
-# ---------------------------------------------------------------------------
-
-
 def build_populations() -> dict[str, dict[str, Any]]:
     """Every population a cell in this group was scored on, plus its paired delta.
 
@@ -299,7 +283,6 @@ def build_populations() -> dict[str, dict[str, Any]]:
 
     populations: dict[str, dict[str, Any]] = {}
 
-    # --- Tuesday open -> close, full 2020-2025 slate -----------------------
     close = non_push(attach_identity(pd.read_parquet(ANCHOR_TUE_CLOSE)))
     production_correct = close[PRODUCTION_CORRECT].astype(float)
     close["delta_oracle"] = (
@@ -335,7 +318,6 @@ def build_populations() -> dict[str, dict[str, Any]]:
         ],
     }
 
-    # --- Tuesday open -> last capture before min(kickoff, Sunday 16:00 ET) --
     sunday = non_push(attach_identity(pd.read_parquet(ANCHOR_SUNDAY_1600)))
     sunday_production = sunday[PRODUCTION_CORRECT].astype(float)
     sunday["delta_oracle"] = (
@@ -363,7 +345,6 @@ def build_populations() -> dict[str, dict[str, Any]]:
         "long": team_week_movement(sunday, sunday["sunday_open_move"]),
     }
 
-    # --- movement_expansion_v1 window (2020-2021), three checkpoints -------
     battery = non_push(attach_identity(pd.read_parquet(EXPANSION_PER_GAME)))
     battery_production = battery[PRODUCTION_CORRECT].astype(float)
     for tag, column in (
@@ -423,7 +404,6 @@ def build_populations() -> dict[str, dict[str, Any]]:
             "long": team_week_movement(frame, move),
         }
 
-    # --- composed chain (2020-2025), same window as threshold_1_0 ----------
     composed = non_push(attach_identity(pd.read_parquet(COMPOSITION_PER_GAME)))
     composed["delta_composed"] = composed["correct_b"].astype(float) - composed["correct_a"].astype(
         float
@@ -480,10 +460,6 @@ def build_attribution_flags(slate: pd.DataFrame) -> dict[str, pd.Series]:
             classes[f"{population_name}_{class_name}"] = slate["game_id"].isin(identifiers)
     return classes
 
-
-# ---------------------------------------------------------------------------
-# Entry -> construct specification
-# ---------------------------------------------------------------------------
 
 TRAIT_ENTRIES: tuple[dict[str, str], ...] = (
     {
@@ -621,11 +597,6 @@ BUILDER_PROVENANCE: dict[str, str] = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Measurement
-# ---------------------------------------------------------------------------
-
-
 def registry_seasons() -> dict[str, tuple[int, int]]:
     registry = load_registry(default_registry_path(REPO / "registry"))
     out: dict[str, tuple[int, int]] = {}
@@ -691,7 +662,6 @@ def main() -> int:
     replications: dict[str, dict[str, Any]] = {}
     secondary: list[dict[str, Any]] = []
 
-    # --- the twelve trait cells -------------------------------------------
     for spec in TRAIT_ENTRIES:
         entry = spec["entry"]
         seasons = seasons_by_entry[entry]
@@ -738,7 +708,6 @@ def main() -> int:
         shown = "  n/a  " if row["reliability"] is None else f"{row['reliability']:+.4f}"
         print(f"  {entry:<52} n={row['n_units']:>4} rel={shown} {row['status']}")
 
-    # --- the fourteen attribution cells ------------------------------------
     slate = populations["tue_close"]["games"]
     flags = build_attribution_flags(slate)
     for population_name in ("pop_unfiltered", "pop_threshold"):
@@ -783,7 +752,6 @@ def main() -> int:
                 f"(flagged games {row['n_flagged_games']})"
             )
 
-    # --- positive controls, one per distinct unit structure ----------------
     controls: dict[str, Any] = {}
     control_frames = {
         "tue_close_2020_2025": (populations["tue_close"]["long"], (2020, 2025)),
@@ -797,7 +765,6 @@ def main() -> int:
         controls[label] = rlib.positive_control(restricted, n_boot=args.control_n_boot)
         print(f"positive control {label}: {controls[label]}")
 
-    # --- battery-level replication correlations ----------------------------
     battery_correlations: dict[str, Any] = {}
     for battery in (
         "observed_movement",
@@ -810,7 +777,6 @@ def main() -> int:
         }
         battery_correlations[battery] = rlib.battery_replication_correlation(members)
 
-    # --- artifact ----------------------------------------------------------
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     output_dir = REPO / "artifacts" / "reliability_sweep" / "movement" / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)

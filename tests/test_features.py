@@ -144,11 +144,6 @@ def test_offseason_state_regresses_and_season_game_count_resets() -> None:
     assert attached.loc[0, "diff_off_epa_per_play"] == pytest.approx(5.0)
 
 
-# ---------------------------------------------------------------------------
-# Opener-bias family (MOD-07)
-# ---------------------------------------------------------------------------
-
-
 def _bracket_schedules() -> pd.DataFrame:
     """Two seasons around a synthetic four-team postseason bracket.
 
@@ -204,62 +199,27 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         "bias_week2_anchor_diff",
     )
     assert set(BIAS_FEATURE_COLUMNS).isdisjoint(MODEL_FEATURE_COLUMNS)
-    # The MOD-07 candidate profile (SPEC-4 step 2) is the ONE declared consumer
-    # of this family. Every other set -- above all the frozen ones the active
-    # model is fitted on -- must stay clear of it, so this pins the exception
-    # rather than merely permitting one.
     admitting = {
         name for name, columns in FEATURE_SETS.items() if set(columns) & set(BIAS_FEATURE_COLUMNS)
     }
-    # weak_stack_surface (MOD-08) is declared as weak_stack + the
-    # surface-switch family, so it inherits the bias columns too -- not a
-    # second independent consumer, the same one extended. weak_stack_js_prior
-    # (MOD-06, docs/mod06_position_prior_shrinkage.md) is weak_stack with the
-    # player_values family swapped for player_values_js_prior -- same reason.
-    # weak_stack_v3 (docs/weak_stack_v3.md) is weak_stack_surface plus the new
-    # gap_v3_* families -- same inheritance, not a fourth independent consumer.
-    # weak_stack_v4 (docs/weak_stack_v4.md) is weak_stack plus the
-    # forecast_weather family -- same inheritance again, for the same reason.
     inherited_suffixes = {
-        "weak_stack_coord_change",  # PER-07 adds dated September staff turnover only.
-        "weak_stack_spread_regime",  # MOD-18 adds row-local spread columns to weak_stack.
-        # MOD-18 lane Q (docs/home_dog_location.md): weak_stack plus the
-        # row-local home-underdog points, and that plus its above-seven hinge.
+        "weak_stack_coord_change",
+        "weak_stack_spread_regime",
         "weak_stack_home_dog_points",
         "weak_stack_home_dog_hinge_7",
-        # MOD-18 lane S (docs/home_side_location.md): weak_stack plus the
-        # row-local symmetric spread-size hinge above seven points.
         "weak_stack_home_side_hinge_7",
-        "weak_stack_apm_unit",  # PER-09 adds only the six unit ratings to weak_stack.
+        "weak_stack_apm_unit",
         "weak_stack",
         "weak_stack_surface",
         "weak_stack_js_prior",
         "weak_stack_v3",
         "weak_stack_v4",
-        # weak_stack_oracle_weather (docs/weak_stack_v4.md, "wind oracle") is
-        # weak_stack plus OBSERVED weather -- a POSITIVE CONTROL that is
-        # deliberately leaky and never promotable. Same inheritance again.
         "weak_stack_oracle_weather",
-        # weak_stack_graph_sack (docs/graph_team_stat_on_production.md) is
-        # weak_stack plus the one graph-propagated off_sack_rate column --
-        # same inheritance again, not a fifth independent consumer.
         "weak_stack_graph_sack",
-        # weak_stack_graph_def_ypp (docs/graph_team_stat_def_ypp_on_production.md)
-        # is weak_stack plus the one graph-propagated def_yards_per_play column --
-        # same inheritance again, not a sixth independent consumer.
         "weak_stack_graph_def_ypp",
-        # weak_stack_graph_off_rush_epa
-        # (docs/graph_team_stat_off_rush_epa_on_production.md) is weak_stack plus
-        # the one graph-propagated off_rush_epa_per_play column -- same
-        # inheritance again, not a seventh independent consumer.
         "weak_stack_graph_off_rush_epa",
-        # weak_stack_fluview_home/_away (docs/fluview_on_production.md) are
-        # weak_stack plus exactly one FluView elevated-illness column each --
-        # same inheritance again, not a sixth/seventh independent consumer.
         "weak_stack_fluview_home",
         "weak_stack_fluview_away",
-        # 2026-09-01/02 on-production confirmation profiles all extend the
-        # same declared weak stack with exactly one measured candidate column.
         "weak_stack_durability",
         "weak_stack_illness_home",
         "weak_stack_illness_away",
@@ -268,82 +228,37 @@ def test_bias_family_is_registered_but_outside_every_frozen_feature_set() -> Non
         "weak_stack_redzone_third_down",
         "weak_stack_source_availability",
         "weak_stack_team_style_pace",
-        # 2026-09-05 overnight lead batteries (docs/schedule_flag_battery.md,
-        # docs/market_lead_battery.md): each is weak_stack plus exactly one
-        # deterministic pregame flag column, the same inheritance again.
         "weak_stack_post_ot",
         "weak_stack_mnf_road",
         "weak_stack_home_thursday",
         "weak_stack_opener_softness",
         "weak_stack_ml_divergence",
-        # Wave 2 venue/market-context leads (docs/schedule_flag_battery.md
-        # "Wave 2"): each is weak_stack plus exactly one more deterministic
-        # pregame flag column, the same inheritance again.
         "weak_stack_new_stadium",
         "weak_stack_dome_shootout",
         "weak_stack_low_total_div_dog",
         "weak_stack_sept_heat",
-        # Wave 3 public-claim leads on production (docs/schedule_flag_battery.md
-        # "Wave 3", LEAD-57 leads): each is weak_stack plus exactly one more
-        # deterministic pregame flag column, the same inheritance again.
         "weak_stack_road_fav_fade",
         "weak_stack_division_dog",
         "weak_stack_week1_dog",
         "weak_stack_ats_streak_regress",
-        # Wave 4 PBP coaching-trait leads on production
-        # (docs/schedule_flag_battery.md "Wave 4", LEAD-26/27/30): each is
-        # weak_stack plus exactly one more deterministic pregame trait
-        # column, the same inheritance again.
         "weak_stack_opening_drive_epa",
         "weak_stack_q3_point_diff",
         "weak_stack_fourth_down_interaction",
-        # Wave 5 quarterback-identity leads on production
-        # (docs/schedule_flag_battery.md "Wave 5", LEAD-20/LEAD-25): each is
-        # weak_stack plus exactly one more deterministic pregame flag column,
-        # the same inheritance again.
         "weak_stack_rookie_qb_debut_fade",
         "weak_stack_qb_revenge",
-        # 2026-09-05 transaction-wire lead battery (docs/schedule_flag_battery.md
-        # "Wave 6", LEAD-12/LEAD-23/LEAD-14): each is weak_stack plus exactly one
-        # more deterministic pregame flag column, the same inheritance again.
         "weak_stack_holdout_slow_start",
         "weak_stack_deadline_drag",
         "weak_stack_suspension_rust",
-        # 2026-09-05 officiating-crew lead battery (docs/officials_crew_leads.md,
-        # LEAD-34/LEAD-31): each is weak_stack plus exactly one more
-        # deterministic pregame flag column, the same inheritance again.
         "weak_stack_crew_second_meeting_favorite",
         "weak_stack_rookie_crew_underdog",
-        # 2026-09-05 weather/venue lead battery (docs/weather_venue_leads.md,
-        # ROADMAP LEAD-36/LEAD-37): each is weak_stack plus exactly one more
-        # deterministic pregame flag column, the same inheritance again.
         "weak_stack_open_corner_wind_dog",
         "weak_stack_rain_on_grass_dog",
-        # Lane T promotion evaluation (docs/promotion_eval_20260905.md) is
-        # weak_stack plus BOTH the qb_revenge and deadline_drag columns at
-        # once (composition test) -- same inheritance again, not a new
-        # independent consumer.
         "weak_stack_qb_revenge_deadline_drag",
-        # Wave 7 roster-availability lead battery
-        # (docs/schedule_flag_battery.md "Wave 7", LEAD-13/LEAD-17): each is
-        # weak_stack plus exactly one more deterministic pregame flag column,
-        # the same inheritance again.
         "weak_stack_ir_return_reinforcement",
         "weak_stack_specialist_absence_fade",
-        # Wave 8 rookie-wall/kicker-change leads on production
-        # (docs/schedule_flag_battery.md "Wave 8", LEAD-24 stage 2/LEAD-16):
-        # each is weak_stack plus exactly one more deterministic pregame
-        # flag column, the same inheritance again.
         "weak_stack_rookie_wall_dependence",
         "weak_stack_kicker_change_underdog",
-        # Wave 9 backup tenure-gap valuation lead on production
-        # (docs/schedule_flag_battery.md "Wave 9", LEAD-15): weak_stack plus
-        # exactly one more deterministic pregame flag column, the same
-        # inheritance again.
         "weak_stack_backup_tenure_gap",
-        # MOD-07 lane C, 2026-09-07 (docs/weak_stack_v5.md): weak_stack plus
-        # exactly one continuous FluView away-market ILI column, the same
-        # inheritance again; measured -1.07 points at the opener, not played.
         "weak_stack_v5",
     }
     assert admitting == {
@@ -358,8 +273,8 @@ def test_playoff_holdover_flags_week_one_teams_from_the_previous_bracket() -> No
     bias = add_bias_features(schedules, schedules)
 
     opener = _bias_row(bias, "2023_01_D_A")
-    assert opener["bias_playoff_holdover_home"] == 1.0  # A reached the Super Bowl
-    assert opener["bias_playoff_holdover_away"] == 0.0  # D missed the bracket
+    assert opener["bias_playoff_holdover_home"] == 1.0
+    assert opener["bias_playoff_holdover_away"] == 0.0
     assert opener["bias_playoff_holdover_diff"] == 1.0
 
     both = _bias_row(bias, "2023_01_C_B")
@@ -367,8 +282,6 @@ def test_playoff_holdover_flags_week_one_teams_from_the_previous_bracket() -> No
     assert both["bias_playoff_holdover_away"] == 1.0
     assert both["bias_playoff_holdover_diff"] == 0.0
 
-    # Week 1 of the bracket season itself has no prior postseason in the frame,
-    # and later weeks are never flagged even for holdover teams.
     assert _bias_row(bias, "2022_01_B_A")["bias_playoff_holdover_home"] == 0.0
     assert _bias_row(bias, "2023_02_B_A")["bias_playoff_holdover_home"] == 0.0
 
@@ -383,7 +296,6 @@ def test_prior_week_ats_uses_the_single_previous_game_team_signed() -> None:
     assert opener["bias_week2_anchor_home"] == 0.0
     assert opener["bias_week2_anchor_away"] == 0.0
 
-    # A won by 6 laying 3 in week 1; B lost by 1 while getting 2 as the host.
     week_two = _bias_row(bias, "2023_02_B_A")
     assert week_two["bias_prior_week_ats_home"] == pytest.approx(3.0)
     assert week_two["bias_prior_week_ats_away"] == pytest.approx(-3.0)
@@ -392,10 +304,8 @@ def test_prior_week_ats_uses_the_single_previous_game_team_signed() -> None:
     assert week_two["bias_week2_anchor_away"] == pytest.approx(-3.0)
     assert week_two["bias_week2_anchor_diff"] == pytest.approx(6.0)
 
-    # The season resets: the 2023 opener does not see the 2022 Super Bowl.
     assert pd.isna(_bias_row(bias, "2023_01_C_B")["bias_prior_week_ats_home"])
 
-    # Away-team sign convention, and postseason rows read the earlier round.
     assert _bias_row(bias, "2022_02_C_A")["bias_prior_week_ats_away"] == pytest.approx(-4.0)
     assert _bias_row(bias, "2022_19_C_A")["bias_prior_week_ats_home"] == pytest.approx(6.0)
     assert _bias_row(bias, "2022_22_B_A")["bias_prior_week_ats_home"] == pytest.approx(3.0)
@@ -407,14 +317,12 @@ def test_bias_features_cannot_see_the_result_of_their_own_game(
     schedules, stats = schedules_and_stats
     baseline = build_game_features(schedules, stats, span=3, min_periods=1)
     changed_schedules = schedules.copy()
-    changed_schedules.loc[2, "result"] = 40.0  # week 3, originally +7
+    changed_schedules.loc[2, "result"] = 40.0
     changed = build_game_features(changed_schedules, stats, span=3, min_periods=1)
 
     assert set(BIAS_FEATURE_COLUMNS).issubset(baseline.columns)
     for column in ("bias_prior_week_ats_home", "bias_prior_week_ats_away"):
-        # Week 3's own result stays invisible to week 3.
         assert changed.loc[2, column] == pytest.approx(baseline.loc[2, column])
-        # It reaches week 4, which is what makes the lookup non-trivial.
         assert changed.loc[3, column] != pytest.approx(baseline.loc[3, column])
     assert pd.isna(baseline.loc[0, "bias_prior_week_ats_home"])
     assert baseline["bias_playoff_holdover_home"].eq(0.0).all()
@@ -444,14 +352,6 @@ def test_bias_family_leaves_every_pre_existing_column_bit_identical(
         without_bias[pre_existing],
         check_exact=True,
     )
-
-
-# ---------------------------------------------------------------------------
-# Surface-switch tilt candidate feature (docs/surface_switch_feature_arm.md,
-# MOD-08). Mirrors tests/test_surface_switch_tilt_overlay.py's own fixture
-# and leakage-test shapes exactly, since add_surface_switch_features is a
-# verbatim port of that module's surface_switch_flag_by_game construct.
-# ---------------------------------------------------------------------------
 
 
 def _surface_switch_schedule() -> pd.DataFrame:
@@ -494,11 +394,6 @@ def test_surface_switch_family_is_registered_but_outside_every_frozen_feature_se
     assert FEATURE_FAMILIES["surface_switch"] == SURFACE_SWITCH_FEATURE_COLUMNS
     assert SURFACE_SWITCH_FEATURE_COLUMNS == ("surface_switch_flag",)
     assert set(SURFACE_SWITCH_FEATURE_COLUMNS).isdisjoint(MODEL_FEATURE_COLUMNS)
-    # weak_stack_surface (MOD-08) is the ONE direct consumer, mirroring
-    # BIAS_FEATURE_COLUMNS' own exception-pinning test above; weak_stack_v3
-    # (docs/weak_stack_v3.md) inherits it by being declared as
-    # weak_stack_surface plus the new gap_v3_* families, not a second
-    # independent consumer.
     admitting = {
         name
         for name, columns in FEATURE_SETS.items()
@@ -527,14 +422,9 @@ def test_surface_switch_flag_fires_on_grass_modal_visitor_onto_turf() -> None:
     flagged = add_surface_switch_features(schedule, schedule)
 
     assert _surface_row(flagged, "2026_03_TURFHOST_GRASSAWAY")["surface_switch_flag"] == 1.0
-    # Same visitor, surfaces match (grass at grass) -- no switch.
     assert _surface_row(flagged, "2026_04_GRASSHOST_GRASSAWAY")["surface_switch_flag"] == 0.0
-    # Turf-modal visitor playing at another turf venue -- no switch.
     assert _surface_row(flagged, "2026_03_TURFHOST2_TURFAWAY")["surface_switch_flag"] == 0.0
-    # Visitor's own modal home surface is unresolved -- no signal.
     assert _surface_row(flagged, "2026_05_TURFHOST3_NOSURF")["surface_switch_flag"] == 0.0
-    # POST-season game with the same flagged shape as week 3 -- excluded by
-    # the REG-only gate.
     assert _surface_row(flagged, "2026_20_POSTHOST_GRASSAWAY")["surface_switch_flag"] == 0.0
 
 
@@ -653,14 +543,8 @@ def test_surface_switch_features_land_in_build_game_features_and_leave_other_col
     )
 
 
-# ---------------------------------------------------------------------------
-# The pool's own graded line as the decision line (docs/splash_lines.md)
-# ---------------------------------------------------------------------------
-
-
 _EASTERN = ZoneInfo("America/New_York")
 
-#: The board capture the tests below apply, frozen the Tuesday before the week it covers -- the.
 _POOL_CAPTURE = DecisionLineOverride(
     season=2022,
     week=6,
@@ -781,7 +665,6 @@ def test_pool_capture_refuses_a_played_game_when_the_board_postdates_kickoff(
 
     schedules, _ = schedules_and_stats
     played = _with_played_week(schedules)
-    # Read the morning AFTER the game -- the number nobody could have played.
     afterwards = DecisionLineOverride(
         season=2022,
         week=6,
@@ -911,7 +794,6 @@ def test_captures_on_disk_become_validated_overrides(tmp_path: Path) -> None:
     assert override.capture_id == "2026_week01_20260908_noon"
     assert override.source == "splashsports.com"
     assert len(override.lines) == 16
-    # Home-signed: Seattle favored by 3.5 at home over New England.
     assert override.lines["2026_01_NE_SEA"] == pytest.approx(3.5)
     assert all(abs(value * 2 - round(value * 2)) < 1e-9 for value in override.lines.values())
 

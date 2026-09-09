@@ -34,20 +34,12 @@ def _with_games(content: BoardContent, updated: dict[str, GameRow]) -> BoardCont
     return replace(content, games=games)
 
 
-# ---------------------------------------------------------------------------
-# all-upcoming -- today's rendering, unchanged
-# ---------------------------------------------------------------------------
-
-
 def test_all_upcoming_board_has_no_final_markup_or_hero_strip() -> None:
     content = build_fixture_content()
     assert content.season_record is None
     assert all(not game.final for game in content.games)
 
     html = board_terminal.render(content)
-    # Checked as class-attribute USAGE (the trailing/leading quote), never a
-    # loose substring -- every one of these names is also a CSS selector in
-    # the page's own <style> block, which must not trip a false positive.
     assert 'class="season-record-strip"' not in html
     assert 'outcome-win"' not in html
     assert 'outcome-loss"' not in html
@@ -55,13 +47,7 @@ def test_all_upcoming_board_has_no_final_markup_or_hero_strip() -> None:
     assert 'final-win"' not in html
     assert 'final-loss"' not in html
     assert 'final-push"' not in html
-    # Every game still shows its confidence meter, exactly like today.
     assert html.count('class="meter"') == len(content.games)
-
-
-# ---------------------------------------------------------------------------
-# mixed week -- some final, some upcoming
-# ---------------------------------------------------------------------------
 
 
 def test_mixed_week_renders_final_and_upcoming_rows_cleanly() -> None:
@@ -89,15 +75,9 @@ def test_mixed_week_renders_final_and_upcoming_rows_cleanly() -> None:
     assert 'final-loss"' in html
     assert "outcome outcome-win" in html
     assert "outcome outcome-loss" in html
-    # The 14 still-upcoming games keep their meter.
     assert html.count('class="meter"') == len(content.games) - 2
     assert "Covered" in html
     assert "No cover" in html
-
-
-# ---------------------------------------------------------------------------
-# fully-graded week
-# ---------------------------------------------------------------------------
 
 
 def test_fully_graded_week_replaces_every_meter_with_an_outcome() -> None:
@@ -120,15 +100,8 @@ def test_fully_graded_week_replaces_every_meter_with_an_outcome() -> None:
 
     html = board_terminal.render(graded)
     assert html.count('class="meter"') == 0
-    # One "outcome" wrapper div per game -- ``class="outcome outcome-<result>"``,
-    # distinct from its own nested ``outcome-score``/``outcome-word`` spans.
     assert html.count('class="outcome outcome-') == len(content.games)
     assert "Best Pick: 1-0" in html
-
-
-# ---------------------------------------------------------------------------
-# pushes
-# ---------------------------------------------------------------------------
 
 
 def test_push_renders_its_own_tint_and_word_not_win_or_loss() -> None:
@@ -151,11 +124,6 @@ def test_push_renders_its_own_tint_and_word_not_win_or_loss() -> None:
     assert "Push" in html
     assert 'final-win"' not in html
     assert 'final-loss"' not in html
-
-
-# ---------------------------------------------------------------------------
-# Best Pick win and loss
-# ---------------------------------------------------------------------------
 
 
 def test_best_pick_win_renders_in_the_hero_strip() -> None:

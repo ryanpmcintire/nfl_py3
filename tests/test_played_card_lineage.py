@@ -44,12 +44,6 @@ from nfl_ats.totals import TotalsView
 PREDICTION_TIMESTAMP = "2026-09-03T14:32:53+00:00"
 FEATURE_BUILD = "2026-09-03T14:31:38+00:00"
 
-# ---------------------------------------------------------------------------
-# A minimal base lineage to extend -- mirrors tests/test_lineage.py's own
-# synthetic forecast/metadata shape, kept self-contained rather than imported
-# so the two test files cannot break each other by changing a shared helper.
-# ---------------------------------------------------------------------------
-
 
 def _base_lineage() -> CardLineage:
     forecast = pd.DataFrame(
@@ -84,13 +78,6 @@ def _base_lineage() -> CardLineage:
         feature_columns=("spread_line", "elo_diff"),
         display_fields={"Matchup": "formatted from team columns"},
     )
-
-
-# ---------------------------------------------------------------------------
-# Overlay wiring: the same duck-typed composition shape tests/test_lineage.py
-# already exercises for overlay_sources_from_composition, fed through the
-# publish-time extension function.
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -128,10 +115,8 @@ def test_one_fired_overlay_is_added_to_the_played_card_lineage() -> None:
 
     assert "overlay:player_arrests_back_side_policy" in played.decision_bearing_fields()
     assert "overlay:coach_fade" not in played.decision_bearing_fields()
-    # The base card's own fields are untouched -- this is an extension, not a
-    # rebuild.
     assert set(base.decision_bearing_fields()).issubset(played.decision_bearing_fields())
-    validate_card_lineage(played)  # does not raise
+    validate_card_lineage(played)
 
 
 def test_zero_fired_overlays_add_no_overlay_records() -> None:
@@ -157,12 +142,7 @@ def test_prediction_timestamp_advances_to_the_publish_instant() -> None:
     played = extend_card_lineage_for_publication(base, prediction_timestamp=publish_instant)
 
     assert played.prediction_timestamp == "2026-09-05T12:00:00+00:00"
-    assert base.prediction_timestamp == PREDICTION_TIMESTAMP  # base is unmodified
-
-
-# ---------------------------------------------------------------------------
-# Tiebreaker wiring
-# ---------------------------------------------------------------------------
+    assert base.prediction_timestamp == PREDICTION_TIMESTAMP
 
 
 def _schedules_row() -> pd.Series:
@@ -256,11 +236,6 @@ def test_tiebreaker_adds_model_and_totals_views_when_present() -> None:
     assert validate_card_lineage(played)
 
 
-# ---------------------------------------------------------------------------
-# Fail closed
-# ---------------------------------------------------------------------------
-
-
 def test_safety_check_fails_closed_on_a_missing_decision_bearing_overlay_record() -> None:
     base = _base_lineage()
     composition = _FakeComposition(
@@ -278,9 +253,6 @@ def test_safety_check_fails_closed_on_a_missing_decision_bearing_overlay_record(
     played = extend_card_lineage_for_publication(base, overlay_sources=overlay_sources)
     assert "overlay:player_arrests_back_side_policy" in played.decision_bearing_fields()
 
-    # Blank the overlay's own record while keeping the field marked
-    # decision-bearing -- the exact "declared present, but unrecordable"
-    # shape a broken overlay adapter would produce.
     broken = replace(
         played,
         entries=tuple(
@@ -293,12 +265,6 @@ def test_safety_check_fails_closed_on_a_missing_decision_bearing_overlay_record(
 
     with pytest.raises(LineageError, match="overlay:player_arrests_back_side_policy"):
         validate_card_lineage(broken)
-
-
-# ---------------------------------------------------------------------------
-# End-to-end: publish_active_predictions actually calls the wiring and writes
-# lineage.json beside the published card (not into the forecast directory).
-# ---------------------------------------------------------------------------
 
 
 def _tenure_schedules() -> pd.DataFrame:
@@ -349,12 +315,10 @@ def _write_played_card_fixture(root: Path) -> tuple[Path, Path]:
     metadata = {
         "active_model_id": "model-123",
         "synchronization_status": "SYNCHRONIZED",
-        # Without this the base lineage falls back to now() and the test goes wall-clock dependent.
         "created_at_utc": PREDICTION_TIMESTAMP,
         "season": 2026,
         "week": 1,
         "feature_profile": "player",
-        # Likewise: no manifest means every source timestamp falls back to the wall clock.
         "provenance": {
             "feature_table": {
                 "path": "data/processed/game_features_player.parquet",
@@ -440,8 +404,6 @@ def test_publish_writes_played_card_lineage_beside_the_card_not_the_forecast(
     assert result["played_card_lineage_checks_passed"]
     assert result["card_metadata"]["played_card_overlay_lineage_count"] >= 1
 
-    # Never written into the forecast artifact directory -- that lineage.json
-    # (if any) is the FORECAST's own, not the played card's.
     assert not (forecast / LINEAGE_FILENAME).exists()
 
     played = CardLineage.from_json((destination.parent / LINEAGE_FILENAME).read_text())

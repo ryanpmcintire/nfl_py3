@@ -28,10 +28,6 @@ from nfl_ats.rookie_kicker_flag_features import (
     kicker_player_slugs,
 )
 
-# ---------------------------------------------------------------------------
-# LEAD-24 stage 2: rookie-wall dependence fade
-# ---------------------------------------------------------------------------
-
 
 def _schedule_row(game_id: str, season: int, week: int, home: str, away: str) -> dict:
     return {
@@ -50,11 +46,11 @@ def _dependence_row(team: str, season: int, week: int, dependent: bool) -> dict:
 def test_rookie_wall_dependence_sign_convention() -> None:
     schedule = pd.DataFrame(
         [
-            _schedule_row("g_away_dep", 2020, 12, "HOME_A", "AWAY_A"),  # away dependent -> +1
-            _schedule_row("g_home_dep", 2020, 12, "HOME_B", "AWAY_B"),  # home dependent -> -1
-            _schedule_row("g_both_dep", 2020, 12, "HOME_C", "AWAY_C"),  # both dependent -> 0
-            _schedule_row("g_neither", 2020, 12, "HOME_D", "AWAY_D"),  # neither -> 0
-            _schedule_row("g_missing", 2020, 12, "HOME_E", "AWAY_E"),  # no dependence rows -> 0
+            _schedule_row("g_away_dep", 2020, 12, "HOME_A", "AWAY_A"),
+            _schedule_row("g_home_dep", 2020, 12, "HOME_B", "AWAY_B"),
+            _schedule_row("g_both_dep", 2020, 12, "HOME_C", "AWAY_C"),
+            _schedule_row("g_neither", 2020, 12, "HOME_D", "AWAY_D"),
+            _schedule_row("g_missing", 2020, 12, "HOME_E", "AWAY_E"),
         ]
     )
     dependence = pd.DataFrame(
@@ -86,7 +82,6 @@ def test_rookie_wall_dependence_joins_the_correct_season_week_row() -> None:
     schedule = pd.DataFrame([_schedule_row("g1", 2021, 14, "HOME_X", "AWAY_X")])
     dependence = pd.DataFrame(
         [
-            # Wrong week for AWAY_X: must NOT make g1 fire +1.
             _dependence_row("AWAY_X", 2021, 13, True),
             _dependence_row("AWAY_X", 2021, 14, False),
             _dependence_row("HOME_X", 2021, 14, False),
@@ -110,11 +105,6 @@ def test_rookie_wall_dependence_missing_table_columns_raises() -> None:
     schedule = pd.DataFrame([_schedule_row("g1", 2020, 12, "H", "A")])
     with pytest.raises(DataContractError):
         derive_rookie_wall_dependence_fade_features(schedule, pd.DataFrame({"team": ["H"]}))
-
-
-# ---------------------------------------------------------------------------
-# LEAD-16: kicker-acquisition phrase discipline
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -142,8 +132,8 @@ def test_kicker_acquire_re_matches_confirmed_language(slug: str) -> None:
     ],
 )
 def test_kicker_acquire_speculative_re_excludes_negated_and_predicted_language(slug: str) -> None:
-    assert KICKER_ACQUIRE_RE.search(slug) is not None  # would match the base verb pattern...
-    assert KICKER_ACQUIRE_SPECULATIVE_RE.search(slug) is not None  # ...but is excluded
+    assert KICKER_ACQUIRE_RE.search(slug) is not None
+    assert KICKER_ACQUIRE_SPECULATIVE_RE.search(slug) is not None
 
 
 def _transactions_index(rows: list[dict]) -> pd.DataFrame:
@@ -170,7 +160,7 @@ def test_confirmed_kicker_change_transactions_excludes_speculative_and_wrong_cat
             },
             {
                 "slug": "vikings-release-kicker-blair-walsh",
-                "category": "release",  # not an acquisition-direction category
+                "category": "release",
                 "url_year": 2017,
                 "url_month": 1,
             },
@@ -185,11 +175,6 @@ def test_confirmed_kicker_change_transactions_requires_slug_and_category_columns
         confirmed_kicker_change_transactions(pd.DataFrame({"slug": ["x-sign-y"]}))
 
 
-# ---------------------------------------------------------------------------
-# LEAD-16: player-identity resolution restricted to a confirmed kicker
-# ---------------------------------------------------------------------------
-
-
 def _snap_counts(rows: list[tuple[str, str, str]]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["player", "team", "position"])
 
@@ -198,7 +183,7 @@ def test_kicker_player_slugs_excludes_non_kicker_positions() -> None:
     snaps = _snap_counts(
         [
             ("Roberto Aguayo", "TB", "K"),
-            ("Roberto Anderson", "TB", "WR"),  # similarly-named non-kicker
+            ("Roberto Anderson", "TB", "WR"),
         ]
     )
     slugs = kicker_player_slugs(snaps)
@@ -215,7 +200,6 @@ def test_describe_kicker_change_population_never_guesses_an_unresolvable_row() -
                 "url_year": 2016,
                 "url_month": 9,
             },
-            # Team unresolvable (no recognizable team nickname token).
             {
                 "slug": "sign-kicker-someone-somewhere",
                 "category": "signing",
@@ -229,12 +213,6 @@ def test_describe_kicker_change_population_never_guesses_an_unresolvable_row() -
     assert stats["n_candidate_slugs"] == 2
     assert stats["n_resolved_kicker_and_team"] == 1
     assert stats["resolved_slugs"] == ["buccaneers-sign-kicker-roberto-aguayo"]
-
-
-# ---------------------------------------------------------------------------
-# LEAD-16: sign convention, timing (first-qualifying-game-only), and
-# pregame safety
-# ---------------------------------------------------------------------------
 
 
 def _reg_schedule_row(
@@ -258,9 +236,9 @@ def _lines(rows: list[tuple[str, float]]) -> pd.DataFrame:
 def test_kicker_change_underdog_sign_convention() -> None:
     schedule = pd.DataFrame(
         [
-            _reg_schedule_row("g1", 2016, 2, "2016-09-15", "TB", "OPP1"),  # TB changed, home dog
-            _reg_schedule_row("g2", 2016, 2, "2016-09-15", "OPP2", "TB"),  # TB changed, away dog
-            _reg_schedule_row("g3", 2016, 2, "2016-09-15", "TB", "OPP3"),  # TB changed, home fav
+            _reg_schedule_row("g1", 2016, 2, "2016-09-15", "TB", "OPP1"),
+            _reg_schedule_row("g2", 2016, 2, "2016-09-15", "OPP2", "TB"),
+            _reg_schedule_row("g3", 2016, 2, "2016-09-15", "TB", "OPP3"),
         ]
     )
     transactions = _transactions_index(
@@ -269,7 +247,7 @@ def test_kicker_change_underdog_sign_convention() -> None:
                 "slug": "buccaneers-sign-kicker-roberto-aguayo",
                 "category": "signing",
                 "url_year": 2016,
-                "url_month": 8,  # report predates every Week 2 kickoff above
+                "url_month": 8,
             }
         ]
     )
@@ -278,13 +256,8 @@ def test_kicker_change_underdog_sign_convention() -> None:
     flags = derive_kicker_change_underdog_features(schedule, transactions, snaps, lines).set_index(
         "game_id"
     )[KICKER_CHANGE_COLUMN]
-    assert flags["g1"] == 1.0  # home underdog, TB (home) changed kicker
-    assert flags["g2"] == -1.0  # away underdog, TB (away) changed kicker
-    # g3: TB (home) changed its kicker and is FAVORED (not the dog) -- the
-    # construct is NOT side-specific (predeclared: signed only by which team
-    # is the underdog, not by which team changed its kicker), so eligibility
-    # is TRUE (a change happened) and the flag still follows the opener
-    # underdog -- here the AWAY team (OPP3) -> -1.
+    assert flags["g1"] == 1.0
+    assert flags["g2"] == -1.0
     assert flags["g3"] == -1.0
 
 
@@ -292,7 +265,7 @@ def test_kicker_change_underdog_requires_eligibility_not_just_underdog() -> None
     schedule = pd.DataFrame([_reg_schedule_row("g1", 2018, 3, "2018-09-20", "H", "A")])
     transactions = _transactions_index([])
     snaps = _snap_counts([])
-    lines = _lines([("g1", -3.0)])  # home underdog but no kicker change anywhere
+    lines = _lines([("g1", -3.0)])
     flags = derive_kicker_change_underdog_features(schedule, transactions, snaps, lines).set_index(
         "game_id"
     )[KICKER_CHANGE_COLUMN]
@@ -312,7 +285,7 @@ def test_kicker_change_underdog_missing_opener_spread_is_zero() -> None:
         ]
     )
     snaps = _snap_counts([("Roberto Aguayo", "TB", "K")])
-    lines = _lines([])  # no opener line row for g1 at all
+    lines = _lines([])
     flags = derive_kicker_change_underdog_features(schedule, transactions, snaps, lines).set_index(
         "game_id"
     )[KICKER_CHANGE_COLUMN]
@@ -360,7 +333,7 @@ def test_kicker_change_report_after_kickoff_never_qualifies_that_game() -> None:
                 "slug": "buccaneers-sign-kicker-roberto-aguayo",
                 "category": "signing",
                 "url_year": 2016,
-                "url_month": 9,  # month-end (2016-09-30) is AFTER g_early's kickoff
+                "url_month": 9,
             }
         ]
     )

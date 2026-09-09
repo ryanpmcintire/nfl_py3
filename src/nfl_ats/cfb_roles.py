@@ -71,16 +71,12 @@ import pandas as pd
 from nfl_ats.cfb import CFB_PBP_SEASON_TYPE_CODES
 from nfl_ats.data import DataContractError, require_columns
 
-# ---------------------------------------------------------------------------
-# Frozen configuration (fixed before any delivery/absence result existed)
-# ---------------------------------------------------------------------------
-
-FROZEN_ROLE_SEASONS: tuple[int, int] = (2013, 2025)  # inclusive, both leagues, regular season only
-FROZEN_ROLE_SPAN: int = 8  # EWM alpha = 2/(span+1), mirroring nfl_ats.players role_span
+FROZEN_ROLE_SEASONS: tuple[int, int] = (2013, 2025)
+FROZEN_ROLE_SPAN: int = 8
 FROZEN_MIN_PRIOR_APPEARANCES: int = 3
 FROZEN_ROLE_THRESHOLDS: dict[str, float] = {"dropback": 0.50, "carry": 0.20, "reception": 0.15}
 FROZEN_MIN_TEAM_ACTIONS: dict[str, int] = {"dropback": 10, "carry": 10, "reception": 5}
-FROZEN_CREDIT_COVERAGE_MIN: float = 0.95  # CFB per-(season, action_type) measurement gate
+FROZEN_CREDIT_COVERAGE_MIN: float = 0.95
 FROZEN_REPLICATION_GATES: dict[str, float] = {
     "median_low": 0.90,
     "median_high": 1.10,
@@ -90,7 +86,6 @@ FROZEN_REPLICATION_GATES: dict[str, float] = {
 
 ACTION_TYPES: tuple[str, ...] = ("dropback", "carry", "reception")
 
-# The shared league-neutral schemas produced by both league adapters.
 ROLE_ACTION_COLUMNS: tuple[str, ...] = (
     "game_id",
     "season",
@@ -141,8 +136,6 @@ ABSENCE_COLUMNS: tuple[str, ...] = (
     "team_total_trailing",
 )
 
-# The pbp columns the CFB adapter reads; exported so the CLI can request
-# exactly this subset from ``nfl_ats.cfb_features.load_cfb_seasons``.
 CFB_ROLE_PBP_LOAD_COLUMNS: tuple[str, ...] = (
     "game_id",
     "season",
@@ -167,11 +160,6 @@ _NFL_ROLE_STATS_COLUMNS: tuple[str, ...] = (
     "receptions",
     "sacks_taken",
 )
-
-
-# ---------------------------------------------------------------------------
-# 1. League-neutral core
-# ---------------------------------------------------------------------------
 
 
 def build_role_states(actions: pd.DataFrame) -> pd.DataFrame:
@@ -472,11 +460,6 @@ def evaluate_replication_gates(
     return result
 
 
-# ---------------------------------------------------------------------------
-# 2. League adapters
-# ---------------------------------------------------------------------------
-
-
 def _regular_season_mask(season_type: pd.Series) -> pd.Series:
     """True for CFB pbp rows tagged regular season -- see the module docstring.
 
@@ -733,11 +716,6 @@ def nfl_role_actions(role_stats: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFra
             )
     coverage = pd.DataFrame(coverage_records, columns=COVERAGE_COLUMNS)
     return actions, team_games, coverage
-
-
-# ---------------------------------------------------------------------------
-# 3. Runner
-# ---------------------------------------------------------------------------
 
 
 def run_role_replication(

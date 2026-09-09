@@ -106,7 +106,6 @@ LEAKAGE_CAVEAT_MIXED = (
     "genuinely season-causal and pregame-safe"
 )
 
-# Same-season-aggregate gap thresholds (predeclared, docs/weather_followup.md).
 TEMP_GAP_THRESHOLD_F = 25.0
 WIND_GAP_TEAM_BASELINE_MAX = 8.0
 WIND_GAP_GAME_MIN = 15.0
@@ -187,7 +186,7 @@ def load_population(schedules_path: Path, team_stats_path: Path) -> pd.DataFrame
     df["week"] = pd.to_numeric(df["week"], errors="raise").astype(int)
     df = df.loc[df["season"].between(SEASON_START, SEASON_END)].reset_index(drop=True)
 
-    df = add_ats_outcomes(df)  # adds ats_margin, home_cover (reused verbatim)
+    df = add_ats_outcomes(df)
     n_before_push_drop = len(df)
     df = df.loc[df["home_cover"].notna()].reset_index(drop=True)
     pushes_or_missing = n_before_push_drop - len(df)
@@ -200,11 +199,6 @@ def load_population(schedules_path: Path, team_stats_path: Path) -> pd.DataFrame
     df["surface_norm"] = df["surface"].map(_normalize_surface)
     df["week_block"] = df["season"] * 100 + df["week"]
 
-    # Away team's own same-season climatological-normal temp/wind: mean
-    # actual temp/wind across the away team's OWN outdoor home games that
-    # season (same full-season-aggregate convention as away_modal_roof /
-    # away_modal_surface in the parent script -- disclosed in
-    # docs/weather_followup.md, not season-causal, precedented).
     outdoor_home = df.loc[df["outdoor"]]
     team_climate = (
         outdoor_home.groupby(["home_team", "season"])
@@ -221,9 +215,6 @@ def load_population(schedules_path: Path, team_stats_path: Path) -> pd.DataFrame
     if "home_team_climate" in df.columns:
         df = df.drop(columns=["home_team_climate"])
 
-    # away_modal_surface, reused verbatim from the parent script (full REG
-    # 2009-2025 home-game population; roof/surface is a stadium fact, not a
-    # cover outcome).
     modal_surface = (
         df.assign(surface_norm=df["surface_norm"])
         .groupby(["home_team", "season"])["surface_norm"]
@@ -272,7 +263,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
 
     outdoor = df["outdoor"]
 
-    # 1. temp_gap_cold_visitor
     temp_gap = df["climate_temp"] - df["temp"]
     temp_gap_missing = df["climate_temp"].isna() | df["temp"].isna() | df["roof"].isna()
     add(
@@ -286,7 +276,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         leakage=LEAKAGE_CAVEAT_ACTUAL,
     )
 
-    # 2. wind_gap_visitor
     wind_gap_missing = df["climate_wind"].isna() | df["wind"].isna() | df["roof"].isna()
     add(
         "weather_followup_wind_gap_visitor",
@@ -301,7 +290,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         leakage=LEAKAGE_CAVEAT_ACTUAL,
     )
 
-    # 3. high_wind_pass_heavy_visitor
     pass_heavy_missing = df["prior_pass_rate"].isna() | df["wind"].isna() | df["roof"].isna()
     add(
         "weather_followup_high_wind_pass_heavy_visitor",
@@ -315,7 +303,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         leakage=LEAKAGE_CAVEAT_MIXED,
     )
 
-    # 4. rest_disadvantage_cold
     rest_missing = (
         df["away_rest"].isna() | df["home_rest"].isna() | df["temp"].isna() | df["roof"].isna()
     )
@@ -331,7 +318,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         leakage=LEAKAGE_CAVEAT_ACTUAL,
     )
 
-    # 5. surface_switch_x_outdoor_cold
     surf_cold_missing = (
         df["away_modal_surface"].isna()
         | df["surface_norm"].isna()

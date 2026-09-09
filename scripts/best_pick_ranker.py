@@ -40,17 +40,11 @@ REPO = Path(__file__).resolve().parents[1]
 
 SIGNALS = ("calibrated_probability", "key_number_distance", "sweep_robustness")
 
-# Standard evaluator configuration (the frozen active config, base profile).
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 MIN_EDGE = 0.02
 FEATURE_PROFILE = "base"
 METHODS = ("market_residual",)
-
-
-# ---------------------------------------------------------------------------
-# 1. Walk-forward predictions + per-week sweeps from the SAME weekly fit
-# ---------------------------------------------------------------------------
 
 
 def sweep_frame(
@@ -87,24 +81,12 @@ def sweep_frame(
         sweep = model.line_sweep(weekly, offsets=DEFAULT_LINE_SWEEP_OFFSETS)
         sweep["season"] = int(str(season))
         sweep["week"] = int(str(week))
-        # The un-swept prediction from the same fit, for the reproduction check.
         point = model.predict(weekly)
         point["game_id"] = weekly["game_id"].to_numpy()
         rows.append(sweep.merge(point[["game_id", "predicted_margin"]], on="game_id", how="left"))
     if not rows:
         raise ValueError("No week had enough prior training games for the sweep")
     return pd.concat(rows, ignore_index=True)
-
-
-# The signal itself now lives in ``nfl_ats.best_pick`` so the weekly Best Pick
-# the published site shows is computed by the SAME function that was scored here.
-# Keeping a second copy in this script is how a confirmed signal silently drifts
-# away from the deployed one.
-
-
-# ---------------------------------------------------------------------------
-# 2. Signals
-# ---------------------------------------------------------------------------
 
 
 def build_picks(
@@ -117,7 +99,6 @@ def build_picks(
 ) -> pd.DataFrame:
     picks = predictions.loc[predictions["season"].between(start_season, end_season)].copy()
     picks["pick"] = np.where(picks["home_cover_probability"] >= 0.5, "HOME", "AWAY")
-    # Pushes carry no correctness; forced-pick accuracy is defined on resolved games.
     picks = picks.loc[picks["home_cover"].notna()].copy()
     picks["correct"] = np.where(
         picks["pick"].eq("HOME"),
@@ -125,7 +106,6 @@ def build_picks(
         1.0 - picks["home_cover"].astype(float),
     )
 
-    # Signal 1: Platt-calibrated pick-side cover probability.
     calibrated = calibrate_cover_prediction_stream(
         predictions,
         method="platt",
@@ -139,20 +119,13 @@ def build_picks(
         picks["pick"].eq("HOME"), home_calibrated, 1.0 - home_calibrated
     )
 
-    # Signal 2: market key-number distance minus fair key-number distance.
     picks["key_number_distance"] = (
         key_number_distance(picks["spread_line"].astype(float), KEY_NUMBERS).to_numpy()
         - key_number_distance(picks["fair_spread"].astype(float), KEY_NUMBERS).to_numpy()
     )
 
-    # Signal 3: sweep robustness.
     picks["sweep_robustness"] = picks["game_id"].map(sweep_robustness(sweep, picks)).astype(float)
     return picks
-
-
-# ---------------------------------------------------------------------------
-# 3. Metrics
-# ---------------------------------------------------------------------------
 
 
 def _flag_top1(picks: pd.DataFrame, signal: str) -> pd.DataFrame:
@@ -164,7 +137,6 @@ def _flag_top1(picks: pd.DataFrame, signal: str) -> pd.DataFrame:
     """
 
     frame = picks.dropna(subset=[signal]).copy()
-    # Deterministic tie-break by game_id so the ranking never depends on row order.
     frame = frame.sort_values([signal, "game_id"], ascending=[False, True])
     frame["is_top1"] = ~frame.duplicated(subset=["season", "week"], keep="first")
     return frame.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
@@ -201,11 +173,6 @@ def evaluate_signal(picks: pd.DataFrame, signal: str, *, samples: int, seed: int
     }
 
 
-# ---------------------------------------------------------------------------
-# 4. Driver
-# ---------------------------------------------------------------------------
-
-
 def run(
     features: pd.DataFrame,
     *,
@@ -236,7 +203,6 @@ def run(
         min_train_games=min_train_games,
     )
 
-    # Proof that the sweep loop reproduces the evaluator's weekly fit exactly.
     check = predictions[["game_id", "predicted_margin"]].merge(
         sweep[["game_id", "predicted_margin"]].drop_duplicates("game_id"),
         on="game_id",
@@ -271,20 +237,6 @@ def run(
     return summary, picks
 
 
-# ---------------------------------------------------------------------------
-# 5. Opener-graded confirmation arm (SPEC-5's gate stage)
-# ---------------------------------------------------------------------------
-#
-# The screen grades against the nflverse spread. The confirmation grades the
-# same frozen signal against the Tuesday opener the pool actually uses, which
-# means re-forming every pick at the opener line. ``opener_pick_evaluation``
-# already does that; what it does not emit is a line sweep, so ``sweep_robustness``
-# has to come from a parallel loop that refits the identical weekly model and
-# sweeps ``at_open``. The reproduction check below proves the two loops share a
-# fit: the sweep loop's residual at the opener must equal the evaluator's
-# ``residual_at_open`` to 0.0, exactly as stage A proved for the screen.
-
-
 def opener_sweep_frame(
     features: pd.DataFrame,
     paired: pd.DataFrame,
@@ -313,8 +265,6 @@ def opener_sweep_frame(
             feature_profile=feature_profile,  # type: ignore[arg-type]
             ridge_alpha=RIDGE_ALPHA,
         )
-        # Swap ONLY spread_line to the opener, matching opener_pick_evaluation's
-        # declared approximation (every other feature stays close-era).
         at_open = week_rows.merge(
             group[["game_id", "tue_open_home_spread"]], on="game_id", how="inner"
         ).copy()
@@ -352,9 +302,6 @@ def run_opener_confirmation(
         "ridge_alpha": RIDGE_ALPHA,
         "target": "market_residual",
     }
-    # Truncate at the window's last season so no unspent window is ever scored,
-    # even into a discarded frame. Training is unaffected: the evaluator takes
-    # strictly-earlier gamedays only, and everything earlier is still present.
     features = features.loc[features["season"].astype(int).le(end_season)].copy()
     scored = opener_pick_evaluation(
         market_root,
@@ -386,7 +333,6 @@ def run_opener_confirmation(
         min_train_games=min_train_games,
     )
 
-    # Same-fit proof: the sweep loop must reproduce the evaluator's opener residual.
     check = window[["game_id", "residual_at_open"]].merge(
         sweep[["game_id", "predicted_market_residual"]].drop_duplicates("game_id"),
         on="game_id",

@@ -46,35 +46,9 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# TEAMA fires its coach ("Old Coach A") after week 1 of 2026 and hires
-#   "Interim One": week 2 (at OPP2, road) is TEAMA's FIRST game under the
-#   interim -- flagged. Week 3 (home vs OPP3) is its SECOND game -- NOT
-#   flagged (the folklore only covers game 1, per docs/interim_coach_screen.md
-#   section 6's own decomposition).
-# TEAMD and TEAME BOTH get new interims and play each other in week 4 -- a
-#   simultaneous both-sides-first-game case, used for the "no measured
-#   direction, leave untouched" test.
-# TEAMB/TEAMC never appear in the interim-coach source at all -- used for the
-#   "no interim this week, no-op" test.
-#
-# The REG-only eligibility gate is tested separately (see
-# test_overlay_leaves_a_flagged_game_untouched_when_marked_postseason):
-# nfl_ats.experiment_runner._build_interim_coach_trait_data itself only ever
-# considers REG-season schedule rows when joining (see its own module
-# docstring/source), so a POST-season game_id can never appear in the flags
-# in the first place -- the gate in apply_interim_hc_first_game_tilt_overlay
-# operates defensively on the PREDICTIONS frame's own game_type, mirroring
-# every sibling overlay, and is exercised directly against that column
-# rather than via a schedule fixture that the upstream join would reject.
-
 
 def _interim_schedule() -> pd.DataFrame:
     rows = [
-        # game_id, season, week, game_type, gameday, home_team, away_team, home_coach, away_coach
         (
             "2026_01_TEAMA_OPP1",
             2026,
@@ -217,23 +191,9 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["TEAMA", "OPP3", "TEAMC", "TEAME", "MISS_A"],
             "kickoff": ["2026-09-24T17:00:00+00:00"] * 5,
             "spread_line": [-3.0, 2.0, -1.5, 1.0, 1.0],
-            # G-first: model picks HOME (OPP2) -- NOT the interim team
-            #   (TEAMA, away, first game) -- should flip to AWAY.
-            # G-second: model picks AWAY (OPP3) -- TEAMA is home but this is
-            #   its SECOND interim game -- not flagged, no flip.
-            # G-nointerim: no interim data for either team -- no flip.
-            # G-both: both TEAMD (home) and TEAME (away) are in their own
-            #   first interim game simultaneously -- no measured direction,
-            #   no flip regardless of the model's pick.
-            # G-missing: no schedule row at all -- treated as no signal.
             "home_cover_probability": [0.60, 0.35, 0.50, 0.45, 0.50],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. interim_first_game_flag_by_game_fail_open: derived, fail-open
-# ---------------------------------------------------------------------------
 
 
 def test_flag_fires_on_the_first_interim_game_only(tmp_path: Path) -> None:
@@ -276,11 +236,6 @@ def test_flag_fails_open_with_no_repo_data_directory_at_all(tmp_path: Path) -> N
     with pytest.warns(RuntimeWarning):
         flags = interim_first_game_flag_by_game_fail_open(empty_repo)
     assert flags.empty
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_interim_hc_first_game_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_toward_the_interim_teams_first_game(tmp_path: Path) -> None:
@@ -431,11 +386,6 @@ def test_overlay_requires_its_prediction_columns(tmp_path: Path) -> None:
         apply_interim_hc_first_game_tilt_overlay(pd.DataFrame({"game_id": ["G1"]}), tmp_path)
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped(tmp_path: Path) -> None:
     repo_root = _write_repo_root(tmp_path)
     matched_only = _predictions().loc[lambda frame: frame["game_id"].eq("2026_01_TEAMB_TEAMC")]
@@ -457,10 +407,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production(
     assert "OPP2 -> TEAMA" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_interim_hc_first_game_tilt_challenger_decisions: dual-tracked
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -532,15 +478,9 @@ def test_record_interim_hc_first_game_challenger_decisions_records_the_tilt_arm(
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The tilt's own arm diverges from the active model's raw pick (0.60 ->
-    # HOME): the tilt flips it to AWAY (TEAMA), toward the interim team's
-    # first game.
     assert ledger.loc["2026_02_OPP2_TEAMA", "pick_side"] == "AWAY"
-    # The no-signal game keeps the model's own pick (0.50 -> HOME by the
-    # >= 0.5 convention).
     assert ledger.loc["2026_01_TEAMB_TEAMC", "pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_interim_hc_first_game_tilt_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -593,9 +533,6 @@ def test_record_interim_hc_first_game_challenger_refuses_a_fingerprint_mismatch(
 ) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     repo_root = _write_repo_root(tmp_path)
     data_root = repo_root / "data"

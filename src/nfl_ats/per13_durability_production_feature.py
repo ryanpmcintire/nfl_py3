@@ -62,17 +62,11 @@ from nfl_ats.durability_prior import (
     durability_prior_columns,
 )
 
-#: Stage 1's own training-floor constant (docs/per13_durability_prior.md sec 5).
 MIN_TRAIN_ROWS = 2_000
-#: Stage 1's estimator, at Stage 1's hyperparameters, unchanged.
 LOGISTIC_C = 1.0
 LOGISTIC_MAX_ITER = 1000
 LOGISTIC_SOLVER = "lbfgs"
 
-#: ``(season, week, gsis_id)``. Team is deliberately NOT part of the key: the
-#: enrichment loop and the availability outcome builder apply team-abbreviation
-#: aliases at different points, and a player is on exactly one roster in a
-#: given week, so the three-part key is both unambiguous and alias-proof.
 OffsetKey = tuple[int, int, str]
 
 TRAINING_COLUMNS = (
@@ -114,11 +108,6 @@ def augmented_unavailability(base: np.ndarray | float, offset: np.ndarray | floa
     with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
         updated = base_values / (base_values + (1.0 - base_values) * np.exp(-offset_values))
     return np.asarray(np.where(offset_values == 0.0, base_values, updated), dtype=float)
-
-
-# ---------------------------------------------------------------------------
-# The offset model
-# ---------------------------------------------------------------------------
 
 
 def _fit_offset_coefficients(design: np.ndarray, outcome: np.ndarray) -> np.ndarray | None:
@@ -232,11 +221,6 @@ def offset_lookup(offsets: pd.DataFrame) -> dict[OffsetKey, float]:
             strict=True,
         )
     }
-
-
-# ---------------------------------------------------------------------------
-# The swap
-# ---------------------------------------------------------------------------
 
 
 def augmented_injury_frame(

@@ -88,19 +88,13 @@ DENOMINATOR_COLUMN = {
     "run_direction_hhi": "n_run_plays",
     "seconds_per_play_pace": "n_off_plays",
 }
-# The reliability-based exclusion threshold -- the ONE admissible
-# reliability exclusion this task allows. A dimension whose year-over-year
-# Pearson r 95% CI (via team-season block bootstrap) sits entirely at or
-# below this bar is not treated as a personality trait for cell-building.
-# 0.0 (not some higher bar) so the exclusion is "genuinely indistinguishable
-# from a random redraw each year", never a precision complaint.
 RELIABILITY_EXCLUSION_BAR = 0.0
 
 
 def year_over_year_pairs(team_season: pd.DataFrame, metric: str) -> pd.DataFrame:
     left = team_season[["team", "season", metric]].rename(columns={metric: "value_t"})
     right = team_season[["team", "season", metric]].rename(columns={metric: "value_t1"})
-    right["season"] = right["season"] - 1  # season_t1's season-1 = season_t
+    right["season"] = right["season"] - 1
     pairs = left.merge(right, on=["team", "season"], how="inner")
     return pairs.dropna(subset=["value_t", "value_t1"])
 
@@ -143,10 +137,6 @@ def measure_year_over_year(
     x = pairs["value_t"].to_numpy(dtype=float)
     y = pairs["value_t1"].to_numpy(dtype=float)
     r = float(np.corrcoef(x, y)[0, 1])
-    # seed_offset is the dimension's fixed STYLE_DIMENSIONS index, NOT
-    # hash(metric) -- Python's string hash is PYTHONHASHSEED-randomized
-    # across processes, which would silently break the "fixed seed,
-    # deterministic" requirement every dimension here is held to.
     lower, upper, prob_pos = bootstrap_pearson_ci(
         x, y, samples=20_000, seed=RELIABILITY_SEED + seed_offset
     )

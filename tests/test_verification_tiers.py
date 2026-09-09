@@ -52,11 +52,6 @@ def _collected_count(output: str) -> int:
     raise AssertionError(f"could not find a 'collected' summary line in:\n{output}")
 
 
-# ---------------------------------------------------------------------------
-# 1. The `full` marker is declared (--strict-markers would otherwise reject it)
-# ---------------------------------------------------------------------------
-
-
 def test_full_marker_is_declared_in_pyproject() -> None:
     options = _pytest_ini_options()
     markers = options.get("markers")
@@ -68,11 +63,6 @@ def test_full_marker_is_declared_in_pyproject() -> None:
         "the whole point of declaring `full` is that --strict-markers would "
         "otherwise reject an undeclared marker outright"
     )
-
-
-# ---------------------------------------------------------------------------
-# 2. `-m full` collects a non-empty, and `-m "not full"` deselects it
-# ---------------------------------------------------------------------------
 
 
 def test_full_marker_selects_a_nonempty_tagged_set(tmp_path: Path) -> None:
@@ -128,11 +118,6 @@ def test_not_full_deselects_a_known_tagged_test(tmp_path: Path) -> None:
     assert "test_margin_hgb_and_guards" not in completed.stdout, completed.stdout
 
 
-# ---------------------------------------------------------------------------
-# 3. The two tier scripts exist and are syntactically valid
-# ---------------------------------------------------------------------------
-
-
 def _flat_commands(steps: list[tuple[str, list[str]]]) -> list[str]:
     return [token for _, cmd in steps for token in cmd]
 
@@ -144,8 +129,6 @@ def test_verify_fast_script_exists_and_parses() -> None:
 
     tokens = _flat_commands(verify_fast.STEPS)
     assert "ruff" in tokens and "mypy" in tokens and "pytest" in tokens
-    # The fast tier's whole reason to exist: it must actually filter pytest
-    # by the `full` marker, not just resemble the full tier's command list.
     assert "not full" in tokens
 
 
@@ -156,8 +139,5 @@ def test_verify_full_script_exists_and_parses() -> None:
 
     tokens = _flat_commands(verify_full.STEPS)
     assert "ruff" in tokens and "mypy" in tokens and "pytest" in tokens
-    # The full tier is the AGENTS.md gate unchanged -- its actual pytest
-    # invocation (not the docstring, which discusses the fast tier's marker
-    # filter in prose) must not filter by marker the way the fast tier does.
     assert "not full" not in tokens
     assert "-m" not in tokens

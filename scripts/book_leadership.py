@@ -160,9 +160,6 @@ def main() -> None:
         **result,
         "elapsed_seconds": time.time() - started,
         "provenance": {
-            # Directory-scanned input: artifact_provenance needs a single
-            # feature-table file, so provenance here is the configuration
-            # hash plus the explicit snapshot inventory below.
             "configuration": configuration,
             "configuration_sha256": configuration_hash(configuration),
             "quote_snapshots": len(snapshots),

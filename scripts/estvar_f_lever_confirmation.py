@@ -115,25 +115,15 @@ THIN_COLUMNS: tuple[str, ...] = (
 )
 FULL_COLUMNS: tuple[str, ...] = CFB_MODEL_FEATURE_COLUMNS
 
-# --- Frozen configuration (design.md sec 4a). Declared before this script is
-# --- ever run against the out-of-screen population; not re-swept afterward.
 TAU = 0.05
 N_BOOT = 120
 RIDGE_ALPHA = CFB_BENCHMARK_RIDGE_ALPHA
 MIN_TRAIN_GAMES = CFB_BENCHMARK_MIN_TRAIN_GAMES
 INTERVAL_SAMPLES = 20_000
 INTERVAL_SEED = 20260818
-REFIT_SEED_BASE = 3  # distinct from estvar_real_cfb_audit.py's A=1, B=2
-# Placebo-gate random seed, declared before results are seen (design.md sec 7
-# flags this as a fresh underived choice that must be declared up front, same
-# discipline as estvar_f_lever_splithalf.py's existing 20260818 seeds).
+REFIT_SEED_BASE = 3
 PLACEBO_SEED = 20260818
 
-# Population: out-of-screen only. Neither the 9-point sweep
-# (estvar_real_cfb_audit.py::f_lever_report) nor the split-half check
-# (estvar_f_lever_splithalf.py) ever touched these seasons -- both operate on
-# CFB_CLEAN_CORE_SEASONS (2012-2019, 2021-2025) exclusively. NFL is not
-# admitted (orchestrator adjudication, decision 1).
 OUT_OF_SCREEN_SEASONS: tuple[int, ...] = (*tuple(range(2006, 2012)), 2020)
 
 
@@ -172,8 +162,8 @@ class SeasonFit:
     candidate_model: MarginModel
     baseline_prob_point: np.ndarray
     candidate_prob_point: np.ndarray
-    baseline_refit_prob: np.ndarray  # (n_boot, n_test)
-    candidate_refit_prob: np.ndarray  # (n_boot, n_test)
+    baseline_refit_prob: np.ndarray
+    candidate_refit_prob: np.ndarray
 
 
 def fit_seasons(
@@ -450,7 +440,6 @@ def main() -> None:
         "n_blocks_realized": n_blocks,
     }
 
-    # --- PHASE 1: reliability, computed and reported BEFORE the accuracy screen.
     print(
         "\n=== Gate-membership reliability (read this BEFORE the accuracy screen) ===", flush=True
     )
@@ -458,7 +447,6 @@ def main() -> None:
     results["reliability"] = reliability
     print(json.dumps(reliability, indent=2), flush=True)
 
-    # --- PHASE 2: frozen accuracy screen (real gate + required placebo control).
     print("\n=== Accuracy screen: real gate vs. placebo (tau frozen, no re-sweep) ===", flush=True)
     screen = accuracy_screen(arrays, tau=TAU, placebo_seed=PLACEBO_SEED)
     results["accuracy_screen"] = screen
@@ -468,7 +456,7 @@ def main() -> None:
     out_dir = ARTIFACT_ROOT / ts
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / "results.json"
-    write_stamped_artifact(results, out_path)  # ENG-38
+    write_stamped_artifact(results, out_path)
     print(f"\nWrote {out_path} in {time.time() - started:.1f}s", flush=True)
 
 

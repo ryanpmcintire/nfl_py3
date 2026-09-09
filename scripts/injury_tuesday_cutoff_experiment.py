@@ -80,15 +80,11 @@ MIN_TRAIN_GAMES = 500
 SAMPLES = 20000
 SEED = 20260819
 
-# Exact snapshots the on-disk game_features_player_value.parquet manifest
-# recorded (data/processed/game_features_player_value.manifest.json, read).
 PLAYER_SNAPSHOT_ID = "20260812T200527Z"
 PBP_SNAPSHOT_ID = "20260812T142851Z"
 PLAYER_VALUE_SNAPSHOT_ID = "20260813T121050Z"
 PFT_SNAPSHOT_ID = "20260819T191639Z"
 
-# The recorded D-A "cleaner isolation" number from docs/injury_value_lost.md
-# sec 4, quoted here as the reproduction target for the fresh Saturday rebuild.
 RECORDED_SATURDAY_D_MINUS_A = {
     "delta_points": 1.316,
     "probability_positive": 0.8875,
@@ -116,11 +112,6 @@ def _config(profile: str) -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
-# Tuesday-noon-ET cutoff per (season, week, team)
-# ---------------------------------------------------------------------------
-
-
 def team_week_tuesday_noon(games: pd.DataFrame) -> pd.DataFrame:
     """One row per (season, week, team) with that game's own-week Tuesday noon ET.
 
@@ -144,11 +135,6 @@ def team_week_tuesday_noon(games: pd.DataFrame) -> pd.DataFrame:
     long["tuesday_noon_utc"] = tuesday_noon_et.dt.tz_convert("UTC")
     long["kickoff_utc"] = long["kickoff"]
     return long[["season", "week", "team", "game_id", "kickoff_utc", "tuesday_noon_utc"]]
-
-
-# ---------------------------------------------------------------------------
-# PFT article <-> player matching
-# ---------------------------------------------------------------------------
 
 
 def build_player_name_map(rosters: pd.DataFrame) -> dict[str, str]:
@@ -189,13 +175,8 @@ def build_pft_match_table(
 
     relevant = pft.loc[pft["injury_relevant"]].copy()
     relevant["headline_norm"] = relevant["headline_guess"].map(_normalize_name)
-    # Inverted index on the last name token (>=3 chars) to avoid an O(rows x articles) scan.
     last_name_index: dict[str, list[int]] = {}
     headlines = relevant["headline_norm"].to_numpy()
-    # Naive UTC datetime64[ns] throughout below: avoids tz-aware/object-array
-    # dtype pitfalls in numpy while staying an exact UTC instant comparison
-    # (every timestamp involved -- lastmod, kickoff, tuesday_noon -- already
-    # went through tz_convert("UTC") upstream).
     lastmods = (
         relevant["lastmod"]
         .dt.tz_convert("UTC")
@@ -250,11 +231,6 @@ def build_pft_match_table(
         "UTC"
     )
     return merged
-
-
-# ---------------------------------------------------------------------------
-# Arm construction (re-derived from scripts/availability_ablation.py)
-# ---------------------------------------------------------------------------
 
 
 def spent_window_split(
@@ -443,9 +419,6 @@ def main() -> None:
         injuries, name_map, pft, cutoffs, lookback_days=args.lookback_days
     )
 
-    # -----------------------------------------------------------------
-    # Experiment 1: three injuries variants
-    # -----------------------------------------------------------------
     official_visible = matched_exp1["date_modified"] <= matched_exp1["tuesday_noon_utc"]
     pft_augmented_visible = official_visible | matched_exp1["pft_match_lastmod"].notna()
 
@@ -556,10 +529,6 @@ def main() -> None:
         "vs_pft_augmented_tuesday": delta_pft,
     }
 
-    # -----------------------------------------------------------------
-    # Experiment 2: fraction of Friday-final designations already
-    # headline-visible by Tuesday noon (Sunday-night -> Tuesday-morning window)
-    # -----------------------------------------------------------------
     final_report = (
         injuries.sort_values("date_modified")
         .drop_duplicates(["season", "week", "team", "gsis_id"], keep="last")

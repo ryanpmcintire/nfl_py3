@@ -50,11 +50,6 @@ def _load_parent_module():
 base = _load_parent_module()
 
 
-# --------------------------------------------------------------------------
-# Parse GDELT raw timelinevol JSON into {team: pd.Series(date -> value)}
-# --------------------------------------------------------------------------
-
-
 def _extract_series_from_timelinevol(payload: dict[str, Any]) -> pd.Series:
     """Defensive parse: GDELT timelinevol responses nest under
     ``timeline -> [ {data: [{date, value}, ...]} ]``. ``date`` strings are
@@ -175,11 +170,6 @@ def load_gdelt_weekly_long(
     }
 
 
-# --------------------------------------------------------------------------
-# Cross-source correlation
-# --------------------------------------------------------------------------
-
-
 def cross_source_correlation(wiki_long: pd.DataFrame, gdelt_long: pd.DataFrame) -> dict[str, Any]:
     wiki = wiki_long.loc[
         wiki_long["has_baseline"], ["team", "season", "week", "attention_z"]
@@ -204,12 +194,6 @@ def cross_source_correlation(wiki_long: pd.DataFrame, gdelt_long: pd.DataFrame) 
         "n_teams": int(merged["team"].nunique()),
         "season_range": [int(merged["season"].min()), int(merged["season"].max())],
     }
-
-
-# --------------------------------------------------------------------------
-# both_cold replication on GDELT (identical cell definition to the parent
-# battery -- same threshold, same eligibility rule, same sign, same value_col)
-# --------------------------------------------------------------------------
 
 
 def both_cold_cell_gdelt(game_df: pd.DataFrame, *, samples: int, seed: int) -> dict[str, Any]:
@@ -244,11 +228,6 @@ def both_cold_cell_gdelt(game_df: pd.DataFrame, *, samples: int, seed: int) -> d
         seed=seed,
     )
     return {"week_blocked_primary": primary, "season_blocked_secondary": secondary}
-
-
-# --------------------------------------------------------------------------
-# Main
-# --------------------------------------------------------------------------
 
 
 def main() -> None:

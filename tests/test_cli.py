@@ -82,9 +82,6 @@ def test_weak_signals_record_stores_plain_summary_and_category(
 def test_weak_signals_record_without_plain_summary_or_category_warns_but_succeeds(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    # Both fields are optional -- the existing (pre-2026-08-26) registry rows
-    # carry neither -- but a NEW record that skips them should say so loudly
-    # rather than silently choosing the Signal Ledger page's fallback state.
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
     assert cli.main(_record_weak_signal_args("cli_no_summary_demo")) == 0
     err = capsys.readouterr().err
@@ -126,7 +123,7 @@ def test_prospective_primary_entrants_preserve_played_and_raw_policy_arms() -> N
     assert np.isnan(entrants["base_model_no_pick_overlays"].loc[0, "edge"])
 
 
-@pytest.mark.full  # ENG-11: end-to-end CLI data build; dominates --durations
+@pytest.mark.full
 def test_cli_data_workflow(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -191,7 +188,7 @@ def test_cli_data_workflow(
     assert smoke_output == {"schedule_season": 2026, "stats_season": 2025}
 
 
-@pytest.mark.full  # ENG-11: end-to-end CLI model fit/predict; dominates --durations
+@pytest.mark.full
 def test_cli_model_workflow(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -246,11 +243,6 @@ def test_cli_model_workflow(
                 "80",
                 "--bootstrap-samples",
                 "20",
-                # margin-predict below is invoked with its promoted default
-                # (--probability-method gaussian_median, MOD-06, 2026-09-07); the
-                # matching evaluation this test builds must carry the SAME
-                # probability_method or synchronization below correctly
-                # returns UNLINKED (nfl_ats.active_model's identity match).
                 "--probability-method",
                 "gaussian_median",
             ]
@@ -289,13 +281,10 @@ def test_cli_model_workflow(
     assert (margin_prediction_directory / "pool_card.csv").is_file()
     assert (margin_prediction_directory / "prediction_safety.json").is_file()
     assert (margin_prediction_directory / "straight_up_pool_market_residual.csv").is_file()
-    # ENG-16: lineage ships with the forecast and the card metadata points at it.
     assert (margin_prediction_directory / "lineage.json").is_file()
     assert margin_prediction_output["lineage"]["path"] == "lineage.json"  # type: ignore[index]
     assert "pick" in margin_prediction_output["lineage"]["decision_bearing_fields"]  # type: ignore[index]
     assert margin_prediction_output["ats_method"] == "market_residual"
-    # This legacy synthetic frame intentionally has no game_type column; real
-    # canonical tables record REG/WC/DIV/CON/SB and preserve it here.
     assert margin_prediction_output["game_type"] is None
     assert margin_prediction_output["synchronization_status"] == "SYNCHRONIZED"
     active_model = json.loads(
@@ -541,12 +530,6 @@ def test_publish_predictions_does_not_record_by_default(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    # This test fakes the whole publish pipeline to probe CLI flag wiring in
-    # isolation, so the number-provenance gate (real artifact state this
-    # empty tmp_path carries none of) is faked out too -- same discipline as
-    # every other side-effecting call below (owner mandate, 2026-09-05:
-    # "please do not let those percentages get out of date anymore", the
-    # rule this gate enforces at the REAL publish path).
     monkeypatch.setattr(publishing_cmds, "verify_number_provenance", lambda *a, **k: ())
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_record)
@@ -599,7 +582,6 @@ def test_publish_predictions_does_not_record_by_default(
     )
     payload = _last_json(capsys.readouterr().out)
 
-    # Neither ledger call fires without the explicit flag.
     assert calls == []
     assert payload["clv_ledger"] == {
         "recorded": 0,
@@ -1046,12 +1028,6 @@ def test_publish_predictions_records_with_the_explicit_flag(
         forecast_cold_visitor_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
-    # This test fakes the whole publish pipeline to probe CLI flag wiring in
-    # isolation, so the number-provenance gate (real artifact state this
-    # empty tmp_path carries none of) is faked out too -- same discipline as
-    # every other side-effecting call below (owner mandate, 2026-09-05:
-    # "please do not let those percentages get out of date anymore", the
-    # rule this gate enforces at the REAL publish path).
     monkeypatch.setattr(publishing_cmds, "verify_number_provenance", lambda *a, **k: ())
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_record)
@@ -1232,17 +1208,12 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
         return {"recorded": 1}
 
     def fake_deactivated_backup_qb(artifacts_root: Path, data_root: Path) -> dict:
-        # Mirrors exactly what record_backup_qb_fade_challenger_decisions
-        # itself raises for a non-ACTIVE_PROSPECTIVE status
-        # (nfl_ats.prospective_scoring.ACTIVE_CHALLENGER_STATUS check).
         raise ValueError(
             "Challenger 'backup_qb_fade_overlay' is registered as "
             "'DEACTIVATED_STRUCTURAL_NO_OP'; only ACTIVE_PROSPECTIVE challengers "
             "have picks recorded"
         )
 
-    # See the "does not record by default" test above for why this is faked
-    # out here too.
     monkeypatch.setattr(publishing_cmds, "verify_number_provenance", lambda *a, **k: ())
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     monkeypatch.setattr(publishing_cmds, "record_paper_decisions", fake_ok)
@@ -1290,15 +1261,11 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
             "--record-decisions",
         ]
     )
-    # The whole command must still succeed: a deactivated challenger's
-    # refusal must never un-publish or fail the run.
     assert exit_code == 0
     payload = _last_json(capsys.readouterr().out)
 
     assert payload["backup_qb_fade_challenger_ledger"]["recorded"] == 0
     assert "DEACTIVATED_STRUCTURAL_NO_OP" in payload["backup_qb_fade_challenger_ledger"]["error"]
-    # Every OTHER ledger still recorded normally -- one bad challenger must
-    # not take down the rest of the publish.
     assert payload["clv_ledger"] == {"recorded": 1}
     assert payload["overlay_challenger_ledger"] == {"recorded": 1}
     assert payload["ecdf_mapping_incumbent_challenger_ledger"] == {"recorded": 1}
@@ -1337,7 +1304,6 @@ def test_publish_predictions_surfaces_stale_arrest_snapshot_refusal(
     ) -> dict:
         raise DataContractError("player-arrests snapshot is stale at 40.00 hours old")
 
-    # See "does not record by default" above for why this is faked out too.
     monkeypatch.setattr(publishing_cmds, "verify_number_provenance", lambda *a, **k: ())
     monkeypatch.setattr(publishing_cmds, "publish_active_predictions", fake_publish)
     with pytest.raises(SystemExit) as exit_info:
@@ -1428,10 +1394,6 @@ def test_cli_refresh_picks_end_to_end(
     )
 
     game_id = "2026_02_III_JJJ"
-    # `refresh-picks` has no `--now` override (matching publish-predictions),
-    # so it reads the real clock; a kickoff a couple of days out from the
-    # real "now" stays inside RECORDING_LOCK_WINDOW and ahead of its own
-    # per-game deadline regardless of which real day the suite runs on.
     kickoff = pd.Timestamp(datetime.now(UTC)) + pd.Timedelta(days=2)
     feature_columns = [
         c
@@ -1463,7 +1425,7 @@ def test_cli_refresh_picks_end_to_end(
             "home_team": "JJJ",
             "home_spread_odds": -110.0,
             "away_spread_odds": -110.0,
-            "spread_line": 9.5,  # CURRENT line -- must never be what refresh scores at
+            "spread_line": 9.5,
             "home_cover": np.nan,
             "ats_margin": np.nan,
             "result": np.nan,
@@ -1474,8 +1436,6 @@ def test_cli_refresh_picks_end_to_end(
     features_path = data_root / "processed" / "game_features.parquet"
     atomic_parquet(features, features_path)
 
-    # Independently reproduce the frozen-line prediction so the fixture can
-    # guarantee a real change: pick_side below is set to the OPPOSITE side.
     target, margin_models = fit_margin_models_for_week(
         features,
         season=2026,
@@ -1525,7 +1485,7 @@ def test_cli_refresh_picks_end_to_end(
                 "schedule_snapshot_id": "schedule-tuesday",
                 "schedule_parquet_sha256": "schedule-hash",
                 "bet_side": original_pick_side,
-                "decision_home_spread": 1.0,  # the FROZEN Tuesday line, different from 9.5 above
+                "decision_home_spread": 1.0,
                 "edge": 0.05,
                 "is_best_pick": False,
             }
@@ -1540,7 +1500,6 @@ def test_cli_refresh_picks_end_to_end(
         "# NFL ATS predictions: 2026 Week 2\n\nTuesday content.\n", encoding="utf-8"
     )
 
-    # A rehearsal-style dry pass (no --record-decisions): computes but writes nothing.
     exit_code = cli.main(
         [
             "refresh-picks",
@@ -1561,18 +1520,12 @@ def test_cli_refresh_picks_end_to_end(
     assert dry_payload["changed_game_ids"] == [game_id]
     assert dry_payload["ledger"]["skipped"] is True
     assert load_pick_revisions(artifacts_root).empty
-    # No data/market/raw store exists in this fixture, so the observed-
-    # movement policy (POL-11 addendum, docs/late_week_refresh.md) fails
-    # open: the model-only pick governs, surfaced in the JSON payload.
     assert dry_payload["movement_policy"]["current_line_fresh"] is False
     assert dry_payload["movement_policy"]["current_line_reason"] == "no_market_snapshots"
     assert dry_payload["movement_policy"]["games_model_only"] == [game_id]
-    # T-90 inactives is wired as a separate challenger result. With no capture
-    # store it fails closed/observationally; the played refresh still runs.
     assert dry_payload["inactives_refresh_overlay"]["challenger_id"] == "inactives_refresh_v1"
     assert dry_payload["inactives_refresh_overlay"]["recorded"] == 0
 
-    # The real, opt-in recording pass, with the card append.
     exit_code = cli.main(
         [
             "refresh-picks",
@@ -1609,8 +1562,6 @@ def test_cli_refresh_picks_end_to_end(
     assert revisions.iloc[0]["decision_home_spread"] == pytest.approx(1.0)
     assert revisions.iloc[0]["previous_pick_side"] == original_pick_side
     assert revisions.iloc[0]["new_pick_side"] == true_side
-    # Both arms recorded on the ledger row: no fresh captured line this pass,
-    # so the model-only arm governed and equals the played pick.
     assert revisions.iloc[0]["movement_policy"] == "model_only"
     assert revisions.iloc[0]["model_only_pick_side"] == true_side
     assert pd.isna(revisions.iloc[0]["movement_delta"])

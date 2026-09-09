@@ -63,9 +63,6 @@ from nfl_ats.prospective_scoring import (  # noqa: E402
     load_challenger_registry,
 )
 
-#: Challengers whose rows do NOT live in the shared challenger ledger. Each
-#: maps to the loader for its own ledger and a note on when it legitimately
-#: records nothing, so a zero can be read as "not yet" rather than "broken".
 DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
     "injury_signal_refresh_tilt": {
         "ledger": "prospective/injury_signal_refresh_decisions.parquet",
@@ -101,11 +98,6 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
     },
 }
 
-# These arms already have standalone recorders, but the recorder calls are
-# intentionally not part of the publish/refresh command surfaces yet.  A zero
-# here is therefore a wiring gap, not an unexplained failed recorder.  Keep
-# this list explicit: silently treating a newly registered shared-ledger arm
-# as a standalone one would hide a real lock-day failure.
 STANDALONE_PENDING_WIRING = frozenset(
     {
         "bye_edge_fade_overlay",
@@ -117,9 +109,6 @@ STANDALONE_PENDING_WIRING = frozenset(
     }
 )
 
-# Refresh arms whose dedicated recorder exists but is not called by the CLI.
-# They are separate from DEDICATED_LEDGERS because their no-row state must be
-# shown as PENDING_WIRING rather than as a legitimate refresh-time skip.
 PENDING_REFRESH_LEDGERS: dict[str, dict[str, Any]] = {
     "inactives_refresh_v1": {
         "ledger": "prospective/inactives_refresh_decisions.parquet",
@@ -139,7 +128,6 @@ PENDING_REFRESH_LEDGERS: dict[str, dict[str, Any]] = {
     },
 }
 
-#: Challengers that record one row per WEEK rather than one per game.
 WEEKLY_SINGLE_ROW = ("best_pick_nomination_v2", "best_pick_nomination_v3")
 
 
@@ -194,10 +182,6 @@ def verify(
     active = active_challenger_ids(artifacts_root)
     reported_gates = gated_skips(run_summary)
 
-    # The registry is the source of truth for the documented command.  Keep a
-    # map here so the report exposes the actual path rather than inferring it
-    # from which ledger happened to be empty.  Static standalone IDs remain a
-    # fallback for old/synthetic registries used by tests and rehearsals.
     registry_entries = {
         str(entry.get("challenger_id")): entry
         for entry in load_challenger_registry(artifacts_root).get("challengers", [])
@@ -262,9 +246,6 @@ def verify(
 
         loader = dedicated["loader"]
         count = len(_week_rows(loader(artifacts_root), season=season, week=week))
-        # A registration can be updated after the recorder is wired.  Prefer
-        # its current command over the static pending marker so the verifier
-        # does not report a stale readiness gap during that handoff.
         wired = bool(dedicated.get("wired", True))
         if challenger_id in PENDING_REFRESH_LEDGERS and registry_command:
             wired = (
@@ -354,9 +335,6 @@ def render(report: dict[str, Any]) -> str:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- an aggregate ledger check that
-# reads four ledgers and reports recorded/skipped/MISSING per challenger, never writing under
-# artifacts/ or registry/.
 
 
 def main(argv: list[str] | None = None) -> int:

@@ -52,10 +52,6 @@ from nfl_ats.experiments import paired_feature_comparisons
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_CFB_ROOT = REPO / "data" / "cfb"
 
-# Predeclared grid: spans the shipped default (0.67) and the three NFL-side
-# route estimates measured in scripts/offseason_retention_routes.py (route1
-# horizon-4 median ~0.37, route2 ~0.379, route3 full-season ~0.400), a
-# no-retention control, and a symmetric point above 0.67.
 RETENTION_GRID: tuple[float, ...] = (0.0, 0.20, 0.337, 0.40, 0.50, 0.67, 0.75)
 BASELINE_RETENTION = 0.67
 BOOTSTRAP_SAMPLES = 2000
@@ -68,9 +64,6 @@ def _method_name(retention: float) -> str:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:

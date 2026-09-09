@@ -92,15 +92,11 @@ FEATURES_PATH = REPO_ROOT / "data" / "processed" / "cfb_game_features.parquet"
 ARTIFACT_ROOT = REPO_ROOT / "artifacts" / "graph_team_stat_cfb_replication"
 PREDECLARATION = "docs/graph_team_stat_cfb_replication.md"
 
-#: Report-only era split. The clean core straddles the 2020 season the XLG-03
-#: benchmark itself excludes, which is the obvious boundary. Owner rule: era
-#: MAGNITUDE, not presence -- a weaker era is never reported as an absence.
 ERA_1 = (2012, 2019)
 ERA_2 = (2021, 2025)
 
 ARM_NAMES = ("market", "raw_only", "graph_only", "benchmark", "benchmark_plus_graph")
 
-#: ``(label, reference_arm, candidate_arm)``. The first is the headline.
 COMPARISONS: tuple[tuple[str, str, str], ...] = (
     ("primary_benchmark_plus_graph_vs_benchmark", "benchmark", "benchmark_plus_graph"),
     ("secondary_graph_only_vs_raw_only", "raw_only", "graph_only"),
@@ -108,11 +104,6 @@ COMPARISONS: tuple[tuple[str, str, str], ...] = (
 )
 
 GRADES = ("close", "open")
-
-
-# ---------------------------------------------------------------------------
-# Inputs
-# ---------------------------------------------------------------------------
 
 
 def load_cfb_table() -> pd.DataFrame:
@@ -140,11 +131,6 @@ def arm_feature_columns(cell: str, *, leak: bool) -> dict[str, tuple[str, ...] |
         "benchmark": CFB_MODEL_FEATURE_COLUMNS,
         "benchmark_plus_graph": (*CFB_MODEL_FEATURE_COLUMNS, graph_column),
     }
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_window(
@@ -189,9 +175,6 @@ def run_window(
             continue
 
         at_close = group.copy()
-        # Measured: 17 of the 9,093 clean-core rows carry no spread_open. A
-        # game without an opener is unscorable at the opener grade, not a
-        # zero -- it is left NaN and drops out of the opener comparison only.
         open_available = pd.to_numeric(group["spread_open"], errors="coerce").notna().to_numpy()
         at_open = group.loc[open_available].copy()
         at_open["spread_line"] = pd.to_numeric(at_open["spread_open"], errors="coerce")
@@ -386,11 +369,6 @@ def null_distribution(
         "observed_delta_points": float(observed) * 100.0,
         "observed_percentile_of_null": float((finite < observed).mean()) * 100.0,
     }
-
-
-# ---------------------------------------------------------------------------
-# Reporting
-# ---------------------------------------------------------------------------
 
 
 def _print_pair(label: str, summary: dict[str, Any] | None) -> None:

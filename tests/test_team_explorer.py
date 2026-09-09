@@ -31,11 +31,6 @@ def _feature_table() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Schema fixture + schema contract
-# ---------------------------------------------------------------------------
-
-
 def test_make_schema_fixture_carries_canonical_columns_and_is_deterministic() -> None:
     first = team_explorer.make_schema_fixture(seed=7)
     second = team_explorer.make_schema_fixture(seed=7)
@@ -43,8 +38,7 @@ def test_make_schema_fixture_carries_canonical_columns_and_is_deterministic() ->
         *team_explorer.IDENTIFIER_COLUMNS,
         *team_explorer.STATE_COLUMNS,
     ]
-    assert len(first) == 4 * 3 * 9  # teams x seasons x games
-    # Deterministic for a fixed seed.
+    assert len(first) == 4 * 3 * 9
     pd.testing.assert_frame_equal(first, second)
 
 
@@ -52,11 +46,6 @@ def test_make_schema_fixture_differs_by_seed() -> None:
     a = team_explorer.make_schema_fixture(seed=1)
     b = team_explorer.make_schema_fixture(seed=2)
     assert not a.equals(b)
-
-
-# ---------------------------------------------------------------------------
-# Coercion / validation
-# ---------------------------------------------------------------------------
 
 
 def test_coerce_state_table_rejects_missing_identifier() -> None:
@@ -80,11 +69,6 @@ def test_coerce_state_table_returns_empty_frame_for_none() -> None:
     ]
 
 
-# ---------------------------------------------------------------------------
-# Aggregation
-# ---------------------------------------------------------------------------
-
-
 def test_aggregate_team_trends_empty_input_is_empty() -> None:
     trends = team_explorer.aggregate_team_trends(pd.DataFrame())
     assert trends.latest_season is None
@@ -98,13 +82,10 @@ def test_aggregate_team_trends_computes_latest_season_and_z() -> None:
     trends = team_explorer.aggregate_team_trends(df)
     assert trends.latest_season == 2025
     assert set(trends.teams) == {"ARI", "BUF", "KC", "SF"}
-    # One row per (team, metric) in the latest season.
     assert len(trends.latest) == len(trends.teams) * len(STATE_METRICS)
-    # z is value minus the league mean for that season/metric -> sums to ~0.
     for metric in STATE_METRICS[:3]:
         col = trends.latest.loc[trends.latest["metric"] == metric, "z"]
         assert col.sum() == pytest.approx(0.0, abs=1e-9)
-    # Trend has one row per (team, metric, season).
     assert len(trends.trend) == len(trends.teams) * len(STATE_METRICS) * 3
 
 
@@ -121,20 +102,13 @@ def test_team_state_payload_maps_team_to_metric_z() -> None:
     payload = team_explorer.team_state_payload(trends)
     assert set(payload) == set(trends.teams)
     assert "off_epa_per_play" in payload["ARI"]
-    # Empty trends -> empty payload.
     assert team_explorer.team_state_payload(team_explorer.TeamTrends.empty()) == {}
-
-
-# ---------------------------------------------------------------------------
-# Feature-table conversion
-# ---------------------------------------------------------------------------
 
 
 def test_feature_table_to_team_states_melts_home_and_away() -> None:
     converted = team_explorer.feature_table_to_team_states(_feature_table())
     assert converted is not None
     assert set(converted["team"]) == {"ARI", "BUF"}
-    # Two rows (one per side) and the canonical state columns survive.
     assert len(converted) == 2
     assert "state_off_epa_per_play" in converted.columns
     ari = converted.loc[converted["team"] == "ARI", "state_off_epa_per_play"].iloc[0]
@@ -149,11 +123,6 @@ def test_feature_table_to_team_states_returns_none_without_state_columns() -> No
         is None
     )
     assert team_explorer.feature_table_to_team_states(None) is None
-
-
-# ---------------------------------------------------------------------------
-# Rendering (design-system + fail-open contract)
-# ---------------------------------------------------------------------------
 
 
 def _assert_public_safe(page: str) -> None:
@@ -183,11 +152,9 @@ def test_render_team_explorer_page_renders_all_sections_from_fixture() -> None:
     assert "Season-by-season trends" in page
     assert "Head-to-head comparison" in page
     assert "Latest season shown: 2025" in page
-    # Interactive comparer payload + controls present.
     assert 'id="ats-te-data"' in page
     assert 'id="ats-te-a"' in page
     assert 'id="ats-te-b"' in page
-    # Direction honesty is present, per stat and in the closing footnote.
     assert "lower is better" in page or "Lower is better" in page
     assert "league average for that season" in page
 
@@ -198,7 +165,6 @@ def test_render_team_explorer_page_respects_custom_metrics() -> None:
         metrics=["off_epa_per_play", "def_epa_per_play"],
         generated_at=pd.Timestamp("2026-08-24", tz="UTC"),
     )
-    # Only the two requested metrics appear as overview headers.
     assert "Offense EPA/play" in page
     assert "Defense EPA/play allowed" in page
     assert "Point differential" not in page

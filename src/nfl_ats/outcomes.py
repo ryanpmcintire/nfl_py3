@@ -212,10 +212,6 @@ def _score_methods(
     batches: list[pd.DataFrame] = []
     for method, model in margin_models.items():
         batch = games.copy()
-        # MOD-18 lane S promotion (docs/home_side_offset_promotion.md): the
-        # served ATS method alone carries the home-side point offset; the
-        # market / fair-margin / straight-up companions stay untouched so the
-        # card's comparison columns keep meaning what they always meant.
         center_offset = (
             center_offset_for_games(batch, center_offsets)
             if center_offsets is not None and method == "market_residual"
@@ -224,9 +220,6 @@ def _score_methods(
         forecasts = model.predict(
             batch, probability_method=probability_method, center_offset=center_offset
         )
-        # Discrete push read (docs/discrete_push_read.md): the served ATS
-        # method's push / three-way split is read off the mass-preserving
-        # lattice; ``home_cover_probability`` (the pick) is untouched.
         if discrete_read is not None and method == "market_residual":
             forecasts = serve_discrete_three_way(
                 forecasts,
@@ -236,11 +229,6 @@ def _score_methods(
                 probability_method=probability_method,
                 log=discrete_read_log,
             )
-        # Key-line pick read (docs/key_line_pick_read.md): on the served ATS
-        # method, and only where the quoted line sits exactly on 3 or 7,
-        # the pick-deciding two-way probability is read off the same
-        # lattice at the same served point (offset included) -- after the
-        # offset, after the push split, before the decision columns.
         if key_line_pick_read is not None and method == "market_residual":
             forecasts = apply_key_line_pick_read(
                 forecasts,
@@ -251,8 +239,6 @@ def _score_methods(
                 log=key_line_pick_read_log,
             )
             if discrete_read_log is not None:
-                # The push sidecar's two-way number is the SERVED one, so the
-                # two records beside the card never disagree on a touched game.
                 for game_id, served in zip(
                     batch["game_id"].astype(str),
                     forecasts["home_cover_probability"].to_numpy(dtype=float),
@@ -411,13 +397,6 @@ def walk_forward_outcomes(
     feature_profile: MarginFeatureProfile = "base",
     methods: tuple[str, ...] = OUTCOME_METHODS,
     ridge_alpha: float = 10.0,
-    # Default unchanged (2026-08-19, MOD-08 promotion): this walk-forward
-    # backs every historical/research backtest (margin-backtest CLI, player
-    # ablations, experiment comparisons), so it stays on the raw ECDF unless
-    # a caller explicitly asks for "gaussian" -- e.g. to build a matching
-    # ``margins/`` evaluation for a Gaussian-mapped weekly forecast to
-    # synchronize against. See ``score_outcome_week``, the one caller whose
-    # OWN default did change.
     probability_method: ResidualSmoothingMethod = "ecdf",
 ) -> OutcomeBacktestResult:
     if feature_profile not in MARGIN_FEATURE_PROFILES:
@@ -533,9 +512,6 @@ def score_outcome_week(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_profile: MarginFeatureProfile = "base",
     ridge_alpha: float = 10.0,
-    # Promoted 2026-09-07: median location, unchanged Gaussian scale.
-    # See docs/gaussian_median_promotion.md. Historical backtests keep ECDF;
-    # the weekly pipeline explicitly supplies the matching median method.
     probability_method: ResidualSmoothingMethod = "gaussian_median",
     center_offsets: Mapping[str, float] | None = None,
     discrete_read: DiscretePushReader | None = None,
@@ -837,17 +813,10 @@ def walk_forward_key_number_mass(
 def outcome_bootstrap_intervals(
     predictions: pd.DataFrame,
     *,
-    # Was 1,000 -- the noisiest of the three bootstrap paths. This one is
-    # already vectorized, so raising it is nearly free. See
-    # paired_feature_comparisons for why seed jitter matters here.
     samples: int = 20_000,
     confidence: float = 0.95,
     block: Literal["week", "season"] = "week",
     seed: int = 20260812,
-    # D4 guard. Default 'warn' + a flagged output column, never 'raise':
-    # refusing would change what existing call sites return, and the point is
-    # that the flag TRAVELS with the number into the CSV a registry entry cites.
-    # A caller that is about to record a verdict should pass 'raise'.
     on_degenerate: OnDegenerate = "warn",
     min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
@@ -929,9 +898,6 @@ def outcome_bootstrap_intervals(
             "block": block,
             "samples": samples,
             "blocks": block_verdict.block_count,
-            # True => lower/upper (and delta_lower/delta_upper) are NOT a
-            # valid interval at this block count. See the docstring; do not
-            # render as one.
             "degenerate_blocks": block_verdict.degenerate,
         }
         if method != "market" and metric in market:
@@ -999,8 +965,6 @@ def _outcome_bootstrap_contributions(
     )
     working.loc[cover_mask, "cover_count"] = 1.0
 
-    # Outcome summaries compute betting metrics on non-push cover rows. Match
-    # that contract exactly here instead of counting wagers attached to pushes.
     wager_mask = cover_mask & working["bet_side"].ne("PASS").to_numpy(dtype=bool)
     wager_positions = np.flatnonzero(wager_mask)
     profits = np.zeros(len(wager_positions), dtype=float)

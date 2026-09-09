@@ -129,10 +129,6 @@ def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
     return snapshot_dir
 
 
-# URL-slug keyword list for "injury/personnel-availability relevant" news.
-# Deliberately over-inclusive (recall over precision): downstream filtering on
-# the retained `injury_relevant` boolean can be redone without re-fetching,
-# since every ProFootballTalk NFL url is kept regardless of this match.
 INJURY_KEYWORDS = [
     "injured-reserve",
     "-on-ir",

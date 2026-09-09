@@ -55,11 +55,6 @@ def _synthetic_predictions(
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Engine correctness
-# ---------------------------------------------------------------------------
-
-
 def test_confidence_sequence_matches_hand_computation_at_the_default_icc() -> None:
     """icc=0 (independence, the project's default): variance is k * s^2, not k^2 * s^2."""
 
@@ -67,7 +62,7 @@ def test_confidence_sequence_matches_hand_computation_at_the_default_icc() -> No
     sums = np.array([3.0])
     trace = confidence_sequence_from_block_stats(sizes, sums, alpha=0.05, prior_variance=0.01)
 
-    variance_process = 10.0  # k * s^2 * (1 + (k-1)*0) = 10 * 1.0 * 1 = 10
+    variance_process = 10.0
     denom = 1.0 + 0.01 * variance_process
     expected_log_e = -0.5 * np.log(denom) + 0.01 * 3.0**2 / (2.0 * denom)
     expected_radius = (1.0 / 10.0) * np.sqrt(
@@ -144,27 +139,18 @@ def test_confidence_sequence_rejects_bad_inputs() -> None:
 
 
 def test_default_prior_variance_derivation_and_guards() -> None:
-    # Default (icc=0, proxy=1): rho = 1 / (target_games * k), the independent case.
     assert default_prior_variance(16.0, target_games=800) == pytest.approx(1.0 / (800 * 16.0))
-    # An explicit override changes the reference point to
-    # k * proxy * (1 + (k - 1) * icc), never the formula's shape.
     overridden = default_prior_variance(
         16.0, target_games=800, per_game_variance_proxy=0.6, intraclass_correlation=0.1
     )
     expected_reference = 800 * (16.0 * 0.6 * (1.0 + 15.0 * 0.1))
     assert overridden == pytest.approx(1.0 / expected_reference)
-    # The worst-case override reduces to the k^2 form.
     worst_case = default_prior_variance(16.0, target_games=800, intraclass_correlation=1.0)
     assert worst_case == pytest.approx(1.0 / (800 * 16.0**2))
     with pytest.raises(ValueError, match="average_block_size"):
         default_prior_variance(0.0)
     with pytest.raises(ValueError, match="target_games"):
         default_prior_variance(16.0, target_games=0)
-
-
-# ---------------------------------------------------------------------------
-# DataFrame surface: shares the paired_feature_comparisons contract.
-# ---------------------------------------------------------------------------
 
 
 def test_paired_anytime_comparisons_matches_fixed_sample_point_estimate() -> None:
@@ -221,7 +207,6 @@ def test_paired_anytime_comparisons_detects_a_dominant_candidate() -> None:
     summary = anytime_summary(trace)
     assert bool(summary["final_excludes_zero"].iloc[0])
     assert summary["first_excluding_zero_look"].iloc[0] is not None
-    # Once excluded, a near-certain win should stay excluded through the end.
     tail = trace.sort_values("look").tail(5)
     assert tail["excludes_zero"].all()
 
@@ -256,11 +241,6 @@ def test_paired_anytime_comparisons_detects_mismatched_pairing() -> None:
     corrupted.loc[candidate_mask, "home_cover"] = 1.0 - corrupted.loc[candidate_mask, "home_cover"]
     with pytest.raises(ValueError, match="Paired home_cover values differ"):
         paired_anytime_comparisons(corrupted, baseline_feature_set="baseline")
-
-
-# ---------------------------------------------------------------------------
-# Simulation building blocks used at scale by scripts/anytime_validate.py.
-# ---------------------------------------------------------------------------
 
 
 def test_simulate_block_sequence_is_bounded_and_unbiased_in_expectation() -> None:
@@ -315,11 +295,6 @@ def test_run_peeking_trial_under_a_true_null_rarely_excludes_zero() -> None:
 
 def test_anytime_metrics_are_exactly_the_bounded_ones() -> None:
     assert set(ANYTIME_METRICS) == {"accuracy_improvement", "brier_improvement"}
-
-
-# ---------------------------------------------------------------------------
-# Measuring the intraclass correlation instead of assuming it.
-# ---------------------------------------------------------------------------
 
 
 def test_anova_intraclass_correlation_recovers_the_perfectly_correlated_case() -> None:
@@ -382,10 +357,9 @@ def test_default_icc_zero_holds_calibration_even_stress_tested() -> None:
             true_mean=0.0,
             prior_variance=prior_variance,
             simulated_total_variance=0.55,
-            simulated_intraclass_correlation=1.0,  # deliberately worse than assumed
+            simulated_intraclass_correlation=1.0,
             assumed_per_game_variance_proxy=0.55,
-            # assumed_intraclass_correlation left at its default, 0.0.
             check_fixed_sample=False,
         )
         false_alarms += int(result.cs_excluded)
-    assert false_alarms / trials <= 0.10  # nominal alpha is 0.05; generous margin for n=400
+    assert false_alarms / trials <= 0.10

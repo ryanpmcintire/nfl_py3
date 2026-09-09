@@ -60,11 +60,6 @@ def lane() -> ModuleType:
     return _load_script()
 
 
-# ---------------------------------------------------------------------------
-# Trait-change accounting
-# ---------------------------------------------------------------------------
-
-
 def test_an_unchanged_trait_reports_zero_changed_games(lane: ModuleType) -> None:
     before = pd.DataFrame({"game_id": ["a", "b", "c"], "tenure": [0, 1, 2]})
     report = lane.change_report(before, before.copy(), "game_id", ("tenure",))
@@ -118,11 +113,6 @@ def test_tenure_counts_distinct_prior_seasons_only(lane: ModuleType) -> None:
     assert table.loc["g4"] == 0
 
 
-# ---------------------------------------------------------------------------
-# Crew composition
-# ---------------------------------------------------------------------------
-
-
 def _crew_rows(
     game_id: str, week: int, referee: str, others: str, season: int = 2020
 ) -> list[dict]:
@@ -172,18 +162,12 @@ def test_a_crew_working_under_a_new_referee_counts_every_borrowed_position(
     lane: ModuleType,
 ) -> None:
     table = lane.crew_composition(_three_week_season("Ref One")).set_index("game_id")
-    # g2: the six non-referee officials all worked under Ref One in week 1, so
-    # all six are off their modal crew; the new referee himself has no prior
-    # game and stays unresolved.
     assert table.loc["g2", "positions_resolved"] == 6
     assert table.loc["g2", "positions_off_modal_crew_prior"] == 6
 
 
 def test_a_modal_crew_tie_is_broken_by_the_most_recent_prior_game(lane: ModuleType) -> None:
     table = lane.crew_composition(_three_week_season("Ref One")).set_index("game_id")
-    # By week 3 each official has one game under each referee. The tie breaks
-    # to the most recent (Ref Two), so working under Ref One again counts as
-    # off-crew for all six, and Ref One's own modal crew is himself.
     assert table.loc["g3", "positions_resolved"] == 7
     assert table.loc["g3", "positions_off_modal_crew_prior"] == 6
 
@@ -226,11 +210,6 @@ def test_modal_tie_falls_back_to_a_deterministic_order(lane: ModuleType) -> None
     assert lane._modal(Counter({"B": 2, "A": 1}), "A") == "B"
 
 
-# ---------------------------------------------------------------------------
-# Paired scoring and column attachment
-# ---------------------------------------------------------------------------
-
-
 def _paired_frame() -> pd.DataFrame:
     return pd.DataFrame(
         {
@@ -249,7 +228,6 @@ def test_identical_picks_are_exactly_zero_not_a_small_number(lane: ModuleType) -
     assert result["flips"] == 0
     assert result["lower"] == 0.0
     assert result["upper"] == 0.0
-    # The push is excluded from every graded read in this repository.
     assert result["n"] == 3
 
 

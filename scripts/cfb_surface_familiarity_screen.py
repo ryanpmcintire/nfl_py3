@@ -551,7 +551,7 @@ def _print_pair(label: str, result: dict[str, Any]) -> None:
 
 def main() -> None:
     started = time.time()
-    write_predeclaration()  # frozen BEFORE any cover rate below is computed
+    write_predeclaration()
 
     print(f"\n=== loading CFB clean-core population (features: {FEATURES_PATH}) ===")
     df = load_population()
@@ -581,7 +581,6 @@ def main() -> None:
         "predeclaration": str(PREDECLARATION_PATH),
     }
 
-    # ---- descriptives ----
     known_surface = df.loc[df["surface_norm"].notna()]
     turf_games = int((known_surface["surface_norm"] == "turf").sum())
     grass_games = int((known_surface["surface_norm"] == "grass").sum())
@@ -603,7 +602,6 @@ def main() -> None:
         ),
     }
 
-    # ---- C1: subset vs. complement, full population ----
     print("\n=== C1 cfb_surface_switch_grass_to_turf ===")
     c1_flag = (df["away_modal_surface"] == "grass") & (df["surface_norm"] == "turf")
     c1 = score_subset(
@@ -616,7 +614,6 @@ def main() -> None:
     results["C1_cfb_surface_switch_grass_to_turf"] = c1
     _print_subset("C1", c1)
 
-    # ---- C2: turf-venue visitor split ----
     print("\n=== C2 cfb_surface_familiarity_turf_venue_visitor_split ===")
     c2_pair = build_pair(df, venue_surface="turf", mismatch_surface="grass")
     c2 = score_pair(
@@ -625,7 +622,6 @@ def main() -> None:
     results["C2_cfb_surface_familiarity_turf_venue_visitor_split"] = c2
     _print_pair("C2", c2)
 
-    # ---- C3: grass-venue mirror ----
     print("\n=== C3 cfb_surface_familiarity_grass_venue_mirror ===")
     c3_pair = build_pair(df, venue_surface="grass", mismatch_surface="turf")
     c3 = score_pair(
@@ -634,7 +630,6 @@ def main() -> None:
     results["C3_cfb_surface_familiarity_grass_venue_mirror"] = c3
     _print_pair("C3", c3)
 
-    # ---- era split of C1 (report-only, no extra registry entries) ----
     results["era_split_C1_report_only"] = {}
     for label, (start, end) in (("2012_2019", ERA_1), ("2021_2025", ERA_2)):
         print(f"\n=== era split (C1 only, report-only) {start}-{end} ===")

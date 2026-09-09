@@ -80,11 +80,6 @@ class HeadlineNumbers:
 
     opener_accuracy: float
     close_accuracy: float
-    #: The original protocol grading (sign of the residual). Kept for
-    #: provenance: production has always played the probability rule, so the
-    #: headline fields above carry the production-rule grades (owner decision,
-    #: 2026-08-19; docs/opener_evaluation.md addendum), and these two say what
-    #: the frozen sign-rule instrument measured on the same games.
     protocol_opener_accuracy: float
     protocol_close_accuracy: float
     paired_games: int
@@ -152,67 +147,19 @@ class HeadlineNumbers:
         return round((self.opener_accuracy - 50.0) / 100.0 * 285)
 
 
-# ---------------------------------------------------------------------------
-# Ceiling bands -- the ONE home of every ceiling figure on the site. All
-# measured (from doc): docs/pool_edge_plan.md, "The ceiling, and why".
-# Every module composes its ceiling prose from these; hand-typing a band
-# into prose fails tests/test_number_variables.py.
-# ---------------------------------------------------------------------------
-
-#: measured (from doc): pool_edge_plan.md "Practical excellence band for us:
-#: 54-55% vs the frozen opener." Also HEADLINE's own ceiling interval below,
-#: so the findings hero tile and every repeat render the same band.
 PRACTICAL_CEILING_LOW_PCT = 54.0
 PRACTICAL_CEILING_HIGH_PCT = 55.0
 
-#: measured (from doc): pool_edge_plan.md omniscient-pregame oracle vs the
-#: close: "~55-56% ceiling. Matches the best documented career bettors."
 BETTORS_VS_CLOSE_BAND = "55-56"
 
-#: measured (from doc): docs/leak_ceiling_control.md total-leak positive
-#: control -- pregame-feature arms B/B2 scored 55.57%/56.05%, quoted in the
-#: ladder as "about 56%".
 MEASURED_CEILING_PCT = 56
 
-#: measured (from doc): pool_edge_plan.md "Same oracle vs a frozen Tuesday
-#: pool line: ~57-58%" -- superseded as a guess by the leak control above,
-#: which is why the ladder labels it the pre-measurement guess.
 PREMEASUREMENT_GUESS_BAND = "57-58"
 
-#: measured (from doc): floor of pool_edge_plan.md's ~57-58% frozen-Tuesday
-#: oracle band; the ceiling card quotes the band's floor ("around 57%").
 ORACLE_FROZEN_LINE_PCT = 57
 
-#: measured (from doc): pool_edge_plan.md honesty guardrail -- "any backtest
-#: showing 60%+ is a leak, not a breakthrough."
 CEILING_BUG_MARK_PCT = 60
 
-# ---------------------------------------------------------------------------
-# Played-card expectation (2026-08-23, owner question: "what edge am I
-# playing"). The played card is the four-member overlay union (coach fade +
-# division revenge + player arrests + spread gap; policy fingerprint
-# bbdd60a171238654) plus the POL-11 market-follow refresh rule. Its honest
-# forward expectation is a PLANNING SYNTHESIS -- pinned here as a constant and
-# never computed from an artifact, so it can never masquerade as a measured
-# figure (AGENTS.md: measured and inferred must be distinguishable at a
-# glance). Every number below names its provenance:
-#
-# - PLAYED_CARD_EXPECTATION_PERCENT: de-inflated planning synthesis from
-#   docs/overlay_subset_composition.md, "[Inferred] Decision expectation"
-#   section (cross-half shrinkage 0.6356 + both holdout directions => roughly
-#   +1 accuracy point over the coach->arrest chain).
-# - OVERLAY_UNION_PAIRED_*: docs/overlay_subset_composition.md (measured):
-#   paired +1.2641383899 accuracy points over the same paired opener archive,
-#   probability_positive = 0.85715.
-# - OVERLAY_UNION_ARCHIVE_SCORE_FRACTION / OVERLAY_UNION_SUBSET_COUNT:
-#   docs/overlay_subset_composition.md (measured): candidate accuracy
-#   55.4225% selected as the maximum over 127 correlated subsets -- i.e. a
-#   SELECTION-INFLATED archive score, never quotable as an expectation.
-# - OVERLAY_SELECTION_RECHECK_*: registry entry ``redteam_overlay_subset_loso_cv``
-#   (docs/edge_audit_redteam.md): leave-one-season-out CV of the selection
-#   step itself measured 0.0000 pts, P+ 0.4930 -- the out-of-sample re-check
-#   already discounted inside the expectation above.
-# ---------------------------------------------------------------------------
 
 PLAYED_CARD_EXPECTATION_PERCENT = 55
 
@@ -225,19 +172,11 @@ OVERLAY_UNION_SUBSET_COUNT = 127
 OVERLAY_SELECTION_RECHECK_POINTS = 0.0
 OVERLAY_SELECTION_RECHECK_P_PLUS = 0.4930
 
-# - MOVEMENT_COMPOSED_*: docs/movement_composition_eval.md results table
-#   (registry entry ``movement_rule_composed_chain``, measured): paired
-#   +1.5303 accuracy points over the coach->arrest chain on the same 1,503
-#   reused games, week-blocked P+ 0.8942 / season-blocked P+ 0.9297 -- an
-#   attribution upper bound on already-looked-at data.
-# ---------------------------------------------------------------------------
 
 MOVEMENT_COMPOSED_EFFECT_POINTS = 1.5303
 MOVEMENT_COMPOSED_WEEK_P_PLUS = 0.8942
 MOVEMENT_COMPOSED_SEASON_P_PLUS = 0.9297
 
-#: The page's single crowned hero figure ("≈55%" rendered): an
-#: approximation sign on purpose -- planning estimate, not measurement.
 PLAYED_CARD_EXPECTATION_HERO = f"\u2248{PLAYED_CARD_EXPECTATION_PERCENT}%"
 
 PLAYED_CARD_EXPECTATION_DEK = "Planning estimate for the played card."
@@ -248,12 +187,6 @@ LEDGER_PROMOTED_CAVEAT = (
     "full ladder on The Model page."
 )
 
-#: Human names for every arm id that can render on the public ledger or the
-#: candidate-rules panel (2026-08-24: owner directive -- no internal id may
-#: render as a display name). Shared by model_ledger and public_board so the
-#: two surfaces can never disagree about what an arm is called. Any id not
-#: listed falls back to a humanized form of the id, and the map-coverage
-#: test pins that every REGISTERED challenger id has a curated entry.
 CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "mod07_weak_signal_stack": "Model + seven-rule stat stack",
     "hc_year_one_fade_overlay": "Year-one coach fade",
@@ -293,7 +226,6 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "pbp08_protection_mismatch_tilt_overlay": "Protection-mismatch tilt",
     "crew_tilt_refresh_v1": "Officiating-crew tilt",
     "player_qb_continuity|ridge_alpha=1|calibration=none": "QB-continuity alpha probe",
-    # POL-10 challenger expansion, 2026-09-01 (docs/challenger_expansion_20260901.md).
     "bye_edge_fade_overlay": "Bye-week rest-edge fade",
     "tank_zone_fade_tilt_overlay": "Tank-zone fade, weeks 14-18",
     "third_down_reversion_fade_overlay": "Elite third-down fade",
@@ -302,7 +234,6 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "pace_mismatch_dog_tilt_overlay": "Pace-mismatch underdog tilt",
     "weak_stack_qb_revenge_deadline_drag": "QB-revenge + trade-deadline-drag stack",
     "totals_served_method": "Served-total method (tiebreaker)",
-    # Lane AR prospective registrations, 2026-09-05 (docs/prospective_evidence.md).
     "specialist_absence_fade_refresh_v1": "Snapper/punter absence fade",
     "late_week_move_follow_refresh_v1": "Follow late-week line moves",
     "low_total_div_home_dog_challenger": "Low-total divisional home-dog",
@@ -312,46 +243,17 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "best_pick_sunday_renomination": "Best Pick re-nominated Sunday morning",
     "tiebreaker_low_side_shade": "Tiebreaker guess shaded one point under",
 }
-
-# ---------------------------------------------------------------------------
-# Per-card study figures that would otherwise collide, as typed literals,
-# with the canonical headline grades (the full-player backtest below is a
-# DIFFERENT measurement from the active close grade; it merely rounds to
-# the same one decimal). All measured (from doc); each constant names its
-# study so prose composes figures instead of retyping them.
-# ---------------------------------------------------------------------------
-
-#: measured (from doc): docs/modeling.md "Player availability and value" --
-#: base (market-and-team-form) profile scored 51.08% on the fixed
-#: 2018-2025 screen; renders rounded to one decimal.
 MARKET_TEAM_FORM_MODEL_PCT = 51.1
 
-#: measured (from doc): docs/modeling.md -- the value-extended full player
-#: profile scored 52.14% on the same screen (also ROADMAP.md PER-05 row and
-#: docs/data_feasibility.md). NOT the active model's close grade.
 FULL_PLAYER_LAYER_PCT = 52.1
 
-#: measured (from doc): ROADMAP.md first player-family ablation --
-#: "injury-only reached 51.28%" on the same 2,075 games.
 INJURY_ONLY_MODEL_PCT = 51.3
 
-#: measured (from doc): docs/modeling.md learned-availability ATS
-#: replacement -- "the candidate reached 52.24% (1,084/2,075) versus 52.14%
-#: (1,082/2,075)"; also docs/data_feasibility.md.
 LEARNED_AVAILABILITY_BEFORE_PCT = 52.14
 LEARNED_AVAILABILITY_AFTER_PCT = 52.24
 
-#: measured (from doc): docs/data_feasibility.md participation-rating screen
-#: -- adding the plus/minus contrasts moved accuracy "from 52.14% to
-#: 51.71%" (docs/modeling.md: 1,073 of 2,075 non-push games).
 PARTICIPATION_RAPM_MODEL_PCT = 51.7
-
-
-# ---------------------------------------------------------------------------
-# End of the pinned-number region. Below this line no canonical accuracy
-# figure may appear as a source literal in any dashboard module -- compose
-# prose from the named constants above. Guard: tests/test_number_variables.py
-# ---------------------------------------------------------------------------
+PINNED_NUMBER_REGION_END = "End of the pinned-number region"
 
 
 def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
@@ -372,18 +274,14 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
 
     played = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
     rungs = [
-        # 1. The raw baseline, honestly placed beneath a coin flip.
         "Coin flip: 50%. The model's current opener and close grades are on The Model page.",
     ]
     if played is not None:
-        # 2. The measured history the crowned hero sits on top of.
         rungs.append(
             f"Played chain (model alone \u2192 coach fade \u2192 arrests): {played} measured "
             f"on {POLICY_GRADED_GAMES:,} paired games \u2014 the measured history under the "
             "crowned expectation."
         )
-    # 3. The union actually played: paired evidence, selection inflation,
-    #    and the out-of-sample re-check that already discounted it.
     rungs.append(
         f"Fix-up rules: paired +{OVERLAY_UNION_PAIRED_EFFECT_POINTS:.2f} points on "
         f"reused data ("
@@ -394,7 +292,6 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
         f"({_humanize_probability_positive(OVERLAY_SELECTION_RECHECK_P_PLUS)}) \u2014 already "
         f"discounted in the {PLAYED_CARD_EXPECTATION_HERO} expectation."
     )
-    # 4. The refresh rule, as an attribution upper bound only.
     rungs.append(
         "Movement rule (market-follow on >=1pt moves via refresh): composed "
         f"+{MOVEMENT_COMPOSED_EFFECT_POINTS:.2f} points (week to week "
@@ -402,17 +299,12 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
         f"{_humanize_probability_positive(MOVEMENT_COMPOSED_SEASON_P_PLUS)}) "
         "\u2014 an attribution upper bound on already-looked-at data."
     )
-    # 5. The measured ceiling, replacing the pre-measurement guess.
     rungs.append(
         f"Best documented long-run bettors: roughly {BETTORS_VS_CLOSE_BAND}% against "
         f"the close. Measured pregame ceiling: about {MEASURED_CEILING_PCT}% (total-leak "
         f"control, docs/leak_ceiling_control.md); the older {PREMEASUREMENT_GUESS_BAND}% "
         "band was the pre-measurement guess."
     )
-    # The binding closing hedge (AGENTS.md research framing), reworded
-    # 2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
-    # fucking legal bullshit words") to drop the "not proof of a profitable
-    # or stable edge" phrase while keeping the honest quantitative fact.
     rungs.append(
         "A small step above a coin flip could easily be erased by sportsbook vig "
         "alone. These are forced paper picks \u2014 not a game-level probability."
@@ -521,10 +413,6 @@ class HonestyRule:
     body: str
 
 
-# ---------------------------------------------------------------------------
-# Hero
-# ---------------------------------------------------------------------------
-
 HERO_KICKER = "What we've learned"
 HERO_TITLE = "Everything the research has settled, in plain English"
 HERO_SUB = (
@@ -557,10 +445,6 @@ HERO_PARAGRAPHS: tuple[str, ...] = (
 
 LEGEND_KICKER = "How to read the labels"
 
-
-# ---------------------------------------------------------------------------
-# Groups, in page order
-# ---------------------------------------------------------------------------
 
 GROUPS: tuple[VerdictGroup, ...] = (
     VerdictGroup(
@@ -628,17 +512,9 @@ GROUPS: tuple[VerdictGroup, ...] = (
 )
 
 
-# ---------------------------------------------------------------------------
-# The findings
-# ---------------------------------------------------------------------------
-
 DETAIL_SUMMARY_LABEL = "How we know"
 SOURCE_LABEL = "Source"
 
-#: The day every ``registry_keys``/``registry_fingerprints`` pair below was
-#: re-read against the live registries (2026-09-02 recertification). A future
-#: correction only needs to update the SPECIFIC finding it touches, not this
-#: constant.
 _CURATED_AS_OF = "2026-09-02"
 
 FINDINGS: tuple[Finding, ...] = (
@@ -668,10 +544,6 @@ FINDINGS: tuple[Finding, ...] = (
             "The evidence chip compares the big-spread-only addition with the earlier "
             "version that also adjusted smaller spreads."
         ),
-        # Fixed historical comparison, not the live headline. Static Finding prose
-        # uses source + checked registry fingerprints (Finding's curation contract).
-        # Sources name active model a4c757efd2525da6 and family
-        # mod18_home_side_location_v1; the chip's comparator is S2, not no push.
         source=(
             "docs/home_side_location.md:9-20; "
             "docs/home_side_offset_promotion.md:147-250; "
@@ -682,7 +554,6 @@ FINDINGS: tuple[Finding, ...] = (
         registry_fingerprints=("c885ac154499d883",),
         curated_as_of="2026-09-08",
     ),
-    # -- helps ---------------------------------------------------------------
     Finding(
         question="Do our picks beat a coin flip against the line the pool actually uses?",
         verdict="helps",
@@ -698,7 +569,7 @@ FINDINGS: tuple[Finding, ...] = (
             "retain their archived values."
         ),
         source="docs/opener_evaluation.md; docs/player_arrests_back_side_overlay.md",
-        evergreen=True,  # driven by HEADLINE, not a registry key; see test_findings_headline.py
+        evergreen=True,
     ),
     Finding(
         question="Does it matter which line we are graded against?",
@@ -719,7 +590,7 @@ FINDINGS: tuple[Finding, ...] = (
             "See the evaluation record for the current measurements."
         ),
         source="docs/opener_evaluation.md",
-        evergreen=True,  # driven by HEADLINE, not a registry key; see test_findings_headline.py
+        evergreen=True,
     ),
     Finding(
         question="Is it better to correct the market's number than to predict the game ourselves?",
@@ -742,7 +613,7 @@ FINDINGS: tuple[Finding, ...] = (
             "cannot."
         ),
         source="docs/modeling.md, ROADMAP.md (XLG-03)",
-        evergreen=True,  # foundational modeling comparison, predates the weak-signal registry
+        evergreen=True,
     ),
     Finding(
         question="Does knowing who is hurt and who is starting at quarterback help?",
@@ -772,7 +643,6 @@ FINDINGS: tuple[Finding, ...] = (
         registry_fingerprints=("3a719416f790fb7e",),
         curated_as_of=_CURATED_AS_OF,
     ),
-    # -- unproven ------------------------------------------------------------
     Finding(
         question="Can we learn who will actually play, instead of trusting the injury label?",
         verdict="unproven",
@@ -873,9 +743,8 @@ FINDINGS: tuple[Finding, ...] = (
             "that pile before any combined candidate can be judged honestly."
         ),
         source="docs/pool_edge_plan.md (MOD-07), registry/weak_signals.json",
-        evergreen=True,  # a live command's output, not a single registry entry to fingerprint
+        evergreen=True,
     ),
-    # -- no-edge -------------------------------------------------------------
     Finding(
         question="Does grading every single play tell us who is really better?",
         verdict="no-edge",
@@ -905,9 +774,6 @@ FINDINGS: tuple[Finding, ...] = (
         ),
         source="ROADMAP.md, docs/modeling.md",
         registry_keys=("rotation:pbp_drive_bundle",),
-        # Re-curated 2026-09-05: the family record gained an ENG-37 grandfather
-        # note for its pre-validator five-season window; classification
-        # (unresolved) and effect (-0.08) are unchanged, so the prose stands.
         registry_fingerprints=("05ca36cf42d2301c",),
         curated_as_of="2026-09-05",
     ),
@@ -930,7 +796,7 @@ FINDINGS: tuple[Finding, ...] = (
             "as an accuracy idea, and it will not be re-tuned on the same seasons."
         ),
         source="ROADMAP.md (PBP-03), docs/modeling.md",
-        evergreen=True,  # not tracked as its own registry entry
+        evergreen=True,
     ),
     Finding(
         question="Does a team that keeps its lineup together beat the number?",
@@ -1039,7 +905,7 @@ FINDINGS: tuple[Finding, ...] = (
             "50% and 80% ranges already land at almost exactly the rates they claim."
         ),
         source="docs/margin_variance.md",
-        evergreen=True,  # not tracked as its own registry entry
+        evergreen=True,
     ),
     Finding(
         question="Does a web of who-beat-whom rank teams better than a plain rating?",
@@ -1081,9 +947,8 @@ FINDINGS: tuple[Finding, ...] = (
             "did not spend one of our own limited untouched test windows re-discovering it."
         ),
         source="docs/pool_edge_plan.md",
-        evergreen=True,  # published literature, no internal registry entry
+        evergreen=True,
     ),
-    # -- context -------------------------------------------------------------
     Finding(
         question="How much of the answer is already in the betting line?",
         verdict="context",
@@ -1104,7 +969,7 @@ FINDINGS: tuple[Finding, ...] = (
             "quarterback state, the injury report, rest, and basic schedule context."
         ),
         source="docs/modeling.md",
-        evergreen=True,  # methodology explainer, no single registry entry
+        evergreen=True,
     ),
     Finding(
         question="What is the best we could possibly do?",
@@ -1132,7 +997,7 @@ FINDINGS: tuple[Finding, ...] = (
             "good."
         ),
         source="docs/pool_edge_plan.md",
-        evergreen=True,  # ceiling arithmetic, no single registry entry
+        evergreen=True,
     ),
     Finding(
         question="Are the picks we feel best about more likely to win?",
@@ -1157,7 +1022,7 @@ FINDINGS: tuple[Finding, ...] = (
             "pick was selected on it -- which is why we can quote it at all."
         ),
         source="docs/opener_evaluation.md, docs/pool_edge_plan.md",
-        evergreen=True,  # a read-only historical measurement, not a registry entry
+        evergreen=True,
     ),
     Finding(
         question="What can't we see?",
@@ -1181,7 +1046,7 @@ FINDINGS: tuple[Finding, ...] = (
             "That is the honest map of where the remaining room is."
         ),
         source="docs/pool_edge_plan.md",
-        evergreen=True,  # methodology explainer, no single registry entry
+        evergreen=True,
     ),
     Finding(
         question="Do rest, travel and weather matter?",
@@ -1200,7 +1065,7 @@ FINDINGS: tuple[Finding, ...] = (
             "time-zone changes and body-clock effects are on the list and unbuilt as well."
         ),
         source="docs/data_feasibility.md, ROADMAP.md (ENV-01 to ENV-06)",
-        evergreen=True,  # background context features, not their own registry entry
+        evergreen=True,
     ),
     Finding(
         question="Can we even make picks for the playoffs?",
@@ -1221,7 +1086,7 @@ FINDINGS: tuple[Finding, ...] = (
             "declared before it is computed, not after."
         ),
         source="docs/postseason_support.md",
-        evergreen=True,  # infrastructure note, no registry entry
+        evergreen=True,
     ),
     Finding(
         question="Why not just keep testing ideas until something works?",
@@ -1249,8 +1114,6 @@ FINDINGS: tuple[Finding, ...] = (
             "rotation:cfb_role_continuity",
         ),
         registry_fingerprints=(
-            # Re-curated 2026-09-05 (ENG-37 grandfather note on the
-            # pbp_drive_bundle family; the -0.08-point reading is unchanged).
             "05ca36cf42d2301c",
             "3a719416f790fb7e",
             "282f6629c405ef76",
@@ -1287,14 +1150,6 @@ FINDINGS: tuple[Finding, ...] = (
             "weak_signal:best_pick_opener_ranker_dispersion_filtered_candidate_vs_live_v2",
             "weak_signal:best_pick_opener_ranker_candidate_prob_distance_vs_live_v2",
         ),
-        # Deliberately no challenger:* key here (or in any finding below): the
-        # tracked registry/ files are always present in a real checkout, but
-        # artifacts/prospective/challengers.json is a runtime ledger that many
-        # legitimate contexts (a fresh checkout, most test fixtures) build
-        # without -- gating curation on it would fail the whole page over an
-        # optional store. The "currently tracked" challenger list is instead
-        # covered by its own always-fresh, no-fingerprint section (see
-        # findings_generation.md), which needs no curation at all.
         registry_fingerprints=(
             "00f87012f174f5d6",
             "006ad32121b1f645",
@@ -1415,7 +1270,7 @@ FINDINGS: tuple[Finding, ...] = (
             "the standard fix for that has never been tested properly."
         ),
         source="docs/play_level_audit.md",
-        evergreen=True,  # methodology explainer, no single registry entry
+        evergreen=True,
     ),
     Finding(
         question="How much history does the model need before its picks are trustworthy?",
@@ -1440,7 +1295,7 @@ FINDINGS: tuple[Finding, ...] = (
             "unsupported single-number cliff decide which seasons we may test."
         ),
         source="src/nfl_ats/constants.py, docs/rotation_registry.md",
-        evergreen=True,  # generated from current feasibility/calibration constants
+        evergreen=True,
     ),
     Finding(
         question="If a signal is real but tiny, why not just include it?",
@@ -1495,7 +1350,7 @@ FINDINGS: tuple[Finding, ...] = (
             "three and barely at all at a line of nine."
         ),
         source="docs/pool_edge_plan.md",
-        evergreen=True,  # a fact about score distributions, not a registry entry
+        evergreen=True,
     ),
     Finding(
         question="Would a more careful statistical model squeeze more out of thin data?",
@@ -1667,10 +1522,6 @@ FINDINGS: tuple[Finding, ...] = (
 )
 
 
-# ---------------------------------------------------------------------------
-# Closing section: the honesty rules
-# ---------------------------------------------------------------------------
-
 HONESTY_KICKER = "Before you trust a percentage"
 HONESTY_TITLE = "How to read any number on this dashboard"
 HONESTY_SUB = (
@@ -1732,26 +1583,6 @@ CLOSING_NOTE = (
 )
 
 
-# ---------------------------------------------------------------------------
-# "What we're watching" -- hand-curated one-liners for the top few leads
-# ---------------------------------------------------------------------------
-
-#: Curated 2026-08-19 against the three most extreme entries in the LIVE
-#: ``top_open_leads`` ranking at the time of writing (see
-#: ``nfl_ats.findings_registry.top_open_leads`` -- ranked by
-#: ``|probability_positive - 0.5|``, so a P+ near 0 is exactly as strong a
-#: lead as one near 1, just pointed the other way). Every other rendered
-#: lead falls back to the registry's own ``description`` with no curation
-#: needed at all -- this tuple only needs to grow when a NEW entry earns a
-#: plainer sentence than its own description already is, never on a
-#: schedule.
-#: Reader-safety curation (2026-08-23): the movement-agreement registry
-#: entries carry internal audit prose (script paths, scratchpad references,
-#: "NOT deleted per AGENTS.md" annotations) in their ``description`` fields.
-#: Those descriptions stay untouched in the registry -- they are research
-#: records -- but these blurbs replace what a reader of findings.html sees,
-#: with the full record one link away. Fingerprints pin them to today's live
-#: entries; any re-recording fails the build loudly and forces a re-read.
 _MOVEMENT_AGREEMENT_BLURB_TEXT = (
     "A line-movement signal was re-checked independently; its measured edge did not "
     "survive the re-check as more than noise \u2014 tracked as unresolved."
@@ -1801,11 +1632,6 @@ LEAD_BLURBS: tuple[LeadBlurb, ...] = (
         registry_fingerprints=("b772582fecd8d125",),
     ),
 )
-
-
-# ---------------------------------------------------------------------------
-# Accessors
-# ---------------------------------------------------------------------------
 
 
 def findings_for(verdict: Verdict) -> tuple[Finding, ...]:

@@ -143,23 +143,13 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "era_weighted_half_life_8"
 
-#: MOD-14's selected arm (docs/era_weighting_screen.md "Walk-forward
-#: discipline: which arm does the predeclared grid select?"). Frozen, not a
-#: free parameter of this overlay.
 HALF_LIFE_SEASONS = 8.0
 
 _REQUIRED_PREDICTION_COLUMNS = frozenset(
     {"game_id", "season", "week", "home_team", "away_team", "spread_line", "home_cover_probability"}
 )
-
-
-# ---------------------------------------------------------------------------
-# Ported verbatim from scripts/era_weighting_lib.py (MOD-14) -- see module
-# docstring for why this is copied rather than imported.
-# ---------------------------------------------------------------------------
 
 
 def half_life_weights(
@@ -249,14 +239,6 @@ def fit_weighted_ridge_margin(
         distribution_rows=len(residuals),
         training_max_gameday=pd.to_datetime(sorted_frame["gameday"]).max().date().isoformat(),
     )
-
-
-# ---------------------------------------------------------------------------
-# Leak-safe training-frame construction, mirroring
-# nfl_ats.outcomes._target_and_models_for_week / nfl_ats.margin.fit_margin_model
-# exactly (row-for-row, order-for-order) so a uniform-weight refit reproduces
-# the active card bit-for-bit.
-# ---------------------------------------------------------------------------
 
 
 def _target_values(frame: pd.DataFrame) -> pd.Series:
@@ -404,8 +386,6 @@ def apply_era_weighted_half_life_8_overlay(
         aligned = target_indexed.loc[group_ids]
         spread = aligned["spread_line"].to_numpy(dtype=float)
 
-        # 1. Uniform-weight reproduction check (same discipline as
-        #    smooth_cdf_mapping_overlay's ECDF check).
         uniform_weights = np.ones(len(sorted_frame), dtype=float)
         uniform_model = fit_weighted_ridge_margin(
             sorted_frame,
@@ -424,11 +404,6 @@ def apply_era_weighted_half_life_8_overlay(
             card_refit.probability_method if card_refit is not None else "gaussian"
         )
         uniform_centers = uniform_predicted["predicted_margin"].to_numpy(dtype=float)
-        # The reproduction check compares what the card refit actually
-        # returned: on lines quoted exactly on a key number the served number
-        # is the key-line pick read (docs/key_line_pick_read.md), which
-        # ``CardRefit.predict`` replays; a smooth recompute would refuse every
-        # such card (Codex lane AC, 2026-09-08).
         uniform_check = (
             uniform_predicted["home_cover_probability"].to_numpy(dtype=float)
             if card_refit is not None
@@ -445,7 +420,6 @@ def apply_era_weighted_half_life_8_overlay(
                 "card, so the half-life-8 refit would not be a like-for-like comparison"
             )
 
-        # 2. Half-life-8 season-decay weighted refit -- the arm being tested.
         seasons_arr = sorted_frame["season"].to_numpy(dtype=float)
         weights = half_life_weights(seasons_arr, predict_season=season, half_life=half_life)
         weighted_model = fit_weighted_ridge_margin(

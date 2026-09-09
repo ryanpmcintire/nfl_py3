@@ -64,11 +64,6 @@ DEFAULT_ROOT = REPO / "data/market/raw"
 DEFAULT_FEATURES = REPO / "data/processed/game_features_player.parquet"
 DEFAULT_OUTPUT_ROOT = REPO / "artifacts/novig_diagnostics"
 
-# The 6 historical decision labels the archive carries h2h (moneyline) rows
-# at (measured against the local archive; see docs/novig_diagnostics.md).
-# Restricting to these -- rather than passing labels=None -- keeps this
-# script from also loading the archive's 6,966 intraday_hourly snapshots,
-# which no diagnostic here needs.
 ALL_LABELS: tuple[str, ...] = (
     "tue_open",
     "thu_pre_tnf",
@@ -167,9 +162,6 @@ def build_calibration_arm(
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:

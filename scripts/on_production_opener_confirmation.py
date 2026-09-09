@@ -143,7 +143,6 @@ def run_arm(
 ) -> pd.DataFrame:
     source = features.copy() if leak else features
     if leak:
-        # The only permitted treatment leak, used solely by --mode positive-control.
         source[candidate.column] = pd.to_numeric(source["ats_margin"], errors="raise")
     scored = opener_pick_evaluation(
         market_root,

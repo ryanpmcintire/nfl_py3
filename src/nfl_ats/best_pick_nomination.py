@@ -100,35 +100,13 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: docs/ridge_alpha.md section 4's named candidate -- the walk-forward Brier
-#: optimum, confirmed at the opener grade by
-#: artifacts/ridge_alpha_promotion/20260818T221459Z. Not re-derived here.
 NOMINATION_RIDGE_ALPHA = 2_000.0
 
-#: Owner decision 2026-08-18: nominate the weekly Best Pick with the measured
-#: v2 rule instead of the signal-free ``sweep_robustness`` incumbent.
-#: Flipping this off restores the v1 nomination wherever ``publishing.py``
-#: checks it. The challenger ledger (:func:`record_nomination_challenger_decisions`)
-#: records v2's nomination regardless of this switch, since it reads the
-#: flag itself rather than relying on the published card's effect.
 NOMINATION_V2_ENABLED = True
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "best_pick_nomination_v2"
 
-#: v3 (POL-09 audit, docs/best_pick_ranker.md "v3 audit", 2026-08-19):
-#: registered in artifacts/prospective/challengers.json as a SIDE-LEDGER-ONLY
-#: challenger. v3 uses the exact same eligibility pool and primary ranking as
-#: v2 (:func:`week_dispersion_pool`, ``candidate_dist``) but breaks ties on
-#: ascending ``game_id`` alone -- see :func:`select_nominee_v3`. Never wired
-#: into ``publishing.py``; ``NOMINATION_V2_ENABLED`` is untouched and governs
-#: the published card exactly as before.
 CHALLENGER_ID_V3 = "best_pick_nomination_v3"
-
-
-# ---------------------------------------------------------------------------
-# 1. Dispersion pool
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -151,7 +129,7 @@ class DispersionPool:
 
     frame: pd.DataFrame
     fallback: bool
-    fallback_reason: str | None  # "missing_data" | "empty_filter" | None
+    fallback_reason: str | None
     n_games: int
     n_missing: int
     n_pool_pass: int
@@ -225,11 +203,6 @@ def dispersion_pool_from_frame(frame: pd.DataFrame) -> DispersionPool:
     return DispersionPool(frame, False, None, n_games, n_missing, int(below.sum()))
 
 
-# ---------------------------------------------------------------------------
-# 2. Candidate probabilities and the nomination rule
-# ---------------------------------------------------------------------------
-
-
 def fit_candidate_probabilities(
     features: pd.DataFrame,
     *,
@@ -281,7 +254,7 @@ class NominationV2Result:
 
     game_id: str
     n_tied_at_max: int
-    tie_break: str  # "none" | "dispersion" | "game_id"
+    tie_break: str
     probability_table: pd.DataFrame
     dispersion: DispersionPool
 
@@ -436,9 +409,6 @@ def _nominate(
 
     candidates = table.loc[table["pool_pass"]]
     if candidates.empty:
-        # The fallback rule guarantees this cannot happen (a fallback week
-        # marks every game pool_pass=True); fail loudly if it somehow does
-        # rather than silently nominate from the wrong pool.
         raise DataContractError("Dispersion-pool fallback left zero eligible candidates")
 
     nominee, n_tied, tie_break = select_fn(candidates)
@@ -504,7 +474,7 @@ class NominationV3Result:
 
     game_id: str
     n_tied_at_max: int
-    tie_break: str  # "none" | "game_id"
+    tie_break: str
     probability_table: pd.DataFrame
     dispersion: DispersionPool
 
@@ -557,11 +527,6 @@ def nominate_v3(
     )
 
 
-# ---------------------------------------------------------------------------
-# 3. Disclosure text
-# ---------------------------------------------------------------------------
-
-
 def nomination_v2_tie_note(result: NominationV2Result) -> str:
     """Plain-language tie disclosure, mirroring
     ``nfl_ats.best_pick.best_pick_tie_note`` -- but distinguishing a tie the
@@ -604,8 +569,6 @@ def nomination_v3_tie_note(result: NominationV3Result) -> str:
     )
 
 
-#: Verbatim per the owner's 2026-08-18 decision -- do not paraphrase; other
-#: surfaces (tests, docs) match against this exact string.
 NOMINATION_V2_METHOD_SENTENCE = "nominated by calibrated probability among low-disagreement games"
 
 
@@ -630,11 +593,6 @@ def nomination_v2_disclosure_note(result: NominationV2Result) -> str:
     sentence += "."
     tie_note = nomination_v2_tie_note(result)
     return f"{sentence} {tie_note}".rstrip() if tie_note else sentence
-
-
-# ---------------------------------------------------------------------------
-# 4. Challenger-ledger recording (both nominations tracked)
-# ---------------------------------------------------------------------------
 
 
 def _record_instant(now: datetime | None) -> pd.Timestamp:
@@ -738,10 +696,6 @@ def _record_nomination_for_challenger(
         season=season,
         week=week,
         regressor=str(metadata.get("regressor", "ridge")),
-        # Not str(...)-wrapped: the nominate functions declare feature_profile
-        # as the MarginFeatureProfile Literal, and metadata.get(...) is already
-        # typed Any (json.loads), so passing it straight through type-checks
-        # -- an explicit str() cast would widen it to plain str and fail.
         feature_profile=metadata.get("feature_profile"),
         min_train_games=int(min_train_games) if min_train_games else DEFAULT_MIN_TRAIN_GAMES,
     )

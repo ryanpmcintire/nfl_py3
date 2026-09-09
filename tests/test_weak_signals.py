@@ -97,8 +97,6 @@ def test_plain_summary_and_category_round_trip(tmp_path: Path) -> None:
 
 
 def test_plain_summary_and_category_are_optional_and_round_trip_as_none(tmp_path: Path) -> None:
-    # The pre-existing registry (480 rows as of this change) carries neither
-    # field, so both must stay optional and survive a save/load cycle as None.
     registry = registry_from_payload(_payload(alpha=_signal()))
     signal = registry.signals["alpha"]
     assert signal.plain_summary is None
@@ -114,8 +112,6 @@ def test_category_rejects_an_unknown_value() -> None:
 
 
 def test_recording_the_same_signal_twice_needs_an_explicit_replace() -> None:
-    # A silently overwritten effect would let a second look at one signal
-    # masquerade as independent new evidence.
     registry = Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
     first = signal_from_payload("alpha", _signal())
     registry = record_signal(registry, first)
@@ -129,13 +125,10 @@ def test_recording_the_same_signal_twice_needs_an_explicit_replace() -> None:
 
 def test_standard_error_is_recovered_from_an_interval() -> None:
     signal = signal_from_payload("alpha", _signal(standard_error=None, interval=[-0.423, 0.417]))
-    # A 95% interval spans 2 * 1.96 standard errors.
     assert signal.resolved_standard_error() == pytest.approx((0.417 + 0.423) / 3.9199, rel=1e-3)
 
 
 def test_sign_test_counts_directions_not_magnitudes() -> None:
-    # Ten of eleven leaning one way is a real binomial event even though every
-    # individual effect here is far too small for its own test to resolve.
     signals = [
         signal_from_payload(f"s{i}", _signal(effect=0.05 if i < 10 else -0.05)) for i in range(11)
     ]
@@ -161,7 +154,6 @@ def test_sign_test_on_an_empty_pile_is_not_a_finding() -> None:
 
 
 def test_sign_test_does_not_score_exact_ties_against_the_candidate() -> None:
-    # The defect: `favours_candidate` is `effect > 0`, and the tally counted everything else as a.
     signals = [
         signal_from_payload("up", _signal(effect=0.05)),
         signal_from_payload("down", _signal(effect=-0.05)),
@@ -173,7 +165,6 @@ def test_sign_test_does_not_score_exact_ties_against_the_candidate() -> None:
     assert result["favouring_candidate"] == 1
     assert result["favouring_baseline"] == 1
     assert result["informative_signals"] == 2
-    # A pile that is 80% dead heats and otherwise split 1-1 leans nowhere.
     assert result["p_value"] == pytest.approx(1.0)
     assert "coin flip" in result["interpretation"]
 
@@ -204,7 +195,6 @@ def test_sign_test_says_so_when_every_signal_is_a_dead_heat() -> None:
 
 
 def test_pooling_sharpens_the_standard_error_toward_sqrt_k() -> None:
-    # The mechanism: K identical signals pool to sqrt(K) times the precision.
     signals = [
         signal_from_payload(f"s{i}", _signal(effect=0.20, standard_error=0.40)) for i in range(4)
     ]
@@ -212,16 +202,10 @@ def test_pooling_sharpens_the_standard_error_toward_sqrt_k() -> None:
     assert pooled["pooled_effect"] == pytest.approx(0.20)
     assert pooled["standard_error"] == pytest.approx(0.40 / math.sqrt(4))
     assert pooled["sharpening_vs_best_single"] == pytest.approx(2.0)
-    # Four is NOT enough, and pretending otherwise is the trap this registry
-    # exists to avoid: each signal sits at 0.5 sigma, so four of them reach
-    # only 1.0 sigma and the pooled interval still spans zero.
     assert not pooled["excludes_zero"]
 
 
 def test_pooling_needs_roughly_sixteen_half_sigma_signals_to_resolve() -> None:
-    # The honest arithmetic behind "keep collecting them". To carry a 0.5-sigma
-    # effect past 1.96 sigma you need sqrt(K) >= 3.92, i.e. about sixteen
-    # independent signals -- which is the actual price of this strategy.
     def pooled_sigma(count: int) -> float:
         signals = [
             signal_from_payload(f"s{i}", _signal(effect=0.20, standard_error=0.40))
@@ -261,7 +245,6 @@ def _sized(name: str, *, effect: float, se: float, games: int) -> Any:
 
 
 def test_a_three_game_cell_cannot_hold_the_whole_pool() -> None:
-    # The defect, reproduced: a block bootstrap's band SHRINKS as the cell it resamples gets.
     honest = [_sized(f"honest{i}", effect=0.1, se=1.0, games=4000) for i in range(20)]
     degenerate = _sized("degenerate", effect=-9.0, se=1e-5, games=3)
 
@@ -273,17 +256,15 @@ def test_a_three_game_cell_cannot_hold_the_whole_pool() -> None:
     fixed = pooled_effect([*honest, degenerate], method="fixed")
     assert fixed["max_weight_share"] < 0.2
     assert fixed["most_influential_signal"] != "degenerate"
-    # The honest majority now decides the pooled estimate.
     assert fixed["pooled_effect"] > 0.0
 
 
 def test_the_thin_cell_is_floored_and_flagged_but_never_dropped() -> None:
-    # AGENTS.md: excluding a signal for being underpowered is exactly the move the crossing-zero.
     honest = [_sized(f"honest{i}", effect=0.1, se=1.0, games=4000) for i in range(20)]
     degenerate = _sized("degenerate", effect=-9.0, se=1e-5, games=3)
     result = pooled_effect([*honest, degenerate], method="fixed")
 
-    assert result["signals"] == 21  # nothing dropped
+    assert result["signals"] == 21
     assert result["standard_errors_floored"] == 1
     floored = result["floored_signals"][0]
     assert floored["name"] == "degenerate"
@@ -294,7 +275,6 @@ def test_the_thin_cell_is_floored_and_flagged_but_never_dropped() -> None:
 
 
 def test_pooling_leaves_plausible_standard_errors_alone() -> None:
-    # The floor must only bite on bands too narrow for their own sample size; genuine precision.
     signals = [
         _sized("wide", effect=0.1, se=2.0, games=100),
         _sized("mid", effect=0.1, se=1.0, games=400),
@@ -304,7 +284,6 @@ def test_pooling_leaves_plausible_standard_errors_alone() -> None:
     result = pooled_effect(signals, method="fixed")
     assert result["standard_errors_floored"] == 0
     assert result["floored_signals"] == []
-    # Same answer the honest inverse-variance pool gives.
     legacy = pooled_effect(signals, method="fixed", weighting="inverse_variance")
     assert result["pooled_effect"] == pytest.approx(legacy["pooled_effect"])
 
@@ -321,7 +300,6 @@ def test_pooling_reports_the_superseded_weighting_so_the_change_is_auditable() -
 
 
 def test_pooling_reports_probability_positive_not_just_a_zero_crossing() -> None:
-    # AGENTS.md, binding: report probability_positive, never the binary "contains zero" -- the.
     signals = [_sized(f"s{i}", effect=0.2, se=1.0, games=1000) for i in range(4)]
     result = pooled_effect(signals, method="fixed")
     assert not result["excludes_zero"]
@@ -329,7 +307,6 @@ def test_pooling_reports_probability_positive_not_just_a_zero_crossing() -> None
 
 
 def test_pooling_falls_back_when_no_entry_records_a_sample_size() -> None:
-    # Synthetic pools and older rows carry no sample size; say so out loud rather than inventing.
     signals = [
         signal_from_payload(f"s{i}", _signal(effect=0.2, standard_error=0.4)) for i in range(4)
     ]
@@ -355,9 +332,7 @@ def test_rows_recorded_under_the_strict_zero_convention_are_flagged_not_rewritte
     assert zero_atom["count"] == 1
     assert zero_atom["signals"] == ["dead_heat"]
     assert zero_atom["correctable_value"] == 0.5
-    # A non-zero effect at P+ 0.0 cannot be corrected from the registry: the draws that would say.
     assert flagged["strict_zero_with_nonzero_effect"]["signals"] == ["real_negative"]
-    # Flagging is not closing.
     assert "not a verdict" in flagged["nothing_is_closed_by_this"]
 
 
@@ -392,7 +367,6 @@ def test_overlapping_seasons_are_flagged_as_shared_noise() -> None:
     ]
     assert overlap_warnings(disjoint) == []
 
-    # Different leagues cannot share football.
     cross = [
         signal_from_payload("a", _signal(seasons=[2009, 2015], league="nfl")),
         signal_from_payload("b", _signal(seasons=[2009, 2015], league="cfb")),
@@ -406,25 +380,20 @@ def test_signal_family_collapses_decompositions_of_one_construct() -> None:
     def family(name: str, *, league: str = "nfl") -> str:
         return signal_family(signal_from_payload(name, _signal(league=league)))
 
-    # The opener grade is the same construct as the close grade.
     assert family("bias_battery_short_week_opener") == family("bias_battery_short_week")
-    # Era splits partition their parent.
     assert (
         family("altitude_deficit_4000ft_era_2018_2025")
         == family("altitude_deficit_4000ft_era_2009_2017")
         == family("altitude_deficit_4000ft")
     )
-    # Bare-year and pre/post window splits too.
     assert (
         family("body_clock_west_road_early_2009_2016")
         == family("body_clock_west_road_early_2017_2025")
         == family("body_clock_west_road_early")
     )
     assert family("bye_overval_home_edge_pre2011") == family("bye_overval_home_edge_post2011")
-    # A battery marker collapses every cell of the screening battery.
     assert family("bias_battery_home_underdog") == "bias_battery"
     assert family("cfb_bias_battery_home_underdog", league="cfb") == "cfb_bias_battery"
-    # An explicit declaration always wins over inference.
     declared = signal_from_payload("odd_name", _signal(family="declared_family"))
     assert signal_family(declared) == "declared_family"
 
@@ -442,7 +411,6 @@ def test_family_overlap_warnings_report_families_not_pairs() -> None:
     assert report["families"] == 2
     assert report["families_with_internal_overlap"] == 1
     assert report["pairwise_within_family_pairs"] == 1
-    # The two families share seasons, so cross-family correlation is counted.
     assert report["cross_family_shared_window_pairs"] == 1
     assert report["pairwise_overlap_pairs"] == 3
     entry = report["within_family"][0]
@@ -451,7 +419,6 @@ def test_family_overlap_warnings_report_families_not_pairs() -> None:
     assert entry["shared_seasons"] == [2009, 2025]
     assert "correlated decompositions" in entry["warning"]
 
-    # Disjoint windows produce no warnings at all.
     disjoint = [
         signal_from_payload("x_a", _signal(seasons=[2009, 2010])),
         signal_from_payload("x_b", _signal(seasons=[2011, 2012])),
@@ -489,7 +456,6 @@ def test_effect_outside_interval_is_refused_at_record_time() -> None:
     base = Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
     with pytest.raises(WeakSignalError, match="outside its own interval"):
         record_signal(base, contradictory)
-    # And the soft load-time counterpart reports it without raising.
     problems = coherence_problems([contradictory])
     assert problems and problems[0]["signal"] == "alpha"
 
@@ -505,7 +471,6 @@ def test_bounded_by_control_needs_quantitative_evidence() -> None:
                 standard_error=None,
             ),
         )
-    # With a number attached it loads fine.
     ok = signal_from_payload(
         "alpha",
         _signal(
@@ -532,8 +497,6 @@ def test_no_reliability_closure_cannot_cite_a_reliable_trait() -> None:
 
 
 def test_only_genuinely_unresolved_signals_are_poolable() -> None:
-    # Folding a refuted mechanism or a control-bounded null into the pool would
-    # launder a known failure into a fresh-looking positive.
     registry = registry_from_payload(
         _payload(
             live=_signal(classification="unresolved_below_power"),
@@ -591,7 +554,6 @@ def test_pooling_refuses_to_mix_leagues_when_none_is_chosen() -> None:
     with pytest.raises(ValueError, match="Refusing to pool across leagues"):
         combination_report(registry)
 
-    # Naming one league is still fine, and still pools only that league.
     assert combination_report(registry, league="cfb")["eligible"] == ["cfb_one"]
 
 
@@ -741,18 +703,7 @@ def test_closing_ground_round_trips(tmp_path: Path) -> None:
     assert reloaded.signals["alpha"].closing_ground == "wrong_sign_resolved"
 
 
-# ---------------------------------------------------------------------------
-# WP16: correlation / *_improvement effect_units, and the retag-units repair
-# path for entries that had to be forced into the wrong unit for lack of a
-# better one.
-# ---------------------------------------------------------------------------
-
-
 def test_existing_effect_units_are_unchanged_by_the_new_additions() -> None:
-    # The five pre-existing units keep their exact spellings and stay ahead
-    # of the four new ones -- nothing about how an OLD entry round-trips may
-    # depend on where in the tuple its unit sits, but pinning the prefix
-    # still catches an accidental rename or removal.
     assert EFFECT_UNITS[:5] == ("ats_points", "accuracy_points", "brier", "log_loss", "mae")
     assert set(EFFECT_UNITS[5:]) == {
         "correlation",
@@ -778,11 +729,6 @@ def test_new_effect_units_are_accepted_and_round_trip(unit: str, tmp_path: Path)
     "unit", ["correlation", "mae_improvement", "brier_improvement", "log_loss_improvement"]
 )
 def test_new_units_follow_the_same_positive_favours_candidate_convention(unit: str) -> None:
-    # Every unit in this module stores positive=candidate-better, whatever the
-    # underlying metric's own polarity (module docstring). The whole point of
-    # the *_improvement units is that the unit NAME now says so too, but the
-    # stored-sign behaviour itself must be identical to every other unit --
-    # an improvement is recorded directly, with no extra negation at load time.
     assert signal_from_payload("a", _signal(effect_units=unit, effect=0.01)).favours_candidate
     assert not signal_from_payload("a", _signal(effect_units=unit, effect=-0.01)).favours_candidate
 
@@ -818,10 +764,6 @@ def test_pooling_a_correlation_and_an_accuracy_points_signal_still_refuses_mixed
 
 
 def test_accuracy_points_pool_output_is_unchanged_by_the_new_units(tmp_path: Path) -> None:
-    # A fixture registry mixing an accuracy_points pair with a correlation
-    # entry: pooling by effect_units="accuracy_points" must produce EXACTLY
-    # the same numbers the pre-existing pooling logic always produced --
-    # adding new units must not perturb how an old one is grouped or pooled.
     registry = registry_from_payload(
         _payload(
             acc_a=_signal(effect_units="accuracy_points", effect=0.20, standard_error=0.40),
@@ -870,8 +812,6 @@ def test_retag_effect_units_changes_only_the_unit_and_appends_an_audit_note() ->
     assert "was mae with the sign convention explained only in notes" in retagged.notes
     assert "2026-09-01T12:00:00+00:00" in retagged.notes
 
-    # Everything else -- classification, effect, interval, closing_ground and
-    # every other field -- is untouched.
     assert retagged.effect == original.effect
     assert retagged.interval == original.interval
     assert retagged.standard_error == original.standard_error
@@ -892,7 +832,6 @@ def test_retag_effect_units_changes_only_the_unit_and_appends_an_audit_note() ->
     assert retagged.recorded_at == original.recorded_at
     assert retagged.name == original.name
 
-    # And the original registry object passed in is untouched (immutability).
     assert registry.signals["totals_market_residual_blend"].effect_units == "mae"
 
 

@@ -84,18 +84,11 @@ from scripts.xlg06_rookie_prior_cfb_screen import (  # noqa: E402
 ARTIFACT_ROOT = REPO_ROOT / "artifacts" / "xlg06_rookie_prior_cfb"
 POSITION = "RB"
 
-# Same seeds the original script's Step 6 (secondary positions) and Step 3
-# (reliability) already used for RB -- RB is index 0 of SECONDARY_POSITIONS =
-# ("RB", "WR", "TE") and index 1 of (PRIMARY_POSITION, *SECONDARY_POSITIONS)
-# = ("QB", "RB", "WR", "TE"). Reusing them is what makes --mode screen an
-# exact reproduction of the already-computed RB numbers, not a new draw.
 SCREEN_COHORT_SEED = 4000
 SCREEN_PLAYER_SEED = 4100
 RELIABILITY_COHORT_SEED = 1001
 RELIABILITY_PLAYER_SEED = 1101
 
-# New seeds for the positive-control mode -- not present in the original
-# script, since it never ran a leak treatment.
 POSITIVE_CONTROL_COHORT_SEED = 5000
 POSITIVE_CONTROL_PLAYER_SEED = 5100
 
@@ -183,10 +176,6 @@ def run_reliability(
     }
 
 
-# Seed base for the per-cohort trend diagnostic below -- the same recipe the
-# original script's Step 5 uses for QB (seed = base + year), but a disjoint
-# seed space (3100 vs QB's 3000) since RB's per-cohort trend was never
-# computed there.
 COHORT_TREND_SEED_BASE = 3100
 
 

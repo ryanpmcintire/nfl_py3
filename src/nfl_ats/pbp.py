@@ -27,16 +27,6 @@ from nfl_ats.opponent_adjustment import add_opponent_adjusted_pbp_features
 PBP_FILTER_VERSION = "v1"
 PBP_FEATURE_VERSION = "v3"
 
-# nflverse spells "postseason" differently across the feeds this package
-# ingests. Verified against nflreadpy for 2015/2019/2021/2023/2024:
-#
-#   load_injuries / load_rosters_weekly / load_snap_counts -> ``game_type``
-#       carries the per-round codes REG, WC, DIV, CON, SB
-#   load_pbp / load_player_stats -> ``season_type`` carries REG and POST
-#
-# Both spellings are accepted wherever a season scope is applied so a feed that
-# switches spelling keeps working. PRE is a recognized code that is never kept:
-# preseason has always been out of contract.
 REGULAR_SEASON_CODE = "REG"
 PRESEASON_CODE = "PRE"
 POSTSEASON_CODES = ("WC", "DIV", "CON", "SB", "POST")
@@ -94,9 +84,6 @@ PBP_REQUIRED_COLUMNS = (
     "wp",
 )
 
-# The raw nflverse table is deliberately narrowed at ingestion. These fields
-# are sufficient to reproduce the v1 play filter, drives, team efficiencies,
-# and a future quarterback layer without persisting hundreds of unused fields.
 PBP_SNAPSHOT_COLUMNS = (
     *PBP_REQUIRED_COLUMNS,
     "qtr",

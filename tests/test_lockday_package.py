@@ -225,9 +225,6 @@ def _write_package(tree: dict[str, Path], **overrides: Any) -> dict[str, Any]:
     return write_decision_package(**kwargs)
 
 
-# ---------------------------------------------------------------------------
-
-
 def test_package_links_inputs_model_outputs_recorders_ledgers_and_verify(
     tree: dict[str, Path],
 ) -> None:
@@ -249,7 +246,6 @@ def test_package_links_inputs_model_outputs_recorders_ledgers_and_verify(
     assert manifest["rehearsal"] is False
     assert manifest["errors"] == []
 
-    # model identity
     identity = manifest["model_identity"]
     assert identity["model_id"] == "123d60be8c80a35d"
     assert identity["feature_profile"] == "weak_stack"
@@ -259,7 +255,6 @@ def test_package_links_inputs_model_outputs_recorders_ledgers_and_verify(
     assert identity["probability_method"] == "gaussian"
     assert identity["manifest_sha256"] == sha256_file(tree["artifacts"] / "active_ats_model.json")
 
-    # inputs: the feature table the run actually named, and its build manifest
     table_paths = {entry["path"] for entry in manifest["inputs"]["feature_tables"]}
     assert str(tree["features"]) in table_paths
     assert manifest["inputs"]["snapshot_ids"]["pbp-snapshot"] == ["20260901T000002Z"]
@@ -267,7 +262,6 @@ def test_package_links_inputs_model_outputs_recorders_ledgers_and_verify(
     build_manifest_path = str(tree["features"].with_name("game_features_weak_stack.manifest.json"))
     assert manifests[build_manifest_path]["manifest"]["source_pbp_snapshot"] == ("20260901T000002Z")
 
-    # outputs: the forecast directory and the published card
     assert manifest["outputs"]["forecast"]["directory"] == str(tree["forecast_dir"])
     forecast_files = {Path(item["path"]).name for item in manifest["outputs"]["forecast"]["files"]}
     assert {"predictions.csv", "metadata.json"} <= forecast_files
@@ -276,14 +270,12 @@ def test_package_links_inputs_model_outputs_recorders_ledgers_and_verify(
         tree["repo_root"] / "CURRENT_PREDICTIONS.md"
     )
 
-    # recorder results, verbatim, plus the flat challenger index
     publish = manifest["recorders"]["steps"]["publish-predictions"]["output"]
     assert publish["ledger"] == {"recorded": 16}
     by_id = manifest["recorders"]["by_challenger_id"]
     assert by_id["example_publish_arm"]["recorded"] == 16
     assert "Friday 16:00 ET" in by_id["nflcom_friday_refresh_out2_starters_v1"]["reason"]
 
-    # ledger writes
     ledgers = {row["ledger"]: row for row in manifest["ledgers"]}
     assert set(ledgers) == set(ledger_paths(tree["artifacts"]))
     assert ledgers["paper_decisions"]["rows_before"] == 0
@@ -291,11 +283,9 @@ def test_package_links_inputs_model_outputs_recorders_ledgers_and_verify(
     assert ledgers["paper_decisions"]["appended_rows"] == 4
     assert ledgers["challenger_decisions"]["rows_after"] == 0
 
-    # lockday_verify output
     assert manifest["lockday_verify"]["recorded"] == 2
     assert manifest["lockday_verify"]["missing"] == []
 
-    # code provenance
     assert "revision" in manifest["code"]
     assert manifest["code"]["uv_lock_sha256"] == sha256_file(tree["repo_root"] / "uv.lock")
 
@@ -317,12 +307,10 @@ def test_every_linked_hash_is_recomputable(tree: dict[str, Path]) -> None:
         checked += 1
     assert checked >= 5
 
-    # the appended-row digest recomputes from the stated recipe alone
     row = next(item for item in manifest["ledgers"] if item["ledger"] == "paper_decisions")
     frame = pd.read_parquet(row["path"]).iloc[row["rows_before"] :]
     assert sha256_bytes(frame.to_csv(index=False).encode("utf-8")) == row["appended_rows_sha256"]
 
-    # and the manifest pins its own bytes
     digest_line = (
         Path(written["manifest_sha256_path"]).read_text(encoding="utf-8").split()[0].strip()
     )
@@ -374,7 +362,6 @@ def test_a_broken_component_still_yields_a_manifest_with_an_errors_list(
     assert "lockday_verify" in components
     assert "lockday_verify blew up" in json.dumps(manifest["errors"])
     assert manifest["ok"] is False
-    # every other section still assembled
     assert manifest["model_identity"]["model_id"] == "123d60be8c80a35d"
     assert manifest["ledgers"]
     assert manifest["outputs"]["cards"]
@@ -549,17 +536,12 @@ def test_real_lockday_verify_runs_in_process_against_a_synthetic_root(
         data_root=tree["data"],
         repo_root=Path.cwd(),
         run_summary=_run_summary(tree),
-        # Explicit, so the test hashes the synthetic card rather than the
-        # repository's real tracked one.
         card_paths=[tree["repo_root"] / "CURRENT_PREDICTIONS.md"],
         now=NOW,
     )
     assert manifest["errors"] == []
     report = manifest["lockday_verify"]
     assert report["active_registered"] == 2
-    # Both synthetic arms wrote nothing into an empty synthetic ledger, so the
-    # verifier correctly calls both MISSING. What this pins is that the REAL
-    # verifier ran in-process and produced its own report shape, not a stub's.
     assert set(report["missing"]) == {"example_publish_arm", "mod07_weak_signal_stack"}
     assert report["exit_code"] == 1
     assert "lock-day verification" in report["rendered"]
@@ -608,16 +590,6 @@ def test_capture_ledger_state_is_read_only(tree: dict[str, Path]) -> None:
     assert not (tree["artifacts"] / "prospective" / "challenger_decisions.parquet").exists()
 
 
-# ---------------------------------------------------------------------------
-# weekly-run wiring
-#
-# The real Week 1 lock is 2026-09-08. These tests never run a recorder and
-# never touch the production artifacts tree: NFL_ATS_ARTIFACTS_DIR/
-# NFL_ATS_DATA_DIR point at tmp_path and ``run_weekly`` is replaced by a stub,
-# so the only thing exercised is the additive package wiring itself.
-# ---------------------------------------------------------------------------
-
-
 def _weekly_run_stub(calls: list[dict[str, Any]], summary: dict[str, Any] | None = None) -> Any:
     def stub(**kwargs: Any) -> dict[str, Any]:
         calls.append(kwargs)
@@ -664,7 +636,6 @@ def test_weekly_run_writes_a_package_only_with_record_decisions(
 
     captured = capsys.readouterr()
     assert str(packages[0]) in captured.err
-    # the run's own JSON summary is unchanged apart from the added key
     payload = (
         json.loads(captured.out.strip().split("\n{")[-1].join(("", "")) or "{}") if False else None
     )
@@ -699,8 +670,6 @@ def test_package_is_written_even_when_the_run_aborts(
 
     monkeypatch.setattr(operations_cmds, "run_weekly", exploding)
 
-    # Unchanged behaviour: WeeklyRunError is a ValueError, so cli.main still
-    # reports it on stderr and exits 2. The package is written on the way out.
     with pytest.raises(SystemExit) as excinfo:
         cli.main(["weekly-run", "--season", "2026", "--week", "1", "--record-decisions"])
     assert excinfo.value.code == 2
@@ -740,7 +709,6 @@ def test_package_write_failure_never_aborts_the_lock(
     assert payload["command"] == "weekly-run"
     assert payload["decision_package"]["written"] is False
     assert payload["decision_package"]["errors"][0]["error"] == "disk full"
-    # the run itself still executed in full; the package is strictly last
     assert wired["calls"][-1]["record_decisions"] is True
     assert not packages_root(tree["artifacts"]).exists()
 

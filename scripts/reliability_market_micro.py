@@ -122,9 +122,6 @@ SBR_ODDS = REPO / "data/processed/sbr_odds.parquet"
 SBR_SCORED = REPO / "artifacts/sbr_era_opener_eval/20260819T233013Z/scored.parquet"
 PROXY_SCORED = REPO / "artifacts/proxy_opener_replication/20260819T194330Z/main_scored.parquet"
 
-#: A game-level quantity with no team side is still measured with the shared
-#: estimator, but at the HOME-TEAM-season unit (the stadium/venue proxy). The
-#: tag says so out loud so nobody reads it as a team-trait number.
 METHOD_VENUE_HOME_UNIT = rlib.METHOD_VENUE + (
     ". VENUE KEY = the home team (one stadium per franchise); the quantity is "
     "symmetric across the two sides of the game and has no team split, so it is "
@@ -153,16 +150,8 @@ MOD08_NOTE = (
     "different construct."
 )
 
-#: Near-constant guard. A column with (almost) no cross-unit spread in its
-#: half-means can return a large |r| of either sign that flips with the season
-#: window; that is an artifact, not a trait, and must not be recorded.
 MIN_DISTINCT_VALUES = 3
 MIN_SPREAD = 1e-9
-
-
-# ---------------------------------------------------------------------------
-# Long-frame shapes (every VALUE comes from a screen's own builder)
-# ---------------------------------------------------------------------------
 
 
 def signed_team_week(
@@ -312,11 +301,6 @@ def window_sign_stability(
         "pearson_r": measured["pearson_r"],
         "reliability": measured["reliability"],
     }
-
-
-# ---------------------------------------------------------------------------
-# Screen-by-screen population construction
-# ---------------------------------------------------------------------------
 
 
 def build_odds_micro(market_root: Path, features_path: Path) -> dict[str, Any]:
@@ -578,10 +562,6 @@ def build_sbr(tue_open_lines: pd.DataFrame) -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
-# Entry -> parent quantity mapping
-# ---------------------------------------------------------------------------
-
 TUE_OPEN_BASIS = (
     "purchased point-in-time odds archive, capture_kind='historical_backfill', "
     "decision_label='tue_open' (data/market/raw)"
@@ -596,7 +576,6 @@ SAGARIN_OPEN_BASIS = (
 )
 SBR_BASIS = "data/processed/sbr_odds.parquet, via proxy_opener_replication.build_population"
 
-#: frame key -> (market quantity, snapshot basis, unit label, method, method tag)
 QUANTITIES: dict[str, tuple[str, str, str, str, str]] = {
     "juice_lean": (
         "no-vig juice lean off the tue_open spread PRICE, signed toward the team on the "
@@ -706,7 +685,6 @@ QUANTITIES: dict[str, tuple[str, str, str, str, str]] = {
     ),
 }
 
-#: entry -> (battery, frame key, oracle control?, secondary frame keys)
 CELL_TABLE: dict[str, tuple[str, str | None, bool, tuple[str, ...]]] = {
     "odds_microstructure_H1_1_2_dose_response_high_minus_low": (
         "odds_microstructure",
@@ -1051,11 +1029,6 @@ def build_replications(
             "home_cover_at_open_proxy",
         )
     return out
-
-
-# ---------------------------------------------------------------------------
-# Runner
-# ---------------------------------------------------------------------------
 
 
 def registry_seasons() -> dict[str, tuple[int, int]]:

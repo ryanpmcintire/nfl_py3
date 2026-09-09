@@ -255,7 +255,6 @@ def permutation_diagnostic(
     eligible_pairs = set(together_full.loc[together_full.ge(MIN_OVERLAP_GAMES)].index)
     if not eligible_pairs:
         raise DataContractError(f"unit {unit} has no pairs clearing the overlap floor")
-    # Member rates from the full frame (fixed across draws, as predeclared).
     member_rates: dict[str, float] = {}
     first_absent: dict[str, int] = {}
     together_count: dict[str, int] = {}

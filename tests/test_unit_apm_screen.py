@@ -19,13 +19,11 @@ from scripts.unit_apm_screen import (
 
 def _rosters() -> pd.DataFrame:
     rows = []
-    # AAA: G in 2020, T in 2021 (a real position switch across seasons).
     rows += [
         {"gsis_id": "AAA", "season": 2020, "position": "G", "team": "H", "week": 1},
         {"gsis_id": "AAA", "season": 2020, "position": "G", "team": "H", "week": 2},
         {"gsis_id": "AAA", "season": 2021, "position": "T", "team": "H", "week": 1},
     ]
-    # BBB: WR every season. CCC: K (unmapped specialist).
     for season in (2020, 2021):
         rows.append({"gsis_id": "BBB", "season": season, "position": "WR", "team": "H", "week": 1})
         rows.append({"gsis_id": "CCC", "season": season, "position": "K", "team": "H", "week": 1})
@@ -82,9 +80,6 @@ def _rotating_table() -> pd.DataFrame:
         for side in ("H", "A"):
             play += 1
             pool = [f"P{i}" for i in rng.choice(8, size=4, replace=False)]
-            # Same +1 coding as the implementation for every row: the target
-            # must NOT be negated by side (that would model players hurting
-            # their own team on the road and make the halves disagree).
             epa = float(sum(latent[player] for player in pool)) / 4.0
             rows.append(
                 {

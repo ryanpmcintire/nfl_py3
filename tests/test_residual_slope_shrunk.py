@@ -44,15 +44,12 @@ def test_standard_error_matches_the_textbook_least_squares_formula():
     expected = math.sqrt((residual @ residual) / (x.size - 2) / float(((x - x.mean()) ** 2).sum()))
     assert slope == pytest.approx(coefficients[1])
     assert standard_error == pytest.approx(expected)
-    # More rows around the same line pin the slope down harder.
     wide = rng.normal(size=400)
     _, tighter = slope_and_standard_error(wide, 2.0 + 0.75 * wide + rng.normal(scale=3.0, size=400))
     assert tighter < standard_error
 
 
 def test_a_bucket_that_cannot_support_a_standard_error_serves_the_incumbent():
-    # Fewer than four rows, no variation in x, and a perfect (zero-residual)
-    # fit all mark the bucket not estimable: nan, so beta stays 1.
     for x, y in (
         (np.array([1.0, 2.0, 3.0]), np.array([1.0, 3.0, 5.0])),
         (np.full(20, 2.0), np.arange(20.0)),
@@ -71,10 +68,7 @@ def test_tau_squared_is_the_fixed_target_moment_estimator():
     weights = {k: 1.0 / errors[k] ** 2 for k in estimates}
     q = sum(weights[k] * (estimates[k] - 1.0) ** 2 for k in estimates)
     assert tau_squared(estimates, errors) == pytest.approx((q - 3) / sum(weights.values()))
-    # Estimates sitting on the incumbent leave no between-bucket variance, and
-    # the estimator is floored at zero rather than going negative.
     assert tau_squared(dict.fromkeys(estimates, 1.0), errors) == 0.0
-    # A bucket with no estimable slope drops out of both Q and the count.
     partial = tau_squared(estimates, {**errors, "c": float("nan")})
     pair = {"a": estimates["a"], "b": estimates["b"]}
     assert partial == pytest.approx(tau_squared(pair, errors))
@@ -82,18 +76,14 @@ def test_tau_squared_is_the_fixed_target_moment_estimator():
 
 
 def test_empirical_bayes_keeps_noisy_buckets_on_the_incumbent():
-    # Same departure from 1.0, ten times the standard error: the noisy bucket
-    # is pulled much closer to the incumbent.
     precise = empirical_bayes(-1.0, 0.10, 0.25)
     noisy = empirical_bayes(-1.0, 1.00, 0.25)
     assert precise == pytest.approx(1.0 + (-2.0) * 0.25 / (0.25 + 0.01))
     assert noisy == pytest.approx(1.0 + (-2.0) * 0.25 / (0.25 + 1.0))
     assert abs(precise - 1.0) > abs(noisy - 1.0)
-    # tau^2 = 0 is the incumbent everywhere, for any estimate or error.
     for slope in (-3.0, 0.0, 0.5, 4.0):
         for standard_error in (0.01, 0.5, 9.0):
             assert empirical_bayes(slope, standard_error, 0.0) == INCUMBENT_SLOPE
-    # Perfect precision serves the raw estimate.
     assert empirical_bayes(0.4, 1e-12, 0.25) == pytest.approx(0.4, abs=1e-9)
 
 
@@ -119,7 +109,6 @@ def test_r2_fits_every_bucket_from_its_own_precision():
         assert fit.fraction[bucket] == pytest.approx(
             fit.tau_squared / (fit.tau_squared + fit.standard_error[bucket] ** 2)
         )
-    # An empty bucket has no slope to shrink and serves the incumbent exactly.
     for bucket in ("7", "7.5-10"):
         assert fit.games[bucket] == 0
         assert fit.betas[bucket] == INCUMBENT_SLOPE
@@ -127,10 +116,6 @@ def test_r2_fits_every_bucket_from_its_own_precision():
 
 
 def test_tau_squared_zero_reproduces_beta_one_in_every_bucket():
-    # Every bucket's slope planted exactly on the incumbent, with real scatter
-    # about it (the noise is orthogonal to x, so the fit is not degenerate and
-    # every standard error is finite): Q collapses, the moment estimator floors
-    # at zero and the arm IS S3.
     x = np.arange(-9.0, 10.0)
     noise = 0.4 * (x**2 - (x**2).mean())
     rows = [
@@ -164,8 +149,6 @@ def test_r2b_moves_only_the_biggest_bucket_and_keeps_lane_r_shrinkage():
             continue
         assert fit.betas[bucket] == INCUMBENT_SLOPE
         assert fit.fraction[bucket] == 0.0
-    # Only 10.5+ rows can reach the served weight; the small bucket's slope is
-    # estimated and reported but never served.
     assert fit.raw["0-3"] != INCUMBENT_SLOPE
 
 
@@ -184,7 +167,7 @@ def test_future_and_out_of_window_rows_cannot_reach_either_arm():
     prior = prior_rows_before(stream, 2025, 2)
     for restricted in (False, True):
         fit = fit_shrunk(prior, restricted=restricted)
-        assert fit.games[RESTRICTED_BUCKET] == 4  # 2019 and the 2025 wk2/2026 rows excluded
+        assert fit.games[RESTRICTED_BUCKET] == 4
         baseline = fit.betas[RESTRICTED_BUCKET]
         poisoned = stream.copy()
         poisoned.loc[[0, 5, 6], "result"] = -1e6
@@ -218,7 +201,6 @@ def test_predict_serves_line_plus_shrunk_beta_residual_plus_offset():
         scoring.spread_line.to_numpy() + beta * residual + offset,
         atol=1e-12,
     )
-    # tau^2 = 0 IS the served S3 read, not an approximation of it.
     incumbent = model.predict(
         scoring,
         probability_method="gaussian_median",

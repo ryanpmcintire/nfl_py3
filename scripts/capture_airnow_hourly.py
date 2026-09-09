@@ -170,7 +170,6 @@ def parse(payload: bytes) -> tuple[pd.DataFrame, dict[str, int]]:
 def map_stadiums(
     observations: pd.DataFrame, stadiums: pd.DataFrame, captured_at_utc: datetime
 ) -> pd.DataFrame:
-    # Stable ordering makes a tie select the lexically first AQS site.
     county = (
         observations.sort_values(["county_fips", "aqi", "AQSID"], ascending=[True, False, True])
         .drop_duplicates("county_fips")

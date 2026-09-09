@@ -31,9 +31,6 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
         "week": 1,
         "generated_at": "20260831T110000Z",
         "games": {
-            # MIA @ LV -- the fixture's Best Pick game. LV carries the
-            # fail-closed QB mismatch; MIA is a clean, fresh snapshot with
-            # one flagged player.
             "2026_01_MIA_LV": {
                 "home": {
                     "team": "LV",
@@ -97,11 +94,6 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
                             "has_injury_designation": True,
                         },
                         {
-                            # No injury designation this week -- UI-20-AB:
-                            # the number below is still a real per-player,
-                            # per-game forecast from the availability
-                            # model, so it renders as a percentage exactly
-                            # like a designated player's.
                             "name": "Malik Washington",
                             "position": "WR",
                             "slot": "WR3",
@@ -114,9 +106,6 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
                     ],
                 },
             },
-            # DEN @ KC -- both sides published, but stale relative to the
-            # fixture's generated_at (2026-08-31); every answer about either
-            # team must degrade to the stale fallback, never guess.
             "2026_01_DEN_KC": {
                 "home": {
                     "team": "KC",
@@ -155,9 +144,6 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
                     ],
                 },
             },
-            # NE @ SEA is deliberately absent from this payload -- exercises
-            # the "no artifact for this team" fallback with real games that
-            # the fixture already carries.
         },
     }
     target = tmp_path / STABLE_LINEUP_PATH
@@ -167,7 +153,7 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
 
 def _content_with_lineups(tmp_path: Path):
     _write_lineups_artifact(tmp_path)
-    loaded = load_lineups(tmp_path)  # real nfl_ats.lineup_view parser
+    loaded = load_lineups(tmp_path)
     content = build_fixture_content()
     dives = tuple(
         replace(dive, home_lineup=loaded[dive.game_id][0], away_lineup=loaded[dive.game_id][1])
@@ -180,12 +166,6 @@ def _content_with_lineups(tmp_path: Path):
 
 def _knowledge(tmp_path: Path):
     return build_knowledge_for_board(_content_with_lineups(tmp_path))
-
-
-# ---------------------------------------------------------------------------
-# Corpus wiring: the merge is additive and keeps the golden sort-order
-# contract every other entry in this corpus already relies on.
-# ---------------------------------------------------------------------------
 
 
 def test_lineup_block_is_merged_and_corpus_stays_sorted(tmp_path: Path) -> None:
@@ -201,11 +181,6 @@ def test_no_lineup_artifact_leaves_an_empty_but_present_block() -> None:
     knowledge = build_knowledge_for_board(build_fixture_content())
     assert knowledge["lineups"]["games"] == {}
     assert knowledge["lineups"]["players"] == []
-
-
-# ---------------------------------------------------------------------------
-# Intent: who is starting at QB for <team>.
-# ---------------------------------------------------------------------------
 
 
 def test_qb_starter_answers_cleanly_when_forecast_and_lineup_agree(tmp_path: Path) -> None:
@@ -232,7 +207,7 @@ def test_qb_starter_degrades_to_stale_fallback_never_guessing(tmp_path: Path) ->
     assert "won't guess" in resolved.text
     assert "freshness budget" in resolved.text
     assert "as of 2020-01-01T00:00:00Z from nflverse depth charts" in resolved.text
-    assert "Mahomes" not in resolved.text  # never names a starter from a stale snapshot
+    assert "Mahomes" not in resolved.text
 
 
 def test_qb_starter_degrades_to_absent_fallback_for_an_unpublished_team(tmp_path: Path) -> None:
@@ -240,11 +215,6 @@ def test_qb_starter_degrades_to_absent_fallback_for_an_unpublished_team(tmp_path
     assert resolved.topic == "lineup:qb"
     assert "No projected-lineup artifact is published for NE this week" in resolved.text
     assert "won't guess" in resolved.text
-
-
-# ---------------------------------------------------------------------------
-# Intent: any injuries for <team>.
-# ---------------------------------------------------------------------------
 
 
 def test_team_injuries_reports_a_flagged_player(tmp_path: Path) -> None:
@@ -268,11 +238,6 @@ def test_team_injuries_degrades_to_stale_fallback(tmp_path: Path) -> None:
     assert resolved.topic == "lineup:injuries"
     assert "won't guess" in resolved.text
     assert "freshness budget" in resolved.text
-
-
-# ---------------------------------------------------------------------------
-# Intent: is <player> playing / available.
-# ---------------------------------------------------------------------------
 
 
 def test_player_availability_reports_probability_injury_and_role(tmp_path: Path) -> None:
@@ -321,15 +286,8 @@ def test_player_availability_falls_through_when_no_player_resolves(tmp_path: Pat
 def test_unresolved_availability_question_never_hijacks_unrelated_routing(
     tmp_path: Path,
 ) -> None:
-    # "how good is the model" shares no tokens with any published player
-    # name; confirms the new early availability check is a true no-op here.
     resolved = answer("how good is the model?", _knowledge(tmp_path))
     assert resolved.topic == "record"
-
-
-# ---------------------------------------------------------------------------
-# Intent: which games have a backup QB.
-# ---------------------------------------------------------------------------
 
 
 def test_backup_qb_games_lists_the_mismatch_and_notes_excluded_stale_teams(
@@ -340,7 +298,7 @@ def test_backup_qb_games_lists_the_mismatch_and_notes_excluded_stale_teams(
     assert "LV" in resolved.text
     assert "forecast assumed Geno Smith" in resolved.text
     assert "current snapshot lists Aidan O'Connell" in resolved.text
-    assert "stale" in resolved.text  # KC/DEN excluded, never guessed
+    assert "stale" in resolved.text
 
 
 def test_backup_qb_games_reports_none_when_nothing_disagrees() -> None:
@@ -360,12 +318,6 @@ def test_backup_qb_games_absent_artifact_via_answer() -> None:
     assert "No projected-lineup artifact is published this week" in resolved.text
 
 
-# ---------------------------------------------------------------------------
-# Direct unit coverage: staleness math and the consistency-rule signal,
-# independent of the answer() routing layer.
-# ---------------------------------------------------------------------------
-
-
 def test_build_lineup_knowledge_flags_stale_precisely(tmp_path: Path) -> None:
     _write_lineups_artifact(tmp_path)
     loaded = load_lineups(tmp_path)
@@ -374,10 +326,10 @@ def test_build_lineup_knowledge_flags_stale_precisely(tmp_path: Path) -> None:
     )
     mia_lv = knowledge["games"]["2026_01_MIA_LV"]
     den_kc = knowledge["games"]["2026_01_DEN_KC"]
-    assert mia_lv["home"]["stale"] is False  # LV, ~25h old
-    assert mia_lv["away"]["stale"] is False  # MIA, ~25h old
-    assert den_kc["home"]["stale"] is True  # KC, years old
-    assert den_kc["away"]["stale"] is True  # DEN, years old
+    assert mia_lv["home"]["stale"] is False
+    assert mia_lv["away"]["stale"] is False
+    assert den_kc["home"]["stale"] is True
+    assert den_kc["away"]["stale"] is True
 
 
 def test_build_lineup_knowledge_carries_the_consistency_note_verbatim(tmp_path: Path) -> None:

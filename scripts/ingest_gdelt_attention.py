@@ -64,13 +64,10 @@ def _load_parent_module():
     return module
 
 
-base = _load_parent_module()  # for TEAM_ARTICLES (team -> alias article slugs)
+base = _load_parent_module()
 
 GDELT_ENDPOINT = "https://api.gdeltproject.org/api/v2/doc/doc"
 
-# Sports/news domain allowlist -- keeps the query on football coverage and
-# away from entertainment-gossip crossover (Kelce/Swift, Hallmark movies,
-# etc., confirmed noisy on a bare team-name query this session).
 DOMAIN_ALLOWLIST = [
     "espn.com",
     "nfl.com",
@@ -162,11 +159,6 @@ def fetch_timelinevol(
     }
 
 
-# --------------------------------------------------------------------------
-# Probe mode -- verify query shape and historical coverage before a full run
-# --------------------------------------------------------------------------
-
-
 def run_probe() -> None:
     print("=== probe 1: domain-filtered artlist, noise check ===")
     r = fetch_timelinevol("Kansas City Chiefs", "20240901000000", "20240910000000", mode="artlist")
@@ -220,11 +212,6 @@ def run_probe() -> None:
                 print(f"  first={data[0]} last={data[-1]}")
     else:
         print(f"  body[:500]={r['body'][:500]!r}")
-
-
-# --------------------------------------------------------------------------
-# Full ingestion
-# --------------------------------------------------------------------------
 
 
 def team_name_phrases() -> dict[str, list[str]]:
@@ -302,9 +289,6 @@ def run_ingest(
                 if not result["parsed_ok"]:
                     print(f"    WARNING: parse failed, retries={result['retries']}", flush=True)
 
-                # Write the manifest after every request (not just at the end)
-                # so a timeout/interruption mid-run still leaves a usable,
-                # resumable record of what succeeded.
                 manifest["n_requests_so_far"] = len(manifest["requests"])
                 (output_dir / "manifest.json").write_text(
                     json.dumps(manifest, indent=2), encoding="utf-8"

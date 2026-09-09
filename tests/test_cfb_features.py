@@ -80,8 +80,6 @@ def test_ats_semantics_match_the_nfl_convention(cfb_features_frame: pd.DataFrame
     assert frame.loc[covered, "home_cover"].eq(1.0).all()
     assert frame.loc[lost, "home_cover"].eq(0.0).all()
     assert frame.loc[~covered & ~lost, "home_cover"].isna().all()
-    # Home-oriented sign convention: positive spread_line means home favored,
-    # and stronger fixture homes carry positive spreads.
     strong_home = frame.loc[frame["home_id"].lt(frame["away_id"])]
     assert strong_home["spread_line"].gt(0).all()
 
@@ -158,7 +156,7 @@ def test_current_game_cannot_change_current_pregame_features(
     schedules, lines, pbp = cfb_inputs
     baseline, _ = build_cfb_game_features(schedules, lines, pbp, start_season=2013, end_season=2014)
 
-    target_game = 20140701  # mid-season 2014, both teams have later games
+    target_game = 20140701
     changed_pbp = pbp.copy()
     changed_pbp.loc[changed_pbp["game_id"].eq(target_game), "EPA"] = 1_000.0
     changed_schedules = schedules.copy()

@@ -52,9 +52,6 @@ def test_boundaries_pushes_pick_rule_and_confidence() -> None:
     row = rows[3]
     assert row.accuracy == 0.5
     assert row.confidence == pytest.approx(0.65)
-    # Bucket 7.5-10 holds two non-push rows: home -7.5 (home is the underdog,
-    # home pick = underdog pick, home covered, correct) and home +8 (home is
-    # the favourite, home pick = favourite pick, home failed to cover, wrong).
     assert row.favourite_pick_rate == 0.5
     assert row.favourite_cover_rate == 0
     assert row.favourite_accuracy == 0
@@ -72,12 +69,9 @@ def test_home_split_excludes_pickem_and_pushes_and_reads_the_home_side() -> None
         for side in (HOME_FAVOURITE, HOME_UNDERDOG)
     ]
     by_key = {(r.spread, r.home_side): r for r in split}
-    # The level-odds line (spread 0) is the only 0-3 game: neither side counts it.
     assert by_key[("0-3", HOME_FAVOURITE)].games == 0
     assert by_key[("0-3", HOME_UNDERDOG)].games == 0
     assert by_key[("0-3", HOME_UNDERDOG)].home_cover_rate is None
-    # 7.5-10: home +8 favourite failed to cover (model said 70% home); home -7.5
-    # underdog covered (model said 60% home). The home -10 push never counts.
     favourite = by_key[("7.5-10", HOME_FAVOURITE)]
     underdog = by_key[("7.5-10", HOME_UNDERDOG)]
     assert (favourite.games, favourite.home_cover_rate, favourite.accuracy) == (1, 0.0, 0.0)
@@ -131,8 +125,6 @@ def test_model_panel_and_assistant_share_table_and_missing_sentence(tmp_path: Pa
     )
     assert model.weak_spots == WeakSpots()
     unavailable = render_model_page(model)
-    # Both tables say so in the visible markup (the assistant corpus in the
-    # trailing <script> repeats the sentence); no stale numbers anywhere.
     assert unavailable.split("<script")[0].count(UNAVAILABLE) == 2
     assert 'id="weak-spots-home-h"' in unavailable
     model = replace(model, weak_spots=build_weak_spots(frame()))
@@ -185,12 +177,12 @@ def _aligned_frame() -> pd.DataFrame:
     source["home_side_offset_at_open"] = [0.0, 0.8, 1.9, -0.2, 0.4, 0.0, 1.9, 0.0]
     source["pick_home_at_open_probability_rule_raw"] = [
         True,
-        False,  # the push flipped this 7.5-10 pick to the home side
+        False,
         False,
         False,
         False,
         True,
-        False,  # and this 10.5+ pick
+        False,
         True,
     ]
     source["correct_at_open_probability_rule_raw"] = [1, 1, 1, 0, 1, 1, 1, 1]
@@ -200,7 +192,7 @@ def _aligned_frame() -> pd.DataFrame:
 def test_home_correction_reads_both_sides_and_this_weeks_push() -> None:
     from nfl_ats.model_weak_spots import build_home_correction
 
-    assert build_home_correction(frame()) is None  # a pre-alignment record
+    assert build_home_correction(frame()) is None
     correction = build_home_correction(
         _aligned_frame(),
         {"0-3": 0.03, "3.5-6.5": 0.38, "7": -0.17, "7.5-10": 0.78, "10.5+": 1.92},
@@ -212,7 +204,7 @@ def test_home_correction_reads_both_sides_and_this_weeks_push() -> None:
     row = by_bucket["7.5-10"]
     assert row.this_week_points == pytest.approx(0.78)
     assert row.learned_from_games == 160
-    assert row.archive_games == 2  # the -10 push never counts
+    assert row.archive_games == 2
     assert row.picks_changed == 1
     assert row.accuracy_with == 0.5
     assert row.accuracy_without == 1.0
@@ -225,7 +217,6 @@ def test_home_correction_reads_both_sides_and_this_weeks_push() -> None:
     assert correction.accuracy_with == pytest.approx(5 / 7)
     assert correction.accuracy_without == pytest.approx(6 / 7)
     assert correction.this_week_available is True
-    # Without a served sidecar the archive record still renders, push blank.
     no_week = build_home_correction(_aligned_frame())
     assert no_week is not None
     assert no_week.rows[0].this_week_points is None
@@ -314,12 +305,10 @@ def test_loader_attaches_this_weeks_push_from_the_linked_forecast(
     assert by_bucket["10.5+"].this_week_points == pytest.approx(1.92)
     assert by_bucket["10.5+"].learned_from_games == 113
     assert by_bucket["0-3"].this_week_points is None
-    # A card built under an earlier version of the push is not "this week's push".
     write_sidecar("home_side_offset_by_bucket_v1")
     spots = load_model_weak_spots(tmp_path, active)
     assert spots.home_correction is not None
     assert spots.home_correction.this_week_available is False
-    # A card built without the push shows the archive record only.
     (forecast / "home_side_offset.json").write_text(json.dumps({"served": False}))
     spots = load_model_weak_spots(tmp_path, active)
     assert spots.home_correction is not None

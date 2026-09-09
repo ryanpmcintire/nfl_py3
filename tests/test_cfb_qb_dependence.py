@@ -12,12 +12,6 @@ from nfl_ats.cfb_qb_dependence import (
     build_cfb_qb_states,
 )
 
-# ---------------------------------------------------------------------------
-# Synthetic CFB universe: three teams, controlled passer identities/EPA, and
-# enough competitive plays per team-game to exercise both the per-game floor
-# (CFB_QB_MIN_GAME_DROPBACKS=5) and the career gate (CFB_QB_MIN_DROPBACKS=20).
-# ---------------------------------------------------------------------------
-
 TEAM_HOME = 1
 TEAM_AWAY = 2
 TEAM_THIRD = 3
@@ -182,11 +176,6 @@ def _base_universe() -> tuple[pd.DataFrame, pd.DataFrame]:
     return _canonical_games(games), pd.DataFrame(plays)
 
 
-# ---------------------------------------------------------------------------
-# 1. off_pass_rate: hand-computed share on a tiny synthetic PBP frame
-# ---------------------------------------------------------------------------
-
-
 def test_off_pass_rate_matches_hand_computed_share() -> None:
     _games, pbp = _base_universe()
     team_games = build_cfb_pass_rate_team_games(pbp)
@@ -194,19 +183,12 @@ def test_off_pass_rate_matches_hand_computed_share() -> None:
         team_games["game_id"].eq(20200001) & team_games["team_id"].eq(TEAM_HOME)
     ]
     assert len(game1_home) == 1
-    # 8 pass plays, 4 rush plays -> 8 / 12 = 0.6666...
     assert game1_home["off_pass_rate"].iloc[0] == pytest.approx(8.0 / 12.0)
 
     game1_away = team_games.loc[
         team_games["game_id"].eq(20200001) & team_games["team_id"].eq(TEAM_AWAY)
     ]
-    # 6 pass plays, 6 rush plays -> 0.5
     assert game1_away["off_pass_rate"].iloc[0] == pytest.approx(0.5)
-
-
-# ---------------------------------------------------------------------------
-# 2. Dropback-gate: a low-volume backup never crosses the career threshold
-# ---------------------------------------------------------------------------
 
 
 def test_dropback_gate_excludes_low_volume_backup_from_state() -> None:
@@ -216,13 +198,11 @@ def test_dropback_gate_excludes_low_volume_backup_from_state() -> None:
 
     qb3_rows = qb_states.loc[qb_states["passer_player_id"].eq("QB3")].sort_values("gameday")
     assert len(qb3_rows) == 2
-    # QB3's career dropbacks: 6, then 12 -- both strictly below CFB_QB_MIN_DROPBACKS (20).
     assert qb3_rows["career_dropbacks"].tolist() == [6.0, 12.0]
     assert qb3_rows["state_qb_epa_per_dropback"].isna().all()
     assert CFB_QB_MIN_DROPBACKS > 12.0
 
     qb1_rows = qb_states.loc[qb_states["passer_player_id"].eq("QB1")].sort_values("gameday")
-    # QB1's career dropbacks: 8, 16, 24, 32, 40, 48 -- crosses the gate at game 3 (24 >= 20).
     assert qb1_rows["career_dropbacks"].tolist() == [8.0, 16.0, 24.0, 32.0, 40.0, 48.0]
     assert qb1_rows["state_qb_epa_per_dropback"].isna().tolist() == [
         True,
@@ -234,19 +214,11 @@ def test_dropback_gate_excludes_low_volume_backup_from_state() -> None:
     ]
 
 
-# ---------------------------------------------------------------------------
-# 3. Leak-safety: a game's own result never touches its own pregame feature
-# ---------------------------------------------------------------------------
-
-
 def test_week_n_interaction_unaffected_by_week_n_own_result() -> None:
     games, pbp = _base_universe()
     baseline = build_and_attach_cfb_qb_dependence(games, pbp)
 
     perturbed_pbp = pbp.copy()
-    # Perturb ONLY game 3's own plays: triple QB1's EPA that game and swap
-    # its pass/rush mix, changing that game's own realized off_pass_rate and
-    # qb_epa_per_dropback substantially.
     game3_home_pass = (
         perturbed_pbp["game_id"].eq(20200003)
         & perturbed_pbp["pos_team_id"].eq(TEAM_HOME)
@@ -273,9 +245,6 @@ def test_week_n_interaction_unaffected_by_week_n_own_result() -> None:
     )
     pd.testing.assert_frame_equal(baseline_game3, perturbed_game3)
 
-    # Sanity check: the perturbation DID propagate forward to a later game
-    # (game 4's home_qb_starter_epa_per_dropback reads QB1's post-game-3
-    # state), proving the leak-safety result above is not vacuous.
     baseline_game4 = baseline.loc[
         baseline["game_id"].eq(20200004), "home_qb_starter_epa_per_dropback"
     ].iloc[0]
@@ -285,11 +254,6 @@ def test_week_n_interaction_unaffected_by_week_n_own_result() -> None:
     assert baseline_game4 != pytest.approx(perturbed_game4)
 
 
-# ---------------------------------------------------------------------------
-# 4. REG bit-identity: attaching the new columns never touches an existing one
-# ---------------------------------------------------------------------------
-
-
 def test_reg_bit_identity_of_existing_cfb_columns(
     cfb_inputs: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
     cfb_features_frame: pd.DataFrame,
@@ -297,9 +261,6 @@ def test_reg_bit_identity_of_existing_cfb_columns(
     from nfl_ats.cfb_qb_dependence import CFB_QB_DEPENDENCE_COLUMNS
 
     _, _, pbp = cfb_inputs
-    # The shared fixture's synthetic pbp carries no passer identity at all;
-    # add a deterministic one so the module's functions have something to
-    # read, without touching the shared conftest fixture itself.
     pbp_with_passers = pbp.copy()
     pbp_with_passers["passer_player_id"] = None
     pass_rows = pbp_with_passers["pass"].astype(bool)

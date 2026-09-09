@@ -46,45 +46,24 @@ from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 from nfl_ats.data import DataContractError
 from nfl_ats.market_data import NFL_TEAM_NAMES, POOL_TIMEZONE
 
-#: Directory under the repository ``data/`` root that holds board captures.
 SPLASH_SUBDIRECTORY = "splash"
 
-#: Provenance string written into every capture.
 SPLASH_SOURCE = "splashsports.com"
 
-#: The sign convention note carried by a capture, restated verbatim so a file
-#: read years from now says which way the number points without a lookup.
 SPLASH_CONVENTION = "home_spread positive = HOME favored (nflverse convention)"
 
-#: The half-point fact, carried in every capture for the same reason.
 SPLASH_HALF_POINT_NOTE = "Every quoted number is a half point. No push is possible in this pool."
 
-#: The pool's board format. The contest/slate/entry identifiers and the
-#: owner's own entry are deliberately NOT tracked here: this repository is
-#: public and those identify a real-money account and a live, unlocked card.
-#: They stay in the untracked capture under ``data/splash/``.
 SPLASH_CONTEST_NAME = "FTPL - Your favorite pick 'em league!"
 SPLASH_CONTEST_CHANNEL: str | None = None
 SPLASH_CONTEST_FORMAT = "NFL Pick'Em, Winner (ATS)"
 
-#: The pool posts a new board every Tuesday at noon ET, so a capture older
-#: than one board cycle belongs to a previous week's board. Used as the
-#: default staleness horizon by :func:`is_stale`; it is the pool's publishing
-#: cadence, not a tuned constant.
 SPLASH_BOARD_CYCLE = timedelta(days=7)
 
-#: Parser sanity bound only. The largest point spread in NFL history is under
-#: 30, so a parsed magnitude beyond this is a mis-read of the page (a "2.5"
-#: swallowed into "25.5"), never a real line. It gates nothing downstream.
 MAX_ABS_SPREAD = 40.0
 
-#: nflverse abbreviations, the identity every game_id and feature table uses.
 NFLVERSE_TEAM_ABBREVIATIONS = frozenset(NFL_TEAM_NAMES.values())
 
-#: Splash prints a few abbreviations that differ from nflverse's (the owner's
-#: own submitted Week 1 entry says "JAC" where the schedule says "JAX"). Fold
-#: them onto the nflverse identity; anything not listed here and not already
-#: an nflverse abbreviation is refused rather than guessed at.
 SPLASH_TEAM_ALIASES: dict[str, str] = {
     **TEAM_ABBREVIATION_ALIASES,
     "JAC": "JAX",
@@ -117,7 +96,6 @@ _MONTHS = {
 
 _WEEKDAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
 
-# "Sun, Sep 13 1:00 PM" -- weekday optional, comma optional, month abbreviated.
 _WHEN_PATTERN = re.compile(
     r"^(?:(?P<weekday>Mon|Tue|Wed|Thu|Fri|Sat|Sun)[a-z]*\.?,?\s+)?"
     r"(?P<month>Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+"
@@ -126,12 +104,8 @@ _WHEN_PATTERN = re.compile(
     r"(?:\s*(?:ET|EST|EDT))?$"
 )
 
-# "CHI   Sun, Sep 13 1:00 PM   CAR" -- away abbreviation, kickoff, home
-# abbreviation. Anchored at both ends so the trailing token is the home team.
 _MATCHUP_PATTERN = re.compile(r"^(?P<away>[A-Z]{2,4})\s+(?P<when>.+?)\s+(?P<home>[A-Z]{2,4})$")
 
-# "Bears      CHI -2.5" -- the nickname varies, the abbreviation and the signed
-# number do not, so the signed number anchors the match.
 _OPTION_PATTERN = re.compile(
     r"^(?P<nickname>.*?)\s*(?P<team>[A-Z]{2,4})\s+(?P<sign>[+-])(?P<value>\d+(?:\.\d+)?)$"
 )
@@ -529,11 +503,6 @@ def picks_locked(capture: SplashCapture, as_of: datetime) -> bool | None:
     return as_of >= capture.picks_lock_et
 
 
-# ---------------------------------------------------------------------------
-# Board text parser
-# ---------------------------------------------------------------------------
-
-
 def _parse_when(text: str, *, season: int, context: str) -> datetime | None:
     match = _WHEN_PATTERN.match(text.strip())
     if match is None:
@@ -549,9 +518,6 @@ def _parse_when(text: str, *, season: int, context: str) -> datetime | None:
         hour += 12
     elif meridiem == "am" and hour == 12:
         hour = 0
-    # The board prints no year. An NFL season labelled ``season`` runs from
-    # September into the following February, so January/February belong to the
-    # next calendar year and every other month to the season's own.
     year = season + 1 if month <= 2 else season
     try:
         kickoff = datetime(year, month, day, hour, minute, tzinfo=POOL_TIMEZONE)
@@ -655,8 +621,6 @@ def parse_splash_board(text: str, season: int, week: int) -> tuple[SplashGame, .
                 away=away,
                 home=home,
                 away_line=away_option,
-                # The home side's printed number is the home handicap; negate
-                # it for the repository's "positive = home favored" convention.
                 home_spread=-home_option,
                 kickoff_et=kickoff,
             )

@@ -151,16 +151,6 @@ from nfl_ats.source_policy import require_acquisition  # noqa: E402
 SOURCE_ID = "internet_archive_pfr_boxscores"
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 ORIGINAL_URL_TEMPLATE = "https://www.pro-football-reference.com/boxscores/{pfr_id}.htm"
-# ``from=`` (2026-09-07): captures BEFORE the game are pre-game placeholder
-# pages with no officials block -- measured on the first live fetch of
-# 2014_01_GB_SEA, whose earliest capture was 2014-05-30 for a 2014-09-04 game
-# and parsed 0 officials. Only captures from the day after the game qualify.
-# No ``limit`` (2026-09-07, lane N, measured): ``limit=5`` handed back the
-# five EARLIEST post-game captures, which for 2009-2011 games predate PFR's
-# officials block; ``limit=-3`` (the CDX "last N" form) drew an HTTP 504 --
-# a negative limit forces a full index scan -- while the unbounded query for
-# the same URLs returned 200 with 61-74 rows (a few KB). The selector ranks
-# the full list client-side, newest first.
 CDX_URL_TEMPLATE = (
     "https://web.archive.org/cdx/search/cdx"
     "?url={original}&output=json&filter=statuscode:200&from={not_before}"
@@ -193,11 +183,6 @@ OFFICIALS_PARQUET_COLUMNS = [
     "wayback_url",
     "fetched_at_utc",
 ]
-
-
-# ---------------------------------------------------------------------------
-# Rate limiting and backoff-aware fetch
-# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -300,13 +285,7 @@ def fetch_with_backoff(
         sleep_fn(backoff)
         backoff_schedule.append(backoff)
         backoff *= 2.0
-    # Unreachable: the loop above always returns by attempt == max_attempts.
     raise AssertionError("fetch_with_backoff exhausted its loop without returning")
-
-
-# ---------------------------------------------------------------------------
-# Schedule loading
-# ---------------------------------------------------------------------------
 
 
 def newest_schedule_snapshot(repo: Path = REPO) -> Path:
@@ -331,10 +310,6 @@ def load_games(schedule_path: Path, *, season_start: int, season_end: int) -> pd
     return frame
 
 
-# ---------------------------------------------------------------------------
-# Officials-block parsing
-# ---------------------------------------------------------------------------
-
 _TAG_RE = re.compile(r"<[^>]+>")
 _WS_RE = re.compile(r"\s+")
 
@@ -345,11 +320,6 @@ def strip_tags(fragment: str) -> str:
     return _WS_RE.sub(" ", text).strip()
 
 
-# Strategy A: a dedicated table, e.g. <table ... id="officials"> ... </table>,
-# 2026-09-07 (measured on the first live post-game captures, 2014 season):
-# that era's boxscore names the same table id="ref_info" and bolds each
-# position label in <b>...</b>; strip_tags already handles the label.
-# with one <tr> per crew position and two cells (position label, name).
 _OFFICIALS_TABLE_RE = re.compile(
     r'<table[^>]*\bid=["\'](?:officials|ref_info)["\'][^>]*>(.*?)</table>',
     re.IGNORECASE | re.DOTALL,
@@ -357,8 +327,6 @@ _OFFICIALS_TABLE_RE = re.compile(
 _ROW_RE = re.compile(r"<tr\b[^>]*>(.*?)</tr>", re.IGNORECASE | re.DOTALL)
 _CELL_RE = re.compile(r"<t[hd]\b[^>]*>(.*?)</t[hd]>", re.IGNORECASE | re.DOTALL)
 
-# Strategy B: an inline "Officials: Referee: X, Umpire: Y, ..." line, e.g.
-# inside a <div>...</div> in the page's scorebox_meta block.
 _INLINE_OFFICIALS_RE = re.compile(
     r"Officials:\s*(.*?)(?:</div>|<br\s*/?>|$)", re.IGNORECASE | re.DOTALL
 )
@@ -415,11 +383,6 @@ def parse_officials_block(html: str) -> tuple[list[tuple[str, str]], list[str]]:
     return [], ["no officials block found (neither table nor inline strategy matched)"]
 
 
-# ---------------------------------------------------------------------------
-# Manifest I/O
-# ---------------------------------------------------------------------------
-
-
 def load_existing_manifest(snapshot_dir: Path) -> dict[str, Any]:
     manifest_path = snapshot_dir / "manifest.json"
     if not manifest_path.exists():
@@ -435,11 +398,6 @@ def already_fetched_pfr_ids(manifest: dict[str, Any], snapshot_dir: Path) -> set
         if pfr_id and html_file and (snapshot_dir / html_file).exists():
             fetched.add(str(pfr_id))
     return fetched
-
-
-# ---------------------------------------------------------------------------
-# Sweep
-# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -511,9 +469,6 @@ def run_sweep(
             html_path = snapshot_dir / str(existing["html_file"])
             html_text = html_path.read_text(encoding="utf-8", errors="replace")
             rows, warnings = parse_officials_block(html_text)
-            # Keep the manifest honest about the CURRENT parser's read of the
-            # on-disk page (the 2014 run's first five rows stayed at 0 after
-            # the ref_info parser fix because this branch never wrote back).
             existing["officials_parsed"] = len(rows)
             existing["parse_warnings"] = warnings
             if rows or not config.retry_unparsed:
@@ -522,15 +477,10 @@ def run_sweep(
                 for position, name in rows:
                     officials_rows.append(_officials_row(game, position, name, source_row=existing))
                 continue
-            # --retry-unparsed: the on-disk page still parses 0 under the
-            # current parser, so fall through and try NEWER captures. Every
-            # capture already fetched for this game is excluded below.
             games_retried_unparsed += 1
             previous_attempts = _previous_attempts(existing)
 
         if config.limit is not None and new_fetch_count >= config.limit:
-            # Cap NEW network work only: keep walking so every page already
-            # on disk is still re-parsed into the parquet (2026-09-07).
             stopped_early = True
             stop_reason = "limit_reached"
             continue
@@ -586,7 +536,6 @@ def run_sweep(
 
         if cdx_outcome.content is None:
             if existing is not None and existing.get("html_file"):
-                # A retry whose CDX lookup failed keeps the page it already has.
                 row = _keep_existing_page(existing, row)
             row["outcome"] = "cdx_fetch_failed"
             consecutive_failures += 1
@@ -607,9 +556,8 @@ def run_sweep(
             if ts not in already_tried
         ]
         if not candidates:
-            consecutive_failures = 0  # a clean 200 with zero rows is not a throttle failure
+            consecutive_failures = 0
             if existing is not None and existing.get("html_file"):
-                # Nothing newer than the zero-parse page already on disk.
                 row = _keep_existing_page(existing, row)
                 row["outcome"] = "fetched"
                 row["retry_note"] = "no post-game capture beyond those already fetched"
@@ -621,8 +569,6 @@ def run_sweep(
             _write_manifest(snapshot_dir, manifest_rows, config)
             continue
 
-        # Newest-first, then up to ``fallback_captures`` further captures if
-        # the page fetched parses zero officials.
         chosen: dict[str, Any] | None = None
         last_fetched: dict[str, Any] | None = None
         parsed_rows: list[tuple[str, str]] = []
@@ -923,11 +869,6 @@ def _write_manifest(
     if summary is not None:
         payload["summary"] = summary
     atomic_json(payload, snapshot_dir / "manifest.json")
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 
 def run_id_now() -> str:

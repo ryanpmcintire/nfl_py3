@@ -14,11 +14,6 @@ from nfl_ats.odds import settle_bet
 
 BootstrapBlock = Literal["week", "season"]
 
-# Explicit status markers for the optional CLV columns of ``season_scorecard``.
-# A missing market-capture archive is DATA, not a silent NaN: every row of a
-# scorecard carries ``clv_status`` so a reader can always tell whether
-# ``clv_points`` was measured against the point-in-time archive or could not
-# be computed at all (and why).
 CLV_STATUS_MEASURED = "measured"
 CLV_STATUS_CAPTURE_UNAVAILABLE = "capture_unavailable"
 CLV_STATUS_NO_PAIRED_GAMES = "no_paired_games"
@@ -151,8 +146,6 @@ def _clv_per_season(
             dict.fromkeys(seasons, CLV_STATUS_CAPTURE_UNAVAILABLE),
             zero_games,
         )
-    # Imported lazily and deliberately: nfl_ats.clv imports nfl_ats.active_model,
-    # which imports this module -- a top-level import here would be circular.
     from nfl_ats.clv import (
         CLOSE_LABEL_PRIORITY,
         build_pairing_table,
@@ -285,17 +278,10 @@ def season_scorecard(
 def block_bootstrap_intervals(
     predictions: pd.DataFrame,
     *,
-    # See paired_feature_comparisons: 2,000 leaves ~6-7% of the reported SE as
-    # the bootstrap's own noise, which is enough to flip a threshold-adjacent
-    # verdict between seeds. 20,000 is ~5x quieter and effectively free.
     samples: int = 20_000,
     confidence: float = 0.95,
     block: BootstrapBlock = "week",
     seed: int = 20260812,
-    # D4 guard. Default 'warn' + a flagged output column, never 'raise':
-    # refusing would change what existing call sites return, and the point is
-    # that the flag TRAVELS with the number into the CSV a registry entry cites.
-    # A caller that is about to record a verdict should pass 'raise'.
     on_degenerate: OnDegenerate = "warn",
     min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
@@ -376,8 +362,6 @@ def block_bootstrap_intervals(
             "block": block,
             "samples": samples,
             "blocks": block_verdict.block_count,
-            # True => lower/upper are NOT a valid interval at this block
-            # count. See the docstring; do not render as one.
             "degenerate_blocks": block_verdict.degenerate,
         }
     )

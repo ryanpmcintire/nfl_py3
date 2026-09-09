@@ -42,9 +42,7 @@ OUT = common.REPO / "artifacts/research/laneR"
 PREDECLARATION = common.REPO / "docs/residual_slope.md"
 FAMILY = "mod18_home_side_location_v1"
 ARMS = ("R1", "R1b")
-#: The three buckets R1b pools into one slope (the same buckets S3 serves).
 BIG_BUCKETS = ("7", "7.5-10", "10.5+")
-#: The incumbent weight the slope is shrunk toward: keep the whole residual.
 INCUMBENT_SLOPE = 1.0
 DISCOUNT = (
     "Post-hoc mechanism found on the mined archive S2/S3 were selected on, and the 10.5+ slope "
@@ -88,11 +86,6 @@ KIND_UNITS = {
     "brier": "brier_improvement",
     "log_loss": "log_loss_improvement",
 }
-
-
-# ---------------------------------------------------------------------------
-# The predeclared estimator
-# ---------------------------------------------------------------------------
 
 
 def ols_slope(x: np.ndarray, y: np.ndarray) -> float:
@@ -256,11 +249,6 @@ def slope_intervals(prior: pd.DataFrame) -> dict[str, dict[str, float]]:
         )
         out[bucket] = interval
     return out
-
-
-# ---------------------------------------------------------------------------
-# Stages
-# ---------------------------------------------------------------------------
 
 
 def replay(archive: pd.DataFrame, active: dict, archive_path: Path) -> None:
@@ -535,12 +523,6 @@ def week1(active: dict, archive_path: Path) -> None:
     print(json.dumps(fitted, indent=2), flush=True)
 
 
-# ---------------------------------------------------------------------------
-# Record commands (written, never run: the shared registry is serialised by
-# the coordinator this session)
-# ---------------------------------------------------------------------------
-
-
 def scope_words(label: str) -> str:
     if label == "overall":
         return "all games from 2020 to 2025"
@@ -631,7 +613,6 @@ def main() -> None:
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     os.environ["NFL_ATS_ARTIFACTS_DIR"] = str(OUT)
-    # Never the live registry: this lane writes its record commands to a file.
     os.environ["NFL_ATS_REGISTRY_DIR"] = str(OUT / "registry")
     active = json.loads((common.REPO / "artifacts/active_ats_model.json").read_text())
     match = find_matching_opener_evaluation(common.REPO / "artifacts", active)

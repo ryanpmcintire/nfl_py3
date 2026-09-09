@@ -28,12 +28,8 @@ def test_plan_runs_the_schedulers_own_commands_in_order() -> None:
     assert all(step.skip_reason is None for step in steps)
     schedule = {job.name: job for job in capture_scheduler.SCHEDULE}
     by_name = {step.name: step for step in steps}
-    # Spreads: the identical capture argv the Tuesday opener job runs.
     assert list(by_name["spreads"].argv) == schedule["odds_tue_open"].command
-    # Lineups + injuries: the identical argv the daily lineups jobs run
-    # (depth charts, then weekly-run --refresh-player-data).
     assert list(by_name["lineups and injuries"].argv) == schedule["lineups_tue"].command
-    # Picks: the served late-week rule, recorded and labelled on the card.
     picks = list(by_name["picks"].argv)
     assert picks[-5:] == [
         "refresh-picks",
@@ -57,16 +53,16 @@ def test_every_nfl_ats_argv_parses_against_the_real_parser() -> None:
 @pytest.mark.parametrize(
     ("now", "skipped"),
     [
-        (datetime(2026, 9, 8, 8, 30, tzinfo=ET), True),  # Tuesday before the pool lock
-        (datetime(2026, 9, 8, 11, 59, tzinfo=ET), True),  # one minute before the lock
-        (datetime(2026, 9, 8, 12, 0, tzinfo=ET), False),  # pool locked: a press IS the line
-        (datetime(2026, 9, 8, 12, 4, tzinfo=ET), False),  # locked; the 12:05 job not yet run
-        (datetime(2026, 9, 8, 12, 5, tzinfo=ET), False),  # opener window open
+        (datetime(2026, 9, 8, 8, 30, tzinfo=ET), True),
+        (datetime(2026, 9, 8, 11, 59, tzinfo=ET), True),
+        (datetime(2026, 9, 8, 12, 0, tzinfo=ET), False),
+        (datetime(2026, 9, 8, 12, 4, tzinfo=ET), False),
+        (datetime(2026, 9, 8, 12, 5, tzinfo=ET), False),
         (datetime(2026, 9, 8, 12, 30, tzinfo=ET), False),
-        (datetime(2026, 9, 7, 8, 30, tzinfo=ET), False),  # Monday morning
-        (datetime(2026, 9, 7, 21, 0, tzinfo=ET), False),  # Monday 21:00 ET (Tuesday UTC): Monday
-        (datetime(2026, 9, 8, 20, 30, tzinfo=ET), False),  # Tuesday evening (after the opener)
-        (datetime(2026, 9, 9, 8, 30, tzinfo=ET), False),  # Wednesday
+        (datetime(2026, 9, 7, 8, 30, tzinfo=ET), False),
+        (datetime(2026, 9, 7, 21, 0, tzinfo=ET), False),
+        (datetime(2026, 9, 8, 20, 30, tzinfo=ET), False),
+        (datetime(2026, 9, 9, 8, 30, tzinfo=ET), False),
     ],
 )
 def test_spreads_capture_is_skipped_on_tuesday_before_the_opener(

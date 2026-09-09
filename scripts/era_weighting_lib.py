@@ -28,14 +28,9 @@ ArmKind = Literal["uniform", "half_life", "rolling"]
 class WeightingArm:
     name: str
     kind: ArmKind
-    # Half-life in seasons (half_life arms) or window length in seasons
-    # (rolling arms); unused (None) for the uniform baseline.
     parameter: float | None = None
 
 
-# Predeclared grid (docs/era_weighting_screen.md Section 2): one baseline
-# plus six candidates. half_life=infinity and rolling=all both collapse to
-# `baseline` mathematically, so they are represented once, not run twice.
 ERA_WEIGHTING_ARMS: tuple[WeightingArm, ...] = (
     WeightingArm("baseline", "uniform", None),
     WeightingArm("half_life_2", "half_life", 2.0),

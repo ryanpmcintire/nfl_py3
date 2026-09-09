@@ -95,33 +95,18 @@ from nfl_ats.weak_signals import POOLABLE_CLASSIFICATION
 
 SCORECARD_SCHEMA_VERSION = 1
 
-#: Reused everywhere an interval needs a fixed bootstrap RNG; matches the
-#: project's convention of a frozen, documented seed rather than the wall
-#: clock (see e.g. ``nfl-ats prospective-score``'s ``--bootstrap-seed``).
 DEFAULT_BOOTSTRAP_SAMPLES = 2_000
 DEFAULT_BOOTSTRAP_SEED = 20260904
 
-#: The calibration bin width already used everywhere else in the repo
-#: (``nfl_ats.reporting.calibration_table``'s own default).
 CALIBRATION_BINS = 10
 
 ACTIVE_MODEL_ENTRANT_ID = "active_model"
 
 _METRIC_FN = Callable[[pd.DataFrame], dict[str, float]]
 
-# ENG-33: the two admissible closing grounds under "refuted mechanism",
-# reused directly from nfl_ats.weak_signals.CLOSING_GROUNDS rather than
-# retyped, so a future rename there cannot silently drift out of sync here.
 WRONG_SIGN_RESOLVED, NO_SPLIT_HALF_RELIABILITY = weak_signals.CLOSING_GROUNDS["refuted_mechanism"]
 (POSITIVE_CONTROL_BOUND,) = weak_signals.CLOSING_GROUNDS["bounded_by_control"]
 
-#: The fixed ENG-20 next-admissible-action vocabulary, spelled the way
-#: ENG-33's own definition of done names it. Four of the six strings are
-#: identical to ``nfl_ats.research_queue.NEXT_ACTIONS``; the other two
-#: (``test_on_production``, ``run_candidate_sized_positive_control``) are
-#: this report's names for ``research_queue``'s
-#: ``test_on_top_of_production`` / ``run_positive_control`` and are
-#: translated by :data:`_ACTION_TRANSLATION` below. Never includes "wait".
 NEXT_ADMISSIBLE_ACTIONS = (
     "run_unspent_window",
     "run_reused_window_with_discount",
@@ -135,27 +120,10 @@ _ACTION_TRANSLATION = {
     research_queue.ACTION_RUN_POSITIVE_CONTROL: "run_candidate_sized_positive_control",
 }
 
-#: A challenger's own registered evidence cites the weak-signal(s) it is
-#: built from as ``"registry/weak_signals.json:<name>"`` strings (see e.g.
-#: ``hc_year_one_fade_overlay``'s ``evidence.registry_source`` in
-#: ``artifacts/prospective/challengers.json``). Matched anywhere in the
-#: evidence block, not just a fixed field name, because different
-#: challengers spell the field differently (``registry_source`` as a bare
-#: string, a list of strings, or nested one level under a named cell).
 _REGISTRY_SOURCE_RE = re.compile(r"registry/weak_signals\.json:([A-Za-z0-9_]+)")
 
-#: Fields a challenger's registered evidence uses to report a
-#: candidate-favouring probability -- reporting ``probability_positive`` (as
-#: opposed to a ``probability_negative``) IS the predeclared direction under
-#: this repo's "positive favours candidate" convention
-#: (``nfl_ats.weak_signals``'s ``EFFECT_UNITS`` block), so presence alone is
-#: read as a predeclared positive sign, regardless of the number's value.
 _SIGN_PROBABILITY_FIELDS: tuple[str, ...] = ("probability_positive", "source_probability_positive")
 
-#: Fields carrying a signed accuracy-point effect a challenger declared for
-#: itself at registration; the sign of a nonzero value is read as the
-#: predeclared direction. Covers ``best_pick_big_spread_eligibility``, the
-#: one live entry whose own declared effect is negative.
 _SIGN_EFFECT_FIELDS: tuple[str, ...] = (
     "effect_accuracy_points",
     "source_effect_accuracy_points",
@@ -531,21 +499,6 @@ def _classification(paired_vs_active: dict[str, Any]) -> tuple[str, bool | None]
         return POOLABLE_CLASSIFICATION, None
     crosses_zero = bool(delta["interval_lower"] <= 0.0 <= delta["interval_upper"])
     return POOLABLE_CLASSIFICATION, crosses_zero
-
-
-# ---------------------------------------------------------------------------
-# ENG-33: closing-ground CANDIDATE detection and next_admissible_action.
-#
-# Everything below is advisory only. It never changes `classification`
-# (always `unresolved_below_power`, computed above) and never writes to
-# either registry -- the taxonomy pasted in the module docstring applies in
-# full: an interval containing zero is never grounds to reject, and only a
-# RESOLVED wrong sign, zero split-half reliability, or a proven positive
-# control may ever close a line of work. This section only flags which rows
-# LOOK like candidates for those two admissible grounds so a reader does not
-# have to recompute the interval math by hand before deciding whether to run
-# `nfl-ats weak-signals record` / `nfl-ats rotation record-look`.
-# ---------------------------------------------------------------------------
 
 
 def _predeclared_sign(entry: dict[str, Any] | None) -> tuple[int | None, str | None]:
@@ -973,9 +926,6 @@ def _entrant_row(
             samples=samples,
             seed=seed,
         )
-        # ENG-33: the active model is not a registered challenger and has no
-        # paired comparison against itself, so it never carries a closing-
-        # ground candidate -- only next_admissible_action ("keep recording").
         row["closing_ground_candidate"] = None
         row["closing_ground_evidence"] = {
             "reason": "active_model_is_not_a_challenger_and_has_no_paired_comparison"
@@ -1014,9 +964,6 @@ def _entrant_row(
             paired_metric=paired_metric,
             split_half=split_half,
         )
-        # The candidate field is advisory ONLY: classification above is
-        # already fixed at unresolved_below_power regardless of what this
-        # says, per the module docstring and AGENTS.md.
         row["closing_ground_candidate"] = closing_ground_candidate
         row["closing_ground_evidence"] = closing_ground_evidence
         has_settled_shared_data = bool(paired.get("shared_settled_games", 0))
@@ -1216,7 +1163,6 @@ def scorecards_to_frame(rows: list[dict[str, Any]]) -> pd.DataFrame:
                 "refresh_probability_positive": refresh_metric.get("probability_positive"),
                 "brier_score": calibration.get("brier_score"),
                 "calibration_games": calibration.get("games_with_recorded_probability"),
-                # ENG-33: advisory only -- classification (above) is unchanged by these.
                 "closing_ground_candidate": row.get("closing_ground_candidate"),
                 "next_admissible_action": row.get("next_admissible_action"),
                 "next_admissible_action_detail": row.get("next_admissible_action_detail"),

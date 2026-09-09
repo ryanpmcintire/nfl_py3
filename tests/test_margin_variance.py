@@ -18,10 +18,6 @@ from nfl_ats.margin_variance import (
     fit_cfb_variance_model,
 )
 
-# ---------------------------------------------------------------------------
-# 1. Feature derivation and the variance fit
-# ---------------------------------------------------------------------------
-
 
 def test_add_variance_features_derives_absolute_spread() -> None:
     frame = pd.DataFrame({"spread_line": [-7.5, 0.0, 3.0]})
@@ -41,8 +37,6 @@ def test_fit_cfb_variance_model_produces_bounded_ratios(
     assert np.isfinite(ratios).all()
     assert (ratios >= VARIANCE_RATIO_FLOOR - 1e-12).all()
     assert (ratios <= VARIANCE_RATIO_CEILING + 1e-12).all()
-    # The fixture has real feature variation, so the ratios must not be one
-    # constant -- that is the pooled model, not a conditional one.
     assert len(np.unique(np.round(ratios, 6))) > 1
 
 
@@ -50,11 +44,6 @@ def test_variance_model_requires_features(cfb_features_frame: pd.DataFrame) -> N
     variance = fit_cfb_variance_model(cfb_features_frame)
     with pytest.raises(DataContractError, match="missing features"):
         variance.scale_ratio(cfb_features_frame.drop(columns=["total_line"]))
-
-
-# ---------------------------------------------------------------------------
-# 2. The heteroskedastic wrapper: same center, scaled distribution
-# ---------------------------------------------------------------------------
 
 
 class _ConstantEstimator:
@@ -78,14 +67,10 @@ def test_hetero_model_keeps_center_and_recovers_pooled_at_ratio_one(
     pooled_predictions = pooled.predict(scored)
     hetero_predictions = hetero.predict(scored)
 
-    # The center (and therefore the forced pick direction of the mean) is
-    # byte-identical; only distribution-derived quantities may move.
     for column in ("predicted_margin", "fair_spread", "predicted_market_residual"):
         assert hetero_predictions[column].tolist() == pooled_predictions[column].tolist()
     assert "variance_scale_ratio" in hetero_predictions.columns
 
-    # With the estimator pinned to the baseline scale, every ratio is 1 and
-    # the pooled probabilities are recovered exactly.
     neutral = VarianceModel(
         estimator=_ConstantEstimator(float(np.log(variance.s_bar + 1.0))),  # type: ignore[arg-type]
         s_bar=variance.s_bar,
@@ -101,12 +86,7 @@ def test_hetero_model_keeps_center_and_recovers_pooled_at_ratio_one(
     )
 
 
-# ---------------------------------------------------------------------------
-# 3. The two-arm benchmark run
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.full  # ENG-11: dominates --durations; full CFB benchmark fit
+@pytest.mark.full
 def test_cfb_variance_benchmark_matched_arms(cfb_features_frame: pd.DataFrame) -> None:
     result = cfb_variance_benchmark(
         cfb_features_frame,
@@ -121,8 +101,6 @@ def test_cfb_variance_benchmark_matched_arms(cfb_features_frame: pd.DataFrame) -
     per_method = result.predictions.groupby("method")["game_id"].apply(set)
     assert per_method["market_residual_variance"] == per_method["market_residual"]
 
-    # Identical centers game-for-game: the variance arm changes only the
-    # distribution, never the forced pick's mean.
     pooled_rows = result.predictions.loc[
         result.predictions["method"].eq("market_residual")
     ].set_index("game_id")

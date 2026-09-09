@@ -191,13 +191,6 @@ def create_fresh_snapshot_dir(
     return snapshot_dir, copied_forward
 
 
-# URL-slug keyword list for "transaction relevant" news (signings, cuts,
-# trades, IR/practice-squad moves). Deliberately over-inclusive (recall over
-# precision), matching the injury-news script's INJURY_KEYWORDS approach:
-# every PFR post url is kept regardless of this match, with a
-# `transaction_relevant` boolean, so the keyword line can be redrawn later
-# without re-fetching. Headline-from-slug is extracted for every url
-# regardless, so the full inventory is useful even for urls this list misses.
 TRANSACTION_KEYWORDS = [
     "signs",
     "sign-",
@@ -333,7 +326,7 @@ def parse_yearly_sitemap(raw: bytes, year: str) -> pd.DataFrame:
             continue
         loc = loc_el.text.strip()
         if loc.rstrip("/") == "https://www.profootballrumors.com":
-            continue  # empty-year placeholder entry (2013 and earlier)
+            continue
         lastmod = lastmod_el.text.strip() if lastmod_el is not None and lastmod_el.text else None
         url_match = URL_YEAR_MONTH_SLUG_RE.search(loc)
         if url_match:
@@ -383,10 +376,6 @@ def dry_run_report(
     years = [str(year) for year in range(int(start), int(end) + 1)]
 
     if fresh_snapshot:
-        # Mirrors create_fresh_snapshot_dir's split without creating a
-        # directory or touching the filesystem: every year except the max
-        # year would be copied forward (no network) from the most recent
-        # existing snapshot; the max year would be force-refetched.
         latest = sorted(
             path for path in out_dir.glob("*") if path.is_dir() and SNAPSHOT_DIR_RE.match(path.name)
         )
@@ -799,10 +788,6 @@ def main() -> None:
         print(json.dumps(report, indent=2))
         return
 
-    # MKT-09: acquisition may be paused by a policy update without a code
-    # change (e.g. a terms review finding new restrictions); fail before
-    # creating a directory or making a request, matching
-    # scripts/ingest_nflcom_injuries.py's run_ingest().
     require_acquisition("pfr_transactions")
 
     args.out.mkdir(parents=True, exist_ok=True)

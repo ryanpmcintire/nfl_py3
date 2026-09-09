@@ -46,8 +46,6 @@ REPO = Path(__file__).resolve().parents[1]
 
 DELPHI_ENDPOINT = "https://api.delphi.cmu.edu/epidata/fluview/"
 
-# docs/fluview_battery.md section 2 -- static team -> state mapping, unique
-# state list (23 states covering all 34 historical nflverse team codes).
 STATE_BY_TEAM: dict[str, str] = {
     "ARI": "az",
     "ATL": "ga",
@@ -87,15 +85,12 @@ STATE_BY_TEAM: dict[str, str] = {
 }
 STATES = sorted(set(STATE_BY_TEAM.values()))
 
-# Also fetch national ("nat") for the peak-week predeclaration cross-check
-# (docs/fluview_battery.md section 4 -- already measured/frozen, but kept
-# here so the raw national series is reproducible from this ingest too).
 REGIONS = [*STATES, "nat"]
 
 EPIWEEK_LOW = "201040"
 EPIWEEK_HIGH = "202552"
 ISSUES_LOW = "201040"
-ISSUES_HIGH = "202608"  # a little past 202552 as safety margin for late revisions
+ISSUES_HIGH = "202608"
 
 RATE_LIMIT_SECONDS = 3.0
 MAX_RETRIES = 6

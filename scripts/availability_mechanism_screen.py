@@ -53,8 +53,6 @@ PAIRED = (
     / "mod07_ablation_2020_2021.B_minus_A_availability_and_value.parquet"
 )
 
-# The columns whose SEMANTICS change between the two tables and which both arms
-# read (they are in the `player` feature set, so the baseline sees them too).
 SHARED_AVAILABILITY_COLUMNS = (
     "diff_injury_offense_unavailability",
     "diff_injury_defense_unavailability",
@@ -67,8 +65,6 @@ SHARED_AVAILABILITY_COLUMNS = (
     "diff_qb_expected_epa_per_dropback",
 )
 
-# The two columns the candidate feature set ADDS. Their magnitude is a second,
-# independent axis: a game with no injury value lost cannot be moved by them.
 ADDED_VALUE_COLUMNS = (
     "diff_injury_skill_epa_value_lost",
     "diff_injury_defense_disruption_value_lost",
@@ -82,8 +78,6 @@ def input_movement(baseline_table: Path, candidate_table: Path, game_ids: pd.Ind
     right = pd.read_parquet(candidate_table).drop_duplicates("game_id").set_index("game_id")
     index = game_ids.intersection(left.index).intersection(right.index)
 
-    # Standardise each column by its own spread over the scored games so that
-    # one large-scale column cannot dominate the norm.
     parts = []
     for column in SHARED_AVAILABILITY_COLUMNS:
         a = pd.to_numeric(left.loc[index, column], errors="coerce")
@@ -149,17 +143,11 @@ def disagreement_contrast(paired: pd.DataFrame, axis: str) -> dict[str, Any]:
     disagree = paired["left_pick_home"].ne(paired["right_pick_home"])
     moved = paired.loc[disagree, axis]
     same = paired.loc[~disagree, axis]
-    # Rank-biserial correlation from the Mann-Whitney U statistic: distribution
-    # free, and the paired frame is small enough that a normal approximation on
-    # the raw values would be the weaker choice.
     ranks = paired[axis].rank()
     n_moved, n_same = len(moved), len(same)
     total = n_moved + n_same
     u = float(ranks.loc[disagree].sum()) - n_moved * (n_moved + 1) / 2.0
     rank_biserial = 2.0 * u / (n_moved * n_same) - 1.0
-    # Var(U) = n1 n2 (N+1)/12 under the null, so Var(r) = (N+1)/(3 n1 n2).
-    # This statistic uses all 456 games and a continuous covariate, which is why
-    # it resolves where the 456-game ACCURACY delta cannot.
     standard_error = float(np.sqrt((total + 1.0) / (3.0 * n_moved * n_same)))
     z = rank_biserial / standard_error
     return {
@@ -184,9 +172,6 @@ def disagreement_contrast(paired: pd.DataFrame, axis: str) -> dict[str, Any]:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -213,9 +198,6 @@ def main() -> None:
     )
     paired = paired.merge(movement, left_on="game_id", right_index=True, how="inner")
 
-    # Placebo axes: the same tercile machinery on quantities with NO availability
-    # content. Tercile spread on 456 games is large by itself, so the strata
-    # table below means nothing without these beside it.
     features = (
         pd.read_parquet(args.candidate_features).drop_duplicates("game_id").set_index("game_id")
     )

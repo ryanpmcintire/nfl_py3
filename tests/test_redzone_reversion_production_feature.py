@@ -24,8 +24,6 @@ from nfl_ats.redzone_reversion_production_feature import (
 
 COLUMN = REDZONE_THIRD_DOWN_OVER_FADE_COLUMN
 
-#: Four teams is the smallest panel where a 75th percentile is not degenerate:
-#: exactly one of the four sits at or above the cut in a given season.
 TEAMS = ("AAA", "BBB", "CCC", "DDD")
 
 
@@ -58,11 +56,6 @@ def _value(games: pd.DataFrame, panel: pd.DataFrame, game_id: str) -> float:
     return float(derived.loc[game_id, COLUMN])
 
 
-# ---------------------------------------------------------------------------
-# Leakage: a season-S value uses ONLY seasons strictly before S
-# ---------------------------------------------------------------------------
-
-
 def test_only_strictly_prior_seasons_reach_a_value() -> None:
     """The binding leakage claim, both halves at once.
 
@@ -80,8 +73,6 @@ def test_only_strictly_prior_seasons_reach_a_value() -> None:
 
     for injected_season in (2012, 2013, 2014):
         polluted = dict(base)
-        # An extreme value large enough to drag any pooled quantile upward and
-        # to flag every team it touches.
         polluted[injected_season] = dict.fromkeys(TEAMS, 99.0)
         assert _value(games, _panel(polluted), "2012_01_BBB_AAA") == reference
 
@@ -130,11 +121,6 @@ def test_a_team_with_no_prior_season_row_is_missing_not_zero() -> None:
     assert np.isnan(derived.loc["2011_01_ZZZ_AAA", COLUMN])
 
 
-# ---------------------------------------------------------------------------
-# Sign and orientation
-# ---------------------------------------------------------------------------
-
-
 def test_sign_orientation_covers_all_three_states() -> None:
     """``int(home flagged) - int(away flagged)``: a home over-performer to fade
     is +1, an away over-performer is -1, both-flagged and neither-flagged are
@@ -143,8 +129,6 @@ def test_sign_orientation_covers_all_three_states() -> None:
     panel = _panel(
         {
             2010: _flat(2010),
-            # 2011 is the prior season for the 2012 games below: AAA and BBB
-            # are the over-performers, CCC and DDD are not.
             2011: {"AAA": 0.10, "BBB": 0.10, "CCC": -0.02, "DDD": -0.02},
         }
     )
@@ -191,11 +175,6 @@ def test_team_aliases_are_canonicalised_on_both_sides() -> None:
     games = _games([("g", 2012, "SD", "BBB")])
     derived = derive_redzone_third_down_features(games, offense=panel).set_index("game_id")
     assert derived.loc["g", COLUMN] == 1.0
-
-
-# ---------------------------------------------------------------------------
-# Additivity and join contracts
-# ---------------------------------------------------------------------------
 
 
 def test_attach_is_purely_additive() -> None:

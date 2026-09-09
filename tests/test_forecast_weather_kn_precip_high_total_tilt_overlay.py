@@ -49,23 +49,9 @@ from nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay import (
 from nfl_ats.prospective_scoring import CHALLENGER_DECISION_COLUMNS, load_challenger_decisions
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# WET at RAIN, outdoor, precip 70%, total_line 48 -> flagged. Model's pick is
-#   AWAY (WET) -> flips HOME.
-# WET at DOME, roof=closed, precip 70%, total_line 48: flag would fire on
-#   precip/total alone, but the game itself is indoors -> no flip.
-# WET at RAIN2, outdoor, precip 40% (below 60), total_line 51 -> not flagged.
-# WET at RAIN3, outdoor, precip 80%, total_line 44 (below 47) -> not flagged.
-# WET at RAIN4, outdoor, NO forecast row at all -> no signal -> no flip.
-# WET at RAINP mirrors the clean flagged shape but game_type=POST.
-
 
 def _schedule() -> pd.DataFrame:
     rows = [
-        # game_id, season, game_type, week, home, away, roof
         ("2025_10_RAIN_WET", 2025, "REG", 10, "RAIN", "WET", "outdoors"),
         ("2025_10_DOME_WET", 2025, "REG", 10, "DOME", "WET", "closed"),
         ("2025_10_RAIN2_WET", 2025, "REG", 10, "RAIN2", "WET", "outdoors"),
@@ -86,7 +72,6 @@ def _forecasts() -> pd.DataFrame:
                 "2025_10_DOME_WET",
                 "2025_10_RAIN2_WET",
                 "2025_10_RAIN3_WET",
-                # 2025_10_RAIN4_WET deliberately absent -- missing forecast row
                 "2025_20_RAINP_WET",
             ],
             "forecast_precip_prob_pct": [70.0, 70.0, 40.0, 80.0, 70.0],
@@ -115,20 +100,9 @@ def _predictions() -> pd.DataFrame:
             "kickoff": ["2025-11-09T18:00:00+00:00"] * 6,
             "spread_line": [-3.0, -2.0, -1.5, -1.0, -2.5, -3.0],
             "total_line": [48.0, 48.0, 51.0, 44.0, 48.0, 48.0],
-            # G-clean: away pick, flagged (precip 70>=60, total 48>=47) -> flips.
-            # G-dome: away pick, flagged on precip/total but indoors -> no flip.
-            # G-lowprecip: away pick, precip 40<60 -> no flip.
-            # G-lowtotal: away pick, total 44<47 -> no flip.
-            # G-nowx: away pick, no forecast row -> no flip.
-            # G-post: same shape as G-clean but POST season -> no flip.
             "home_cover_probability": [0.35, 0.35, 0.35, 0.35, 0.35, 0.35],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. precip_high_total_flag_by_game
-# ---------------------------------------------------------------------------
 
 
 def _total_lines() -> pd.DataFrame:
@@ -192,11 +166,6 @@ def test_flag_requires_schedule_columns() -> None:
 def test_flag_requires_total_line_columns() -> None:
     with pytest.raises(DataContractError, match="total_lines is missing"):
         precip_high_total_flag_by_game(_schedule(), _forecasts(), pd.DataFrame({"game_id": ["G1"]}))
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_precip_high_total_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_away_to_home_on_the_clean_case() -> None:
@@ -285,11 +254,6 @@ def test_overlay_requires_total_line_on_predictions() -> None:
         apply_precip_high_total_tilt_overlay(predictions, _schedule(), _forecasts())
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     only_dome = _predictions().loc[lambda frame: frame["game_id"].eq("2025_10_DOME_WET")]
     result = apply_precip_high_total_tilt_overlay(only_dome, _schedule(), _forecasts())
@@ -325,10 +289,6 @@ def test_disclosure_note_formats_a_hand_built_flip() -> None:
     assert "precip 70%" in note
     assert "total 48.0" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -433,7 +393,7 @@ def _no_network_stub(station: str, runtime_utc, *, model: str) -> list[dict]:
     ]
 
 
-@pytest.mark.full  # ENG-11: dominates --durations
+@pytest.mark.full
 def test_record_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -531,7 +491,7 @@ def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_
     assert result["forecast_cutoff_mode"] == "pool_decision"
 
 
-@pytest.mark.full  # ENG-11: dominates --durations
+@pytest.mark.full
 def test_record_challenger_refuses_outside_recording_lock_window(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)

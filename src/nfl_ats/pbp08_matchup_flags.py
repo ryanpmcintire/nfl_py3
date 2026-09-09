@@ -48,12 +48,10 @@ from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 from nfl_ats.data import DataContractError
 from nfl_ats.pbp import analysis_plays, load_pbp_snapshot, snapshot_from_root
 
-#: Frozen by the screen's predeclaration. Not tunable here.
 WINDOW_GAMES = 4
 MIN_WINDOW_OBS = 3
 MIN_QUANTILE_POOL = 200
 
-#: Quartile codes emitted by :func:`expanding_quartile_flags`.
 QUARTILE_UNASSIGNED = -1
 QUARTILE_BOTTOM = 0
 QUARTILE_MIDDLE = 1
@@ -243,10 +241,6 @@ def build_flag_table(schedule: pd.DataFrame, pbp_snapshot_path: Path) -> pd.Data
     table["home_press_gen_w"] = home["press_gen_w"]
     table["away_press_gen_w"] = away["press_gen_w"]
 
-    # The cell fires on the OFFENSE row: that team's pressure-allowed window is
-    # top-quartile AND the team it faces generates pressure at a top-quartile
-    # rate. A row whose window never reached the minimum pool is UNASSIGNED and
-    # is never folded into the complement -- same posture as the screen.
     home_flagged = home["press_allow_q"].eq(QUARTILE_TOP) & away["press_gen_q"].eq(QUARTILE_TOP)
     away_flagged = away["press_allow_q"].eq(QUARTILE_TOP) & home["press_gen_q"].eq(QUARTILE_TOP)
     table["home_offense_flagged"] = home_flagged.reindex(table.index).fillna(False).astype(bool)

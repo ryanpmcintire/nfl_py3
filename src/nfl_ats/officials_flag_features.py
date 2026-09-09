@@ -63,27 +63,15 @@ from nfl_ats.weak_stack_v3_features import latest_schedules_snapshot
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: Frozen column names, matching every sibling on-production candidate's
-#: single-new-column discipline.
 CREW_HOME_BIAS_COLUMN = "crew_home_bias_flag"
 SECOND_MEETING_FAVORITE_COLUMN = "crew_second_meeting_favorite_flag"
 ROOKIE_CREW_UNDERDOG_COLUMN = "rookie_crew_underdog_flag"
 
-#: LEAD-32 Stage-2: minimum PRIOR games this season before a crew's trailing
-#: home-bias is considered eligible (docs/officials_crew_leads.md).
 TRAILING_HOME_BIAS_MIN_GAMES = 3
 
-#: LEAD-31: excludes the left-censored 2015 all-"rookies" slate, matching
-#: docs/referee_battery.md's own referee_rookie_home_cover population.
 ROOKIE_ELIGIBLE_SEASON_FLOOR = 2016
-#: "first OR second dataset-visible season" -- prior_seasons_experience is
-#: 0-indexed (0 = first season, 1 = second season).
 ROOKIE_PRIOR_EXPERIENCE_MAX = 1
 
-#: Columns every ``home_away_penalty_game_table``-shaped frame must carry --
-#: enforced on every derived-table entry point (whether loaded fresh or
-#: injected by a test), so a malformed table raises ``DataContractError``
-#: instead of a raw ``KeyError`` deep inside a ``groupby``.
 _PENALTY_TABLE_REQUIRED_COLUMNS = {
     "game_id",
     "official_name",
@@ -102,12 +90,6 @@ def _require_penalty_table_columns(table: pd.DataFrame) -> None:
         raise DataContractError(f"officials penalty table is missing columns: {', '.join(missing)}")
 
 
-# ---------------------------------------------------------------------------
-# Shared loader: officials -> schedules crosswalk -> game_penalties, reusing
-# the referee battery's own snapshot discovery and join.
-# ---------------------------------------------------------------------------
-
-
 def home_away_penalty_game_table(repo_root: Path | None = None) -> pd.DataFrame:
     """One row per (official_name, REG game with a matched head referee).
 
@@ -122,9 +104,6 @@ def home_away_penalty_game_table(repo_root: Path | None = None) -> pd.DataFrame:
 
     root = repo_root or REPO_ROOT
     officials_path, game_penalties_path, _snapshot_id = _latest_officials_snapshot(root)
-    # LEAD-59: nfl_ats.officials_archive is the single officials loader. At
-    # its shipped default it returns this feed bit-for-bit, so this routing
-    # changes nothing; the 2009-2014 Wayback crews are opt-in there.
     officials = load_officials(root, officials_path=officials_path)
     refs = officials.loc[
         (officials["position"] == _REFEREE_POSITION)
@@ -160,13 +139,6 @@ def home_away_penalty_game_table(repo_root: Path | None = None) -> pd.DataFrame:
     merged["week"] = pd.to_numeric(merged["week"], errors="raise").astype(int)
     merged["home_minus_away"] = merged["penalties_on_home"] - merged["penalties_on_away"]
     return merged
-
-
-# ---------------------------------------------------------------------------
-# LEAD-32 Stage 1: directional home-cooking reliability (odd/even split-half
-# within season, season-to-season by referee) via the reused PBP-trait
-# reliability harness.
-# ---------------------------------------------------------------------------
 
 
 def officials_home_bias_reliability(
@@ -227,12 +199,6 @@ def officials_home_bias_reliability(
         "within_season_odd_even_week": within,
         "season_to_season_same_referee": across,
     }
-
-
-# ---------------------------------------------------------------------------
-# LEAD-32 Stage 2: trailing (prior-games-only, within season) home-bias top
-# quartile -> BACK the home team.
-# ---------------------------------------------------------------------------
 
 
 def trailing_home_bias_table(
@@ -316,12 +282,6 @@ def attach_crew_home_bias_features(
     merged = _attach(features, schedule, _derive, (CREW_HOME_BIAS_COLUMN,))
     merged[CREW_HOME_BIAS_COLUMN] = merged[CREW_HOME_BIAS_COLUMN].fillna(0.0)
     return merged
-
-
-# ---------------------------------------------------------------------------
-# LEAD-34: crew-familiarity second meetings (deterministic; reliability
-# not_applicable).
-# ---------------------------------------------------------------------------
 
 
 def crew_familiarity_table(
@@ -436,12 +396,6 @@ def attach_second_meeting_favorite_features(
     merged = _attach(features, schedule, _derive, (SECOND_MEETING_FAVORITE_COLUMN,))
     merged[SECOND_MEETING_FAVORITE_COLUMN] = merged[SECOND_MEETING_FAVORITE_COLUMN].fillna(0.0)
     return merged
-
-
-# ---------------------------------------------------------------------------
-# LEAD-31: rookie-referee tenure (left-censoring disclosure) -> take the
-# underdog.
-# ---------------------------------------------------------------------------
 
 
 def describe_referee_left_censoring(repo_root: Path | None = None) -> dict[str, Any]:

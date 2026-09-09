@@ -104,10 +104,8 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "low_total_div_home_dog_challenger"
 
-#: Frozen, ported verbatim from nfl_ats.schedule_flag_features.LOW_TOTAL_DIV_DOG_TOTAL_MAX.
 LOW_TOTAL_MAX = 42.0
 
 
@@ -294,7 +292,7 @@ def record_low_total_div_home_dog_challenger_decisions(
     only, never a fabricated paper-bet edge for the post-flip side.
     """
 
-    del data_root  # unused -- see docstring; kept for call-signature parity
+    del data_root
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

@@ -62,11 +62,6 @@ def stamp_dir(root: Path, when: datetime) -> Path:
 NOW = datetime(2026, 9, 10, 12, 0, tzinfo=UTC)
 
 
-# ---------------------------------------------------------------------------
-# nfl_ats.capture_freshness: cadence derivation
-# ---------------------------------------------------------------------------
-
-
 def test_single_weekly_job_gets_a_week_plus_grace_budget() -> None:
     job = make_job(day="tue", at="09:00", grace_minutes=180)
     budget = cf.derive_budget_minutes([job])
@@ -85,7 +80,7 @@ def test_two_jobs_budget_is_the_larger_weekly_gap_plus_its_grace() -> None:
 
     budget = cf.derive_budget_minutes([tue, thu])
 
-    assert budget == expected_gap + 180  # largest grace among the two jobs
+    assert budget == expected_gap + 180
 
 
 def test_a_fully_disabled_job_group_has_no_budget() -> None:
@@ -112,11 +107,6 @@ def test_group_by_source_ignores_jobs_with_no_dedupe_dir() -> None:
     groups = cf.group_by_source([orchestration_job, capture_job])
 
     assert list(groups) == ["data/market/raw"]
-
-
-# ---------------------------------------------------------------------------
-# nfl_ats.capture_freshness: locators
-# ---------------------------------------------------------------------------
 
 
 def test_newest_snapshot_instant_reads_the_newest_directory_name(tmp_path: Path) -> None:
@@ -169,12 +159,6 @@ def test_newest_json_field_instant_malformed_json_is_none(tmp_path: Path) -> Non
     path = tmp_path / "bad.json"
     path.write_text("{not json", encoding="utf-8")
     assert cf.newest_json_field_instant(path, "generated_at") is None
-
-
-# ---------------------------------------------------------------------------
-# nfl_ats.capture_freshness: compute_freshness status paths (fresh/stale/
-# missing/disabled) -- the DoD's required coverage.
-# ---------------------------------------------------------------------------
 
 
 def test_compute_freshness_fresh_source(tmp_path: Path) -> None:
@@ -289,12 +273,7 @@ def test_render_table_and_as_dict_cover_every_status(tmp_path: Path) -> None:
     assert "[fresh]" in table
     assert "[missing]" in table
     assert "[disabled]" in table
-    json.dumps([source.as_dict() for source in sources])  # must be JSON-serializable
-
-
-# ---------------------------------------------------------------------------
-# capture_scheduler.py: heartbeat (item 1)
-# ---------------------------------------------------------------------------
+    json.dumps([source.as_dict() for source in sources])
 
 
 def test_write_heartbeat_writes_a_file_separate_from_state(
@@ -335,11 +314,6 @@ def test_read_heartbeat_malformed_file_returns_none(
     assert capture_scheduler.read_heartbeat() is None
 
 
-# ---------------------------------------------------------------------------
-# capture_scheduler.py: build_health_report / render_health (item 4)
-# ---------------------------------------------------------------------------
-
-
 def _heartbeat_payload(
     now: datetime,
     *,
@@ -374,9 +348,6 @@ def test_health_report_alive_when_heartbeat_is_recent(
     now = datetime(2026, 9, 10, 8, 5, tzinfo=ET)
     monkeypatch.setattr(capture_scheduler, "HEARTBEAT_PATH", heartbeat_path)
     monkeypatch.setattr(capture_scheduler, "SCHEDULE", ())
-    # code/schedule must be CURRENT for this test's "everything is fine"
-    # scenario -- compute them after the SCHEDULE monkeypatch above so the
-    # schedule digest matches what build_health_report will recompute.
     heartbeat_path.write_text(
         _heartbeat_payload(
             now,
@@ -465,8 +436,6 @@ def test_health_report_ok_end_to_end_with_a_real_fresh_source(
     monkeypatch.setattr(capture_scheduler, "HEARTBEAT_PATH", heartbeat_path)
     monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
     monkeypatch.setattr(capture_scheduler, "REPO", tmp_path)
-    # Compute AFTER the SCHEDULE monkeypatch above, same reasoning as
-    # test_health_report_alive_when_heartbeat_is_recent.
     heartbeat_path.write_text(
         _heartbeat_payload(
             now,
@@ -499,7 +468,7 @@ def test_health_report_fails_when_an_expected_active_source_is_missing(
     )
     monkeypatch.setattr(capture_scheduler, "HEARTBEAT_PATH", heartbeat_path)
     monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
-    monkeypatch.setattr(capture_scheduler, "REPO", tmp_path)  # empty: no market/raw dir at all
+    monkeypatch.setattr(capture_scheduler, "REPO", tmp_path)
 
     report = capture_scheduler.build_health_report(now, {"runs": {}})
 
@@ -518,11 +487,6 @@ def test_health_report_json_is_serializable(
     text = json.dumps(capture_scheduler._health_report_json(report), sort_keys=True)
 
     assert '"ok": false' in text
-
-
-# ---------------------------------------------------------------------------
-# capture_scheduler.py: per-job persisted health, state["job_health"] (item 2)
-# ---------------------------------------------------------------------------
 
 
 def test_run_job_success_updates_job_health_and_resets_failures(
@@ -600,7 +564,7 @@ def test_sweep_missed_increments_missed_window_count_once_per_occurrence(
     state: dict[str, Any] = {"runs": {}}
 
     capture_scheduler.sweep_missed(thursday, state)
-    capture_scheduler.sweep_missed(thursday, state)  # same occurrence: must be a no-op
+    capture_scheduler.sweep_missed(thursday, state)
 
     assert state["job_health"][job.name]["missed_window_count"] == 1
 
@@ -625,12 +589,6 @@ def test_job_health_key_does_not_disturb_state_runs(
     key = f"{job.name}@{start.date().isoformat()}"
     assert state["runs"][key]["status"] == "CAUGHT_UP"
     assert set(state["runs"][key]) == {"status", "window_start", "ran_at", "caught_up"}
-
-
-# ---------------------------------------------------------------------------
-# ENG-26: code-version guard -- heartbeat identity, --health STALE flag,
-# --is-running double-start guard, --acknowledge-missed.
-# ---------------------------------------------------------------------------
 
 
 def test_write_heartbeat_records_code_and_schedule_identity(
@@ -682,7 +640,7 @@ def test_daemon_loop_freezes_code_identity_at_startup_not_per_poll(
     def fake_write_heartbeat(**kwargs: Any) -> None:
         calls.append(kwargs)
         if len(calls) >= 2:
-            raise SystemExit(0)  # stop the infinite loop after two polls
+            raise SystemExit(0)
 
     monkeypatch.setattr(capture_scheduler, "write_heartbeat", fake_write_heartbeat)
     monkeypatch.setattr(capture_scheduler, "load_state", lambda: {"runs": {}})
@@ -711,7 +669,7 @@ def test_health_report_flags_stale_code(monkeypatch: pytest.MonkeyPatch, tmp_pat
         _heartbeat_payload(
             now,
             age=timedelta(seconds=1),
-            code_sha256="0" * 64,  # deliberately wrong
+            code_sha256="0" * 64,
             schedule_digest=capture_scheduler.compute_schedule_digest(),
         ),
         encoding="utf-8",
@@ -740,7 +698,7 @@ def test_health_report_flags_stale_schedule(
             now,
             age=timedelta(seconds=1),
             code_sha256=capture_scheduler.compute_code_sha256(),
-            schedule_digest="0" * 64,  # deliberately wrong
+            schedule_digest="0" * 64,
         ),
         encoding="utf-8",
     )
@@ -768,7 +726,7 @@ def test_health_report_treats_a_legacy_heartbeat_without_hashes_as_stale(
 
     report = capture_scheduler.build_health_report(now, {"runs": {}})
 
-    assert report["heartbeat"]["daemon_alive"] is True  # the daemon itself IS alive
+    assert report["heartbeat"]["daemon_alive"] is True
     assert report["code_version"]["code_current"] is False
     assert report["code_version"]["schedule_current"] is False
     assert report["ok"] is False
@@ -913,7 +871,7 @@ def test_daemon_is_running_false_when_heartbeat_stale(
     alive, pid = capture_scheduler.daemon_is_running(now)
 
     assert alive is False
-    assert pid == 4242  # still reported, so a caller can print it either way
+    assert pid == 4242
 
 
 def test_daemon_is_running_false_when_heartbeat_absent(

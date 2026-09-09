@@ -90,12 +90,8 @@ from nfl_ats.provenance import sha256_file
 from nfl_ats.qb_identity_features import attach_qb_revenge_features
 from nfl_ats.transaction_flag_features import attach_deadline_integration_drag_features
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "weak_stack_qb_revenge_deadline_drag"
 
-#: The profile this challenger's OWN weekly refit actually uses -- distinct
-#: from the active model's registered "weak_stack" (see module docstring's
-#: "Declared deviation" note).
 CANDIDATE_FEATURE_PROFILE: MarginFeatureProfile = "weak_stack_qb_revenge_deadline_drag"
 
 

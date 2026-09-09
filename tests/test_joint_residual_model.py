@@ -36,10 +36,6 @@ from nfl_ats.joint_residual_model import (
 )
 from nfl_ats.totals_wave2 import WAVE2_DRIVE_FEATURES
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
 _FEATURES = ("wind", "temp")
 
 
@@ -105,21 +101,11 @@ def _postseason_row(features: pd.DataFrame) -> pd.DataFrame:
     return pd.concat([features, extra], ignore_index=True)
 
 
-# ---------------------------------------------------------------------------
-# 1. Union feature set
-# ---------------------------------------------------------------------------
-
-
 def test_union_features_are_the_margin_baseline_plus_wave2_drive_with_no_overlap() -> None:
     assert len(UNION_FEATURES) == len(MARGIN_BASELINE_FEATURES) + len(WAVE2_DRIVE_FEATURES)
     assert set(MARGIN_BASELINE_FEATURES).isdisjoint(WAVE2_DRIVE_FEATURES)
     assert tuple(MARGIN_BASELINE_FEATURES) + tuple(WAVE2_DRIVE_FEATURES) == UNION_FEATURES
     assert len(set(UNION_FEATURES)) == len(UNION_FEATURES)
-
-
-# ---------------------------------------------------------------------------
-# 2. realised_residual_frame: targets and the regular-season filter
-# ---------------------------------------------------------------------------
 
 
 def test_realised_residual_frame_computes_both_targets_and_drops_postseason() -> None:
@@ -150,12 +136,6 @@ def test_realised_residual_frame_requires_declared_columns() -> None:
     features = _synthetic_features(weeks=2, games_per_week=3).drop(columns=["ats_margin"])
     with pytest.raises(DataContractError, match="ats_margin"):
         realised_residual_frame(features, feature_columns=_FEATURES)
-
-
-# ---------------------------------------------------------------------------
-# 3. Multi-output ridge is column-independent (the predeclared fact this
-#    module is built around).
-# ---------------------------------------------------------------------------
 
 
 def test_multi_output_ridge_matches_two_independent_single_target_fits() -> None:
@@ -197,11 +177,6 @@ def test_multi_output_ridge_matches_two_independent_single_target_fits() -> None
     )
 
 
-# ---------------------------------------------------------------------------
-# 4. Walk-forward cutoff leakage guard
-# ---------------------------------------------------------------------------
-
-
 def test_walk_forward_joint_predictions_trains_only_on_strictly_earlier_weeks() -> None:
     features = _synthetic_features(weeks=8, games_per_week=40, flip_week=5)
     population = realised_residual_frame(features, feature_columns=_FEATURES)
@@ -219,7 +194,7 @@ def test_walk_forward_joint_predictions_trains_only_on_strictly_earlier_weeks() 
         block = predictions.loc[predictions["week"] == week]
         assert int(block["train_games"].iloc[0]) == 40 * (week - 1)
 
-    target_week = 5  # the flip week: honest and leaky training disagree here.
+    target_week = 5
     honest_train = population.loc[population["week"] < target_week]
     leaky_train = population.loc[population["week"] <= target_week]
     target_rows = population.loc[population["week"] == target_week]
@@ -288,16 +263,11 @@ def test_second_stage_predictions_uses_only_strictly_earlier_stage1_blocks() -> 
         assert prior_rows >= 80
 
 
-# ---------------------------------------------------------------------------
-# 5. totals_shaped_predictions and out_of_sample_r2
-# ---------------------------------------------------------------------------
-
-
 def test_totals_shaped_predictions_aliases_the_requested_target() -> None:
     frame = pd.DataFrame({"predicted_total_residual": [1.0, 2.0], "other": [9.0, 9.0]})
     shaped = totals_shaped_predictions(frame, target_column="total_residual")
     assert shaped["predicted_residual"].tolist() == [1.0, 2.0]
-    assert "predicted_total_residual" in shaped.columns  # original column preserved
+    assert "predicted_total_residual" in shaped.columns
 
     with pytest.raises(DataContractError):
         totals_shaped_predictions(frame, target_column="margin_residual")
@@ -307,25 +277,16 @@ def test_out_of_sample_r2_known_values() -> None:
     actual = pd.Series([2.0, -3.0, 4.0, -1.0])
     assert out_of_sample_r2(actual, actual) == pytest.approx(1.0)
     assert out_of_sample_r2(actual, pd.Series([0.0, 0.0, 0.0, 0.0])) == pytest.approx(0.0)
-    # A prediction that overshoots to 3x the true magnitude is worse than the
-    # zero baseline: the residual left behind (2x actual) has 4x actual's
-    # own sum of squares, so SS_res > SS_tot and R2 < 0.
     assert out_of_sample_r2(actual, actual * 3.0) < 0.0
 
     with pytest.raises(ValueError):
         out_of_sample_r2(pd.Series([0.0, 0.0]), pd.Series([1.0, 1.0]))
 
 
-# ---------------------------------------------------------------------------
-# 6. Correlation math on a hand-computable frame
-# ---------------------------------------------------------------------------
-
-
 def test_pearson_correlation_known_values() -> None:
     a = pd.Series([1.0, 2.0, 3.0, 4.0])
     assert pearson_correlation(a, a) == pytest.approx(1.0)
     assert pearson_correlation(a, -a) == pytest.approx(-1.0)
-    # Zero variance in one column is a documented guard, not an exception.
     assert pearson_correlation(a, pd.Series([5.0, 5.0, 5.0, 5.0])) == 0.0
 
     with pytest.raises(ValueError):
@@ -361,26 +322,16 @@ def test_blocked_correlation_reports_probability_positive() -> None:
     assert result["games"] == len(frame)
 
 
-# ---------------------------------------------------------------------------
-# 7. Positive-control contamination helper
-# ---------------------------------------------------------------------------
-
-
 def test_leak_target_into_feature_replaces_only_the_named_column() -> None:
     frame = pd.DataFrame({"margin_residual": [1.0, 2.0, 3.0], "home_point_diff": [9.0, 9.0, 9.0]})
     leaked = leak_target_into_feature(
         frame, feature_column="home_point_diff", target_column="margin_residual"
     )
     assert leaked["home_point_diff"].tolist() == [1.0, 2.0, 3.0]
-    assert frame["home_point_diff"].tolist() == [9.0, 9.0, 9.0]  # input untouched
+    assert frame["home_point_diff"].tolist() == [9.0, 9.0, 9.0]
 
     with pytest.raises(DataContractError):
         leak_target_into_feature(frame, feature_column="missing", target_column="margin_residual")
-
-
-# ---------------------------------------------------------------------------
-# 8. Opener-archive plumbing (synthetic baseline; no real odds archive needed)
-# ---------------------------------------------------------------------------
 
 
 def _synthetic_baseline(features: pd.DataFrame) -> pd.DataFrame:
@@ -424,9 +375,7 @@ def test_joint_opener_pick_evaluation_scores_every_baseline_week_and_agrees_on_t
     joint = joint_opener_pick_evaluation(
         baseline, features, feature_columns=_FEATURES, min_train_games=40
     )
-    assert set(joint["game_id"]) == set(
-        baseline.loc[baseline["week"] > 1, "game_id"]
-    )  # week 1 has no prior training rows
+    assert set(joint["game_id"]) == set(baseline.loc[baseline["week"] > 1, "game_id"])
     assert (joint["pick_home_at_open"] == joint["predicted_margin_residual_open"].gt(0.0)).all()
 
     paired = paired_opener_accuracy(baseline, joint)

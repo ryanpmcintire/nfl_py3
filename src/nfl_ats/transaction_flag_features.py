@@ -73,7 +73,6 @@ from nfl_ats.transaction_wire_features import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: The one new column each candidate profile adds. Frozen names.
 HOLDOUT_SLOW_START_COLUMN = HOLDOUT_SLOW_START_ON_PRODUCTION_FEATURE_COLUMNS[0]
 DEADLINE_INTEGRATION_DRAG_COLUMN = DEADLINE_INTEGRATION_DRAG_ON_PRODUCTION_FEATURE_COLUMNS[0]
 SUSPENSION_RETURN_RUST_COLUMN = SUSPENSION_RETURN_RUST_ON_PRODUCTION_FEATURE_COLUMNS[0]
@@ -97,11 +96,6 @@ RETROSPECTIVE_SLUG_MARKERS: tuple[str, ...] = (
     "this-date-in-transactions-history",
     "this-date-in-nfl-transactions-history",
 )
-
-
-# ---------------------------------------------------------------------------
-# Shared loaders
-# ---------------------------------------------------------------------------
 
 
 def default_schedule(repo_root: Path | None = None) -> pd.DataFrame:
@@ -189,11 +183,6 @@ def _require_schedule_columns(schedule: pd.DataFrame) -> None:
         raise DataContractError(f"schedule is missing columns: {', '.join(missing)}")
 
 
-# ---------------------------------------------------------------------------
-# Player-name substring matching against the snap-count universe
-# ---------------------------------------------------------------------------
-
-
 def _normalize_name_to_slug(name: str) -> str:
     lowered = name.strip().lower().replace("'", "").replace(".", "")
     return re.sub(r"[^a-z0-9]+", "-", lowered).strip("-")
@@ -257,13 +246,6 @@ def _implied_season(year: int, month: int) -> int:
     date belongs to the season that STARTED the previous September."""
 
     return year - 1 if month <= 2 else year
-
-
-# ---------------------------------------------------------------------------
-# Shared additive-merge helper (identical shape to
-# nfl_ats.schedule_flag_features._attach / nfl_ats.qb_identity_features'
-# inlined equivalent)
-# ---------------------------------------------------------------------------
 
 
 def _attach_qualifying_sides(
@@ -331,21 +313,6 @@ def _attach(
     return merged
 
 
-# ---------------------------------------------------------------------------
-# LEAD-12: holdout slow-start fade
-# ---------------------------------------------------------------------------
-
-#: Confirmatory ("this already happened") holdout-ending language only.
-#: Measured against the real corpus (2026-09-05): every other holdout
-#: mention in the archive is speculative/negated ("threatens holdout",
-#: "won't hold out", "expected to hold out", "hints at holdout") and
-#: correctly does NOT match this pattern. Both alternation branches are
-#: hyphen-anchored on both sides -- naive substring matching without this
-#: anchor produces two measured false positives: (a) "ended-holdout" is a
-#: substring of "...hints-at-EXTENDED-HOLDOUT" (the word "extended" itself
-#: contains "ended"); (b) bare "report-to-camp" (no "s"/"ed") is a
-#: substring of "...adams-EXPECTED-TO-REPORT-TO-CAMP" -- an infinitive
-#: PREDICTION, not the confirmed present/past tense this pattern requires.
 HOLDOUT_END_RE = re.compile(
     r"(?:^|-)(?:ends-holdout|ended-holdout|reports-to-camp|reported-to-camp)(?:-|$)"
 )
@@ -483,7 +450,7 @@ def derive_holdout_slow_start_features(
                 continue
             kickoff = week_games["gameday_dt"].min()
             if not (report_end < kickoff):
-                continue  # leakage guard: report not confirmed pregame for this week
+                continue
             started = _player_started_prior_week(event["player"], team, season, week, snap_counts)
             if started:
                 qualifying_records.append({"season": season, "week": week, "team": team})
@@ -513,34 +480,14 @@ def attach_holdout_slow_start_features(
     return _attach(features, derived, HOLDOUT_SLOW_START_COLUMN)
 
 
-# ---------------------------------------------------------------------------
-# LEAD-23: trade-deadline integration drag
-# ---------------------------------------------------------------------------
-
-#: A confirmed player acquisition, not a draft-pick trade and not
-#: speculation ("looking to trade for", "eyeing", "tried to trade for" all
-#: fail this pattern -- see module docstring's measured examples). Matches
-#: "<team>-(to-)?(re)?acquire(s|d)-<rest>".
 ACQUISITION_RE = re.compile(r"(?:^|-)(?:to-)?(?:re)?acquir(?:e|es|ed)-")
 _ACQUIRE_SPLIT_RE = re.compile(r"^(?P<prefix>.*?)-(?:to-)?(?:re)?acquir(?:e|es|ed)-(?P<rest>.+)$")
-#: Excludes a draft-PICK acquisition (a real player-for-picks trade, e.g.
-#: "patriots-acquire-brandin-cooks", is kept; "bills-acquire-no-23-select-
-#: cb-kaiir-elam" and "broncos-acquire-no-42-from-bengals" are excluded).
 DRAFT_PICK_RE = re.compile(r"-no-\d+|-\d+(?:st|nd|rd|th)-pick|-pick-\d+|select-")
-#: Excludes a FAILED or merely rumored acquisition. Measured against the
-#: real corpus: "saints-tried-to-acquire-giants-wr-darius-slayton",
-#: "packers-attempted-to-acquire-raiders-te-darren-waller-at-deadline", and
-#: "browns-attempted-to-acquire-calvin-ridley-in-2022" all match
-#: :data:`ACQUISITION_RE` (they contain "...to-acquire-...") but describe an
-#: attempt that did not happen, not a completed trade.
 SPECULATIVE_ACQUISITION_RE = re.compile(
     r"tried-to-acquir|attempted-to-acquir|wants-to-acquire|hopes-to-acquire|"
     r"hoping-to-acquire|could-acquire|would-acquire|looking-to-acquire|"
     r"interested-in-acquir|eyeing-.*acquir|exploring-.*acquir|in-talks-to-acquire"
 )
-#: In-season trading window only (the trade-DEADLINE mechanism this lead
-#: tests does not apply to an offseason draft-capital trade with a full
-#: training camp to integrate).
 DEADLINE_WINDOW_MONTHS: tuple[int, ...] = (9, 10, 11, 12)
 DEADLINE_INTEGRATION_GAMES = 3
 
@@ -625,14 +572,14 @@ def _acquisition_events(
         ]
         prior_rows = season_rows.loc[season_rows["team"] != acquiring_team]
         if prior_rows.empty:
-            continue  # cannot resolve a "previous team" this season -- never guessed
+            continue
 
         last_prior_week = int(prior_rows["week"].max())
         giving_team = str(prior_rows.loc[prior_rows["week"] == last_prior_week, "team"].iloc[0])
         trailing_rows = prior_rows.loc[prior_rows["team"] == giving_team]
         trailing_share = float(trailing_rows["snap_share"].mean())
         if trailing_share < HIGH_SNAP_SHARE_THRESHOLD:
-            continue  # not "high-snap" -- population excludes low-usage acquisitions
+            continue
 
         records.append(
             {
@@ -747,20 +694,6 @@ def attach_deadline_integration_drag_features(
     return _attach(features, derived, DEADLINE_INTEGRATION_DRAG_COLUMN)
 
 
-# ---------------------------------------------------------------------------
-# LEAD-14: suspension-return rust
-# ---------------------------------------------------------------------------
-
-#: A player CONFIRMED reinstated (returning), never a mere reinstatement
-#: FILING/request, and never a suspension itself being reinstated
-#: (reimposed). Measured against the real corpus: "josh-gordon-files-
-#: reinstatement-suspension" describes a PETITION, not a grant --
-#: "reinstatement" (the noun) never matches this pattern because it lacks
-#: the "-d" of "reinstated" (the two words diverge right after
-#: "reinstate"). "tom-bradys-suspension-reinstated-by-appeals-court" means
-#: the SUSPENSION was reinstated (reimposed) by a court, the opposite of a
-#: player returning -- excluded by the negative lookbehind on
-#: "suspension-" immediately preceding "reinstated".
 REINSTATED_RE = re.compile(r"(?<!suspension-)reinstated")
 SUSPENSION_RETURN_GAMES = 2
 
@@ -858,7 +791,7 @@ def _suspension_events(
         ].astype(int)
         earlier = candidates.loc[candidates["_idx"] < r_idx]
         if earlier.empty:
-            continue  # no confirmed "imposed" bracket -- can't measure duration
+            continue
         imposed_row = earlier.sort_values("_idx").iloc[0]
         i_idx = int(imposed_row["_idx"])
 

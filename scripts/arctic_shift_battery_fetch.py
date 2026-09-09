@@ -40,11 +40,6 @@ REQUEST_DELAY_SECONDS = 3.0
 MAX_ATTEMPTS = 6
 BACKOFF_BASE_SECONDS = 5.0
 
-# 32 canonical team codes (nfl_ats.constants.TEAM_ABBREVIATION_ALIASES-
-# canonicalized) -> best-effort current official team subreddit name.
-# Reported from general knowledge, NOT verified before this session; this
-# script's own fetch results (item counts, error fields) are the
-# verification, logged per team below.
 SUBREDDITS_ALL: dict[str, str] = {
     "ARI": "AZCardinals",
     "ATL": "falcons",
@@ -63,7 +58,7 @@ SUBREDDITS_ALL: dict[str, str] = {
     "JAX": "Jaguars",
     "KC": "KansasCityChiefs",
     "LA": "LosAngelesRams",
-    "LAC": "Chargers",  # "LosAngelesChargers" returns zero data; verified this session
+    "LAC": "Chargers",
     "LV": "raiders",
     "MIA": "miamidolphins",
     "MIN": "minnesotavikings",
@@ -81,7 +76,7 @@ SUBREDDITS_ALL: dict[str, str] = {
 }
 
 WINDOW_AFTER = "2010-08-01"
-WINDOW_BEFORE = "2026-08-27"  # exclusive upper bound, one day past today
+WINDOW_BEFORE = "2026-08-27"
 
 
 def fetch_with_retries(url: str) -> tuple[bytes | None, str | None]:
@@ -96,8 +91,6 @@ def fetch_with_retries(url: str) -> tuple[bytes | None, str | None]:
             payload = json.loads(body.decode("utf-8"))
             if isinstance(payload, dict) and payload.get("error"):
                 last_error = str(payload["error"])
-                # A named error (e.g. "subreddit not found") is not a
-                # transient failure -- do not retry, report it directly.
                 return None, last_error
             return body, None
         except urllib.error.HTTPError as exc:

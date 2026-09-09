@@ -44,7 +44,6 @@ DEFAULT_FEATURES = REPO / "data/processed/game_features_weak_stack.parquet"
 BASELINE_ARM = "ecdf"
 CANDIDATE_ARM = "gaussian"
 
-# Production recipe, artifacts/active_ats_model.json (2026-08-19).
 FEATURE_PROFILE = "weak_stack"
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0

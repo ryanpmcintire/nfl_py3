@@ -135,40 +135,16 @@ from nfl_ats.experiments import PairedBlock
 
 DEFAULT_ALPHA = 0.05
 
-# accuracy_improvement and brier_improvement are both differences of two
-# quantities already bounded in [0, 1] (a 0/1 correctness indicator, or a
-# Brier score), so both are bounded in [-1, 1]. log_loss_improvement is not
-# bounded -- see the module docstring -- and is deliberately unsupported.
 ANYTIME_METRICS: tuple[str, ...] = ("accuracy_improvement", "brier_improvement")
 
-# The rotation registry's OWN default confirmation-window size (three
-# seasons, ~800 games; docs/rotation_registry.md, "Window mechanics") is
-# already the project's established scale for "enough evidence to decide
-# something." Reusing it as the default target horizon for tuning the
-# martingale's prior variance means the default is derived from an existing,
-# documented project constant rather than invented for this module.
 DEFAULT_TARGET_GAMES = 800
 
-# Standing project decision (2026-08-18, docs/anytime_valid.md): games within
-# a week involve disjoint teams playing separate contests with no shared
-# outcome mechanism, so independence is the modelling decision for the
-# within-block correlation, not a quantity to estimate per comparison. This
-# is the default everywhere below; ``WORST_CASE_INTRACLASS_CORRELATION`` is
-# kept as an explicit, named override for stress-testing only.
 DEFAULT_INTRACLASS_CORRELATION = 0.0
 WORST_CASE_INTRACLASS_CORRELATION = 1.0
 
 _REQUIRED_PREDICTION_COLUMNS = frozenset(
     {"feature_set", "game_id", "season", "week", "home_cover", "home_cover_probability"}
 )
-
-
-# ---------------------------------------------------------------------------
-# Pairing (mirrors experiments.paired_feature_comparisons' contract exactly,
-# duplicated rather than imported so this module owns its correctness
-# independently of any future change to that file, which this brief forbids
-# touching).
-# ---------------------------------------------------------------------------
 
 
 def _validate_predictions_columns(predictions: pd.DataFrame) -> None:
@@ -234,12 +210,6 @@ def _ordered_blocks(
     identity = grouped.size().reset_index()[group_columns]
     block_arrays = [group["value"].to_numpy(dtype=np.float64) for _, group in grouped]
     return identity, block_arrays
-
-
-# ---------------------------------------------------------------------------
-# The martingale / confidence sequence engine, pure-numeric so it is reusable
-# by the calibration and power simulations without any DataFrame overhead.
-# ---------------------------------------------------------------------------
 
 
 def _per_block_variance(
@@ -356,11 +326,6 @@ def confidence_sequence_from_block_stats(
 
     cumulative_games = np.cumsum(block_sizes)
     cumulative_sum = np.cumsum(block_sums)
-    # The predictable variance process (see docstring): k_i is known from the
-    # schedule before block i's outcomes are revealed, so it is predictable,
-    # and per_game_variance_proxy/intraclass_correlation are fixed BEFORE any
-    # monitoring begins -- neither is re-estimated online, which is what
-    # keeps this a legitimate, non-adaptive variance process.
     cumulative_variance_process = np.cumsum(
         _per_block_variance(block_sizes, per_game_variance_proxy, intraclass_correlation)
     )
@@ -393,11 +358,6 @@ def confidence_sequence_from_block_stats(
             "excludes_zero": excludes_zero,
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# The DataFrame-facing surface, wired alongside paired_feature_comparisons.
-# ---------------------------------------------------------------------------
 
 
 def paired_anytime_comparisons(
@@ -466,8 +426,6 @@ def paired_anytime_comparisons(
         block_sizes = np.array([len(b) for b in block_arrays], dtype=np.float64)
         block_sums = np.array([float(b.sum()) for b in block_arrays], dtype=np.float64)
         average_block_size = float(np.mean(block_sizes))
-        # Diagnostic only -- see the docstring -- never fed back into rho or
-        # the variance process, both of which use the fixed operating value.
         measured_icc_diagnostic = (
             anova_intraclass_correlation(block_arrays) if len(block_arrays) >= 2 else float("nan")
         )
@@ -538,13 +496,6 @@ def anytime_summary(trace: pd.DataFrame) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# Simulation building blocks shared by tests/test_anytime.py (small-scale
-# correctness checks) and scripts/anytime_validate.py (the full calibration
-# and power study on real CFB block sizes).
-# ---------------------------------------------------------------------------
 
 
 def simulate_block_sequence(
@@ -742,23 +693,6 @@ def run_peeking_trial(
         fixed_sample_first_look=fixed_first_look,
         fixed_sample_first_games=fixed_first_games,
     )
-
-
-# ---------------------------------------------------------------------------
-# Measuring the intraclass correlation -- as a DIAGNOSTIC, not an input.
-#
-# ``intraclass_correlation`` is the single biggest lever on power (Kish's
-# design effect is linear in it). This project's operating value is a
-# standing decision, not an estimate: independence (icc=0), because games
-# within a week involve disjoint teams with no shared outcome mechanism --
-# see the module docstring and docs/anytime_valid.md. The two functions
-# below exist so a caller CAN check what a specific comparison's own data
-# says, as a sanity check against that decision; neither one feeds
-# ``paired_anytime_comparisons``'s or ``confidence_sequence_from_block_
-# stats``'s operating value, by design. Four independent checks so far (this
-# module's own tests plus three real CFB comparisons and one NFL comparison
-# in docs/anytime_valid.md) all land within a hair of zero.
-# ---------------------------------------------------------------------------
 
 
 def anova_intraclass_correlation(

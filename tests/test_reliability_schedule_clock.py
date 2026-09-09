@@ -48,15 +48,6 @@ import nfl_travel_rest_battery_screen as trbs  # noqa: E402
 import reliability_schedule_clock as rsc  # noqa: E402
 from reliability_lib import measure_reliability  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# Fixtures: the minimal columns each owning screen's own build_cells reads
-# (scripts/body_clock_screen.py:111-127, scripts/body_clock_night_screen.py:
-# 54-141, scripts/nfl_travel_rest_battery_screen.py:250-355,
-# scripts/dst_transition_battery_screen.py:191-275) -- constructed directly,
-# bypassing each screen's file-reading load_population, since build_cells
-# itself is the unit under test here.
-# ---------------------------------------------------------------------------
-
 
 def _body_clock_fixture() -> pd.DataFrame:
     return pd.DataFrame(
@@ -78,7 +69,6 @@ def _body_clock_fixture() -> pd.DataFrame:
                 "America/New_York",
             ],
             "location": ["Home", "Home", "Home", "Home", "Home", "Home"],
-            # minutes past midnight ET: 13:00, 19:30, 13:00, 15:00, 20:15, 20:30
             "kick_min": [13 * 60, 19 * 60 + 30, 13 * 60, 15 * 60, 20 * 60 + 15, 20 * 60 + 30],
             "season": [2010, 2010, 2011, 2011, 2016, 2016],
             "gameday": [
@@ -119,11 +109,6 @@ def _dst_fixture() -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# (a) Series equality: the script's own flags reproduce each screen's build_cells
-# ---------------------------------------------------------------------------
-
-
 def test_body_clock_cells_matches_screens_own_builders_exactly() -> None:
     df = _body_clock_fixture()
     combined = rsc.body_clock_cells(df)
@@ -131,18 +116,13 @@ def test_body_clock_cells_matches_screens_own_builders_exactly() -> None:
     direct_day = bcs.build_cells(df)
     direct_night = bcns.build_cells(df)
 
-    # Every day-screen cell reproduced byte-for-byte.
     for name, spec in direct_day.items():
         pd.testing.assert_series_equal(combined[name]["flag"], spec["flag"], check_names=False)
 
-    # Every night-screen cell reproduced byte-for-byte EXCEPT the 4 dose-bucket
-    # cells, which are deliberately renamed to match the registry's own
-    # (mismatched) names -- see rsc._DOSE_NAME_ALIAS.
     for name, spec in direct_night.items():
         target = rsc._DOSE_NAME_ALIAS.get(name, name)
         pd.testing.assert_series_equal(combined[target]["flag"], spec["flag"], check_names=False)
 
-    # The alias covers exactly the 4 dose cells, no silent drops or extras.
     assert set(rsc._DOSE_NAME_ALIAS) == {
         "body_clock_night_west_road_dose_1300",
         "body_clock_night_west_road_dose_1400_1659",
@@ -165,8 +145,6 @@ def test_redteam_masks_match_body_clock_night_screens_own_flag() -> None:
     reference = bcns.build_cells(df)["body_clock_night_west_road_ge2000et"]["flag"]
     pd.testing.assert_series_equal(masks["west_night"], reference, check_names=False)
 
-    # west_night must be exactly away_west & true_home & night -- not some
-    # looser or tighter combination.
     pd.testing.assert_series_equal(
         masks["west_night"],
         masks["away_west"] & masks["true_home"] & masks["night"],
@@ -190,7 +168,6 @@ def test_travel_rest_cells_are_the_screens_own_builder() -> None:
         "travel_rest_short_week_road",
         "travel_rest_thursday_pure",
     }
-    # Neutral-site row is the international flag and nothing else.
     assert direct["travel_rest_international_game"]["flag"].tolist() == [False, False, True, False]
 
 
@@ -204,7 +181,6 @@ def test_dst_cells_are_the_screens_own_builder() -> None:
         "dst_transition_eastbound_interaction",
         "dst_placebo_shifted_window",
     }
-    # d1_flag = days_since_fall_transition in [0, 6]: rows 0, 1, 4 (0, 3, 2).
     assert cells["dst_fall_transition_shock"]["flag"].tolist() == [True, True, False, False, True]
 
 
@@ -215,9 +191,6 @@ def test_one_sided_long_does_not_leak_the_other_side() -> None:
     side-specific fact to the opponent."""
 
     df = _travel_rest_fixture()
-    # away_team/season/week aren't in the travel-rest fixture (only what
-    # build_cells reads); one_sided_long also needs season/week, so add a
-    # minimal set of team/schedule columns for this test.
     df2 = df.copy()
     df2["home_team"] = ["A", "B", "C", "D"]
     df2["away_team"] = ["W", "X", "Y", "Z"]
@@ -227,12 +200,6 @@ def test_one_sided_long_does_not_leak_the_other_side() -> None:
     assert set(long["team_id"]) == {"W", "X", "Y", "Z"}
     assert "A" not in set(long["team_id"])
     assert long["away_rest"].tolist() == df2["away_rest"].tolist()
-
-
-# ---------------------------------------------------------------------------
-# (b) split-half arithmetic on a hand-computable Pearson r + Spearman-Brown,
-#     and the rare-flag regression guard.
-# ---------------------------------------------------------------------------
 
 
 def _hand_pearson_r(x: list[float], y: list[float]) -> float:
@@ -247,15 +214,10 @@ def _hand_pearson_r(x: list[float], y: list[float]) -> float:
 
 
 def test_measure_reliability_known_answer_pearson_and_spearman_brown() -> None:
-    # 4 team-seasons, 2 observations per half, each observation equal to its
-    # half's mean (so the mean is exact, no floating surprises). Odd means
-    # [1, 2, 3, 5], even means [2, 3, 5, 4] -- picked arbitrarily, not to be
-    # perfectly correlated, so the Spearman-Brown step-up is a genuine test.
     rows = []
     means = [(1.0, 2.0), (2.0, 3.0), (3.0, 5.0), (5.0, 4.0)]
     for i, (odd_mean, even_mean) in enumerate(means):
         team = f"T{i}"
-        # weeks 1, 3 = odd (Python week%2==1); weeks 2, 4 = even.
         rows += [
             {"team_id": team, "season": 2020, "week": 1, "metric": odd_mean},
             {"team_id": team, "season": 2020, "week": 3, "metric": odd_mean},
@@ -280,7 +242,6 @@ def test_measure_reliability_known_answer_pearson_and_spearman_brown() -> None:
     assert result["method"] == "test-trait-method"
     assert result["n_units"] == 4
 
-    # Sanity: the hand-computed r is not trivially 0 or 1 -- a real check.
     assert 0.5 < expected_r < 0.9
 
 
@@ -293,7 +254,7 @@ def test_rare_flag_frame_is_never_recorded_as_zero_reliability() -> None:
         {
             "team_id": ["Z", "Z"],
             "season": [2021, 2021],
-            "week": [1, 2],  # week 1 = odd (1 obs), week 2 = even (1 obs)
+            "week": [1, 2],
             "metric": [5.0, 6.0],
         }
     )
@@ -313,7 +274,7 @@ def test_rare_flag_default_min_units_floor_also_catches_a_small_measured_group()
     for e.g. the DST Arizona-shield cells."""
 
     rows = []
-    for i in range(4):  # well under MIN_UNITS=20
+    for i in range(4):
         team = f"T{i}"
         rows += [
             {"team_id": team, "season": 2021, "week": 1, "metric": float(i)},
@@ -322,7 +283,7 @@ def test_rare_flag_default_min_units_floor_also_catches_a_small_measured_group()
             {"team_id": team, "season": 2021, "week": 4, "metric": float(i) + 1.0},
         ]
     long = pd.DataFrame(rows)
-    result = measure_reliability(long, "metric", method="test-method")  # default min_units=20
+    result = measure_reliability(long, "metric", method="test-method")
 
     assert result["status"] == "insufficient_split_units"
     assert result["reliability"] is None

@@ -44,8 +44,6 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: Registered in artifacts/prospective/challengers.json (the registration
-#: snippet is in docs/key_line_pick_read.md).
 CHALLENGER_ID = "key_line_pick_read_off_incumbent"
 
 

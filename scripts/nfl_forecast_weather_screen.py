@@ -82,12 +82,11 @@ FORECAST_COLUMNS = ["game_id", "forecast_temp_f", "forecast_wind_mph", "fetch_st
 
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260819
-SEASON_START = 2020  # forecast archive coverage, narrower than the 2009-2025 originals
+SEASON_START = 2020
 SEASON_END = 2025
 
 OUTDOOR_ROOFS = frozenset({"outdoors", "open"})
 DOME_CLOSED_ROOFS = frozenset({"dome", "closed"})
-# Reused verbatim from scripts/nfl_weather_battery_screen.py.
 WARM_METRO_TEAM_CODES = frozenset(
     {
         "MIA",
@@ -106,7 +105,7 @@ WARM_METRO_TEAM_CODES = frozenset(
     }
 )
 
-TEMP_GAP_THRESHOLD_F = 25.0  # weather_followup_temp_gap_cold_visitor's threshold, reused verbatim
+TEMP_GAP_THRESHOLD_F = 25.0
 
 LEAKAGE_CAVEAT_FORECAST = (
     "forecast-based (Tuesday-noon GFS-MOS), genuinely pregame-available at the pool's lock "
@@ -146,7 +145,7 @@ def load_population(schedules_path: Path, forecasts_path: Path) -> pd.DataFrame:
     df["week"] = pd.to_numeric(df["week"], errors="raise").astype(int)
     df = df.loc[df["season"].between(SEASON_START, SEASON_END)].reset_index(drop=True)
 
-    df = add_ats_outcomes(df)  # adds ats_margin, home_cover (reused verbatim)
+    df = add_ats_outcomes(df)
     n_before_push_drop = len(df)
     df = df.loc[df["home_cover"].notna()].reset_index(drop=True)
     pushes_or_missing = n_before_push_drop - len(df)
@@ -162,8 +161,6 @@ def load_population(schedules_path: Path, forecasts_path: Path) -> pd.DataFrame:
     n_forecast_matched = int(df["fetch_status"].notna().sum())
     n_forecast_ok = int((df["fetch_status"] == "ok").sum())
 
-    # away_modal_roof: same convention as scripts/nfl_weather_battery_screen.py
-    # (full REG population after push-drop, per (home_team, season)).
     modal_roof = (
         df.groupby(["home_team", "season"])["roof"]
         .agg(lambda s: s.mode().iat[0] if not s.mode().empty else None)
@@ -176,9 +173,6 @@ def load_population(schedules_path: Path, forecasts_path: Path) -> pd.DataFrame:
         how="left",
     )
 
-    # climate_temp: away team's own climatological-normal ACTUAL outdoor home
-    # temp this season, same convention as scripts/nfl_weather_followup_screen.py
-    # (not season-causal, disclosed, precedented, unchanged here).
     outdoor_home = df.loc[df["outdoor"]]
     team_climate = (
         outdoor_home.groupby(["home_team", "season"])
@@ -237,7 +231,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     outdoor = df["outdoor"]
     roof_missing = df["roof"].isna()
 
-    # 1. high_wind_outdoor -- mirrors weather_battery_high_wind_outdoor
     add(
         "forecast_weather_high_wind_outdoor",
         outdoor & (df["forecast_wind_mph"] >= 15),
@@ -251,7 +244,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "screen's 2020-2025 population (diagnostic, not recorded)",
     )
 
-    # 2. dome_team_outdoors_cold -- mirrors weather_battery_dome_team_outdoors_cold
     dome_missing = df["away_modal_roof"].isna() | df["forecast_temp_f"].isna() | roof_missing
     add(
         "forecast_weather_dome_team_outdoors_cold",
@@ -267,7 +259,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "this screen's 2020-2025 population (diagnostic, not recorded)",
     )
 
-    # 3. warm_team_cold_late -- mirrors weather_battery_warm_team_cold_late
     warm_missing = df["forecast_temp_f"].isna() | roof_missing
     add(
         "forecast_weather_warm_team_cold_late",
@@ -289,7 +280,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
         "screen's 2020-2025 population (diagnostic, not recorded)",
     )
 
-    # 4. temp_gap_cold_visitor -- mirrors weather_followup_temp_gap_cold_visitor
     forecast_temp_gap = df["climate_temp"] - df["forecast_temp_f"]
     forecast_gap_missing = df["climate_temp"].isna() | df["forecast_temp_f"].isna() | roof_missing
     actual_temp_gap = df["climate_temp"] - df["temp"]

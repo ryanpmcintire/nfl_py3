@@ -85,8 +85,6 @@ class SeasonDataset:
         return f"{self.release}/{self.stem}_{season}"
 
 
-#: The datasets this repo pulls per season. Verified 2026-09-08 against the
-#: paths ``nflreadpy``'s own loaders build.
 SEASON_DATASETS: dict[str, SeasonDataset] = {
     "injuries": SeasonDataset("injuries", "injuries"),
     "rosters_weekly": SeasonDataset("weekly_rosters", "roster_weekly"),
@@ -149,9 +147,6 @@ def load_season_frame(dataset: str, season: int) -> pd.DataFrame:
             "nflverse-data", entry.path(int(season)), season=int(season)
         )
     except ConnectionError as exc:
-        # The downloader reports a 404 as a ConnectionError carrying the URL.
-        # Anything else (a real network fault) is left to propagate: a caller
-        # must not read "the site is down" as "the season does not exist".
         if "404" not in str(exc):
             raise
         raise SeasonReleaseNotPublished(

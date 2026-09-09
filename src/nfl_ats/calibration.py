@@ -116,17 +116,6 @@ def calibrate_cover_prediction_stream(
     *,
     method: str,
     evaluation_start_season: int,
-    # DERIVED, not inherited (2026-08-17). The previous default of 400 was an
-    # undocumented constant that nobody had ever tested; it demanded 200
-    # observations per parameter for a two-parameter Platt sigmoid and, via the
-    # rotation registry's warm-up rule, permanently shrank the confirmation-window
-    # pool. Measured on the real 2009-2025 walk-forward stream by bucketing
-    # calibrated-vs-raw Brier by the history each week's calibrator actually had:
-    # 100-199 rows makes Brier WORSE (0.206 -> 0.284, though only 16 games);
-    # 200-399 rows already IMPROVES it (0.269 -> 0.250 on 204 games), as does
-    # every larger bucket with diminishing returns. So a floor is real but 400 is
-    # twice what the evidence supports; 200 is the smallest demonstrated-safe
-    # value. Raising it again needs evidence, not caution.
     min_calibration_games: int = DEFAULT_MIN_CALIBRATION_GAMES,
     min_edge: float = 0.02,
 ) -> pd.DataFrame:
@@ -217,40 +206,6 @@ def calibrate_cover_prediction_stream(
         ["gameday", "game_id"], ignore_index=True
     )
 
-
-# ---------------------------------------------------------------------------
-# Residual-distribution smoothing (research item: docs/ecdf_smoothing.md)
-# ---------------------------------------------------------------------------
-#
-# ``margin.MarginModel`` builds its predictive distribution for every game by
-# adding a fixed out-of-time residual SAMPLE (typically a few hundred draws --
-# see ``fit_margin_model``'s 20% chronological holdout) to that game's
-# predicted centre, then reads cover/win/loss probabilities off the resulting
-# discretized empirical CDF (``margin._smoothed_probability``: a Laplace/KT
-# continuity-corrected count, not a fitted density). That is an ECDF, with
-# whatever sampling noise a few-hundred-draw ECDF carries.
-#
-# Everything below is an OPT-IN alternative reader of the SAME residual draws
-# -- it never touches ``margin.py`` and is never called by the production
-# prediction path unless a caller explicitly builds a ``ResidualSmoother``.
-# The frozen active model is therefore bit-identical whether or not this
-# module is imported; ``tests/test_calibration_ecdf_smoothing.py`` pins that.
-#
-# IMPORTANT: replacing the ECDF with a smoothed density is NOT the "rescale
-# the point prediction" operation MOD-06 closed (docs/pool_edge_plan.md: a
-# positive scalar rescaling can never flip ``sign(predicted residual)``).
-# The pool's actual forced pick is ``home_cover_probability >= 0.5``
-# (`nfl_ats.pool.build_ats_pool_card`), which is the EMPIRICAL MEDIAN of
-# ``center + residuals`` compared against the line, not the point residual
-# compared against zero. Because the raw held-out residual sample has a
-# nonzero, noisy mean/median (it corrects for the temporary fit model's own
-# out-of-time bias), those two decision rules already disagree for a real,
-# measurable share of games under the CURRENT unsmoothed model. Smoothing
-# changes the estimated location/shape of the distribution -- not its scale
-# -- so it can move which side of 0.5 a game near that boundary falls on.
-# That is a real, distinct lever from rescaling, which is exactly why it
-# needs its own predeclared confirmation window rather than shipping on a
-# measurement.
 
 ResidualSmoothingMethod = Literal[
     "ecdf",
@@ -418,12 +373,6 @@ def smoothed_home_cover_probability(
     """
 
     if method in DISCRETE_MARGIN_METHODS:
-        # MOD-18 C2 (docs/mod18_discrete_margin_mapping.md): the served
-        # mass-preserving lattice deciding the SIDE, either on every line or
-        # only on the key numbers and the half points either side of them.
-        # ``conditional_history`` is the caller's already cutoff-filtered
-        # prior stream, the same contract the conditional-margin methods
-        # state; only its ``spread_line`` and integer ``result`` are read.
         if conditional_history is None:
             raise ValueError("Discrete margin methods require prior completed prediction history")
         smooth = (
@@ -442,8 +391,6 @@ def smoothed_home_cover_probability(
             smooth=smooth,
         )
     if method in HOME_SIDE_MAPPING_METHODS:
-        # ``conditional_history.predicted_margin`` is the prior forecasts'
-        # mapping centre (point + gaussian_median location), as in lane K.
         if conditional_history is None:
             raise ValueError("Home-side methods require prior completed prediction history")
         if method == "smooth_home_side_shift":
@@ -495,7 +442,6 @@ def smoothed_home_cover_probability(
         )
     smoother = fit_residual_smoother(residuals, method=method)
     if method == "discrete_residual":
-        # Same integer support convention as key_numbers.implied_key_number_mass.
         margins = np.round(np.asarray(centers, dtype=float)[:, None] + smoother.residuals)
         covers = margins > np.asarray(lines, dtype=float)[:, None]
         return np.asarray((covers.sum(axis=1) + 0.5) / (smoother.n + 1), dtype=np.float64)

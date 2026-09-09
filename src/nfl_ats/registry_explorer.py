@@ -65,11 +65,6 @@ VIEWS: tuple[str, ...] = (
 )
 
 
-# ---------------------------------------------------------------------------
-# (a) Unresolved signals
-# ---------------------------------------------------------------------------
-
-
 def unresolved_signals(
     registry: weak_signals.Registry,
     *,
@@ -125,11 +120,6 @@ def unresolved_signals(
         )
     )
     return rows
-
-
-# ---------------------------------------------------------------------------
-# (b) Repeated windows
-# ---------------------------------------------------------------------------
 
 
 def repeated_windows(reg: rotation.Registry) -> dict[str, Any]:
@@ -223,11 +213,6 @@ def repeated_windows(reg: rotation.Registry) -> dict[str, Any]:
             "how much a result should move a decision, never a ban on drawing it."
         ),
     }
-
-
-# ---------------------------------------------------------------------------
-# (c) Shared populations
-# ---------------------------------------------------------------------------
 
 
 def shared_population_groups(
@@ -331,11 +316,6 @@ def shared_population_groups(
     }
 
 
-# ---------------------------------------------------------------------------
-# (d) Source availability
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class SourceRule:
     """One family-prefix rule, with the citation for how it was established.
@@ -357,12 +337,6 @@ class SourceRule:
     citation: str
 
 
-#: Every entry below was verified this session by reading the cited file(s)
-#: -- see each ``citation``. A family not matched by any prefix here falls
-#: through to :data:`_CATEGORY_FALLBACK` (a lower-confidence, category-level
-#: inference, explicitly labelled as such) and finally to ``"unknown"``. Do
-#: not add an entry without a citation: this table exists specifically so
-#: source availability is never guessed (ENG-07's own requirement).
 FAMILY_SOURCE_RULES: tuple[SourceRule, ...] = (
     SourceRule(
         "public_betting",
@@ -631,11 +605,6 @@ FAMILY_SOURCE_RULES: tuple[SourceRule, ...] = (
     ),
 )
 
-#: Second-tier, lower-confidence fallback keyed by the registry's own
-#: ``category`` field (an existing structured field, not inferred by this
-#: module) when no :data:`FAMILY_SOURCE_RULES` prefix matches. Every detail
-#: string says "not verified for this specific family" so a reader can never
-#: mistake this tier for the citation-backed rows above.
 _CATEGORY_FALLBACK: dict[str, tuple[str, str]] = {
     "schedule": (
         "inferred_from_category",
@@ -741,8 +710,6 @@ def source_availability(
         if league is not None and signal.league != league:
             continue
         key = (signal.league, weak_signals.signal_family(signal))
-        # Prefer a signal that actually carries a category, in case members
-        # of the same family were recorded inconsistently.
         if key not in seen or seen[key] is None:
             seen[key] = signal.category
 
@@ -762,10 +729,6 @@ def source_availability(
     rows.sort(key=lambda row: (row["league"], row["family"]))
     return rows
 
-
-# ---------------------------------------------------------------------------
-# ENG-27: rotation-registry coverage plan.
-# ---------------------------------------------------------------------------
 
 COVERAGE_ACTION_STUB = "declare_stub"
 COVERAGE_ACTION_NO_ROTATION_NEEDED = "no_rotation_needed"
@@ -861,11 +824,6 @@ def coverage_plan(
             }
         )
     return rows
-
-
-# ---------------------------------------------------------------------------
-# (e) Next shots
-# ---------------------------------------------------------------------------
 
 
 def matching_rotation_families(

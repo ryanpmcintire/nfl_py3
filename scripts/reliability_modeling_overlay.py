@@ -106,20 +106,12 @@ GUARD_COMPOSITIONAL = "not_applicable_compositional_constraint"
 GUARD_UNIT_CONSTANT = "not_applicable_unit_constant"
 GUARD_NEAR_CONSTANT = "not_informative_near_constant"
 
-#: A single value covering this share of the column makes |r| a function of a
-#: handful of rows; the orchestrator measured such columns flipping sign with
-#: the season window, so they are reported, never recorded.
 NEAR_CONSTANT_MODAL_SHARE = 0.98
 
-#: Share of units whose within-unit variance is exactly zero above which the
-#: odd/even split is tautological (both halves are the same number).
 UNIT_CONSTANT_SHARE = 0.995
 
-#: Mean random-halves correlation at or below which a negative measurement is
-#: read as a compositional constraint rather than a trait property.
 COMPOSITIONAL_RANDOM_HALVES_MAX = -0.30
 
-#: Reseeds for the random-halves check (cheap; each is one bootstrap-light run).
 RANDOM_HALVES_RESEEDS = 12
 RANDOM_HALVES_N_BOOT = 200
 
@@ -131,33 +123,20 @@ MOVEMENT_PER_GAME = REPO / "artifacts/movement_tilt_screen/20260819T160330Z/per_
 GAME_FEATURES = REPO / "data/processed/game_features.parquet"
 
 
-# ---------------------------------------------------------------------------
-# Cell table
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class Cell:
     """One registry cell, its disposition, and how to measure it (or why not)."""
 
     entry: str
     disposition: str
-    #: For (a)/(b): the parent quantity's plain name. For (c): the reason there
-    #: is no single parent trait, in one sentence.
     parent: str
-    #: Where the mapping was read from, file:line.
     provenance: str
     frame: str | None = None
     metric: str | None = None
     method: str | None = None
     unit_col: str = "team_id"
-    #: ``(frame, metric)`` pairs measured and REPORTED (never recorded) so a
-    #: block cell's information is not lost.
     members: tuple[tuple[str, str], ...] = ()
-    #: Names of other rows in this run that already carry the member parents'
-    #: numbers, for composition cells.
     member_rows: tuple[str, ...] = ()
-    #: Always run the random-halves conserved-quantity check for this parent.
     conserved_candidate: bool = False
     extra: dict[str, Any] = field(default_factory=dict)
 
@@ -211,7 +190,6 @@ _P_ERA_WEIGHTING = (
 _P_FLAG_BUILDER = "src/nfl_ats/experiment_runner.py FLAG_BUILDERS. Read 2026-09-01."
 
 CELLS: tuple[Cell, ...] = (
-    # ---- best-pick rankers -------------------------------------------------
     Cell(
         "best_pick_calibrated_probability_top1",
         DISPOSITION_TRAIT,
@@ -268,7 +246,6 @@ CELLS: tuple[Cell, ...] = (
         metric="spread_std",
         method=_TRAIT,
     ),
-    # ---- combined / max-EV stacks -----------------------------------------
     Cell(
         "combined_stacker_opener_2022_2023",
         DISPOSITION_NO_TRAIT,
@@ -283,7 +260,6 @@ CELLS: tuple[Cell, ...] = (
             ("v34", "injury_defense_disruption_value_lost"),
         ),
     ),
-    # ---- era trend ---------------------------------------------------------
     Cell(
         "era_trend_extra_rest_edge",
         DISPOSITION_TRAIT,
@@ -315,7 +291,6 @@ CELLS: tuple[Cell, ...] = (
         "scripts/reliability_map.py:543 already files this cell as "
         "'model-level accuracy trend, not a feature'. Read 2026-09-01.",
     ),
-    # ---- era weighting -----------------------------------------------------
     *(
         Cell(
             name,
@@ -337,7 +312,6 @@ CELLS: tuple[Cell, ...] = (
             "era_weighting_nfl_rolling_6",
         )
     ),
-    # ---- availability / shrinkage blocks ----------------------------------
     Cell(
         "learned_availability_ats_2018_2025",
         DISPOSITION_NO_TRAIT,
@@ -414,7 +388,6 @@ CELLS: tuple[Cell, ...] = (
         ),
         extra={"member_seasons": [2020, 2021]},
     ),
-    # ---- movement tilt -----------------------------------------------------
     Cell(
         "movement_direction_tilt_opener",
         DISPOSITION_TRAIT,
@@ -446,7 +419,6 @@ CELLS: tuple[Cell, ...] = (
         metric="predicted_move_team_signed",
         method=_TRAIT,
     ),
-    # ---- overlay leave-one-out --------------------------------------------
     Cell(
         "overlay_loo_drop_coach_fade",
         DISPOSITION_EXPOSURE,
@@ -489,7 +461,6 @@ CELLS: tuple[Cell, ...] = (
         metric="abs_spread_line",
         method=_TRAIT,
     ),
-    # ---- overlay compositions ---------------------------------------------
     Cell(
         "overlay_single_addition_to_played_union_forward_holdout",
         DISPOSITION_NO_TRAIT,
@@ -603,7 +574,6 @@ CELLS: tuple[Cell, ...] = (
             "overlay_loo_drop_player_arrests_back_side_policy",
         ),
     ),
-    # ---- pbp bundle --------------------------------------------------------
     Cell(
         "pbp_drive_bundle",
         DISPOSITION_NO_TRAIT,
@@ -627,7 +597,6 @@ CELLS: tuple[Cell, ...] = (
         ),
         extra={"member_seasons": [2013, 2017]},
     ),
-    # ---- pick-conditioned screens -----------------------------------------
     Cell(
         "pick_conditioned_off_bye_fade_pre2018",
         DISPOSITION_TRAIT,
@@ -679,7 +648,6 @@ CELLS: tuple[Cell, ...] = (
         metric="abs_spread_line",
         method=_TRAIT,
     ),
-    # ---- QB / lineup continuity blocks ------------------------------------
     Cell(
         "player_qb_continuity_bundled_alpha",
         DISPOSITION_NO_TRAIT,
@@ -721,7 +689,6 @@ CELLS: tuple[Cell, ...] = (
         ),
         extra={"member_seasons": [2014, 2017]},
     ),
-    # ---- red team ----------------------------------------------------------
     Cell(
         "redteam_bye_fade_sham_placebo_null",
         DISPOSITION_NO_TRAIT,
@@ -766,7 +733,6 @@ CELLS: tuple[Cell, ...] = (
             "overlay_loo_drop_spread_gap_zone_fade",
         ),
     ),
-    # ---- referee battery ---------------------------------------------------
     Cell(
         "referee_battery_rookie_home_cover",
         DISPOSITION_EXPOSURE,
@@ -793,7 +759,6 @@ CELLS: tuple[Cell, ...] = (
         metric="exposure",
         method=_EXPOSURE,
     ),
-    # ---- hyperparameter ----------------------------------------------------
     Cell(
         "ridge_alpha_2000_nfl_opener_confirmation",
         DISPOSITION_NO_TRAIT,
@@ -816,7 +781,6 @@ CELLS: tuple[Cell, ...] = (
             "overlay_loo_drop_player_arrests_back_side_policy",
         ),
     ),
-    # ---- weak stack v2 / v3 ------------------------------------------------
     Cell(
         "weak_stack_v2_narrowed_only",
         DISPOSITION_NO_TRAIT,
@@ -878,7 +842,6 @@ CELLS: tuple[Cell, ...] = (
         ),
         extra={"member_seasons": [2020, 2025]},
     ),
-    # ---- oracle ceiling ----------------------------------------------------
     Cell(
         "weather_oracle_ceiling_opener_probability_rule",
         DISPOSITION_NO_TRAIT,
@@ -894,11 +857,6 @@ CELLS: tuple[Cell, ...] = (
         extra={"member_unit_col": "venue_id", "member_method": "venue"},
     ),
 )
-
-
-# ---------------------------------------------------------------------------
-# Frames
-# ---------------------------------------------------------------------------
 
 
 def _latest(root: Path, pattern: str) -> Path:
@@ -928,7 +886,6 @@ class Frames:
             "venue_weather": self._build_venue_weather,
         }
 
-    # -- helpers ---------------------------------------------------------
     def identity(self) -> pd.DataFrame:
         if self._identity is None:
             features = pd.read_parquet(
@@ -961,7 +918,6 @@ class Frames:
         self.get(name)
         return self._games.get(name)
 
-    # -- builders --------------------------------------------------------
     def _build_v34(self) -> pd.DataFrame:
         features = relmap.load_feature_table()
         dtypes = {column: features[column].dtype for column in features.columns}
@@ -1219,11 +1175,6 @@ def game_frame_to_team_week(
     return pd.concat(pieces, ignore_index=True)
 
 
-# ---------------------------------------------------------------------------
-# Guards
-# ---------------------------------------------------------------------------
-
-
 def column_diagnostics(
     long: pd.DataFrame, metric: str, unit_col: str, seasons: tuple[int, int]
 ) -> dict[str, Any]:
@@ -1298,11 +1249,6 @@ def random_halves_check(
             "positive; a conserved-total quantity stays strongly negative."
         ),
     }
-
-
-# ---------------------------------------------------------------------------
-# Measurement
-# ---------------------------------------------------------------------------
 
 
 class Measurer:
@@ -1395,11 +1341,6 @@ class Measurer:
         window = window.dropna(subset=["season"])
         window = window.loc[window["season"].astype(int).between(seasons[0], seasons[1])]
         self.controls[label] = rlib.positive_control(window, unit_col=unit_col, n_boot=1000)
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 
 def registry_windows() -> dict[str, dict[str, Any]]:

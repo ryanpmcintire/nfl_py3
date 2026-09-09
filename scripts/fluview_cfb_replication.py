@@ -101,32 +101,18 @@ DEFAULT_FEATURES = REPO_ROOT / "data" / "processed" / "cfb_game_features.parquet
 ARTIFACT_ROOT = REPO_ROOT / "artifacts" / "fluview_cfb_replication"
 TEAM_INFO_ROOT = REPO_ROOT / "data" / "cfb" / "team_info" / "raw"
 
-#: docs/fluview_cfb_replication.md section 7 -- 1,000 samples for comparability
-#: with the NFL sibling harness, seed = today's date per repo convention.
 BOOTSTRAP_SAMPLES = 1_000
 SEED = 20260901
 PERMUTATIONS = 200
 
-#: docs/fluview_cfb_replication.md section 7 -- the obvious boundary is the
-#: benchmark's own declared 2020 regime gap. Magnitudes are reported per era
-#: and NEVER averaged across a sign flip (owner rule "era magnitude, not
-#: presence").
 ERAS: tuple[tuple[str, int, int], ...] = (("2017_2019", 2017, 2019), ("2021_2025", 2021, 2025))
 
-#: Seasons the cfbfastR-data team_info snapshot must cover: every season the
-#: XLG-03 table can carry, so the school -> state map never runs short of the
-#: training population.
 TEAM_INFO_SEASONS = tuple(range(2006, 2026))
 
 CELLS: dict[str, dict[str, str]] = {
     "away": {"column": CFB_FLUVIEW_AWAY_ELEVATED_COLUMN, "role": "primary"},
     "home": {"column": CFB_FLUVIEW_HOME_ELEVATED_COLUMN, "role": "secondary"},
 }
-
-
-# ---------------------------------------------------------------------------
-# mode: fetch-inputs
-# ---------------------------------------------------------------------------
 
 
 def fetch_team_info() -> Path:
@@ -188,11 +174,6 @@ def fetch_team_info() -> Path:
     return snapshot
 
 
-# ---------------------------------------------------------------------------
-# population
-# ---------------------------------------------------------------------------
-
-
 def load_population(features_path: Path) -> tuple[pd.DataFrame, dict[str, Any]]:
     """The XLG-03 benchmark table with both candidate columns attached.
 
@@ -219,11 +200,6 @@ def covered_clean_core_seasons(diagnostics: dict[str, Any]) -> tuple[int, ...]:
     return tuple(
         season for season in CFB_CLEAN_CORE_SEASONS if float(coverage.get(str(season), 0.0)) > 0.0
     )
-
-
-# ---------------------------------------------------------------------------
-# the evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_walk_forward(
@@ -418,11 +394,6 @@ def summarize_pair(paired: pd.DataFrame, samples: int, seed: int) -> dict[str, A
         summary["season_blocked_ci95"] = None
         summary["season_blocked_probability_positive"] = None
     return summary
-
-
-# ---------------------------------------------------------------------------
-# entry point
-# ---------------------------------------------------------------------------
 
 
 def _print_pair(label: str, summary: dict[str, Any] | None) -> None:

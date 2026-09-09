@@ -49,9 +49,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Literal
 
-# Reused verbatim rather than duplicated: this is the same list rendered in
-# HANDOFF.md's "Local reproducibility inventory" section, and duplicating it
-# here would let the two views silently drift.
 from nfl_ats.handoff import _display_path, _local_inventory
 
 PREFLIGHT_VERSION = 1
@@ -62,14 +59,11 @@ Status = Literal["ok", "warn", "fail"]
 _FALLBACK_REQUIRES_PYTHON = ">=3.12,<3.14"
 _EXPECTED_HOOKS_PATH = ".githooks"
 
-#: (env var, human description of what breaks without it). Values are never
-#: read into a check's ``detail`` -- presence/absence only.
 _SOURCE_POLICY_KEYS: tuple[tuple[str, str], ...] = (
     ("THE_ODDS_API_KEY", "live odds fetches and the historical market backfill"),
     ("CFBD_API_KEY", "CFB Data API ingestion"),
 )
 
-#: (env var, default relative path) for the three overridable roots.
 _DIRECTORY_ENV_OVERRIDES: tuple[tuple[str, str], ...] = (
     ("NFL_ATS_DATA_DIR", "data"),
     ("NFL_ATS_ARTIFACTS_DIR", "artifacts"),
@@ -328,7 +322,6 @@ def _probe_writable(directory: Path) -> tuple[bool, str]:
         probe_path.write_text("preflight probe", encoding="utf-8")
     except OSError as error:
         return False, str(error)
-    # Best-effort cleanup; the write already proved writability either way.
     with contextlib.suppress(OSError):
         probe_path.unlink()
     return True, "ok"

@@ -170,9 +170,6 @@ def test_tuesday_opener_quotes_selects_earliest_tuesday_capture() -> None:
     opener = tuesday_opener_quotes(history)
     assert len(opener) == 1
     assert opener.iloc[0]["nflverse_game_id"] == "2026_01_NE_SEA"
-    # Both Tuesday captures (12:00Z and 15:00Z, i.e. 08:00 and 11:00 ET) are
-    # before the pool's 12:00 ET lock, so the earliest Tuesday capture wins as
-    # the fallback -- not the later Tuesday or the Wednesday quote.
     assert opener.iloc[0]["opener_home_spread"] == 3.0
     assert opener.iloc[0]["opener_basis"] == OPENER_BASIS_PRE_LOCK_FALLBACK
 
@@ -182,8 +179,8 @@ def test_tuesday_opener_quotes_prefers_the_first_capture_after_the_pool_lock() -
     the post-lock capture exists (the full rule is pinned in
     ``tests/test_pool_spread_lock.py``)."""
 
-    pre_lock = datetime(2026, 9, 8, 13, tzinfo=UTC)  # 09:00 ET
-    post_lock = datetime(2026, 9, 8, 16, 5, tzinfo=UTC)  # 12:05 ET
+    pre_lock = datetime(2026, 9, 8, 13, tzinfo=UTC)
+    post_lock = datetime(2026, 9, 8, 16, 5, tzinfo=UTC)
     assert pre_lock.weekday() == post_lock.weekday() == 1
     history = pd.concat(
         [

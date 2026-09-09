@@ -95,16 +95,6 @@ from nfl_ats.players import attach_snap_player_ids
 PLAY_PROBABILITY_MODEL_VERSION = "v2-decision-safe-disjoint-calibration"
 DEPTH_CHART_HISTORY_VERSION = "v1-legacy-week-and-daily-dt"
 
-# ---------------------------------------------------------------------------
-# Fixed category vocabularies. HistGradientBoostingClassifier's
-# ``categorical_features="from_dtype"`` encodes a pandas "category" column by
-# its ``.cat.categories`` array; a training frame and a one-row serving frame
-# built independently could otherwise assign the SAME category string a
-# DIFFERENT integer code (e.g. if a rare category is simply absent from one
-# frame), silently corrupting predictions with no error raised. Every
-# categorical feature is built through ``_categorical`` below using one of
-# these FIXED, ordered tuples so training and serving always agree.
-# ---------------------------------------------------------------------------
 DEPTH_RANK_BUCKET_CATEGORIES: tuple[str, ...] = ("1", "2", "3+", "unknown")
 POSITION_GROUP_CATEGORIES: tuple[str, ...] = (
     "offensive_line",
@@ -167,13 +157,6 @@ _CATEGORY_VOCABULARY: dict[str, tuple[str, ...]] = {
 LABEL_PLAYED = "played"
 LABEL_STARTED = "started"
 
-#: Specific-position buckets used ONLY for the "started" proxy label's own
-#: competition for starting slots, ranked by recorded snap share.
-#: Deliberately finer than ``POSITION_GROUP_CATEGORIES``: grouping every
-#: offensive lineman together (5 simultaneous roles) or every "skill" player
-#: together (QB pooled with RB/WR/TE/FB) makes a 50%-of-group threshold
-#: unreachable for almost anyone. These buckets instead group only players
-#: who genuinely compete for the SAME handful of simultaneous slots.
 _START_SHARE_POSITION_BUCKETS: dict[str, str] = {
     "QB": "QB",
     "RB": "RB",
@@ -252,11 +235,6 @@ def _ordinal(season: pd.Series, week: pd.Series) -> pd.Series:
     return pd.to_numeric(season, errors="coerce") * 100 + pd.to_numeric(week, errors="coerce")
 
 
-# ---------------------------------------------------------------------------
-# Depth-chart history archive (all positions; QB-only archives already
-# exist under nfl_ats.quarterbacks and are untouched by this module).
-# ---------------------------------------------------------------------------
-
 LEGACY_DEPTH_HISTORY_COLUMNS: tuple[str, ...] = (
     "season",
     "week",
@@ -288,13 +266,6 @@ DEPTH_CHART_HISTORY_OUTPUT_COLUMNS: tuple[str, ...] = (
     "depth_rank",
     "source_schema",
 )
-#: Specialist Special-Teams positions with no Offense/Defense counterpart --
-#: kept even though their only rows are ``formation == "Special Teams"``
-#: (legacy) / a specialist ``pos_abb`` (daily). Every other Special Teams row
-#: (KR/PR/H for a player whose primary role is offense or defense) is a
-#: SECOND listing for a player already captured via his primary-role row and
-#: is dropped -- keeping it would let a WR's return-only rank stand in for
-#: his real receiver depth rank. See ``_dedupe_primary_role``.
 _SPECIALIST_POSITIONS = frozenset(("K", "P", "LS", "PK"))
 
 
@@ -655,12 +626,6 @@ def attach_history_features(
     result["_row"] = np.arange(len(result))
     result["ordinal"] = _ordinal(result["season"], result["week"])
     left = result[["_row", "gsis_id", "ordinal"]].copy()
-    # merge_asof's `by=` requires an EXACT dtype match on both sides; the
-    # population's gsis_id (parquet-loaded, pyarrow-backed "string") and
-    # history's (produced by attach_snap_player_ids's dict .map(), numpy-
-    # backed "string") are both "string" dtype but not the SAME string
-    # dtype, and pandas refuses to merge on them -- cast both to plain
-    # Python str first.
     left["gsis_id"] = left["gsis_id"].astype(str)
     left = left.sort_values("ordinal")
     right = history.rename(columns={"ordinal": "last_play_ordinal"}).copy()
@@ -773,10 +738,6 @@ def _played_label(
         .rename("_played_outcome")
         .reset_index()
     )
-    # ``population`` may already carry its own "played" column (this is
-    # called a second time, from inside ``_started_label``, on a population
-    # that already has LABEL_PLAYED assigned) -- select only the join keys
-    # so that pre-existing column can never collide with the computed one.
     result = population[["season", "week", "team", "gsis_id"]].reset_index(drop=True).copy()
     result["_row"] = np.arange(len(result))
     merged = result.merge(played, on=["season", "week", "team", "gsis_id"], how="left")
@@ -889,11 +850,6 @@ def build_player_week_panel(
     population[LABEL_PLAYED] = _played_label(population, rosters, snaps)
     population[LABEL_STARTED] = _started_label(population, rosters, snaps)
     return population
-
-
-# ---------------------------------------------------------------------------
-# Model: walk-forward, isotonic-calibrated HistGradientBoostingClassifier.
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -1210,10 +1166,6 @@ def calibration_slot(position: object, depth_rank: object) -> str:
         if rank in (1, 2, 3):
             return f"WR{rank}"
         return "WR4+"
-    # Side-specific depth-chart slot tags (nflverse's daily-schema `pos_abb`,
-    # seasons >= 2025 -- see the module docstring's schema-seam note) never
-    # match the bare generic checks below on their own; normalized here so
-    # e.g. a starting "LCB" lands in the same "CB" slot as a generic "CB".
     if pos in ("LT", "RT"):
         pos = "T"
     elif pos in ("LG", "RG"):
@@ -1265,12 +1217,6 @@ def calibration_table(
     )
     grouped["gap"] = grouped["mean_predicted"] - grouped["mean_observed"]
     return grouped.sort_values("slot").reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# Serving adapters -- used by scripts/build_week_lineups.py, no training data
-# fetched or re-derived here beyond what the caller already loaded.
-# ---------------------------------------------------------------------------
 
 
 def serving_player_history(

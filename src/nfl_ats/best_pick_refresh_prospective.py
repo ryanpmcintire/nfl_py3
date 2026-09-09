@@ -179,7 +179,6 @@ def record_best_pick_refresh(
             return skip("Tuesday nomination is not before refresh")
         tuesday_deadline = pick_deadline(pd.Timestamp(frozen["tuesday_kickoff"]), lock)
         if instant >= tuesday_deadline:
-            # Both arms retain an already-locked nominee, independent of its result.
             arm = {name: frozen[f"tuesday_{name}"] for name in ARM_FIELDS}
         else:
             playable = original.loc[

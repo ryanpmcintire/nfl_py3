@@ -62,9 +62,6 @@ CLASSIFICATION_EVIDENCE = (
     "wrong side of the predicted direction) and no positive-control bound was run."
 )
 
-# Predicted direction per cell, mirroring docs/forecast_weather_screen.md. `None` means the
-# sibling cell itself carries no predicted direction (high_wind_outdoor is a plain, unsigned
-# subset-vs-complement flag) -- wrong_sign_resolved can never apply to it.
 PREDICTED_DIRECTION: dict[str, str | None] = {
     "forecast_weather_high_wind_outdoor": None,
     "forecast_weather_dome_team_outdoors_cold": "positive",

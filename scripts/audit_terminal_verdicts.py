@@ -59,7 +59,7 @@ from scipy import stats
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-MDE80_Z = 2.8  # z_(1-alpha/2) + z_power = 1.96 + 0.84, two-sided alpha=0.05, 80% power
+MDE80_Z = 2.8
 
 
 def paired_stats_from_picks(
@@ -85,20 +85,19 @@ def paired_stats_from_picks(
 
     outcome = a[outcome_col]
     valid = outcome.notna() & b[outcome_col].notna()
-    # Sanity: outcome must agree across arms for the same game_id.
     mismatched_outcome = int((a.loc[valid, outcome_col] != b.loc[valid, outcome_col]).sum())
 
     a = a.loc[valid]
     b = b.loc[valid]
     n = len(a)
 
-    pick_a = (a[prob_col] >= 0.5).astype(int)  # 1 = pick home cover
+    pick_a = (a[prob_col] >= 0.5).astype(int)
     pick_b = (b[prob_col] >= 0.5).astype(int)
-    y = a[outcome_col].astype(int)  # 1 = home covered
+    y = a[outcome_col].astype(int)
 
     correct_a = (pick_a == y).astype(int)
     correct_b = (pick_b == y).astype(int)
-    delta = correct_a - correct_b  # +1: a right/b wrong, -1: a wrong/b right, 0: agree
+    delta = correct_a - correct_b
 
     disagree = pick_a != pick_b
     f_count = int(disagree.sum())
@@ -107,15 +106,11 @@ def paired_stats_from_picks(
     a_wins = int(((delta == 1) & disagree).sum())
     b_wins = int(((delta == -1) & disagree).sum())
 
-    mean_delta = float(delta.mean())  # fraction scale
-    # Paired sd using the disagreement-only model MDE80 assumes: on agreeing
-    # games delta==0 exactly, on disagreeing games delta==+-1.
-    paired_sd_pred = math.sqrt(f) if n else float("nan")  # predicted from f alone
-    paired_sd_emp = float(delta.std(ddof=1)) if n > 1 else float("nan")  # empirical, ddof=1
+    mean_delta = float(delta.mean())
+    paired_sd_pred = math.sqrt(f) if n else float("nan")
+    paired_sd_emp = float(delta.std(ddof=1)) if n > 1 else float("nan")
     se_emp = paired_sd_emp / math.sqrt(n) if n else float("nan")
 
-    # Unpaired "coin-flip" sd some evidence strings compare against, for
-    # explicit contrast -- NOT the right comparator for a paired delta.
     unpaired_coinflip_sd_pts = 100 * 0.5 / math.sqrt(n) if n else float("nan")
 
     z = mean_delta / se_emp if se_emp else float("nan")
@@ -181,11 +176,8 @@ def audit_qb_continuity(artifact_dir: Path) -> dict[str, dict[str, Any]]:
     original_primary["source"] = source
     alpha_only["source"] = source
     return {
-        # candidate=alpha1+continuity vs base_alpha1 (matched regularization)
         "player_qb_continuity_matched_alpha": matched_alpha,
-        # candidate=alpha1+continuity vs base_alpha10, the ORIGINAL closed_negative pairing
         "player_qb_continuity": original_primary,
-        # base_alpha1 vs base_alpha10, isolates the regularization change alone
         "alpha_only_control": alpha_only,
     }
 
@@ -204,7 +196,6 @@ def audit_pbp_drive_bundle(artifact_dir: Path) -> dict[str, dict[str, Any]]:
     )
     result["source"] = source
     return {
-        # candidate=full_pbp vs base
         "pbp_drive_bundle": result,
     }
 
@@ -219,9 +210,6 @@ def format_report(results: dict[str, dict[str, Any]]) -> str:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:

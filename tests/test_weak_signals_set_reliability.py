@@ -84,9 +84,6 @@ def test_sets_only_reliability_and_appends_one_audit_note() -> None:
     assert _SOURCE in updated.notes
     assert "2026-09-01T12:00:00+00:00" in updated.notes
 
-    # Everything else is carried over byte-for-byte, including ``source``:
-    # the artifact holding the reliability goes in the audit line, never over
-    # the entry's own provenance.
     assert updated.effect == original.effect
     assert updated.effect_units == original.effect_units
     assert updated.interval == original.interval
@@ -107,7 +104,6 @@ def test_sets_only_reliability_and_appends_one_audit_note() -> None:
     assert updated.recorded_at == original.recorded_at
     assert updated.name == original.name
 
-    # The registry passed in is untouched (immutability).
     assert registry.signals["weather_cell"].reliability is None
 
 

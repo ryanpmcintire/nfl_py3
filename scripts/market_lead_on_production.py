@@ -69,8 +69,6 @@ BOOTSTRAP_SEED = 20260905
 NULL_PERMUTATIONS = 200
 DEFAULT_MARKET_ROOT = REPO_ROOT / "data/market/raw"
 
-#: LEAD-05 step 1's descriptive split, restated here (also the default in
-#: nfl_ats.market_lead_features.split_half_rank_reliability's caller).
 ODD_SEASONS = (2021, 2023, 2025)
 EVEN_SEASONS = (2020, 2022, 2024)
 
@@ -156,7 +154,6 @@ def run_arm(
 ) -> pd.DataFrame:
     source = features.copy() if leak else features
     if leak:
-        # The only permitted treatment leak, used solely by --mode positive-control.
         source[candidate.column] = pd.to_numeric(source["ats_margin"], errors="raise")
     scored = opener_pick_evaluation(
         market_root,
@@ -295,13 +292,6 @@ def null_distribution(
         "observed_delta": delta,
         "fraction_of_null_below_observed": float((values < delta).mean()),
     }
-
-
-# ---------------------------------------------------------------------------
-# Window-free descriptive modes: `--mode rank` (LEAD-05 step 1) and
-# `--mode coverage` (LEAD-03's predeclared moneyline-coverage measurement).
-# Neither touches the rotation registry or grades a pick.
-# ---------------------------------------------------------------------------
 
 
 def run_rank_mode(market_root: Path) -> dict[str, Any]:

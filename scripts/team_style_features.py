@@ -75,9 +75,6 @@ TEAM_GAME_PATH = CACHE_DIR / "team_game_style.parquet"
 TEAM_SEASON_PATH = CACHE_DIR / "team_season_style.parquet"
 TEAM_SEASON_FACED_PATH = CACHE_DIR / "team_season_style_faced.parquet"
 
-# nflverse full-column fields this script needs beyond the in-repo
-# PBP_SNAPSHOT_COLUMNS contract (air-yards/formation/direction fields the
-# narrowed snapshot never kept).
 EXTRA_STYLE_COLUMNS = (
     "air_yards",
     "pass_length",

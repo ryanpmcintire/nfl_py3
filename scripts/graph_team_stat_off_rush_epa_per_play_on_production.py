@@ -88,15 +88,7 @@ RIDGE_ALPHA = 10.0
 DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_graph_off_rush_epa.parquet"
 ROTATION_FAMILY = "graph_off_rush_epa_on_production"
 
-# Rotation-assigned window (docs/graph_team_stat_off_rush_epa_on_production.md
-# section 7); overridable via --seasons for the instrument checks, which run on
-# the same window for comparability with both siblings' own instrument checks.
 DEFAULT_SEASONS = "2014-2016"
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_window(
@@ -306,11 +298,6 @@ def summarize_pair(paired: pd.DataFrame, samples: int, seed: int) -> dict[str, A
         "n_weeks": int(paired[["season", "week"]].drop_duplicates().shape[0]),
         "n_seasons": int(paired["season"].nunique()),
     }
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

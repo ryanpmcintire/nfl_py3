@@ -140,11 +140,6 @@ def _coefficients(model: object) -> np.ndarray:
     return np.asarray(estimator.coefficients, dtype=float)
 
 
-# ---------------------------------------------------------------------------
-# Degenerate limits: the prior-mean ridge is the ridge it claims to be
-# ---------------------------------------------------------------------------
-
-
 def test_prior_mean_ridge_reduces_to_plain_ridge_when_the_prior_is_zero(
     target_frame: pd.DataFrame, preprocessor: tuple[object, object]
 ) -> None:
@@ -196,8 +191,6 @@ def test_kappa_zero_is_the_nfl_only_arm_and_kappa_one_is_the_cfb_prior_arm(
     )
     np.testing.assert_allclose(_coefficients(at_zero), _coefficients(nfl_only), atol=1e-9)
     np.testing.assert_allclose(_coefficients(at_one), _coefficients(cfb_prior), atol=1e-9)
-    # ... and the two endpoints are genuinely different, so the identities above
-    # are not both true merely because the prior happens to be inert.
     assert not np.allclose(_coefficients(at_zero), _coefficients(at_one), atol=1e-6)
 
 
@@ -305,10 +298,6 @@ def test_prior_vector_stability_is_bounded_and_uses_both_halves(
     assert stability.odd_rows > 0 and stability.even_rows > 0
     assert stability.odd_rows + stability.even_rows == len(auxiliary_frame)
 
-
-# ---------------------------------------------------------------------------
-# Leakage: three independent ways this design could see its own week
-# ---------------------------------------------------------------------------
 
 TEST_ARMS = ("nfl_only", "naive_pooled", "cfb_prior", "partial_pooled", "prior_market_only")
 

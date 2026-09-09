@@ -58,18 +58,6 @@ from nfl_ats.lineup_view import team_lineup
 from nfl_ats.players import canonicalize_injuries
 from scripts.build_week_lineups import _team_payload, _visible_injuries_by_team
 
-# ---------------------------------------------------------------------------
-# Synthetic roster/injury/snap fixture shared by the lineup_availability tests
-# ---------------------------------------------------------------------------
-#
-# Two "eligible" (status == ACT) WRs on team AAA across 2024 weeks 1-3:
-#   p1 plays every week (snaps > 0) -> unavailable=0.0 every week.
-#   p2 never plays (no snap rows at all) -> unavailable=1.0 every week.
-# p3 is INA (must be EXCLUDED -- "INA" is nflverse's own weekly inactive
-# tag, so folding it in would make "unavailable" tautological).
-# p4 is listed on the week-2 injury report (must be EXCLUDED from the
-# not-listed pool for that week only).
-
 
 def _rosters() -> pd.DataFrame:
     rows = []
@@ -115,10 +103,6 @@ def _rosters() -> pd.DataFrame:
 
 
 def _snaps() -> pd.DataFrame:
-    # Only p1 ever records a snap row; p2/p3/p4 are absent entirely (the
-    # left-join in _active_roster_snap_timeline fills their `played` as
-    # False, exactly like a real snap_counts table with no row for a
-    # player who never took the field).
     rows = [
         {
             "season": 2024,
@@ -141,16 +125,12 @@ def _injuries() -> pd.DataFrame:
 
 def test_no_designation_outcomes_exclude_ina_and_listed_rows() -> None:
     outcomes = build_no_designation_outcomes(_injuries(), _rosters(), _snaps())
-    # p4 (listed week 2) and p3 (INA) never appear; p1/p2 appear for all
-    # three weeks each -- six rows total.
     assert set(outcomes["gsis_id"]) == {"p1", "p2"}
     assert len(outcomes) == 6
     p1_rows = outcomes.loc[outcomes["gsis_id"] == "p1"].sort_values("week")
     p2_rows = outcomes.loc[outcomes["gsis_id"] == "p2"].sort_values("week")
     assert p1_rows["unavailable"].tolist() == [0.0, 0.0, 0.0]
     assert p2_rows["unavailable"].tolist() == [1.0, 1.0, 1.0]
-    # recent_role: week 1 has no earlier ACT appearance for either player;
-    # week 2/3 look at that SAME player's own immediately preceding week.
     assert p1_rows["recent_role"].tolist() == [
         RECENT_ROLE_UNKNOWN_NO_HISTORY,
         RECENT_ROLE_RETURNING_CONTRIBUTOR,
@@ -167,32 +147,21 @@ def test_no_designation_rates_shrinkage_math() -> None:
     outcomes = build_no_designation_outcomes(_injuries(), _rosters(), _snaps())
     rates = build_no_designation_rates(outcomes, target_seasons=[2025])
     lookup = no_designation_rate_lookup(rates)
-    # Global: 3 of 6 rows unavailable -> exactly 0.5, and the "skill"
-    # (WR) group already sits at the global rate, so shrinking it toward
-    # 0.5 leaves it at 0.5 too.
     assert lookup[(2025, "__all__", "__all__")] == pytest.approx(0.5)
     assert lookup[(2025, "skill", "__all__")] == pytest.approx(0.5)
-    # unknown_no_history: 1 of 2 rows unavailable, shrunk toward the
-    # group rate (0.5) with role_prior=20 -> (1 + 20*0.5) / (2 + 20).
     assert lookup[(2025, "skill", RECENT_ROLE_UNKNOWN_NO_HISTORY)] == pytest.approx(
         (1 + 20 * 0.5) / 22
     )
-    # returning_contributor: 0 of 2 unavailable -> pulled UP toward 0.5,
-    # never all the way to 0 -- the shrinkage is doing real work here.
     returning_rate = lookup[(2025, "skill", RECENT_ROLE_RETURNING_CONTRIBUTOR)]
     assert returning_rate == pytest.approx((0 + 20 * 0.5) / 22)
     assert 0.0 < returning_rate < 0.5
-    # no_recent_role: 2 of 2 unavailable -> pulled DOWN toward 0.5.
     no_role_rate = lookup[(2025, "skill", RECENT_ROLE_NO_RECENT_ROLE)]
     assert no_role_rate == pytest.approx((2 + 20 * 0.5) / 22)
     assert 0.5 < no_role_rate < 1.0
-    # A position group absent from training (offensive_line) falls all
-    # the way back to the global rate rather than returning None.
     fallback = no_designation_unavailability(
         lookup, target_season=2025, position="LT", recent_role="anything"
     )
     assert fallback == pytest.approx(0.5)
-    # An unseen target season returns None rather than inventing a number.
     assert (
         no_designation_unavailability(lookup, target_season=1999, position="WR", recent_role="x")
         is None
@@ -201,15 +170,13 @@ def test_no_designation_rates_shrinkage_math() -> None:
 
 def test_latest_recent_roles_reflects_each_players_own_last_act_appearance() -> None:
     roles = latest_recent_roles(_rosters(), _snaps(), before_season=2025)
-    assert roles["p1"] == RECENT_ROLE_RETURNING_CONTRIBUTOR  # played week 3
-    assert roles["p2"] == RECENT_ROLE_NO_RECENT_ROLE  # never played
-    assert roles["p4"] == RECENT_ROLE_NO_RECENT_ROLE  # ACT week 2, no snaps
-    assert "p3" not in roles  # INA is never eligible, so it has no role at all
+    assert roles["p1"] == RECENT_ROLE_RETURNING_CONTRIBUTOR
+    assert roles["p2"] == RECENT_ROLE_NO_RECENT_ROLE
+    assert roles["p4"] == RECENT_ROLE_NO_RECENT_ROLE
+    assert "p3" not in roles
 
 
 def test_depth_chart_position_group_understands_side_specific_tags() -> None:
-    # nflverse depth charts (unlike injuries/rosters) use side-specific
-    # tags the bare availability.position_group cannot see.
     assert depth_chart_position_group("LDE") == "front"
     assert depth_chart_position_group("RCB") == "secondary"
     assert depth_chart_position_group("LT") == "offensive_line"
@@ -223,7 +190,6 @@ def test_resolve_play_probability_three_paths() -> None:
             target_seasons=[2025],
         )
     )
-    # No gsis_id at all: never invents a number.
     probability, source, reason = resolve_play_probability(
         gsis_id=None,
         position="WR",
@@ -236,8 +202,6 @@ def test_resolve_play_probability_three_paths() -> None:
     assert source == "unavailable"
     assert "gsis_id" in reason
 
-    # Listed this week: uses the fixed prior (learned_lookup=None) on the
-    # player's OWN current-week report/practice status.
     current_injury = pd.Series({"report_status": "Out", "practice_status": None, "position": "WR"})
     probability, source, reason = resolve_play_probability(
         gsis_id="wr-1",
@@ -247,12 +211,10 @@ def test_resolve_play_probability_three_paths() -> None:
         learned_lookup=None,
         no_designation_lookup=lookup,
     )
-    assert probability == pytest.approx(0.0)  # "Out" -> fixed_unavailability == 1.0
+    assert probability == pytest.approx(0.0)
     assert source == "availability_model"
     assert "listed" in reason
 
-    # No designation this week: falls back to the position's no-designation
-    # base rate, conditioned on recent_role -- a real number, never None.
     probability, source, reason = resolve_play_probability(
         gsis_id="wr-1",
         position="WR",
@@ -267,7 +229,6 @@ def test_resolve_play_probability_three_paths() -> None:
     assert source == "availability_model"
     assert "no injury designation" in reason
 
-    # No designation AND no lookup available at all: honestly None.
     probability, source, reason = resolve_play_probability(
         gsis_id="wr-1",
         position="WR",
@@ -278,12 +239,6 @@ def test_resolve_play_probability_three_paths() -> None:
     )
     assert probability is None
     assert source == "unavailable"
-
-
-# ---------------------------------------------------------------------------
-# scripts.build_week_lineups._team_payload: every-player coverage, the QB
-# bit-identical guarantee, and point-in-time leakage.
-# ---------------------------------------------------------------------------
 
 
 def _synthetic_depth(team: str, players: list[dict]) -> pd.DataFrame:
@@ -346,20 +301,12 @@ def test_every_player_with_a_gsis_id_gets_a_real_probability() -> None:
     )
     by_gsis = {player["gsis_id"]: player for player in payload["players"]}
 
-    # UI-20-AB: the base-model QB is scored by the SAME model as everyone
-    # else now; the forecast's own input survives only as the separate
-    # `model_qb_start_probability` field, never deleted.
     qb_model = by_gsis["qb-model"]
     assert qb_model["play_probability"] == pytest.approx(0.9)
     assert qb_model["start_probability"] == pytest.approx(0.5)
     assert qb_model["model_qb_start_probability"] == 0.9123456789
     assert qb_model["probability_source"] == "play_probability_model"
 
-    # Every other player with a gsis_id -- including a backup QB and a
-    # deep-bench offensive lineman -- gets a real, non-None probability
-    # from the play-probability model, not left blank, and carries no
-    # `model_qb_start_probability` (that field is only ever populated for
-    # the one QB the active margin model consumed).
     for key in ("qb-backup", "wr-1", "ol-deep"):
         player = by_gsis[key]
         assert player["play_probability"] is not None
@@ -369,8 +316,6 @@ def test_every_player_with_a_gsis_id_gets_a_real_probability() -> None:
         assert player["probability_reason"]
         assert player["model_qb_start_probability"] is None
 
-    # A row with no gsis_id at all is the only one left blank, and it says
-    # exactly why.
     none_row = next(player for player in payload["players"] if player["gsis_id"] is None)
     assert none_row["play_probability"] is None
     assert none_row["start_probability"] is None
@@ -396,9 +341,6 @@ def test_model_qb_start_probability_stays_bit_identical_to_the_forecast_input() 
         )
         qb = payload["players"][0]
         assert qb["model_qb_start_probability"] == forecast_probability
-        # play_probability itself now comes from the model, not the forecast
-        # input, for every value of that input -- proving the two are
-        # genuinely decoupled, not just coincidentally equal.
         assert qb["play_probability"] == pytest.approx(0.9)
         assert qb["probability_source"] == "play_probability_model"
 
@@ -420,8 +362,6 @@ def test_model_qb_start_probability_is_none_when_the_forecast_never_supplied_one
     )
     qb = payload["players"][0]
     assert qb["model_qb_start_probability"] is None
-    # The model still scores this player -- an absent forecast input no
-    # longer blanks out play_probability the way it used to.
     assert qb["play_probability"] == pytest.approx(0.9)
     assert qb["probability_source"] == "play_probability_model"
 
@@ -487,8 +427,6 @@ def test_a_later_dated_injury_report_never_changes_a_players_number() -> None:
     late_report = probability_for([{**base_row, "date_modified": "2026-09-11T12:00:00Z"}])
     early_report = probability_for([{**base_row, "date_modified": "2026-09-08T12:00:00Z"}])
 
-    # A report dated AFTER generated_at must be invisible -- identical to
-    # there being no report at all.
     assert late_report["play_probability"] == no_report["play_probability"]
     assert (
         late_report["probability_source"]
@@ -497,18 +435,8 @@ def test_a_later_dated_injury_report_never_changes_a_players_number() -> None:
     )
     assert no_report["play_probability"] == pytest.approx(0.9)
 
-    # The SAME report, dated before generated_at, IS visible and changes
-    # the number (the stub predictor drops to 0.0 on a visible "out" report)
-    # -- proving the leakage filter (not some other bug) is what suppressed
-    # the late one.
     assert early_report["play_probability"] == pytest.approx(0.0)
     assert early_report["probability_source"] == "play_probability_model"
-
-
-# ---------------------------------------------------------------------------
-# Render: the legend line, and the em dash reserved for genuinely
-# unscoreable rows.
-# ---------------------------------------------------------------------------
 
 
 def _lineup_for_render() -> object:
@@ -522,10 +450,6 @@ def _lineup_for_render() -> object:
             "note": None,
             "players": [
                 {
-                    # UI-20-AB (2026-09-05): a real per-player, per-game
-                    # forecast from the play-probability model. The QB
-                    # slot also carries `start_probability` as a second,
-                    # smaller "start" number.
                     "name": "QB Model",
                     "position": "QB",
                     "slot": "QB1",
@@ -541,13 +465,6 @@ def _lineup_for_render() -> object:
                     "injury_status": "questionable",
                 },
                 {
-                    # NO injury designation this week -- 0.62 is still a
-                    # real per-player forecast from the play-probability
-                    # model (UI-20-AB), not a position base rate, so it
-                    # renders as a percentage exactly like a designated
-                    # player's. `start_probability` is deliberately set
-                    # here too, to prove it never renders outside the QB
-                    # slot.
                     "name": "WR One",
                     "position": "WR",
                     "slot": "WR1",
@@ -605,16 +522,9 @@ def test_lineups_html_prints_a_probability_legend_and_reserves_the_dash() -> Non
         "plays = takes at least one snap; starts = fills a starting slot by playing time." in html
     )
     assert "Colour shows availability risk" in html
-    # UI-20-AB (2026-09-05): every player with a model probability shows
-    # it now, designated or not -- the QB's real number...
     assert "90%" in html
-    # ...and the no-designation player's real number both render as
-    # percentages (the retired 2026-09-05 "no designation" stopgap no
-    # longer hides it).
     assert "62%" in html
-    # The em dash appears exactly once per team block -- only for the
-    # player the model genuinely could not score.
-    assert html.count("—") == 2  # once for the away team's block, once for home
+    assert html.count("—") == 2
 
 
 def test_lineup_probability_cell_carries_the_reason_as_a_tooltip() -> None:
@@ -650,14 +560,7 @@ def test_lineup_start_probability_renders_only_for_the_qb_slot() -> None:
     qb_row = next(row for row in rows if "QB Model" in row)
     wr_row = next(row for row in rows if "WR One" in row)
     assert "starts 82%" in qb_row
-    # Since 2026-09-05 (CX1/CX10) every listed player carries a starts chance:
-    # "fills a starting slot by playing time", not a QB-only field.
     assert "starts " in wr_row
-
-
-# ---------------------------------------------------------------------------
-# The lineup-aware assistant now answers availability for non-QB players.
-# ---------------------------------------------------------------------------
 
 
 def test_player_availability_answer_covers_a_non_qb_player() -> None:
@@ -669,10 +572,6 @@ def test_player_availability_answer_covers_a_non_qb_player() -> None:
     tokens = frozenset(_tokens("is wr one playing this week"))
     answer = player_availability_answer(tokens, knowledge)
     assert answer is not None
-    # WR One carries NO injury designation this week, but UI-20-AB's
-    # per-player forecast still names a real percentage for him, exactly
-    # like a designated player's (retires the 2026-09-05 "no designation"
-    # stopgap).
     assert "62% chance of taking the field" in answer.text
     assert "availability model" in answer.text
     assert "WR One" in answer.text

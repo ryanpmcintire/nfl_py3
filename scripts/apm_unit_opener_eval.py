@@ -22,7 +22,7 @@ from nfl_ats.participation import (
     load_participation_snapshot,
 )
 from nfl_ats.pbp import latest_pbp_snapshot, load_pbp_snapshot
-from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # ENG-38
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 from nfl_ats.rotation import load_registry
 from scripts.weak_stack_v4_opener_eval import paired_frame
 from scripts.weak_stack_v5_opener_eval import assert_baseline, frozen_pick_null
@@ -153,8 +153,8 @@ def build_features(base: pd.DataFrame, out: Path) -> pd.DataFrame:
     ).drop(columns="decision_timestamp")
     pd.testing.assert_frame_equal(augmented[base.columns], base, check_exact=True)
     augmented.to_parquet(out / "features.parquet")
-    stamp_sidecar(out / "features.parquet")  # ENG-38 provenance
-    write_stamped_artifact(  # ENG-38 provenance
+    stamp_sidecar(out / "features.parquet")
+    write_stamped_artifact(
         {
             "participation": participation.snapshot_id,
             "pbp": pbp.snapshot_id,
@@ -255,11 +255,11 @@ def main() -> None:
             features[["game_id", *APM_UNIT_COLUMNS]], on="game_id", validate="one_to_one"
         )
         paired.to_parquet(out / f"paired_{start}_{end}.parquet")
-        stamp_sidecar(out / f"paired_{start}_{end}.parquet")  # ENG-38 provenance
+        stamp_sidecar(out / f"paired_{start}_{end}.parquet")
         candidate.to_parquet(out / f"candidate_{start}_{end}.parquet")
-        stamp_sidecar(out / f"candidate_{start}_{end}.parquet")  # ENG-38 provenance
+        stamp_sidecar(out / f"candidate_{start}_{end}.parquet")
         result = evaluate_summary(paired, args.samples)
-        write_stamped_artifact(result, out / f"window_{start}_{end}.json")  # ENG-38
+        write_stamped_artifact(result, out / f"window_{start}_{end}.json")
         record(out, result, start, end)
         all_paired.append(paired)
         print(f"Recorded {start}-{end}: {result['primary']}", flush=True)
@@ -268,7 +268,7 @@ def main() -> None:
     full = pd.concat(all_paired, ignore_index=True)
     assert len(full) == 1537 and full.game_id.is_unique
     full.to_parquet(out / "opener_paired.parquet")
-    stamp_sidecar(out / "opener_paired.parquet")  # ENG-38 provenance
+    stamp_sidecar(out / "opener_paired.parquet")
     result = evaluate_summary(full, args.samples)
     result.update(
         active_model_id=active["model_id"],
@@ -276,7 +276,7 @@ def main() -> None:
         baseline_artifact=str(BASELINE),
         feature_table_sha256=active["feature_table_sha256"],
     )
-    write_stamped_artifact(result, out / "opener_summary.json")  # ENG-38 provenance
+    write_stamped_artifact(result, out / "opener_summary.json")
     print(json.dumps(result, indent=2), flush=True)
     print(f"Wrote {out}", flush=True)
 

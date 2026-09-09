@@ -31,8 +31,6 @@ def test_shrink_fraction_one_removes_the_location() -> None:
     rng = np.random.default_rng(1)
     residuals = rng.normal(loc=5.0, scale=10.0, size=500)
     shrunk_at_zero = shrunk_survival(residuals, 0.0, shrink_fraction=1.0)
-    # A sample re-centered at its own mean crosses zero almost exactly at the
-    # continuity-corrected 50% mark.
     assert shrunk_at_zero == pytest.approx(0.5, abs=0.05)
 
 
@@ -62,27 +60,18 @@ def test_shrunk_home_cover_probability_matches_survival() -> None:
 def test_recency_weights_are_monotone_and_endpoint_correct() -> None:
     weights = recency_weights(10, half_life_games=3.0)
     assert len(weights) == 10
-    # Weights strictly increase toward the most recent draw.
     assert np.all(np.diff(weights) > 0.0)
-    # Most recent draw (last index) always carries weight exactly 1.
     assert weights[-1] == pytest.approx(1.0)
-    # Halving check: exactly one half-life back should be weight 0.5.
-    # Index 7 is 3 games before the most recent (index 9, age 0) at age 2 --
-    # use an exact multiple instead: index -1-3 = index 6 is age 3.
     assert weights[6] == pytest.approx(0.5, rel=1e-9)
 
 
 def test_recency_weighted_survival_reweights_toward_recent_draws() -> None:
     """A short half-life should track only the most recent draws' sign mix."""
 
-    # Old draws are all negative; recent draws are all positive.
     residuals = np.concatenate([np.full(200, -5.0), np.full(50, 5.0)])
     long_half_life = recency_weighted_survival(residuals, 0.0, half_life_games=10_000.0)
     short_half_life = recency_weighted_survival(residuals, 0.0, half_life_games=5.0)
-    # With almost no weighting, positives are a small minority (50 of 250).
     assert long_half_life < 0.3
-    # With a short half-life, the probability mass is dominated by the recent,
-    # all-positive tail.
     assert short_half_life > 0.9
 
 

@@ -61,8 +61,6 @@ REPO = Path(__file__).resolve().parents[1]
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 
-# The recorded MOD-07 look, from artifacts/mod07_weak_stack/opener_2020_2021.json.
-# These are the reproduction targets; the ablation is void if they do not return.
 RECORDED = {
     "paired_games": 456,
     "weeks": 35,
@@ -268,9 +266,6 @@ def run(
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:

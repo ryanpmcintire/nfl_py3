@@ -67,10 +67,6 @@ REPO = Path(__file__).resolve().parents[1]
 BASELINE_ENTRANT = "active_model"
 DEFAULT_CHALLENGER_ID = "mod07_weak_signal_stack"
 
-# docs/anytime_valid.md. per_game_variance_proxy is measured on real CFB
-# paired comparisons. intraclass_correlation is a standing project decision
-# (independence -- disjoint teams, no shared outcome mechanism), not a
-# measured or padded value; keep it at 0.0 unless deliberately stress-testing.
 MEASURED_PER_GAME_VARIANCE_PROXY = 0.55
 OPERATING_INTRACLASS_CORRELATION = 0.0
 
@@ -235,8 +231,8 @@ def main() -> None:
 
     if args.output is not None:
         trace.to_csv(args.output / "trace.csv", index=False)
-        stamp_sidecar(args.output / "trace.csv")  # ENG-38
-        write_stamped_artifact(result, args.output / "reading.json")  # ENG-38
+        stamp_sidecar(args.output / "trace.csv")
+        write_stamped_artifact(result, args.output / "reading.json")
 
 
 if __name__ == "__main__":

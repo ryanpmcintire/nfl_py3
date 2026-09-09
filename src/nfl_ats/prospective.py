@@ -194,26 +194,13 @@ def freeze_forecast(
         "prediction_safety": audit.to_dict(),
         "model": metadata,
     }
-    # Written last: its presence is the commit marker for a complete record.
     atomic_json(manifest, destination / "manifest.json")
     return FrozenForecast(forecast_id=forecast_id, directory=destination, games=len(frozen))
 
 
-# ---------------------------------------------------------------------------
-# Publish-time challenger recorders (POL-10): both challengers below are
-# post-prediction transforms of the PLAYED production-chain pick, so their
-# base card IS the paper-decision ledger row record_paper_decisions wrote
-# earlier in the same publish-predictions --record-decisions call. Neither is
-# wired into publishing.py; both only ever append to the SEPARATE prospective
-# challenger ledger. Every absent-input path fails open (a skipped week or a
-# kept pick), never an exception out of publish.
-# ---------------------------------------------------------------------------
-
 MOVEMENT_RULE_COMPOSED_CHALLENGER_ID = "movement_rule_composed_v1"
 NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID = "nflcom_friday_refresh_out2_starters_v1"
 
-#: Frozen by docs/nflcom_friday_refresh.md ("Overlay rule (frozen before
-#: scoring)") and registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain.
 NFLCOM_STARTER_OUT_THRESHOLD = 2
 
 
@@ -493,16 +480,6 @@ def nflcom_out2_starters_flip(
     return chain_pick_home
 
 
-# The four helpers below are PORTED VERBATIM from
-# scripts/nflcom_friday_designation_screen.py (QA_OR_WORSE / SUFFIXES /
-# STARTER_SNAP_SHARE / normalize_name / initial_last_key / load_report_flags /
-# build_starter_keys), the machinery registry/weak_signals.json:
-# nflcom_refresh_out2_starters_on_chain was measured with -- same constants,
-# same regex-free normalization steps, same week+1 starter-proxy keying.
-# Duplicated rather than imported for the reason nfl_ats.pick_refresh gives for
-# its own duplicated helper: this src/ module must not depend on another
-# file's script-level names, and neither copy should change without the other.
-
 _NFLCOM_QA_OR_WORSE = frozenset({"questionable", "doubtful", "out"})
 _NFLCOM_SUFFIXES = {"jr", "sr", "ii", "iii", "iv", "v"}
 _NFLCOM_STARTER_SNAP_SHARE = 0.50
@@ -662,8 +639,6 @@ def latest_nflcom_injuries_snapshot(
         pages = _manifest_pages(manifest_path)
         if week_key in pages:
             return manifest_path.parent, pages
-    # No snapshot holds this week: hand back the newest so the caller reports
-    # its own "page absent from snapshot manifest" skip, unchanged.
     return manifests[-1].parent, _manifest_pages(manifests[-1])
 
 
@@ -759,13 +734,6 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
             "reason": f"freshness gate failed: {gate_reason}",
         }
 
-    # Leakage guard, PER GAME rather than week-wide (corrected 2026-08-25; see
-    # docs/nflcom_friday_refresh.md "2026-08-25 correction"). A game may only
-    # be flagged from a page that predates ITS OWN pick deadline. The previous
-    # week-wide form required the page to predate the EARLIEST kickoff of the
-    # week, which no Friday-final page can ever do once the week contains a
-    # Thursday (or Wednesday) game -- measured unsatisfiable on 7 of 7 real
-    # weeks, i.e. this arm could never have recorded a single row.
     deadlines = kickoffs.map(lambda k: pick_deadline(k, sunday_lock))
     before_own_deadline = deadlines.gt(fetched)
 
@@ -791,9 +759,6 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
         if not bool(pre_kickoff.iloc[position]) or game_id in already:
             continue
         if not bool(before_own_deadline.iloc[position]):
-            # The final page post-dates this game's own pick deadline (a
-            # Wednesday/Thursday game against a Friday page). Excluded here
-            # rather than poisoning the whole week.
             skipped_page_after_deadline += 1
             continue
         chain_home = chain_sides[position] == "HOME"

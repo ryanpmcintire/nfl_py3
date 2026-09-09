@@ -85,11 +85,6 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-# ---------------------------------------------------------------------------
-# Inputs
-# ---------------------------------------------------------------------------
-
-
 def load_schedule(schedules_path: Path) -> pd.DataFrame:
     raw = pd.read_parquet(schedules_path)
     df = raw.loc[raw["game_type"] == "REG"].copy()
@@ -194,11 +189,6 @@ def attach_adp(games: pd.DataFrame, adp_with_features: pd.DataFrame) -> pd.DataF
     return joined
 
 
-# ---------------------------------------------------------------------------
-# Cell construction (exactly the doc's section 4 table)
-# ---------------------------------------------------------------------------
-
-
 def cell_a_values(pop: pd.DataFrame) -> pd.Series:
     top_dog_home = pop["home_top_tercile"].fillna(False) & (pop["spread_line"] < 0)
     top_dog_away = pop["away_top_tercile"].fillna(False) & (pop["spread_line"] > 0)
@@ -218,11 +208,6 @@ def cell_b_values(pop: pd.DataFrame) -> pd.Series:
     pick_away = (extreme_away & positive_side).to_numpy()
     value = np.where(pick_home, pop["home_cover"], 1.0 - pop["home_cover"])
     return pd.Series(np.where(pick_home | pick_away, value, np.nan), index=pop.index)
-
-
-# ---------------------------------------------------------------------------
-# Standard battery: week-blocked primary, season-blocked secondary
-# ---------------------------------------------------------------------------
 
 
 def block_bootstrap_single(
@@ -279,11 +264,6 @@ def summarize(df: pd.DataFrame, *, samples: int, seed: int) -> dict[str, Any]:
         "bootstrap_seed": seed,
         "insufficient_data": False,
     }
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:

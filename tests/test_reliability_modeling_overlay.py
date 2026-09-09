@@ -39,11 +39,6 @@ def _cell(entry: str) -> sweep.Cell:
     return matches[0]
 
 
-# ---------------------------------------------------------------------------
-# 1. Parent mapping agrees with the builder that defines each cell
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     "entry",
     [
@@ -75,8 +70,6 @@ def test_spread_gap_cells_map_to_the_quantity_the_overlay_actually_thresholds(
             "home_team": ["AAA", "BBB", "CCC"],
             "away_team": ["DDD", "EEE", "FFF"],
             "home_cover_probability": [0.62, 0.62, 0.62],
-            # Same magnitude, opposite signs: a rule keyed on the ABSOLUTE
-            # value must treat the first two identically.
             "spread_line": [inside, -inside, outside],
         }
     )
@@ -139,11 +132,6 @@ def test_movement_cells_map_to_the_screen_s_own_confidence_column() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# 2. The split arithmetic, on an answer computable by hand
-# ---------------------------------------------------------------------------
-
-
 def _hand_frame(n_units: int = 24) -> tuple[pd.DataFrame, float]:
     """One frame whose odd/even unit means are known exactly.
 
@@ -178,7 +166,6 @@ def test_measure_reliability_reproduces_a_hand_computed_pearson_r() -> None:
     assert measured["status"] == rlib.STATUS_MEASURED
     assert measured["n_units"] == 24
     assert measured["pearson_r"] == pytest.approx(expected_r, abs=1e-9)
-    # Spearman-Brown step-up: 2r / (1 + r), which is what gets recorded.
     assert measured["reliability"] == pytest.approx(
         (2.0 * expected_r) / (1.0 + expected_r), abs=1e-9
     )
@@ -200,9 +187,6 @@ def test_too_few_units_is_reported_unmeasured_and_never_as_a_number() -> None:
 def test_random_halves_check_separates_a_trait_from_a_conserved_total() -> None:
     """The conserved-quantity guard's discriminator actually discriminates."""
 
-    # A real trait: a stable per-unit level plus per-observation noise. Enough
-    # observations per unit that a RANDOM half-split still clears the
-    # >=2-per-half floor the estimator enforces.
     n_units, n_obs = 30, 12
     rng = np.random.default_rng(3)
     levels = rng.normal(scale=1.0, size=n_units)
@@ -222,8 +206,6 @@ def test_random_halves_check_separates_a_trait_from_a_conserved_total() -> None:
     )
     assert real["mean"] is not None and real["mean"] > 0.0
 
-    # A conserved total: each unit's observations sum to a fixed budget, so
-    # more in one half mechanically forces less in the other.
     rng = np.random.default_rng(11)
     rows = []
     for index in range(n_units):
@@ -242,11 +224,6 @@ def test_random_halves_check_separates_a_trait_from_a_conserved_total() -> None:
     )
     assert conserved["mean"] is not None
     assert conserved["mean"] <= sweep.COMPOSITIONAL_RANDOM_HALVES_MAX
-
-
-# ---------------------------------------------------------------------------
-# 3. Group bookkeeping
-# ---------------------------------------------------------------------------
 
 
 def test_every_cell_is_listed_once_and_carries_a_reason() -> None:

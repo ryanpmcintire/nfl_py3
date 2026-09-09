@@ -22,8 +22,6 @@ PROFILE = "weak_stack_home_side_hinge_7"
 
 
 def test_home_side_hinge_is_symmetric_in_the_spread() -> None:
-    # nflverse convention: positive spread_line means the HOME team is favoured;
-    # the hinge only cares how big the spread is.
     frame = pd.DataFrame({"spread_line": [3.0, 0.0, -3.5, 7.0, -7.0, 10.5, -10.5, np.nan]})
     actual = attach_home_side_location(frame)
     assert actual.home_side_hinge_7.tolist()[:7] == [0.0, 0.0, 0.0, 0.0, 0.0, 3.5, 3.5]
@@ -65,7 +63,6 @@ def _stream() -> pd.DataFrame:
                         "game_id": f"g{game}",
                         "season": season,
                         "week": week,
-                        # One Thursday game per week: same week, earlier date.
                         "gameday": sunday - pd.Timedelta(days=3) if j == 0 else sunday,
                         "spread_line": spread,
                         "point_incumbent": spread + 1.0,
@@ -85,13 +82,10 @@ def test_offsets_are_shrunken_bucket_means_of_prior_home_error() -> None:
         }
     )
     fitted = fit_home_side_offsets(prior)
-    # 10.5+ errors: +6, +8, -3 -> sum 11 over (3 + 100).
     assert fitted.prior_games["10.5+"] == 3
     assert fitted.offsets["10.5+"] == pytest.approx(11.0 / (3 + PRIOR_WEIGHT_GAMES))
-    # S3 (2026-09-08): the small buckets are fitted (counts kept) but never served.
     assert fitted.prior_games["0-3"] == 1
     assert fitted.offsets["0-3"] == 0.0
-    # The research replay of S2 keeps every bucket.
     replay = fit_home_side_offsets(prior, all_buckets=True)
     assert replay.offsets["0-3"] == pytest.approx(-3.0 / (1 + PRIOR_WEIGHT_GAMES))
     assert replay.offsets["10.5+"] == fitted.offsets["10.5+"]
@@ -105,15 +99,10 @@ def test_offsets_are_shrunken_bucket_means_of_prior_home_error() -> None:
 def test_prior_games_exclude_the_whole_target_week_and_the_completion_allowance() -> None:
     stream = _stream()
     prior = prior_games_for_week(stream, 2020, 2)
-    # Week 2's Thursday game is in the target week; nothing from week 2 or
-    # later may be used, and week 1's games (a week earlier) are all usable.
     assert set(prior.week) == {1} and set(prior.season) == {2020}
-    # A game finishing the day before the target week's first game is not
-    # completed under the one-day allowance.
     tight = stream.copy()
     tight.loc[tight.game_id.eq("g3"), "gameday"] = pd.Timestamp("2020-09-16")
     assert "g3" not in set(prior_games_for_week(tight, 2020, 2).game_id)
-    # Seasons earlier than target - 5 are dropped.
     old = stream.copy()
     old.loc[old.season.eq(2020), "season"] = 2014
     assert prior_games_for_week(old, 2021, 1).empty
@@ -147,7 +136,6 @@ def test_future_games_and_results_cannot_move_an_earlier_offset() -> None:
         expected.loc[earlier].reset_index(drop=True),
         walk_forward_home_offsets(changed).loc[earlier.index[earlier]].reset_index(drop=True),
     )
-    # Week 1 of the first season has no prior games at all: offset exactly zero.
     first = stream.season.eq(2020) & stream.week.eq(1)
     assert (expected.loc[first, "home_side_offset"] == 0.0).all()
     assert (expected.loc[first, "prior_games_in_bucket"] == 0).all()
@@ -165,7 +153,6 @@ def test_gaussian_median_probability_matches_the_residual_smoother() -> None:
         lines, points, float(np.median(residuals)), float(np.std(residuals, ddof=1))
     )
     np.testing.assert_allclose(actual, expected, rtol=0, atol=1e-15)
-    # Moving the point toward the home side raises the home cover probability.
     assert (gaussian_median_cover_probability(lines, points + 2.0, 0.4, 13.0) > actual).all()
 
 

@@ -54,15 +54,9 @@ from nfl_ats.data import DataContractError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: Cell 1 -- NFL sibling ``venue_milestone_home_opener``.
 CFB_HOME_OPENER_COLUMN = "cfb_venue_home_opener"
-#: Cell 2 -- NFL sibling ``venue_milestone_new_stadium_debut``.
 CFB_NEW_VENUE_DEBUT_COLUMN = "cfb_venue_new_venue_debut"
-#: Cell 3 -- NFL sibling ``bias_battery_three_plus_road_games``.
 CFB_THREE_PLUS_ROAD_COLUMN = "cfb_schedule_three_plus_road"
-#: Cell 4 -- ADAPTED from NFL ``bias_battery_division_revenge_game`` (that cell
-#: is a WITHIN-season division rematch; CFB has almost no within-season rematch
-#: population, so this one looks back across seasons -- see the predeclaration).
 CFB_REVENGE_PRIOR_MEETING_COLUMN = "cfb_schedule_revenge_prior_meeting_loss"
 
 CFB_VENUE_POSITION_FEATURE_COLUMNS: tuple[str, ...] = (
@@ -72,11 +66,8 @@ CFB_VENUE_POSITION_FEATURE_COLUMNS: tuple[str, ...] = (
     CFB_REVENGE_PRIOR_MEETING_COLUMN,
 )
 
-#: Predeclared lookback for cell 4: the most recent prior meeting must sit in
-#: the current season or one of the two immediately preceding seasons.
 REVENGE_LOOKBACK_SEASONS = 2
 
-#: Columns the module needs from the schedules snapshot.
 SCHEDULE_COLUMNS: tuple[str, ...] = (
     "game_id",
     "season",
@@ -91,15 +82,9 @@ SCHEDULE_COLUMNS: tuple[str, ...] = (
     "away_points",
 )
 
-#: Columns the module needs from the cfbfastR-data ``team_info`` snapshot.
 TEAM_INFO_COLUMNS: tuple[str, ...] = ("team_id", "school", "venue_id", "venue_name")
 
 _REQUIRED_FEATURE_COLUMNS = frozenset({"game_id", "season", "home_id", "away_id"})
-
-
-# ---------------------------------------------------------------------------
-# Input resolution (lazy, so importing this module never requires local data)
-# ---------------------------------------------------------------------------
 
 
 def _latest(glob_pattern: str, label: str) -> Path:
@@ -194,11 +179,6 @@ def load_team_own_venues(team_info_dir: Path | None = None) -> pd.DataFrame:
     return table.loc[:, ["season", "team_id", "own_venue_id", "venue_name", "school"]]
 
 
-# ---------------------------------------------------------------------------
-# Team-side sequence
-# ---------------------------------------------------------------------------
-
-
 def build_team_side_sequence(schedules: pd.DataFrame) -> pd.DataFrame:
     """One row per team per game, kickoff-ordered -- the sequence every cell reads.
 
@@ -245,11 +225,6 @@ def build_team_side_sequence(schedules: pd.DataFrame) -> pd.DataFrame:
     return table.sort_values(["team_id", "kickoff", "game_id"]).reset_index(drop=True)
 
 
-# ---------------------------------------------------------------------------
-# Cell 1 -- home opener
-# ---------------------------------------------------------------------------
-
-
 def flag_home_opener(sequence: pd.DataFrame) -> pd.Series:
     """The team's FIRST true home game of its season, in kickoff order.
 
@@ -263,11 +238,6 @@ def flag_home_opener(sequence: pd.DataFrame) -> pd.Series:
     flag = pd.Series(False, index=sequence.index)
     flag.loc[order.index] = order.eq(0).to_numpy()
     return flag & home
-
-
-# ---------------------------------------------------------------------------
-# Cell 2 -- new venue debut
-# ---------------------------------------------------------------------------
 
 
 def declared_home_venues(sequence: pd.DataFrame) -> pd.DataFrame:
@@ -355,11 +325,6 @@ def flag_new_venue_debut(sequence: pd.DataFrame) -> pd.Series:
     return flag.astype(bool)
 
 
-# ---------------------------------------------------------------------------
-# Cell 3 -- third-or-later consecutive true road game
-# ---------------------------------------------------------------------------
-
-
 def flag_three_plus_road(sequence: pd.DataFrame) -> pd.Series:
     """This game and the two immediately preceding games are all true road games.
 
@@ -375,11 +340,6 @@ def flag_three_plus_road(sequence: pd.DataFrame) -> pd.Series:
     previous_one = grouped.shift(1).fillna(False).astype(bool)
     previous_two = grouped.shift(2).fillna(False).astype(bool)
     return sequence["is_true_road"] & previous_one & previous_two
-
-
-# ---------------------------------------------------------------------------
-# Cell 4 -- lost the most recent prior meeting (ADAPTED across seasons)
-# ---------------------------------------------------------------------------
 
 
 def attach_prior_meeting(
@@ -422,11 +382,6 @@ def attach_prior_meeting(
         & ordered["prior_team_points"].lt(ordered["prior_opponent_points"])
     )
     return ordered.sort_index()
-
-
-# ---------------------------------------------------------------------------
-# Assembly
-# ---------------------------------------------------------------------------
 
 
 def derive_cfb_venue_position_features(

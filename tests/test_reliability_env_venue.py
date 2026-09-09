@@ -34,11 +34,6 @@ import reliability_env_venue as sweep  # noqa: E402
 import reliability_lib as rlib  # noqa: E402
 import roof_decision_screen  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# 1. roof_open_frame reproduces roof_decision_screen's own retract_open /
-#    retract_closed gate exactly -- never re-derived by hand.
-# ---------------------------------------------------------------------------
-
 
 def _tiny_roof_frame() -> pd.DataFrame:
     return pd.DataFrame(
@@ -56,8 +51,6 @@ def test_roof_open_matches_the_screens_own_retract_open_and_retract_closed_gates
     frame = _tiny_roof_frame()
     retractable = roof_decision_screen.RETRACTABLE_TEAMS
 
-    # roof_decision_screen.build_long_table's own gate, reproduced here only
-    # to compare against -- NOT used to build the sweep's roof_open column.
     expected_open = (
         frame["is_home"] & frame["home_team"].isin(retractable) & (frame["roof"] == "open")
     )
@@ -67,10 +60,6 @@ def test_roof_open_matches_the_screens_own_retract_open_and_retract_closed_gates
 
     out = sweep.roof_open_frame(frame, retractable_teams=retractable)
 
-    # Every row the source screen would flag retract_open==True must carry
-    # roof_open==1.0, and every retract_closed==True row must carry 0.0 --
-    # on the exact rows that survive the population filter (is_home & a
-    # RETRACTABLE_TEAMS venue).
     assert set(out.index) == set(
         frame.index[frame["is_home"] & frame["home_team"].isin(retractable)]
     )
@@ -80,26 +69,18 @@ def test_roof_open_matches_the_screens_own_retract_open_and_retract_closed_gates
         elif expected_closed.loc[idx]:
             assert out.loc[idx, "roof_open"] == 0.0
         else:
-            assert np.isnan(out.loc[idx, "roof_open"])  # "dome" reading: neither open nor closed
+            assert np.isnan(out.loc[idx, "roof_open"])
 
-    # DAL (non-retractable in this tiny fixture's team) and the away row are
-    # excluded from the population entirely, matching is_home & RETRACTABLE_TEAMS.
     assert "DAL" not in out["home_team"].to_numpy() or not out.empty
 
 
 def test_roof_open_frame_excludes_non_retractable_venues_and_away_rows() -> None:
     frame = _tiny_roof_frame()
     out = sweep.roof_open_frame(frame, retractable_teams=roof_decision_screen.RETRACTABLE_TEAMS)
-    assert (out["home_team"] == "SF").sum() == 0  # not a RETRACTABLE_TEAMS venue
-    assert len(out) == 4  # excludes SF (non-retractable) and the away row (index 3, is_home=False)
+    assert (out["home_team"] == "SF").sum() == 0
+    assert len(out) == 4
     assert bool(out["is_home"].all())
     assert bool(out["home_team"].isin(roof_decision_screen.RETRACTABLE_TEAMS).all())
-
-
-# ---------------------------------------------------------------------------
-# 2. The split arithmetic, on an answer computable by hand (mirrors
-#    tests/test_reliability_graph_team_stat.py's shape).
-# ---------------------------------------------------------------------------
 
 
 def _long_frame(values: dict[tuple[str, int], list[float]]) -> pd.DataFrame:
@@ -142,11 +123,6 @@ def test_too_few_units_returns_unmeasured_not_zero() -> None:
     assert result["reliability_low"] is None and result["reliability_high"] is None
 
 
-# ---------------------------------------------------------------------------
-# 3. force_diagnostic (hazard i) and the compositional guard (hazard ii)
-# ---------------------------------------------------------------------------
-
-
 def test_force_diagnostic_wipes_the_recordable_fields_but_keeps_the_raw_numbers() -> None:
     measured = rlib.measure_reliability(
         _long_frame(
@@ -165,7 +141,6 @@ def test_force_diagnostic_wipes_the_recordable_fields_but_keeps_the_raw_numbers(
     assert forced["reliability"] is None
     assert forced["reliability_low"] is None and forced["reliability_high"] is None
     assert forced["note"] == "diagnostic only"
-    # the raw measurement is preserved for transparency, just not "recordable"
     assert forced["n_units"] == measured["n_units"]
 
 
@@ -212,9 +187,6 @@ def test_random_half_probe_and_compositional_guard_catch_a_conserved_total_flag(
         frame, "exposure", unit_col="unit_id", seasons=(2020, 2020), n_reseeds=5, seed=99
     )
     assert probe["mean_reliability"] is not None
-    # The conserved-total structure survives randomizing which half each
-    # unit's single flagged week lands in -- it is an artifact of "exactly
-    # one flagged week per unit", not of chronological order.
     assert probe["mean_reliability"] < 0
     assert sweep._compositional_guard(measured["reliability"], probe) is True
 
@@ -225,11 +197,6 @@ def test_compositional_guard_does_not_fire_on_a_mild_or_positive_reliability() -
     assert sweep._compositional_guard(-0.04, probe_mild) is False
     assert sweep._compositional_guard(0.7, probe_positive) is False
     assert sweep._compositional_guard(None, probe_mild) is False
-
-
-# ---------------------------------------------------------------------------
-# 4. The 27-entry manifest is disjoint and exhaustive across the 5 builders.
-# ---------------------------------------------------------------------------
 
 
 def test_entry_groups_are_disjoint_and_total_27() -> None:

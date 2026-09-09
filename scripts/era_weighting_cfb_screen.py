@@ -82,8 +82,6 @@ def _score_week(weekly_games: pd.DataFrame, models: dict[str, MarginModel]) -> l
         batch["model_name"] = model.model_name
         batch["train_rows"] = model.training_rows
         batch["distribution_rows"] = model.distribution_rows
-        # The screen is a forced-pick instrument, not a wagering policy --
-        # matches nfl_ats.cfb_benchmark._score_week's own convention.
         batch["bet_side"] = "PASS"
         batch["bet_odds"] = np.nan
         batches.append(batch)
@@ -132,7 +130,7 @@ def run_screen(
             elif arm.kind == "half_life":
                 arm_frame, arm_target = training_full, target_full
                 weights = half_life_weights(seasons_full, predict_season, arm.parameter or 1.0)
-            else:  # rolling
+            else:
                 floor_season = rolling_window_floor_season(predict_season, arm.parameter or 1.0)
                 arm_frame = training_full.loc[training_full["season"].ge(floor_season)]
                 if len(arm_frame) < min_train_games:

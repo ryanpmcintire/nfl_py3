@@ -50,8 +50,6 @@ def test_fluview_profiles_are_registered_and_disjoint_from_production_sets() -> 
     for name in ("football_weak_stack", "full_weak_stack", "football", "full"):
         assert set(FEATURE_SETS[name]).isdisjoint(FLUVIEW_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS)
 
-    # Each profile = weak_stack plus exactly its OWN one new column -- never
-    # both, never mixed with the sibling graph_sack profile's column.
     home_columns = set(margin_feature_columns("market_residual", "weak_stack_fluview_home"))
     away_columns = set(margin_feature_columns("market_residual", "weak_stack_fluview_away"))
     weak_stack_columns = set(margin_feature_columns("market_residual", "weak_stack"))
@@ -67,20 +65,12 @@ def test_fluview_profiles_are_registered_and_disjoint_from_production_sets() -> 
     assert FLUVIEW_AWAY_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS[0] == FLUVIEW_AWAY_ELEVATED_COLUMN
 
 
-# ---------------------------------------------------------------------------
-# Synthetic fixture: two states (az=ARI, ca=LAC), a handful of games spanning
-# a release-date boundary and one neutral-site game.
-# ---------------------------------------------------------------------------
-
-
 def _games() -> pd.DataFrame:
     return pd.DataFrame(
         {
             "game_id": ["g1", "g2", "g3", "g4"],
             "season": [2018, 2018, 2018, 2018],
             "week": [1, 2, 3, 3],
-            # Tuesday-of-week cutoffs: a Thursday gameday's cutoff is the
-            # Tuesday two days prior.
             "gameday": pd.to_datetime(["2018-01-11", "2018-01-18", "2018-05-17", "2018-05-17"]),
             "home_team": ["ARI", "ARI", "ARI", "LAC"],
             "away_team": ["LAC", "LAC", "LAC", "ARI"],
@@ -90,9 +80,6 @@ def _games() -> pd.DataFrame:
 
 
 def _fluview_raw() -> pd.DataFrame:
-    # az revised from 1.0 (below threshold) to 99.0 (elevated) by a release on
-    # 2018-05-18 -- one day AFTER g3/g4's cutoff (2018-05-15, the Tuesday
-    # before the Thursday 2018-05-17 gameday).
     return pd.DataFrame(
         {
             "region": ["az", "az", "ca", "ca"],
@@ -119,11 +106,8 @@ def test_derive_fluview_elevated_features_is_leak_safe_across_a_release() -> Non
         games, fluview_raw=_fluview_raw(), thresholds=THRESHOLDS
     ).set_index("game_id")
 
-    # g3: home=ARI(az), away=LAC(ca); az still reads the OLD (not elevated)
-    # value as of this cutoff.
     assert derived.loc["g3", FLUVIEW_HOME_ELEVATED_COLUMN] == 0.0
 
-    # A game whose cutoff is ON the release date sees the revision.
     later = games.copy()
     later["gameday"] = pd.to_datetime(["2018-01-11", "2018-01-18", "2018-05-24", "2018-05-24"])
     derived_later = derive_fluview_elevated_features(
@@ -144,7 +128,6 @@ def test_derive_fluview_elevated_features_marks_non_home_location_as_missing() -
 
     assert pd.isna(derived.loc["g4", FLUVIEW_HOME_ELEVATED_COLUMN])
     assert pd.isna(derived.loc["g4", FLUVIEW_AWAY_ELEVATED_COLUMN])
-    # g3, the Home-location game at the same cutoff, is NOT masked.
     assert not pd.isna(derived.loc["g3", FLUVIEW_HOME_ELEVATED_COLUMN])
 
 
@@ -156,7 +139,7 @@ def test_derive_fluview_elevated_features_uses_caller_supplied_thresholds() -> N
     reuses the already-recorded thresholds instead."""
 
     games = _games()
-    low_threshold = {"az": 0.5, "ca": 0.5}  # every reading now counts as elevated
+    low_threshold = {"az": 0.5, "ca": 0.5}
     derived = derive_fluview_elevated_features(
         games, fluview_raw=_fluview_raw(), thresholds=low_threshold
     ).set_index("game_id")

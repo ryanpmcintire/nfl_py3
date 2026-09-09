@@ -77,9 +77,6 @@ def main(argv: list[str] | None = None) -> int:
         stamp = run_id()
         directory = out_root / f"{args.season}_wk{args.week:02d}_{stamp}"
         atomic_text(markdown, directory / "snapshot_diff.md")
-        # ENG-29: write_stamped_artifact(), not write_experiment_artifact() --
-        # this diff is explicitly not an experiment (see module docstring),
-        # and the latter always creates a registry/experiments/ row.
         write_stamped_artifact(to_dict(diff), directory / "snapshot_diff.json")
         print(f"wrote {directory}", file=sys.stderr)
 

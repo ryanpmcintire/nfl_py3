@@ -166,23 +166,6 @@ from nfl_ats.team_explorer import (
 from nfl_ats.weak_signals import Registry as WeakSignalRegistry
 from nfl_ats.weak_signals import default_registry_path as _default_weak_signals_registry_path
 
-# ---------------------------------------------------------------------------
-# Mandatory public-audience disclaimer text
-#
-# Embedded verbatim (not escaped) wherever it appears in a page: both strings
-# are static, hardcoded, developer-authored constants -- never artifact or user
-# data -- so there is no injection risk, and escaping would only mangle the
-# apostrophe into "&#x27;" for no benefit.
-# ---------------------------------------------------------------------------
-
-#: 2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
-#: fucking legal bullshit words"): reworded to drop every compliance/
-#: legalese phrase (see ``nfl_ats.card_explanation.BANNED_BOILERPLATE``)
-#: while keeping the facts that matter -- these are paper picks, not
-#: betting advice, and the model's historical accuracy sits close to a
-#: coin flip. Both constants are still used to seed the (unrendered on the
-#: live Terminal pages) structural ``Disclaimer`` field on
-#: ``nfl_ats.board_content.BoardContent``.
 DISCLAIMER_SHORT = "Research project -- simulated, paper picks only. Not betting advice."
 
 DISCLAIMER_FULL = (
@@ -193,10 +176,6 @@ DISCLAIMER_FULL = (
 )
 
 
-# ---------------------------------------------------------------------------
-# The shared page shell
-# ---------------------------------------------------------------------------
-
 PICKS_PAGE = "index.html"
 FINDINGS_PAGE = "findings.html"
 MODELS_PAGE = "models.html"
@@ -204,7 +183,6 @@ TEAM_EXPLORER_PAGE = "team_explorer.html"
 POOL_PAGE = "pool.html"
 LEDGER_PAGE = "ledger.html"
 
-# (file name, nav label, browser title) in nav order.
 SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (PICKS_PAGE, "This week", "This week's picks"),
     (MODELS_PAGE, "Models", "Model ledger"),
@@ -214,13 +192,6 @@ SITE_PAGES: tuple[tuple[str, str, str], ...] = (
     (LEDGER_PAGE, "Signal ledger", "Signal ledger"),
 )
 
-# Page chrome only: the "Ledger base + Terminal layout" design system. It rides
-# AFTER theme.stylesheet() so its token remaps win on equal specificity, and the
-# dark theme is a second DESIGNED palette behind ``prefers-color-scheme`` (not
-# an inversion). Binding rules baked in below: hex budget <= 10 in the light
-# block; sizes only {11,12,13,14,17,24}px; 4px spacing grid; radius {4,8};
-# shadows banned (the sticky header separates with a hairline border, not a
-# shadow); no gradients or glows; transitions <=200ms on interactive state only.
 _PAGE_CHROME = """
 <style>
 body { margin: 0; overflow-x: hidden; }
@@ -694,7 +665,6 @@ def _footer(generated: datetime, note: str = "") -> str:
     stamp = generated.strftime("%Y-%m-%d %H:%M UTC")
     lead = f"{note} &middot; " if note else ""
     return (
-        # <footer> landmark (WCAG 1.3.1 Info and Relationships).
         '<footer style="margin-top:36px;padding-top:14px;border-top:1px solid var(--grid);">'
         f'<p class="fine">{lead}page generated {stamp}.</p>'
         f'<p class="fine" style="margin-top:10px;max-width:82ch;">{DISCLAIMER_FULL}</p></footer>'
@@ -737,25 +707,9 @@ def _page(
 """
 
 
-# ---------------------------------------------------------------------------
-# Sign conventions (shared with the retired internal pages; the composition
-# lives here now. Keep them in sync by hand with card_view.py.)
-# ---------------------------------------------------------------------------
-
-# A "strong lean" is a fair-line disagreement with the market of at least this
-# many points. It gates the explanation, not the pick: every pool pick is
-# forced, and our confidence ordering has NOT proven predictive (see the
-# findings page), so the lean is a narrative marker, never a weighting.
 STRONG_LEAN_POINTS = 1.5
 SWEEP_HALF_WIDTH = 4.0
 
-#: The cover curve's fallback offset grid, for a game whose Gaussian read
-#: exists but whose real ``line_sweep`` row does not (an older/rolled-back
-#: artifact tree -- see ``_game_deep_dive``). Same span and step as the real
-#: sweep (``SWEEP_HALF_WIDTH``, ``SPREAD_EXPLORER_STEP`` -- both already 0.5
-#: independently, since real NFL spreads are quoted in half points), so a
-#: chart built from this fallback looks exactly like one built from real
-#: swept rows, never wider or coarser.
 _COVER_CURVE_FALLBACK_OFFSETS: tuple[float, ...] = tuple(
     round(-SWEEP_HALF_WIDTH + step_index * SPREAD_EXPLORER_STEP, 1)
     for step_index in range(round(2 * SWEEP_HALF_WIDTH / SPREAD_EXPLORER_STEP) + 1)
@@ -811,12 +765,6 @@ def _default_data_root() -> Path:
     return Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
 
 
-#: Decimal places a probability is rounded to before it is banded, matching
-#: the one-decimal percent the board prints (55.9%, 56.1%). The word must be
-#: a function of the number the READER SEES, or one printed percentage can
-#: carry two different words. Week 1 2026 did exactly that: 0.559 and 0.561
-#: both printed "56%" on opposite sides of the 0.56 edge, so the card read
-#: "ATL a 56% cover, a lean" beside "MIA a 56% cover, a strong lean".
 CONFIDENCE_ROUNDING_PLACES = 3
 
 
@@ -839,9 +787,6 @@ def confidence_word(probability: float) -> str:
     return "slight"
 
 
-#: Filled segments per :func:`confidence_word` band, for the board's strength
-#: meter. Three bands, three segments -- the meter encodes exactly what the
-#: word does and never implies a finer resolution than the bands carry.
 _CONFIDENCE_FILL = {"slight": 1, "lean": 2, "strong": 3}
 
 
@@ -889,8 +834,6 @@ def delta_html(points: float | None, *, digits: int = 2, suffix: str = "") -> st
     return f'<span class="delta {tone}">{points:+.{digits}f}{escape(suffix)}</span>'
 
 
-#: State -> (pill modifier, visible label). The label is never omitted: the
-#: dot carries colour, the words carry the meaning.
 _PILL_TONES: dict[str, str] = {
     "good": "is-good",
     "warn": "is-warn",
@@ -952,37 +895,7 @@ def pill_html(tone: str, label: str, *, title: str = "") -> str:
     return f'<span class="pill {modifier}"{attrs}>{escape(label)}</span>'
 
 
-# ---------------------------------------------------------------------------
-# Cover curve / spread explorer merge (owner request, 2026-08-26): the picks
-# page used to carry TWO tools that answered the same question -- a static
-# sweep curve and a standalone "pick a spread, see the odds of covering"
-# slider (owner request, 2026-08-20) -- and the owner's complaint was exactly
-# that duplication, plus that neither used colour well. They are now ONE
-# component, :func:`nfl_ats.dashboard.viz.cover_curve`: the visible curve is
-# real swept model output wherever a game has it, and the slider's handle
-# reads a JS-evaluated Gaussian off the SAME residual sample the published
-# pick's own ``home_cover_probability`` came from -- see
-# ``nfl_ats.spread_explorer`` for the refit-and-verify discipline that
-# produces each game's (center, mean, sd) and that module's docstring for why
-# push probability is deliberately not modeled by either path.
-#
-# Domain choice: the slider's range matches the plotted curve's own domain
-# (line OFFSETS from the quoted line, +/-4 -- see ``SWEEP_HALF_WIDTH``), not
-# the old widget's absolute [-20, +20] line range. That old range existed
-# because the widget worked in ABSOLUTE spread values, where reproducing a
-# card's own WHOLE-number line (3, 7, ...) needed 0.5-point steps across a
-# wide span; expressed as an OFFSET from the quote, offset 0 reproduces the
-# card's own line trivially regardless of whether it is a whole or
-# half-point number, so the far narrower, far more informative +/-4 window
-# (where the S-curve actually moves; probability is nearly flat beyond it)
-# is sufficient. This widget still never shows a push probability
-# (mathematically undefined for a continuous Gaussian fit at a single point,
-# and the mean/sd-only embedding this task specifies has no discrete sample
-# to compute one from honestly) -- a plain-English note says so instead of
-# inventing a number, both in the page-level intro and on every widget.
-# ---------------------------------------------------------------------------
-
-_SPREAD_EXPLORER_TOLERANCE = 1e-4  # see _assert_spread_explorer_matches_card
+_SPREAD_EXPLORER_TOLERANCE = 1e-4
 
 
 def _assert_spread_explorer_matches_card(
@@ -1008,9 +921,6 @@ def _assert_spread_explorer_matches_card(
         return
     lookup = predictions.set_index(predictions["game_id"].astype(str))
     for game_id, values in spread_explorer_payload(params).items():
-        # A key-line game (docs/key_line_pick_read.md) ships its served
-        # lattice number for the quoted line; that is what the widget shows
-        # at offset zero, so that is what must match the card.
         widget_probability = (
             float(values["pinned"])
             if "pinned" in values
@@ -1073,24 +983,6 @@ def _spread_explorer_intro(generated: datetime) -> str:
     return f'<div style="margin-top:16px;">{inner}</div>'
 
 
-# ---------------------------------------------------------------------------
-# Page 1 -- This week
-# ---------------------------------------------------------------------------
-
-# Season ops timeline (owner request, 2026-08-20): now that picks stay
-# editable to kickoff (docs/late_week_refresh.md, POL-11) and only the
-# GRADING line freezes Tuesday, the weekly cadence itself is new information
-# a reader needs to make sense of "why did the pick change" -- this strip is
-# that explanation, read once at a glance rather than requiring a trip to
-# docs/late_week_refresh.md. Every day/step below is [read] from that
-# document's own "Cadence" section and "Per-game deadline" section (both
-# read in full while building this); the pool's own Wednesday revision is
-# [read] from docs/pool_edge_plan.md line 82 / docs/observed_movement_channel.md
-# line 14 ("the pool posts lines Tuesday, revises once Wednesday, then
-# freezes for the week"). The 2026 Week 1 lock date is [read] from
-# docs/late_week_refresh.md's "Season note" ("Week 1 2026 locks Tuesday
-# 2026-09-08"). Nothing here is re-derived or guessed; it restates what those
-# two tracked documents already say, in the reader's plain English.
 _WEEK1_LOCK_LABEL = "Tuesday, September 8, 2026"
 
 _SEASON_OPS_STEPS: tuple[tuple[str, str], ...] = (
@@ -1173,15 +1065,6 @@ def _season_ops_timeline_section(challengers: Sequence[Mapping[str, Any]]) -> st
         + "</div>"
     )
 
-
-# ---------------------------------------------------------------------------
-# Per-game attribution ("Why this pick") -- waterfall feed, fail-open
-#
-# The feed is an optional artifact: absent, stale, or short (a game missing
-# from ``games``), every panel degrades to a quiet note. A missing attribution
-# must never block a publish, exactly like the sweep and spread-explorer
-# optional artifacts above.
-# ---------------------------------------------------------------------------
 
 _ATTRIBUTION_UNAVAILABLE = (
     '<p class="fine" style="color:var(--muted);">Attribution not published.</p>'
@@ -1343,7 +1226,6 @@ def _pick_oriented_lines(row: pd.Series, pick_team: str, home: str) -> tuple[str
     negation-flip). Fair is ``None`` when the card carries no fair spread."""
 
     home_spread = float(row["spread_line"])
-    # home -> -value, away -> +value, for both the quoted line and our fair one.
     sign = -1.0 if pick_team == home else 1.0
     market_value = home_spread * sign
     market_text = "pick'em" if market_value == 0 else f"{market_value:+g}"
@@ -1387,8 +1269,6 @@ def _game_deep_dive(
     strong = abs(residual) >= STRONG_LEAN_POINTS
     pick_market_text, pick_fair_text = _pick_oriented_lines(row, pick_team, home)
 
-    # B4 fix: a flip disclosure takes priority over the market-lean
-    # explanation (two numbers for one concept must never co-render).
     if production_members:
         member_text = ", ".join(_member_words(name) for name in production_members)
         explanation_html = (
@@ -1400,9 +1280,6 @@ def _game_deep_dive(
             "tracking uses the former coach-to-arrests policy as its control.</p>"
         )
     elif arrest_flip is not None:
-        # Consolidation law (2026-08-23): the policy's archive percentages
-        # are accuracy statistics -- they ride inside a collapsed toggle so
-        # the default view never shows them next to the picks.
         explanation_html = (
             '<p class="sub" style="font-weight:600;">Arrest rule applied: '
             f"flipped from {escape(arrest_flip.original_pick_team)} to "
@@ -1418,8 +1295,6 @@ def _game_deep_dive(
             "be tracked prospectively.</p></details>"
         )
     elif flip is not None:
-        # Same consolidation law: the rule's historical cover rate stays
-        # collapsed; the default view carries only the flip disclosure.
         explanation_html = (
             '<p class="sub" style="font-weight:600;">Coach-fade overlay applied: flipped from '
             f"{escape(flip.year_one_team)} (the model&#8217;s own pick) to "
@@ -1434,8 +1309,6 @@ def _game_deep_dive(
             "</p></details>"
         )
     elif strong and not explanation:
-        # Fail-quiet (2026-08-23): a promising kicker above an unpublished
-        # breakdown reads as a broken promise -- omit the whole block.
         explanation_html = ""
     elif strong:
         lean_text = (
@@ -1450,27 +1323,10 @@ def _game_deep_dive(
     else:
         explanation_html = ""
 
-    # LICENSING (MKT-09 provider licensing/quota audit, ROADMAP.md): the public
-    # site plots ONLY the one consensus market line this card already publishes
-    # and our own fair line. The internal dashboard also plots an
-    # archive-derived opener consensus and a predicted close; both stay off the
-    # public site until that audit clears redistribution.
-    #
-    # Everything charted below lives inside ONE collapsed details toggle: the
-    # cover curve (with its table-view twin and on-chart slider) and the
-    # market-vs-fair line journey (kept as-is -- it answers a different
-    # question, where the market sits vs. our own fair line, not "what would
-    # the pick's odds be at a hypothetical line"; see the 2026-08-26 header
-    # comment above ``_SPREAD_EXPLORER_TOLERANCE``). Collapsed, this block
-    # shows a single percentage; expanded, every number the old flat layout
-    # had.
     pick_is_home = pick_team == home
     quote_label = spread_words(home, away, market_spread)
     points: list[tuple[float, float]]
     if not game_sweep.empty:
-        # Prefer REAL swept model output over any approximation wherever the
-        # card has it (research-integrity rule: never invent what is already
-        # measured).
         points = [
             (float(offset), float(probability) if pick_is_home else 1.0 - float(probability))
             for offset, probability in zip(
@@ -1480,11 +1336,6 @@ def _game_deep_dive(
             )
         ]
     elif spread_explorer_params is not None:
-        # Fallback for a game with a Gaussian read but no saved sweep row
-        # (older/rolled-back artifact tree): synthesize the SAME standard
-        # offset grid from the closed-form formula
-        # (``widget_home_cover_probability`` -- the exact browser-mirrored
-        # erf approximation, not scipy) rather than leaving the chart empty.
         points = [
             (
                 offset,
@@ -1706,12 +1557,6 @@ def load_model_ledger_html(artifacts_root: Path) -> str:
         return _LEDGER_UNAVAILABLE_HTML.replace("{detail}", detail)
 
 
-#: Plain-language glossary for research vocabulary that was unexplained at
-#: point of use (wave-1 UX finding on the picks page: "P+", "Ledger mini",
-#: "Evidence P+", "Challenger watch"). Rendered as ``<abbr title="...">``
-#: tooltips -- the same mechanism the week board already uses for its
-#: flip/best flags -- so the visible text stays unchanged and every term is
-#: glossed in plain language where it appears.
 _GLOSSARY: dict[str, str] = {
     "P+": (
         "Our confidence that a measured effect is real rather than luck; "
@@ -1766,11 +1611,6 @@ def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, 
     rows = []
     for label, status_words, probability in arms[:5]:
         probability_text = viz.p_plus_text(probability) if probability is not None else "--"
-        # "promoted" is the only status that means THIS ARM ACTUALLY PLAYS;
-        # every other row is tracked-only. That categorical difference now
-        # rides the shared status pill (colour-carrying dot + its own label)
-        # instead of an ad-hoc green text class, so it matches every other
-        # state on the site and never conveys the state by colour alone.
         tone = "good" if status_words == "promoted" else "idle"
         status_cell = f"<td>{pill_html(tone, status_words)}</td>"
         rows.append(
@@ -1786,8 +1626,6 @@ def _ledger_mini_table(model_id: str | None, challengers: Sequence[Mapping[str, 
     )
 
 
-#: Challenger-watch rows shown collapsed-open before the "show all" details.
-#: Six reads at a glance; the rest stay one click away, never hidden.
 _CHALLENGER_WATCH_VISIBLE = 6
 
 
@@ -1879,13 +1717,6 @@ def _challenger_watch_panel(
     )
 
 
-#: Panel 1's ONE dominant number: the played card's HONEST EXPECTATION vs
-#: Tuesday-frozen lines. 2026-08-23 owner question ("what edge am I playing"):
-#: the hero was the chain's measured history, but the card actually plays the
-#: three-member overlay union + market-follow refresh, whose forward
-#: expectation is a de-inflated PLANNING synthesis -- pinned in
-#: :mod:`nfl_ats.dashboard.findings_content` with provenance, never computed
-#: from an artifact. The measured chain history is the secondary line.
 _CROWNED_LABEL = "PLAYED CARD \u2014 HONEST EXPECTATION VS TUESDAY LINES"
 
 
@@ -1924,12 +1755,6 @@ def _crowned_stat_block(played_chain_accuracy: float | None) -> str:
     )
 
 
-#: The active model's own out-of-sample accuracy, surfaced as the ONE
-#: deliberate headline figure on the index landing page (wave-1 improvement 1,
-#: rubric dimension 1). It is a distinct element from Panel 1's two stats:
-#: Panel 1 keeps the consolidation law's exactly-two-stats shape, and this
-#: headline is the owner-sanctioned exception that answers "how good has the
-#: model actually been" within ~30 seconds of landing.
 def render_picks_page(
     predictions: pd.DataFrame,
     sweep: pd.DataFrame | None = None,
@@ -2058,11 +1883,6 @@ def render_picks_page(
     week_label = _WEEK_LABELS.get(game_type, f"Week {week}")
     season_label = f"{season} · " if season is not None else ""
 
-    # What actually gets submitted: the coach-fade overlay + Best Pick
-    # nomination, through the one shared implementation every surface uses.
-    # Both are injectable so ``build_public_site`` can compute them ONCE and
-    # share the result with the model/history page's Best Pick section rather
-    # than paying v2's cross-book dispersion-pool scan twice per site build.
     if overlay is None:
         overlay = resolve_overlay(predictions, data_root)
     if arrest_overlay is None:
@@ -2089,9 +1909,6 @@ def render_picks_page(
         else recommendations
     )
 
-    # B3 fix (2026-08-23): the summary's strength counts are COMPUTED from the
-    # same frame the board renders, using the same confidence_word buckets --
-    # never from a different threshold on a different frame.
     strong_count = sum(
         1 for _, row in ordered.iterrows() if confidence_word(pick_side(row)[1]) == "strong"
     )
@@ -2101,11 +1918,6 @@ def render_picks_page(
         "Picks are graded against Tuesday-frozen lines all season.",
     )
 
-    # POL-09: the week's Best Pick nomination, resolved exactly as
-    # `publish-predictions` would choose it -- v2's calibrated-probability
-    # signal when it can be computed, the incumbent v1 sweep_robustness
-    # signal otherwise. Scored on the model's OWN, un-overlaid picks (the
-    # overlay never influences which GAME is nominated), regular season only.
     best_pick_id: str | None = None
     best_pick_note = ""
     if game_type == "REG":
@@ -2135,8 +1947,6 @@ def render_picks_page(
         sweep.columns
     )
 
-    # Level-3 attribution is built per game ONCE and lives ONLY in the board's
-    # expandable sub-rows; the deep-dive blocks below carry level-2 detail.
     why_by_game = {
         str(row["game_id"]): _why_this_pick_panel(
             (waterfall_feed or {}).get(str(row["game_id"])),
@@ -2181,7 +1991,6 @@ def render_picks_page(
         "model-vs-market gap.</p>"
     )
 
-    # P1 summary: composition line, recent form when computable, Best Pick.
     composition = ["Synchronized with the active model"]
     if strong_count:
         composition.append(f"{strong_count} strong lean{'s' if strong_count != 1 else ''}")
@@ -2247,9 +2056,6 @@ def render_picks_page(
     )
 
     ops_timeline = _season_ops_timeline_section(challengers)
-    # Gated on whether any game actually got a chart (real sweep OR a
-    # Gaussian fallback -- see ``_game_deep_dive``), not just on whether the
-    # Gaussian map is non-empty: a sweep-only build still gets the intro.
     spread_explorer_intro = _spread_explorer_intro(generated) if chart_payloads else ""
     deep_dive = (
         _section_header("Game notes", "One block per game", "Anchored from the board above.")
@@ -2262,19 +2068,11 @@ def render_picks_page(
         body=(header + grid + deep_dive + ops_timeline),
         generated=generated,
         footer_note=(
-            # Consolidation law: no accuracy percentages in the default view.
             f"{model_text} &middot; lines are home-oriented "
             "spreads at card-build time; the pool's exact number can differ by a half point"
         ),
-        # No host sanitizer on a static page, so the cover curve's delegated
-        # drag-handler script ships as its own script tag.
         scripts=viz.cover_curve_script(chart_payloads),
     )
-
-
-# ---------------------------------------------------------------------------
-# Page 2 -- What we've learned
-# ---------------------------------------------------------------------------
 
 
 def _rows(cards: Sequence[str], *, per_row: int = 2) -> str:
@@ -2294,8 +2092,6 @@ def _rows(cards: Sequence[str], *, per_row: int = 2) -> str:
 
 
 def _section_header(kicker: str, title: str, sub: str, *, top: int = 34) -> str:
-    # <h2>: section headers nest directly under the page's single <h1>
-    # (WCAG 1.3.1 Info and Relationships).
     return (
         f'<div style="margin:{top}px 0 16px;max-width:70ch;">'
         f'<p class="kicker">{escape(kicker)}</p>'
@@ -2358,11 +2154,6 @@ def _findings_hero(artifacts_root: Path | None = None) -> str:
         f'<p class="kicker">{escape(LEGEND_KICKER)}</p>'
         f'<div class="row" style="margin-top:4px;">{legend_items}</div>'
     )
-    # The lead narrative is capped at the theme's 68ch reading measure, which is
-    # right for prose but left ~600px of dead plane beside it on a wide screen,
-    # with the legend stranded underneath. Pairing the two fills the width with
-    # content that already existed and reads better together anyway: the story
-    # of the number, and the key for the verdicts used all down the page.
     return (
         viz.page_header(HERO_KICKER, HERO_TITLE, HERO_SUB)
         + tiles
@@ -2464,9 +2255,6 @@ def _group_section(group: VerdictGroup) -> str:
     return header + _rows([_finding_card(finding, group) for finding in findings])
 
 
-#: Plain-English words for the units the weak-signal registry stores. Kept
-#: here (rendering), not in ``findings_registry`` (content model), matching
-#: this file's existing split between the two modules.
 _EFFECT_UNIT_WORDS = {
     "accuracy_points": "accuracy points",
     "ats_points": "line points",
@@ -2589,8 +2377,6 @@ def _watching_lead_card(
     )
     league_words = "NFL" if lead.league == "nfl" else lead.league.upper()
     headline_text = blurb.text if blurb is not None else lead.description
-    # Every card links to the registry row it was generated from, blurbed or
-    # not: the link is the reader's route to the full evidence either way.
     registry_link = (
         '<p class="fine" style="margin-top:8px;"><a href="../registry/weak_signals.json">'
         "details in the research registry</a></p>"
@@ -2752,10 +2538,6 @@ def render_findings_page(
         if weak_signal_registry is not None
         else load_weak_signal_registry(registry_root)
     )
-    # `registry` -- whether injected (tests) or disk-loaded (production) --
-    # backs BOTH curation validation and the leads below. Re-reading a
-    # second, independent copy from disk for validation would let the two
-    # silently disagree whenever a caller injects its own registry.
     entries = load_all_entries(
         registry_root=registry_root, weak_signal_registry=registry, challengers=challengers
     )
@@ -2824,15 +2606,6 @@ def humanize_identifier(token: str) -> str:
     return _humanize(token)
 
 
-#: Reader-facing names for every registered challenger id, one per line of the
-#: picks page's challenger-watch panel and the ledger mini table. Raw registry
-#: ids are operator detail (snake_case config spellings like
-#: ``nflcom_friday_refresh_out2_starters_v1``); a reader needs the rule, not
-#: the slug. The canonical map lives in findings_content (shared with the
-#: model ledger so both surfaces agree); a challenger id missing from it
-#: still renders correctly through the :func:`_humanize` fallback, so a
-#: brand-new registration never blocks a build -- the map-covers-registry
-#: test in ``tests/test_public_board`` is what reminds us to add the name.
 _CHALLENGER_DISPLAY_NAMES = CHALLENGER_DISPLAY_NAMES
 
 
@@ -2840,13 +2613,6 @@ def _challenger_display_name(challenger_id: str) -> str:
     return _CHALLENGER_DISPLAY_NAMES.get(challenger_id, _humanize(challenger_id))
 
 
-#: One hand-written sentence per known challenger id: "what it does", never
-#: "how it's configured" -- the config/fingerprint/command fields on each
-#: registry entry stay off the public page (they are for the CLI operator,
-#: not a reader). A challenger not in this dict (a brand-new registration)
-#: still renders correctly with a generic fallback -- see
-#: :func:`_challenger_blurb` -- so registering a new challenger never
-#: requires touching this file.
 _CHALLENGER_BLURBS: dict[str, str] = {
     "mod07_weak_signal_stack": (
         "Tracks the active model's own weak-signal stack as its own separate "
@@ -2947,13 +2713,6 @@ def challenger_blurb(challenger_id: str) -> str:
 _SENTENCE_END = re.compile(r"[.!?](?=\s|$)")
 
 
-#: How far past ``max_len`` a COMPLETE first sentence may run and still be
-#: shown whole. Without this, a sentence one character over the limit loses its
-#: full stop to an ellipsis -- which is what the challenger watch shipped:
-#: "No games matched its rule this week, so nothing would change." is 61
-#: characters against a 60-character limit, so readers saw "...would change..."
-#: and were invited to open a "show all" that revealed a single extra period.
-#: A whole sentence slightly over the budget beats a truncated one every time.
 _SENTENCE_OVERSHOOT = 24
 
 
@@ -2985,11 +2744,6 @@ def _first_sentence(text: str, *, max_len: int = 260) -> str:
     return head.rstrip(" ,;:([-") + "..."
 
 
-#: Evidence keys this file knows are caveats/disclosures worth flagging as
-#: their own chip, rather than only readable inside the (long, essay-length)
-#: ``status_reason`` prose. Generic by suffix, not a per-challenger hardcoded
-#: list, so a new challenger's own caveat fields surface automatically the
-#: day it is registered -- see :func:`_evidence_caveat_chips`.
 _CAVEAT_KEY_SUFFIXES = ("_caveat", "_disclosure")
 _CAVEAT_KEY_EXACT = ("caveats",)
 
@@ -3104,11 +2858,6 @@ def _challenger_card(
     divergence_chip = _opener_close_divergence_chip(evidence)
     if divergence_chip:
         evidence_chips.append(f'<span class="chip">{escape(divergence_chip)}</span>')
-    # Caveats live on the ``evidence`` block for most challengers, but a few
-    # (e.g. ``forecast_cold_visitor_tilt``'s ``climatology_deviation_disclosure``/
-    # ``station_mapping_deviation_disclosure``) are registered as SIBLINGS of
-    # ``evidence`` on the entry itself -- scan both, deduplicating by label,
-    # so neither location is silently missed.
     caveat_labels = list(
         dict.fromkeys(_evidence_caveat_chips(entry) + _evidence_caveat_chips(evidence))
     )
@@ -3156,15 +2905,10 @@ def _challenger_card(
     )
     card_html = viz.card("".join(parts))
     if not is_active:
-        # Greyed, not hidden (icon/label/text above already carry the status --
-        # this is a supplemental visual cue, never the only signal).
         card_html = f'<div style="opacity:0.6;">{card_html}</div>'
     return card_html
 
 
-#: Shown for every challenger until the ledger has at least one settled
-#: game -- true for the whole roster before the season starts (see
-#: :func:`_challenger_prospective_records`).
 _PENDING_PROSPECTIVE_RECORD = (
     "Not scored yet this season -- this fills in automatically once games are played "
     "and picks are recorded and settled each week."
@@ -3221,16 +2965,6 @@ def _challengers_section(
     )
     return _spaced(intro + cards)
 
-
-# ---------------------------------------------------------------------------
-# "This week" previews for challenger cards -- what each ACTIVE_PROSPECTIVE
-# challenger actually did (the one applied overlay) or WOULD have done (every
-# other pick-level tilt, all dual-tracked only) to this week's un-overlaid
-# card. Every path below degrades to omitting the challenger from the
-# returned mapping rather than raising -- a missing local snapshot or
-# feature table just means that card renders with no "this week" line,
-# exactly like ``card_view.resolve_overlay`` degrades to a no-op.
-# ---------------------------------------------------------------------------
 
 _NOT_APPLIED_NOTE = "Prospective evidence only -- not applied to the published card."
 
@@ -3398,19 +3132,6 @@ def _best_pick_v3_preview_sentence(
     return "No nomination this week (playoff week, or no line-sweep artifact yet)."
 
 
-#: Challengers this file deliberately does NOT attempt to preview locally --
-#: each for a distinct, honest, stated reason (never a bare omission): a
-#: weekly model REFIT is too heavy to pay twice per site build
-#: (``ecdf_mapping_incumbent``, ``era_weighted_half_life_8``), a genuine LIVE
-#: network fetch this static build must not make (``forecast_cold_visitor_tilt``
-#: -- the first challenger in the registry to need one -- and its
-#: kickoff-nearest siblings ``forecast_weather_kn_warm_team_cold_late_tilt`` /
-#: ``forecast_weather_kn_precip_high_total_tilt``, see each one's own
-#: ``challengers.json`` registration), or a mechanism that structurally has
-#: nothing to preview before a later refresh pass runs
-#: (``model_only_refresh_incumbent``). Per the task spec: when a challenger's
-#: preview needs more than this page can honestly compute at build time, say
-#: so plainly ("evaluated at lock time") rather than guess or omit silently.
 _LOCK_TIME_EVALUATED_NOTES: dict[str, str] = {
     "ecdf_mapping_incumbent": (
         "Evaluated at lock time -- this challenger remaps every game's probability from a "
@@ -3480,8 +3201,6 @@ def _load_injury_features_for_challenger_preview(data_root: Path) -> pd.DataFram
         return None
 
 
-#: (challenger_id, apply function, flip-detail adapter) for the three
-#: hypothetical tilts that need only the newest local schedule snapshot.
 _SCHEDULE_BASED_TILT_PREVIEWS: tuple[tuple[str, Any, Any], ...] = (
     ("backup_qb_fade_overlay", apply_backup_qb_fade_overlay, _flip_backup_qb),
     ("division_revenge_tilt_overlay", apply_division_revenge_tilt_overlay, _flip_division_revenge),
@@ -3574,12 +3293,6 @@ def _challenger_week_previews(
                 )
 
     if "interim_hc_first_game_tilt_overlay" in active_ids:
-        # Fail-open by design (nfl_ats.interim_hc_first_game_tilt_overlay's
-        # own contract): a missing/unavailable interim-coach snapshot never
-        # raises here, it just yields zero flags, which _tilt_preview_sentence
-        # already renders as an honest "no games matched its rule this week"
-        # sentence -- exactly the "no interim coaches this week" preview
-        # Week 1 2026 needs, since mid-season firings cannot exist yet.
         try:
             result = apply_interim_hc_first_game_tilt_overlay(predictions, data_root.parent)
         except DataContractError:
@@ -3594,15 +3307,6 @@ def _challenger_week_previews(
             previews[challenger_id] = note
 
     return previews
-
-
-# ---------------------------------------------------------------------------
-# "2026 prospective record" for challenger cards -- read fresh from the
-# newest ``nfl-ats prospective-score`` run, exactly like the History
-# tiles read the newest ``opener_evaluation`` run. The ledger starts EMPTY
-# (the 2026 season has not kicked off yet), so the common case is the
-# generic pending sentence -- this must never fail the build over that.
-# ---------------------------------------------------------------------------
 
 
 def _load_latest_prospective_scoring(artifacts_root: Path) -> dict[str, Mapping[str, Any]]:
@@ -3656,14 +3360,6 @@ def _challenger_prospective_records(
         )
         for entry in challengers
     }
-
-
-# ---------------------------------------------------------------------------
-# Artifact loading: active model manifest -> weekly forecast -> predictions +
-# line sweep, the latest market-decomposition attribution for explanations, and
-# the latest opener evaluation for the historical model record. Optional artifacts are
-# feature-detected: an older checkout without one still renders a site.
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -3726,21 +3422,6 @@ def load_public_board_artifacts(artifacts_root: Path) -> PublicBoardArtifacts:
     return PublicBoardArtifacts(predictions, sweep, explanations, metadata, active)
 
 
-# B4 fix (2026-08-19): verified live on ATL at PIT -- the header said "We make
-# this line 2.0 points different from the market" while the market-decomposition
-# explanation paragraph below it said "The model essentially agrees with the
-# market on this game (a 0.1-point gap)." Both sentences describe the SAME
-# quantity (the model-vs-market residual), but from two different sources: the
-# header always reads the CURRENT recommendations.csv, while the explanation
-# text is baked into a market_decomposition run that can predate it (the
-# dashboard's own state.py already flags this exact staleness for OTHER
-# purposes via a feature-table sha256 comparison). A page cannot render two
-# numbers for one concept and disagree with itself, so rather than trust an
-# opaque, possibly-stale sentence, this compares the attribution artifact's
-# OWN recorded ``predicted_residual`` against the live card's
-# ``predicted_market_residual`` for the same game, and drops the explanation
-# entirely when they diverge -- ``_game_card`` already has an honest fallback
-# ("not been published for this card yet") for a missing explanation.
 _EXPLANATION_RESIDUAL_TOLERANCE = 0.3
 
 
@@ -3774,7 +3455,7 @@ def _reconciled_explanations(artifacts_root: Path, predictions: pd.DataFrame) ->
                 and live_value is not None
                 and abs(attrib_value - live_value) > _EXPLANATION_RESIDUAL_TOLERANCE
             ):
-                continue  # stale/inconsistent attribution -- drop rather than contradict
+                continue
         explanations[game_id] = str(row["explanation"])
     return explanations
 
@@ -3818,10 +3499,6 @@ def load_opener_evaluation_artifacts(
 
 
 def _feature_table_sha256_of_opener_evaluation(metadata: Mapping[str, Any]) -> str | None:
-    # ``metadata["provenance"]["feature_table"]["sha256"]`` -- measured
-    # against a real ``opener_evaluation/*/metadata.json`` (2026-09-05):
-    # the field is NOT top-level, it is nested under the run's own
-    # ``provenance`` block alongside ``environment``/``code``.
     provenance = metadata.get("provenance")
     feature_table = provenance.get("feature_table") if isinstance(provenance, Mapping) else None
     sha = feature_table.get("sha256") if isinstance(feature_table, Mapping) else None
@@ -3974,8 +3651,6 @@ def find_matching_overlay_composition(
     return None
 
 
-#: Played members using the archive's names. Match the exact set, never
-#: the search winner or the retired four-member row (2026-09-07 retirement).
 PLAYED_UNION_MEMBER_IDS: frozenset[str] = frozenset(
     {
         "coach_fade_overlay",
@@ -4090,14 +3765,6 @@ def load_era_magnitude_profile(artifacts_root: Path) -> dict[str, list[EraMagnit
             era_row = era_results.get(key) if isinstance(key, str) else None
             if not isinstance(era_row, dict) or era_row.get("insufficient_data"):
                 continue
-            # Two shapes coexist in this artifact: most signals nest their
-            # bootstrap under "week_blocked" (estimate/lower/upper/
-            # probability_positive) alongside a separate top-level "effect".
-            # At least one signal (production_model_opener_proxy_edge, a
-            # re-sliced-not-rerun variant) instead stores the point estimate
-            # as "estimate" with lower/upper/probability_positive directly
-            # on the era row, no "effect" key and no nesting. Support both
-            # rather than silently dropping every era of the second shape.
             effect = _number(era_row.get("effect"))
             interval: tuple[float, float] | None = None
             probability_positive: float | None = None
@@ -4230,11 +3897,6 @@ def render_models_page(
         body=body,
         generated=(generated_at or datetime.now(UTC)),
     )
-
-
-# ---------------------------------------------------------------------------
-# Team explorer (UI-07) -- per-team pregame-state trends, canonical schema only
-# ---------------------------------------------------------------------------
 
 
 def _diverging_bar(z: float, max_abs: float, *, good_direction: int = 0) -> str:
@@ -4457,10 +4119,6 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
     data_json = json.dumps(payload, separators=(",", ":"))
     labels_json = json.dumps([metric_label(m) for m in metrics], separators=(",", ":"))
     metrics_json = json.dumps(list(metrics), separators=(",", ":"))
-    # +1 = higher is better, -1 = lower is better, 0 = unknown -> neutral.
-    # Without this the JS re-render tints by SIGN, so switching teams would
-    # paint "Defense EPA/play allowed" red for a GOOD defence -- the exact
-    # defect the server-rendered path was just fixed for.
     directions_json = json.dumps([metric_good_direction(m) for m in metrics], separators=(",", ":"))
     script = (
         '<script type="application/json" id="ats-te-data">' + data_json + "</script>\n"
@@ -4477,9 +4135,6 @@ def _team_explorer_matchup(trends: TeamTrends, metrics: Sequence[str]) -> tuple[
         "  var labels = " + labels_json + ";\n"
         "  var metricsArr = " + metrics_json + ";\n"
         "  var goodDir = " + directions_json + ";\n"
-        # Mirrors the Python _signed() above so the JS-rendered comparison rows
-        # carry the same diverging tone as the server-rendered ones. The sign
-        # character is always present, so colour is the second channel.
         "  function signed(v, dir) {\n"
         "    if (v === null || v === undefined || isNaN(v)) "
         "{ return '<span class=\"delta zero\">\u2014</span>'; }\n"
@@ -4713,17 +4368,8 @@ def build_public_site(
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
     resolved_data_root = data_root if data_root is not None else _default_data_root()
     artifacts = load_public_board_artifacts(artifacts_root)
-    # Consolidation law (2026-08-23): the active manifest's aggregate
-    # historical accuracy is NOT rendered inside Panel 1 anymore -- Panel 1
-    # carries exactly two accuracy stats (the pinned planning hero and the
-    # measured chain history). The one owner-sanctioned exception (wave-1
-    # improvement 1, rubric dimension 1) is the headline historical-accuracy
-    # figure surfaced from the manifest by render_picks_page itself.
     model_id = artifacts.active.get("model_id")
 
-    # Computed ONCE and shared with the History page's Best Pick
-    # section (B1/B2, D3(b)) rather than paying v2's cross-book
-    # dispersion-pool scan twice per site build.
     game_type = (
         str(artifacts.predictions["game_type"].iloc[0])
         if "game_type" in artifacts.predictions and not artifacts.predictions.empty
@@ -4757,14 +4403,7 @@ def build_public_site(
         )
     )
     nomination = view.nomination if view is not None else None
-    # Loaded once and shared with the findings page's "currently tracked"
-    # section, mirroring how ``overlay``/``nomination`` above are computed
-    # once and shared rather than paying the IO/scan twice per site build.
     challengers = load_prospective_challengers(artifacts_root)
-    # Same reuse discipline: each challenger's "this week" preview and 2026
-    # prospective record are computed ONCE here and shared by both pages, so
-    # findings.html and the model summary can never disagree about what a
-    # challenger did this week.
     challenger_week_previews = _challenger_week_previews(
         challengers,
         artifacts.predictions,
@@ -4775,46 +4414,20 @@ def build_public_site(
     )
     challenger_prospective_records = _challenger_prospective_records(artifacts_root, challengers)
 
-    # P1's "recent form" line, read fresh from the newest prospective scoring
-    # run -- omitted entirely (never guessed) when nothing has been settled.
     active_report = _load_latest_prospective_scoring(artifacts_root).get("active_model")
     active_record_text = _prospective_record_text(active_report) if active_report else ""
-    # P1's "recent form" line, read fresh from the newest prospective scoring
-    # run -- suppressed entirely while nothing has been settled yet, rather
-    # than rendering the generic pending sentence as if it were a result.
     recent_form_text = (
         f"This season so far: {active_record_text}"
         if active_record_text and not active_record_text.startswith("Not scored yet")
         else None
     )
 
-    # Week-board attribution feed + Model Ledger fragment (2026-08-21
-    # integration wave): both optional, both fail-open -- see
-    # :func:`load_waterfall_feed` and :func:`load_model_ledger_html`.
     waterfall_feed = load_waterfall_feed(artifacts_root)
     ledger_section = load_model_ledger_html(artifacts_root)
-    # UI-08: the "How the model decides" family-weight section on the models
-    # page. Optional artifact, fail-open -- see
-    # :func:`nfl_ats.model_explanation.load_model_explanation_html`.
     explanation_section = load_model_explanation_html(artifacts_root)
 
-    # Panel 1's crowned stat (2026-08-23): the played chain's own historical
-    # opener accuracy, read once here so the picks page never re-types it.
     played_chain_accuracy = load_played_chain_accuracy(artifacts_root)
 
-    # Spread explorer (2026-08-20, owner request): per-game Gaussian params
-    # for the picks-page slider widget. Only the "gaussian" probability
-    # method (MOD-08, promoted 2026-08-19) has a closed-form mean/sd the
-    # widget's erf formula can read -- an older/rolled-back "ecdf" active
-    # model has no such closed form (its probability is a raw discretized
-    # count, not a fitted density), so the widget is simply omitted for that
-    # configuration, the SAME graceful-degradation contract every other
-    # optional artifact on this page already follows. Once a gaussian card
-    # exists to explain, though, a genuinely MISSING feature table is a real
-    # data-integrity problem (the same table `margin-predict` itself needed)
-    # and is treated as a hard failure -- matching
-    # ``nfl_ats.smooth_cdf_mapping_overlay``'s identical judgment call, not a
-    # silent degrade.
     spread_explorer_params: dict[str, SpreadExplorerGameParams] = {}
     if (
         str(artifacts.metadata.get("probability_method")) in ("gaussian", "gaussian_median")
@@ -4832,16 +4445,8 @@ def build_public_site(
             center_offsets=center_offsets_from_metadata(artifacts.metadata, artifacts.predictions),
             pick_overrides=pick_overrides_from_metadata(artifacts.metadata),
         )
-        # REQUIRED consistency check: the widget's own formula must reproduce
-        # the published card at each game's own line before it ships.
         _assert_spread_explorer_matches_card(spread_explorer_params, artifacts.predictions)
 
-    # Team explorer (UI-07): per-team pregame-state trends from the canonical
-    # team-state feature schema. The exact feature table the active forecast's
-    # own provenance points to carries the per-side pregame states; we melt it
-    # into the team-long form team_explorer consumes. A missing/unreadable
-    # table is the SAME fail-open contract every optional artifact follows --
-    # the page renders a quiet empty state, never an error.
     team_states: pd.DataFrame = pd.DataFrame()
     if not artifacts.predictions.empty:
         try:

@@ -78,23 +78,6 @@ from nfl_ats.nfl_week import pool_decision_cutoff  # noqa: E402
 from nfl_ats.provenance import sha256_file  # noqa: E402
 
 MOS_API = "https://mesonet.agron.iastate.edu/api/1/mos.json"
-# Model choice depends on how far the decision cutoff sits from kickoff:
-#   MEX (GFS MOS Extended, issues 00Z/12Z, +192h range, IEM archive from
-#     2020-07-12 -- measured) is required for tuesday_noon, whose cutoff is
-#     typically ~120-144h before a Sunday kickoff.
-#   GFS (GFS MOS "short-range", issues 00Z/12Z/06Z/18Z, ~+69h range) is used
-#     for kickoff_nearest instead of MEX: **measured** this session, MEX's
-#     finest granularity near its OWN issuance time starts far from the run
-#     (mean forecast-valid gap from kickoff 18.5h, min 12.5h, across the
-#     2024 kickoff_nearest pilot -- MEX is built for days-out extended
-#     guidance, not near-term), whereas GFS returns rows starting at
-#     issuance+6h in 3h steps -- e.g. a 2024-09-08T12:00Z GFS run's first row
-#     is valid 2024-09-08T18:00Z, exactly +6h. GFS's IEM archive also
-#     measurably reaches further back than MEX: present for
-#     runtime=2005-01-01T00:00Z and 2009-09-01T00:00Z, absent for
-#     2003-01-01T00:00Z (KDFW probes) -- comfortably covering this project's
-#     full 2009-2025 window for a near-kickoff forecast, free and instant,
-#     with no NCEI HAS/AIRS order needed for that use case.
 MOS_MODEL_BY_CUTOFF_MODE = {
     "tuesday_noon": "MEX",
     "kickoff_nearest": "GFS",
@@ -102,14 +85,9 @@ MOS_MODEL_BY_CUTOFF_MODE = {
 }
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 DELAY_SECONDS_DEFAULT = 0.3
-MAX_LOOKBACK_STEPS_DEFAULT = 10  # 10 * 12h = 5 days back from the Tuesday-noon-ET cutoff
+MAX_LOOKBACK_STEPS_DEFAULT = 10
 KNOTS_TO_MPH = 1.15078
 ET = ZoneInfo("America/New_York")
-
-
-# ---------------------------------------------------------------------------
-# 1. Population: NFL REG games in range, joined to kickoff + stadium/station
-# ---------------------------------------------------------------------------
 
 
 def _latest(glob_pattern: str) -> Path:
@@ -164,11 +142,6 @@ def load_population(
 
     station_map = pd.read_csv(station_map_path)
     df = df.merge(station_map[["stadium", "icao_station", "mappable"]], on="stadium", how="left")
-    # A stadium genuinely ABSENT from the reference table leaves BOTH
-    # icao_station and mappable null after the merge; a deliberately
-    # unmappable international stadium is present in the table with
-    # icao_station null but mappable=False (not null) -- only the former is
-    # an error to fail closed on.
     unmapped_stadiums = sorted(df.loc[df["mappable"].isna(), "stadium"].unique().tolist())
     if unmapped_stadiums:
         raise ValueError(
@@ -177,11 +150,6 @@ def load_population(
         )
     df["mappable"] = df["mappable"].astype(bool)
     return df
-
-
-# ---------------------------------------------------------------------------
-# 2. Tuesday-noon-ET cutoff and MOS fetch
-# ---------------------------------------------------------------------------
 
 
 def tuesday_noon_et_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
@@ -267,11 +235,8 @@ def fetch_mos_bulletin(
                 payload = json.load(resp)
             if "data" in payload:
                 return list(payload["data"])
-            return []  # "no results" detail response -> no bulletin, not an error
+            return []
         except urllib.error.HTTPError as exc:
-            # IEM uses HTTP 404 for an expected "no bulletin at this exact
-            # station/runtime" result in parts of the older archive.  It is a
-            # miss in the declared backward search, not a transport failure.
             if exc.code == 404:
                 return []
             last_exc = exc
@@ -353,12 +318,6 @@ def fetch_one_game(
             ftime_actual = row["ftime_utc"]
             tmp = row.get("tmp")
             wsp = row.get("wsp")
-            # Precip probability (p06/p12, percent) is sparse within a bulletin
-            # (populated only on 6h-boundary rows) -- picked via a SEPARATE
-            # field-restricted nearest-by-valid-time search over the same
-            # already-fetched rows, not the plain nearest_row pick above, which
-            # would silently return null on most games. p06 (6h prob) preferred
-            # over p12 (12h prob, coarser window) when both are available.
             precip_row = nearest_row_with_field(rows, kickoff_utc, "p06") or nearest_row_with_field(
                 rows, kickoff_utc, "p12"
             )
@@ -393,11 +352,6 @@ def fetch_one_game(
         "fetch_error": None,
         "issuance_runtime_utc": None,
     }
-
-
-# ---------------------------------------------------------------------------
-# 3. Driver
-# ---------------------------------------------------------------------------
 
 
 def load_resume_cache(
@@ -439,9 +393,6 @@ def load_resume_cache(
             if record.get("fetch_status") in {"ok", "unmappable_international_stadium"}:
                 cache[game_id] = record
             else:
-                # The JSONL is an append-only attempt log. A later failed
-                # attempt must invalidate any earlier cached row for this game
-                # so resume retries it rather than silently preserving failure.
                 cache.pop(game_id, None)
                 retryable_rows += 1
     print(
@@ -538,9 +489,6 @@ def main() -> None:
         output_dir / "run_config.json",
     )
     if args.resume_from is not None:
-        # Rewrite from the validated terminal cache even when resuming in
-        # place. This removes failed/superseded attempts and guarantees the
-        # final parquet has exactly one row per game.
         rewrite_resume_cache(jsonl_path, cache)
 
     rows = population if args.limit is None else population.head(args.limit)
@@ -626,7 +574,6 @@ def main() -> None:
                     f"elapsed={elapsed:.0f}s rate={rate:.2f} games/sec"
                 )
 
-    # Assemble the final parquet from the full jsonl (cache + this run).
     all_records = []
     with jsonl_path.open("r", encoding="utf-8") as handle:
         for line in handle:

@@ -111,11 +111,6 @@ def _log(msg: str) -> None:
     print(msg, flush=True)
 
 
-# ---------------------------------------------------------------------------
-# Construct wrapper: a common shape every subset-vs-complement signal fits
-# ---------------------------------------------------------------------------
-
-
 @dataclass
 class Construct:
     name: str
@@ -144,11 +139,6 @@ def _restrict_seasons(construct: Construct, lo: int, hi: int) -> Construct:
         season_col=construct.season_col,
         reliability=construct.reliability,
     )
-
-
-# ---------------------------------------------------------------------------
-# Building the six subset-vs-complement constructs
-# ---------------------------------------------------------------------------
 
 
 def build_surface_switch() -> Construct:
@@ -207,7 +197,7 @@ def build_hc_year_one_fade() -> Construct:
         table=weeks,
         flag=flag,
         eligible=eligible,
-        sign=-1,  # raw gap (year_one - kept_coach) is negative; sign flips to favour the hypothesis
+        sign=-1,
         response_col="team_covered",
         description=(
             "First-year HC (weeks 1-8, known tenure) vs kept-coach complement, two-sided design "
@@ -239,11 +229,6 @@ def build_all_constructs() -> dict[str, Construct]:
     constructs["hc_year_one_fade"] = build_hc_year_one_fade()
     _log(f"  hc_year_one_fade: {len(constructs['hc_year_one_fade'].table)} rows")
     return constructs
-
-
-# ---------------------------------------------------------------------------
-# Stage 1a: three fixed-era slices
-# ---------------------------------------------------------------------------
 
 
 def era_summary(
@@ -331,11 +316,6 @@ def era_summary(
         "season_blocked": season_blocked,
         "mechanical_classification": classification,
     }
-
-
-# ---------------------------------------------------------------------------
-# Stage 1b/2a/2b: joint per-season bootstrap -> slope, changepoint, modulator
-# ---------------------------------------------------------------------------
 
 
 def _real_per_season(construct: Construct) -> tuple[list[int], list[dict[str, Any]]]:
@@ -556,7 +536,6 @@ def season_trend_and_changepoint(
         },
     }
 
-    # --- 2a: free-break changepoint ---
     n_seasons = len(season_ids)
     if n_seasons >= 2 * MIN_SEGMENT_SEASONS:
         best_k, _best_sse = _changepoint_grid(y_real, MIN_SEGMENT_SEASONS)
@@ -598,7 +577,6 @@ def season_trend_and_changepoint(
             "min_required": 2 * MIN_SEGMENT_SEASONS,
         }
 
-    # --- 2b: mechanistic modulator regression ---
     if modulator is not None:
         mod_seasons = modulator_seasons_only or valid_seasons
         mod_mask_idx = [i for i, s in enumerate(season_ids) if s in mod_seasons and s in modulator]
@@ -645,11 +623,6 @@ def season_trend_and_changepoint(
     return result
 
 
-# ---------------------------------------------------------------------------
-# Declared league-level modulator series ("what makes an era")
-# ---------------------------------------------------------------------------
-
-
 def compute_league_series(
     constructs: dict[str, Construct], features: pd.DataFrame, pbp: pd.DataFrame
 ) -> dict[str, dict[int, float]]:
@@ -659,7 +632,6 @@ def compute_league_series(
     ].copy()
     reg_features["result"] = pd.to_numeric(reg_features["result"], errors="coerce")
 
-    # 1. league turf share (surface_switch modulator)
     weather_df = constructs["surface_switch"].table
     turf_share = (
         weather_df.assign(is_turf=weather_df["surface_norm"] == "turf")
@@ -669,27 +641,22 @@ def compute_league_series(
         * 100.0
     )
 
-    # 2. league mean |scoring margin| (division_revenge modulator)
     margin_abs = (
         reg_features.dropna(subset=["result"])
         .groupby("season")["result"]
         .apply(lambda s: s.abs().mean())
     )
 
-    # 3. league mean raw home-field advantage: mean(home - away) (home_underdog modulator)
     home_field_adv = reg_features.dropna(subset=["result"]).groupby("season")["result"].mean()
 
-    # 4. league mean |own_rest - opp_rest| (extra_rest_edge modulator)
     rest_table = constructs["extra_rest_edge"].table
     rest_gap = (
         (rest_table["own_rest"] - rest_table["opp_rest"]).abs().groupby(rest_table["season"]).mean()
     )
 
-    # 5. league mean team-season penalty rate (penalty_rate_quartile modulator)
     penalty_rate = _team_season_penalty_rate(pbp)
     penalty_rate_by_season = penalty_rate.groupby("season")["rate"].mean() * 100.0
 
-    # 6. count of year-one team-seasons per season (hc_year_one_fade modulator)
     schedules = pd.read_parquet(hc_module.default_schedules())
     all_features = pd.read_parquet(hc_module.DEFAULT_FEATURES)
     long = hc_module.build_team_game_table(schedules, all_features)
@@ -718,11 +685,6 @@ MODULATOR_ASSIGNMENT = {
     "penalty_rate_quartile": "league_mean_penalty_rate_pct",
     "hc_year_one_fade": "league_year_one_hc_count",
 }
-
-
-# ---------------------------------------------------------------------------
-# Signal 7: production model's own opener-proxy edge
-# ---------------------------------------------------------------------------
 
 
 def load_signal7_frame() -> pd.DataFrame:
@@ -808,9 +770,6 @@ def signal7_slope_and_changepoint(
         by_season = frame.groupby("season")["correct"].mean() * 100.0 - 50.0
         by_season = by_season.reindex(seasons_sorted)
         if by_season.isna().any():
-            # Season entirely missing from this resample (should be rare given
-            # ~15-20 week-blocks per season); fall back to the real value so the
-            # draw is not silently dropped and does not bias the location.
             by_season = by_season.fillna(pd.Series(y_real, index=seasons_sorted))
         y = by_season.to_numpy(dtype=float)
         xbar = x_real.mean()
@@ -883,13 +842,6 @@ def signal7_modulator(combined: pd.DataFrame, *, samples: int, seed: int) -> dic
         .to_numpy()
     )
 
-    # week_blocked_bootstrap only returns summary stats, not raw per-draw vectors,
-    # and the weighted-slope bootstrap below needs the raw per-season draws (same
-    # joint-resample requirement as season_trend_and_changepoint's Y matrix) --
-    # so this reimplements its exact resampling loop (same algorithm: draw whole
-    # (season, week) blocks with replacement, same RNG convention) restricted to
-    # this small (6-season) true-opener-only population, rather than discarding a
-    # second, wasted 20,000-sample run just to get the interval-only summary.
     group_columns = ["season", "week"]
     grouped_indices = list(
         true_only.groupby(group_columns, sort=False, dropna=False).indices.values()
@@ -935,11 +887,6 @@ def signal7_modulator(combined: pd.DataFrame, *, samples: int, seed: int) -> dic
             "rather than force a conclusion."
         ),
     }
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:
@@ -1085,7 +1032,7 @@ def main() -> None:
         "signals": signals,
     }
     output_path = output_dir / "results.json"
-    write_stamped_artifact(payload, output_path)  # ENG-38
+    write_stamped_artifact(payload, output_path)
     _log(f"\nwrote {output_path}")
 
 

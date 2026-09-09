@@ -46,12 +46,6 @@ PATHS = ("market_only", "simple_model", "active_model", "overlay")
 PRODUCTION_PATHS = ("active_model_production", "overlay_production")
 LINES = ("opener", "close")
 
-#: The one game in the fixture with a close-snapshot but deliberately NO
-#: tue_open snapshot in ``opener_store`` (see
-#: ``.agent_tmp/generate_parity_opener_store.py``'s generator docstring) --
-#: exercises the real 1,537-vs-1,552 snapshot-pair requirement documented in
-#: ``docs/opener_evaluation.md``. Present in every walk-forward path's
-#: population; absent from both production paths, at both lines.
 CLOSE_ONLY_GAME_ID = "2022_05_T7_T8"
 
 
@@ -80,11 +74,6 @@ def production_results(fixture_frame: pd.DataFrame) -> dict[tuple[str, str], Pat
     }
 
 
-# ---------------------------------------------------------------------------
-# Fixture sanity
-# ---------------------------------------------------------------------------
-
-
 def test_fixture_is_small_and_spans_three_seasons(fixture_frame: pd.DataFrame) -> None:
     assert 40 <= len(fixture_frame) <= 65
     assert fixture_frame["season"].nunique() == 3
@@ -93,13 +82,7 @@ def test_fixture_is_small_and_spans_three_seasons(fixture_frame: pd.DataFrame) -
 
 
 def test_fixture_has_a_true_opener_close_split(fixture_frame: pd.DataFrame) -> None:
-    # Otherwise "opener" and "close" would trivially agree on every claim below.
     assert not fixture_frame["spread_line_open"].equals(fixture_frame["spread_line_close"])
-
-
-# ---------------------------------------------------------------------------
-# 1. Identical game-ID population, per line, across all four paths
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("line", LINES)
@@ -119,17 +102,8 @@ def test_all_four_paths_grade_the_identical_game_id_set(
 def test_populations_are_nontrivial_not_the_whole_fixture(
     fixture_frame: pd.DataFrame, all_results: dict[tuple[str, str], PathResult]
 ) -> None:
-    # The MIN_FITTABLE_TRAIN_GAMES=50 floor must actually bite: most of the
-    # fixture is warm-up, only the tail is graded. If this ever equals the
-    # full fixture, the cutoff stopped doing anything and the test below
-    # (chronological cutoffs) would be vacuous.
     scored = all_results[("opener", "active_model")].scored_game_ids
     assert 0 < len(scored) < len(fixture_frame)
-
-
-# ---------------------------------------------------------------------------
-# 2. Chronological cutoffs identical across paths
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("line", LINES)
@@ -162,11 +136,6 @@ def test_market_only_cutoff_agrees_with_walk_forward_backtest_own_cutoff(
         assert all_results[("opener", path)].skipped_weeks == market_skipped
 
 
-# ---------------------------------------------------------------------------
-# 3. Push handling identical across paths, and the rule is named
-# ---------------------------------------------------------------------------
-
-
 def test_push_rule_is_named() -> None:
     assert PUSH_RULE
     assert "push" in PUSH_RULE.lower()
@@ -182,8 +151,6 @@ def test_push_handling_is_identical_across_paths(
     assert reference, f"fixture has no push at the {line} line; push parity is untested"
     for path in PATHS:
         assert pushed[path] == reference, f"{path!r} disagreed on which games pushed"
-    # Excluded, never scored as a loss or half-win: every pushed game_id is
-    # absent from correct_by_game (not present as False/0.5).
     for path in PATHS:
         result = all_results[(line, path)]
         assert reference.isdisjoint(result.correct_by_game)
@@ -204,14 +171,9 @@ def test_push_populations_differ_by_line_the_1537_vs_1503_pattern(
 
     opener = all_results[("opener", "active_model")]
     close = all_results[("close", "active_model")]
-    assert opener.scored_game_ids == close.scored_game_ids  # same population
-    assert opener.pushed_game_ids != close.pushed_game_ids  # different push set
+    assert opener.scored_game_ids == close.scored_game_ids
+    assert opener.pushed_game_ids != close.pushed_game_ids
     assert len(opener.evaluated_game_ids) != len(close.evaluated_game_ids)
-
-
-# ---------------------------------------------------------------------------
-# 4. Paired delta on the intersection, with intersection size reported
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("line", LINES)
@@ -256,12 +218,6 @@ def test_paired_delta_on_disjoint_populations_reports_zero_intersection() -> Non
     assert pd.isna(delta["delta_a_minus_b"])
 
 
-# ---------------------------------------------------------------------------
-# 5. The suite catches a deliberately divergent population
-#    (the 1,537-vs-1,503 SHAPE of bug: one path silently drops games)
-# ---------------------------------------------------------------------------
-
-
 def test_suite_catches_a_deliberately_divergent_population(fixture_frame: pd.DataFrame) -> None:
     """A path that silently drops graded games must show up as a symmetric
     difference, not be masked by comparing accuracy alone.
@@ -277,9 +233,6 @@ def test_suite_catches_a_deliberately_divergent_population(fixture_frame: pd.Dat
 
     corrupted = fixture_frame.copy()
     graded = grade_games(fixture_frame, "opener", "active_model").scored_game_ids
-    # Drop two graded games' rows entirely, as if a candidate path lost them
-    # (e.g. a stricter join, a coverage gap) -- exactly the shape of a
-    # population bug, not an accuracy difference.
     drop_ids = sorted(graded)[:2]
     corrupted = corrupted.loc[~corrupted["game_id"].isin(drop_ids)].reset_index(drop=True)
 
@@ -290,11 +243,6 @@ def test_suite_catches_a_deliberately_divergent_population(fixture_frame: pd.Dat
     symmetric_difference = healthy.scored_game_ids ^ broken.scored_game_ids
     assert symmetric_difference == set(drop_ids)
     assert len(symmetric_difference) == 2
-
-
-# ---------------------------------------------------------------------------
-# 6. Overlay-specific: population preserved, at least one real trigger fires
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("line", LINES)
@@ -310,12 +258,6 @@ def test_overlay_preserves_the_active_model_population(
 def test_overlay_has_at_least_one_real_trigger(
     all_results: dict[tuple[str, str], PathResult],
 ) -> None:
-    # The fixture includes one clean-case year-1-coach game (T1 in 2022,
-    # coach differs from 2021; its opponent's coach does not) inside
-    # coach_fade_overlay's weeks-1-8 window -- the "couple of overlay
-    # triggers" the fixture is required to carry (ENG-17 item 1). Both lines
-    # fit the same weekly-refit model and are checked, since either grading
-    # is a legitimate real path.
     flips = {line: all_results[(line, "overlay")].flipped_game_ids for line in LINES}
     assert any(flips.values()), "fixture's year-1-coach trigger never fired the overlay"
 
@@ -323,11 +265,6 @@ def test_overlay_has_at_least_one_real_trigger(
 def test_grade_games_rejects_unknown_path(fixture_frame: pd.DataFrame) -> None:
     with pytest.raises(ValueError):
         grade_games(fixture_frame, "opener", "not_a_real_path")  # type: ignore[arg-type]
-
-
-# ---------------------------------------------------------------------------
-# 7. ENG-28: production paths through the REAL opener-snapshot machinery
-# ---------------------------------------------------------------------------
 
 
 def test_production_paths_require_opener_store(fixture_frame: pd.DataFrame) -> None:
@@ -341,8 +278,6 @@ def test_production_paths_require_opener_store(fixture_frame: pd.DataFrame) -> N
 def test_production_populations_are_nontrivial(
     line: str, path: str, production_results: dict[tuple[str, str], PathResult]
 ) -> None:
-    # 8 graded games (2022 wk4 + wk5) minus the one deliberately missing its
-    # tue_open snapshot -- see CLOSE_ONLY_GAME_ID.
     result = production_results[(line, path)]
     assert len(result.scored_game_ids) == 7
 
@@ -412,8 +347,6 @@ def test_production_paths_push_handling_matches_market_only(
         assert result.pushed_game_ids == market_pushed, (
             f"{path!r} disagreed with market_only on which paired games pushed at {line}"
         )
-        # Excluded, never scored as a loss or half-win -- same contract as
-        # section 3 above, now checked on the real production output.
         assert market_pushed.isdisjoint(result.correct_by_game)
 
 

@@ -90,12 +90,6 @@ ALL_COLUMNS = BASELINE_COLUMNS + EXTRA_COLUMNS
 BASELINE_COEF = np.array([2.0, -1.5, 1.0, 0.8])
 
 
-# ---------------------------------------------------------------------------
-# Shared synthetic DGP (same shape as scripts/estvar_planted_effects.py, so the
-# numbers here are directly comparable to docs/estimation_variance.md sec 2)
-# ---------------------------------------------------------------------------
-
-
 def sigmoid(x: np.ndarray) -> np.ndarray:
     return 1.0 / (1.0 + np.exp(-np.clip(x, -30.0, 30.0)))
 
@@ -154,11 +148,6 @@ def true_effect_mc(
     return float(np.mean(values)), float(np.std(values, ddof=1) / math.sqrt(replicates))
 
 
-# ---------------------------------------------------------------------------
-# Study 1: the D4 block floor, measured on the real estimand
-# ---------------------------------------------------------------------------
-
-
 def degeneracy_study(*, replicates: int, samples: int, seed: int) -> dict[str, Any]:
     """Coverage of the percentile block bootstrap vs. the number of blocks.
 
@@ -209,11 +198,6 @@ def degeneracy_study(*, replicates: int, samples: int, seed: int) -> dict[str, A
         "adopted_min_blocks": MIN_BLOCKS_FOR_INTERVAL,
         "adopted_reliable_blocks": RELIABLE_BLOCKS_FOR_INTERVAL,
     }
-
-
-# ---------------------------------------------------------------------------
-# Study 2: planted-effect coverage of naive vs. old-honest vs. new-honest
-# ---------------------------------------------------------------------------
 
 
 def coverage_cell(
@@ -362,11 +346,6 @@ def coverage_study(*, replicates: int, n_boot: int, samples: int, seed: int) -> 
     return {"study": "coverage", "nominal_coverage": 0.95, "cells": cells}
 
 
-# ---------------------------------------------------------------------------
-# Study 3: what drives the inflation factor
-# ---------------------------------------------------------------------------
-
-
 def inflation_study(*, n_boot: int, samples: int, seed: int, replicates: int) -> dict[str, Any]:
     real_coef = np.array([1.6, -1.2, 0.9])
     rows: list[dict[str, Any]] = []
@@ -439,11 +418,6 @@ def inflation_study(*, n_boot: int, samples: int, seed: int, replicates: int) ->
     return {"study": "inflation", "n_boot": n_boot, "replicates": replicates, "rows": rows}
 
 
-# ---------------------------------------------------------------------------
-# Study 4: how many refits the cheap path needs
-# ---------------------------------------------------------------------------
-
-
 def refits_study(*, samples: int, seed: int, max_refits: int, replicates: int) -> dict[str, Any]:
     real_coef = np.array([1.6, -1.2, 0.9])
     counts = [m for m in (5, 10, 20, 40, 80, 160, 320, 640) if m <= max_refits]
@@ -512,11 +486,6 @@ def refits_study(*, samples: int, seed: int, max_refits: int, replicates: int) -
         "reference_refits": max(counts),
         "rows": rows,
     }
-
-
-# ---------------------------------------------------------------------------
-# Study 5: one real CFB comparison
-# ---------------------------------------------------------------------------
 
 
 def cfb_study(
@@ -700,15 +669,7 @@ def _decomposition_row(decomposition: Any) -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
-
-
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:

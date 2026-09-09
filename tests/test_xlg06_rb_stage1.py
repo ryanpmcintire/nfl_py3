@@ -114,7 +114,7 @@ def _synthetic_matched() -> pd.DataFrame:
 
     n_per_position = 14
     rb_rating = np.linspace(50.0, 99.0, n_per_position)
-    rb_outcome = 0.001 * rb_rating + 0.01  # exact positive linear relationship
+    rb_outcome = 0.001 * rb_rating + 0.01
     wr_rating = np.linspace(50.0, 99.0, n_per_position)
     wr_outcome = np.array([0.05 if i % 2 == 0 else 0.06 for i in range(n_per_position)])
 
@@ -157,23 +157,17 @@ def test_leak_only_modifies_target_position() -> None:
     rb_mask = leaked["position_usage"].eq("RB")
     wr_mask = leaked["position_usage"].eq("WR")
 
-    # A different position (WR) must be completely untouched by an RB leak.
     pd.testing.assert_series_equal(
         leaked.loc[wr_mask, "usage.overall"].reset_index(drop=True),
         original.loc[wr_mask, "usage.overall"].reset_index(drop=True),
     )
-    # The caller's frame must not be mutated in place.
     pd.testing.assert_frame_equal(matched, original)
 
-    # RB rows must have changed and be perfectly rank-monotone in the
-    # predictor (Spearman rho == 1.0 by construction of the rank leak).
     assert not leaked.loc[rb_mask, "usage.overall"].equals(original.loc[rb_mask, "usage.overall"])
     rb = leaked.loc[rb_mask]
     spearman = rb["rating"].corr(rb["usage.overall"], method="spearman")
     assert spearman == pytest.approx(1.0, abs=1e-9)
 
-    # Bounded within the RB population's own originally observed outcome range
-    # (min-max rescale, not an unbounded leak).
     assert leaked.loc[rb_mask, "usage.overall"].min() == pytest.approx(
         original.loc[rb_mask, "usage.overall"].min()
     )
@@ -222,17 +216,12 @@ def test_run_cell_position_filter_is_correct() -> None:
     assert rb_result["player_blocked_secondary"]["n"] == n_rb == 14
     assert wr_result["player_blocked_secondary"]["n"] == n_wr == 14
 
-    # Point estimates (unaffected by bootstrap draw count/seed -- computed
-    # once on the full selected subset) must reflect each position's OWN
-    # constructed relationship, never the other position's.
     rb_r = rb_result["player_blocked_secondary"]["pearson_r"]
     wr_r = wr_result["player_blocked_secondary"]["pearson_r"]
     assert rb_r == pytest.approx(1.0, abs=1e-9)
     assert abs(wr_r) < 0.5
     assert rb_r != pytest.approx(wr_r, abs=1e-3)
 
-    # Point estimate is identical across blocking schemes (both computed on
-    # the same position-filtered subset before any resampling).
     assert rb_result["cohort_blocked_primary"]["pearson_r"] == pytest.approx(rb_r, abs=1e-9)
 
 
@@ -248,7 +237,7 @@ except (DataContractError, FileNotFoundError, OSError):
     not CFB_SNAPSHOTS_AVAILABLE,
     reason="local CFB recruiting_players/usage snapshots not present",
 )
-@pytest.mark.full  # ENG-11: reproduces a frozen artifact against real local CFB snapshots
+@pytest.mark.full
 def test_wrapper_reproduces_original_rb_artifact_numbers() -> None:
     """Pointed at the same local snapshots the 2026-08-18 run used, the
     wrapper's ``run_cell``/``run_reliability`` reproduce that run's already-

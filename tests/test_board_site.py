@@ -83,7 +83,7 @@ def test_no_page_carries_a_skin_toggle_or_desk_reference(site: dict[str, str]) -
         assert "ats-board-skin" not in html, relative_path
 
 
-@pytest.mark.full  # ENG-11: triggers the real-artifact site-content build (dominates --durations)
+@pytest.mark.full
 def test_nav_is_the_same_four_pages_on_every_page(site: dict[str, str]) -> None:
     for filename, html in site.items():
         for other_filename, _label, _title in board_terminal.SITE_PAGES:
@@ -120,30 +120,10 @@ def test_writing_the_site_to_disk_creates_a_flat_directory(
     assert (tmp_path / "model.html").is_file()
     assert (tmp_path / "history.html").is_file()
     assert (tmp_path / "findings.html").is_file()
-    # No stale terminal/ or desk/ subdirectories from the retired two-skin
-    # layout should ever be created by this function.
     assert not (tmp_path / "terminal").exists()
     assert not (tmp_path / "desk").exists()
 
 
-# ---------------------------------------------------------------------------
-# Mobile-width overflow fix (2026-08-31 390px-iframe audit): the owner
-# reproduced a real document scrollWidth overflow on every one of the four
-# pages (index.html's policy-note policy id, model.html's challenger-ledger
-# evidence-pill registry keys, findings.html's trace chips / watching-lead
-# channel names & artifact paths / signal-registry names). These two tests
-# scan the REAL built pages (the ``site`` fixture above, real repo
-# artifacts -- exactly what a publish would ship) rather than a hand-built
-# fixture, since the bug was in real content shape, not the renderer's logic.
-# Pragmatic, class-based checks, not a browser measurement -- see
-# ``tests/test_board_terminal.py`` for the stylesheet-contract half of this
-# fix, and the owner's own 390px-iframe re-measurement for ground truth.
-# ---------------------------------------------------------------------------
-
-#: Classes the appended "mobile-width overflow fix" CSS block gives
-#: ``overflow-wrap:anywhere`` (see board_terminal_style.css and
-#: test_board_terminal.py's ``test_mobile_overflow_fix_css_covers_every_
-#: long_identifier_class``).
 _OVERFLOW_WRAP_CLASSES = {
     "policy-note",
     "evidence-pill",
@@ -155,9 +135,6 @@ _OVERFLOW_WRAP_CLASSES = {
     "sub",
     "gen",
 }
-#: Classes whose element scrolls its own overflow rather than relying on
-#: wrapping (the board table's own scroll container, and the ticker, which
-#: clips via ``overflow:hidden``).
 _OVERFLOW_CONTAINER_CLASSES = {"board-scroll", "ticker", "ticker-track"}
 _LONG_UNBROKEN_TOKEN = re.compile(r"\S{40,}")
 _VOID_TAGS = frozenset(
@@ -211,7 +188,7 @@ class _OverflowStructureScanner(HTMLParser):
             self._skip_depth += 1
 
     def handle_startendtag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
-        pass  # self-closed elements carry no text content of their own
+        pass
 
     def handle_endtag(self, tag: str) -> None:
         if tag in {"script", "style"} and self._skip_depth > 0:

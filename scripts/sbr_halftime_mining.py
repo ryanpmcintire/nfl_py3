@@ -596,11 +596,11 @@ def main() -> None:
         "excluded_games": results["excluded_detail"],
     }
     args.out_dir.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(inventory, args.out_dir / "field_inventory.json")  # ENG-38
+    write_stamped_artifact(inventory, args.out_dir / "field_inventory.json")
     serializable = json.loads(json.dumps(results, default=str))
-    write_stamped_artifact(serializable, args.out_dir / "analysis.json")  # ENG-38
+    write_stamped_artifact(serializable, args.out_dir / "analysis.json")
     (args.out_dir / "records.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    stamp_sidecar(args.out_dir / "records.txt")  # ENG-38
+    stamp_sidecar(args.out_dir / "records.txt")
 
     print(
         f"n_parsed={len(mined)} n_usable={results['n_usable']} "

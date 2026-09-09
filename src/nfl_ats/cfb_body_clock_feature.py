@@ -65,10 +65,6 @@ from nfl_ats.data import DataContractError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: cfbfastR-data ``team_info`` columns this module needs. ``state`` and ``city``
-#: sit beside ``venue_id``/``venue_name``, so they describe the school's own
-#: listed VENUE -- the body clock the mechanism is about -- and they are
-#: per-season, so a venue change is carried correctly.
 TEAM_INFO_COLUMNS = ("team_id", "school", "venue_id", "venue_name", "city", "state")
 
 EASTERN = "America/New_York"
@@ -77,21 +73,10 @@ MOUNTAIN = "America/Denver"
 ARIZONA = "America/Phoenix"
 PACIFIC = "America/Los_Angeles"
 
-#: The NFL cells' WEST body-clock set, taken verbatim from
-#: ``docs/body_clock_screen.md`` ("WEST body clock := tz in
-#: {America/Los_Angeles, America/Phoenix} ... Denver (Mountain) is deliberately
-#: EXCLUDED"). Kept EXACTLY as the NFL set so this replicates the recorded
-#: construct rather than a broader one: Mountain-time CFB schools (Colorado,
-#: Utah, Wyoming, New Mexico, Montana, Boise, UTEP) sit in the complement just
-#: as Denver does, and Hawaii (``Pacific/Honolulu``, 5-6 hours behind ET) is
-#: also excluded because its dose is not the NFL construct's 2-3 hours. Both
-#: exclusions are disclosed with measured counts in the diagnostics.
 WEST_BODY_CLOCK_ZONES: frozenset[str] = frozenset({PACIFIC, ARIZONA})
 
 HAWAII = "Pacific/Honolulu"
 
-#: States that lie wholly inside ONE zone (for every school in this
-#: population). Two-letter USPS codes, upper-cased.
 STATE_TIMEZONES: dict[str, str] = {
     "AL": CENTRAL,
     "AR": CENTRAL,
@@ -134,17 +119,10 @@ STATE_TIMEZONES: dict[str, str] = {
     "WY": MOUNTAIN,
 }
 
-#: States that span two IANA zones. Declared as a SET before any outcome was
-#: seen, and resolved by CITY (never by a blanket per-state assumption) --
-#: ``docs/cfb_body_clock_replication.md`` section 4.
 SPLIT_STATES: frozenset[str] = frozenset(
     {"FL", "TX", "TN", "KY", "IN", "MI", "ND", "SD", "NE", "KS", "OR", "ID"}
 )
 
-#: The majority-population zone of each split state. Used ONLY when a school's
-#: city is absent from :data:`SPLIT_STATE_CITY_TIMEZONES`; every such use is
-#: counted in the diagnostics as ``n_split_state_city_fallback`` so a silent
-#: fallback can never hide inside a result.
 SPLIT_STATE_DEFAULT_TIMEZONES: dict[str, str] = {
     "FL": EASTERN,
     "TX": CENTRAL,
@@ -160,14 +138,7 @@ SPLIT_STATE_DEFAULT_TIMEZONES: dict[str, str] = {
     "ID": MOUNTAIN,
 }
 
-#: ``(state, lower-cased city) -> IANA zone`` for EVERY school in a split state
-#: that appears in ``data/processed/cfb_game_features.parquet`` (measured: 42
-#: distinct (state, city) pairs covering 43 schools -- Rice and Houston share
-#: the city Houston). Entries whose zone equals the state default are listed
-#: anyway, so the table is an auditable statement about each school rather than
-#: a list of exceptions.
 SPLIT_STATE_CITY_TIMEZONES: dict[tuple[str, str], str] = {
-    # Florida: every FBS venue is Eastern; the Central panhandle hosts none.
     ("FL", "boca raton"): EASTERN,
     ("FL", "gainesville"): EASTERN,
     ("FL", "miami"): EASTERN,
@@ -175,40 +146,29 @@ SPLIT_STATE_CITY_TIMEZONES: dict[tuple[str, str], str] = {
     ("FL", "orlando"): EASTERN,
     ("FL", "tallahassee"): EASTERN,
     ("FL", "tampa"): EASTERN,
-    # Idaho: the panhandle (Moscow) is Pacific, the south (Boise) is Mountain.
     ("ID", "boise"): "America/Boise",
     ("ID", "moscow"): PACIFIC,
-    # Indiana: every FBS venue is in the Eastern part of the state.
     ("IN", "bloomington"): "America/Indiana/Indianapolis",
     ("IN", "muncie"): "America/Indiana/Indianapolis",
     ("IN", "notre dame"): "America/Indiana/Indianapolis",
     ("IN", "west lafayette"): "America/Indiana/Indianapolis",
-    # Kansas: both FBS venues are in the Central east; only far-west counties
-    # are Mountain.
     ("KS", "lawrence"): CENTRAL,
     ("KS", "manhattan"): CENTRAL,
-    # Kentucky: Lexington and Louisville are Eastern; Bowling Green is Central.
     ("KY", "bowling green"): CENTRAL,
     ("KY", "lexington"): EASTERN,
     ("KY", "louisville"): EASTERN,
-    # Michigan: every FBS venue is Eastern; only the far western UP is Central.
     ("MI", "ann arbor"): "America/Detroit",
     ("MI", "east lansing"): "America/Detroit",
     ("MI", "kalamazoo"): "America/Detroit",
     ("MI", "mount pleasant"): "America/Detroit",
     ("MI", "ypsilanti"): "America/Detroit",
-    # Nebraska: Lincoln is Central; only the panhandle is Mountain.
     ("NE", "lincoln"): CENTRAL,
-    # Oregon: both FBS venues are Pacific; only Malheur County is Mountain.
     ("OR", "corvallis"): PACIFIC,
     ("OR", "eugene"): PACIFIC,
-    # Tennessee: Knoxville is Eastern; the middle and west of the state are
-    # Central.
     ("TN", "knoxville"): EASTERN,
     ("TN", "memphis"): CENTRAL,
     ("TN", "murfreesboro"): CENTRAL,
     ("TN", "nashville"): CENTRAL,
-    # Texas: every FBS venue is Central except El Paso, which is Mountain.
     ("TX", "austin"): CENTRAL,
     ("TX", "college station"): CENTRAL,
     ("TX", "denton"): CENTRAL,
@@ -223,18 +183,10 @@ SPLIT_STATE_CITY_TIMEZONES: dict[tuple[str, str], str] = {
     ("TX", "waco"): CENTRAL,
 }
 
-#: ``kick_min`` below this reads as the PREVIOUS evening's late window rather
-#: than as an early kickoff: a 22:30 Pacific kickoff is 01:30 ET the next
-#: calendar day, and calling that "before 14:00 ET" would invert the cell.
-#: 06:00 ET is comfortably below the earliest genuine CFB kickoff (07:00 ET,
-#: measured) and comfortably above the latest post-midnight one.
 PAST_MIDNIGHT_ET_CUTOFF_MINUTES = 360
 
-#: ``docs/body_clock_screen.md`` cell 1: "kickoff < 14:00 ET".
 EARLY_KICKOFF_ET_MINUTES = 14 * 60
-#: ``docs/body_clock_night_screen.md`` cell 1: "kickoff >= 20:00 ET".
 NIGHT_KICKOFF_ET_MINUTES = 20 * 60
-#: ``docs/travel_rest_battery.md`` cell 2: "tz_delta_eastbound >= 2 (hours)".
 EASTBOUND_MULTIZONE_HOURS = 2.0
 
 CFB_BODY_CLOCK_WEST_ROAD_EARLY_COLUMN = "cfb_body_clock_west_road_early"
@@ -242,7 +194,6 @@ CFB_BODY_CLOCK_EAST_HOST_WEST_VISITOR_EARLY_COLUMN = "cfb_body_clock_east_host_w
 CFB_TRAVEL_REST_EASTBOUND_MULTIZONE_COLUMN = "cfb_travel_rest_eastbound_multizone"
 CFB_BODY_CLOCK_NIGHT_WEST_ROAD_COLUMN = "cfb_body_clock_night_west_road_ge2000et"
 
-#: Cell key (the ``--cell`` value) -> candidate column name.
 CFB_BODY_CLOCK_CELL_COLUMNS: dict[str, str] = {
     "west_road_early": CFB_BODY_CLOCK_WEST_ROAD_EARLY_COLUMN,
     "east_host_west_visitor_early": CFB_BODY_CLOCK_EAST_HOST_WEST_VISITOR_EARLY_COLUMN,
@@ -261,11 +212,6 @@ _REQUIRED_COLUMNS = {
     "away_id",
     "neutral_site",
 }
-
-
-# ---------------------------------------------------------------------------
-# venue state/city -> IANA timezone
-# ---------------------------------------------------------------------------
 
 
 def resolve_timezone(state: object, city: object) -> tuple[str | None, bool]:
@@ -367,11 +313,6 @@ def zone_utc_offset_hours(kickoff_utc: pd.Series, zones: pd.Series) -> pd.Series
         local = utc.loc[mask].dt.tz_convert(ZoneInfo(zone)).dt.tz_localize(None)
         offsets.loc[mask] = (local - naive_utc.loc[mask]).dt.total_seconds() / 3600.0
     return offsets
-
-
-# ---------------------------------------------------------------------------
-# feature construction
-# ---------------------------------------------------------------------------
 
 
 def eastern_kickoff_minutes(kickoff_utc: pd.Series) -> pd.Series:

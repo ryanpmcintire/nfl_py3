@@ -88,10 +88,6 @@ def derive(features: pd.DataFrame) -> dict[str, Any]:
     unconditional_median = float(magnitude.median())
     frac_zero = float((magnitude == 0.0).mean())
     frac_at_or_above_median = float((magnitude >= threshold).mean())
-    # The zero mass point ends at this percentile -- reported so it is
-    # visible whether the unconditional median would have collided with it
-    # (it does for the CFB analog, which is exactly why the conditional
-    # median is the general rule, not the unconditional one).
     zero_mass_percentile = float((magnitude == 0.0).mean())
 
     return {

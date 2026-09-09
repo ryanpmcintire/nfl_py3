@@ -88,9 +88,6 @@ ROTATION_FAMILY = "fluview_home_elevated_opener"
 DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_fluview.parquet"
 DEFAULT_MARKET_ROOT = REPO_ROOT / "data/market/raw"
 
-# Matches docs/opener_evaluation.md's and scripts/surface_profile_opener_eval.py's
-# own opener-grade convention -- comparable to the other opener confirmations
-# in this tree, not to the close-graded sibling's graph_input_screen constants.
 OPENER_BOOTSTRAP_SAMPLES = 20_000
 OPENER_BOOTSTRAP_SEED = 20260817
 NULL_PERMUTATIONS = 200

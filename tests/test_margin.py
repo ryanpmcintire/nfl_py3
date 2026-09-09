@@ -51,8 +51,6 @@ def test_independent_margin_and_residual_models(model_frame: pd.DataFrame) -> No
     participation_columns = margin_feature_columns("market_residual", "player_participation")
     assert "diff_injury_offense_participation_value_lost" in participation_columns
     assert "diff_injury_skill_epa_value_lost" in participation_columns
-    # MOD-07 candidate profile: the player-value composite plus the bias family,
-    # with no duplicated columns and the frozen player profile left untouched.
     weak_stack_columns = margin_feature_columns("market_residual", "weak_stack")
     player_columns = margin_feature_columns("market_residual", "player")
     assert len(weak_stack_columns) == len(set(weak_stack_columns))
@@ -78,7 +76,7 @@ def test_market_baseline_is_centered_on_spread(model_frame: pd.DataFrame) -> Non
     assert predictions["home_cover_probability"].eq(0.5).all()
 
 
-@pytest.mark.full  # ENG-11: fits a real HistGradientBoosting margin model
+@pytest.mark.full
 def test_margin_hgb_and_guards(model_frame: pd.DataFrame) -> None:
     model = fit_margin_model(model_frame, target="margin", model_name="hgb")
     assert len(model.predict(model_frame.tail(2))) == 2
@@ -125,7 +123,6 @@ def test_home_cover_probability_is_bit_identical_to_reference_formula(
         line = float(rows.loc[index, "spread_line"])
         expected = _reference_smoothed_cover_probability(center, model.residuals, line)
         assert predictions.loc[index, "home_cover_probability"] == expected
-    # New columns are additive: the smoothed value is unaffected by their presence.
     assert "home_cover_probability_excluding_push" in predictions.columns
     assert "push_probability" in predictions.columns
     assert "home_loss_probability" in predictions.columns
@@ -216,11 +213,9 @@ def test_push_probability_survives_continuous_residuals() -> None:
     predictions = model.predict(frame)
     by_game = predictions.set_index(frame["game_id"])
 
-    # Not one residual equals the line exactly, yet the push mass is real.
     assert not np.any(model.residuals == 3.0)
     assert by_game.loc["three", "push_probability"] > 0.005
     assert by_game.loc["seven", "push_probability"] > 0.005
-    # A whole-number margin can never land on a half-point line.
     assert by_game.loc["hook", "push_probability"] == 0.0
     for game in ("three", "seven", "hook"):
         total = (
@@ -248,10 +243,6 @@ def test_line_sweep_default_grid_sums_to_one_and_holds_belief_fixed_for_market(
         + sweep["home_loss_probability"]
     )
     assert np.allclose(total, 1.0)
-    # The predictive distribution is conditioned on the actually quoted line
-    # and stays fixed across the sweep; only the settlement threshold moves.
-    # A higher home line is therefore never easier to cover, and a friendlier
-    # line at -4.0 must genuinely beat a tougher one at +4.0.
     for _, group in sweep.groupby("game_id"):
         ordered = group.sort_values("line_offset")["home_cover_probability"].to_numpy()
         assert np.all(np.diff(ordered) <= 1e-12)
@@ -267,18 +258,12 @@ def test_line_sweep_varies_with_alternative_line_for_fair_margin(
     target = model_frame.tail(1)
     sweep = model.line_sweep(target, offsets=(-0.5, 0.0, 0.5)).sort_values("line_offset")
     cover = sweep["home_cover_probability"].tolist()
-    # A higher home line is harder to cover, so cover probability is non-increasing.
     assert cover[0] >= cover[1] >= cover[2]
 
 
 def test_line_sweep_shows_a_confidence_gap_across_a_half_point_hook(
     model_frame: pd.DataFrame,
 ) -> None:
-    # fair_margin's center does not use spread_line as a feature, so its
-    # cover probability moves purely because the threshold moves -- the
-    # cleanest demonstration that a half-point hook (here, +2.5 vs +3) can
-    # change the pick's confidence without changing the model's opinion of
-    # the game itself.
     model = fit_margin_model(model_frame, target="margin", model_name="ridge")
     target = model_frame.tail(1).copy()
     target.loc[:, "spread_line"] = 3.0

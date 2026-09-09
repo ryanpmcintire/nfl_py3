@@ -52,25 +52,9 @@ from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
 from nfl_ats.prospective_scoring import CHALLENGER_DECISION_COLUMNS, load_challenger_decisions
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# MIA (away, a real code in WARM_METRO_TEAM_CODES) plays at FROST week 15,
-#   outdoor, forecast 30F -> flagged. Model's pick is AWAY (MIA) -> flips HOME.
-# MIA plays at DOME week 15 (roof=closed, forecast 20F): flag would fire on
-#   temp alone, but the game itself is indoors -> no flip.
-# MIA plays at FROST2 week 15 (outdoor, NO forecast row at all): missing
-#   forecast -> no signal -> no flip.
-# MIA plays at FROST3 week 8 (outdoor, forecast 20F): week<13 -> no flip.
-# COLD (a fictional code NOT in WARM_METRO_TEAM_CODES) plays at FROST4 week
-#   15 (outdoor, forecast 20F): team not on the static list -> no flip.
-# MIA at FROSTP mirrors the week-15 flagged shape but game_type=POST.
-
 
 def _schedule() -> pd.DataFrame:
     rows = [
-        # game_id, season, game_type, week, home, away, roof
         ("2025_15_FROST_WARM", 2025, "REG", 15, "FROST", "MIA", "outdoors"),
         ("2025_15_DOME_WARM", 2025, "REG", 15, "DOME", "MIA", "closed"),
         ("2025_15_FROST2_WARM", 2025, "REG", 15, "FROST2", "MIA", "outdoors"),
@@ -89,7 +73,6 @@ def _forecasts() -> pd.DataFrame:
             "game_id": [
                 "2025_15_FROST_WARM",
                 "2025_15_DOME_WARM",
-                # 2025_15_FROST2_WARM deliberately absent -- missing forecast row
                 "2025_08_FROST3_WARM",
                 "2025_15_FROST4_COLD",
                 "2025_20_FROSTP_WARM",
@@ -118,20 +101,9 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["MIA", "MIA", "MIA", "MIA", "COLD", "MIA"],
             "kickoff": ["2025-12-14T18:00:00+00:00"] * 6,
             "spread_line": [-3.0, -2.0, -1.5, -1.0, -2.5, -3.0],
-            # G-clean: away pick (MIA), flagged -> flips to HOME.
-            # G-dome: away pick (MIA), indoors -> no flip.
-            # G-nowx: away pick (MIA), no forecast -> no flip.
-            # G-early: away pick (MIA), week<13 -> no flip.
-            # G-notlisted: away pick (COLD, not on the warm-metro list) -> no flip.
-            # G-post: same shape as G-clean but POST season -> no flip.
             "home_cover_probability": [0.35, 0.35, 0.35, 0.35, 0.35, 0.35],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. warm_team_cold_late_flag_by_game
-# ---------------------------------------------------------------------------
 
 
 def test_flag_fires_on_warm_metro_visitor_cold_late_forecast() -> None:
@@ -172,11 +144,6 @@ def test_flag_requires_forecast_columns() -> None:
 def test_flag_requires_schedule_columns() -> None:
     with pytest.raises(DataContractError, match="warm-team cold-late"):
         warm_team_cold_late_flag_by_game(pd.DataFrame({"game_id": ["G1"]}), _forecasts())
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_warm_team_cold_late_tilt_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_away_to_home_on_the_clean_case() -> None:
@@ -256,11 +223,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     only_dome = _predictions().loc[lambda frame: frame["game_id"].eq("2025_15_DOME_WARM")]
     result = apply_warm_team_cold_late_tilt_overlay(only_dome, _schedule(), _forecasts())
@@ -293,11 +255,6 @@ def test_disclosure_note_formats_a_hand_built_flip() -> None:
     note = overlay_disclosure_note(result)
     assert "AWAY -> HOME" in note
     assert "forecast 30F" in note
-
-
-# ---------------------------------------------------------------------------
-# 4. Live fetch layer -- FAIL-OPEN, kickoff_nearest/GFS, no real network call
-# ---------------------------------------------------------------------------
 
 
 def _stub_bulletin_rows(
@@ -395,8 +352,6 @@ def test_live_snf_fetch_rejects_a_bulletin_labeled_after_the_lock() -> None:
             ftime_utc="2025-09-08T00:00:00+00:00",
         )
 
-    # Simulate a malformed provider response: its row claims a runtime later
-    # than the requested Sunday cycle.
     def malformed(station: str, runtime_utc, *, model: str) -> list[dict]:
         rows = stub(station, runtime_utc, model=model)
         rows[0]["runtime_utc"] = "2025-09-08T00:00:00+00:00"
@@ -457,7 +412,7 @@ def test_fetch_fail_open_works_end_to_end_with_a_stub_bulletin(tmp_path: Path) -
         return _stub_bulletin_rows(30.0, 40.0)
 
     with warnings.catch_warnings():
-        warnings.simplefilter("error")  # a working fetch must not warn at all
+        warnings.simplefilter("error")
         forecasts = fetch_kickoff_nearest_forecasts_fail_open(
             games, station_map, fetch_bulletin=stub, delay_seconds=0.0
         )
@@ -466,10 +421,6 @@ def test_fetch_fail_open_works_end_to_end_with_a_stub_bulletin(tmp_path: Path) -
     assert row["forecast_precip_prob_pct"] == 40.0
     assert row["fetch_status"] == "ok"
 
-
-# ---------------------------------------------------------------------------
-# 5. record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -502,14 +453,6 @@ def _recorder_predictions() -> pd.DataFrame:
         "2025-12-14T18:00:00+00:00",
         "2025-12-14T18:00:00+00:00",
         "2025-12-14T18:00:00+00:00",
-        # The week-8 game's real gameday is earlier in the season than the
-        # other rows' week-15 kickoff, which would put it in the past
-        # relative to this fixture's recording instant (now=2025-12-09) --
-        # kept a future timestamp here instead so the recorder-level test
-        # can assert on ALL six rows being recorded pre-kickoff, matching
-        # how a real multi-week card's kickoffs would all still be in the
-        # future (mirrors forecast_cold_visitor_tilt_overlay's own test
-        # fixture, which makes the identical adjustment for its ROOKIE row).
         "2025-12-14T18:00:00+00:00",
         "2025-12-14T18:00:00+00:00",
         "2026-01-11T18:00:00+00:00",
@@ -581,7 +524,7 @@ def _no_network_stub(station: str, runtime_utc, *, model: str) -> list[dict]:
     return _stub_bulletin_rows(30.0, 40.0, ftime_utc="2025-12-14T18:00:00+00:00")
 
 
-@pytest.mark.full  # ENG-11: dominates --durations
+@pytest.mark.full
 def test_record_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -688,7 +631,7 @@ def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_
     assert result["forecast_cutoff_mode"] == "pool_decision"
 
 
-@pytest.mark.full  # ENG-11: dominates --durations
+@pytest.mark.full
 def test_record_challenger_refuses_outside_recording_lock_window(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)

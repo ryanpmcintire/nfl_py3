@@ -89,16 +89,7 @@ RIDGE_ALPHA = 10.0
 DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_team_style_pace.parquet"
 ROTATION_FAMILY = "team_style_pace_on_production"
 
-# Rotation-assigned window (docs/team_style_pace_on_production.md section 7),
-# never hand-picked; overridable via --seasons for the instrument checks, which
-# run on the same window for comparability with the sibling on-production
-# experiments' own instrument checks.
 DEFAULT_SEASONS = "2011-2013"
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_window(
@@ -329,11 +320,6 @@ def flag_coverage(features: pd.DataFrame, seasons: tuple[int, ...]) -> dict[str,
         "firing_rate": float(values.loc[covered].mean()) if covered.any() else float("nan"),
         "n_firing": int(values.loc[covered].sum()) if covered.any() else 0,
     }
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

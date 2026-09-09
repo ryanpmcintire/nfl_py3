@@ -59,24 +59,13 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 
-# Trees mirrored by default for manual invocations. `artifacts/` contains both
-# large regenerable outputs and small, load-bearing prospective/research
-# ledgers, so the scheduled weekly job opts it in explicitly.
 DEFAULT_SOURCES: tuple[str, ...] = ("data",)
 ARTIFACT_SOURCE = "artifacts"
 
-# The owner's off-device drive, in version control on purpose -- same reasoning
-# as SCHEDULE in capture_scheduler.py. A machine fact that governs whether data
-# survives belongs somewhere reviewable, not in one operator's shell history.
 DEFAULT_DESTS: tuple[str, ...] = (r"E:\nfl_data_backup",)
 
-# Machine-local runtime state. Restoring these onto a different machine would
-# make the capture scheduler believe it had already run this machine's windows,
-# so they are deliberately not mirrored. Both rebuild themselves.
 EXCLUDE_NAMES = frozenset({"scheduler_state.json", "scheduler_log.txt"})
 
-# NTFS-to-NTFS preserves mtime exactly through copy2; the tolerance is for
-# destinations that round (FAT/exFAT external drives, some network mounts).
 MTIME_TOLERANCE_SECONDS = 2.0
 
 HASH_CHUNK_BYTES = 1 << 20
@@ -208,8 +197,6 @@ def process_tree(
             report.failures.append(f"copy failed: {relative}: {error}")
             continue
 
-        # Verify what we just wrote. A copy that silently truncated is exactly
-        # the failure a backup must not report as success.
         if sha256(source) == sha256(destination):
             report.copied += 1
             report.copied_bytes += size
@@ -244,10 +231,6 @@ def write_manifest(dest_root: Path, report: RunReport, sources: Sequence[str]) -
 
 def print_report(report: RunReport, *, apply: bool) -> None:
     print(f"\n=== {report.dest} ===")
-    # In apply mode these two columns describe the state this run FOUND, before
-    # it copied anything -- so they are labelled that way. Without the suffix a
-    # weekly log reads "covered 0.0%" directly above "copied 42,839 files" and
-    # looks like a contradiction rather than a before/after pair.
     covered_label = "covered@start" if apply else "covered"
     pending_label = "to-copy" if apply else "pending"
     width = len(covered_label)
@@ -291,16 +274,11 @@ def print_report(report: RunReport, *, apply: bool) -> None:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/ -- every write
-# site the scanner finds (mkdir/write_text/shutil.copy2) resolves to
-# DEFAULT_DESTS (E:\nfl_data_backup, an off-device mirror drive) or a path
-# under it, never into artifacts/ or registry/. `--include-artifacts` only
-# adds "artifacts" as a SOURCE tree to copy FROM, never a destination.
 READ_ONLY_EXCEPTIONS: dict[int, str] = {
-    205: "destination is under dest_root (DEFAULT_DESTS / --dest), the mirror drive",
-    206: "destination is under dest_root (DEFAULT_DESTS / --dest), the mirror drive",
-    242: "path == dest_root / MANIFEST_NAME, the mirror drive, never artifacts/",
-    346: "dest_root comes from --dest or DEFAULT_DESTS (E:\\nfl_data_backup)",
+    194: "destination is under dest_root (DEFAULT_DESTS / --dest), the mirror drive",
+    195: "destination is under dest_root (DEFAULT_DESTS / --dest), the mirror drive",
+    229: "path == dest_root / MANIFEST_NAME, the mirror drive, never artifacts/",
+    324: "dest_root comes from --dest or DEFAULT_DESTS (E:\\nfl_data_backup)",
 }
 
 

@@ -13,7 +13,6 @@ EVENT_COLUMNS = ["game_id", "observed_at_utc", "steam_side", "books"]
 def decision_cutoff(kickoff: Any) -> pd.Timestamp:
     """Earlier of kickoff and the game week's Sunday at 16:00 Eastern."""
     local = pd.Timestamp(kickoff).tz_convert(EASTERN)
-    # Monday night belongs to the preceding Sunday; all other days to the next.
     days = -1 if local.weekday() == 0 else 6 - local.weekday()
     sunday = (local.normalize().tz_localize(None) + pd.Timedelta(days=days, hours=16)).tz_localize(
         EASTERN
@@ -66,7 +65,6 @@ def spread_move_events(quotes: pd.DataFrame) -> pd.DataFrame:
             ]
             if len(window) < 3:
                 continue
-            # A book counts once, irrespective of duplicate outcome rows or moves.
             books = sorted(window["bookmaker_key"].unique())
             if len(books) >= 3 and not fresh.empty:
                 events.append(
@@ -98,7 +96,6 @@ def attach_midweek_steam(
     starts: list[pd.Timestamp] = []
     for game in result.itertuples(index=False):
         cutoff = game.decision_cutoff_utc
-        # The Tuesday preceding the cutoff's Sunday defines this NFL week.
         local = pd.Timestamp(str(game.kickoff)).tz_convert(EASTERN)
         days = -1 if local.weekday() == 0 else 6 - local.weekday()
         sunday = local.normalize().tz_localize(None) + pd.Timedelta(days=days)

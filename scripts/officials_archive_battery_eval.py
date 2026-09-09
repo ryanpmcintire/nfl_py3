@@ -68,9 +68,7 @@ PREDECLARATION = REPO / "docs/officials_archive_battery.md"
 
 SEED = 20260817
 SAMPLES = 20_000
-#: MOD-18's own minimum training set for a walk-forward week (its ``build_stream``).
 MIN_ERA_TRAIN_GAMES = 500
-#: docs/officials_archive_battery.md, Part D.
 SCRAMBLE_THRESHOLD = 4
 SCRAMBLE_FALLBACK_THRESHOLD = 3
 SCRAMBLE_MIN_FLAGGED = 30
@@ -81,10 +79,6 @@ ERAS: tuple[tuple[str, int, int, str], ...] = (
     ("2020-2025", 2020, 2025, "Tuesday opener"),
 )
 
-#: First archived season plus one, mirroring the shipped
-#: ``ROOKIE_ELIGIBLE_SEASON_FLOOR`` (2015 feed floor + 1). Used ONLY by the
-#: era-floor arms, which exist because the shipped constant is 2016 and makes
-#: the rookie flag identically zero on every pre-2016 game.
 ARCHIVE_ROOKIE_SEASON_FLOOR = 2010
 
 ARM_PROFILE = {
@@ -107,9 +101,6 @@ ARM_COLUMN = {
     "second_meeting_archive_era": SECOND_MEETING_FAVORITE_COLUMN,
 }
 
-#: The two Part-B arms are the shipped construction; the two ``*_era`` arms are
-#: the only ones that can carry a value on a pre-2015 game at all (see
-#: ``docs/officials_archive_battery.md``, "Part C amendment").
 ERA_ARMS: tuple[str, ...] = (
     "rookie_feed",
     "rookie_archive_tenure",
@@ -157,11 +148,6 @@ def jsonable(value: Any) -> Any:
     if isinstance(value, (np.bool_,)):
         return bool(value)
     return value
-
-
-# ---------------------------------------------------------------------------
-# Shared loading
-# ---------------------------------------------------------------------------
 
 
 def active_model(profile: str = "weak_stack") -> dict[str, Any]:
@@ -258,12 +244,6 @@ def crew_long_table(*, include_archive: bool, schedule: pd.DataFrame) -> pd.Data
     return joined.astype({"season": int, "week": int}).reset_index(drop=True)
 
 
-# ---------------------------------------------------------------------------
-# The two era-floor arms: the shipped rules with their one 2015-shaped
-# constraint lifted, so that a pre-2015 game can carry a value at all
-# ---------------------------------------------------------------------------
-
-
 def _signed_by_line(
     frame: pd.DataFrame, lines: pd.DataFrame, flag: pd.Series, column: str, *, favourite: bool
 ) -> pd.DataFrame:
@@ -321,11 +301,6 @@ def archive_second_meeting_flag(games: pd.DataFrame, lines: pd.DataFrame) -> pd.
     return _signed_by_line(
         ordered, lines, pd.Series(flags), SECOND_MEETING_FAVORITE_COLUMN, favourite=True
     )
-
-
-# ---------------------------------------------------------------------------
-# Part A: what moves when the archive is switched on
-# ---------------------------------------------------------------------------
 
 
 def change_report(
@@ -458,11 +433,6 @@ def stage_traits() -> dict[str, Any]:
     return result
 
 
-# ---------------------------------------------------------------------------
-# The candidate flag columns, one per declared arm
-# ---------------------------------------------------------------------------
-
-
 def opener_line_frame(schedule: pd.DataFrame, *, close_proxy: bool) -> pd.DataFrame:
     """Tuesday-opener consensus lines; with ``close_proxy`` the archived nflverse
     spread fills the pre-2020 seasons the opener store does not reach (MOD-18's
@@ -543,11 +513,6 @@ def attach(features: pd.DataFrame, column: str, values: pd.DataFrame) -> pd.Data
     return out
 
 
-# ---------------------------------------------------------------------------
-# Paired scoring
-# ---------------------------------------------------------------------------
-
-
 def paired_accuracy(
     frame: pd.DataFrame,
     candidate: np.ndarray,
@@ -591,11 +556,6 @@ def paired_accuracy(
         "baseline_accuracy": float((bp == truth).mean()),
         "flips": int((cp != bp).sum()),
     }
-
-
-# ---------------------------------------------------------------------------
-# Part B: opener-graded arms against the active model
-# ---------------------------------------------------------------------------
 
 
 def served_artifact_id() -> str:
@@ -786,11 +746,6 @@ def stage_served_proxy() -> dict[str, Any]:
     return result
 
 
-# ---------------------------------------------------------------------------
-# Part C: the era-extended walk-forward read (close proxy before 2020)
-# ---------------------------------------------------------------------------
-
-
 def stage_era() -> dict[str, Any]:
     schedule = schedules()
     base = regular_season_rows(pd.read_parquet(FEATURES)).reset_index(drop=True)
@@ -899,11 +854,6 @@ def stage_era() -> dict[str, Any]:
     }
     write_stamped_artifact(jsonable(result), OUT / "era.json")
     return result
-
-
-# ---------------------------------------------------------------------------
-# Part D: LEAD-33's crew-composition statistic
-# ---------------------------------------------------------------------------
 
 
 def _modal(counts: Counter[str], most_recent: str | None) -> str | None:
@@ -1044,11 +994,6 @@ def stage_composition() -> dict[str, Any]:
     return result
 
 
-# ---------------------------------------------------------------------------
-# Through the played card: the only rule in this lane that moves a pick
-# ---------------------------------------------------------------------------
-
-
 def _load_by_path(name: str) -> Any:
     """Import a sibling script by file location (``scripts/`` is not a package)."""
 
@@ -1119,11 +1064,6 @@ def stage_card() -> dict[str, Any]:
     }
     write_stamped_artifact(jsonable(result), OUT / "card.json")
     return result
-
-
-# ---------------------------------------------------------------------------
-# Record commands (written, never run, by this lane)
-# ---------------------------------------------------------------------------
 
 
 PLAIN_SUMMARY = {
@@ -1239,12 +1179,6 @@ def stage_record() -> dict[str, Any]:
         if not metrics or not metrics.get("weeks"):
             continue
         if metrics["flips"] == 0:
-            # Not a measurement: the two arms' candidate columns are identical
-            # on every game, so the fitted model, the picks and the delta are
-            # the same object twice. Recording an exact algebraic zero with a
-            # degenerate `probability_positive` would dress a proof up as an
-            # estimate. The identity is reported in
-            # docs/officials_archive_battery.md instead.
             lines.append(
                 f"# SKIPPED {arm} vs {reference}: identical candidate columns on all "
                 f"{metrics['n']} games, zero picks changed, delta exactly 0. An identity, "

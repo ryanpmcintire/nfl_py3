@@ -26,10 +26,6 @@ from nfl_ats.weak_stack_v3_features import (
     team_season_penalty_rate,
 )
 
-# ---------------------------------------------------------------------------
-# Registration
-# ---------------------------------------------------------------------------
-
 
 def test_weak_stack_v3_profile_is_registered_and_disjoint_from_production_sets() -> None:
     assert "weak_stack_v3" in MARGIN_FEATURE_PROFILES
@@ -41,17 +37,10 @@ def test_weak_stack_v3_profile_is_registered_and_disjoint_from_production_sets()
     assert gap_columns.isdisjoint(MODEL_FEATURE_COLUMNS)
     for name in ("football_weak_stack", "full_weak_stack", "football", "full"):
         assert set(FEATURE_SETS[name]).isdisjoint(gap_columns), name
-    # weak_stack_v3 = weak_stack_surface (weak_stack + surface_switch_flag)
-    # plus exactly the 15 new gap columns -- never used by the active model.
     v3_columns = set(margin_feature_columns("market_residual", "weak_stack_v3"))
     surface_columns = set(margin_feature_columns("market_residual", "weak_stack_surface"))
     assert v3_columns - surface_columns == gap_columns
     assert len(gap_columns) == 15
-
-
-# ---------------------------------------------------------------------------
-# gap_v3_bias: worked example (division revenge, sandwich spot, post-blowout)
-# ---------------------------------------------------------------------------
 
 
 def _bias_schedule() -> pd.DataFrame:
@@ -105,12 +94,12 @@ def test_division_revenge_fires_only_for_the_team_that_lost_the_first_meeting() 
     bias = build_gap_bias_features(_bias_schedule())
 
     first_meeting = _row(bias, "2021_01_A_B")
-    assert first_meeting["gap_division_revenge_home"] == 0.0  # A: no prior meeting yet
-    assert first_meeting["gap_division_revenge_away"] == 0.0  # B: no prior meeting yet
+    assert first_meeting["gap_division_revenge_home"] == 0.0
+    assert first_meeting["gap_division_revenge_away"] == 0.0
 
     rematch = _row(bias, "2021_03_A_B")
-    assert rematch["gap_division_revenge_home"] == 0.0  # A won the first meeting
-    assert rematch["gap_division_revenge_away"] == 1.0  # B lost the first meeting
+    assert rematch["gap_division_revenge_home"] == 0.0
+    assert rematch["gap_division_revenge_away"] == 1.0
     assert rematch["gap_division_revenge_diff"] == -1.0
 
 
@@ -118,12 +107,11 @@ def test_sandwich_spot_fires_only_when_flanked_by_division_games_on_both_sides()
     bias = build_gap_bias_features(_bias_schedule())
 
     sandwiched_a = _row(bias, "2021_02_A_C")
-    assert sandwiched_a["gap_sandwich_spot_home"] == 1.0  # A: div(w1), non-div(w2), div(w3)
+    assert sandwiched_a["gap_sandwich_spot_home"] == 1.0
 
     sandwiched_b = _row(bias, "2021_02_D_B")
-    assert sandwiched_b["gap_sandwich_spot_away"] == 1.0  # B: div(w1), non-div(w2), div(w3)
+    assert sandwiched_b["gap_sandwich_spot_away"] == 1.0
 
-    # week4 is non-div for A but has no week5 (next_div is NaN) -- not sandwiched.
     not_sandwiched = _row(bias, "2021_04_A_D")
     assert not_sandwiched["gap_sandwich_spot_home"] == 0.0
 
@@ -132,14 +120,13 @@ def test_post_blowout_letdown_and_bounce_use_the_strictly_prior_game_only() -> N
     bias = build_gap_bias_features(_bias_schedule())
 
     after_a_blowout_win = _row(bias, "2021_02_A_C")
-    assert after_a_blowout_win["gap_post_blowout_win_letdown_home"] == 1.0  # A won w1 by 20
+    assert after_a_blowout_win["gap_post_blowout_win_letdown_home"] == 1.0
     assert after_a_blowout_win["gap_post_blowout_loss_bounce_home"] == 0.0
 
     after_a_blowout_loss = _row(bias, "2021_02_D_B")
-    assert after_a_blowout_loss["gap_post_blowout_loss_bounce_away"] == 1.0  # B lost w1 by 20
+    assert after_a_blowout_loss["gap_post_blowout_loss_bounce_away"] == 1.0
     assert after_a_blowout_loss["gap_post_blowout_win_letdown_away"] == 0.0
 
-    # A's week3 margin was only +3 -- week4 must not fire.
     no_blowout_last_week = _row(bias, "2021_04_A_D")
     assert no_blowout_last_week["gap_post_blowout_win_letdown_home"] == 0.0
     assert no_blowout_last_week["gap_post_blowout_loss_bounce_home"] == 0.0
@@ -162,18 +149,12 @@ def test_gap_bias_flags_never_read_this_games_own_outcome_columns() -> None:
     mutated.loc[target, "spread_line"] = 21.0
     changed = build_gap_bias_features(mutated).set_index("game_id")
 
-    # The mutated game's OWN flags stay put (they never look at own result).
     own_columns = list(baseline.columns)
     pd.testing.assert_series_equal(
         changed.loc["2021_03_A_B", own_columns],
         baseline.loc["2021_03_A_B", own_columns],
         check_exact=True,
     )
-    # But a LATER game that looks back at 2021_03_A_B's result does change --
-    # proof the lookup is real, not a no-op (week4 letdown flips because A's
-    # week3 margin moved from +3 to -30, wait: A is home in week3, mutating
-    # result to -30 means A now LOST week3 by 30 -- week4's bounce flag
-    # should now fire instead of neither).
     assert changed.loc["2021_04_A_D", "gap_post_blowout_loss_bounce_home"] == 1.0
     assert baseline.loc["2021_04_A_D", "gap_post_blowout_loss_bounce_home"] == 0.0
 
@@ -211,17 +192,10 @@ def test_gap_bias_flags_are_leak_safe_across_the_season_boundary() -> None:
     pd.testing.assert_frame_equal(changed.loc[baseline.index], baseline, check_exact=True)
 
 
-# ---------------------------------------------------------------------------
-# gap_v3_penalty: diff_penalty_rate_prior
-# ---------------------------------------------------------------------------
-
-
 def _penalty_pbp() -> pd.DataFrame:
     rows = []
-    # Team A: 2020 rate 10/100=0.10, 2021 rate 30/100=0.30.
     rows += [{"season": 2020, "posteam": "A", "penalty": 1 if i < 10 else 0} for i in range(100)]
     rows += [{"season": 2021, "posteam": "A", "penalty": 1 if i < 30 else 0} for i in range(100)]
-    # Team B: flat 0.05 rate both seasons, so the diff column isolates A's move.
     rows += [{"season": 2020, "posteam": "B", "penalty": 1 if i < 5 else 0} for i in range(100)]
     rows += [{"season": 2021, "posteam": "B", "penalty": 1 if i < 5 else 0} for i in range(100)]
     return pd.DataFrame(rows)
@@ -229,9 +203,9 @@ def _penalty_pbp() -> pd.DataFrame:
 
 def _penalty_schedule() -> pd.DataFrame:
     rows = [
-        ("2020_01_A_B", 2020, "A", "B"),  # no prior local season (2019) for A
-        ("2021_01_A_B", 2021, "A", "B"),  # prior season 2020 -> rate 0.10
-        ("2022_01_A_B", 2022, "A", "B"),  # prior season 2021 -> rate 0.30
+        ("2020_01_A_B", 2020, "A", "B"),
+        ("2021_01_A_B", 2021, "A", "B"),
+        ("2022_01_A_B", 2022, "A", "B"),
     ]
     frame = pd.DataFrame(rows, columns=["game_id", "season", "home_team", "away_team"])
     return frame
@@ -242,11 +216,8 @@ def test_penalty_rate_prior_is_strictly_lagged_one_season() -> None:
     schedule = _penalty_schedule()
     result = build_gap_penalty_feature(pbp, schedule).set_index("game_id")
 
-    assert pd.isna(result.loc["2020_01_A_B", "diff_penalty_rate_prior"])  # no 2019 data
-    # B is flat at 0.05 both seasons, so the diff isolates A's own move:
-    # 2021 sees A's 2020 rate (0.10) -> diff = 0.10 - 0.05 = 0.05.
+    assert pd.isna(result.loc["2020_01_A_B", "diff_penalty_rate_prior"])
     assert result.loc["2021_01_A_B", "diff_penalty_rate_prior"] == pytest.approx(0.05)
-    # 2022 sees A's 2021 rate (0.30) -> diff = 0.30 - 0.05 = 0.25.
     assert result.loc["2022_01_A_B", "diff_penalty_rate_prior"] == pytest.approx(0.25)
 
 
@@ -263,12 +234,8 @@ def test_penalty_rate_lag_can_never_self_match_or_look_forward() -> None:
     assert (lag["prev_season"] > lag["season"]).all()
 
 
-# ---------------------------------------------------------------------------
-# gap_v3_travel: thursday_pure, return_trip_hangover
-# ---------------------------------------------------------------------------
-
 _STADX = {"lat": 40.0, "lon": -74.0, "tz": "America/New_York"}
-_STADY = {"lat": 34.0, "lon": -118.0, "tz": "America/Los_Angeles"}  # ~2451mi from StadX
+_STADY = {"lat": 34.0, "lon": -118.0, "tz": "America/Los_Angeles"}
 
 
 def _travel_coords() -> dict[str, dict[str, float | str]]:
@@ -324,8 +291,6 @@ def _travel_schedule(week2_home_rest: int) -> pd.DataFrame:
 def test_return_trip_hangover_fires_on_long_trip_and_short_rest() -> None:
     result = build_gap_travel_rest_features(_travel_schedule(week2_home_rest=6), _travel_coords())
     row = result.loc[result["game_id"].eq("2021_02_Y_X")].iloc[0]
-    # Y traveled ~2451mi (>=1500) in week1 (away at StadX), then hosts week2
-    # on only 6 days' rest (<=8) -- hangover fires.
     assert row["gap_return_trip_hangover_flag"] == 1.0
 
 
@@ -344,7 +309,6 @@ def test_thursday_pure_flag_matches_the_weekday_column() -> None:
 
 
 def test_haversine_matches_a_known_city_pair_distance() -> None:
-    # NYC to LA great-circle distance is a well-known ~2451 miles.
     assert haversine_mi(
         _STADX["lat"], _STADX["lon"], _STADY["lat"], _STADY["lon"]
     ) == pytest.approx(2451.0, rel=0.02)
@@ -363,11 +327,6 @@ def test_gap_travel_features_never_read_result_or_spread_line() -> None:
     assert "spread_line" not in schedule.columns
     result = build_gap_travel_rest_features(schedule, _travel_coords())
     assert len(result) == 2
-
-
-# ---------------------------------------------------------------------------
-# Orchestrator wiring (additivity)
-# ---------------------------------------------------------------------------
 
 
 def test_attach_weak_stack_v3_gap_features_is_purely_additive(
@@ -397,9 +356,7 @@ def test_attach_weak_stack_v3_gap_features_is_purely_additive(
             "some_pre_existing_column": range(len(schedule)),
         }
     )
-    result = module.attach_weak_stack_v3_gap_features(
-        base, repo_root=pd.NA
-    )  # repo_root unused by stubs
+    result = module.attach_weak_stack_v3_gap_features(base, repo_root=pd.NA)
 
     pd.testing.assert_frame_equal(result[base.columns.tolist()], base, check_exact=True)
     new_columns = set(result.columns) - set(base.columns)
@@ -410,4 +367,4 @@ def test_attach_weak_stack_v3_gap_features_is_purely_additive(
     )
     assert new_columns == expected
     for column in set(GAP_V3_BIAS_FEATURE_COLUMNS) | set(GAP_V3_TRAVEL_FEATURE_COLUMNS):
-        assert result[column].notna().all()  # flags are always fillna(0.0)-completed
+        assert result[column].notna().all()

@@ -43,17 +43,9 @@ def _opener_lines(rows: list[tuple[str, float | None]]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["game_id", "tue_open_home_spread"])
 
 
-# ---------------------------------------------------------------------------
-# LEAD-36: open-corner stadium wind
-# ---------------------------------------------------------------------------
-
-
 def _wind_schedule() -> pd.DataFrame:
     return pd.DataFrame(
         [
-            # BUF00 open-corner venue, outdoor, wind 20 -- qualifies. Home
-            # (BUF) is the underdog (positive away-favorite spread convention:
-            # tue_open_home_spread < 0 means home is the dog) -> +1.
             {
                 "game_id": "g_home_dog",
                 "home_team": "BUF",
@@ -62,7 +54,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "outdoors",
                 "wind": 20.0,
             },
-            # Same venue/wind, but the AWAY team is the underdog -> -1.
             {
                 "game_id": "g_away_dog",
                 "home_team": "BUF",
@@ -71,8 +62,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "outdoors",
                 "wind": 22.0,
             },
-            # Qualifies on venue/wind/roof but opener spread is an exact
-            # pick'em -> 0 (no side to back).
             {
                 "game_id": "g_pickem",
                 "home_team": "BUF",
@@ -81,8 +70,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "outdoors",
                 "wind": 18.0,
             },
-            # Qualifies on venue/roof but wind is only 10 mph -- below
-            # threshold -> 0 regardless of the opener spread.
             {
                 "game_id": "g_low_wind",
                 "home_team": "BUF",
@@ -91,9 +78,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "outdoors",
                 "wind": 10.0,
             },
-            # Open-corner venue, high wind, but roof is a DOME for this game
-            # (should not happen in practice for BUF00, but must still gate
-            # correctly if it did) -> 0.
             {
                 "game_id": "g_dome",
                 "home_team": "BUF",
@@ -102,8 +86,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "dome",
                 "wind": 25.0,
             },
-            # NOT a frozen open-corner venue (e.g. a dome team) -> 0 even
-            # though wind happens to be recorded high (data artifact).
             {
                 "game_id": "g_not_open_corner",
                 "home_team": "DAL",
@@ -112,9 +94,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "outdoors",
                 "wind": 30.0,
             },
-            # DEN home game at a ONE-OFF away stadium code (international
-            # relocation) -- must NOT qualify even though home_team == DEN
-            # and wind/roof otherwise satisfy the gate.
             {
                 "game_id": "g_den_one_off",
                 "home_team": "DEN",
@@ -123,8 +102,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "outdoors",
                 "wind": 25.0,
             },
-            # NYJ/NYG frozen ONLY at NYC01 (MetLife) -- a home game at the
-            # old NYC00 code must not qualify.
             {
                 "game_id": "g_old_meadowlands",
                 "home_team": "NYJ",
@@ -133,7 +110,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "outdoors",
                 "wind": 25.0,
             },
-            # NYG at NYC01 (MetLife) qualifies like every other frozen venue.
             {
                 "game_id": "g_metlife",
                 "home_team": "NYG",
@@ -142,8 +118,6 @@ def _wind_schedule() -> pd.DataFrame:
                 "roof": "outdoors",
                 "wind": 16.0,
             },
-            # Missing wind value entirely -> never guessed, treated as
-            # not qualifying.
             {
                 "game_id": "g_missing_wind",
                 "home_team": "BUF",
@@ -159,15 +133,15 @@ def _wind_schedule() -> pd.DataFrame:
 def _wind_opener_lines() -> pd.DataFrame:
     return _opener_lines(
         [
-            ("g_home_dog", -3.0),  # home (BUF) underdog
-            ("g_away_dog", 3.0),  # away (NYJ) underdog
-            ("g_pickem", 0.0),  # exact pick'em
+            ("g_home_dog", -3.0),
+            ("g_away_dog", 3.0),
+            ("g_pickem", 0.0),
             ("g_low_wind", -3.0),
             ("g_dome", -3.0),
             ("g_not_open_corner", 3.0),
             ("g_den_one_off", -3.0),
             ("g_old_meadowlands", -3.0),
-            ("g_metlife", 3.0),  # away (PHI) underdog
+            ("g_metlife", 3.0),
             ("g_missing_wind", -3.0),
         ]
     )
@@ -186,7 +160,6 @@ def test_open_corner_stadiums_matches_the_frozen_task_anchor_list() -> None:
         "NYJ/NYG",
         "PHI",
     }
-    # NYJ/NYG intentionally share exactly one stadium_id (MetLife).
     assert list(OPEN_CORNER_STADIUMS).count("NYC01") == 1
 
 
@@ -223,7 +196,6 @@ def test_open_corner_wind_non_qualifying_games_are_zero(game_id: str) -> None:
 def test_open_corner_wind_metlife_qualifies_at_nyc01_only() -> None:
     result = derive_open_corner_wind_dog_features(_wind_schedule(), _wind_opener_lines())
     result = result.set_index("game_id")
-    # g_metlife: away (PHI) is the underdog -> -1.
     assert result.loc["g_metlife", OPEN_CORNER_WIND_DOG_COLUMN] == -1.0
 
 
@@ -289,19 +261,10 @@ def test_open_corner_wind_derive_requires_every_schedule_column() -> None:
 
 def test_open_corner_wind_population_diagnostic_counts() -> None:
     diagnostic = open_corner_wind_population_diagnostic(_wind_schedule(), _wind_opener_lines())
-    # Open-corner venue games: every row except g_not_open_corner (DAL00),
-    # g_den_one_off (SFO01), and g_old_meadowlands (NYC00) = 10 - 3 = 7.
     assert diagnostic["n_open_corner_venue_games"] == 7
-    assert diagnostic["n_open_corner_outdoor_games"] == 6  # excludes g_dome
-    # Eligible (venue + outdoor + wind>=15): g_home_dog, g_away_dog,
-    # g_pickem, g_metlife = 4 (g_low_wind is 10mph, g_missing_wind is None).
+    assert diagnostic["n_open_corner_outdoor_games"] == 6
     assert diagnostic["n_eligible_high_wind_games"] == 4
     assert diagnostic["eligible_missing_opener_spread"] == 0
-
-
-# ---------------------------------------------------------------------------
-# LEAD-37: rain-on-grass fumble chaos
-# ---------------------------------------------------------------------------
 
 
 def _rain_schedule() -> pd.DataFrame:
@@ -309,20 +272,15 @@ def _rain_schedule() -> pd.DataFrame:
         [
             {"game_id": "r_home_dog", "home_team": "GB", "away_team": "CHI", "surface": "grass"},
             {"game_id": "r_away_dog", "home_team": "GB", "away_team": "MIN", "surface": "grass"},
-            # Trailing-space raw value, must still normalize to grass.
             {
                 "game_id": "r_trailing_space",
                 "home_team": "GB",
                 "away_team": "DET",
                 "surface": "grass ",
             },
-            # Turf surface -- never qualifies regardless of precip.
             {"game_id": "r_turf", "home_team": "DAL", "away_team": "NYG", "surface": "fieldturf"},
-            # Grass but precip probability below threshold.
             {"game_id": "r_low_precip", "home_team": "GB", "away_team": "CHI", "surface": "grass"},
-            # Grass, high precip, but opener spread is an exact pick'em.
             {"game_id": "r_pickem", "home_team": "GB", "away_team": "CHI", "surface": "grass"},
-            # Grass with a missing forecast row entirely -> never guessed.
             {
                 "game_id": "r_missing_forecast",
                 "home_team": "GB",
@@ -356,7 +314,6 @@ def _rain_forecast() -> pd.DataFrame:
             {"game_id": "r_turf", "forecast_precip_prob_pct": 90.0},
             {"game_id": "r_low_precip", "forecast_precip_prob_pct": 20.0},
             {"game_id": "r_pickem", "forecast_precip_prob_pct": 65.0},
-            # r_missing_forecast intentionally absent.
         ]
     )
 
@@ -467,17 +424,10 @@ def test_rain_on_grass_population_diagnostic_counts() -> None:
     diagnostic = rain_on_grass_population_diagnostic(
         _rain_schedule(), _rain_opener_lines(), _rain_forecast()
     )
-    assert diagnostic["n_grass_games"] == 6  # excludes r_turf
-    assert diagnostic["n_grass_games_with_forecast"] == 5  # excludes r_missing_forecast
-    # Eligible (grass + precip>=60): r_home_dog, r_away_dog,
-    # r_trailing_space, r_pickem = 4.
+    assert diagnostic["n_grass_games"] == 6
+    assert diagnostic["n_grass_games_with_forecast"] == 5
     assert diagnostic["n_eligible_high_precip_games"] == 4
     assert diagnostic["eligible_missing_opener_spread"] == 0
-
-
-# ---------------------------------------------------------------------------
-# On-production wrapper contracts (both candidates)
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("key", sorted(wvop.CANDIDATES))

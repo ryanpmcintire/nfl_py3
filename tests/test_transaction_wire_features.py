@@ -18,10 +18,6 @@ from nfl_ats.transaction_wire_features import (
     own_week_wednesday_freeze_utc,
 )
 
-# ---------------------------------------------------------------------------
-# 1. Slug classification
-# ---------------------------------------------------------------------------
-
 
 @pytest.mark.parametrize(
     "slug,expected",
@@ -64,11 +60,6 @@ def test_every_category_is_declared() -> None:
     assert set(ALL_CATEGORIES) == set(TRANSACTION_CATEGORIES) | {OTHER_CATEGORY}
 
 
-# ---------------------------------------------------------------------------
-# 2. Team-nickname matching
-# ---------------------------------------------------------------------------
-
-
 def test_match_transaction_teams_single_team() -> None:
     assert match_transaction_teams("eagles-extend-jason-peters") == {"PHI"}
 
@@ -87,8 +78,6 @@ def test_match_transaction_teams_multi_word_nickname() -> None:
 
 
 def test_match_transaction_teams_no_false_positive_substring() -> None:
-    # "cardinals" must not fire on an unrelated token that merely contains
-    # similar letters; only a whole hyphen-delimited token counts.
     assert match_transaction_teams("chargers-sign-rb") == {"LAC"}
     assert "TEN" not in match_transaction_teams("patriots-sign-te")
 
@@ -100,30 +89,22 @@ def test_canonical_team_maps_relocated_codes() -> None:
     assert canonical_team("PHI") == "PHI"
 
 
-# ---------------------------------------------------------------------------
-# 3. Cutoff construction
-# ---------------------------------------------------------------------------
-
-
 def test_own_week_wednesday_freeze_is_the_same_calendar_week_wednesday_noon() -> None:
-    # One kickoff per weekday, Wednesday through Monday (2026-09-16 is a
-    # Wednesday, verified against the real 2026 calendar), all EDT.
     kickoffs = pd.Series(
         pd.to_datetime(
             [
-                "2026-09-16T17:00:00Z",  # Wednesday
-                "2026-09-17T00:15:00Z",  # Thursday night (gameday Wed 9/16 in ET... see below)
-                "2026-09-20T17:00:00Z",  # Sunday early
-                "2026-09-22T00:15:00Z",  # Monday night (ET gameday still Mon 9/21)
+                "2026-09-16T17:00:00Z",
+                "2026-09-17T00:15:00Z",
+                "2026-09-20T17:00:00Z",
+                "2026-09-22T00:15:00Z",
             ]
         ),
         dtype="datetime64[ns, UTC]",
     )
     freeze = own_week_wednesday_freeze_utc(kickoffs)
-    expected_wednesday_noon = pd.Timestamp("2026-09-16T16:00:00Z")  # noon EDT = 16:00 UTC
+    expected_wednesday_noon = pd.Timestamp("2026-09-16T16:00:00Z")
     for value in freeze:
         assert value == expected_wednesday_noon
-    # Freeze must precede kickoff for every game actually in this week.
     for k in kickoffs:
         assert freeze.iloc[0] <= k
 
@@ -145,13 +126,7 @@ def test_own_week_wednesday_freeze_for_a_tuesday_kickoff_is_the_prior_week() -> 
 def test_kickoff_utc_combines_gameday_and_eastern_gametime() -> None:
     games = pd.DataFrame({"gameday": ["2026-09-17"], "gametime": ["20:15"]})
     result = kickoff_utc(games)
-    # September is EDT (UTC-4): 20:15 ET -> 00:15 UTC next day.
     assert result.iloc[0] == pd.Timestamp("2026-09-18T00:15:00Z")
-
-
-# ---------------------------------------------------------------------------
-# 4. Team-week population construction
-# ---------------------------------------------------------------------------
 
 
 def _schedules_frame() -> pd.DataFrame:
@@ -202,12 +177,7 @@ def test_build_team_week_population_filters_to_season_range_and_reg() -> None:
         ignore_index=True,
     )
     panel = build_team_week_population(schedules, season_start=2026, season_end=2026)
-    assert len(panel) == 2  # only the REG 2026 game survives
-
-
-# ---------------------------------------------------------------------------
-# 5. Leakage regression test: nothing published at/after kickoff can count
-# ---------------------------------------------------------------------------
+    assert len(panel) == 2
 
 
 def _dated(rows: list[tuple[str, str]]) -> pd.DataFrame:
@@ -222,13 +192,8 @@ def test_leakage_transaction_published_after_kickoff_is_never_counted() -> None:
 
     dated = _dated(
         [
-            # Before kickoff -- a real practice-squad elevation for the home
-            # team, published Saturday, well inside the 72h window.
             ("cowboys-elevate-rb-from-practice-squad", str(kickoff - pd.Timedelta(hours=20))),
-            # AT kickoff exactly -- must be excluded (right bound is strict).
             ("cowboys-elevate-wr-from-practice-squad", str(kickoff)),
-            # AFTER kickoff -- a postgame transaction story that must never
-            # leak into a pregame feature.
             ("cowboys-place-lb-on-injured-reserve", str(kickoff + pd.Timedelta(hours=2))),
         ]
     )
@@ -244,16 +209,13 @@ def test_leakage_transaction_published_after_kickoff_is_never_counted() -> None:
 
 
 def _sunday_schedules_frame() -> pd.DataFrame:
-    # A Sunday-afternoon kickoff puts Wed-noon freeze ~4.5 days (108h) before
-    # kickoff -- comfortably outside the 72h-before-kickoff window, unlike a
-    # Thursday game where the two windows overlap (disclosed separately).
     return pd.DataFrame(
         {
             "game_id": ["2026_02_PHI_DAL"],
             "game_type": ["REG"],
             "season": [2026],
             "week": [2],
-            "gameday": ["2026-09-20"],  # a Sunday
+            "gameday": ["2026-09-20"],
             "gametime": ["13:00"],
             "home_team": ["DAL"],
             "away_team": ["PHI"],
@@ -270,22 +232,20 @@ def test_leakage_transaction_before_freeze_excluded_from_since_freeze_but_may_co
     row = panel.loc[panel["team"] == "DAL"].iloc[0]
     kickoff = row["kickoff_utc"]
     freeze = row["freeze_utc"]
-    assert freeze < kickoff - pd.Timedelta(hours=72)  # Wed noon well before Sun-72h in this fixture
+    assert freeze < kickoff - pd.Timedelta(hours=72)
 
     dated = _dated(
         [
-            # Exactly at the freeze instant -- excluded (left bound strict).
             ("cowboys-sign-rb", str(freeze)),
-            # Just after the freeze but outside the 72h-before-kickoff window.
             ("cowboys-sign-wr", str(freeze + pd.Timedelta(hours=1))),
         ]
     )
     exploded = explode_dated_transactions(dated)
     scored = attach_transaction_counts(panel, exploded)
     dal_row = scored.loc[scored["team"] == "DAL"].iloc[0]
-    assert dal_row["n_events_since_freeze"] == 1  # only the post-freeze one
+    assert dal_row["n_events_since_freeze"] == 1
     assert dal_row["n_signing_since_freeze"] == 1
-    assert dal_row["n_events_72h"] == 0  # neither falls in the 72h-before-kickoff window
+    assert dal_row["n_events_72h"] == 0
 
 
 def test_thursday_kickoff_freeze_instant_falls_inside_the_72h_window() -> None:
@@ -295,7 +255,7 @@ def test_thursday_kickoff_freeze_instant_falls_inside_the_72h_window() -> None:
     where they do not). A signing right after freeze counts in BOTH windows."""
 
     panel = build_team_week_population(_schedules_frame(), season_start=2026, season_end=2026)
-    row = panel.loc[panel["team"] == "DAL"].iloc[0]  # _schedules_frame is a Thursday game
+    row = panel.loc[panel["team"] == "DAL"].iloc[0]
     assert row["freeze_utc"] > row["window72_start_utc"]
 
     dated = _dated([("cowboys-sign-rb", str(row["freeze_utc"] + pd.Timedelta(hours=1)))])
@@ -312,10 +272,6 @@ def test_leakage_bulk_random_events_never_leak_across_kickoff() -> None:
     equals the set with ``precise_ts < kickoff_utc`` -- never includes a
     post-kickoff timestamp."""
 
-    # Real team codes/nicknames (DAL/"cowboys") -- a fake code like "TST" would
-    # never match any TEAM_NICKNAMES entry and every event would silently be
-    # dropped by explode_dated_transactions before this test could exercise
-    # the leakage boundary at all.
     schedules = pd.DataFrame(
         {
             "game_id": [f"2026_{w:02d}_DAL_PHI" for w in range(1, 6)],
@@ -346,8 +302,6 @@ def test_leakage_bulk_random_events_never_leak_across_kickoff() -> None:
     exploded = explode_dated_transactions(dated)
     scored = attach_transaction_counts(dal_panel, exploded)
 
-    # Naive UTC datetime64[ns] throughout, matching attach_transaction_counts'
-    # own internal representation, so every comparison below is dtype-safe.
     event_ts_arr = (
         dated["precise_ts"]
         .dt.tz_convert("UTC")
@@ -374,7 +328,7 @@ def test_leakage_bulk_random_events_never_leak_across_kickoff() -> None:
     )
 
     saw_a_post_kickoff_event = bool((event_ts_arr >= kickoffs.min()).any())
-    assert saw_a_post_kickoff_event  # sanity: the random draw actually exercised the boundary
+    assert saw_a_post_kickoff_event
 
     for i in range(len(scored)):
         kickoff = kickoffs[i]
@@ -383,17 +337,9 @@ def test_leakage_bulk_random_events_never_leak_across_kickoff() -> None:
         assert scored["n_events_since_freeze"].iloc[i] == expected_since_freeze
         assert scored["n_events_72h"].iloc[i] == expected_72h
 
-        # Directly re-derive the count using ONLY strictly-pregame events and
-        # confirm it is unchanged by however many post-kickoff events exist --
-        # the leakage property this test exists to pin.
         pregame_only = event_ts_arr[event_ts_arr < kickoff]
         recount = int((pregame_only > freezes[i]).sum())
         assert scored["n_events_since_freeze"].iloc[i] == recount
-
-
-# ---------------------------------------------------------------------------
-# 6. explode_dated_transactions
-# ---------------------------------------------------------------------------
 
 
 def test_explode_dated_transactions_drops_zero_team_rows_and_splits_trades() -> None:

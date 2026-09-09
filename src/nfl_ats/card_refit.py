@@ -24,10 +24,6 @@ class CardRefit:
     center_offsets: Mapping[str, float] | None
     probability_method: ResidualSmoothingMethod
     warnings: tuple[str, ...] = ()
-    #: game_id -> the served two-way probability on the games the key-line
-    #: pick read touched (docs/key_line_pick_read.md); ``None`` for a card
-    #: produced without that promotion. Applied AFTER ``predict`` so the
-    #: refit reproduces the number the card actually played.
     pick_overrides: Mapping[str, float] | None = None
 
     def predict(

@@ -55,11 +55,11 @@ from nfl_ats.totals_wave2 import bootstrap_wave_vs_wave, wave_vs_wave_paired_fra
 DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack.parquet"
 DEFAULT_MARKET_ROOT = REPO_ROOT / "data/market/raw"
 MARGIN_BASELINE_PROFILE = "weak_stack"
-BASE_TOTAL_K = 0.1  # docs/totals_model.md's frozen served weight.
+BASE_TOTAL_K = 0.1
 OPENER_BOOTSTRAP_SAMPLES = 20_000
 OPENER_SEED = 20260905
 TOTAL_BOOTSTRAP_SAMPLES = 2_000
-TOTAL_SEED = 20260901  # matches nfl_ats.totals's own regime seed.
+TOTAL_SEED = 20260901
 CORRELATION_SAMPLES = 2_000
 CORRELATION_SEED = 20260905
 STAGE2_MIN_TRAIN_GAMES = 200

@@ -112,21 +112,8 @@ from nfl_ats.served_total import (
 from nfl_ats.totals import TotalsDataError, TotalsView, model_total_view
 from nfl_ats.totals_wave2 import model_total_view_wave2
 
-#: Version of this module's ENG-24 lineage-adapter logic (``tiebreaker_lineage_sources``).
-#: Bumping it means a previously emitted ``TiebreakerSource`` record was built by
-#: different logic -- mirrors ``nfl_ats.lineage.BUILDER_VERSION``'s own convention.
 BUILDER_VERSION = "v1"
 
-#: Widening (margin, total) KERNEL BANDWIDTHS for the historical
-#: neighborhood, walked in order -- continuously, by linear interpolation
-#: between neighbouring entries -- until the effective sample size reaches
-#: ``_MIN_NEIGHBORHOOD``. These are the same numbers that were the hard
-#: window half-widths before 2026-09-01; the first entry ``(1.0, 1.5)``
-#: supplies the base bandwidths ``h_m``/``h_t`` the module docstring
-#: describes. The final ``None`` entry still means "all of history,
-#: unweighted" and is the fallback when even the widest bandwidth cannot
-#: reach the floor (a tiny synthetic history in tests; with 4,630 real
-#: games the finite entries always clear it first).
 _NEIGHBORHOOD_WINDOWS: tuple[tuple[float, float] | None, ...] = (
     (1.0, 1.5),
     (1.5, 2.5),
@@ -135,88 +122,18 @@ _NEIGHBORHOOD_WINDOWS: tuple[tuple[float, float] | None, ...] = (
     None,
 )
 
-#: The finite entries alone -- the interpolation knots for the continuous
-#: widening. Index ``k`` is scale position ``float(k)``.
 _BANDWIDTH_SCHEDULE: tuple[tuple[float, float], ...] = tuple(
     window for window in _NEIGHBORHOOD_WINDOWS if window is not None
 )
 
-#: Floor on the neighborhood's size. Unchanged in value and in intent from
-#: the hard-window era; it is now read as a floor on the Kish EFFECTIVE
-#: sample size ``(sum w)**2 / sum w**2``, which equals the plain count when
-#: every weight is equal and is the standard weighted-sample equivalent
-#: otherwise.
 _MIN_NEIGHBORHOOD = 150
 
-#: Bisection steps used to find the minimal bandwidth scale whose effective
-#: sample size clears ``_MIN_NEIGHBORHOOD``. Derived, not chosen: each step
-#: halves the bracket, so 40 steps resolve the scale to 2**-40 ~ 9e-13 of
-#: one schedule entry -- roughly twelve orders of magnitude finer than the
-#: half-point quantum this whole design exists to be insensitive to, and
-#: still far above float64's ~2e-16 relative precision.
 _BANDWIDTH_BISECTION_STEPS = 40
 
-#: Relative tolerance for "the cumulative weight lands exactly on the half
-#: point" in the weighted median. A float-comparison epsilon, not a model
-#: parameter: float64 carries ~1e-16 relative precision and the cumulative
-#: sum accumulates at most a few thousand terms, so 1e-12 leaves about four
-#: decades of headroom while staying far below any real weight difference.
-#: It exists so that uniform weights reproduce pandas' even-count median
-#: (average of the two middle values) exactly.
 _MEDIAN_TIE_TOLERANCE = 1e-12
 
-#: Weight on the active model's margin disagreement when blending it into the
-#: market margin for SCORE-GUESSING (not side-picking). Measured 2026-09-01 on
-#: ``artifacts/opener_evaluation/20260819T174244Z`` (1,537 opener-graded
-#: games, chronological prediction-level output): home-margin MAE is 9.912 at
-#: k=0 (market alone), 9.906 at k=0.2 (the optimum, better in 5 of 6
-#: seasons), and 10.003 at k=1 -- the RAW MODEL IS WORSE THAN THE MARKET as a
-#: point estimate, even though it beats the market on sides. On the 487 games
-#: where the model disagrees by >=2 points, no weight helps at all (9.800 at
-#: k=0.3 vs 9.793 at k=0). Side-picking skill is not point-estimate skill:
-#: the pick needs only P(margin > line) tilted past 50%, the tiebreaker needs
-#: E[margin], and the market wins the latter. This constant is derived from
-#: that sweep, not chosen (AGENTS.md: underived constants are defects).
 MODEL_RESIDUAL_WEIGHT = 0.2
 
-#: Weight on the TOTALS model's residual when blending it into the market
-#: total. Two sweeps measured this, wave 1 then wave 2, and BOTH chose k=0.1
-#: -- the weight is unchanged across the wiring switch below; what changes
-#: is which fitted model produces the residual being blended in.
-#:
-#: Wave 1, measured 2026-09-01 by `nfl-ats totals-backtest`
-#: (``artifacts/totals_backtest/20260901T184010Z``, 3,935 walk-forward
-#: regular-season games 2010-2025, prediction-level output preserved, 41-column
-#: allowlist on ``game_features.parquet``). The full MAE sweep over
-#: ``total_line + k * predicted_residual``, in total points: k=0.0 10.4249
-#: (market alone), k=0.1 10.4241 (the optimum), k=0.2 10.4260, k=0.3 10.4310,
-#: k=0.4 10.4387, k=0.5 10.4486, k=0.6 10.4615, k=0.7 10.4785, k=0.8 10.4993,
-#: k=0.9 10.5233, k=1.0 10.5495 -- so the RAW MODEL TOTAL IS WORSE THAN THE
-#: MARKET TOTAL (10.549 vs 10.425), exactly the shape
-#: :data:`MODEL_RESIDUAL_WEIGHT` found on the margin. The k=0.1 improvement is
-#: +0.0008 total points, week-blocked bootstrap 95% [-0.0062, +0.0077],
-#: ``probability_positive`` 0.583 over 261 week blocks; registry entry
-#: ``totals_market_residual_blend``.
-#:
-#: Wave 2, measured 2026-09-01 by
-#: ``scripts/totals_wave2_backtest.py --mode screen`` (``docs/
-#: totals_model_wave2.md``, ``artifacts/totals_backtest_wave2/wp18run/screen``,
-#: identical 3,935-game population, 65-column allowlist -- wave 1's 41 plus 24
-#: drive-pace columns -- on ``game_features_pbp.parquet``). Wave 2's OWN
-#: MAE-minimizing k, from its own independently re-swept grid, is also 0.1
-#: (10.4221 vs market 10.4249, +0.0028 vs market). The decision metric for
-#: ADOPTING wave 2 over wave 1 is the paired wave-2-vs-wave-1 comparison,
-#: graded with wave 1 at its frozen k=0.1 and wave 2 at its own k=0.1: +0.0020
-#: total points, week-blocked bootstrap 95% [-0.0024, +0.0063],
-#: ``probability_positive`` 0.8235 over 261 week blocks; registry entry
-#: ``totals_market_residual_wave2_vs_wave1``. Both intervals cross zero --
-#: expected at this evaluator's resolution for a real small signal, not
-#: grounds to reject either (AGENTS.md). 0.8235 is why the served number below
-#: comes from wave 2's model rather than wave 1's: it is the favourite on the
-#: project's EV decision rule, consistent everywhere it was checked (vs
-#: market, per-season majority, playoffs -- see the doc). 0.583 is, as before,
-#: why the weight itself is 0.1 and not 0.0. Derived from those two sweeps,
-#: not chosen.
 TOTALS_RESIDUAL_WEIGHT = 0.1
 
 
@@ -226,9 +143,9 @@ class MarketConsensus:
     local odds snapshot that quotes it, or the schedules row as fallback."""
 
     game_id: str
-    home_expected_margin: float  # positive = home favored
+    home_expected_margin: float
     total_line: float
-    source: str  # "snapshot <stamp> (<n> books)" or "schedules (fallback)"
+    source: str
 
 
 @dataclass(frozen=True)
@@ -239,9 +156,9 @@ class ModelView:
     DEN @ KC: market KC by 2.5, model KC by ~4.3) instead of silently
     ignoring it."""
 
-    predicted_margin: float  # model's expected home margin
-    forecast_line: float  # the spread_line the residual was measured against
-    residual: float  # predicted_margin - forecast_line
+    predicted_margin: float
+    forecast_line: float
+    residual: float
     source: str
 
 
@@ -251,74 +168,29 @@ class TiebreakerReport:
     home: str
     away: str
     consensus: MarketConsensus
-    #: The model's view when a forecast prices this game, else ``None``; the
-    #: guess margin is then market + MODEL_RESIDUAL_WEIGHT * residual.
     model_view: ModelView | None
-    #: The totals model's view when :mod:`nfl_ats.totals` can price this game,
-    #: else ``None``; the guess total is then market +
-    #: TOTALS_RESIDUAL_WEIGHT * residual. Mirrors ``model_view`` exactly.
     totals_view: TotalsView | None
-    #: The margin the guess is actually built from (blended when a model
-    #: view exists, the market consensus alone otherwise).
     guess_margin: float
-    #: The total the guess is actually built from -- the SERVED total
-    #: (MOD-17, ``docs/tiebreaker.md`` "one lattice, one margin, one total"):
-    #: whichever of :data:`nfl_ats.served_total.SERVED_TOTAL_METHOD`'s two
-    #: named methods produced a value for this game, blended when a view
-    #: exists for that method, the market consensus total alone otherwise.
-    #: :attr:`served_total` is a same-value alias; :attr:`served_total_method`
-    #: names which method actually produced THIS number (it can read back
-    #: ``"blend_k01"`` even when the module default is ``"joint_residual"``,
-    #: when the joint model could not price this game); and
-    #: :attr:`comparison_total_blend_k01` always reports today's blend
-    #: arithmetic regardless of which method served, so the two arms are
-    #: comparable on every report.
     guess_total_line: float
     served_total_method: ServedTotalMethod
     comparison_total_blend_k01: float
     implied_home: float
     implied_away: float
-    #: Kish EFFECTIVE sample size of the kernel-weighted neighborhood,
-    #: rounded -- ``(sum w)**2 / sum w**2``, which is the plain game count
-    #: when every weight is equal (the "all history" fallback).
     neighborhood_games: int
     neighborhood_window: str
-    #: Weighted medians over that neighborhood.
     median_total: float
     median_home_margin: float
-    #: Integer guess: closest-total-optimal (median-based), margin-consistent.
     guess_home: int
     guess_away: int
-    #: Most common exact ``(home_score, away_score)`` finals in the
-    #: neighborhood, with KERNEL-WEIGHTED counts (a float: a game half a
-    #: bandwidth away casts half a vote) -- the exact-score-metric guess.
     common_scores: tuple[tuple[int, int, float], ...]
-    #: Whole-history honest error bars for the baseline.
     total_mae: float
     total_median_ae: float
     total_bias: float
     implied_score_mae: float
-    #: One-lattice consistency (owner mandate, 2026-09-05: "our project
-    #: over/under total needs to line up with our spread prediction").
-    #: ``pick_side``/``pick_spread_line`` are ``None`` unless ``model_view``
-    #: exists AND its residual is nonzero (a genuine side to be consistent
-    #: with); when set, ``guess_home``/``guess_away`` above are read off
-    #: :mod:`nfl_ats.score_lattice`'s joint distribution centred on
-    #: ``(model_view.predicted_margin, guess_total_line)`` -- the SAME two
-    #: production numbers behind the card's pick and the served total --
-    #: restricted to finals whose margin lies STRICTLY on ``pick_side``'s
-    #: side of ``pick_spread_line`` (see :func:`build_report`). See
-    #: ``docs/tiebreaker.md``'s "one lattice, one margin, one total" section.
     pick_side: str | None = None
     pick_spread_line: float | None = None
-    #: ``P(pick_side covers pick_spread_line)`` / ``P(push)``, both read off
-    #: that same lattice -- :func:`nfl_ats.score_lattice.pick_cover_probability`
-    #: / :meth:`nfl_ats.score_lattice.ScoreLattice.push_probability`.
     pick_cover_probability: float | None = None
     pick_push_probability: float | None = None
-    #: Plain-English "consistent with the <TEAM> <line> pick, P(cover) x%"
-    #: sentence, or ``""`` when ``pick_side`` is ``None`` (a market-only or
-    #: historical guess, which has no card pick to be consistent with).
     consistency_note: str = ""
 
     @property
@@ -407,8 +279,6 @@ def snapshot_consensus(game_id: str, data_root: Path) -> MarketConsensus | None:
         totals = rows.loc[(rows["market"] == "totals") & (rows["outcome_side"] == "OVER")]
         if spreads.empty or totals.empty:
             continue
-        # One line per book (a book quotes each market once per snapshot,
-        # but groupby-first makes that an invariant rather than a hope).
         spread_by_book = spreads.groupby("bookmaker_key")["line"].first()
         total_by_book = totals.groupby("bookmaker_key")["line"].first()
         return MarketConsensus(
@@ -579,7 +449,6 @@ def _neighborhood(
             upper = float(index)
             break
     if upper is None:
-        # The schedule's final ``None`` entry: all of history, unweighted.
         return Neighborhood(
             frame=finals,
             weights=np.ones(len(finals), dtype=float),
@@ -661,13 +530,6 @@ def build_report(
     guess_margin = consensus.home_expected_margin
     if model_view is not None:
         guess_margin += MODEL_RESIDUAL_WEIGHT * model_view.residual
-    # MOD-17 served total (docs/tiebreaker.md "one lattice, one margin, one
-    # total"; nfl_ats.served_total): the comparison arm is ALWAYS today's
-    # blend, computed with this module's own TOTALS_RESIDUAL_WEIGHT so the
-    # two constants can never silently diverge; the SERVED number is
-    # whichever named method SERVED_TOTAL_METHOD selects, with an automatic
-    # fall back to the blend when the selected method could not price this
-    # game (see nfl_ats.served_total.served_total's own docstring).
     comparison_total_blend_k01 = served_total_blend_k01(
         consensus.total_line, totals_view, weight=TOTALS_RESIDUAL_WEIGHT
     )
@@ -686,18 +548,6 @@ def build_report(
     median_total = weighted_median(actual_totals, weights)
     median_margin = weighted_median(actual_margins, weights)
 
-    # One lattice, one margin, one total (owner mandate, 2026-09-05): when a
-    # production model view exists, the SERVED score is read off
-    # nfl_ats.score_lattice's joint distribution centred on the production
-    # margin and the served total -- the SAME two numbers behind the card's
-    # actual pick -- restricted to finals strictly on the pick's side of the
-    # spread. This REPLACES the median-based guess below for that case; the
-    # median/common-scores block still runs unconditionally because it also
-    # backs the secondary "most common finals" display and the honest
-    # whole-history error bars further down. Deferred (function-local)
-    # import: nfl_ats.score_lattice imports FROM this module (_neighborhood,
-    # market_implied_scores, weighted_median), so a top-of-file import here
-    # would be circular.
     pick_side: str | None = None
     pick_spread_line: float | None = None
     pick_cover_probability: float | None = None
@@ -715,20 +565,10 @@ def build_report(
                 finals, model_view.predicted_margin, guess_total_line
             )
         except ValueError as error:
-            # A too-sparse/too-narrow history whose recentred mass lands
-            # entirely off its own feasible support (score_lattice's own
-            # guard) is exactly as fail-closed a signal as "no admissible
-            # cell" below -- never let a raw ValueError escape uncaught.
             raise TiebreakerConsistencyError(
                 f"{game['game_id']}: could not build a score lattice ({error}) -- refusing "
                 "to publish an inconsistent tiebreaker guess"
             ) from error
-        # 2026-09-05 second fix (owner bug report against the real Week 1
-        # guess, KC 38 - DEN 6): the centre for pick_consistent_top_score's
-        # geometric nearest-candidate rule is (predicted_margin,
-        # guess_total_line) directly -- the SAME two numbers the lattice
-        # itself was built from just above -- not a converted (home, away)
-        # score pair. See that function's docstring for the full rule.
         chosen = score_lattice_module.pick_consistent_top_score(
             lattice,
             pick_side=pick_side,
@@ -737,15 +577,6 @@ def build_report(
             centre_margin=model_view.predicted_margin,
         )
         if chosen is None:
-            # The SAME fail-closed signal covers two distinct causes now:
-            # no side-and-total-admissible final exists at all, OR the
-            # nearest one that does exist still sits more than
-            # score_lattice._MAX_CENTRE_DISTANCE points from the centre on
-            # the margin or total axis (the hard "never a tail score"
-            # guard). Either way the guess degrades: this raises instead of
-            # publishing, and nfl_ats.publishing drops just this week's
-            # tiebreaker line while the rest of the card still publishes
-            # (docs/tiebreaker.md's "publish gate").
             raise TiebreakerConsistencyError(
                 f"{game['game_id']}: no final on the {pick_side} side of "
                 f"{pick_spread_line:g} both sits within a total-proximity tolerance of "
@@ -756,12 +587,6 @@ def build_report(
             )
         guess_home, guess_away, _cell_probability, total_tolerance = chosen
         rounded_total = guess_home + guess_away
-        # pick_consistent_top_score already restricts every candidate to the
-        # winning tolerance before taking the argmax, so this is a defensive
-        # check against a bug in that contract, not the primary gate -- it is
-        # measured against the ACTUAL tolerance used, not a hard-coded 1.0,
-        # so a legitimate 2-point widening is never mistaken for the
-        # inconsistency it exists to catch (2026-09-05 fix).
         if abs(rounded_total - guess_total_line) > total_tolerance + 1e-9:
             raise TiebreakerConsistencyError(
                 f"{game['game_id']}: the lattice-consistent score totals {rounded_total}, "
@@ -776,27 +601,17 @@ def build_report(
         pick_team = str(game["home_team"]) if pick_side == "HOME" else str(game["away_team"])
         team_line = -pick_spread_line if pick_side == "HOME" else pick_spread_line
         pick_line_text = "pick'em" if team_line == 0 else f"{team_line:+g}"
-        # The primary contract tolerance is 1 point (see
-        # score_lattice._TOTAL_PROXIMITY_TOLERANCES); note it explicitly
-        # whenever the actual guess needed the wider 2-point fallback,
-        # rather than silently reporting a widened guess as the tight one.
         widened_note = (
             f"; total tolerance widened to {total_tolerance:g} points (no candidate within 1)"
             if total_tolerance > 1.0
             else ""
         )
-        # The card already states this pick's cover probability from the
-        # production probability method; the lattice's own cover mass is a
-        # different estimator and must not appear beside it as a second
-        # number for the same event (owner rule: one served probability).
         consistency_note = f"consistent with the {pick_team} {pick_line_text} pick{widened_note}"
     else:
         guess_total = round(median_total)
         guess_home = round((guess_total + median_margin) / 2.0)
         guess_away = guess_total - guess_home
     score_counts = weighted_score_counts(rows, weights)
-    # Ties broken by score rather than by iteration order, so the reported
-    # modes are deterministic across pandas/row orderings.
     ranked = sorted(score_counts.items(), key=lambda item: (-item[1], item[0]))
     common = tuple(
         (home_score, away_score, count) for (home_score, away_score), count in ranked[:3]
@@ -964,16 +779,8 @@ def tiebreaker_report(
         try:
             totals_view = model_total_view_wave2(str(game["game_id"]), data_root, wave2_features)
         except (TotalsDataError, KeyError, OSError, TypeError, ValueError):
-            # A present but stale, corrupt, or misaligned PBP table must not
-            # turn into a wave-1 view (or a fabricated residual).  The
-            # tiebreaker remains usable from the market-only path.  The wave-2
-            # model itself keeps raising TotalsDataError for direct callers so
-            # data-quality failures remain visible to backtests and tests.
             totals_view = None
     else:
-        # The PBP table itself is absent (a fresh clone) -- fall back to
-        # wave 1's model, tagged so the report line names the fallback rather
-        # than silently looking like a wave-2 number.
         totals_view = model_total_view(str(game["game_id"]), data_root, wave1_features)
         if totals_view is not None:
             totals_view = replace(
@@ -990,10 +797,6 @@ def tiebreaker_report(
             str(game["game_id"]), data_root, features_path=joint_features
         )
     except (TotalsDataError, KeyError, OSError, TypeError, ValueError):
-        # Same fail-open contract as the wave-2 totals view above: a present
-        # but stale/misaligned/too-thin weak-stack table degrades to "no
-        # joint view" (served_total() then serves the blend), never a hard
-        # failure over an optional input.
         joint_totals_view = None
     return build_report(
         game,
@@ -1076,18 +879,6 @@ def format_report(report: TiebreakerReport) -> str:
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------------------
-# ENG-24: lineage adapter -- from an already-built TiebreakerReport (this
-# module's own structured result, returned by tiebreaker_report() alongside
-# the text format_report() renders) to the played card's lineage inputs.
-# ---------------------------------------------------------------------------
-
-#: An nflverse-style capture stamp (``run_id``'s own ``%Y%m%dT%H%M%SZ``
-#: convention -- see ``nfl_ats.io.run_id`` and
-#: ``nfl_ats.lineage.parse_snapshot_capture``), embedded in both the odds-
-#: snapshot directory name ``snapshot_consensus`` reports in
-#: ``MarketConsensus.source`` and the forecast directory name
-#: ``active_model_view`` reports in ``ModelView.source``.
 _SNAPSHOT_ID_PATTERN = re.compile(r"\d{8}T\d{6}Z")
 
 

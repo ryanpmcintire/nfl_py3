@@ -36,10 +36,6 @@ from nfl_ats.margin import MarginModel
 from nfl_ats.outcomes import center_offset_for_games
 from nfl_ats.prospective_scoring import load_challenger_decisions
 
-# ---------------------------------------------------------------------------
-# Archive fixtures
-# ---------------------------------------------------------------------------
-
 
 def _archive(rows: int = 240, seed: int = 7) -> pd.DataFrame:
     """A synthetic opener archive: big home favourites under-located by +3."""
@@ -75,11 +71,6 @@ def _write_evaluation(root: Path, name: str, per_game: pd.DataFrame, model_id: s
     return evaluation
 
 
-# ---------------------------------------------------------------------------
-# 1. Fit path
-# ---------------------------------------------------------------------------
-
-
 def test_archive_prior_stream_uses_the_out_of_time_point() -> None:
     stream = archive_prior_stream(_archive(10))
     expected = stream["spread_line"] + _archive(10)["residual_at_open"]
@@ -105,8 +96,6 @@ def test_fit_learns_the_big_spread_home_error_and_nothing_elsewhere(tmp_path: Pa
     assert fitted.policy == HOME_SIDE_OFFSET_POLICY
     n = fitted.prior_games["10.5+"]
     assert n > 0
-    # The synthetic +3 error survives shrinkage toward zero at the declared
-    # 100-game prior weight (roughly 3 * n / (n + 100)), never as the raw mean.
     shrunk = 3.0 * n / (n + PRIOR_WEIGHT_GAMES)
     assert shrunk - 0.6 < fitted.offsets["10.5+"] < shrunk + 0.6
     assert abs(fitted.offsets["0-3"]) < 1.0
@@ -148,11 +137,6 @@ def test_fit_is_leak_safe_against_later_games_and_result_mutations(tmp_path: Pat
     after = fit_production_home_side_offsets(root, {"model_id": "model-a"}, season=2024, week=5)
     assert after.offsets == before.offsets
     assert after.prior_games == before.prior_games
-
-
-# ---------------------------------------------------------------------------
-# 2. Point-shift contract on the model
-# ---------------------------------------------------------------------------
 
 
 def _model_frame(rows: int = 320, seed: int = 3) -> pd.DataFrame:
@@ -245,10 +229,6 @@ def test_center_offset_for_games_defaults_missing_games_to_zero() -> None:
     shift = center_offset_for_games(games, {"A": 1.5, "C": -0.5})
     assert shift.tolist() == [1.5, 0.0, -0.5]
 
-
-# ---------------------------------------------------------------------------
-# 3. Paired challenger recorder
-# ---------------------------------------------------------------------------
 
 _SEASON, _WEEK = 2026, 1
 _FORECAST_DIR = "2026-week-01-forecast"

@@ -87,14 +87,8 @@ def test_empty_unit_fails_closed() -> None:
 def test_bye_like_and_data_missing_games_never_count() -> None:
     snaps, rosters = _frames(independent=True)
     contributors = build_contributor_games(snaps, rosters)
-    # A rostered team-week with no game (bye-like) must never enter the
-    # frame: restrict to scheduled weeks, then apply the data-presence gate.
     schedule = pd.DataFrame(
-        [
-            {"season": 2020, "week": week, "team": team}
-            for team in ("H", "A")
-            for week in (2, 3)  # week 4 has no game for anyone here
-        ]
+        [{"season": 2020, "week": week, "team": team} for team in ("H", "A") for week in (2, 3)]
     )
     contributors = contributors.merge(
         schedule.assign(on_schedule=True), on=["season", "week", "team"], how="inner"

@@ -108,14 +108,8 @@ from nfl_ats.tank_zone_fade_tilt_overlay import (  # noqa: E402
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "artifacts" / "tank_zone_fade_stacked"
 DEFAULT_SAMPLES = 20_000
 
-#: Recorded in the artifact and quoted in the report. Chosen as this session's
-#: UTC date before any result was seen, mirroring every sibling script's
-#: fixed-seed convention.
 DEFAULT_SEED = 20260901
 
-#: The four production members, mapped onto the overlay names
-#: ``overlay_stack_backtest.run_overlays`` returns. The arrests member has no
-#: ``apply_*`` overlay on the historical archive and is reconstructed instead.
 PRODUCTION_MEMBER_TO_OVERLAY: dict[str, str] = {
     COACH_FADE: "coach_fade_overlay",
     DIVISION_REVENGE_TILT: "division_revenge_tilt_overlay",
@@ -207,10 +201,6 @@ def run_backtest(
     tilt = apply_tank_zone_fade_tilt_overlay(predictions, schedules)
     tank_ids = {flip.game_id for flip in tilt.flips}
 
-    # build_eval_frame gives us the frozen baseline correctness column with the
-    # archive's own push handling; the six-overlay stack columns it also
-    # produces are unused here (empty flip sets), so correct_combined is
-    # identical to correct_baseline by construction.
     empty_flip_sets: dict[str, set[str]] = {name: set() for name in OVERLAY_NAMES}
     eval_frame = build_eval_frame(predictions, per_game, empty_flip_sets)
     eval_frame = eval_frame[["game_id", "season", "week", "correct_baseline"]].copy()

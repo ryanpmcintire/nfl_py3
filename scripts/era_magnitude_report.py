@@ -87,10 +87,6 @@ from nfl_ats.weak_signals import (  # noqa: E402
     pooled_effect,
 )
 
-# Applied in order; the first pattern that matches and leaves a non-empty
-# remainder wins. Ordered longest/most-specific first so
-# "_era_2009_2017" is not mistaken for a bare "_2009_2017"-style match by a
-# looser pattern trying first.
 ERA_SUFFIX_PATTERNS: tuple[re.Pattern[str], ...] = (
     re.compile(r"_era_\d{4}_\d{4}$"),
     re.compile(r"_era_\d{4}$"),
@@ -118,8 +114,8 @@ def era_stem(name: str) -> tuple[str, bool]:
 class EraGroup:
     stem: str
     league: str
-    members: tuple[WeakSignal, ...]  # sorted by seasons[0]
-    parent: WeakSignal | None  # exact-stem full-range entry, if one exists
+    members: tuple[WeakSignal, ...]
+    parent: WeakSignal | None
 
 
 def find_era_groups(signals: dict[str, WeakSignal], *, league: str) -> list[EraGroup]:

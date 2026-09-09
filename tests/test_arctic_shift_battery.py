@@ -28,7 +28,7 @@ def test_window_sum_excludes_days_outside_window() -> None:
 
     total = screen.window_sum(series, start, end)
 
-    assert total == 7.0  # Sep 3 through Sep 9 inclusive, 10 days available
+    assert total == 7.0
 
 
 def test_window_sum_ignores_a_day_strictly_after_the_cutoff() -> None:
@@ -38,7 +38,7 @@ def test_window_sum_ignores_a_day_strictly_after_the_cutoff() -> None:
     dates = pd.date_range("2024-09-01", "2024-09-10", freq="D")
     baseline = pd.Series(1.0, index=dates)
     spiked = baseline.copy()
-    spiked.loc[pd.Timestamp("2024-09-10")] += 1000.0  # one day after the window end below
+    spiked.loc[pd.Timestamp("2024-09-10")] += 1000.0
 
     window_start = pd.Timestamp("2024-09-03")
     window_end = pd.Timestamp("2024-09-09")
@@ -56,7 +56,7 @@ def test_window_sum_reflects_a_spike_inside_the_window() -> None:
     dates = pd.date_range("2024-09-01", "2024-09-10", freq="D")
     baseline = pd.Series(1.0, index=dates)
     spiked = baseline.copy()
-    spiked.loc[pd.Timestamp("2024-09-05")] += 1000.0  # inside [Sep 3, Sep 9]
+    spiked.loc[pd.Timestamp("2024-09-05")] += 1000.0
 
     window_start = pd.Timestamp("2024-09-03")
     window_end = pd.Timestamp("2024-09-09")
@@ -75,7 +75,7 @@ def _synthetic_games() -> pd.DataFrame:
             "game_id": ["g1", "g2"],
             "season": [2024, 2024],
             "week": [1, 4],
-            "gameday": pd.to_datetime(["2024-09-08", "2024-09-29"]),  # both Sundays
+            "gameday": pd.to_datetime(["2024-09-08", "2024-09-29"]),
             "home_team": ["ARI", "ARI"],
             "away_team": ["BUF", "BUF"],
         }
@@ -103,7 +103,7 @@ def test_build_team_game_long_window_ignores_activity_after_tuesday_cutoff() -> 
     }
 
     posts_after = posts_baseline.copy()
-    posts_after.loc[pd.Timestamp("2024-09-04")] += 500.0  # one day after g1's Tuesday cutoff
+    posts_after.loc[pd.Timestamp("2024-09-04")] += 500.0
     team_daily_after = {
         "ARI": {"posts": posts_after, "comments": comments_baseline},
         "BUF": {"posts": _daily_series(dates, 1.0), "comments": _daily_series(dates, 1.0)},
@@ -134,7 +134,7 @@ def test_build_team_game_long_window_reflects_activity_inside_the_window() -> No
     }
 
     posts_inside = posts_baseline.copy()
-    posts_inside.loc[pd.Timestamp("2024-09-01")] += 500.0  # inside g1's window
+    posts_inside.loc[pd.Timestamp("2024-09-01")] += 500.0
     team_daily_inside = {
         "ARI": {"posts": posts_inside, "comments": comments_baseline},
         "BUF": {"posts": _daily_series(dates, 1.0), "comments": _daily_series(dates, 1.0)},
@@ -167,13 +167,7 @@ def test_build_team_game_long_trailing_baseline_excludes_current_window() -> Non
     long_df = screen.build_team_game_long(games, team_daily)
     ari = long_df.loc[long_df["team"] == "ARI"].sort_values("gameday")
 
-    # g1 is ARI's first game of the season -> no strictly-prior game -> no baseline.
     assert bool(ari.iloc[0]["has_baseline_volume"]) is False
-    # g2 has exactly one strictly-prior game (g1); TRAILING_MIN_GAMES=2 in
-    # attention_battery_screen.py, so a single prior game is still short of
-    # the floor -- also no baseline. This assertion documents that floor
-    # rather than assuming it; if the shared constant ever changes this test
-    # will fail loudly instead of silently drifting.
     from attention_battery_screen import TRAILING_MIN_GAMES
 
     if TRAILING_MIN_GAMES > 1:
@@ -192,7 +186,6 @@ def test_load_subreddit_daily_counts_skips_teams_without_both_files(tmp_path: Pa
     subreddit = next(iter(screen.SUBREDDITS_ALL.values()))
     posts_path = raw_dir / f"{subreddit}_posts_timeseries_full.json"
     posts_path.write_text('{"data": [{"date": 1700000000, "value": 5}]}', encoding="utf-8")
-    # comments file deliberately not written
 
     out = screen.load_subreddit_daily_counts(raw_dir)
 

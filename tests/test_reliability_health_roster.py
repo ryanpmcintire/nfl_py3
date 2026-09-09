@@ -62,11 +62,6 @@ def rlib() -> ModuleType:
     return _load("reliability_lib")
 
 
-# ---------------------------------------------------------------------------
-# (a) the parent-trait mapping matches each builder's own definition
-# ---------------------------------------------------------------------------
-
-
 def test_injury_value_lost_parents_are_the_player_values_family(sweep: ModuleType) -> None:
     """Cell 1 of 3: the injury value-lost parents ARE the marginal block.
 
@@ -106,7 +101,6 @@ def test_player_family_blocks_match_constants_feature_families(sweep: ModuleType
                     expected.append(metric)
         assert sweep.block_member_metrics(families) == expected
 
-    # And the composed arms really are the union their FEATURE_SETS name says.
     from nfl_ats.constants import FEATURE_SETS
 
     base = set(FEATURE_SETS["football"])
@@ -163,8 +157,6 @@ def test_nflcom_parent_columns_are_the_screens_own_aggregate_names(sweep: Module
     for entry, (parent, _source, _note) in sweep.NFLCOM_CELL_PARENTS.items():
         assert parent in emitted, f"{entry} -> {parent}"
 
-    # The starter-out threshold the two out>=2 cells fade on is a real
-    # production constant, not a number this sweep invented.
     from nfl_ats.prospective import NFLCOM_STARTER_OUT_THRESHOLD
 
     assert NFLCOM_STARTER_OUT_THRESHOLD == 2
@@ -189,11 +181,6 @@ def test_flag_cells_name_real_registered_flag_builders(sweep: ModuleType) -> Non
             assert payload["construct"]["flag_builder"] == config["builder"], entry
 
 
-# ---------------------------------------------------------------------------
-# (b) split arithmetic on a known answer
-# ---------------------------------------------------------------------------
-
-
 def _known_frame() -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
     """24 units, 2 odd-week and 2 even-week observations each.
 
@@ -210,8 +197,6 @@ def _known_frame() -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
 
     rows = []
     for index in range(n_units):
-        # Two odd-week values averaging exactly odd_means[index], and likewise
-        # for the even weeks -- the +/- offsets cancel in the mean.
         unit = f"T{index:02d}"
         for week, value in (
             (1, odd_means[index] - 0.5),
@@ -240,7 +225,7 @@ def test_spearman_brown_step_up_is_two_r_over_one_plus_r(rlib: ModuleType) -> No
     frame, odd_means, even_means = _known_frame()
     expected_r = float(np.corrcoef(odd_means, even_means)[0, 1])
     expected_sb = (2.0 * expected_r) / (1.0 + expected_r)
-    assert -1.0 <= expected_sb <= 1.0  # the reportable branch, not the fallback
+    assert -1.0 <= expected_sb <= 1.0
 
     result = rlib.measure_reliability(
         frame, "x", method=rlib.METHOD_TRAIT, seasons=(2020, 2020), n_boot=200
@@ -248,9 +233,6 @@ def test_spearman_brown_step_up_is_two_r_over_one_plus_r(rlib: ModuleType) -> No
 
     assert result["reliability"] == pytest.approx(expected_sb, abs=1e-12)
     assert result["spearman_brown_full_length_reliability"] == pytest.approx(expected_sb, abs=1e-12)
-    # The recorded interval must always bracket the recorded point estimate --
-    # the set-reliability validator enforces this and the artifact must not
-    # depend on that second line of defence.
     assert result["reliability_low"] <= result["reliability"] <= result["reliability_high"]
 
 

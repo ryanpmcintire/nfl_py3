@@ -30,10 +30,6 @@ from nfl_ats.purged_cv import (
     team_persistent_null,
 )
 
-# ---------------------------------------------------------------------------
-# Contamination-span measurement: pinned to the pipeline's own declared spans
-# ---------------------------------------------------------------------------
-
 
 def test_team_state_span_matches_source() -> None:
     """Guards against ``TEAM_STATE_SPAN`` silently drifting from the real default."""
@@ -71,7 +67,6 @@ def test_ewma_retained_weight_matches_direct_recursion() -> None:
 
 
 def test_ewma_contamination_games_thresholds() -> None:
-    # Hand-verified against math.log(threshold) / math.log(1 - alpha).
     assert ewma_contamination_games(8, 0.5) == 3
     assert ewma_contamination_games(8, 0.05) == 12
     assert ewma_contamination_games(8, 0.01) == 19
@@ -94,8 +89,6 @@ def test_default_purge_and_embargo_are_derived_not_hardcoded() -> None:
 
 
 def test_half_life_contamination_weeks_matches_hand_derivation() -> None:
-    # weeks = half_life * log2(1/threshold); hand-checked for both declared,
-    # not-yet-exercised rolling-window families.
     assert half_life_contamination_weeks(16.0, 0.05) == pytest.approx(69.15, abs=0.01)
     assert half_life_contamination_weeks(16.0, 0.01) == pytest.approx(106.30, abs=0.01)
     assert half_life_contamination_weeks(8.0, 0.05) == pytest.approx(34.58, abs=0.01)
@@ -108,17 +101,10 @@ def test_half_life_contamination_weeks_matches_hand_derivation() -> None:
         half_life_contamination_weeks(16.0, 0.0)
 
 
-# ---------------------------------------------------------------------------
-# Chronological block partitioning
-# ---------------------------------------------------------------------------
-
-
 def test_partition_week_blocks_is_contiguous_and_covers_every_week() -> None:
     block_of_week = partition_week_blocks(37, 5)
     assert len(block_of_week) == 37
     assert set(block_of_week) == set(range(5))
-    # Every block is a contiguous run: weeks assigned to block b form an
-    # unbroken range once sorted (true for np.array_split of a sorted range).
     for block_id in range(5):
         weeks = np.flatnonzero(block_of_week == block_id)
         assert list(weeks) == list(range(weeks.min(), weeks.max() + 1))
@@ -138,14 +124,8 @@ def test_assign_week_order_is_global_and_idempotent() -> None:
     )
     ordered = assign_week_order(frame)
     assert list(ordered["week_order"]) == [0, 1, 2, 3]
-    # Idempotent: calling again on an already-ordered frame must not collide.
     twice = assign_week_order(ordered)
     assert list(twice["week_order"]) == [0, 1, 2, 3]
-
-
-# ---------------------------------------------------------------------------
-# Fold generation: the leakage-prevention contract itself
-# ---------------------------------------------------------------------------
 
 
 def _synthetic_week_frame(n_weeks: int, games_per_week: int = 3) -> pd.DataFrame:
@@ -180,15 +160,11 @@ def test_folds_are_disjoint_and_purge_embargo_widths_are_exact() -> None:
         assert train_idx.isdisjoint(test_idx)
         lo, hi = fold.test_week_range
         test_weeks = set(week_order[list(test_idx)])
-        assert test_weeks == {lo} == {hi}  # test_group_size=1 -> single week
+        assert test_weeks == {lo} == {hi}
         excluded = set(range(len(frame))) - train_idx - test_idx
         excluded_weeks = set(week_order[list(excluded)]) if excluded else set()
-        # Every excluded (purged/embargoed) row must fall within
-        # [lo-purge, hi+purge+embargo]; nothing outside that band is dropped.
         for week in excluded_weeks:
             assert lo - purge <= week <= hi + purge + embargo
-        # And every week strictly outside the purge+embargo band on either
-        # side IS present in training (purge/embargo don't over-purge).
         train_weeks = set(week_order[list(train_idx)])
         for week in range(len(frame)):
             week_value = int(week_order[week])
@@ -207,8 +183,6 @@ def test_purge_and_embargo_growth_shrinks_training_monotonically() -> None:
     frame = _synthetic_week_frame(n_weeks=60)
     narrow = purged_embargoed_folds(frame, n_blocks=60, purge_weeks=1, embargo_weeks=0)
     wide = purged_embargoed_folds(frame, n_blocks=60, purge_weeks=5, embargo_weeks=3)
-    # Same path count/ordering (block structure unchanged), strictly fewer
-    # training rows once purge/embargo widen, for every interior fold.
     interior = range(10, 50)
     for path_id in interior:
         assert len(wide[path_id].train_index) <= len(narrow[path_id].train_index)
@@ -223,8 +197,6 @@ def test_combinatorial_test_group_size_generates_expected_path_count() -> None:
     assert len(folds) == math.comb(n_blocks, k)
     combos_seen = {fold.test_blocks for fold in folds}
     assert combos_seen == set(itertools.combinations(range(n_blocks), k))
-    # A block that is non-adjacent to another in a combo still gets its OWN
-    # purge/embargo band applied independently (both sides represented).
     for fold in folds:
         assert len(fold.test_blocks) == k
 
@@ -249,11 +221,6 @@ def test_fold_input_validation() -> None:
         purged_embargoed_folds(frame, n_blocks=5, test_group_size=6)
 
 
-# ---------------------------------------------------------------------------
-# End-to-end backtest smoke tests on the project's own CFB fixture
-# ---------------------------------------------------------------------------
-
-
 def test_purged_cv_backtest_contracts(cfb_features_frame: pd.DataFrame) -> None:
     result = purged_cv_backtest(
         cfb_features_frame,
@@ -267,8 +234,6 @@ def test_purged_cv_backtest_contracts(cfb_features_frame: pd.DataFrame) -> None:
     assert result.config["folds_run"] > 0
     assert not predictions.empty
 
-    # Every fold that ran met the training floor (folds that didn't are
-    # counted in folds_skipped_insufficient_training, not silently dropped).
     assert result.fold_summary["train_games"].ge(30).all()
 
     residual = predictions.loc[predictions["method"].eq("market_residual")]
@@ -293,32 +258,18 @@ def test_purged_cv_backtest_can_train_on_chronologically_later_games(
     predictions = result.predictions
     early_path = predictions["path_id"].min()
     early_test_gameday = predictions.loc[predictions["path_id"].eq(early_path), "gameday"].max()
-    # At least one training row used for the earliest test block must be
-    # dated AFTER that block's own games -- impossible in the walk-forward
-    # evaluator by construction.
     later_training_exists = cfb_features_frame["gameday"].max() > early_test_gameday
     assert later_training_exists
-
-
-# ---------------------------------------------------------------------------
-# Negative control: permutation must leave no exploitable structure
-# ---------------------------------------------------------------------------
 
 
 def test_permute_target_breaks_spread_line_dependence(cfb_features_frame: pd.DataFrame) -> None:
     permuted = permute_target(cfb_features_frame, seed=7)
     spread = pd.to_numeric(permuted["spread_line"], errors="raise")
-    # The bug this function's docstring warns about: permuting ``result``
-    # while keeping ``spread_line`` fixed bakes a deterministic -spread_line
-    # term into "ats_margin". Guard against regressing into that by checking
-    # the permuted ats_margin is uncorrelated with spread_line in a frame
-    # large enough for the check to be meaningful.
     if len(permuted) >= 30:
         correlation = np.corrcoef(
             permuted["ats_margin"].to_numpy(dtype=float), spread.to_numpy(dtype=float)
         )[0, 1]
         assert abs(correlation) < 0.3
-    # Internal consistency: result/ats_margin/home_cover still agree.
     recomputed = pd.to_numeric(permuted["result"], errors="raise") - spread
     pd.testing.assert_series_equal(
         recomputed.reset_index(drop=True),
@@ -364,11 +315,6 @@ def test_team_persistent_null_preserves_features_and_has_zero_population_signal(
         )
 
 
-# ---------------------------------------------------------------------------
-# Positive control: a planted, known-magnitude effect
-# ---------------------------------------------------------------------------
-
-
 def test_synthetic_signal_accuracy_roundtrip() -> None:
     for target in (0.51, 0.513, 0.55, 0.65):
         beta = synthetic_signal_beta(target, noise_std=6.0)
@@ -382,12 +328,8 @@ def test_synthetic_signal_accuracy_roundtrip() -> None:
 def test_inject_synthetic_signal_realizes_target_accuracy_at_scale(
     cfb_features_frame: pd.DataFrame,
 ) -> None:
-    # The fixture is tiny (n~115); use it only for the contract, not the
-    # magnitude (population accuracy needs a large n to concentrate).
     injected = inject_synthetic_signal(cfb_features_frame, target_accuracy=0.55, seed=11)
     assert "synthetic_signal" in injected.columns
     assert set(injected["synthetic_signal"].unique()) <= {-1.0, 1.0}
     realized = (np.sign(injected["synthetic_signal"]) == np.sign(injected["ats_margin"])).mean()
-    # Loose bound at small n; scripts/purged_validate.py checks the tight
-    # bound at the full ~12,500-game scale.
     assert 0.35 < realized < 0.75

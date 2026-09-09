@@ -36,10 +36,6 @@ import reliability_opener_eval as sweep  # noqa: E402
 
 from nfl_ats.weak_signals import default_registry_path, load_registry  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# 1. The 28 slices reproduce their registry-recorded sample_games exactly
-# ---------------------------------------------------------------------------
-
 
 @pytest.fixture(scope="module")
 def population() -> pd.DataFrame:
@@ -123,11 +119,6 @@ def test_fallback_construct_only_covers_the_two_rest_diff_entries() -> None:
         assert spec["kind"] == "exposure"
 
 
-# ---------------------------------------------------------------------------
-# 2. The split arithmetic, on an answer computable by hand
-# ---------------------------------------------------------------------------
-
-
 def _synthetic_games(n_teams: int = 8) -> pd.DataFrame:
     """One game per (team pair, week) for 4 weeks, 2020 only -- enough units
     for measure_reliability's MIN_UNITS=20 floor once home+away both count."""
@@ -137,8 +128,6 @@ def _synthetic_games(n_teams: int = 8) -> pd.DataFrame:
         for i in range(n_teams):
             home = f"H{i}"
             away = f"A{i}"
-            # A deterministic per-pair spread and rest_diff so the resulting
-            # team-week values are hand-computable.
             spread = float(i) - 3.5
             rest_diff = float(i % 3) - 1.0
             rows.append(
@@ -167,8 +156,6 @@ def test_build_trait_frame_mirrors_the_away_row_sign() -> None:
     assert len(long) == 2 * len(games)
     home_rows = long.loc[long["team_id"].isin(games["home_team"])]
     away_rows = long.loc[long["team_id"].isin(games["away_team"])]
-    # Team H0's spread is -3.5 (row-for-row identical across all 4 weeks);
-    # team A0 (its away-side mirror pairing) must see +3.5.
     assert home_rows.loc[home_rows["team_id"] == "H0", "value"].unique().tolist() == [-3.5]
     assert away_rows.loc[away_rows["team_id"] == "A0", "value"].unique().tolist() == [3.5]
 
@@ -183,8 +170,6 @@ def test_build_venue_frame_is_one_row_per_game_keyed_on_home_team() -> None:
 
 
 def test_recovers_a_hand_computed_correlation_from_a_trait_frame() -> None:
-    # 6 team-seasons, 4 weeks each: odd half = weeks 1,3; even half = weeks 2,4.
-    # Values set directly so the odd/even half-MEANS have a known Pearson r.
     odd_means = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
     even_means = [1.0, 3.0, 2.0, 5.0, 4.0, 6.0]
     rows = []
@@ -208,11 +193,6 @@ def test_recovers_a_hand_computed_correlation_from_a_trait_frame() -> None:
     assert result["spearman_brown_full_length_reliability"] == pytest.approx(expected_sb, abs=1e-9)
     assert result["reliability"] == pytest.approx(expected_sb, abs=1e-9)
     assert result["reliability_low"] <= result["reliability"] <= result["reliability_high"]
-
-
-# ---------------------------------------------------------------------------
-# 3. A single-season-restricted flag is UNMEASURED, never a manufactured number
-# ---------------------------------------------------------------------------
 
 
 def test_single_season_flag_restricted_to_that_season_is_constant_not_measured() -> None:
@@ -259,28 +239,16 @@ def test_season_2025_entry_reproduces_that_same_unmeasured_status(
     assert result["reliability"] is None
 
 
-# ---------------------------------------------------------------------------
-# 4. The compositional-artifact diagnostic's decision rule
-# ---------------------------------------------------------------------------
-
-
 def test_compositional_artifact_flagged_when_a_negative_survives_randomization() -> None:
-    # rest_diff_own's actual real/diagnostic pair (measured this session):
-    # real -0.7012, random-half mean -0.7067 -- both comfortably past the
-    # 0.30 magnitude floor.
     assert sweep.is_compositional_artifact(-0.7012, -0.7067) is True
 
 
 def test_compositional_artifact_flagged_on_a_large_real_vs_diagnostic_gap() -> None:
-    # week_third_early's actual pair: real +0.2655, random-half mean -0.6796;
-    # the sign flip alone clears the 0.5 gap threshold.
     assert sweep.is_compositional_artifact(0.2655, -0.6796) is True
 
 
 def test_sound_measurement_is_not_flagged() -> None:
-    # confidence_distance's actual pair: real +0.6549, random-half +0.5931.
     assert sweep.is_compositional_artifact(0.6549, 0.5931) is False
-    # A small, consistent near-zero pair (rest_diff<0 flag) is not flagged either.
     assert sweep.is_compositional_artifact(-0.0682, -0.0697) is False
 
 

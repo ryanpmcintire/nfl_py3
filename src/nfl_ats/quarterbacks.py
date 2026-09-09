@@ -56,13 +56,6 @@ QB_AVAILABILITY_COLUMNS = (
     "date_modified",
 )
 
-#: ENG-39: duplicated (not imported) from ``nfl_ats.players.
-#: INJURY_PROXY_HOURS_BEFORE_KICKOFF`` -- importing it back would be a
-#: circular import (``players`` already imports from this module), and this
-#: module's module docstring convention (see ``TEAM_ABBREVIATION_ALIASES``
-#: usage patterns elsewhere in the codebase, e.g.
-#: ``transaction_wire_features.kickoff_utc``) is to duplicate a small,
-#: cross-module-shared constant/helper rather than restructure imports.
 QB_INJURY_PROXY_HOURS_BEFORE_KICKOFF = 24
 _QB_EASTERN = ZoneInfo("America/New_York")
 
@@ -223,11 +216,6 @@ def canonicalize_historical_depth_charts(frame: pd.DataFrame, games: pd.DataFram
     )
     identity_key = ["source_season", "source_week", "team", "gsis_id"]
     result["source_role_conflict"] = result.duplicated(identity_key, keep=False)
-    # Nineteen official team-week/player keys in 2009-2024 are duplicated,
-    # including ten that assign the same player multiple ranks. A player
-    # cannot fill QB1 and QB2 simultaneously, so collapse to the best listed
-    # rank and retain an explicit conflict flag instead of manufacturing a
-    # second identity.
     result = (
         result.loc[:, list(columns)]
         .sort_values([*identity_key, "pos_rank"])
@@ -675,8 +663,6 @@ def _canonicalize_qb_availability(
         result["effective_observed_at"] = pd.to_datetime(
             result["effective_observed_at"], errors="coerce", utc=True
         )
-        # observed_at_basis is left at whatever dtype it already carries --
-        # mirrors the identical note in nfl_ats.players.canonicalize_injuries.
         result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
         result["gsis_id"] = result["gsis_id"].astype("string")
         result["position"] = result["position"].astype("string").str.upper()
@@ -726,7 +712,7 @@ def _canonicalize_qb_availability(
             ["season", "week", "team", "gsis_id", "date_modified"]
         ).reset_index(drop=True)
 
-    assert schedule is not None  # narrowed by the ValueError check above
+    assert schedule is not None
     result = result.loc[
         result["season"].notna()
         & result["week"].notna()
@@ -939,10 +925,6 @@ def enrich_with_qb_features(
                 availability_source = "not_reported"
                 reports = availability_groups.get((season, week, team))
                 if reports is not None:
-                    # ENG-39: mirrors nfl_ats.players._injury_rows_asof --
-                    # "effective_observed_at" (real date_modified, else the
-                    # leakage-safe week_proxy fallback) when present, else
-                    # the historical "date_modified" filter unchanged.
                     availability_timestamp_column = (
                         "effective_observed_at"
                         if "effective_observed_at" in reports.columns

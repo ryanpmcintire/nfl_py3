@@ -85,15 +85,8 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file
 from nfl_ats.surgical_gating import VALUE_LOST_DIFF_COLUMNS
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "injury_value_lost_tilt_overlay"
 
-#: The canonical, fixed-prior-severity player feature table, rebuilt every
-#: Tuesday by weekly-run's step 3 (`build-player-features`) regardless of
-#: which profile the card path is currently using -- so this table is always
-#: fresh for the current week even while `weak_stack` is the active profile.
-#: Matches `nfl_ats.weekly.PLAYER_FEATURE_TABLE`; not imported from there to
-#: avoid a dependency on the weekly-ops module from a research overlay.
 PLAYER_FEATURE_TABLE_NAME = "game_features_player.parquet"
 
 

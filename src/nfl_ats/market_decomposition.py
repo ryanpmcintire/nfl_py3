@@ -107,12 +107,6 @@ from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_FAMILIES
 from nfl_ats.data import DataContractError
 from nfl_ats.margin import MarginFeatureProfile, make_margin_estimator, margin_feature_columns
 
-# ---------------------------------------------------------------------------
-# Frozen configuration -- matches the active model (see
-# artifacts/active_ats_model.json: feature_profile="player", regressor=
-# "ridge", ridge_alpha=10.0). No tuning is performed by this module.
-# ---------------------------------------------------------------------------
-
 DECOMPOSITION_TARGETS: tuple[str, ...] = ("margin", "spread", "residual")
 
 DEFAULT_FEATURE_PROFILE: MarginFeatureProfile = "player"
@@ -120,43 +114,21 @@ DEFAULT_RIDGE_ALPHA = 10.0
 DEFAULT_START_SEASON = 2018
 DEFAULT_END_SEASON = 2025
 
-# A family's "weight" below is its mean per-refit sum of |standardized
-# coefficient| across its design columns, expressed as a *share* of the
-# target's total weight across every family (so it is scale-free and
-# comparable between the margin and spread targets, which share a points
-# scale). These two thresholds define the four-bucket classification in
-# `classify_family` and are written into every artifact's metadata so the
-# cutoffs are auditable rather than implicit.
 DEFAULT_NOISE_SHARE_THRESHOLD = 0.03
 DEFAULT_OVERPRICED_RATIO_THRESHOLD = 1.5
 
-# Reconciliation identity (a) - (b) == (c): walk-forward tolerance, in
-# points, on each held-out game's |((margin-model) - (spread-model)) -
-# (residual-model)| prediction. Ridge's closed-form solution is linear in
-# the target for fixed X and alpha, so this should be within floating-point
-# error; a violation indicates a real bug (e.g. divergent preprocessing
-# state between the three fits), not numerical noise, so it raises.
 RECONCILIATION_ATOL = 1e-4
 
-# Per-game attribution identity: |sum(family contributions) - predicted| in
-# points. Looser than machine epsilon to tolerate summation-order floating
-# error across ~100 design columns, tight enough to catch a real bug.
 ATTRIBUTION_ATOL = 1e-6
 
 INTERCEPT_FAMILY = "intercept"
 
 OPENER_MIN_GAMES_DEFAULT = 50
 
-# Per-game plain-English explanation thresholds (see `explain_game`).
 DEFAULT_MATERIALITY_POINTS = 0.25
 DEFAULT_NEGLIGIBLE_GAP_POINTS = 0.5
 DEFAULT_MAX_DRIVERS = 3
 DEFAULT_MAX_OFFSETS = 1
-
-
-# ---------------------------------------------------------------------------
-# Family registry plumbing
-# ---------------------------------------------------------------------------
 
 
 def build_family_map(
@@ -220,11 +192,6 @@ def decomposition_feature_columns(
     return margin_feature_columns("margin", feature_profile)
 
 
-# ---------------------------------------------------------------------------
-# Shared pipeline plumbing
-# ---------------------------------------------------------------------------
-
-
 def _target_series(frame: pd.DataFrame, target: str) -> pd.Series:
     if target == "margin":
         return pd.to_numeric(frame["result"], errors="coerce")
@@ -272,16 +239,11 @@ def _fit_ridge(
     return estimator
 
 
-# ---------------------------------------------------------------------------
-# 1. Three matched walk-forward regressions
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class WalkForwardDecomposition:
-    coefficients: pd.DataFrame  # season, week, target, feature, family, coefficient
-    predictions: pd.DataFrame  # season, week, game_id, target, predicted, actual
-    reconciliation: pd.DataFrame  # season, week, game_id, error
+    coefficients: pd.DataFrame
+    predictions: pd.DataFrame
+    reconciliation: pd.DataFrame
     refit_weeks: int
     feature_columns: tuple[str, ...]
     ridge_alpha: float
@@ -440,11 +402,6 @@ def walk_forward_decomposition(
     )
 
 
-# ---------------------------------------------------------------------------
-# 2. Family aggregation and four-bucket classification
-# ---------------------------------------------------------------------------
-
-
 def family_weights_table(coefficients: pd.DataFrame) -> pd.DataFrame:
     """Aggregate a walk-forward coefficient table to family-level weights.
 
@@ -583,11 +540,6 @@ def classify_families(
     return pd.DataFrame(rows).sort_values("margin_share", ascending=False, ignore_index=True)
 
 
-# ---------------------------------------------------------------------------
-# 3. R^2 accounting and reconciliation reporting
-# ---------------------------------------------------------------------------
-
-
 def r_squared_table(predictions: pd.DataFrame) -> pd.DataFrame:
     """Out-of-sample, walk-forward R^2 per target, pooling every held-out week.
 
@@ -633,19 +585,14 @@ def reconciliation_summary(reconciliation: pd.DataFrame) -> dict[str, float]:
     }
 
 
-# ---------------------------------------------------------------------------
-# 4. Opener variant (2025 free open/close sample; directional only)
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class OpenerVariantResult:
     available: bool
     reason: str | None
     games: int
-    coefficients: pd.DataFrame | None  # target, feature, family, coefficient
-    family_weights: pd.DataFrame | None  # target, family, abs_weight, share
-    r_squared: pd.DataFrame | None  # in-sample; directional only, see module docs
+    coefficients: pd.DataFrame | None
+    family_weights: pd.DataFrame | None
+    r_squared: pd.DataFrame | None
 
 
 def _opener_unavailable(reason: str, *, games: int = 0) -> OpenerVariantResult:
@@ -784,20 +731,6 @@ def opener_variant_decomposition(
     )
 
 
-# ---------------------------------------------------------------------------
-# 6. Plain-English, pick-side-oriented per-game explanations
-# ---------------------------------------------------------------------------
-
-# Every key of `nfl_ats.constants.FEATURE_FAMILIES`, plus the `intercept`
-# sentinel used only inside attribution, mapped to a phrase a non-modeler
-# can read without knowing any column names. `test_market_decomposition.py`
-# asserts every registry family is covered here.
-# Contributions from design columns whose value is identical for every game
-# in the attributed slate (week-of-season encodings, a uniformly-zero rest
-# differential in week 1, ...) cannot explain why one game differs from the
-# market more than another. They are routed to this pseudo-family and kept
-# out of the per-game "mainly because" narrative; the additive identity is
-# preserved because the bucket still appears in the attribution rows.
 WEEKLY_CONTEXT_FAMILY = "weekly_context"
 
 FAMILY_PHRASES: dict[str, str] = {
@@ -859,7 +792,6 @@ FAMILY_PHRASES: dict[str, str] = {
     "apm_unit_on_production": (
         "each side's offensive and defensive unit strength from play-level ratings"
     ),
-    # 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md)
     "illness_away_active_ge1_on_production": (
         "at least one away player listed with an illness on the injury report"
     ),
@@ -871,13 +803,11 @@ FAMILY_PHRASES: dict[str, str] = {
     ),
     "reddit_away_spike_on_production": ("a spike in chatter on the away team's fan forum"),
     "team_style_pace_mismatch_on_production": ("a big gap between the two teams' offensive tempo"),
-    # 2026-09-05 schedule-flag battery (docs/schedule_flag_battery.md).
     "post_ot_fatigue_on_production": "a team coming off an overtime game last week",
     "mnf_road_short_week_on_production": (
         "a team that played on the road on Monday night and plays again Sunday"
     ),
     "home_thursday_on_production": "the home team in a Thursday-night game",
-    # 2026-09-05 schedule-flag battery, "Wave 2" (docs/schedule_flag_battery.md).
     "new_stadium_home_on_production": (
         "the home team in only its venue's first two seasons of NFL use"
     ),
@@ -888,8 +818,6 @@ FAMILY_PHRASES: dict[str, str] = {
     "sept_heat_home_on_production": (
         "a heat-acclimated home team hosting a cold-climate visitor in September"
     ),
-    # 2026-09-05 schedule-flag battery, "Wave 3" (docs/schedule_flag_battery.md,
-    # LEAD-57 leads on production).
     "road_fav_big_fade_on_production": (
         "a big road favourite (or, mirrored, a big home favourite) at the opener"
     ),
@@ -898,8 +826,6 @@ FAMILY_PHRASES: dict[str, str] = {
     "ats_streak_regress_on_production": (
         "a team on a three-or-more-game losing streak against the spread"
     ),
-    # 2026-09-05 schedule-flag battery, "Wave 4" (docs/schedule_flag_battery.md,
-    # LEAD-26/27/30 PBP coaching traits on production).
     "opening_drive_script_on_production": (
         "a team with a strong track record on its own opening drive"
     ),
@@ -907,7 +833,6 @@ FAMILY_PHRASES: dict[str, str] = {
     "fourth_down_aggression_interaction_on_production": (
         "an aggressive fourth-down team that is also the underdog at the opener"
     ),
-    # 2026-09-05 market-lead battery (docs/market_lead_battery.md).
     "opener_softness_fade_on_production": (
         "a side implied only by the least accurate book's opening line"
     ),
@@ -917,23 +842,16 @@ FAMILY_PHRASES: dict[str, str] = {
     "redzone_third_down_over_fade_on_production": (
         "a team coming off an unsustainably good third-down season"
     ),
-    # PER-13 Stage 2 (docs/per13_durability_stage2_on_production.md): the same
-    # two production blocks, rebuilt on a P(plays) that also knows each player's
-    # own multi-season history of playing through injuries.
     "player_injuries_durability": (
         "expected player availability, using each player's own injury history"
     ),
     "player_values_durability": (
         "estimated value lost to injuries, using each player's own injury history"
     ),
-    # 2026-09-05 schedule-flag battery, "Wave 5" (docs/schedule_flag_battery.md,
-    # LEAD-20/LEAD-25 quarterback-identity leads on production).
     "rookie_qb_debut_fade_on_production": (
         "a quarterback making his first-ever career start as a rookie"
     ),
     "qb_revenge_on_production": ("a quarterback facing the franchise that drafted him"),
-    # 2026-09-05 schedule-flag battery, "Wave 6" (docs/schedule_flag_battery.md,
-    # LEAD-12/LEAD-23/LEAD-14 transaction-wire leads on production).
     "holdout_slow_start_on_production": (
         "a team starting a regular who just ended a training-camp holdout"
     ),
@@ -943,8 +861,6 @@ FAMILY_PHRASES: dict[str, str] = {
     "suspension_return_rust_on_production": (
         "a team playing a player just back from a long suspension"
     ),
-    # 2026-09-05 officiating-crew leads (docs/officials_crew_leads.md,
-    # LEAD-34/LEAD-31).
     "crew_second_meeting_favorite_on_production": (
         "the favorite facing a referee crew that already worked one of these teams "
         "earlier this season"
@@ -952,28 +868,20 @@ FAMILY_PHRASES: dict[str, str] = {
     "rookie_crew_underdog_on_production": (
         "the underdog officiated by a first- or second-year referee crew"
     ),
-    # 2026-09-05 weather/venue leads (docs/weather_venue_leads.md,
-    # ROADMAP LEAD-36/LEAD-37).
     "open_corner_wind_dog_on_production": (
         "the underdog at an open-corner stadium in a high-wind game"
     ),
     "rain_on_grass_dog_on_production": (
         "the underdog on a grass field with a high forecast chance of rain"
     ),
-    # 2026-09-05 roster-availability leads (docs/schedule_flag_battery.md
-    # "Wave 7", LEAD-13/LEAD-17).
     "ir_return_bump_on_production": ("a team getting a starter back from injured reserve"),
     "specialist_absence_fade_on_production": ("a team missing its long snapper or punter"),
-    # 2026-09-05 schedule-flag battery, "Wave 8" (docs/schedule_flag_battery.md,
-    # LEAD-24 stage 2 / LEAD-16).
     "rookie_wall_dependence_on_production": (
         "a team that leans heavily on high-draft-pick rookies late in the season"
     ),
     "kicker_change_underdog_on_production": (
         "the underdog in a game where a team just changed its placekicker"
     ),
-    # 2026-09-05 schedule-flag battery, "Wave 9" (docs/schedule_flag_battery.md,
-    # LEAD-15 backup tenure-gap valuation).
     "backup_tenure_gap_on_production": (
         "a team starting a backup quarterback who has been with it two or more "
         "seasons, versus a team starting a brand-new backup"
@@ -998,16 +906,16 @@ def _join_with_and(items: Sequence[str]) -> str:
 class DriverContribution:
     family: str
     phrase: str
-    points: float  # pick-side-oriented: positive supports the pick, negative opposes it
+    points: float
 
 
 @dataclass(frozen=True)
 class GameExplanation:
     game_id: str
-    pick_side: str  # "HOME" or "AWAY"
+    pick_side: str
     pick_team: str
     other_team: str
-    gap_points: float  # abs(predicted_residual); always >= 0
+    gap_points: float
     drivers: tuple[DriverContribution, ...]
     offsets: tuple[DriverContribution, ...]
     sentence: str
@@ -1069,9 +977,6 @@ def explain_game_structured(
             game_id, pick_side, pick_team, other_team, gap_points, (), (), sentence
         )
 
-    # Slate-shared terms (weekly context, the fitted intercept) apply to
-    # every game equally, so they never appear as game-specific drivers or
-    # offsets; a material shared component is disclosed in a trailing note.
     shared_families = {WEEKLY_CONTEXT_FAMILY, INTERCEPT_FAMILY}
     shared_points = sum(value for family, value in reoriented.items() if family in shared_families)
     game_specific = {
@@ -1162,11 +1067,6 @@ def explain_game(
     ).sentence
 
 
-# ---------------------------------------------------------------------------
-# 5. Per-game attribution
-# ---------------------------------------------------------------------------
-
-
 def attribute_predictions(
     features: pd.DataFrame,
     *,
@@ -1229,11 +1129,6 @@ def attribute_predictions(
 
     family_map = build_family_map(feature_columns, families)
     families_by_column = [_family_for_design_column(name, family_map) for name in names]
-    # Design columns identical across the whole slate (week-of-season terms,
-    # a uniformly-zero rest differential, ...) contribute the same points to
-    # every game and cannot explain game-to-game differences vs the market;
-    # route them to the shared weekly-context bucket. A single-game slate
-    # cannot make the distinction, so it keeps the ordinary families.
     if len(target_games) > 1:
         slate_constant = np.all(np.isclose(standardized, standardized[0:1, :], atol=1e-12), axis=0)
         families_by_column = [
@@ -1294,11 +1189,6 @@ def attribute_predictions(
                 }
             )
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# Top-level orchestration and markdown rendering
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)

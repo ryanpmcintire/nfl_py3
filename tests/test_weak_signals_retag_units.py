@@ -101,7 +101,7 @@ def test_retag_units_changes_only_the_unit_and_appends_an_audit_note(
         )
         == 0
     )
-    capsys.readouterr()  # discard the record command's own JSON/warnings
+    capsys.readouterr()
 
     before = _registry_payload(tmp_path)["signals"][name]
 
@@ -126,7 +126,6 @@ def test_retag_units_changes_only_the_unit_and_appends_an_audit_note(
     assert before["notes"] in after["notes"]
     assert "sign convention explained only in notes" in after["notes"]
 
-    # Everything else on the entry is byte-identical to before the retag.
     unchanged_fields = set(before) - {"effect_units", "notes"}
     for field in unchanged_fields:
         assert after[field] == before[field], field
@@ -145,8 +144,6 @@ def test_retag_units_rejects_a_missing_entry(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
-    # An empty registry (no prior record call) still resolves to a valid,
-    # empty ledger -- the retag itself is what must refuse the unknown name.
     with pytest.raises(SystemExit):
         cli.main(_retag_args("does_not_exist", effect_units="correlation", reason="n/a"))
 

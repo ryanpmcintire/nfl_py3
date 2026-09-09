@@ -330,12 +330,6 @@ def build_coordinator_season_features(games: pd.DataFrame, history: pd.DataFrame
     return pd.DataFrame(records, columns=["game_id", *COORDINATOR_SEASON_COLUMNS])
 
 
-# ---------------------------------------------------------------------------
-# Screen helpers (docs/playcaller_change_leads.md): games after an in-season
-# change, and OC tenure at the season-start observation. Additive; neither
-# is wired into any feature table.
-# ---------------------------------------------------------------------------
-
 PLAYCALLER_EVENT_COLUMNS = {"event_id", "season", "team", "role", "revision_at"}
 _SCREEN_GAME_COLUMNS = {"game_id", "season", "kickoff", "home_team", "away_team"}
 GAMES_AFTER_CHANGE_COLUMNS = (

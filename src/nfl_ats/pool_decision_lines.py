@@ -37,16 +37,10 @@ from nfl_ats.splash_lines import (
     splash_decision_lines,
 )
 
-#: What this module does to a week, recorded in the manifest so a reader knows
-#: the line was replaced deliberately rather than drifting.
 DECISION_LINE_POLICY = "pool_capture"
 
 BUILDER_MODULE = "nfl_ats.pool_decision_lines"
 
-#: ``data/splash/{season}_week{week:02d}_{...}.json`` -- the naming convention
-#: ``scripts/capture_splash_lines.py`` writes and ``docs/splash_lines.md``
-#: documents.  Anything else in the directory is not a board capture and is
-#: left alone.
 _CAPTURE_FILENAME = re.compile(r"^(?P<season>\d{4})_week(?P<week>\d{2})_.+\.json$")
 
 
@@ -98,7 +92,6 @@ def splash_decision_line_overrides(data_root: Path | str) -> tuple[DecisionLineO
                     capture.path.stem if capture.path is not None else f"{season}_week{week:02d}"
                 ),
                 captured_at_utc=capture.captured_at_et.isoformat(),
-                # Load-bearing, not provenance: apply_decision_lines compares this instant.
                 captured_at=capture.captured_at_et,
             )
         )

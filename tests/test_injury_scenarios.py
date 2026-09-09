@@ -43,7 +43,6 @@ def _build(revisions: pd.DataFrame, decision_at: str = "2026-09-10T17:00:00Z"):
 def test_exact_mixture_moments_and_cdf() -> None:
     mixture = _build(_revision())
 
-    # Component samples are [-1, 1] at p=.25 and [3, 5] at p=.75.
     assert mixture.mean == pytest.approx(3.0)
     assert mixture.variance == pytest.approx(4.0)
     assert mixture.home_win_probability == pytest.approx(0.75)

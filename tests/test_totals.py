@@ -79,26 +79,16 @@ def _synthetic_population(
     return frame
 
 
-# ---------------------------------------------------------------------------
-# 1. The walk-forward guard
-# ---------------------------------------------------------------------------
-
-
 def test_walk_forward_trains_only_on_strictly_earlier_weeks() -> None:
     population = _synthetic_population()
     predictions = walk_forward_predictions(population, min_train_games=40)
 
-    # Weeks 2..6 are scored (week 1 has no prior games); every block reports a
-    # training pool equal to the count of STRICTLY earlier games.
     scored_weeks = sorted(predictions["week"].unique())
     assert scored_weeks == [2, 3, 4, 5, 6]
     for week in scored_weeks:
         block = predictions.loc[predictions["week"] == week]
         assert int(block["train_games"].iloc[0]) == 40 * (week - 1)
 
-    # The decisive comparison: at the flip week the guarded prediction must
-    # equal a model fit on weeks 1-3 only, and must DIFFER from one that also
-    # saw week 4. If the guard were "<=" instead of "<", the two would agree.
     target_week = 4
     honest_train = population.loc[population["week"] < target_week]
     leaky_train = population.loc[population["week"] <= target_week]
@@ -114,7 +104,6 @@ def test_walk_forward_trains_only_on_strictly_earlier_weeks() -> None:
     walked = predictions.loc[predictions["week"] == target_week, "predicted_residual"].to_numpy()
 
     assert walked == pytest.approx(honest_prediction)
-    # The leak is not a rounding difference: it moves the answer by points.
     assert np.abs(leaky_prediction - honest_prediction).max() > 1.0
     assert not np.allclose(walked, leaky_prediction)
 
@@ -122,7 +111,6 @@ def test_walk_forward_trains_only_on_strictly_earlier_weeks() -> None:
 def test_walk_forward_respects_the_warm_up_floor() -> None:
     population = _synthetic_population()
     predictions = walk_forward_predictions(population, min_train_games=100)
-    # 100 games are not banked until week 4 (weeks 1-3 supply 120).
     assert sorted(predictions["week"].unique()) == [4, 5, 6]
     assert int(predictions["train_games"].min()) >= 100
 
@@ -136,17 +124,10 @@ def test_chronological_blocks_are_sorted_and_unique() -> None:
     assert chronological_blocks(shuffled) == [(2000, 1), (2000, 2), (2000, 3)]
 
 
-# ---------------------------------------------------------------------------
-# 2. Allowlist enforcement
-# ---------------------------------------------------------------------------
-
-
 def test_design_matrix_is_exactly_the_allowlist_in_order() -> None:
     population = _synthetic_population(weeks=2, games_per_week=5)
     matrix = design_matrix(population)
     assert list(matrix.columns) == list(TOTALS_FEATURES)
-    # Outcome and identifier columns are present in the source frame and
-    # still never reach the matrix.
     for banned in ("actual_total", _TARGET, "game_id", "season", "week", "game_type"):
         assert banned in population.columns
         assert banned not in matrix.columns
@@ -154,7 +135,6 @@ def test_design_matrix_is_exactly_the_allowlist_in_order() -> None:
 
 def test_an_extra_column_never_enters_the_design_matrix_or_the_fit() -> None:
     population = _synthetic_population(weeks=4, games_per_week=30)
-    # A column that would be overwhelmingly predictive if it ever leaked in.
     contaminated = population.assign(
         leaked_actual_total=population["actual_total"] * 1_000.0,
         home_off_epa_per_play_v2=population["wind"] * 99.0,
@@ -178,11 +158,6 @@ def test_a_renamed_allowlist_column_is_a_hard_error_not_a_substitution() -> None
         walk_forward_predictions(renamed, min_train_games=5)
 
 
-# ---------------------------------------------------------------------------
-# 3. Blend math
-# ---------------------------------------------------------------------------
-
-
 def test_blend_total_endpoints_are_the_market_and_the_raw_model() -> None:
     market = pd.Series([44.0, 41.5, 50.0])
     residual = pd.Series([1.0, -2.0, 0.5])
@@ -203,9 +178,6 @@ def test_blend_sweep_covers_the_declared_grid_and_agrees_at_the_endpoints() -> N
     sweep = blend_sweep(predictions)
     assert sweep["k"].tolist() == pytest.approx(list(BLEND_WEIGHTS))
     assert sweep.loc[sweep["k"] == 0.0, "mae"].iloc[0] == pytest.approx(1.5)
-    # k=1 is the raw model: predicted totals 46, 42, 48, 40 vs actuals -> errors
-    # 0, 0, 3, -3, so MAE 1.5 as well, and the improvement column is signed
-    # market-minus-blend.
     assert sweep.loc[sweep["k"] == 1.0, "mae"].iloc[0] == pytest.approx(1.5)
     assert sweep["mae_improvement_vs_market"].iloc[0] == pytest.approx(0.0)
 
@@ -230,17 +202,10 @@ def test_paired_improvement_is_positive_when_the_blend_is_closer() -> None:
         }
     )
     paired = paired_error_frame(predictions, 1.0)
-    # Game a: the blend nails it (improvement +2). Game b: the blend moves the
-    # wrong way (improvement -2).
     assert paired["abs_error_improvement"].tolist() == pytest.approx([2.0, -2.0])
 
     seasons = per_season_deltas(predictions, 1.0)
     assert seasons["mae_improvement"].iloc[0] == pytest.approx(0.0)
-
-
-# ---------------------------------------------------------------------------
-# Population assembly (the contract's population definition)
-# ---------------------------------------------------------------------------
 
 
 def _write_population_fixture(root: Path) -> Path:
@@ -253,7 +218,7 @@ def _write_population_fixture(root: Path) -> Path:
             "gameday": ["2020-09-10", "2020-09-13", "2020-09-20", "2026-09-13"],
             "home_team": ["B", "D", "F", "Y"],
             "away_team": ["A", "C", "E", "X"],
-            "home_score": [24.0, 20.0, 30.0, None],  # the 2026 game is unplayed
+            "home_score": [24.0, 20.0, 30.0, None],
             "away_score": [20.0, 23.0, 13.0, None],
             "total_line": [43.5, 44.0, 41.0, 44.5],
         }
@@ -279,7 +244,7 @@ def test_load_population_keeps_only_lined_finals_and_computes_the_target(tmp_pat
     features_path = _write_population_fixture(tmp_path)
     population = load_population(tmp_path, features_path)
 
-    assert len(population) == 3  # the unplayed 2026 game is excluded
+    assert len(population) == 3
     assert population["game_id"].tolist() == ["2020_01_A_B", "2020_01_C_D", "2020_02_E_F"]
     assert population["actual_total"].tolist() == pytest.approx([44.0, 43.0, 43.0])
     assert population[_TARGET].tolist() == pytest.approx([0.5, -1.0, 2.0])
@@ -288,23 +253,16 @@ def test_load_population_keeps_only_lined_finals_and_computes_the_target(tmp_pat
 
 def test_model_total_view_trains_only_on_games_before_the_target_week(tmp_path: Path) -> None:
     features_path = _write_population_fixture(tmp_path)
-    # Three prior games is under any realistic floor, so the view declines.
     assert model_total_view("2026_01_X_Y", tmp_path, features_path, min_train_games=500) is None
 
     view = model_total_view("2026_01_X_Y", tmp_path, features_path, min_train_games=3)
     assert view is not None
-    assert view.train_games == 3  # the three 2020 finals, none from 2026
+    assert view.train_games == 3
     assert view.market_total == pytest.approx(44.5)
     assert view.predicted_total == pytest.approx(view.market_total + view.residual)
 
-    # A game the feature table does not price gets no view rather than a guess.
     assert model_total_view("2026_01_NO_SUCH", tmp_path, features_path, min_train_games=3) is None
     assert model_total_view("2026_01_X_Y", tmp_path, tmp_path / "absent.parquet") is None
-
-
-# ---------------------------------------------------------------------------
-# 4. Tiebreaker wiring
-# ---------------------------------------------------------------------------
 
 
 def test_tiebreaker_blends_the_totals_residual_at_the_measured_weight() -> None:
@@ -347,11 +305,8 @@ def test_tiebreaker_blends_the_totals_residual_at_the_measured_weight() -> None:
     blended = build_report(game, consensus, finals, None, view)
     assert blended.totals_view is view
     assert blended.guess_total_line == pytest.approx(43.0 + TOTALS_RESIDUAL_WEIGHT * 0.42)
-    # The implied scores are built from the BLENDED total, not the market one.
     assert blended.implied_home + blended.implied_away == pytest.approx(blended.guess_total_line)
 
-    # Without a totals view the guess total is the market's alone -- the
-    # pre-regime behaviour, preserved exactly.
     market_only = build_report(game, consensus, finals)
     assert market_only.totals_view is None
     assert market_only.guess_total_line == pytest.approx(43.0)
@@ -394,7 +349,6 @@ def test_tiebreaker_report_line_names_the_totals_disagreement_and_the_weight() -
     assert "model total view" in text
     assert "+0.42" in text
     assert f"weight {TOTALS_RESIDUAL_WEIGHT:g}" in text
-    # No totals view -> no totals lines at all.
     market_only = format_report(build_report(schedules.iloc[2], consensus, lined_finals(schedules)))
     assert "model total view" not in market_only
 
@@ -419,9 +373,6 @@ def test_totals_blend_cannot_move_the_neighborhood_across_a_line_bucket() -> Non
 
     from nfl_ats.tiebreaker import MarketConsensus, build_report, lined_finals
 
-    # Three totals buckets around a 43.0 centre. The 41.5 one sits EXACTLY on
-    # the retired hard window's edge -- the position that used to be worth a
-    # full vote on one side of the nudge and nothing on the other.
     rows = []
     index = 0
     for total_line, actual_total in ((41.5, 41), (43.0, 43), (44.0, 47)):
@@ -472,19 +423,14 @@ def test_totals_blend_cannot_move_the_neighborhood_across_a_line_bucket() -> Non
     market_only = build_report(game, consensus, finals)
     blended = build_report(game, consensus, finals, None, view)
 
-    # The blended line moves UP, exactly as the model argued.
     assert blended.guess_total_line > market_only.guess_total_line
-    # ... and nothing the guess is built from flips underneath it.
     assert blended.median_total == market_only.median_total
     assert blended.median_home_margin == market_only.median_home_margin
     assert (blended.guess_home, blended.guess_away) == (
         market_only.guess_home,
         market_only.guess_away,
     )
-    # The guess total may not move AGAINST an upward push on the line.
     assert (blended.guess_home + blended.guess_away) >= (
         market_only.guess_home + market_only.guess_away
     )
-    # The effective neighborhood is essentially unchanged -- no bucket-sized
-    # cliff (it used to halve, 320 -> 160, on this very history).
     assert abs(blended.neighborhood_games - market_only.neighborhood_games) <= 10

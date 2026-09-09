@@ -14,7 +14,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import pytest
-from test_publishing import (  # cross-test fixture reuse, as test_reporting does
+from test_publishing import (
     _publish_with_fresh_empty_arrest,
     _write_active_publication_fixture,
 )
@@ -63,8 +63,6 @@ def test_neutral_gaps_roll_up_complete_and_round_trip(
     assert payload["sources"]["inactives"]["state"] == NOT_DUE
     assert payload["sources"]["injuries_sportradar"]["state"] == NOT_CONFIGURED
     (tmp_path / "source_policy.json").write_text(json.dumps(payload), encoding="utf-8")
-    # Rendering a saved publication must not reinterpret yesterday's setup
-    # using today's credentials or clock.
     monkeypatch.setenv("SPORTRADAR_API_KEY", "configured-after-publication")
     view = _load_source_policy_view({}, tmp_path, now=kickoff + timedelta(days=1))
     assert view.card_state == COMPLETE
@@ -156,22 +154,12 @@ def test_publication_schedule_does_not_reset_due_window_or_use_future_snapshot(
     assert next(row for row in report.sources if row.source_id == "inactives").state == DEGRADED
 
 
-#: Sources whose consumer is ALREADY fail-closed. The policy layer may never
-#: grow this set without an owner decision -- that is the whole point of the
-#: "degraded is the strongest state" rule in the module docstring.
 FAIL_CLOSED_ON_ABSENCE = {"player_arrests"}
-#: Sources with an existing anti-backdating gate (prediction_safety's
-#: ``market_timing`` failure, and the arrest loader's negative-age refusal).
 FAIL_CLOSED_ON_FUTURE_DATING = {"player_arrests", "odds_opener", "odds_refresh"}
 
 
 def _stamp(instant: datetime) -> str:
     return instant.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
-
-
-# ---------------------------------------------------------------------------
-# The table: budgets are derived from SCHEDULE, never typed in
-# ---------------------------------------------------------------------------
 
 
 def test_every_budget_matches_the_capture_schedule_arithmetic() -> None:
@@ -181,28 +169,15 @@ def test_every_budget_matches_the_capture_schedule_arithmetic() -> None:
     freshness budget."""
 
     expected = {
-        # odds_tue_open alone: weekly, 10080 + 180 grace.
         "odds_opener": (10080, 180, 10260),
-        # Six odds jobs; the longest gap is Tue 09:00 -> Thu 18:00 (3420 min),
-        # closed by odds_thu_tnf's 90-minute grace.
         "odds_refresh": (3420, 90, 3510),
-        # weekly_lock (Tue 09:15, grace 120) runs weekly-run step 1 ingest.
         "injuries_nflverse": (10080, 120, 10200),
-        # ENG-39: same weekly_lock cadence as injuries_nflverse above -- this
-        # row watches whether the CONSUMED player snapshot's date_modified is
-        # real, not whether a capture landed.
         "injuries_nflverse_timestamps": (10080, 120, 10200),
-        # Sat 10:00 -> Wed 17:30 = 6210 min, closed by a 240-minute grace.
         "injuries_sportradar": (6210, 240, 6450),
-        # Sun 14:40 -> Thu 11:35 = 5575 min, closed by a 15-minute grace.
         "inactives": (5575, 15, 5590),
-        # Daily noon capture: 1440 + 180 grace.
         "projected_lineups": (1440, 180, 1620),
         "referee_assignments": (10080, 240, 10320),
-        # Cadence would allow 10080 + 90; the ALREADY-ENFORCED 36-hour
-        # production gate tightens it to 2160.
         "player_arrests": (10080, 90, 2160),
-        # Sat 07:00 -> Wed 07:00 = 5760 min, closed by a 120-minute grace.
         "pfr_transactions": (5760, 120, 5880),
         "airnow_weather": (10080, 15, 10095),
     }
@@ -227,7 +202,6 @@ def test_the_only_tightened_budget_is_the_constant_production_already_enforces()
     assert overridden == {"player_arrests"}
     arrests = SOURCE_FRESHNESS_POLICIES["player_arrests"]
     assert arrests.budget_minutes == int(MAX_SNAPSHOT_AGE.total_seconds() // 60)
-    # A derived budget is only ever tightened, never loosened.
     assert arrests.budget_minutes < arrests.recurrence_minutes + arrests.grace_minutes
     assert "MAX_SNAPSHOT_AGE" in arrests.budget_derivation
 
@@ -249,16 +223,9 @@ def test_no_currently_permitted_publish_path_becomes_newly_blockable() -> None:
     }
     assert blocking_on_future == FAIL_CLOSED_ON_FUTURE_DATING
     for policy in SOURCE_FRESHNESS_POLICIES.values():
-        # Every degrading source must name what it falls back to; a degraded
-        # state with no stated fallback is an outage in disguise.
         if not policy.fail_closed:
             assert policy.fallback and "none" not in policy.fallback[:5]
         assert policy.enforced_by
-
-
-# ---------------------------------------------------------------------------
-# One test per state, per source
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("source_id", SOURCE_IDS)
@@ -321,11 +288,6 @@ def test_state_on_a_future_dated_snapshot(source_id: str) -> None:
     assert row.state == expected
 
 
-# ---------------------------------------------------------------------------
-# The overall roll-up
-# ---------------------------------------------------------------------------
-
-
 def test_rollup_is_complete_only_when_every_observed_source_is_inside_budget() -> None:
     report = evaluate_sources(
         {
@@ -361,7 +323,7 @@ def test_rollup_blocks_when_the_fail_closed_source_breaches() -> None:
         source_id: NOW - timedelta(minutes=policy.budget_minutes / 2.0)
         for source_id, policy in SOURCE_FRESHNESS_POLICIES.items()
     }
-    observations["referee_assignments"] = None  # degraded, and outranked
+    observations["referee_assignments"] = None
     observations["player_arrests"] = NOW - timedelta(hours=48)
     report = evaluate_sources(observations, NOW)
 
@@ -369,7 +331,6 @@ def test_rollup_blocks_when_the_fail_closed_source_breaches() -> None:
     assert report.blocked == ("player_arrests",)
     assert len(report.blocking_reasons) == 1
     reason = report.blocking_reasons[0]
-    # The message must name the SOURCE and the RULE, not just "stale".
     assert reason.startswith("player_arrests: ")
     assert "budget 2160 min, fail-closed" in reason
     assert "load_latest_complete_arrest_snapshot" in reason
@@ -410,8 +371,6 @@ def test_summary_line_names_all_three_buckets() -> None:
     )
     line = report.summary_line()
     assert "**Source freshness: BLOCKED.**" in line
-    # Source ids render as words, not raw snake_case (owner mandate,
-    # 2026-09-05: "this is for humans not the opus autist").
     assert "Complete: odds opener." in line
     assert "Degraded (allowed fallback): referee assignments." in line
     assert "Blocked: player arrests." in line
@@ -428,11 +387,6 @@ def test_metadata_block_is_json_serialisable_and_carries_every_state() -> None:
     assert payload["sources"]["odds_opener"]["budget_minutes"] == 10260
 
 
-# ---------------------------------------------------------------------------
-# The disk observer (ENG-03 join point)
-# ---------------------------------------------------------------------------
-
-
 def test_observe_from_disk_reads_stamped_directory_names_not_mtimes(tmp_path: Path) -> None:
     data_root = tmp_path / "data"
     newest = NOW - timedelta(minutes=30)
@@ -440,7 +394,6 @@ def test_observe_from_disk_reads_stamped_directory_names_not_mtimes(tmp_path: Pa
         (data_root / "raw" / "player_arrests" / _stamp(NOW - timedelta(minutes=offset))).mkdir(
             parents=True
         )
-    # An unparseable sibling must be ignored, not crash the scan.
     (data_root / "raw" / "player_arrests" / "not-a-stamp").mkdir(parents=True)
 
     observations = {
@@ -450,7 +403,6 @@ def test_observe_from_disk_reads_stamped_directory_names_not_mtimes(tmp_path: Pa
         )
     }
     assert observations["player_arrests"].observed_at == newest
-    # A directory that does not exist is ABSENT (we looked, nothing there).
     assert observations["inactives"].observed_at is None
 
 
@@ -499,17 +451,11 @@ def test_report_for_publication_uses_the_verified_arrest_instant(tmp_path: Path)
     assert stale.blocked == ("player_arrests",)
     assert "verified-old" in stale.to_metadata()["sources"]["player_arrests"]["detail"]
 
-    # No verified instant at all: unobserved, not blocked.
     unverified = report_for_publication(
         data_root=data_root, artifacts_root=tmp_path / "artifacts", now=NOW
     )
     assert "player_arrests" in unverified.unobserved
     assert unverified.state != BLOCKED
-
-
-# ---------------------------------------------------------------------------
-# The published card carries the block
-# ---------------------------------------------------------------------------
 
 
 def test_published_card_metadata_and_markdown_carry_the_source_policy(tmp_path: Path) -> None:
@@ -526,9 +472,6 @@ def test_published_card_metadata_and_markdown_carry_the_source_policy(tmp_path: 
 
     block = result["source_policy"]
     assert isinstance(block, dict)
-    # The fixture writes one fresh, hash-verified arrest snapshot and nothing
-    # else, so the card is DEGRADED on the fallback sources and complete on the
-    # only fail-closed one.
     assert block["state"] == DEGRADED
     assert block["complete"] == ["player_arrests"]
     assert "odds_opener" in block["degraded"]
@@ -538,8 +481,6 @@ def test_published_card_metadata_and_markdown_carry_the_source_policy(tmp_path: 
 
     card = destination.read_text(encoding="utf-8")
     assert "**Source freshness: DEGRADED.**" in card
-    # Rendered as words in card prose (owner mandate, 2026-09-05) -- the
-    # JSON metadata block above keeps the raw source id.
     assert "Complete: player arrests." in card
     assert "docs/source_freshness_policy.md" in card
 
@@ -554,8 +495,6 @@ def test_publish_refuses_when_a_fail_closed_source_blocks(
     _, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
     instant = datetime(2026, 8, 12, tzinfo=UTC)
-    # Build the fixture (fresh arrest snapshot, schedule snapshot) via a first,
-    # successful publish so the failure below is attributable to the policy.
     _publish_with_fresh_empty_arrest(
         tmp_path, destination=destination, readme_path=readme, published_at=instant
     )
@@ -578,7 +517,6 @@ def test_publish_refuses_when_a_fail_closed_source_blocks(
     assert "publication refused by source policy" in message
     assert "player_arrests" in message
     assert "fail-closed" in message
-    # A refused publish must not have half-written the card.
     assert destination.read_text(encoding="utf-8") == before
 
 

@@ -27,12 +27,8 @@ from typing import Any
 from nfl_ats.io import atomic_json
 from nfl_ats.provenance import sha256_file
 
-#: ``2026_01_MIA_LV``-shaped nflverse game ids, the only game key this
-#: capture accepts (a typo'd id would silently orphan the row).
 GAME_ID_RE = re.compile(r"^\d{4}_\d{2}_[A-Z]{2,3}_[A-Z]{2,3}$")
 
-#: Pick-share rounding tolerance: pool pages show whole percents, so two
-#: shares may miss 1.0 by a point of rounding without failing the row.
 SHARE_SUM_TOLERANCE = 0.02
 
 OBSERVABLES_DIRNAME = "pool_observables"
@@ -109,9 +105,6 @@ def _validate_distribution(observation: DistributionObservation) -> None:
         raise PoolObservableError("observer must name who read the pool page")
     unlocked = _parse_instant(observation.unlocked_at_utc, field="unlocked_at_utc")
     observed = _parse_instant(observation.observed_at_utc, field="observed_at_utc")
-    # A distribution cannot be recorded before the game unlocks it: the
-    # whole point of POL-04's closure is that pre-kickoff fields are
-    # unobservable, so a row claiming otherwise is rejected, not stored.
     if observed < unlocked:
         raise PoolObservableError("observed_at_utc precedes unlocked_at_utc")
 

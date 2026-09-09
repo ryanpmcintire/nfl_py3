@@ -29,8 +29,6 @@ from nfl_ats.cfb_opponent_adjustment import (
 from nfl_ats.data import DataContractError
 from nfl_ats.opponent_adjustment import fit_opponent_effects
 
-# The fixture league has eight teams, so a realistic 64-team-game warm-up would
-# never fit. Everything else is the frozen configuration.
 FIXTURE_MIN_TEAM_GAMES = 8
 
 
@@ -64,7 +62,6 @@ def test_adjusted_columns_cannot_see_their_own_week_or_the_future(
     columns = ["game_id", *CFB_OPPONENT_ADJUSTED_FEATURE_COLUMNS]
     assert baseline[list(CFB_OPPONENT_ADJUSTED_FEATURE_COLUMNS)].notna().any().all()
 
-    # Rewrite the current week and every later week beyond recognition.
     boundary_season, boundary_week = 2014, 8
     future = (cfb_team_games["season"].gt(boundary_season)) | (
         cfb_team_games["season"].eq(boundary_season) & cfb_team_games["week"].ge(boundary_week)
@@ -78,7 +75,6 @@ def test_adjusted_columns_cannot_see_their_own_week_or_the_future(
         baseline.loc[unchanged, columns].reset_index(drop=True),
         rescored.loc[unchanged, columns].reset_index(drop=True),
     )
-    # The test is not vacuous: later weeks must move when their history moves.
     later = ~unchanged
     assert later.any()
     assert not baseline.loc[later, columns].equals(rescored.loc[later, columns])
@@ -191,7 +187,7 @@ def test_substitution_is_dimension_neutral() -> None:
         substitute_opponent_adjusted_columns(("spread_line", "total_line"))
 
 
-@pytest.mark.full  # ENG-11: dominates --durations; full CFB benchmark fit
+@pytest.mark.full
 def test_benchmark_scores_both_arms_on_identical_games(
     cfb_features_frame: pd.DataFrame, cfb_team_games: pd.DataFrame
 ) -> None:
@@ -238,7 +234,7 @@ def test_benchmark_scores_both_arms_on_identical_games(
     }
 
 
-@pytest.mark.full  # ENG-11: dominates --durations; full CFB benchmark fit
+@pytest.mark.full
 def test_paired_margin_comparison_contracts(
     cfb_features_frame: pd.DataFrame, cfb_team_games: pd.DataFrame
 ) -> None:
@@ -274,7 +270,6 @@ def test_paired_margin_comparison_contracts(
         samples=50,
     )
     assert identical["estimate"].abs().max() == pytest.approx(0.0)
-    # An arm compared against ITSELF is a dead heat, not a loss. This assertion pinned 0.0 until.
     assert identical["probability_positive"].eq(0.5).all()
 
 

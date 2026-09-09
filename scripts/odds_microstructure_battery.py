@@ -298,7 +298,7 @@ def _wednesday_noon_snapshots(root: Path) -> pd.DataFrame:
     if intraday.empty:
         return intraday
     local = intraday["snapshot_timestamp_utc"].dt.tz_convert(EASTERN)
-    intraday["_local_weekday"] = local.dt.weekday  # Monday=0 .. Wednesday=2
+    intraday["_local_weekday"] = local.dt.weekday
     intraday["_hour_distance_from_noon"] = (local.dt.hour + local.dt.minute / 60.0 - 12.0).abs()
     wednesday = intraday.loc[intraday["_local_weekday"].eq(2)]
     if wednesday.empty:
@@ -344,11 +344,6 @@ def _load_selected_snapshots(rows: pd.DataFrame) -> pd.DataFrame:
     combined["commence_time_utc"] = pd.to_datetime(combined["commence_time_utc"], utc=True)
     combined["observed_at_utc"] = pd.to_datetime(combined["observed_at_utc"], utc=True)
     return combined
-
-
-# ---------------------------------------------------------------------------
-# Bootstrap metric builders
-# ---------------------------------------------------------------------------
 
 
 def _accuracy_metric_fn(correct_col: str):
@@ -404,15 +399,7 @@ def _row(ci: dict[str, pd.DataFrame], metric: str) -> dict[str, float]:
     }
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -431,11 +418,6 @@ def main() -> None:
     schedule = regular[["game_id", "season", "week", "spread_line"]].drop_duplicates("game_id")
     outcomes = regular[["game_id", "result", "home_score", "away_score"]].drop_duplicates("game_id")
 
-    # ------------------------------------------------------------------
-    # Base tue_open construction (H1, H2, H4, H5, H6): reuse the audited
-    # build_pairing_table / spread_price_consensus_table / novig functions
-    # exactly like scripts/novig_diagnostics_screen.py.
-    # ------------------------------------------------------------------
     print("Building tue_open pairing + spread price consensus (H1/H2/H6 base)")
     pairing_tue = build_pairing_table(
         args.root, capture_kind=HISTORICAL_CAPTURE_KIND, labels=("tue_open",), schedule=schedule
@@ -460,10 +442,6 @@ def main() -> None:
         f"tue_open base population: {n_base} games, {n_pushes} pushes excluded from accuracy cells"
     )
 
-    # ------------------------------------------------------------------
-    # Raw tue_open quotes, once, reused for H2's price dispersion, H4's
-    # book-level prices, and H5's totals price consensus.
-    # ------------------------------------------------------------------
     print("Loading raw tue_open quotes for book-level and totals work")
     tue_quotes_raw = load_decision_quotes(
         args.root, capture_kind=HISTORICAL_CAPTURE_KIND, labels=("tue_open",)
@@ -471,9 +449,6 @@ def main() -> None:
     tue_quotes = _true_week_correct(tue_quotes_raw, schedule)
     tue_consensus = decision_market_consensus(tue_quotes)
 
-    # ==================================================================
-    # H1: asymmetric opener juice predicts cover
-    # ==================================================================
     print("\n=== H1: asymmetric opener juice ===")
     prob = spread_novig["no_vig_home_cover_probability"]
     h1_pop = spread_novig.loc[prob.notna() & prob.ne(0.5) & ats_margin.ne(0.0)].copy()
@@ -506,9 +481,6 @@ def main() -> None:
     h1_2["n"] = len(h1_pop)
     cells.append({"hypothesis": "H1", "cell": "1.2_dose_response_high_minus_low", **h1_2})
 
-    # ==================================================================
-    # H2: cross-book dispersion as an uncertainty / game-selection signal
-    # ==================================================================
     print("\n=== H2: cross-book dispersion ===")
     book_prices_raw = _book_level_spread_prices(tue_quotes)
     price_dispersion = (
@@ -559,9 +531,6 @@ def main() -> None:
             f"week_P+={accuracy_row['week_probability_positive']:.3f}"
         )
 
-    # ==================================================================
-    # H3: Tuesday-to-Wednesday drift echo
-    # ==================================================================
     print("\n=== H3: Tuesday-to-Wednesday drift echo ===")
     pairing_full = build_pairing_table(
         args.root,
@@ -643,9 +612,6 @@ def main() -> None:
     ).where(paired_wed["open_move"].ne(0.0))
     _oracle_cell(paired_wed, "3.1_tue_to_wed_oracle_2023_2025")
 
-    # ==================================================================
-    # H4: off-market single-book openers
-    # ==================================================================
     print("\n=== H4: off-market single-book openers ===")
     book_prices = book_prices_raw.copy()
     book_prob, book_hold = _no_vig_pair(book_prices["home_price"], book_prices["away_price"])
@@ -706,9 +672,6 @@ def main() -> None:
     else:
         print("  No disagreement games at this threshold; cell reported as zero-n below.")
 
-    # ==================================================================
-    # H5 (own): totals-market juice asymmetry
-    # ==================================================================
     print("\n=== H5: totals-market juice asymmetry ===")
     totals_prices = _totals_price_consensus(tue_consensus)
     totals_source = pairing_tue[["game_id", "season", "week", "total_line"]].merge(
@@ -744,9 +707,6 @@ def main() -> None:
     wp = h5_row["week_probability_positive"]
     print(f"H5.1 accuracy={h5_row['point_accuracy']:.4f} week_P+={wp:.3f}")
 
-    # ==================================================================
-    # H6 (own): market hold (vig level) as an uncertainty signal
-    # ==================================================================
     print("\n=== H6: market hold as an uncertainty signal ===")
     h6_pop = h1_pop.loc[pd.to_numeric(h1_pop["spread_hold"], errors="coerce").notna()].copy()
     h6_pop["abs_ats_margin"] = h6_pop["ats_margin"].abs()
@@ -780,9 +740,6 @@ def main() -> None:
         f"week_P+={hold_accuracy_row['week_probability_positive']:.3f}"
     )
 
-    # ------------------------------------------------------------------
-    # Propose (never execute) weak-signals record commands for leads
-    # ------------------------------------------------------------------
     for c in cells:
         p_plus = c.get("week_probability_positive")
         if p_plus is None:
@@ -821,9 +778,6 @@ def main() -> None:
         print(f"  [{record['direction']}, P+={wp:.3f}] {record['cell']}")
         print(f"    {record['proposed_command']}")
 
-    # ------------------------------------------------------------------
-    # Write artifacts
-    # ------------------------------------------------------------------
     output_dir = args.output_root / run_id()
     atomic_parquet(spread_novig, output_dir / "spread_novig_tue_open.parquet")
     atomic_parquet(book_prices, output_dir / "book_level_novig_tue_open.parquet")

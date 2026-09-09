@@ -113,10 +113,6 @@ from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  #
 RUN_ID = "20260822T033952Z"
 DEFAULT_BACKFILL = REPO / "artifacts" / "vegasinsider_backfill" / RUN_ID
 YEARS: tuple[int, ...] = tuple(range(2005, 2017))
-# Board book-identity fallback rate 0.643 for 2006 (docs/vegasinsider_backfill.md
-# "Reduced-confidence flag"), the only season over the >20% threshold. Both the
-# full-game and half legs used here derive from the same board/movement pages,
-# so this exclusion applies to both, consistent with scripts/vi_dispersion_screen.py.
 EXCLUDED_REDUCED_CONFIDENCE_SEASONS = frozenset({2006})
 
 FAVORITE_MIN = 3.0
@@ -497,12 +493,10 @@ def run_half_cell(
     fav = eligible_favorites(plausible)
     dedup = dedup_to_one_row_per_game(fav)
 
-    # --- predeclared: freeze the ratio cut from MARKET DATA ONLY ---
     ratio = compute_ratio(dedup, half_num)
     cut = freeze_cut(ratio)
     flagged = apply_flag(dedup, half_num, cut)
 
-    # --- only now does an outcome column enter the picture ---
     outcome_df, n_unmatched = attach_schedule_outcomes(flagged, sched_index)
     n_matched = len(outcome_df)
     outcome_df = add_dog_outcome(outcome_df)
@@ -560,11 +554,6 @@ def run_half_cell(
         draws=null_draws,
         seed=null_seed,
     )
-    # Supplementary: this population's week blocks are mostly size 1 (a game
-    # every ~1.1-1.9 weeks on average per flagged/unflagged pairing), which
-    # leaves the required week-blocked null above near-degenerate -- season
-    # blocks give real swap room and are reported alongside it, never in
-    # place of it.
     permutation_season_supplementary = within_block_permutation_null(
         scored,
         flag_col="flag",

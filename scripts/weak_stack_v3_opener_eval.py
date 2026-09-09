@@ -87,7 +87,7 @@ REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 
 OPENER_BOOTSTRAP_SAMPLES = 20_000
-OPENER_BOOTSTRAP_SEED = 20260817  # this project's standing opener-bootstrap seed
+OPENER_BOOTSTRAP_SEED = 20260817
 
 LINE_BUCKET_EDGES: tuple[float, ...] = (0.0, 3.0, 7.0, 10.0, float("inf"))
 LINE_BUCKET_LABELS: tuple[str, ...] = ("[0,3)", "[3,7)", "[7,10)", "[10,inf)")
@@ -433,13 +433,13 @@ def main() -> None:
         "generated_at_utc": datetime.now(UTC).isoformat(),
         **opener_report,
     }
-    write_stamped_artifact(metadata, out_dir / "opener_summary.json")  # ENG-38
+    write_stamped_artifact(metadata, out_dir / "opener_summary.json")
     opener_result["paired_frame"].to_parquet(out_dir / "opener_paired.parquet")
-    stamp_sidecar(out_dir / "opener_paired.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_paired.parquet")
     opener_result["baseline_frame"].to_parquet(out_dir / "opener_baseline.parquet")
-    stamp_sidecar(out_dir / "opener_baseline.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_baseline.parquet")
     opener_result["candidate_frame"].to_parquet(out_dir / "opener_candidate.parquet")
-    stamp_sidecar(out_dir / "opener_candidate.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_candidate.parquet")
 
     print(f"\nWrote {out_dir}")
 

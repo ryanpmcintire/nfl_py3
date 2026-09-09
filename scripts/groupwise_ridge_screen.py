@@ -48,13 +48,6 @@ from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.margin import MarginModel, column_penalty_multipliers, make_margin_estimator
 from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
-# ---------------------------------------------------------------------------
-# Blocks and the predeclared grid
-# ---------------------------------------------------------------------------
-
-# The CFB feature contract's own declared blocks. The team-state columns split
-# into offense and defense along CFB_STATE_METRICS, whose first four entries are
-# offensive and last four defensive.
 _OFFENSE_METRICS = CFB_STATE_METRICS[:4]
 _DEFENSE_METRICS = CFB_STATE_METRICS[4:]
 
@@ -81,40 +74,18 @@ def cfb_feature_groups(columns: Sequence[str] = CFB_MODEL_FEATURE_COLUMNS) -> tu
     return tuple(lookup[column] for column in columns)
 
 
-# PREDECLARED, fixed before any result was read. Each entry is a per-block
-# penalty multiplier; multipliers are renormalised to a count-weighted geometric
-# mean of 1, so every arm carries the SAME average penalty as `uniform` and only
-# the allocation across blocks differs. That keeps this axis orthogonal to the
-# global-alpha axis MOD-06 already swept and closed.
 PENALTY_GRID: dict[str, dict[str, float]] = {
-    # Baseline: exactly the frozen benchmark.
     "uniform": {},
-    # The lead's hypothesis: light on market, heavy on the noisy state blocks.
     "market_light_3": {"market": 1.0 / 3.0, "offense": 3.0, "defense": 3.0},
     "market_light_10": {"market": 0.1, "offense": 10.0, "defense": 10.0},
-    # Equal and opposite falsification controls.
     "market_heavy_3": {"market": 3.0, "offense": 1.0 / 3.0, "defense": 1.0 / 3.0},
     "market_heavy_10": {"market": 10.0, "offense": 0.1, "defense": 0.1},
-    # State moved against everything else, market held with context/experience.
     "state_heavy_3": {"offense": 3.0, "defense": 3.0},
     "state_light_3": {"offense": 1.0 / 3.0, "defense": 1.0 / 3.0},
 }
 
 BASELINE_ARM = "uniform"
 
-# Global penalty levels the block grid is run at.
-#
-# 10.0 is the frozen benchmark. The other two are DERIVED, not chosen, from the
-# measured eigenspectrum of the standardised design: ridge shrinks the principal
-# direction with eigenvalue d by alpha/(d + alpha). At the final training cut
-# (n = 11,738) only 41 of the 63 transformed directions are non-null -- the
-# `diff = home - away` identity makes the design rank-deficient -- and their
-# eigenvalues have median 6.02e3. At alpha = 10 the MEDIAN direction is
-# therefore shrunk by 0.17%: the penalty is inert, so reallocating it across
-# blocks is bounded to be inert too, whatever the ratio. alpha = 1e3 puts
-# median shrinkage at 0.14 and alpha = 1e4 at 0.62, bracketing the range where
-# a penalty has any leverage at all. Testing block ratios only at an inert
-# global level would be a rigged screen.
 GLOBAL_ALPHAS: tuple[float, ...] = (CFB_BENCHMARK_RIDGE_ALPHA, 1_000.0, 10_000.0)
 
 BOOTSTRAP_SAMPLES = 2_000
@@ -145,15 +116,8 @@ def penalty_configuration(name: str) -> tuple[dict[str, float] | None, dict[str,
     for column, group in zip(columns, groups, strict=True):
         per_block.setdefault(group, per_column[column])
     if name == BASELINE_ARM:
-        # A uniform grid normalises to all-ones, which is bit-identical to the
-        # frozen single-penalty path; pass None so that is literally true.
         return None, per_block
     return per_column, per_block
-
-
-# ---------------------------------------------------------------------------
-# Walk-forward (mirrors cfb_benchmark.cfb_walk_forward_benchmark exactly)
-# ---------------------------------------------------------------------------
 
 
 def _fit_residual_model(
@@ -227,11 +191,6 @@ def run_arm(completed: pd.DataFrame, name: str, ridge_alpha: float) -> pd.DataFr
         lambda season: cfb_evaluation_window(int(season))
     )
     return predictions.sort_values(["gameday", "game_id"]).reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# Metrics and paired blocked bootstrap
-# ---------------------------------------------------------------------------
 
 
 def _components(frame: pd.DataFrame) -> pd.DataFrame:
@@ -312,7 +271,6 @@ def paired_bootstrap(
                 "evaluation_window": window,
                 "block": block,
                 "metric": metric,
-                # Oriented so positive always means the candidate is better.
                 "improvement": float(better.mean() - worse.mean()),
                 "lower": float(np.quantile(sample, 0.025)),
                 "upper": float(np.quantile(sample, 0.975)),
@@ -358,9 +316,6 @@ def pick_flips(baseline: pd.DataFrame, candidate: pd.DataFrame) -> dict[str, Any
     }
 
 
-# ---------------------------------------------------------------------------
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -392,8 +347,6 @@ def main() -> None:
             print(f"[arm] alpha={alpha:g} {name} ...", flush=True)
             predictions[(name, alpha)] = run_arm(completed, name, alpha)
 
-    # Correctness gate: the uniform arm at the frozen alpha must reproduce the
-    # frozen benchmark exactly. Anything else means the opt-in path leaked.
     frozen = cfb_walk_forward_benchmark(features)
     frozen_residual = (
         frozen.predictions.loc[frozen.predictions["method"].eq("market_residual")]
@@ -425,15 +378,11 @@ def main() -> None:
         for name in arms
         for window in ("clean_core", "all")
     ]
-    # Every comparison is against `uniform` AT THE SAME GLOBAL ALPHA, which is
-    # what isolates the block allocation from the global penalty level.
     flips = [
         pick_flips(predictions[(BASELINE_ARM, alpha)], predictions[(name, alpha)])
         for alpha in alphas
         for name in arms
     ]
-    # Plus one cross-alpha row per level, so the global-penalty axis (MOD-06's)
-    # is visible beside the block axis rather than confounded with it.
     flips.extend(
         pick_flips(
             predictions[(BASELINE_ARM, CFB_BENCHMARK_RIDGE_ALPHA)],
@@ -482,15 +431,15 @@ def main() -> None:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     summary_frame.to_csv(args.output_dir / "arm_summaries.csv", index=False)
-    stamp_sidecar(args.output_dir / "arm_summaries.csv")  # ENG-38
+    stamp_sidecar(args.output_dir / "arm_summaries.csv")
     flip_frame.to_csv(args.output_dir / "pick_flips.csv", index=False)
-    stamp_sidecar(args.output_dir / "pick_flips.csv")  # ENG-38
+    stamp_sidecar(args.output_dir / "pick_flips.csv")
     comparison_frame.to_csv(args.output_dir / "paired_comparisons.csv", index=False)
-    stamp_sidecar(args.output_dir / "paired_comparisons.csv")  # ENG-38
+    stamp_sidecar(args.output_dir / "paired_comparisons.csv")
     write_stamped_artifact(
         {name: penalty_configuration(name)[1] for name in PENALTY_GRID},
         args.output_dir / "grid.json",
-    )  # ENG-38
+    )
     print(f"\nWrote {args.output_dir}")
 
 

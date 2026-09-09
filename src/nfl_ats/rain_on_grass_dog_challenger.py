@@ -127,10 +127,8 @@ from nfl_ats.provenance import sha256_file
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.surface_switch_tilt_overlay import GRASS_SURFACES
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "rain_on_grass_dog_challenger"
 
-#: Reused verbatim from nfl_ats.weather_venue_flag_features.RAIN_ON_GRASS_PRECIP_PROB_MIN.
 PRECIP_PROB_THRESHOLD_PCT = 60.0
 
 

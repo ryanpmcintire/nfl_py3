@@ -31,11 +31,6 @@ from nfl_ats.margin import margin_feature_columns  # noqa: E402
 UTC = "UTC"
 
 
-# ---------------------------------------------------------------------------
-# Shared harness wiring (mirrors tests/test_on_production_opener_confirmation.py)
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize("candidate_key", ["opener_softness", "ml_divergence"])
 def test_profile_identity_is_production_plus_the_declared_one_column(candidate_key: str) -> None:
     candidate = harness.CANDIDATES[candidate_key]
@@ -101,17 +96,11 @@ def test_only_positive_control_replaces_the_candidate_column(
     assert source[candidate.column].tolist() == [0.0]
 
 
-# ---------------------------------------------------------------------------
-# LEAD-03's >= 3 percentage-point threshold (pure function, no fixtures)
-# ---------------------------------------------------------------------------
-
-
 def test_divergence_threshold_maps_to_signed_signal() -> None:
     divergence = np.array([-0.05, -0.03, -0.01, 0.0, 0.01, 0.03, 0.05, np.nan])
 
     signal = mlf._divergence_to_signal(divergence, threshold=0.03)
 
-    # The boundary itself counts as a divergence (LEAD-03's ">=" / "<=" rule).
     assert signal.tolist()[:-1] == [-1.0, -1.0, 0.0, 0.0, 0.0, 1.0, 1.0]
     assert np.isnan(signal[-1])
 
@@ -122,11 +111,6 @@ def test_divergence_threshold_is_symmetric_and_configurable() -> None:
     signal = mlf._divergence_to_signal(divergence, threshold=0.05)
 
     assert signal.tolist() == [-1.0, -1.0, 1.0, 1.0]
-
-
-# ---------------------------------------------------------------------------
-# Softest-book walk-forward identification (pure function, no fixtures)
-# ---------------------------------------------------------------------------
 
 
 def _errors_row(
@@ -143,9 +127,6 @@ def _errors_row(
 
 
 def test_walk_forward_softest_book_uses_only_strictly_prior_games() -> None:
-    # Week 1: book B is far softer than book A. Week 2's identification must
-    # be based ONLY on week 1 (strictly earlier gameday); week 3's on weeks
-    # 1-2. A book needs >= min_history_games PRIOR observations to be named.
     errors = pd.DataFrame(
         [
             _errors_row("G1", 2020, 1, "2020-09-10", "A", 0.5),
@@ -160,16 +141,12 @@ def test_walk_forward_softest_book_uses_only_strictly_prior_games() -> None:
     result = mlf.walk_forward_softest_book(errors, min_history_games=1)
     by_week = result.set_index("week")["softest_book"]
 
-    # Week 1 has no strictly-prior history at all: nobody is eligible yet.
     assert pd.isna(by_week.loc[1])
-    # Weeks 2 and 3 see book B's much larger prior error and name it softest.
     assert by_week.loc[2] == "B"
     assert by_week.loc[3] == "B"
 
 
 def test_walk_forward_softest_book_respects_min_history_threshold() -> None:
-    # Only ONE prior observation exists by week 2; requiring 2 must refuse to
-    # name a softest book even though book B's single observation is huge.
     errors = pd.DataFrame(
         [
             _errors_row("G1", 2020, 1, "2020-09-10", "A", 0.5),
@@ -182,7 +159,7 @@ def test_walk_forward_softest_book_respects_min_history_threshold() -> None:
     result = mlf.walk_forward_softest_book(errors, min_history_games=2)
     by_week = result.set_index("week")["softest_book"]
 
-    assert pd.isna(by_week.loc[2])  # only 1 prior observation per book so far
+    assert pd.isna(by_week.loc[2])
 
 
 def test_walk_forward_softest_book_never_uses_the_same_or_a_later_week() -> None:
@@ -197,18 +174,12 @@ def test_walk_forward_softest_book_never_uses_the_same_or_a_later_week() -> None
     before = mlf.walk_forward_softest_book(pd.DataFrame(base), min_history_games=1)
     week1_before = before.set_index("week")["softest_book"].loc[1]
 
-    # A huge future (week 3) observation for book A must not reach back and
-    # change week 1's identification (there IS no history before week 1).
     augmented = pd.DataFrame([*base, _errors_row("G3", 2020, 3, "2020-09-24", "A", 99.0)])
     after = mlf.walk_forward_softest_book(augmented, min_history_games=1)
     week1_after = after.set_index("week")["softest_book"].loc[1]
 
     assert pd.isna(week1_before) and pd.isna(week1_after)
 
-
-# ---------------------------------------------------------------------------
-# Synthetic quote-frame fixtures shared by the two flag-construction tests
-# ---------------------------------------------------------------------------
 
 COMMENCE = {
     "G1": pd.Timestamp("2020-09-10T17:00:00", tz=UTC),
@@ -314,13 +285,6 @@ def _schedule(games: dict[str, float]) -> pd.DataFrame:
 
 
 def test_opener_softness_flag_construction_on_synthetic_quote_frames(monkeypatch) -> None:
-    # Week 1 (G1): books A and C agree with the eventual close (-3.0); book B
-    # misses it badly (its opener is +2.0), building up book B's history as
-    # the softest book. Week 2 (G2): the CONSENSUS opener favors home
-    # (median of -3.0(A), +2.0(B), -3.0(C) == -3.0), but the now-identified
-    # softest book (B) posts an AWAY-favoring opener (+2.0) for this game --
-    # a side disagreement, so the predeclared fade fires FOR the consensus's
-    # side (home, +1.0).
     frame = pd.DataFrame(
         [
             *_spread_rows("G1", "A", -3.0),
@@ -339,8 +303,8 @@ def test_opener_softness_flag_construction_on_synthetic_quote_frames(monkeypatch
     )
     by_game = result.set_index("game_id")[mlf.OPENER_SOFTNESS_FADE_COLUMN]
 
-    assert np.isnan(by_game.loc["G1"])  # no history yet: no softest book identified
-    assert by_game.loc["G2"] == 1.0  # fades book B, siding with the home consensus
+    assert np.isnan(by_game.loc["G1"])
+    assert by_game.loc["G2"] == 1.0
 
 
 def test_opener_softness_flag_is_zero_on_agreement_and_nan_without_a_quote(monkeypatch) -> None:
@@ -349,11 +313,9 @@ def test_opener_softness_flag_is_zero_on_agreement_and_nan_without_a_quote(monke
             *_spread_rows("G1", "A", -3.0),
             *_spread_rows("G1", "B", 2.0),
             *_spread_rows("G1", "C", -3.0),
-            # G2: the softest book (B) AGREES with the consensus favorite (both home).
             *_spread_rows("G2", "A", -1.0),
             *_spread_rows("G2", "B", -4.0),
             *_spread_rows("G2", "C", -1.0),
-            # G3: the softest book (B) never quotes this game at all.
             *_spread_rows("G3", "A", -1.0),
             *_spread_rows("G3", "C", -1.0),
         ]
@@ -366,20 +328,11 @@ def test_opener_softness_flag_is_zero_on_agreement_and_nan_without_a_quote(monke
     )
     by_game = result.set_index("game_id")[mlf.OPENER_SOFTNESS_FADE_COLUMN]
 
-    assert by_game.loc["G2"] == 0.0  # agreement: no fade
-    assert np.isnan(by_game.loc["G3"])  # softest book has no quote for this game
+    assert by_game.loc["G2"] == 0.0
+    assert np.isnan(by_game.loc["G3"])
 
 
 def test_ml_spread_divergence_flag_construction_on_synthetic_quote_frames(monkeypatch) -> None:
-    # Six training games (weeks 1-3, two per week) establish a clean walk
-    # -forward logistic: home_spread <= -5 -> home always wins; >= +5 -> away
-    # always wins, and every training game is priced -110/-110 (a 0.5
-    # no-vig moneyline probability -- the moneyline carries no lean at all).
-    # Week 4's game (S1) has home_spread == -5 (spread implies a heavy home
-    # favorite once the logistic has seen the training games) but a
-    # moneyline priced near even money: the moneyline implies home MUCH
-    # WEAKER than the spread does, so the predeclared rule sides WITH the
-    # moneyline and fades home (-1.0, away).
     frame_rows: list[dict] = []
     for game_id, week, spread in [
         ("T1", 1, -8.0),
@@ -398,7 +351,7 @@ def test_ml_spread_divergence_flag_construction_on_synthetic_quote_frames(monkey
     OBSERVED["S1"] = pd.Timestamp("2020-10-06T09:00:00", tz=UTC)
     GAME_WEEK["S1"] = 4
     frame_rows += _spread_rows("S1", "A", -5.0)
-    frame_rows += _moneyline_rows("S1", "A", -105, -115)  # near even money
+    frame_rows += _moneyline_rows("S1", "A", -105, -115)
 
     frame = pd.DataFrame(frame_rows)
     _install_fake_quotes(monkeypatch, frame)
@@ -430,18 +383,8 @@ def test_ml_spread_divergence_flag_construction_on_synthetic_quote_frames(monkey
     )
     by_game = result.set_index("game_id")[mlf.ML_SPREAD_DIVERGENCE_COLUMN]
 
-    assert np.isnan(by_game.loc["T1"])  # week 1: no strictly-prior training games exist yet
-    # Moneyline near even (~0.52 home) vs a spread-implied home win
-    # probability the logistic pushes well above that once it has seen 6
-    # perfectly separating training games -- a wide divergence with the
-    # moneyline implying home MUCH weaker than the spread does, so the
-    # predeclared rule sides WITH the moneyline and fades home.
+    assert np.isnan(by_game.loc["T1"])
     assert by_game.loc["S1"] == -1.0
-
-
-# ---------------------------------------------------------------------------
-# Leakage: a game's own outcome never changes its own flag
-# ---------------------------------------------------------------------------
 
 
 def test_ml_divergence_leakage_a_games_own_result_never_changes_its_own_flag() -> None:
@@ -474,14 +417,11 @@ def test_ml_divergence_leakage_a_games_own_result_never_changes_its_own_flag() -
     baseline = mlf._walk_forward_spread_implied_home_win_probability(frame, min_train_games=2)
 
     flipped = frame.copy()
-    # Flip week 2's own results (B1/B2) -- week 2's model was trained only on
-    # week 1, so week 2's OWN predictions must be unaffected.
     flipped.loc[flipped["game_id"].isin(["B1", "B2"]), "result"] *= -1.0
     after = mlf._walk_forward_spread_implied_home_win_probability(flipped, min_train_games=2)
 
     week2_positions = frame.index[frame["week"].eq(2)].to_numpy()
     np.testing.assert_array_equal(baseline[week2_positions], after[week2_positions])
 
-    # Week 1 (no training data exists before it either way) is also unaffected.
     week1_positions = frame.index[frame["week"].eq(1)].to_numpy()
     np.testing.assert_array_equal(baseline[week1_positions], after[week1_positions])

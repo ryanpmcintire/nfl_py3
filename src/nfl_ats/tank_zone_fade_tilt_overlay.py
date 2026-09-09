@@ -148,22 +148,13 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file, stamp_sidecar
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "tank_zone_fade_tilt_overlay"
 
-#: The registered cell's own week window (scripts/motivation_ladder_screen.py:532-550,
-#: ``population["week"].between(14, 18)`` inside the M4 flag). Not a tuned choice.
 OVERLAY_WEEK_MIN = 14
 OVERLAY_WEEK_MAX = 18
 
-#: "bottom two league-wide records" -- scripts/motivation_ladder_screen.py:164-165's
-#: ``tank_zone = set(league_ordered[:2])``. Not a tuned choice.
 TANK_ZONE_SIZE = 2
 
-#: The merged-in flags travel under module-private names so a predictions frame
-#: that already carries same-named columns collides with neither (the same
-#: defensive naming ``surface_switch_tilt_overlay.OVERLAY_FLAG_COLUMN`` adopted
-#: after a 2026-08-24 KeyError rehearsal).
 HOME_FLAG_COLUMN = "_tank_zone_tilt_home"
 AWAY_FLAG_COLUMN = "_tank_zone_tilt_away"
 
@@ -563,8 +554,6 @@ def record_tank_zone_fade_tilt_challenger_decisions(
         )
         ledger_path = challenger_ledger_path(artifacts_root)
         atomic_parquet(combined[list(CHALLENGER_DECISION_COLUMNS)], ledger_path)
-        # ENG-38: stamp which commit appended these rows -- a JSON sidecar,
-        # not a rewrite of the parquet ledger itself.
         stamp_sidecar(
             ledger_path, extra={"challenger_id": CHALLENGER_ID, "rows_appended": len(decisions)}
         )

@@ -115,20 +115,8 @@ EVALUATION_SEASONS = (2023, 2024, 2025)
 SAMPLES = 20_000
 SEED = 20260825
 
-#: The FORMER production chain, kept as a reference arm only.
-#:
-#: CORRECTED 2026-08-25: an earlier version of this file called this "what is
-#: submitted today". It is not. Production resolves
-#: ``nfl_ats.clv._FOUR_OVERLAY_POLICY_ID`` --
-#: ``overlay_union_coach_division_revenge_player_arrests_spread_gap_v1`` --
-#: whenever ``require_fresh_arrest_overlay=True``, which
-#: ``cli._cmd_publish_predictions`` always passes. Verified by running
-#: ``record_paper_decisions`` itself against the real active model, not by
-#: reading a study's label for its baseline. See
-#: ``docs/overlay_subset_holdout_v2.md``.
 FORMER_CHAIN = (ARREST_MEMBER, "coach_fade_overlay")
 
-#: What is actually submitted: the four-member OR union.
 PLAYED_UNION = tuple(
     sorted(
         (
@@ -156,16 +144,6 @@ def extra_flip_sets(predictions: pd.DataFrame, schedules: pd.DataFrame) -> dict[
         schedules.loc[schedules["game_type"].astype(str).eq("REG")], DEFAULT_PBP
     )
 
-    # The precip overlay reads ``total_line``, which production's own card
-    # carries (it arrives from the schedules snapshot through the feature
-    # table). The opener archive does not, so it is merged from the same
-    # source production uses rather than invented.
-    #
-    # DISCLOSED: the schedules snapshot's ``total_line`` is the CLOSING total,
-    # not a Tuesday-opener total. The spread leg of this study is opener-graded
-    # and the total leg is not. That mismatch is inherited from the registered
-    # signal itself, which reads the same field -- it is not introduced here,
-    # but any subset containing this member carries it.
     augmented = predictions.merge(
         schedules[["game_id", "total_line"]].drop_duplicates("game_id"),
         on="game_id",
@@ -255,9 +233,6 @@ def evaluate(
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -378,8 +353,6 @@ def main(argv: list[str] | None = None) -> int:
         EVALUATION_SEASONS, SELECTION_SEASONS, "reverse"
     )
 
-    # In-sample maximum over the whole archive: an upper bound, reported so the
-    # gap to the holdout number is visible rather than hidden.
     all_correct = frame["correct"].to_numpy(dtype=float)
     full_deltas = np.array(
         [union_delta(all_correct, frame["game_id"], member_flip_sets, s).mean() for s in subsets]
@@ -402,12 +375,6 @@ def main(argv: list[str] | None = None) -> int:
         with_intervals=True,
     )
 
-    # The decision-relevant question, and a far smaller selection space than
-    # 4,095: does adding ONE more member to the PLAYED union help? Ranked on
-    # the selection half only, then the frozen choice is scored on the holdout.
-    # Every candidate's holdout marginal is reported for completeness and is
-    # explicitly NOT used to choose -- picking the best holdout number would be
-    # selecting on the holdout, the exact error this design prevents.
     def marginal(sub: pd.DataFrame, name: str) -> np.ndarray:
         correct = sub["correct"].to_numpy(dtype=float)
         base = union_delta(correct, sub["game_id"], member_flip_sets, PLAYED_UNION)

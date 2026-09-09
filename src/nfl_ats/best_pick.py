@@ -47,11 +47,6 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-# The signal was measured on the full sweep grid that
-# ``margin-predict`` writes (+/-4 points in 0.5 steps). The public and internal
-# pick pages narrow the sweep for PLOTTING; the ranking must not see that
-# narrowed frame, or it silently censors a signal that is already censored at
-# the grid edge (see docs/best_pick_ranker.md, "Known limitation of signal 3").
 SWEEP_PROBABILITY_FLOOR = 0.50
 
 
@@ -131,10 +126,6 @@ def best_pick_scores(predictions: pd.DataFrame, sweep: pd.DataFrame) -> pd.Serie
         return pd.Series(dtype=float, name="sweep_robustness")
     work = sweep.copy()
     work["game_id"] = work["game_id"].astype(str)
-    # An unfiltered multi-method artifact is malformed for this purpose. Both
-    # production callers filter, but a page with no Best Pick badge is a visible
-    # failure while a wrong badge is an invisible one, so degrade rather than
-    # rank a mixture of three models' curves.
     if work.duplicated(subset=["game_id", "line_offset"]).any():
         return pd.Series(dtype=float, name="sweep_robustness")
     return sweep_robustness(work, _pick_sides(predictions))

@@ -97,9 +97,6 @@ DEFAULT_CFB_FEATURES = REPO / "data/processed/cfb_game_features.parquet"
 FOCAL_ARMS: dict[str, float] = {"recency_hl200": 200.0, "recency_hl400": 400.0}
 SIGN_ONLY_ARM = "sign_only"
 
-# The exact recorded configuration behind registry/weak_signals.json's two
-# refuted_mechanism entries; source: docs/residual_location.md sec 4 and
-# artifacts/residual_location/20260818T115234Z/cfb_paired_comparisons.csv.
 RECORDED = {
     "recency_hl200": {
         "estimate": -0.005485,
@@ -115,9 +112,6 @@ RECORDED = {
     },
 }
 
-# D2's measured naive-interval-width-inflation range (docs/estimation_variance.md
-# sec 2-3), applied only as a crude sensitivity comparator -- sec 7 of that same
-# document states it does not model this family's actual variance source.
 D2_WIDTH_INFLATION_LOW = 1.037
 D2_WIDTH_INFLATION_HIGH = 1.575
 
@@ -193,19 +187,11 @@ def power_arithmetic(predictions: pd.DataFrame) -> dict[str, Any]:
         f = picks_differ_fraction(baseline, pivot[arm].to_numpy(dtype=float))
         out[arm] = {"f": f, "mde80_pts": mde80(f, n)}
 
-    # Sign-only power: f is 0 by construction (d1_degeneracy_check confirms this
-    # directly); mde80 is undefined at f=0 and reported as such, not as 0.0.
     sign_pick = (pivot[rls.BASELINE_ARM].to_numpy(dtype=float) >= 0.5).astype(float)
     out["sign_only_f_vs_ecdf"] = 0.0
     out["sign_only_mde80_pts"] = None
     del sign_pick
     return out
-
-
-# ---------------------------------------------------------------------------
-# Honest, mechanism-targeted interval: resample the residual calibration
-# sample itself (order-preserving), hold the mean model's centres fixed.
-# ---------------------------------------------------------------------------
 
 
 class WeeklyCache:
@@ -219,12 +205,6 @@ class WeeklyCache:
         centers = predicted["predicted_margin"].to_numpy(dtype=float)
         spread = weekly_games["spread_line"].to_numpy(dtype=float)
         actual = pd.to_numeric(weekly_games["home_cover"], errors="raise").to_numpy(dtype=float)
-        # experiments.paired_feature_comparisons drops NaN-home_cover (push) rows
-        # before computing anything (src/nfl_ats/experiments.py: paired.loc[...
-        # .notna() & ...notna()]) -- clean_core carries exactly 160 such games
-        # (9,093 raw vs. the recorded 8,933 paired_games). Match that filter here
-        # so this honest interval is built on the identical game set the naive
-        # recorded interval was, not a slightly different (and NaN-diluted) one.
         keep = ~np.isnan(actual)
         self.records.append(
             {
@@ -234,10 +214,6 @@ class WeeklyCache:
                 "centers": centers[keep],
                 "spread": spread[keep],
                 "actual": actual[keep],
-                # The out-of-time residual/calibration sample is untouched by
-                # this filter: it is a separate trailing-20% draw, never the
-                # test games being scored, so push games in the TEST week have
-                # no bearing on it.
                 "residuals": np.asarray(model.residuals, dtype=np.float64).copy(),
             }
         )
@@ -281,15 +257,11 @@ def _week_bootstrap_probabilities(
         idx.sort(kind="stable")
         resampled = residuals[idx]
 
-        # Unweighted ecdf reader: order-invariant, so a plain value sort suffices.
         sorted_vals = np.sort(resampled)
         pos = np.searchsorted(sorted_vals, thresholds, side="right")
         successes = (n - pos).astype(np.float64)
         out["ecdf"][draw] = (successes + 0.5) / (float(n) + 1.0)
 
-        # Recency-weighted readers: weight[i] is tied to POSITION i in the
-        # resampled (still-chronological) array, so sort (value, weight) pairs
-        # together and read a suffix sum of weight for "> threshold".
         order = np.argsort(resampled, kind="stable")
         sorted_by_value = resampled[order]
         pos_weighted = np.searchsorted(sorted_by_value, thresholds, side="right")
@@ -546,7 +518,7 @@ def main() -> None:
     results["recorded_for_reference"] = RECORDED
     results["timing_seconds"] = time.time() - started
     out_path = OUT_DIR / "residual_location_reaudit.json"
-    write_stamped_artifact(results, out_path)  # ENG-38
+    write_stamped_artifact(results, out_path)
     print(f"\nWrote {out_path} in {results['timing_seconds']:.1f}s", flush=True)
 
 

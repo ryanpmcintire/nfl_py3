@@ -43,10 +43,6 @@ from nfl_ats.board_site_content import (
     SignalLedgerSummary,
 )
 
-# ---------------------------------------------------------------------------
-# (a) "Why this pick"
-# ---------------------------------------------------------------------------
-
 
 @pytest.mark.parametrize("state", ["complete", "degraded", "blocked"])
 def test_injury_state_is_visible_between_board_and_tiebreaker(state: str) -> None:
@@ -175,7 +171,7 @@ def test_why_this_pick_percentages_stay_hidden_unless_the_games_panel_is_selecte
 
     content = build_fixture_content()
     first, *rest = content.games
-    assert first.game_id != content.best_pick_game_id  # not the pre-selected game
+    assert first.game_id != content.best_pick_game_id
     explained = replace(
         first, explanation_text="The model's own probability for this pick is 61.2%."
     )
@@ -202,11 +198,6 @@ def test_row_link_class_is_in_the_stylesheet_allowlist() -> None:
     assert ".row-link" in css
     assert ".is-selected" in css
     assert ".week-grid" in css
-
-
-# ---------------------------------------------------------------------------
-# (c) SOURCES panel -- computed-at-build-time fallback
-# ---------------------------------------------------------------------------
 
 
 def test_sources_panel_shows_live_note_when_computed_live() -> None:
@@ -252,14 +243,9 @@ def test_sources_panel_omits_live_note_when_really_recorded() -> None:
 
 
 def test_sources_panel_not_recorded_placeholder_omits_live_note() -> None:
-    html = board_terminal.render(build_fixture_content())  # default source_policy: not_recorded
+    html = board_terminal.render(build_fixture_content())
     assert "No source-freshness block is recorded for this forecast" in html
     assert SOURCE_POLICY_COMPUTED_LIVE_NOTE not in html
-
-
-# ---------------------------------------------------------------------------
-# (b) "Research this week"
-# ---------------------------------------------------------------------------
 
 
 def _findings_fixture(recent_activity: RecentActivityView) -> FindingsPageContent:
@@ -325,7 +311,6 @@ def test_recent_activity_section_renders_grouped_entries() -> None:
     assert "Leans FOR the pattern described" in html
     assert "Resolved the other way" in html
     assert "failed" not in html.lower()
-    # The whole group is one collapsible unit (de-firehose discipline).
     assert '<details class="table-view">' in html
 
 

@@ -56,16 +56,12 @@ MATCHUP_RE = re.compile(
 )
 PLAYER_LINE_RE = re.compile(r"^(?P<number>\d{1,2})\s+(?P<name>\S.*?)\s*$")
 ANNOTATION_RE = re.compile(r"\s*\((?P<annotation>[^()]+)\)\s*$")
-# Measured across all six snapshot PDFs: pypdf inserts a spurious space after a
-# capital T (53 occurrences) or Y (3 occurrences); no other letter is affected.
 SPLIT_ARTIFACT_LETTERS = "TY"
 SPLIT_ARTIFACT_RE = re.compile(rf"\b([{SPLIT_ARTIFACT_LETTERS}]) (?=[a-z.])")
 
 SEASON_ANNOTATION = "season"
 
 TEAM_CODES: dict[str, tuple[str, str]] = {
-    # raw all-caps PDF name -> (stable code, canonical CFB display name as used by
-    # data/processed/cfb_game_features.parquet)
     "ILLINOIS": ("ILL", "Illinois"),
     "INDIANA": ("IND", "Indiana"),
     "IOWA": ("IOWA", "Iowa"),
@@ -187,8 +183,6 @@ def parse_page_text(text: str, page_index: int, *, context: str) -> ParsedPage:
         separator = lines[2][len(team_raw) :].lstrip()
         venue_side = "away" if separator.startswith("at") else "home"
     else:
-        # Bye generation: the school's name stands alone, followed by a BYE line
-        # and both designation headers collapsed onto one empty line.
         team_raw = lines[2]
         if len(lines) < 4 or lines[3] != "BYE":
             raise PageParseError(
@@ -224,7 +218,6 @@ def parse_page_text(text: str, page_index: int, *, context: str) -> ParsedPage:
             seen_sections.add(line)
             continue
         if current_designation is None:
-            # Kickoff/broadcast lines precede the first designation header.
             if "|" in line or re.match(r"^\d{1,2}:\d{2}", line):
                 continue
             raise PageParseError(f"{context}: line before any designation header: {line!r}")
@@ -284,7 +277,7 @@ def parse_snapshot_pdf(
         for entry in page.entries:
             rows.append(
                 {
-                    "season": None,  # filled by caller (the snapshot's season)
+                    "season": None,
                     "week": page.week,
                     "team_code": page.team_code,
                     "cfb_display_name": page.cfb_display_name,
@@ -451,7 +444,6 @@ def main() -> int:
             for report in file_reports
         ],
     }
-    # Named so artifact_provenance() picks it up as the feature table's manifest.
     (artifact_dir / "tidy_rows.manifest.json").write_text(
         json.dumps(input_manifest, indent=2), encoding="utf-8"
     )

@@ -97,54 +97,25 @@ from nfl_ats.io import atomic_parquet
 from nfl_ats.officials_archive import load_officials_for_prospective_channel
 from nfl_ats.pick_refresh import RefreshResult, original_card
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "crew_tilt_refresh_v1"
 
-#: Registry family for the stacked back-test verdict (predeclared in
-#: docs/referee_assignments_capture.md, WP47 section 5).
 STACKED_SIGNAL_NAME = "crew_tilt_stacked_on_production"
 
-# ---------------------------------------------------------------------------
-# The two cells' own measured per-game gaps. NOT chosen here.
-#
-# ``raw_gap_pct`` is stored already multiplied by the construct's sign
-# (src/nfl_ats/experiment_runner.py:3629-3630 --
-# ``raw_gap_pct = construct.sign * (subset_cover - complement_cover) * 100``),
-# so the SIGNED home-cover gap in percentage points is ``sign * raw_gap_pct``
-# and the probability tilt is that divided by 100. Both values are read from
-# the experiments' own artifacts and pinned by
-# ``tests/test_crew_tilt_refresh_overlay.py`` against BOTH that artifact and
-# ``registry/weak_signals.json``'s ``classification_evidence`` text.
-# ---------------------------------------------------------------------------
 
-#: registry/weak_signals.json:penalty_crew_holding_tilt_run_heavy
 HOLDING_RUN_HEAVY_SIGNAL = "penalty_crew_holding_tilt_run_heavy"
-#: artifacts/experiment_runner/20260820T113432Z/metadata.json result.raw_gap_pct
 HOLDING_RUN_HEAVY_ARTIFACT = "artifacts/experiment_runner/20260820T113432Z/metadata.json"
 HOLDING_RUN_HEAVY_RAW_GAP_POINTS = 5.994893289010933
-#: classification_evidence: "sign=-1 (positive flag=True favours the hypothesis)"
 HOLDING_RUN_HEAVY_SIGN = -1
-#: Signed tilt applied to P(home cover) when cell C's flag fires.
 HOLDING_RUN_HEAVY_TILT = HOLDING_RUN_HEAVY_SIGN * HOLDING_RUN_HEAVY_RAW_GAP_POINTS / 100.0
 
-#: registry/weak_signals.json:penalty_crew_high_flag_heavy_underdog_opener
 HIGH_FLAG_UNDERDOG_SIGNAL = "penalty_crew_high_flag_heavy_underdog_opener"
-#: artifacts/experiment_runner/20260820T113443Z/metadata.json result.raw_gap_pct
 HIGH_FLAG_UNDERDOG_ARTIFACT = "artifacts/experiment_runner/20260820T113443Z/metadata.json"
 HIGH_FLAG_UNDERDOG_RAW_GAP_POINTS = 16.772226131832042
-#: classification_evidence: "sign=+1 (positive flag=True favours the hypothesis)"
 HIGH_FLAG_UNDERDOG_SIGN = 1
-#: Signed tilt applied to P(home cover) when cell A's flag fires.
 HIGH_FLAG_UNDERDOG_TILT = HIGH_FLAG_UNDERDOG_SIGN * HIGH_FLAG_UNDERDOG_RAW_GAP_POINTS / 100.0
 
-#: The heavy-underdog cut is the screen's own default, imported rather than
-#: retyped (src/nfl_ats/experiment_runner.py:1614). Home is a heavy underdog
-#: when the frozen decision line is <= -7.0 in the nflverse convention
-#: (positive = home favored), i.e. home is getting >= 7 points.
 HEAVY_UNDERDOG_THRESHOLD = _HEAVY_UNDERDOG_THRESHOLD_DEFAULT
 
-#: Quartile buckets, matching the builders' own ``pd.qcut(..., 4,
-#: labels=[1, 2, 3, 4])``.
 TOP_QUARTILE = 4
 BOTTOM_QUARTILE = 1
 
@@ -203,12 +174,6 @@ def load_crew_tilt_refresh_decisions(artifacts_root: Path) -> pd.DataFrame:
             f"Crew-tilt refresh ledger is missing columns: {', '.join(missing)}"
         )
     return ledger[list(CREW_TILT_REFRESH_COLUMNS)]
-
-
-# ---------------------------------------------------------------------------
-# The forward hop: a referee's PRIOR completed season, bucketed against the
-# screen builders' own frozen quartile cutpoints.
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -320,11 +285,6 @@ def _referee_name_season(repo_root: Path, *, penalty_type: str | None) -> pd.Dat
     """
 
     officials_path, game_penalties_path, _snapshot = _latest_officials_snapshot(repo_root)
-    # LEAD-59 timing contract: this is the PROSPECTIVE channel, so it loads
-    # through the loader that refuses Wayback-archive rows outright -- every
-    # archive capture is after kickoff and can never satisfy this path's
-    # ``captured_at_utc < min(kickoff, Sunday 16:00 ET)`` test. See
-    # ``docs/officials_archive.md``.
     officials = load_officials_for_prospective_channel(
         repo_root, officials_path=officials_path, channel=CHALLENGER_ID
     )
@@ -372,11 +332,6 @@ def build_crew_trait_lookup(repo_root: Path) -> CrewTraitLookup:
         officials_snapshot_id=officials_snapshot_id,
         penalty_type_snapshot_id=penalty_type_snapshot_id,
     )
-
-
-# ---------------------------------------------------------------------------
-# The two cells' flags and the additive tilt
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -486,11 +441,6 @@ def _opposite(side: str) -> str:
     return "AWAY" if side == "HOME" else "HOME"
 
 
-# ---------------------------------------------------------------------------
-# The in-window crew snapshot
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class CrewSnapshot:
     """One captured crew-assignment snapshot, already filtered to a week."""
@@ -578,11 +528,6 @@ def home_pass_rate_quartiles(repo_root: Path, game_ids: list[str]) -> dict[str, 
         str(row.game_id): int(cast(Any, row.home_pass_rate_quartile))
         for row in merged.itertuples(index=False)
     }
-
-
-# ---------------------------------------------------------------------------
-# The refresh-time rows
-# ---------------------------------------------------------------------------
 
 
 def build_crew_tilt_refresh_rows(
@@ -772,11 +717,6 @@ def record_crew_tilt_refresh_overlay(
     }
 
 
-# ---------------------------------------------------------------------------
-# Card-level application (the historical / back-test path)
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class CrewTiltOverlayResult:
     """The overlay applied to a card-shaped predictions frame."""
@@ -857,11 +797,6 @@ def apply_crew_tilt_refresh_overlay(
         both_flag_game_ids=tuple(frame.loc[holding_flag & underdog_flag, "game_id"].astype(str)),
         n_with_referee=int(frame["official_name"].notna().sum()),
     )
-
-
-# ---------------------------------------------------------------------------
-# Week preview (never a ledger write)
-# ---------------------------------------------------------------------------
 
 
 PREVIEW_COLUMNS: tuple[str, ...] = (
@@ -1015,11 +950,6 @@ def preview_week(
     return frame, summary
 
 
-# ---------------------------------------------------------------------------
-# Stacked-on-production back-test (context, never a gate)
-# ---------------------------------------------------------------------------
-
-
 def _load_script_module(repo_root: Path, name: str) -> Any:
     """Load a ``scripts/*.py`` helper by path.
 
@@ -1127,9 +1057,6 @@ def run_stacked_backtest(
         raise DataContractError(f"production chain members not reconstructed: {missing}")
     production_ids: set[str] = set().union(*members.values())
 
-    # The production probability IS the raw probability complemented on every
-    # game the four-overlay union flips -- the same transform every member
-    # overlay applies (see division_revenge_tilt_overlay's own flip path).
     production_predictions = predictions.copy()
     production_predictions["game_id"] = production_predictions["game_id"].astype(str)
     flipped_mask = production_predictions["game_id"].isin(production_ids)
@@ -1244,8 +1171,6 @@ DEFAULT_ARREST_INCIDENTS = Path(
 DEFAULT_ARREST_FEATURES = Path("data/processed/game_features_pbp.parquet")
 DEFAULT_OUTPUT_ROOT = Path("artifacts/crew_tilt_refresh")
 DEFAULT_SAMPLES = 20_000
-#: Fixed, recorded seed -- this session's UTC date, chosen before any result
-#: was seen, matching every sibling back-test script's convention.
 DEFAULT_SEED = 20260901
 
 

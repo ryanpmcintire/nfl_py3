@@ -55,36 +55,17 @@ from nfl_ats.modeling import regular_season_rows
 
 FloatArray = npt.NDArray[np.float64]
 
-#: Flip to ``False`` to serve the smooth (rounded pooled-residual) push and
-#: three-way split again. The pick is unaffected either way; the sidecar
-#: carries both reads whenever the discrete read is served.
 DISCRETE_PUSH_READ_SERVED = True
-#: Named served policy: lane K's primary form MP1 (band 2.5, 200-game floor).
 DISCRETE_PUSH_READ_POLICY = "mass_preserving_lattice_mp1_v1"
-#: Sidecar written next to ``predictions.csv`` with both reads per game.
 DISCRETE_PUSH_READ_FILENAME = "discrete_push_read.json"
 
-#: Declared band half-width: the frozen lane-K bandwidth, reused, not tuned.
 BAND_HALF_WIDTH = float(BANDWIDTH)
-#: Declared floor (docs/mass_preserving_lattice.md): 200 prior games put ~20
-#: on the ~10% push atom of an integer key line, a ~22% relative standard
-#: error. The band widens in 0.5-point steps until the floor is met or the
-#: band reaches 20 points.
 MIN_BAND_GAMES = 200
 MAX_BAND = 20.0
 BAND_STEP = 0.5
-#: Tilt bracket, far wider than attainable need: one point of mean shift
-#: costs theta about 0.005 (lane K measured mean |theta| 0.012, max 0.064).
-#: A target mean outside the reachable range clamps to the nearer end.
 THETA_BRACKET = 1.0
-#: The key numbers whose absolute mass this read exists to keep.
 KEY_NUMBERS: tuple[int, ...] = (3, 7, 10, 14)
 _ATOM_TOLERANCE = 1e-9
-
-
-# ---------------------------------------------------------------------------
-# The tilt and the read
-# ---------------------------------------------------------------------------
 
 
 def tilted_atoms(
@@ -256,10 +237,6 @@ def residual_location(residuals: FloatArray, probability_method: str) -> float:
     return float(np.mean(values)) if probability_method == "gaussian" else float(np.median(values))
 
 
-# ---------------------------------------------------------------------------
-# The prior pool and its walk-forward window
-# ---------------------------------------------------------------------------
-
 _POOL_COLUMNS = ("game_id", "season", "week", "gameday", "spread_line", "result")
 
 
@@ -377,8 +354,6 @@ class DiscretePushReader:
         return self.read(line, point, conditioning_line=conditioning_line).three_way()
 
 
-#: The coordinator-facing name for one game's read (cover, push, loss, atoms,
-#: theta, band, band_games, key_mass_3).
 DiscreteRead = MassPreservingRead
 
 
@@ -500,10 +475,6 @@ def walk_forward_reads(
             )
     return pd.DataFrame(rows)
 
-
-# ---------------------------------------------------------------------------
-# Serving: replace the smooth three-way split, keep the pick
-# ---------------------------------------------------------------------------
 
 THREE_WAY_COLUMNS = (
     "home_cover_probability_excluding_push",
@@ -634,11 +605,6 @@ def serve_discrete_sweep(
     return result
 
 
-# ---------------------------------------------------------------------------
-# Production: the reader for one forecast week, read-only over artifacts
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class ProductionDiscretePushRead:
     """The reader fitted for one target week plus everything the sidecar records."""
@@ -650,8 +616,6 @@ class ProductionDiscretePushRead:
     active_model_id: str | None
     opener_lines_matched: int
     warnings: tuple[str, ...]
-    #: Set by the CLI when fitting failed outright; the smooth read is then
-    #: served and the sidecar says why. Never blocks the lock.
     error: str | None = None
 
     @property

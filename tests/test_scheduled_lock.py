@@ -199,10 +199,6 @@ def test_lock_scripts_weekly_run_argv_parses_against_the_real_parser() -> None:
     assert (args.season, args.week, args.record_decisions) == (2026, 1, True)
 
 
-#: Verbatim shape of the 2026-09-08 lock's stderr: a step-4
-#: BootstrapDegeneracyWarning (header plus its indented source echo), progress
-#: banners, the decision-package line, and the real reason last. The old
-#: `stderr[-500:]` kept the warning and threw the reason away.
 _NOISY_STDERR = """weekly-run step 4 margin-backtest ...
 F:\\Repos\\nfl_py3\\src\\nfl_ats\\cli_commands\\evaluation.py:442: \
 BootstrapDegeneracyWarning: outcome_bootstrap_intervals(block=season): 8 bootstrap blocks \
@@ -275,7 +271,7 @@ def test_failed_lock_reports_the_log_path_inside_the_scheduler_200_char_cut(
     monkeypatch.setattr(lock_script, "latest_snapshot", lambda _: tmp_path)
     monkeypatch.setattr(lock_script, "load_verified_snapshot", boom)
 
-    assert lock_script.main() == 1
+    assert lock_script.main([]) == 1
 
     line = capsys.readouterr().out.strip()
     payload = json.loads(line)
@@ -301,7 +297,6 @@ def test_override_locks_a_named_week_on_any_day() -> None:
     assert target.game_ids == frozenset({"2026_01_DAL_PHI", "2026_01_BUF_NYJ"})
     with pytest.raises(DataContractError, match="needs both"):
         resolve_lock_target(schedule(), now=wednesday, season=2026)
-    # Only a week whose every game day has begun is refused.
     after_week = datetime.fromisoformat("2026-09-14T09:00:00-04:00")
     with pytest.raises(DataContractError, match="already begun"):
         resolve_lock_target(schedule(), now=after_week, season=2026, week=1)

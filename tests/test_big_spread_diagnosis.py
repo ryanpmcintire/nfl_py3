@@ -86,29 +86,22 @@ def test_build_frame_derives_the_cut_columns_with_the_nflverse_sign_convention()
     assert frame.loc["a", "bucket"] == "10.5+" and frame.loc["g", "bucket"] == "0-3"
     assert frame.loc["a", "home_side"] == "home favourite"
     assert frame.loc["d", "home_side"] == "home underdog"
-    # Road pick on a home favourite = picked the underdog; road pick on a
-    # home underdog = picked the favourite.
     assert frame.loc["a", "pick_side"] == "picked underdog"
     assert frame.loc["d", "pick_side"] == "picked favourite"
     assert frame.loc["d", "pick_location"] == "picked the road team"
-    # Served point = line + served residual; error = result - point.
     assert frame.loc["a", "point_served"] == pytest.approx(11.0)
     assert frame.loc["a", "error_served"] == pytest.approx(-1.0)
     assert frame.loc["a", "error_raw"] == pytest.approx(-0.5)
-    # Favourite frame flips the sign for home underdogs; pick frame for road picks.
     assert frame.loc["d", "error_served"] == pytest.approx(-8.5)
     assert frame.loc["d", "error_served_favourite"] == pytest.approx(8.5)
     assert frame.loc["d", "error_served_pick"] == pytest.approx(8.5)
-    # Move toward the model: game a picked road, line rose (toward home) -> against.
     assert frame.loc["a", "move_band"] == "market moved against the model"
     assert frame.loc["b", "move_band"] == "market moved with the model"
     assert frame.loc["c", "move_band"] == "no move"
-    # Favourite's rest and QB come from whichever side is favoured.
     assert frame.loc["c", "favourite_rest_band"] == "long (8 or more)"
     assert frame.loc["d", "favourite_qb_band"] == "starter expected (95%+)"
     assert frame.loc["d", "underdog_qb_band"] == "starter in doubt (under 95%)"
     assert frame.loc["b", "favourite_rest_edge"] == "favourite rested more"
-    # Travel counts zones only when the favourite is on the road (d: SF at NYJ).
     assert frame.loc["d", "favourite_travel"] == "two or more zones"
     assert frame.loc["a", "favourite_travel"] == "none"
     assert frame.loc["b", "primetime"] == "primetime" and frame.loc["b", "roof_band"] == "indoors"
@@ -126,7 +119,6 @@ def test_cell_row_excludes_pushes_from_accuracy_but_not_from_the_point_error() -
     row = cell_row(big, draws=200)
     assert row["games"] == 6 and row["decided"] == 5
     assert row["accuracy"] == pytest.approx(4 / 5)
-    # Errors: a -1, b +9, c +0.5, d -8.5, e +6, f -1 (push included) -> mean 5/6.
     assert row["error_served"] == pytest.approx(5.0 / 6.0)
     assert row["favourite_pick_rate"] == pytest.approx(2 / 5)
     assert row["home_cover_rate"] == pytest.approx(3 / 5)
@@ -166,4 +158,4 @@ def test_residual_information_table_uses_decided_games_only() -> None:
     assert info.loc["10.5+", "decided"] == 5
     assert info.loc["10.5+", "always_home_cover_rate"] == pytest.approx(3 / 5)
     assert info.loc["10.5+", "model_minus_always_home"] == pytest.approx(0.8 - 0.6)
-    assert np.isnan(info.loc["0-3", "slope_served"])  # a single game has no slope
+    assert np.isnan(info.loc["0-3", "slope_served"])

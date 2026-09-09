@@ -63,12 +63,6 @@ DEFAULT_EXPERIMENT_SPECS_DIR = REPO / "registry" / "experiment_specs"
 
 PHASE_12 = "Phase 12 — open lead queue"
 
-#: The fixed vocabulary AGENTS.md requires: "'Next admissible action' must
-#: never be 'wait for more data' -- it is one of" these six. Each row's
-#: `next_admissible_action` is always exactly one of these literal strings;
-#: the specifics ("which window", "which family") live in the paired
-#: `next_admissible_action_detail` string so the controlled vocabulary itself
-#: never grows free text.
 ACTION_RUN_UNSPENT_WINDOW = "run_unspent_window"
 ACTION_RUN_REUSED_WINDOW_WITH_DISCOUNT = "run_reused_window_with_discount"
 ACTION_TEST_ON_TOP_OF_PRODUCTION = "test_on_top_of_production"
@@ -85,21 +79,12 @@ NEXT_ACTIONS = (
     ACTION_CLOSED,
 )
 
-#: Phrases this ledger must never emit (AGENTS.md, binding). Enforced by
-#: `tests/test_research_queue.py::test_generated_output_never_contains_banned_phrases`
-#: over the persisted JSON and Markdown, not just this module's own strings.
 BANNED_PHRASES = ("more data", "needs n", "contains zero", "failed")
 
 _BACKTICK_TOKEN_RE = re.compile(r"`([a-zA-Z][a-zA-Z0-9_]*)`")
 _FULL_ROW_RE = re.compile(
     r"^\| (?P<item_id>[A-Z]+-\d+) \| (?P<status>✅|🚧|⬜|🔬|🌙|❌) \| [^|]+ \| (?P<dod>.*) \|$"
 )
-
-# --------------------------------------------------------------------------
-# Roadmap row text (reuses scripts/roadmap_inventory.py's item/status/phase
-# parser for the fields it already extracts; adds only the "definition of
-# done" column text that parser intentionally does not capture).
-# --------------------------------------------------------------------------
 
 
 def dod_text_by_item(roadmap_text: str) -> dict[str, str]:
@@ -134,18 +119,10 @@ def backtick_tokens(*texts: str) -> tuple[str, ...]:
     return tuple(seen)
 
 
-# --------------------------------------------------------------------------
-# Capture-source mapping (scripts/capture_scheduler.py SCHEDULE).
-# --------------------------------------------------------------------------
-
 _DAY_TOKENS = frozenset({"mon", "tue", "wed", "thu", "fri", "sat", "sun"})
 _SLOT_TOKENS = frozenset(
     {"open", "close", "late", "early", "checkpoint", "primetime", "afternoon", "tnf", "mnf"}
 )
-# weekly_lock replays the paper-forecast pipeline on top of already-captured
-# data, and every refresh_* job re-scores picks with `refresh-picks`; neither
-# captures a raw external source, so both are excluded from the source-family
-# vocabulary a roadmap row's "required source" can resolve to.
 _NON_SOURCE_JOB_NAMES = frozenset({"weekly_lock"})
 _NON_SOURCE_JOB_PREFIXES = ("refresh_",)
 
@@ -176,12 +153,6 @@ def capture_job_families(jobs: Iterable[Job]) -> dict[str, bool]:
     return families
 
 
-# Ordered, most-specific-first: a row mentioning both "spread" and "arrest"
-# language is vanishingly unlikely, but "designation"/"practice status" (an
-# injuries-report term) must not fall through to the generic "odds" bucket
-# just because a row also mentions the market. Best-effort keyword classifier
-# -- unmapped text resolves to `None` ("unknown"), never a guess dressed up as
-# a fact.
 SOURCE_KEYWORDS: tuple[tuple[str, tuple[str, ...]], ...] = (
     ("player_arrests", ("arrest",)),
     (
@@ -296,10 +267,6 @@ def guess_grade(text: str) -> str:
     return "close"
 
 
-# --------------------------------------------------------------------------
-# Circular-run guard (rotation.py rule 4 / AGENTS.md).
-# --------------------------------------------------------------------------
-
 _DISCLOSURE_MARKERS = ("disclosed", "discount", "acknowledg")
 
 
@@ -376,11 +343,6 @@ def _reuse_flag(registry: rotation.Registry, family_name: str, family: rotation.
         is_circular(family, window) or cross_family_reuse(registry, family_name, window)
         for window in family.windows
     )
-
-
-# --------------------------------------------------------------------------
-# Next admissible action.
-# --------------------------------------------------------------------------
 
 
 def _admissible_closed_window(family: rotation.Family) -> rotation.Window | None:
@@ -505,11 +467,6 @@ def next_admissible_action(
         f"no fresh {grade_guess} block remains globally; declare the family and reuse an "
         "already-spent block, stating the discount"
     )
-
-
-# --------------------------------------------------------------------------
-# Row assembly.
-# --------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -710,10 +667,6 @@ def load_experiment_spec_names(specs_dir: Path = DEFAULT_EXPERIMENT_SPECS_DIR) -
     return frozenset(path.stem for path in specs_dir.glob("*.json"))
 
 
-# --------------------------------------------------------------------------
-# Persistence (registry/research_queue.json, docs/research_queue.md).
-# --------------------------------------------------------------------------
-
 MARKDOWN_HEADER = """# Research queue evidence ledger
 
 **Generated by `scripts/research_queue.py`. Do not hand-edit; run the script
@@ -750,12 +703,6 @@ def queue_payload(rows: Sequence[QueueRow]) -> dict[str, Any]:
         "row_count": len(rows),
         "rows": [asdict(row) for row in rows],
     }
-    # `asdict` preserves each field's own container type, so tuple fields
-    # (windows_used, weak_signal_ids) stay tuples here. A round-trip through
-    # JSON normalises them to lists -- exactly what `json.loads` produces
-    # when `--check` reads the committed file back -- so the two are directly
-    # comparable by `==` without a tuple/list mismatch reporting spurious
-    # staleness on every single run.
     normalized: dict[str, Any] = json.loads(json.dumps(raw))
     return normalized
 

@@ -36,8 +36,6 @@ from nfl_ats.modeling import regular_season_rows
 ROTATION_REGISTRY_VERSION = 1
 ROTATION_REGISTRY_FILENAME = "rotation_registry.json"
 
-# Grade determines the eligible season pool. Opener-graded confirmations need
-# the paired Tuesday-opener archive, which only covers 2020-2025.
 GRADE_POOLS: dict[str, tuple[int, int]] = {
     "opener": (2020, 2025),
     "close": (2009, 2025),
@@ -47,38 +45,6 @@ DEFAULT_WINDOW_SIZE = {"opener": 2, "close": 3, "nflverse_spread": 3}
 MINED_SEASONS = (2018, 2025)
 _MINED_SEASON_SET = frozenset(range(MINED_SEASONS[0], MINED_SEASONS[1] + 1))
 
-# Warm-up eligibility floor (binding rule 9 in docs/rotation_registry.md).
-# The feature table begins with the 2009 season, and a window's first week is
-# scorable only once enough completed games sit in front of it: 500 walk-forward
-# training games (outcomes.walk_forward_outcomes) before any prediction exists,
-# then min_calibration_games further prediction rows before the stream can be
-# calibrated (calibration.calibrate_cover_prediction_stream). Without a floor the
-# pool's first block silently consumes itself as warm-up: [2009, 2011] yields 17
-# scorable weeks, all in 2011, and calibration cannot run at all (the SPEC-5
-# incident, 2026-08-17). Enforced at assignment; historical ledger entries are
-# never re-judged, so lowering this floor cannot un-spend a window.
-#
-# The floor is COMPUTED from the thresholds it depends on, never written down
-# as a season.
-#
-# Rule 9 asks one question: can the evaluation substrate SCORE a window's first
-# week? That is a feasibility question, so the training term is the smallest
-# training set `margin.fit_margin_model` can actually fit -- a value derived
-# from that function's own preconditions -- and NOT the conservative reporting
-# default in `constants.DEFAULT_MIN_TRAIN_GAMES`. Tying an irreversible
-# decision to an underived default was the original defect here: 500 was never
-# measured, and when it finally was (2026-08-17) the answer came back that no
-# threshold exists at all. Rule 9 must not inherit a number like that.
-#
-# The two requirements are CHAINED, not additive: out-of-sample prediction rows
-# only begin accruing once the training floor is first met, and only at week
-# granularity, since a week is scorable only if every game before it clears the
-# floor. Summing the two therefore under-counts by up to one partial week at
-# each boundary. At the old 500 the slack absorbed that error, which is why the
-# naive sum happened to be right; at 50 it does not, and the naive sum returns
-# 2010 when the true answer is 2011. The `2 * GAMES_PER_EARLY_WEEK` term pays
-# for both boundaries. `earliest_eligible_start_season` below computes the exact
-# answer from a real schedule, and a test pins this closed form against it.
 FEATURE_TABLE_START_SEASON = 2009
 GAMES_PER_EARLY_WEEK = 16
 WARMUP_TRAINING_GAMES = MIN_FITTABLE_TRAIN_GAMES
@@ -91,26 +57,10 @@ MIN_ELIGIBLE_START_SEASON = FEATURE_TABLE_START_SEASON + WARMUP_PRIOR_SEASONS
 MIN_WINDOW_SIZE = 2
 MAX_WINDOW_SIZE = 4
 
-# Era-stratified confirmation windows (docs/era_stratified_windows_proposal.md,
-# owner-approved 2026-08-19). A window is either "contiguous" (the original
-# [start, end] block) or "stratified": a pair of non-adjacent single-season
-# legs, each scored walk-forward with training strictly prior to that leg.
-# Scoped to close-graded families only -- the proposal's own text, verbatim:
-# opener-graded families draw from a six-season archive where stratification
-# "buys little and is not proposed there." nflverse_spread shares the same
-# numeric season pool as close but is never named in that scope-limit
-# sentence, so it is excluded too, conservatively, as a resolution decision
-# recorded in the proposal doc's "Implemented" section rather than assumed.
-# Leg pairs, not larger tuples: the proposal's own worked example and its
-# "Same data budget per look (2 seasons)" framing both describe exactly two
-# legs, matching MIN_WINDOW_SIZE. Extending to 3+ legs is out of scope here.
 _WINDOW_KINDS = ("contiguous", "stratified")
 STRATIFIED_GRADE = "close"
 STRATIFIED_LEG_COUNT = 2
 
-#: ENG-27 coverage status: a family declared purely to reserve its name for a
-#: weak-signal family that has no rotation-registry counterpart yet. It never
-#: holds a window and makes no research commitment; see `declare_coverage_stub`.
 COVERAGE_STUB_STATUS = "declared_for_coverage"
 COVERAGE_STUB_GRADE = "close"
 
@@ -130,14 +80,9 @@ _FAMILY_FIELDS = frozenset(
         "inherits",
         "acknowledges_mined_2018_2025",
         "windows",
-        # ENG-27 coverage-stub metadata (optional; only set by declare_coverage_stub).
         "coverage_weak_signal_family",
         "coverage_league",
         "coverage_effect_units",
-        # Dashboard humanising follow-up (2026-09-05, lane AT): one or two
-        # plain-English sentences a football fan can read, mirroring
-        # `weak_signals.WeakSignal.plain_summary`. Optional so every
-        # pre-existing family keeps loading; see `_validate_plain_summary`.
         "plain_summary",
     }
 )
@@ -162,38 +107,10 @@ _WINDOW_FIELDS = frozenset(
     }
 )
 
-# A closed_negative verdict must stand on one of the admissible closing grounds
-# from AGENTS.md's binding taxonomy (shared with the weak-signal registry). An
-# interval containing zero is not among them and never will be; that outcome is
-# "unresolved", which spends the window without closing the family.
 _TERMINAL_VERDICT_GROUNDS = tuple(
     ground for grounds in weak_signals.CLOSING_GROUNDS.values() for ground in grounds
 )
 
-# ---------------------------------------------------------------------------
-# ENG-27: no_rotation_needed records.
-#
-# The rotation registry governs NFL confirmation looks (rule 8,
-# docs/rotation_registry.md); not every weak-signal family is itself a
-# candidate research hypothesis worth a confirmation window -- a reliability
-# check, a positive-control/oracle instrument, or a retired profile is not.
-# `nfl-ats rotation declare-coverage` records those explicitly instead of
-# silently leaving them unmatched, but only ever with one of the fixed
-# reasons below (or a `decomposition_of_parent:<family>` tag); never free
-# text, so a reader never has to parse prose to know why one was excused.
-#
-# ENG-37 (ROADMAP.md Phase 13, 2026-09-05): "cfb_out_of_scope" added after
-# `declare-coverage --apply` was found to have already given 54 CFB
-# weak-signal families a `declared_for_coverage` rotation stub (measured
-# 2026-09-04) even though rule 8 scopes this registry to NFL confirmation
-# looks only -- CFB iteration needs no registry entry at all. Those 54 stubs
-# predate this fix and are kept (declarations are append-only; see rule 1 and
-# `declare_coverage_stub`'s "already declared" refusal -- there is no delete
-# API), but each now also carries a `no_rotation_needed` record with this
-# reason (see `scripts/eng37_rotation_coverage_followups.py`), and
-# `classify_no_rotation_reason` below routes every future CFB family here
-# directly instead of reserving a stub name for it.
-# ---------------------------------------------------------------------------
 
 NO_ROTATION_FIXED_REASONS = (
     "reliability_measurement",
@@ -519,21 +436,9 @@ class Family:
     inherits: tuple[str, ...] = ()
     acknowledges_mined_2018_2025: bool = False
     windows: tuple[Window, ...] = ()
-    #: ENG-27 coverage-stub metadata, set only by `declare_coverage_stub`; all
-    #: three are `None`/empty for every family declared through `declare_family`.
     coverage_weak_signal_family: str | None = None
     coverage_league: str | None = None
     coverage_effect_units: tuple[str, ...] = ()
-    #: One or two plain-English sentences a football fan with no statistics
-    #: background can read on its own -- naming the situation AND what the
-    #: rule found. Mirrors `weak_signals.WeakSignal.plain_summary` exactly
-    #: (dashboard humanising follow-up, 2026-09-05, lane AT: the findings
-    #: page's "Research this week" section was rendering a permanent
-    #: "pending" placeholder for every rotation-window entry because this
-    #: field did not exist). `None` while nobody has written one yet; set
-    #: only through `declare_family`'s `plain_summary` argument or
-    #: `set_plain_summary`, both of which run it through
-    #: `_validate_plain_summary`.
     plain_summary: str | None = None
 
     @property
@@ -551,9 +456,6 @@ class Registry:
     version: int
     notes: tuple[str, ...]
     families: dict[str, Family]
-    #: ENG-27: weak-signal families explicitly excused from needing a rotation
-    #: family (see `NoRotationRecord`). Keyed by weak-signal family name.
-    #: Defaulted so every pre-existing `Registry(...)` call site keeps working.
     no_rotation_needed: dict[str, NoRotationRecord] = field(default_factory=dict)
 
 
@@ -862,11 +764,6 @@ def _window_from_payload(
         payload=payload.get("leg_effects"),
         on_unknown_field=on_unknown_field,
     )
-    # A closed_negative window carrying NO ground is tolerated here, and only
-    # here: historical ledger entries are never re-judged on load (the same
-    # principle as the warm-up floor). `record_look` refuses to WRITE a new
-    # one, and the live-ledger contract test enforces the taxonomy on the
-    # tracked registry, so the tolerance covers frozen prose-era history only.
     return Window(
         seasons=(start, end),
         state=state,
@@ -984,12 +881,6 @@ def _validate(registry: Registry) -> None:
                 and window.state == "spent"
                 and not window.leg_effects
             ):
-                # Owner's binding refinement on the era-stratified proposal
-                # (docs/era_stratified_windows_proposal.md, 2026-08-19): era
-                # variation is a change in MAGNITUDE, so a stratified window's
-                # per-leg effect sizes must accompany its pooled read, always
-                # -- enforced here the same way "spent-without-artifact" is,
-                # a few lines up, rather than left to a write-up's prose.
                 raise RegistryError(
                     f"Family {name!r} has a spent stratified window "
                     f"{list(window.seasons)} without per-leg magnitudes (leg_effects)"
@@ -1000,9 +891,6 @@ def _validate(registry: Registry) -> None:
                     f"{family.grade} pool {list(pool)}"
                 )
             if window.window_kind == "stratified" and family.grade != STRATIFIED_GRADE:
-                # Belt-and-braces: assign_stratified_window already refuses a
-                # non-close grade, but a hand-edited ledger must not be able
-                # to smuggle one past load-time validation either.
                 raise RegistryError(
                     f"Family {name!r} window {list(window.seasons)} is stratified but "
                     f"grade is {family.grade!r}; stratified windows are "
@@ -1017,16 +905,6 @@ def _validate(registry: Registry) -> None:
                     f"{MINED_SEASONS[0]}-{MINED_SEASONS[1]} seasons without "
                     "acknowledges_mined_2018_2025"
                 )
-        # A family must not re-look at seasons it, or anything it inherits from,
-        # has already seen. It must NOT be held responsible for two of its
-        # ancestors overlapping each other: rule 4 makes windows retire
-        # per-family, so independent families are explicitly allowed to draw the
-        # same seasons, and two such families can both legitimately be parents.
-        # Checking every pair in the chain conflated those and made an honest
-        # declaration impossible -- a candidate genuinely downstream of both
-        # `mod07_weak_signal_stack` and `best_pick_ranker_opener` could not name
-        # both, because each spent [2020, 2021]. `eligible_blocks` has always
-        # treated the chain as a union of blocked seasons; this now matches it.
         own = list(family.windows)
         inherited = [
             window
@@ -1048,32 +926,8 @@ def _validate(registry: Registry) -> None:
                     )
 
 
-# ---------------------------------------------------------------------------
-# ENG-37 (ROADMAP.md Phase 13, 2026-09-05): grandfathered pre-validator
-# window-width violations.
-#
-# `validate_registry`'s `window_width_out_of_range` check (added 2026-09-04,
-# ENG-27) audits a rule -- `assign_window`'s [MIN_WINDOW_SIZE, MAX_WINDOW_SIZE]
-# limit -- that did not exist when older windows were drawn. `pbp_drive_bundle`
-# holds a CONTIGUOUS [2013, 2017] window (5 seasons), assigned 2026-08-13,
-# three weeks before the validator existed (VALIDATOR_INTRODUCED_AT below);
-# downgrading its severity from error to warning is a project-owner research
-# decision (ROADMAP.md ENG-37), never an automatic amnesty. This dict is
-# curated by hand, one dated entry at a time -- never populated
-# automatically -- and `validate_registry` additionally requires the
-# matching window's own `assigned_at` to predate `VALIDATOR_INTRODUCED_AT`
-# before it will downgrade anything, so a family added to this dict by
-# mistake for a window assigned on or after that date still errors: the 2-4
-# season rule itself is NOT widened, and this can never grandfather a window
-# drawn after the check existed.
-# ---------------------------------------------------------------------------
-
-#: The date `window_width_out_of_range` landed (ENG-27, ROADMAP.md Phase 13).
 VALIDATOR_INTRODUCED_AT = "2026-09-04"
 
-#: Family name -> the exact grandfathered window's ``seasons`` tuple. A
-#: family/seasons pair not in this dict is never downgraded, regardless of
-#: width or age.
 GRANDFATHERED_WIDTH_VIOLATIONS: dict[str, tuple[int, int]] = {
     "pbp_drive_bundle": (2013, 2017),
 }
@@ -1284,29 +1138,10 @@ def _family_payload(family: Family) -> dict[str, Any]:
         "acknowledges_mined_2018_2025": family.acknowledges_mined_2018_2025,
         "windows": [_window_payload(window) for window in family.windows],
     }
-    # ENG-27 coverage-stub fields are OMITTED entirely (not written as null)
-    # for every family that does not carry them -- i.e. every family declared
-    # through the ordinary `declare_family` path, which is all 30 that
-    # predated this change. Writing them unconditionally would insert three
-    # new keys into every existing family's JSON object and, because JSON
-    # pretty-printing needs a trailing comma once a new sibling key follows,
-    # rewrite the line that used to be each family's LAST field -- a
-    # reformat, not a value change, but one that shows up as noise in
-    # `git diff` and defeats the additions-only contract this command
-    # promises (`nfl-ats rotation declare-coverage`'s own docstring; see
-    # `tests/test_rotation_coverage.py`'s byte-for-byte pre-existing-entry
-    # check). `_family_from_payload` already treats an absent key exactly
-    # like an explicit ``null`` via ``.get(...)``, so omitting it is a
-    # lossless, fully backward/forward-compatible round trip.
     if family.coverage_weak_signal_family is not None:
         payload["coverage_weak_signal_family"] = family.coverage_weak_signal_family
         payload["coverage_league"] = family.coverage_league
         payload["coverage_effect_units"] = list(family.coverage_effect_units)
-    # Same additions-only reasoning as the coverage-stub fields above: omit
-    # the key entirely for every family that carries no plain_summary yet
-    # (every family that predates this schema addition, plus every new one
-    # nobody has written a sentence for), rather than writing `null` and
-    # rewriting the JSON line that used to be each family's last field.
     if family.plain_summary is not None:
         payload["plain_summary"] = family.plain_summary
     return payload
@@ -1321,9 +1156,6 @@ def registry_payload(registry: Registry) -> dict[str, Any]:
         "families": {name: _family_payload(family) for name, family in registry.families.items()},
         "season_usage": season_usage(registry),
     }
-    # Same additions-only reasoning as the per-family fields above: omit the
-    # top-level key entirely while no family has ever been excused from
-    # rotation coverage, rather than writing an empty object every save.
     if registry.no_rotation_needed:
         payload["no_rotation_needed"] = {
             key: {
@@ -1810,9 +1642,6 @@ def confirmation_split(
     cutoff = window["gameday"].min()
     training = frame.loc[frame["gameday"].lt(cutoff) & frame["result"].notna()].copy()
     if training.empty:
-        # Fail-closed backstop for ledgers written outside `assign_window`
-        # (rule 9's floor guards assignment, not hand-edited history): a window
-        # with nothing completed before it cannot be forward-chain scored.
         raise RegistryError(
             f"Family {family!r} window {list(window_entry.seasons)} has no completed "
             "games before it; the window cannot be scored (warm-up rule 9)"
@@ -1882,8 +1711,6 @@ def confirmation_split_legs(
         cutoff = leg["gameday"].min()
         training = frame.loc[frame["gameday"].lt(cutoff) & frame["result"].notna()].copy()
         if training.empty:
-            # Same fail-closed backstop as confirmation_split, applied per leg:
-            # rule 9's floor guards assignment, not hand-edited history.
             raise RegistryError(
                 f"Family {family!r} leg {season} has no completed games before it; "
                 "the leg cannot be scored (warm-up rule 9)"
@@ -1925,10 +1752,6 @@ def record_look(
         raise RegistryError(f"Unknown family: {family!r}")
     declared = registry.families[family]
     if replace_existing:
-        # Corrections are deliberately much narrower than a general history
-        # editor.  They may only replace the latest completed look, never a
-        # prior window hidden behind a newer decision and never an active
-        # assignment.  The artifact is the immutable identity of that look.
         if declared.assigned_window is not None:
             raise RegistryError(
                 f"Family {family!r} has an assigned window; --replace may only correct "
@@ -1992,8 +1815,6 @@ def record_look(
     spent = replace(
         window,
         state="spent",
-        # A correction changes adjudication, never when the look was assigned
-        # or spent.  Those fields are immutable provenance for the one window.
         spent_at=window.spent_at if replace_existing else _today(),
         artifact=artifact,
         verdict=verdict,
@@ -2012,8 +1833,6 @@ def record_look(
         if replace_existing
         else tuple(spent if entry is window else entry for entry in declared.windows)
     )
-    # "Unresolved at this sample size" spends the window without closing the
-    # family; the other two verdicts are terminal statuses.
     status = (
         "open"
         if replace_existing and verdict == "unresolved"
@@ -2033,9 +1852,6 @@ def grade_pool_capacity(registry: Registry) -> dict[str, dict[str, Any]]:
     spendable capacity.
     """
 
-    # Season-set based, not a range-overlap on [min, max] endpoints: a
-    # stratified window's endpoints are its two legs, and the span between
-    # them was never looked at, so it must not count as "taken" capacity.
     taken_seasons = {
         season
         for family in registry.families.values()
@@ -2083,9 +1899,6 @@ def registry_status(registry: Registry) -> dict[str, Any]:
                 "acknowledges_mined_2018_2025": family.acknowledges_mined_2018_2025,
                 "windows": [_window_payload(window) for window in family.windows],
                 "remaining_eligible_windows": len(eligible_blocks(registry, name)),
-                # Close-graded only (era-stratified proposal scope limit); other
-                # grades report 0 rather than raising, since this is a status
-                # listing over every family, not a per-family eligibility check.
                 "remaining_eligible_stratified_seasons": (
                     len(eligible_stratified_seasons(registry, name))
                     if family.grade == STRATIFIED_GRADE

@@ -62,26 +62,12 @@ from nfl_ats.provenance import stamp_sidecar
 from nfl_ats.public_board import load_public_board_artifacts
 from nfl_ats.quarterbacks import write_depth_snapshot
 
-#: Where the active model's already-fitted learned availability rates live
-#: (the SAME table ``nfl_ats.players.enrich_with_player_features`` reads to
-#: compute ``{side}_qb_start_probability``). Read-only here; never rebuilt
-#: or overwritten by this script.
 WEAK_STACK_AVAILABILITY_RATES_PATH = (
     Path("data") / "processed" / "weak_stack_availability_rates.parquet"
 )
 
-#: Local player snapshots (injuries/weekly rosters/snap counts) live here;
-#: the no-designation base rate is derived from whichever snapshot is
-#: newest, entirely offline (no network fetch of its own).
 PLAYER_SNAPSHOT_ROOT = Path("data") / "players" / "raw"
 
-#: UI-20-AB: ``scripts/build_play_probability_panel.py``'s cached walk-forward
-#: training panel. Read-only here -- this script only FITS
-#: (``nfl_ats.play_probability.fit_play_probability_model``, a few seconds)
-#: on every refresh; it never rebuilds the panel itself (that needs a full
-#: nflverse schedule fetch and ~a minute of joins, wasted work to repeat on
-#: every noon-Eastern refresh when the panel does not change within a
-#: season).
 PLAY_PROBABILITY_PANEL_PATH = Path("data") / "processed" / "play_probability_panel.parquet"
 
 
@@ -252,8 +238,6 @@ def _team_payload(
     player_history: dict[str, dict[str, float]],
 ) -> dict[str, Any]:
     rows = depth[depth["team"] == team].copy()
-    # nflverse retains a row for each historical depth-chart update. Keep the
-    # complete latest snapshot, including backups, rather than only starters.
     time_column = "observed_at_utc" if "observed_at_utc" in rows else "dt"
     rows["_dt"] = pd.to_datetime(rows[time_column], errors="coerce", utc=True)
     latest = rows["_dt"].max()
@@ -312,8 +296,6 @@ def _team_payload(
     )
     team_injuries = current_injuries if current_injuries is not None else pd.DataFrame()
 
-    # UI-20-AB: score every gsis_id row ONCE per team, batched, through the
-    # real play-probability model rather than a per-player lookup call.
     rank_column = rows["_rank"].where(rows["_rank"].lt(99), 1).astype(int)
     position_column = (
         rows["pos_abb"].where(rows["pos_abb"].notna(), rows.get("pos_name")).fillna("").astype(str)
@@ -343,28 +325,12 @@ def _team_payload(
         rank = int(row["_rank"]) if row["_rank"] < 99 else 1
         gsis_id = str(row["gsis_id"]) if pd.notna(row.get("gsis_id")) else None
         is_base_model_qb = position == "QB" and gsis_id == model_qb_id
-        # UI-20 lineup-percentage legibility fix (2026-09-05, owner complaint
-        # via the coordinator): whether THIS player carries a visible
-        # injury-report row this week, checked the SAME way for every
-        # player. Additive; also one of `play_probability_model`'s own
-        # feature inputs (see `nfl_ats.play_probability.serving_feature_frame`).
         current_injury = None
         if gsis_id is not None and not team_injuries.empty and gsis_id in team_injuries.index:
             current_injury = team_injuries.loc[gsis_id]
             if isinstance(current_injury, pd.DataFrame):
-                # Defensive: set_index should already guarantee one row per
-                # gsis_id after _visible_injuries_by_team's own
-                # drop_duplicates, but never silently pick one of many.
                 current_injury = current_injury.iloc[-1]
         has_injury_designation = current_injury is not None
-        # UI-20-AB (2026-09-05): the owner's directive to replace the flat
-        # base rate with "a forecast about the game" applies to EVERY player
-        # with a gsis_id, the model's own QB included -- `play_probability`
-        # no longer stays pinned to the forecast input for that one player.
-        # `model_qb_start_probability` preserves that forecast input as its
-        # own, separate field (never deleted, just renamed off the shared
-        # `play_probability` key) so nothing downstream that still wants the
-        # active margin model's own QB-availability number loses it.
         model_qb_start_probability = qb_probability if is_base_model_qb else None
         if gsis_id is not None and idx in model_predictions.index:
             predicted_row = model_predictions.loc[idx]
@@ -442,11 +408,6 @@ def main() -> None:
     artifacts = load_public_board_artifacts(args.artifacts_root)
     season = int(artifacts.metadata.get("season", args.season))
     week = int(artifacts.metadata.get("week", 1))
-    # Captured once, up front: both the point-in-time cutoff for this
-    # week's live injury feed AND the payload's own `generated_at` stamp
-    # must be the exact same instant (UI-20's leakage discipline -- a
-    # revision observed after this instant must never move a player's
-    # number).
     generated_at = datetime.now(UTC)
     display_depth = nfl.load_depth_charts(season).to_pandas()
     depth_snapshot = write_depth_snapshot(
@@ -461,11 +422,6 @@ def main() -> None:
         season, week, schedule, generated_at
     )
     current_injuries_by_team = _visible_injuries_by_team(current_injuries)
-    # Retained for the provenance block below only (UI-20-AB no longer feeds
-    # either lookup into `_team_payload`'s play_probability computation --
-    # the owner's directive was to REPLACE the base-rate approach these two
-    # produce, not offer it alongside the new model). `_recent_roles` is a
-    # byproduct of `_no_designation_lookup` this script no longer consumes.
     _learned_lookup, learned_lookup_note = _learned_availability_lookup()
     _no_designation_lookup_table, _recent_roles, no_designation_note = _no_designation_lookup(
         season
@@ -509,9 +465,6 @@ def main() -> None:
             ),
         }
     stamp = generated_at.strftime("%Y%m%dT%H%M%SZ")
-    # Replacement, not accumulation: the default target is one stable path that
-    # every refresh overwrites. An explicit --output still writes exactly there
-    # (and skips legacy cleanup, so ad-hoc exports never delete the live file).
     explicit_output = args.output is not None
     output = args.output or args.artifacts_root / STABLE_LINEUP_PATH
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -527,9 +480,6 @@ def main() -> None:
                 "probability_provenance": {
                     "play_probability_model": play_probability_note,
                     "current_injury_feed": injury_feed_note,
-                    # Retained for audit only -- UI-20-AB no longer scores
-                    # any player from either of these; see the note above
-                    # `play_probability_predictor` in main().
                     "learned_availability_rate_table_unused": learned_lookup_note,
                     "no_designation_base_rate_unused": no_designation_note,
                 },
@@ -542,11 +492,6 @@ def main() -> None:
     staging = output.with_name(f".{output.name}.{stamp}.tmp")
     staging.write_text(payload, encoding="utf-8")
     os.replace(staging, output)
-    # ENG-38: stamp via a sidecar rather than rerouting the write through
-    # write_stamped_artifact -- this file's own staging/os.replace atomicity
-    # and immediately-following size check are production-sensitive (the
-    # live public board reads STABLE_LINEUP_PATH); the sidecar adds
-    # provenance without touching that path at all.
     stamp_sidecar(output)
     _check_artifact_size(output)
     if not explicit_output:
@@ -554,11 +499,6 @@ def main() -> None:
     print(output)
 
 
-#: Fail-closed ceiling for the display artifact: 16 games of ~140 small
-#: player dicts should stay well under a megabyte (measured 674 KB,
-#: 2026-09-03); a 2026-09-03 stamped run once reached 37 MB and was deleted
-#: unexamined under the replacement policy, so the builder now refuses to
-#: publish a bloated artifact silently instead of hoping it was a one-off.
 MAX_LINEUP_BYTES = 5 * 1024 * 1024
 
 

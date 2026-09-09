@@ -56,21 +56,13 @@ from nfl_ats.mass_preserving_lattice import (
 FloatArray = npt.NDArray[np.float64]
 BoolArray = npt.NDArray[np.bool_]
 
-#: A paired forced-pick accuracy difference cannot exceed a hundred points:
-#: one arm right on every graded game, the other wrong on every one.
 ACCURACY_POINT_CEILING = 100.0
-#: The same robust-outlier constants ``nfl_ats.weak_signals._plausibility_curve``
-#: uses, so a band floored here and a band floored by the pooler agree.
 _ROBUST_SIGMAS = 3.0
 _MAD_TO_SIGMA = 1.4826
 _MEAN_ABS_DEVIATION_TO_SIGMA = 1.2533
 
-#: MOD-05's key numbers, the set AGENTS.md makes binding.
 KEY_NUMBERS: tuple[float, ...] = (3.0, 7.0, 10.0, 14.0)
-#: Lane T's served atom set, inherited rather than re-chosen here.
 SERVED_ATOMS: tuple[float, ...] = (3.0, 7.0)
-#: The smallest non-empty neighbourhood: a spread cannot step by less than a
-#: half point, so this is the adjacent-line radius, not a tuned bandwidth.
 NEIGHBOURHOOD_HALF_WIDTH = 0.5
 _TOLERANCE = 1e-9
 
@@ -127,8 +119,6 @@ class ArmSpec:
         )
 
 
-#: The four frozen arms of ``mod18_discrete_side_read_v1``; nested by
-#: construction (G4 subset G2 subset G3 subset G1).
 ARMS: dict[str, ArmSpec] = {
     "G1": ArmSpec(
         "G1",
@@ -226,11 +216,6 @@ def walk_forward_side_reads(
     return walk_forward_reads(pool, targets, float(half_width))
 
 
-# ---------------------------------------------------------------------------
-# Degenerate cells: floored, not trusted and not dropped
-# ---------------------------------------------------------------------------
-
-
 def plausible_standard_error_floor(
     reference: Iterable[tuple[float, int]], sample_games: int
 ) -> float | None:
@@ -323,10 +308,6 @@ def floor_degenerate_cell(
         f"The point estimate is the measurement and is unchanged."
     )
 
-
-# ---------------------------------------------------------------------------
-# The calibration plug-in point
-# ---------------------------------------------------------------------------
 
 DISCRETE_MARGIN_METHODS = (
     "discrete_conditional_lattice",

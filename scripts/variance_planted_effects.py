@@ -82,25 +82,15 @@ MAGNITUDE_LABELS: dict[float, str] = {
     0.02: "2.00pt",
 }
 NULL_SEEDS: tuple[int, ...] = (901, 902, 903, 904, 905)
-# Idiosyncratic per-game noise added to every planted arm's probability
-# BEFORE the systematic accuracy-targeting shift. Without it, every game's
-# candidate probability moves toward the truth, making brier/log-loss
-# improvement non-negative for every single game by construction -- a
-# degenerate signal any bootstrap detects at any sample size. Tuned (see
-# scripts/variance_planted_effects.py history) so the resulting per-game
-# Brier improvement is genuinely two-sided (30-45% of games worse under the
-# candidate) while the population-average Brier/log-loss improvement stays
-# positive, matching what a real, imperfect-but-net-positive model looks
-# like game to game.
 PROBABILITY_NOISE_SD = 0.01
 NOISE_SEED = 20260818
-BLOCK_GRID: tuple[int, ...] = (3, 6, 12, 25, 50, 100, 0)  # 0 means "all blocks"
+BLOCK_GRID: tuple[int, ...] = (3, 6, 12, 25, 50, 100, 0)
 BOOTSTRAP_SAMPLES = 800
 REPLICATIONS_POSITIVE = 400
 REPLICATIONS_NULL = 200
-DETECTION_TAIL = 0.025  # one-sided lower bound of a two-sided 95% interval
+DETECTION_TAIL = 0.025
 SCREEN_PROBABILITY_THRESHOLD = 0.75
-CONCORDANCE_TARGET_BLOCKS = 12  # ~ a realistic, affordable screening window
+CONCORDANCE_TARGET_BLOCKS = 12
 
 
 def _load_baseline_predictions(features_path: Path) -> pd.DataFrame:
@@ -229,9 +219,6 @@ def _power_curve_for_arm(
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -279,7 +266,6 @@ def main() -> None:
     ).to_numpy(dtype=float)
     assert np.allclose(baseline_raw, 0.0)
 
-    # --- Build planted arms -------------------------------------------------
     probability_noise = np.random.default_rng(NOISE_SEED).normal(
         scale=PROBABILITY_NOISE_SD, size=len(baseline)
     )
@@ -357,7 +343,6 @@ def main() -> None:
         f"{len(NULL_SEEDS)} null); null shift magnitude = {null_magnitude:.4f}"
     )
 
-    # --- Power curves ---------------------------------------------------------
     power_frames: list[pd.DataFrame] = []
     for seed_offset, (arm_name, raw_full) in enumerate(arm_raw_matrices.items()):
         replications = (
@@ -380,7 +365,6 @@ def main() -> None:
     power_table = pd.concat(power_frames, ignore_index=True)
     power_table.to_csv(args.output / "power_curves.csv", index=False)
 
-    # Pool the null arms into a single false-positive-rate curve.
     null_rows = power_table.loc[power_table["arm"].str.startswith("null_seed")]
     pooled_columns = {
         "mean_n_games": "mean_n_games",
@@ -405,7 +389,6 @@ def main() -> None:
     print("Pooled null false-positive rates (should be ~0.025 for *_detect, ~0.25 for screen75):")
     print(pooled_null.to_string(index=False))
 
-    # --- Required sample size per magnitude x method ---------------------------
     method_columns = {
         "current": "current_power",
         "covariate_adjusted": "covariate_adjusted_power",
@@ -437,7 +420,6 @@ def main() -> None:
     print("\nRequired games for 80% power (None = grid exhausted, still <80% at full clean core):")
     print(required_table.to_string(index=False))
 
-    # --- Screen -> confirm concordance at an affordable window ------------------
     concordance_rows: list[dict[str, Any]] = []
     full_power = power_table.loc[power_table["n_blocks"].eq(n_blocks_total)]
     screen_power = power_table.loc[power_table["n_blocks"].eq(CONCORDANCE_TARGET_BLOCKS)]

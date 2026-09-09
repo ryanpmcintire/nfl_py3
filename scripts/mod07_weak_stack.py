@@ -41,7 +41,6 @@ REPO = Path(__file__).resolve().parents[1]
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 
-# Predeclared in SPEC-4; fixed before any number below existed.
 CONFIRM_AT = 0.90
 CLOSE_NEGATIVE_AT = 0.10
 
@@ -68,10 +67,6 @@ def arm(
     """Score one arm at the opener grade over the family's assigned window."""
 
     training, window = confirmation_split(features, registry, family)
-    # The evaluator re-derives its own forward-chained cutoff per week; handing it
-    # training+window means only window seasons can be scored (the opener archive
-    # does not reach the training seasons) while every earlier completed game
-    # remains available to the fit -- which is precisely the registry's split.
     scoped = pd.concat([training, window], ignore_index=True)
     scored = opener_pick_evaluation(
         market_root,

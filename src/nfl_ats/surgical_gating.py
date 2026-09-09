@@ -33,37 +33,11 @@ import pandas as pd
 
 FloatArray = npt.NDArray[np.float64]
 
-#: The two columns docs/injury_value_lost.md section 4's cleaner isolation (arm D)
-#: adds on top of the frozen ``player`` baseline. Both are pregame-available:
-#: built from severity x role-share x value-rate, all measurable before kickoff
-#: (players.py's ``_injury_value_features``).
 VALUE_LOST_DIFF_COLUMNS = (
     "diff_injury_skill_epa_value_lost",
     "diff_injury_defense_disruption_value_lost",
 )
 
-#: Frozen threshold, derived once by
-#: ``scripts/surgical_value_lost_distribution.py`` on 2026-08-18 from the full
-#: leak-safe history (4,431 completed REG games, 2009-2025,
-#: ``data/processed/game_features_player_value.parquet``, via
-#: ``modeling.regular_season_rows`` + ``result.notna()`` -- the exact filter
-#: docs/injury_value_lost.md section 3.1 already used for this table's
-#: split-half reliability). It is the CONDITIONAL MEDIAN of
-#: ``raw_value_magnitude`` (below): the median taken over games where the
-#: magnitude is strictly nonzero. The median is the one fixed quantile with
-#: no further researcher degree of freedom (no "why 75 and not 70" to
-#: answer); conditioning on nonzero is what keeps that property honest when
-#: the point mass at exactly zero is large (29.86% of NFL games here; 55.7%
-#: for this recipe's CFB analog, where the UNCONDITIONAL median is exactly
-#: zero and therefore unusable as a threshold at all -- see
-#: ``scripts/surgical_cfb_recipe_validation.py``). The conditional median is
-#: the one definition of "the typical positive reading" that is well-defined
-#: in both leagues without adapting the rule after seeing which league it is
-#: applied to.
-#:
-#: NOT derived by sweeping candidate thresholds against any accuracy outcome.
-#: Pinned exactly in tests/test_surgical_gating.py so it can never silently
-#: drift toward a re-tuned value.
 VALUE_LOST_MAGNITUDE_THRESHOLD = 2.247849687590416
 
 

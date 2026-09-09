@@ -135,7 +135,7 @@ def run_screen(
             elif arm.kind == "half_life":
                 arm_frame, arm_target = training_full, target_full
                 weights = half_life_weights(seasons_full, predict_season, arm.parameter or 1.0)
-            else:  # rolling
+            else:
                 floor_season = rolling_window_floor_season(predict_season, arm.parameter or 1.0)
                 arm_frame = training_full.loc[training_full["season"].ge(floor_season)]
                 if len(arm_frame) < min_train_games:

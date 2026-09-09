@@ -37,10 +37,6 @@ from nfl_ats.cfb_benchmark import (
 from nfl_ats.evidence_conventions import probability_positive_from_draws
 from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
-# Predeclared grid: log-spaced from 1e-3 (essentially unregularised beyond
-# what the null space forces) to 1e5 (heavy global shrinkage), plus the
-# frozen 10.0 itself so it is scored on the identical instrument rather than
-# only read off the neighbouring points.
 ALPHA_GRID: tuple[float, ...] = (
     1e-3,
     1e-2,
@@ -56,7 +52,7 @@ ALPHA_GRID: tuple[float, ...] = (
     10_000.0,
     100_000.0,
 )
-REFERENCE_ALPHA = CFB_BENCHMARK_RIDGE_ALPHA  # 10.0, the frozen NFL/CFB default
+REFERENCE_ALPHA = CFB_BENCHMARK_RIDGE_ALPHA
 
 BOOTSTRAP_SAMPLES = 2_000
 BOOTSTRAP_SEED = 20260818
@@ -136,9 +132,6 @@ def paired_bootstrap(
                 "evaluation_window": window,
                 "block": block,
                 "metric": metric,
-                # Oriented so positive always means the swept alpha is better
-                # than the frozen 10.0 reference (Brier/log-loss: lower is
-                # better, so "better" there is baseline-minus-candidate).
                 "improvement": float(better.mean() - worse.mean()),
                 "lower": float(np.quantile(sample, 0.025)),
                 "upper": float(np.quantile(sample, 0.975)),
@@ -210,13 +203,13 @@ def main() -> None:
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     summary_frame.to_csv(args.output_dir / "alpha_summary.csv", index=False)
-    stamp_sidecar(args.output_dir / "alpha_summary.csv")  # ENG-38
+    stamp_sidecar(args.output_dir / "alpha_summary.csv")
     comparison_frame.to_csv(args.output_dir / "alpha_comparison.csv", index=False)
-    stamp_sidecar(args.output_dir / "alpha_comparison.csv")  # ENG-38
+    stamp_sidecar(args.output_dir / "alpha_comparison.csv")
     write_stamped_artifact(
         {"alphas": list(args.alphas), "reference_alpha": REFERENCE_ALPHA},
         args.output_dir / "grid.json",
-    )  # ENG-38
+    )
     print(f"\nWrote {args.output_dir}")
 
 

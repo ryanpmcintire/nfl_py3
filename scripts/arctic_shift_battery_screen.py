@@ -81,10 +81,6 @@ BOOTSTRAP_SEED = 20260826
 SEASON_START = 2009
 SEASON_END = 2026
 
-# docs/arctic_shift_ats_battery.md section 4 -- reused from
-# scripts/attention_battery_screen.py's hot_team_fade/away_hot precedent
-# threshold rather than a fresh unexamined pick, for BOTH the volume and the
-# ratio spike constructs.
 SPIKE_THRESHOLD = 2.0
 
 DESCRIPTION_SUFFIX = (
@@ -96,11 +92,6 @@ DESCRIPTION_SUFFIX = (
 
 def _canonical(team: pd.Series) -> pd.Series:
     return team.map(lambda code: TEAM_ABBREVIATION_ALIASES.get(code, code))
-
-
-# ---------------------------------------------------------------------------
-# 1. Raw daily counts
-# ---------------------------------------------------------------------------
 
 
 def load_subreddit_daily_counts(raw_dir: Path) -> dict[str, dict[str, pd.Series]]:
@@ -147,11 +138,6 @@ def window_sum(series: pd.Series, start: pd.Timestamp, end: pd.Timestamp) -> flo
     return float(series.loc[mask].sum())
 
 
-# ---------------------------------------------------------------------------
-# 2. Game / team-game table construction
-# ---------------------------------------------------------------------------
-
-
 def load_games(schedules_path: Path) -> pd.DataFrame:
     schedules = pd.read_parquet(schedules_path)
     games = schedules.loc[
@@ -192,7 +178,7 @@ def build_team_game_long(
         sides.append(side)
     long_df = pd.concat(sides, ignore_index=True)
 
-    weekday = long_df["gameday"].dt.weekday  # Monday=0 ... Sunday=6, Tuesday=1
+    weekday = long_df["gameday"].dt.weekday
     tuesday_offset = (weekday - 1) % 7
     window_end = long_df["gameday"] - pd.to_timedelta(tuesday_offset, unit="D")
     window_start = window_end - pd.Timedelta(days=6)
@@ -224,10 +210,6 @@ def build_team_game_long(
             np.nan,
         )
 
-    # Trailing baseline reset PER (team, season) -- identical convention to
-    # scripts/attention_battery_screen.py's build_team_game_long (first
-    # TRAILING_MIN_GAMES-1 games of a team's season structurally have no
-    # baseline; disclosed, not corrected).
     long_df = long_df.sort_values(["team", "season", "gameday"]).reset_index(drop=True)
     for metric in ("window_volume", "comment_post_ratio"):
         grouped = long_df.groupby(["team", "season"], sort=False)[metric]
@@ -270,11 +252,6 @@ def attach_game_level(games: pd.DataFrame, long_df: pd.DataFrame) -> pd.DataFram
         out[f"{prefix}_has_baseline_ratio"] = side["has_baseline_ratio"]
 
     return out.reset_index()
-
-
-# ---------------------------------------------------------------------------
-# 3. Cells (docs/arctic_shift_ats_battery.md section 5)
-# ---------------------------------------------------------------------------
 
 
 def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
@@ -337,11 +314,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     expected = 5
     assert len(cells) == expected, f"expected {expected} predeclared cells, got {len(cells)}"
     return cells
-
-
-# ---------------------------------------------------------------------------
-# 4. Bootstrap (algorithm-identical to fluview_battery_screen.py)
-# ---------------------------------------------------------------------------
 
 
 def summarize(
@@ -429,19 +401,9 @@ def score_cell(
     }
 
 
-# ---------------------------------------------------------------------------
-# 5. Reliability check (docs/arctic_shift_ats_battery.md section 6)
-# ---------------------------------------------------------------------------
-
-
 def compute_reliability(long_df: pd.DataFrame, metric: str, *, seed: int) -> dict[str, Any]:
     panel = long_df.rename(columns={"team": "team_id"})
     return split_half_reliability(panel, metric, seed=seed)
-
-
-# ---------------------------------------------------------------------------
-# 6. Main
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:

@@ -17,10 +17,6 @@ from nfl_ats.cfb_role_features import (
 )
 from nfl_ats.data import DataContractError
 
-# ---------------------------------------------------------------------------
-# Fixtures: one team's dropback history spanning a QB change and a season break
-# ---------------------------------------------------------------------------
-
 
 def _dropback_history() -> tuple[pd.DataFrame, pd.DataFrame]:
     """Team A: P1 starts G1-G3, then P2 takes over G4-G8; P2 returns in 2023.
@@ -78,35 +74,21 @@ def _dropback_history() -> tuple[pd.DataFrame, pd.DataFrame]:
     return pd.DataFrame(action_rows), pd.DataFrame(team_game_rows)
 
 
-# ---------------------------------------------------------------------------
-# 1. build_role_continuity
-# ---------------------------------------------------------------------------
-
-
 def test_role_continuity_hand_computed_sequence() -> None:
     actions, team_games = _dropback_history()
     continuity = build_role_continuity(actions, team_games)
     by_game = continuity.set_index("game_id")["continuity"]
 
-    # Nobody qualified yet: neutral.
     assert by_game.loc["G1"] == pytest.approx(CONTINUITY_NEUTRAL)
     assert by_game.loc["G2"] == pytest.approx(CONTINUITY_NEUTRAL)
     assert by_game.loc["G3"] == pytest.approx(CONTINUITY_NEUTRAL)
-    # G4: P1 qualified (3 appearances, state 1.0) and appeared in G3.
     assert by_game.loc["G4"] == pytest.approx(1.0)
-    # G5-G6: P1 is the only qualified holder and missed the previous game.
     assert by_game.loc["G5"] == pytest.approx(0.0)
     assert by_game.loc["G6"] == pytest.approx(0.0)
-    # G7: P2 now qualified too (state 1.0, streak 0); P1 still inside the
-    # streak cap with state 1.0 -> continuity is the appeared half of mass.
     assert by_game.loc["G7"] == pytest.approx(0.5)
-    # G8: P1 has now missed FROZEN_STREAK_CAP straight valid games and leaves
-    # the mass; P2 alone remains and appeared last game.
     assert FROZEN_STREAK_CAP == 4
     assert by_game.loc["G8"] == pytest.approx(1.0)
-    # 2023 opener: nobody has appeared this season yet -> neutral.
     assert by_game.loc["H1"] == pytest.approx(CONTINUITY_NEUTRAL)
-    # After P2's first 2023 appearance the mass is active again.
     assert by_game.loc["H2"] == pytest.approx(1.0)
 
 
@@ -117,16 +99,9 @@ def test_role_continuity_ignores_receptions() -> None:
     assert build_role_continuity(actions, team_games).empty
 
 
-# ---------------------------------------------------------------------------
-# 2. absence_separation_study
-# ---------------------------------------------------------------------------
-
-
 def test_absence_separation_labels_departure_and_temporary() -> None:
     actions, team_games = _dropback_history()
 
-    # Add a carry role holder with a one-game temporary absence: P3 carries
-    # in G1-G3, misses G4, returns G5-G8.
     carry_games = {"G1", "G2", "G3", "G5", "G6", "G7", "G8"}
     carry_actions = []
     carry_team_games = []
@@ -175,8 +150,6 @@ def test_absence_separation_labels_departure_and_temporary() -> None:
     p1 = episodes.loc[episodes["player_id"].eq("P1")].iloc[0]
     assert p1["action_type"] == "dropback"
     assert p1["start_season"] == 2022 and p1["start_week"] == 4
-    # P1 misses G4-G8 (five valid 2022 games) and never reappears; the 2023
-    # games are also valid team-games, so the open episode kept counting.
     assert p1["length_valid_games"] == 7
     assert bool(p1["never_reappeared"])
     assert not bool(p1["reappeared_same_season"])
@@ -193,7 +166,6 @@ def test_absence_separation_labels_departure_and_temporary() -> None:
     assert bool(dropback_2022.loc["P2", "appeared_next_season"])
     assert not bool(dropback_2022.loc["P1", "appeared_next_season"])
     assert bool(dropback_2022["next_season_observed"].all())
-    # 2023 is the final observed season: transitions out of it are censored.
     final_season = carryover.loc[carryover["season"].eq(2023)]
     assert not final_season.empty
     assert not final_season["next_season_observed"].any()
@@ -210,14 +182,7 @@ def test_absence_separation_labels_departure_and_temporary() -> None:
     assert carry_k1["reappeared_same_season_rate"] == pytest.approx(1.0)
 
 
-# ---------------------------------------------------------------------------
-# 3. attach_role_continuity
-# ---------------------------------------------------------------------------
-
-
 def test_attach_role_continuity_imputes_neutral() -> None:
-    # Canonical sides carry ids, not pbp display names; the pbp name "A Team"
-    # maps to id 11 via the team-id frame (never by name).
     canonical = pd.DataFrame(
         {
             "game_id": ["G1", "G2"],
@@ -278,12 +243,7 @@ def test_attach_role_continuity_rejects_unmapped_teams() -> None:
         attach_role_continuity(canonical, continuity, team_ids)
 
 
-# ---------------------------------------------------------------------------
-# 4. The three-arm benchmark run
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.full  # ENG-11: dominates --durations; full CFB benchmark fit
+@pytest.mark.full
 def test_cfb_role_benchmark_three_matched_arms(cfb_features_frame: pd.DataFrame) -> None:
     features = cfb_features_frame.copy()
     generator = np.random.default_rng(7)
@@ -304,7 +264,6 @@ def test_cfb_role_benchmark_three_matched_arms(cfb_features_frame: pd.DataFrame)
     methods = set(result.predictions["method"])
     assert methods == {"market", "market_residual", "market_residual_roles"}
 
-    # Identical weeks: every arm scored exactly the same games.
     per_method = result.predictions.groupby("method")["game_id"].apply(set)
     assert per_method["market_residual_roles"] == per_method["market_residual"]
 
@@ -326,8 +285,6 @@ def test_cfb_role_benchmark_requires_role_columns(cfb_features_frame: pd.DataFra
 def test_cfb_role_benchmark_rejects_constant_role_columns(
     cfb_features_frame: pd.DataFrame,
 ) -> None:
-    # The failure mode that voided the first real run: an all-neutral join
-    # makes the candidate arm identical to the baseline. Must fail closed.
     features = cfb_features_frame.copy()
     for column in CFB_ROLE_FEATURE_COLUMNS:
         features[column] = CONTINUITY_NEUTRAL if not column.startswith("diff_") else 0.0

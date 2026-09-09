@@ -42,13 +42,6 @@ from nfl_ats.weak_signals import default_registry_path, load_registry  # noqa: E
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from decision_load_measurements import load_measurements  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# Hand-derived measurements not present as accuracy-scale rows in any
-# *paired*.csv artifact, sourced directly from the docs cited in each comment.
-# Every number here is copied, not re-estimated, from the cited source.
-# ---------------------------------------------------------------------------
-
-# docs/mod07_stack.md "Result": 456 paired games, week-blocked 95% CI.
 MOD07_RAW = dr.EffectMeasurement(
     label="mod07_weak_stack (raw, 456-game selected window)",
     estimate=1.97,
@@ -56,13 +49,9 @@ MOD07_RAW = dr.EffectMeasurement(
     n_games=456,
     source="docs/mod07_stack.md",
 )
-# docs/pool_edge_plan.md "Where to look next": delivered result on the full
-# 1,537-game opener-graded window. Not itself fed to the prior fit -- this is
-# the ground truth the validation step checks the posterior against.
 MOD07_DELIVERED_ESTIMATE = 0.33
 MOD07_DELIVERED_N = 1537
 
-# AGENTS.md, "interval crossing zero" section: three pooled weak signals.
 POOLED_WEAK_SIGNAL = dr.EffectMeasurement(
     label="pooled_weak_signal (3-signal inverse-variance pool)",
     estimate=0.724,
@@ -71,8 +60,6 @@ POOLED_WEAK_SIGNAL = dr.EffectMeasurement(
     source="AGENTS.md interval-crossing-zero section, 2026-08-18",
 )
 
-# docs/injury_value_lost.md section 4: the narrowed, semantics-shift-free arm
-# is the number the task explicitly asks for, not the conflated +1.75.
 INJURY_VALUE_LOST_NARROWED = dr.EffectMeasurement(
     label="injury_value_lost_narrowed (D-A, semantics-shift removed)",
     estimate=1.316,
@@ -81,16 +68,8 @@ INJURY_VALUE_LOST_NARROWED = dr.EffectMeasurement(
     source="docs/injury_value_lost.md section 4",
 )
 
-# docs/pool_edge_plan.md ceiling section: the project's own documented
-# exchange rate between line-error points and ATS accuracy points, used only
-# to make fourth_down_aggressiveness's ats_points figure commensurable with
-# every other candidate here. Flagged explicitly wherever it is used.
 ATS_TO_ACCURACY_EXCHANGE_RATE = 3.0
 
-# registry/weak_signals.json: penalty_discipline carries no interval or SE.
-# Derived here from its own reported components (49.85% vs 50.52% on
-# quartile-sized samples out of 4,431 games -> ~1,108 games per quartile),
-# using the project's own quoted percentages -- not a new measurement.
 PENALTY_DISCIPLINE_QUARTILE_N = 4431 // 4
 PENALTY_DISCIPLINE_P_LOW = 0.4985
 PENALTY_DISCIPLINE_P_HIGH = 0.5052
@@ -102,45 +81,10 @@ def _penalty_discipline_se() -> float:
     return (variance**0.5) * 100.0
 
 
-# ---------------------------------------------------------------------------
-# Calibration-noise sensitivity (docs/purged_cv.md positive control)
-# ---------------------------------------------------------------------------
-#
-# purged_cv.md's positive control plants a KNOWN accuracy effect and runs it
-# through the real pipeline. At a 1.3-point true effect, the full pipeline
-# (with the out-of-time residual/calibration step) recovered the WRONG SIGN
-# (-0.67 vs a realized +1.67); at 3.0 points it recovered +1.14 of +3.34. The
-# doc's own diagnosis is NOT multiplicative attenuation -- a sign flip is
-# impossible under a 0 < k < 1 shrinkage model -- it is an ADDITIVE,
-# direction-unstable noise term from the calibration sample's fold-to-fold
-# instability (quoted as 0.9-1.3 accuracy points across individual folds in a
-# 10-fold worked example). A multiplicative "divide the estimate by k"
-# correction is deliberately NOT applied here: it is not the mechanism the
-# source document identifies, and applying one anyway is exactly the
-# "pick the value that produces the most positive answers" failure this
-# sensitivity check exists to avoid.
-#
-# The same document also reports the ONLY real-data (non-synthetic-plant)
-# reading of this distortion: comparing the full pipeline against a sign-only
-# ablation on the actual data, the gap was 0.1 accuracy point. That
-# measurement aggregates over the full walk-forward evaluator's many
-# refits (hundreds of weeks), which is the same regime nearly all 210 fitted
-# measurements come from -- so REAL_DATA_NOISE_FLOOR is the primary
-# correction applied to the whole fitting set below, and it is small by
-# construction. The larger 0.9-1.3 figure describes per-fold instability in a
-# 10-fold experiment and is applied, as a labelled sensitivity bound rather
-# than a primary correction, only to candidates measured on a comparably
-# small number of blocks (<= SMALL_SAMPLE_GAMES_THRESHOLD games, a proxy for
-# "few independent refits" -- MOD-07 and the injury-value-lost family both
-# ran on 456 games / 35 blocks, structurally the closest thing in this
-# project's record to the purged-CV positive control's own fold count).
 REAL_DATA_NOISE_FLOOR = 0.1
-SMALL_SAMPLE_NOISE_FLOOR = 1.1  # midpoint of the quoted 0.9-1.3 pt range
+SMALL_SAMPLE_NOISE_FLOOR = 1.1
 SMALL_SAMPLE_NOISE_FLOOR_RANGE = (0.9, 1.3)
 SMALL_SAMPLE_GAMES_THRESHOLD = 1000
-
-
-# ---------------------------------------------------------------------------
 
 
 def build_registry_measurements() -> list[dr.EffectMeasurement]:
@@ -185,14 +129,13 @@ def main() -> int:
         else (REPO_ROOT / "artifacts" / "decision_rule_report.json")
     )
 
-    # 1. Fit the prior.
     measurements_df = load_measurements()
     fit_inputs = [
         dr.EffectMeasurement(
             label=f"{row.source}:{row.label}:{row.window}",
             estimate=float(row.estimate),
             standard_error=float(row.se),
-            n_games=None if row.n_games != row.n_games else int(row.n_games),  # NaN check
+            n_games=None if row.n_games != row.n_games else int(row.n_games),
             source=str(row.source),
         )
         for row in measurements_df.itertuples(index=False)
@@ -218,7 +161,6 @@ def main() -> int:
             f"  measurement SE={se_example:.1f} -> weight on data (shrinkage_factor)={shrink:.3f}"
         )
 
-    # 2. Validate against MOD-07.
     print()
     print("=" * 78)
     print("STEP 2: MOD-07 REGRESSION VALIDATION")
@@ -243,7 +185,6 @@ def main() -> int:
         f"prior  |  actual shrinkage realized: {actual_shrink_pct:.1f}%"
     )
 
-    # 2.5 Calibration-noise sensitivity (docs/purged_cv.md).
     print()
     print("=" * 78)
     print("STEP 2.5: CALIBRATION-NOISE SENSITIVITY (docs/purged_cv.md)")
@@ -275,8 +216,6 @@ def main() -> int:
     pc_mean, pc_tau = prior_corrected.mean, prior_corrected.sd
     print(f"prior (uncorrected):         mean={prior_pm.mean:+.4f}  tau={prior_pm.sd:.4f}")
     print(f"prior (noise-floor applied): mean={pc_mean:+.4f}  tau={pc_tau:.4f}")
-    # Degenerate worst case, reported not adopted: apply the full small-sample
-    # noise floor to EVERY fitting row, not just the small ones.
     fit_inputs_worst_case = [
         dr.EffectMeasurement(
             label=m.label,
@@ -300,8 +239,6 @@ def main() -> int:
         "aggregation level."
     )
 
-    # 3. Evaluate every live candidate, under both the original and the
-    # noise-floor-corrected prior, inflating candidate SEs the same way.
     print()
     print("=" * 78)
     print("STEP 3: LIVE CANDIDATES")
@@ -355,7 +292,6 @@ def main() -> int:
     print()
     print(f"Verdicts flipped by the noise-floor correction: {flipped if flipped else 'NONE'}")
 
-    # Model averaging.
     print()
     print("=" * 78)
     print("MODEL AVERAGING")
@@ -382,7 +318,6 @@ def main() -> int:
     for label, weight in sorted(blend.weights.items(), key=lambda kv: -kv[1]):
         print(f"  weight {weight:.3f}  {label}")
 
-    # Snapshot.
     snapshot = {
         "prior_paule_mandel": {
             "mean": prior_pm.mean,
@@ -438,7 +373,7 @@ def main() -> int:
         },
     }
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(snapshot, out_path)  # ENG-38
+    write_stamped_artifact(snapshot, out_path)
     print()
     print(f"wrote {out_path}")
     return 0

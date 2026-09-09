@@ -482,9 +482,6 @@ def build_season_lagged_player_ratings(
     if not targets:
         raise ValueError("At least one target season is required")
 
-    # Build one sparse design matrix. Its global vocabulary contains only
-    # participant identifiers, never outcomes. A future-only player therefore
-    # contributes an all-zero column to an earlier fit and cannot change it.
     offense_counts_by_season: dict[int, Counter[str]] = {
         season: Counter() for season in available_seasons
     }

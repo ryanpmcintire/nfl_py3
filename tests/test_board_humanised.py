@@ -76,35 +76,20 @@ from nfl_ats import board_terminal
 from nfl_ats.board_content import BANNED_BOILERPLATE
 from nfl_ats.board_site_content import PLAIN_SUMMARY_PENDING, SiteContent
 
-# ---------------------------------------------------------------------------
-# Patterns
-# ---------------------------------------------------------------------------
-
 _HEX_RE = re.compile(r"(?<![a-z0-9])[0-9a-f]{8,}(?![a-z0-9])", re.IGNORECASE)
 _VERSIONED_SLUG_RE = re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+)*_v\d\b")
 _SNAKE_CASE_RE = re.compile(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b")
 _SNAPSHOT_STAMP_RE = re.compile(r"\b\d{8}T\d{6}Z\b")
-#: The raw ISO-8601 ``T`` separator specifically -- NOT the human
-#: "YYYY-MM-DD HH:MM UTC" (space-separated) format this site's OWN "updated
-#: .../Generated ..." footers use on purpose (``board_content
-#: ._build_headline_stats``'s ``synced_at_text``,
-#: ``board_site_content._generated_at_text``): that format is the fix, not
-#: a violation of the render contract it is checked against.
 _ISO_TIMESTAMP_RE = re.compile(r"\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}")
 _P_PLUS_RE = re.compile(r"\bP\+")
 _WEEK_BLOCKED_RE = re.compile(r"week-blocked", re.IGNORECASE)
 
-# Exempt blocks: script/style/code tags, and backtick-quoted spans (the
-# markdown card's own "code span" convention -- see module docstring).
 _EXEMPT_TAG_BLOCK_RE = re.compile(
     r"<(script|style|code)\b[^>]*>.*?</\1>", re.IGNORECASE | re.DOTALL
 )
 _BACKTICK_SPAN_RE = re.compile(r"`[^`\n]+`")
 _TAG_RE = re.compile(r"<[^>]+>")
 
-# File-path citations (``docs/opener_evaluation.md``,
-# ``scripts/overlay_subset_composition.py``, ``registry/weak_signals.json``)
-# -- footnote-style references, not registry identifiers.
 _FILE_PATH_RE = re.compile(
     r"\b(?:[a-zA-Z][\w-]*/)+[\w.-]+\.(?:md|py|json|csv|parquet|txt|yaml|yml|css)\b"
 )
@@ -137,10 +122,6 @@ def _assert_humanised(label: str, markup: str) -> None:
 
     hex_hit = _HEX_RE.search(text)
     if hex_hit is not None:
-        # An 8+ digit run with no letters is virtually always two adjacent
-        # numbers (a season, a game count) rather than a real fingerprint --
-        # still worth a real assertion, not a silent pass, so only an
-        # ALL-DIGIT token is forgiven.
         assert hex_hit.group(0).isdigit(), (
             f"{label}: hex-looking token {hex_hit.group(0)!r} (fingerprint/model id "
             "leaked into reader text)"
@@ -163,11 +144,6 @@ def _assert_humanised(label: str, markup: str) -> None:
 
     snake_hit = _SNAKE_CASE_RE.search(text)
     assert snake_hit is None, f"{label}: bare snake_case identifier {snake_hit.group(0)!r}"
-
-
-# ---------------------------------------------------------------------------
-# The four rendered pages
-# ---------------------------------------------------------------------------
 
 
 @pytest.fixture(scope="module")
@@ -200,35 +176,6 @@ def test_findings_page_is_humanised(site_content: SiteContent) -> None:
     html = board_terminal.render_findings_page(site_content.findings)
     _assert_humanised("findings.html (What We've Learned)", html)
 
-
-# ---------------------------------------------------------------------------
-# Every rendered registry row must carry a genuine plain-English summary --
-# never a raw description, and never silently missing either. Lane AQ,
-# 2026-09-05 (dashboard humanising follow-up to lane AH's audit above):
-# ``board_site_content``'s three registry-fed renderers (What we're
-# watching, Research this week, Signal registry) now show
-# ``PLAIN_SUMMARY_PENDING`` instead of ever falling back to raw research
-# prose when a row has no recorded ``plain_summary`` -- so this placeholder
-# appearing on the LIVE site is itself the backlog signal: some registry
-# row a reader can currently see has not been written up in plain language
-# yet. A future session that records a new weak signal without
-# ``--plain-summary`` and lets it surface on "What we're watching" or the
-# "Signal registry" trips one of the tests below, not a silent jargon leak.
-# ``scripts/backfill_plain_summaries.py --missing-plain-summary`` lists the
-# exact backlog by name.
-#
-# Checked against the CONTENT layer (``site_content.findings``), not the
-# rendered HTML string: "Research this week" also mixes in rotation-window
-# entries, which structurally can never carry a ``plain_summary`` (
-# ``rotation.Family`` has no such field in its schema at all, only a
-# research-prose ``description``) -- a real, tracked gap, but a schema
-# change out of this lane's scope, not a per-row backlog item the way a
-# weak signal's missing summary is. A blanket "no PLAIN_SUMMARY_PENDING
-# anywhere on findings.html" assertion would therefore fail on every run
-# regardless of how complete the WEAK-SIGNAL backfill is, which is not an
-# actionable signal -- so the three checks below scope precisely to what
-# CAN be fixed, and only that.
-# ---------------------------------------------------------------------------
 
 _MISSING_PLAIN_SUMMARY_HINT = (
     "-- run .tools\\uv.exe run --no-sync python scripts\\backfill_plain_summaries.py "
@@ -289,19 +236,6 @@ def test_recent_activity_weak_signal_entries_have_no_plain_summary_backlog() -> 
     )
 
 
-# ---------------------------------------------------------------------------
-# The board assistant's embedded knowledge base: reader-visible the moment a
-# user asks about an open lead, even though it never appears in the page's
-# static HTML -- so the ``<script>``-tag exemption every other check in this
-# suite relies on (see the module docstring) would otherwise hide it
-# entirely. Found live, 2026-09-05: ``board_assistant.build_knowledge``'s
-# "watching:" entries hand-built their own sentence out of raw jargon
-# fields (``f"{name}: {effect_text} (probability positive {pp:.4f}; "
-# "unresolved below power -- an open lead, not a verdict)."``) rather than
-# using the same plain-English ``description``/``plain_summary`` every
-# static renderer above was already fixed to use.
-# ---------------------------------------------------------------------------
-
 _ASSISTANT_DATA_RE = re.compile(
     r'<script type="application/json" class="assistant-data">(.*?)</script>', re.DOTALL
 )
@@ -339,11 +273,6 @@ def test_findings_page_assistant_watching_answers_are_humanised(
     assert bodies, "fixture regression: findings.html has no watching-lead assistant entries"
     for body in bodies:
         _assert_humanised("findings.html assistant watching answer", body)
-
-
-# ---------------------------------------------------------------------------
-# The published card
-# ---------------------------------------------------------------------------
 
 
 def test_published_card_is_humanised(tmp_path: Path) -> None:

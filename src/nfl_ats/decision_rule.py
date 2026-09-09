@@ -59,18 +59,13 @@ import math
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-_Z95 = 1.959963984540054  # two-sided 95% normal multiplier, kept for callers
+_Z95 = 1.959963984540054
 _SQRT_2 = math.sqrt(2.0)
 _SQRT_2PI = math.sqrt(2.0 * math.pi)
 
 
 class DecisionRuleError(ValueError):
     """Raised for invalid inputs to the prior fit or the decision arithmetic."""
-
-
-# ---------------------------------------------------------------------------
-# Normal-distribution primitives (no scipy dependency; math.erf is stdlib)
-# ---------------------------------------------------------------------------
 
 
 def norm_cdf(x: float) -> float:
@@ -163,11 +158,6 @@ def _expected_positive_part(mean: float, sd: float) -> float:
         return max(0.0, mean)
     z = mean / sd
     return sd * norm_pdf(z) + mean * norm_cdf(z)
-
-
-# ---------------------------------------------------------------------------
-# Measurements and the prior fit
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -286,10 +276,6 @@ def fit_empirical_prior(
         mu, _ = weighted_mean_and_q(tau2)
         return EmpiricalPrior(mean=mu, variance=tau2, n_measurements=k, method=method)
 
-    # Paule-Mandel: Q(tau2) is monotone non-increasing in tau2, so bisect for
-    # the root of Q(tau2) - target. At tau2 = 0, Q is the ordinary
-    # fixed-effect heterogeneity statistic; it can lie below target - 1 (no
-    # detectable heterogeneity), in which case the root is 0.
     lo, hi = 0.0, max_tau2
     _, q_lo = weighted_mean_and_q(lo)
     if q_lo <= target:
@@ -305,11 +291,6 @@ def fit_empirical_prior(
         tau2 = (lo + hi) / 2.0
     mu, _ = weighted_mean_and_q(tau2)
     return EmpiricalPrior(mean=mu, variance=tau2, n_measurements=k, method=method)
-
-
-# ---------------------------------------------------------------------------
-# The decision
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -386,11 +367,6 @@ def evaluate_candidate(measurement: EffectMeasurement, prior: EmpiricalPrior) ->
         expected_cost_if_skip_is_wrong=cost_skip_wrong,
         verdict="use" if post_mean > 0.0 else "dont_use",
     )
-
-
-# ---------------------------------------------------------------------------
-# Model averaging
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)

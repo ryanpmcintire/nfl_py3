@@ -90,25 +90,14 @@ from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  #
 DEFAULT_ARCHIVE = REPO_ROOT / "artifacts/opener_evaluation/20260819T174244Z/per_game.parquet"
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "artifacts/confidence_allocation_sim"
 
-#: A week must have at least this many *graded* (non-push) games to enter
-#: the sample -- ROADMAP LEAD-51's frozen design threshold.
 MIN_GRADED_GAMES = 8
 
-#: Field sizes named in the frozen design (a Splash-style pool's plausible
-#: field range; POL-05's own sweep goes wider but this experiment only needs
-#: to show the allocation lever's sign is stable across scale).
 FIELD_SIZES: tuple[int, ...] = (20, 100, 500)
 
-#: Monte Carlo draws per week for the field's one-entrant score distribution
-#: and FLAT's own-score distribution (both estimated; every other strategy's
-#: weekly score is exact). i.i.d. entrants mean N never multiplies this cost.
 MC_DRAWS = 20_000
 
-#: One fixed seed, consumed sequentially over weeks in chronological order --
-#: the whole run is reproducible from this single number (tests pin it).
 SIM_SEED = 20260905
 
-#: Outer week-blocked bootstrap over the per-week strategy-vs-FLAT deltas.
 BOOTSTRAP_SAMPLES = 1_000
 BOOTSTRAP_SEED = 20260905
 BOOTSTRAP_CONFIDENCE = 0.95
@@ -133,11 +122,6 @@ REQUIRED_ARCHIVE_COLUMNS = frozenset(
         "pick_home_at_open_probability_rule",
     }
 )
-
-
-# ---------------------------------------------------------------------------
-# Data loading
-# ---------------------------------------------------------------------------
 
 
 def load_archive(path: Path, *, min_graded_games: int = MIN_GRADED_GAMES) -> pd.DataFrame:
@@ -188,11 +172,6 @@ def measure_favorite_share(graded: pd.DataFrame) -> float:
     return float(np.mean(model_side == favorite))
 
 
-# ---------------------------------------------------------------------------
-# Walk-forward calibration (calibration honesty: strictly earlier weeks only)
-# ---------------------------------------------------------------------------
-
-
 def walk_forward_calibration(
     graded: pd.DataFrame, *, min_train: int = DEFAULT_MIN_CALIBRATION_GAMES
 ) -> pd.DataFrame:
@@ -239,11 +218,6 @@ def walk_forward_calibration(
     return frame
 
 
-# ---------------------------------------------------------------------------
-# Confidence-point assignment
-# ---------------------------------------------------------------------------
-
-
 def assign_points(confidence: np.ndarray, game_ids: np.ndarray) -> np.ndarray:
     """Distinct point values ``1..n``, with ``n`` (the most points) going to
     the highest-confidence game -- Splash-style confidence-pool scoring
@@ -266,11 +240,6 @@ def assign_points(confidence: np.ndarray, game_ids: np.ndarray) -> np.ndarray:
     points = np.empty(n, dtype=int)
     points[order_frame["_position"].to_numpy()] = np.arange(n, 0, -1)
     return points
-
-
-# ---------------------------------------------------------------------------
-# Per-week simulation
-# ---------------------------------------------------------------------------
 
 
 def _field_cdf_pmf_at(
@@ -350,17 +319,11 @@ def simulate_week(
         np.where(favorite_covered, p_favorite, 1.0 - p_favorite),
     )
 
-    # FLAT's own-score distribution: a random permutation of 1..n dotted with
-    # our FIXED correctness pattern.
     own_permutations = rng.random((mc_draws, n)).argsort(axis=1) + 1
     flat_own_draws = (own_permutations * our_correct[None, :]).sum(axis=1)
     own_values, own_counts = np.unique(flat_own_draws, return_counts=True)
     own_pmf = own_counts / mc_draws
 
-    # One field entrant's score distribution: independent per-game coin
-    # flips at opponent_correct_probability, dotted with an independent
-    # random permutation. i.i.d. entrants means this single distribution
-    # (not an (entrants, mc_draws) array) is all any field size needs.
     field_hits = rng.random((mc_draws, n)) < opponent_correct_probability[None, :]
     field_permutations = rng.random((mc_draws, n)).argsort(axis=1) + 1
     field_draws = (field_permutations * field_hits).sum(axis=1)
@@ -460,11 +423,6 @@ def run_simulation(
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Cross-week comparison: paired difference vs FLAT, week-blocked bootstrap
-# ---------------------------------------------------------------------------
-
-
 def era_scope_labels(rows: pd.DataFrame) -> pd.DataFrame:
     """Two halves of the archive's own week list (chronological), used
     because the frozen opener archive spans 2020-2025 only -- it does not
@@ -474,7 +432,7 @@ def era_scope_labels(rows: pd.DataFrame) -> pd.DataFrame:
 
     weeks = rows[["season", "week"]].drop_duplicates().sort_values(["season", "week"])
     weeks = weeks.reset_index(drop=True)
-    midpoint = -(-len(weeks) // 2)  # ceil division: first half gets the extra week if odd
+    midpoint = -(-len(weeks) // 2)
     weeks["era"] = np.where(weeks.index < midpoint, "first_half", "second_half")
     return rows.merge(weeks, on=["season", "week"], how="left")
 
@@ -575,11 +533,6 @@ def compare_strategies(
     return pd.DataFrame(results)
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, default=DEFAULT_ARCHIVE)
@@ -613,10 +566,6 @@ def main() -> int:
             f"P+={row['probability_positive']:.4f}"
         )
 
-    # Positive-control self-check: oracle must weakly dominate every other
-    # strategy's weekly expected_points, every week (it assigns the largest
-    # available point values to the fixed set of correct picks, which is the
-    # score-maximizing permutation for that week by construction).
     points_by_week = rows.drop_duplicates(["season", "week", "strategy"]).pivot(
         index=["season", "week"], columns="strategy", values="expected_points"
     )

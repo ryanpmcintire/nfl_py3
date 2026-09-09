@@ -31,10 +31,6 @@ def test_hashes_are_deterministic(tmp_path) -> None:
 
 
 def test_provenance_without_git_or_manifests(private_raw_root: Path) -> None:
-    # ENG-30: this asserts "no enclosing git repository," which requires a
-    # temp dir outside this repo's own .git -- not guaranteed by plain
-    # `tmp_path` when `--basetemp` is pointed in-repo. See conftest.py's
-    # `private_raw_root` fixture.
     feature_path = private_raw_root / "game_features.parquet"
     feature_path.write_bytes(b"features")
     payload = artifact_provenance({"model": "test"}, feature_path, project_root=private_raw_root)
@@ -54,8 +50,6 @@ def test_provenance_uses_matching_feature_manifest(tmp_path) -> None:
 
 
 def test_git_diff_sha256_outside_git_repo(private_raw_root: Path) -> None:
-    # ENG-30: needs a temp dir outside this repo's own .git; plain `tmp_path`
-    # does not guarantee that when `--basetemp` is pointed in-repo.
     assert git_diff_sha256(private_raw_root) is None
 
 
@@ -89,11 +83,6 @@ def test_git_diff_sha256_changes_with_the_working_tree(tmp_path) -> None:
     second = git_diff_sha256(tmp_path)
     assert second is not None
     assert second != first
-
-
-# ---------------------------------------------------------------------------
-# The experiment-provenance registry (RWB-09)
-# ---------------------------------------------------------------------------
 
 
 def _write_experiment_record_payload(**overrides: object) -> dict[str, object]:
@@ -174,7 +163,6 @@ def test_bounded_metrics_truncates_and_names_oversized_entries() -> None:
     assert bounded["headline"] == 1.1
     assert "huge_table" not in bounded
     assert bounded["_metrics_truncated_keys"] == ["huge_table"]
-    # The bounded payload itself must actually be small -- that is the point.
     assert len(json.dumps(bounded).encode("utf-8")) < len(json.dumps(metrics).encode("utf-8"))
 
 
@@ -187,9 +175,6 @@ def _feature_setup(tmp_path: Path) -> Path:
 def test_write_experiment_artifact_writes_metadata_and_registry_row(tmp_path: Path) -> None:
     _init_repo(tmp_path)
     feature_path = _feature_setup(tmp_path)
-    # Commit the feature file too, so this tree is genuinely clean -- an
-    # untracked file would otherwise make git_state report dirty=True, which
-    # is exactly correct but not what this particular test is exercising.
     _run_git(["add", "game_features.parquet"], tmp_path)
     _run_git(["commit", "-q", "-m", "add feature table"], tmp_path)
     configuration = {"command": "demo-command", "start_season": 2020}
@@ -226,7 +211,7 @@ def test_write_experiment_artifact_writes_metadata_and_registry_row(tmp_path: Pa
     assert record.config_hash == provenance["configuration_sha256"]
     assert record.code_revision == provenance["code"]["revision"]
     assert record.code_dirty is False
-    assert record.code_diff_sha256 is None  # clean tree: no diff to hash
+    assert record.code_diff_sha256 is None
     assert record.artifact_directory == str(output)
     assert record.metrics["accuracy_points"] == 1.1
     assert record.provenance_backfilled is False
@@ -238,7 +223,7 @@ def test_write_experiment_artifact_records_a_dirty_tree_never_blocks(tmp_path: P
     feature_path = _feature_setup(tmp_path)
     configuration = {"command": "demo-command"}
     provenance = artifact_provenance(configuration, feature_path, project_root=tmp_path)
-    assert provenance["code"]["dirty"] is True  # sanity: the tree really is dirty
+    assert provenance["code"]["dirty"] is True
 
     metadata = {"provenance": provenance}
     output = tmp_path / "artifacts" / "demo_command" / "20260101T000000Z"
@@ -254,7 +239,6 @@ def test_write_experiment_artifact_records_a_dirty_tree_never_blocks(tmp_path: P
         registry_root=tmp_path / "registry",
     )
 
-    # The whole point: a dirty run is RECORDED, never refused.
     assert payload["code_dirty"] is True
     assert payload["code_diff_sha256"] is not None
     assert payload["code_diff_sha256"] == git_diff_sha256(tmp_path)

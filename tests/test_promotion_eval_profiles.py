@@ -32,8 +32,6 @@ def test_stacked_profile_is_weak_stack_plus_both_columns_exactly() -> None:
         assert stacked - base == {QB_REVENGE_COLUMN, DEADLINE_INTEGRATION_DRAG_COLUMN}
         assert base - stacked == set()
         assert stacked == base | {QB_REVENGE_COLUMN, DEADLINE_INTEGRATION_DRAG_COLUMN}
-        # Exactly the union of the two individual candidate profiles -- no
-        # third column snuck in, none dropped.
         assert stacked == qb_revenge_only | deadline_drag_only
 
 
@@ -43,7 +41,4 @@ def test_stacked_profile_columns_are_claimed_by_the_two_existing_families() -> N
         DEADLINE_INTEGRATION_DRAG_COLUMN
         in FEATURE_FAMILIES["deadline_integration_drag_on_production"]
     )
-    # No new FEATURE_FAMILIES key was declared for the stacked profile --
-    # both columns already belong to a family from their own individual
-    # on-production screens.
     assert "weak_stack_qb_revenge_deadline_drag" not in FEATURE_FAMILIES

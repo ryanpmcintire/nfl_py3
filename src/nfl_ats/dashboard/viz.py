@@ -27,10 +27,6 @@ from html import escape
 from itertools import pairwise
 from typing import Any
 
-# ---------------------------------------------------------------------------
-# Small primitives
-# ---------------------------------------------------------------------------
-
 
 def page_header(kicker: str, title: str, sub: str = "") -> str:
     """Page title block. The 24px title size ships as the ``page-title``
@@ -41,8 +37,6 @@ def page_header(kicker: str, title: str, sub: str = "") -> str:
     sub_html = f'<p class="sub">{escape(sub)}</p>' if sub else ""
     return (
         f'<div style="margin: 4px 0 18px;"><p class="kicker">{escape(kicker)}</p>'
-        # <h1>: every page opens at the top of the document outline (WCAG
-        # 1.3.1 Info and Relationships); sizes still come from the classes.
         f'<h1 class="title page-title">{escape(title)}</h1>{sub_html}</div>'
     )
 
@@ -103,7 +97,6 @@ def stat_tile(
     )
 
 
-# Text glyphs inside bordered circles: SVG icons do not survive the sanitizer.
 _STATUS_GLYPHS = {"good": "&#10003;", "warning": "!", "critical": "&#215;"}
 
 
@@ -126,11 +119,6 @@ def empty_state(title: str, body: str) -> str:
         f'<p class="title" style="margin-bottom:6px;">{escape(title)}</p>'
         f'<p class="sub" style="max-width:52ch;margin:0 auto;">{escape(body)}</p></div>'
     )
-
-
-# ---------------------------------------------------------------------------
-# Probability meter — calibrated cover probability vs. the coin flip
-# ---------------------------------------------------------------------------
 
 
 def probability_meter(probability: float, *, label: str, width: int = 240) -> str:
@@ -163,21 +151,6 @@ def probability_meter(probability: float, *, label: str, width: int = 240) -> st
   </div>
 </div>
 """
-
-
-# ---------------------------------------------------------------------------
-# The cover curve — confidence across alternative spreads, with an on-chart
-# slider (the flagship chart)
-#
-# 2026-08-26 merge (owner): this single component REPLACES two things that
-# used to answer the same question on their own -- the old ``sweep_curve``
-# (a static S-curve with a hover-only tooltip) and the standalone
-# spread-explorer slider (a separate ``<input type=range>`` with its own
-# separate text readout, wired by ``public_board._spread_explorer_script``).
-# The owner's complaint was exactly that duplication ("the Line sweep &
-# explorer also shows basically the same thing as the spread explorer"), so
-# there is now ONE curve, coloured, with the slider's handle riding on it.
-# ---------------------------------------------------------------------------
 
 
 def _polygon(points: Sequence[tuple[float, float]]) -> str:
@@ -246,26 +219,6 @@ def cover_curve(
         return empty_state("No line data saved", "This card predates the line-sweep artifact.")
 
     ordered_points = sorted(points, key=lambda item: item[0])
-    # Reconcile two estimators of the same quantity WITHOUT bending the curve.
-    #
-    # Measured on a real build (2026-08-26): a card's own
-    # ``home_cover_probability`` differs from its OWN ``line_sweep`` row at the
-    # same offset by ~1.8 points (0.5169 vs. 0.4989, 2026_01_NE_SEA). That is
-    # not a defect -- ``margin.py`` documents the asymmetry deliberately: the
-    # published probability comes from ``_smoothed_probability``'s continuous
-    # test, while the sweep rows are raw empirical counts over the simulated
-    # margin distribution. Two estimators, one quantity.
-    #
-    # Pinning ONLY the quoted-line point to ``anchor_probability`` (the first
-    # attempt at this) put the marker back on its own value but tore that one
-    # vertex ~1.8 points away from its neighbours, drawing a visible pinch in
-    # the middle of an otherwise smooth curve (owner-reported, 2026-08-26).
-    #
-    # A rigid translation fixes both at once: shift the WHOLE series by the
-    # gap measured at the quoted line. Shape, spacing and monotonicity are
-    # preserved exactly, the marker lands on the curve by construction, and
-    # every point stays the real swept value plus one constant. The shift is
-    # zero when the two estimators already agree.
     quoted_probability = next(
         (p for offset, p in ordered_points if abs(offset - quoted_line) < 1e-9), None
     )
@@ -290,36 +243,21 @@ def cover_curve(
     curve = [(x_pct(offset), y_pct(p)) for offset, p in ordered_points]
     baseline_pct = y_pct(0.5)
 
-    # Two-tone diverging fill: clamp each point to the baseline from either
-    # side, so each polygon collapses to a zero-height (invisible) sliver
-    # wherever the curve is actually on the OTHER side of 50% -- the standard
-    # bichromatic-area technique. No curve-crossing solver needed, and it
-    # degrades safely even for a non-monotonic curve.
     above = [(x, min(y, baseline_pct)) for x, y in curve]
     below = [(x, max(y, baseline_pct)) for x, y in curve]
     area_pos_polygon = _polygon([*above, (100.0, baseline_pct), (0.0, baseline_pct)])
     area_neg_polygon = _polygon([*below, (100.0, baseline_pct), (0.0, baseline_pct)])
-    # The curve's own edge stays one neutral tone (our model's reading) --
-    # the two-tone fill beneath it is what carries the diverging encoding.
     line_half = 1.5 / plot_height * 100.0
     line_polygon = _polygon(
         [*[(x, y - line_half) for x, y in curve], *[(x, y + line_half) for x, y in reversed(curve)]]
     )
 
-    # Gridlines are symmetric around the 50% baseline (a diverging chart's
-    # meaningful centre), unlike the old asymmetric set.
     grid = "".join(
         f'<div style="position:absolute;left:0;right:0;top:{y_pct(level):.2f}%;height:1px;'
         'background:var(--grid);"></div>'
         for level in (0.3, 0.4, 0.6, 0.7)
         if y_min <= level <= y_max
     )
-    # Walk OUTWARD from the quoted line (never from x_min) so the market's
-    # own tick is always included, however narrow the domain -- a fixed
-    # x_min-anchored stride could step clean over it (verified live: a
-    # narrow +/-0.5 domain with the old x_min-anchored walk skipped offset 0
-    # entirely). The domain's own edges are always added too, so the chart
-    # never implies more range than it actually plots.
     tick_step = max(1.0, round(span / 4))
     tick_offsets = {round(quoted_line, 1), round(x_min, 1), round(x_max, 1)}
     outward = quoted_line + tick_step
@@ -339,25 +277,16 @@ def cover_curve(
         )
 
     anchor_x, anchor_y = x_pct(quoted_line), y_pct(anchor_probability)
-    # The slider can only land where this chart can actually answer: the
-    # finest gap really present in the (real or synthesized) grid, not an
-    # invented finer resolution.
     step = min((b - a for a, b in pairwise(xs)), default=0.5) or 0.5
     handle_tone, handle_fill = _handle_tone(anchor_probability)
 
     payload = escape(json.dumps([[round(offset, 1), round(p, 4)] for offset, p in ordered_points]))
-    # The cover probability diverges around 50%: above it the pick is favoured
-    # at that alternate line, below it the pick is against the odds. The
-    # numeral is always legible, so colour is the second channel, and an exact
-    # 50% reads neutral rather than being pushed to a side.
     table_rows = "".join(
         f"<tr><td>{sweep_offset_label(o)}</td>"
         f'<td><span class="delta {"pos" if p > 0.5 else "neg" if p < 0.5 else "zero"}">'
         f"{p:.1%}</span></td></tr>"
         for o, p in ordered_points
     )
-    # Built as plain text first, escaped whole, so the 100-col limit does not
-    # force a line break INSIDE the rendered attribute value.
     plot_aria_label = escape(
         f"{pick_text} across hypothetical lines near {quote_label}, "
         "with a slider below to explore others"
@@ -410,11 +339,6 @@ def cover_curve(
   </details>
 </div>
 """
-
-
-# ---------------------------------------------------------------------------
-# Line journey — the market's number vs. ours, on one scale
-# ---------------------------------------------------------------------------
 
 
 def line_journey(
@@ -487,11 +411,6 @@ def line_journey(
 """
 
 
-# ---------------------------------------------------------------------------
-# Season bars — one thin bar per season, direct-labeled
-# ---------------------------------------------------------------------------
-
-
 def season_bars(
     rows: Sequence[tuple[str, float]],
     *,
@@ -542,14 +461,6 @@ def season_bars(
   </div>
 </div>
 """
-
-
-# ---------------------------------------------------------------------------
-# Delegated interaction layer (ship once per page): one drag handler for
-# every ``.ats-cover`` widget, replacing the old hover-only crosshair
-# (``interaction_script``/``interaction_js``, retired with ``sweep_curve``)
-# and the standalone spread-explorer script it was paired with.
-# ---------------------------------------------------------------------------
 
 
 def cover_curve_script(payload: Mapping[str, Mapping[str, Any]]) -> str:

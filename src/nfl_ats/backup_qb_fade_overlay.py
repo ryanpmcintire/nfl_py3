@@ -98,14 +98,8 @@ from nfl_ats.prospective_scoring import (
 from nfl_ats.provenance import sha256_file
 from nfl_ats.snapshots import latest_snapshot, load_snapshot
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "backup_qb_fade_overlay"
 
-#: The battery's own frozen eligibility floor (scripts/nfl_bias_battery_screen.py
-#: / nfl_ats.experiment_runner._bias_battery_qb_backup_flag): a team's
-#: starting QB is only ever compared against a modal-starter baseline once at
-#: least this many prior starts this season have been observed. Kept exactly
-#: as measured -- not a free parameter of this overlay.
 MIN_PRIOR_STARTS = 3
 
 

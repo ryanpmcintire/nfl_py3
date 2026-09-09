@@ -76,10 +76,6 @@ from nfl_ats.clv import (  # noqa: E402
 from nfl_ats.data import DataContractError  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 from nfl_ats.rotation import load_registry  # noqa: E402
-
-# Reused unmodified from the sibling template (see the module docstring and
-# docs/movement_leads_battery.md's "Construction" section for why these are
-# imported rather than re-implemented).
 from scripts.movement_expansion_battery import (  # noqa: E402
     NULL_PERMUTATIONS,
     PRODUCTION_PICK_COL,
@@ -98,7 +94,7 @@ DEFAULT_REGISTRY_ROOT = REPO_ROOT / "registry"
 ROTATION_FAMILY = "movement_leads_v1"
 
 BOOTSTRAP_SAMPLES = 20_000
-BOOTSTRAP_SEED = 20260905  # this document's own seed (docs/movement_leads_battery.md)
+BOOTSTRAP_SEED = 20260905
 THRESHOLD = 1.0
 RISING_TOTAL_THRESHOLD = 2.0
 STABLE_SPREAD_THRESHOLD = 0.5
@@ -106,27 +102,11 @@ STABLE_SPREAD_THRESHOLD = 0.5
 INTRADAY_LABEL = "intraday_hourly"
 INTRADAY_SEASONS: tuple[int, ...] = (2023, 2024, 2025)
 EASTERN = ZoneInfo("America/New_York")
-# Day offsets match odds_backfill.DECISION_TIMES' own convention
-# (tue_open=-5, thu_pre_tnf=-3, sat_midday=-1): negative = days before that
-# week's anchor Sunday. Wednesday sits between Tuesday and Thursday, at -4.
 WEDNESDAY_DAY_OFFSET = -4
-WEDNESDAY_HOUR_ET = 12  # "Wed-noon", LEAD-01's own ROADMAP-declared instrument
+WEDNESDAY_HOUR_ET = 12
 SUNDAY_DAY_OFFSET = 0
-SUNDAY_HOUR_ET = (
-    16  # true deadline; real archive ceiling ~10:55 ET (docs/observed_movement_channel.md)
-)
-# tue_open < thu_pre_tnf < sat_midday < sun_early_close: sun_late_close and
-# mon_pre_mnf are excluded even when they precede a game's own kickoff --
-# both sit structurally after the owner's Sunday 16:00 ET pick deadline.
+SUNDAY_HOUR_ET = 16
 PRE_DEADLINE_LABELS: tuple[str, ...] = ("tue_open", "thu_pre_tnf", "sat_midday", "sun_early_close")
-
-
-# ---------------------------------------------------------------------------
-# Intraday-hourly loading: duplicated (not imported) from
-# observed_movement_channel.py, whose own docstring explains the identical
-# choice for its ``_true_week_correct`` helper -- module-private, not meant
-# for cross-script reuse.
-# ---------------------------------------------------------------------------
 
 
 def _true_week_correct(quotes: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
@@ -251,11 +231,6 @@ def _home_spread_at_weekday_cutoff(
     return spread, n_missing
 
 
-# ---------------------------------------------------------------------------
-# LEAD-06: latest pre-deadline historical_backfill checkpoint
-# ---------------------------------------------------------------------------
-
-
 def load_latest_pre_deadline(
     market_root: Path, game_features_path: Path, seasons: tuple[int, int]
 ) -> pd.DataFrame:
@@ -319,11 +294,6 @@ def rising_total_dog_pick(
         pd.Series(pick, index=tue_open_total.index).astype(bool),
         pd.Series(flagged.fillna(False), index=tue_open_total.index),
     )
-
-
-# ---------------------------------------------------------------------------
-# Cell 4: per-point value, paired difference between day-parts (c) and (a)
-# ---------------------------------------------------------------------------
 
 
 def per_point_value_diff_metric(
@@ -457,11 +427,6 @@ def generic_null_distribution(
     }
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, default=DEFAULT_ARCHIVE)
@@ -490,9 +455,6 @@ def main() -> int:
         season=schedule["season"].astype(int), week=schedule["week"].astype(int)
     )
 
-    # ================================================================
-    # Day-part population (2023-2025) -- cells 1, 2, 3, 4
-    # ================================================================
     day_part_base = archive.loc[archive["season"].isin(INTRADAY_SEASONS)].reset_index(drop=True)
     print(f"\nday-part base population (2023-2025): {len(day_part_base)} games")
 
@@ -653,9 +615,6 @@ def main() -> int:
         f"P+={cell_4['week_blocked_probability_positive']:.4f}"
     )
 
-    # ================================================================
-    # LEAD-06: rising-total, stable-spread dog -- assigned window population
-    # ================================================================
     window_population = archive.loc[archive["season"].between(*window_seasons)].reset_index(
         drop=True
     )
@@ -692,10 +651,6 @@ def main() -> int:
         f"P+={cell_5['week_blocked_probability_positive']:.4f}"
     )
 
-    # ================================================================
-    # Positive controls (perfect-foresight, NOT recorded to the signal
-    # registry -- instrument sensitivity diagnostics only)
-    # ================================================================
     joint_control = joint.copy()
     joint_control["_pick_perfect_foresight"] = joint_control["margin_vs_open"].gt(0.0)
     control_dayparts = score_cell(
@@ -726,9 +681,6 @@ def main() -> int:
         f"P+={control_window['week_blocked_probability_positive']:.4f}"
     )
 
-    # ================================================================
-    # Write artifacts
-    # ================================================================
     run_dir_name = args.out or time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     output_dir = DEFAULT_OUTPUT_ROOT / run_dir_name
     output_dir.mkdir(parents=True, exist_ok=True)

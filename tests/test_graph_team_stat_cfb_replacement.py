@@ -64,11 +64,6 @@ def _training_frame(extra_columns: tuple[str, ...] = ()) -> pd.DataFrame:
     return frame
 
 
-# ---------------------------------------------------------------------------
-# 1-2. The substitution is exact, and nothing else moves
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize("cell", CFB_GRAPH_CELLS)
 def test_replacement_drops_every_raw_column_and_adds_the_graph(cell: str) -> None:
     contract = replacement.replacement_feature_columns(cell)
@@ -114,11 +109,6 @@ def test_other_cells_team_state_triples_are_untouched(cell: str) -> None:
         assert cfb_graph_column(other) not in contract
 
 
-# ---------------------------------------------------------------------------
-# 3. The FITTED design matrix agrees with the declared contract
-# ---------------------------------------------------------------------------
-
-
 def test_fitted_design_matrix_matches_the_replacement_contract() -> None:
     graph_column = cfb_graph_column(CELL)
     training = _training_frame(extra_columns=(graph_column,))
@@ -142,11 +132,6 @@ def test_fitted_benchmark_design_matrix_is_the_frozen_contract() -> None:
         training, feature_columns=replacement.arm_feature_columns(CELL)["benchmark"]
     )
     assert list(model.estimator.feature_names_in_) == list(CFB_MODEL_FEATURE_COLUMNS)
-
-
-# ---------------------------------------------------------------------------
-# 4. The ablation arm adds nothing
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("cell", CFB_GRAPH_CELLS)
@@ -177,11 +162,6 @@ def test_positive_control_swaps_only_the_graph_column_for_the_leak() -> None:
     assert leaked["replacement"][:-1] == honest["replacement"][:-1]
 
 
-# ---------------------------------------------------------------------------
-# 5. Undeclared cells are refused (WP8's cell gate, inherited)
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     "builder",
     [
@@ -198,11 +178,6 @@ def test_undeclared_cell_is_refused(builder: object) -> None:
 def test_arm_feature_columns_refuses_an_undeclared_cell() -> None:
     with pytest.raises(ValueError):
         replacement.arm_feature_columns("off_plays_per_game")
-
-
-# ---------------------------------------------------------------------------
-# 6. The reliability long-frame reshape is faithful
-# ---------------------------------------------------------------------------
 
 
 def test_long_frame_gives_each_side_its_own_value() -> None:
@@ -252,14 +227,8 @@ def test_graph_rating_pair_names_match_the_katz_columns() -> None:
         assert away_column.startswith("away_")
         assert home_column.endswith("_katz")
         assert away_column.endswith("_katz")
-        # The differential WP8 attaches is formed from exactly this pair.
         stem = home_column[len("home_") : -len("_katz")]
         assert cfb_graph_column(cell) == f"{stem}_katz_diff"
-
-
-# ---------------------------------------------------------------------------
-# The picks-moved counter, which every reported delta is quoted beside
-# ---------------------------------------------------------------------------
 
 
 def test_picks_moved_counts_only_sides_that_actually_flip() -> None:

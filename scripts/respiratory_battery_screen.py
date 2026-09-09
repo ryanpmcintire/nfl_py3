@@ -89,8 +89,6 @@ SEASON_START = 2022
 SEASON_END = 2026
 DECILE_THRESHOLD = 0.90
 
-# docs/respiratory_battery.md section 1 -- measured NSSP state-level floor;
-# the three per-pathogen signals still updating as of ingest.
 PATHOGEN_SIGNALS = ("pct_ed_visits_covid", "pct_ed_visits_influenza", "pct_ed_visits_rsv")
 
 
@@ -108,11 +106,6 @@ def epiweek_to_release_date(epiweek: int) -> pd.Timestamp:
     return pd.Timestamp(release_date)
 
 
-# ---------------------------------------------------------------------------
-# 1. As-of checkpoint construction (docs/respiratory_battery.md section 3)
-# ---------------------------------------------------------------------------
-
-
 def _to_fluview_shape(raw: pd.DataFrame) -> pd.DataFrame:
     """Reshape one pathogen signal's raw NSSP rows into FluView's own raw-row
     column schema (``region``, ``epiweek``, ``issue``, ``release_date``,
@@ -123,18 +116,6 @@ def _to_fluview_shape(raw: pd.DataFrame) -> pd.DataFrame:
     shaped = raw.rename(columns={"time_value": "epiweek", "value": "ili"})[
         ["region", "epiweek", "issue", "ili"]
     ].copy()
-    # Round-trip through a string, then pd.to_datetime -- measured this
-    # session: schedules.parquet's own ``gameday`` column is stored as
-    # plain strings, so ``load_schedules``' ``cutoff_date`` gets whatever
-    # datetime64 resolution ``pd.to_datetime`` infers FROM A STRING
-    # (``datetime64[us]`` on this session's pandas). A Series built
-    # directly via ``.apply()`` over per-row Timestamp OBJECTS infers a
-    # DIFFERENT resolution and merge_asof then refuses to compare them
-    # (``pandas.errors.MergeError: incompatible merge keys``). Routing
-    # through the same string-parsing path ``cutoff_date`` and FluView's
-    # own ingest-parsed ``release_date`` both use guarantees a matching
-    # resolution by construction rather than by hardcoding a specific unit
-    # that could silently drift with a pandas/parquet version change.
     shaped["release_date"] = pd.to_datetime(
         shaped["issue"].apply(epiweek_to_release_date).astype(str), errors="raise"
     )
@@ -179,11 +160,6 @@ def attach_asof_pathogen(
     return df
 
 
-# ---------------------------------------------------------------------------
-# 2. Population + feature construction
-# ---------------------------------------------------------------------------
-
-
 def _latest(glob_pattern: str, label: str) -> Path:
     candidates = sorted(REPO.glob(glob_pattern))
     if not candidates:
@@ -224,7 +200,7 @@ def load_schedules(path: Path) -> pd.DataFrame:
     pushes_or_missing = n_before_push_drop - len(df)
 
     df["gameday"] = pd.to_datetime(df["gameday"], errors="raise")
-    weekday = df["gameday"].dt.weekday  # Monday=0 ... Sunday=6, Tuesday=1
+    weekday = df["gameday"].dt.weekday
     tuesday_offset = (weekday - 1) % 7
     df["cutoff_date"] = df["gameday"] - pd.to_timedelta(tuesday_offset, unit="D")
     df["week_block"] = df["season"] * 100 + df["week"]
@@ -238,9 +214,6 @@ def load_schedules(path: Path) -> pd.DataFrame:
             f"{sorted(set(unmapped['home_team']) | set(unmapped['away_team']))}"
         )
 
-    # docs/respiratory_battery.md section 4 -- REUSED unchanged from
-    # fluview_battery_screen.PEAK_WEEKS, not re-derived from NSSP's own
-    # national series.
     game_epiweek_of_year = df["gameday"].apply(lambda d: cdc_epiweek(d) % 100)
     df["is_peak_week"] = game_epiweek_of_year.isin(PEAK_WEEKS)
 
@@ -250,8 +223,6 @@ def load_schedules(path: Path) -> pd.DataFrame:
 
 
 def attach_asof_respiratory(df: pd.DataFrame, respiratory: pd.DataFrame) -> pd.DataFrame:
-    # Checkpoints built ONCE per signal (not per side) -- home and away both
-    # look up the same per-state, per-signal checkpoint table.
     checkpoints_by_signal = {
         signal: build_pathogen_checkpoints(respiratory, signal) for signal in PATHOGEN_SIGNALS
     }
@@ -260,11 +231,6 @@ def attach_asof_respiratory(df: pd.DataFrame, respiratory: pd.DataFrame) -> pd.D
         for signal in PATHOGEN_SIGNALS:
             col = f"{side}_{signal}"
             df = attach_asof_pathogen(df, checkpoints_by_signal[signal], side=side, out_col=col)
-            # Plain ``+`` (not ``.add(..., fill_value=...)``): pandas NaN
-            # propagates through addition by default, which is exactly the
-            # any-missing-poisons-the-sum rule docs/respiratory_battery.md
-            # section 3 requires -- a missing pathogen value must never be
-            # silently treated as 0.
             total = df[col] if total is None else total + df[col]
         df[f"{side}_respiratory_total"] = total
     return df
@@ -295,7 +261,7 @@ def compute_state_thresholds(panel: pd.DataFrame) -> dict[str, float]:
     thresholds: dict[str, float] = {}
     for state, group in panel.groupby("state"):
         values = group["ili"].dropna()
-        if len(values) >= 10:  # floor for a stable decile estimate
+        if len(values) >= 10:
             thresholds[state] = float(values.quantile(DECILE_THRESHOLD))
     return thresholds
 
@@ -313,11 +279,6 @@ def attach_elevated_flags(df: pd.DataFrame, thresholds: dict[str, float]) -> pd.
         df["away_missing"], False, df["away_respiratory_total"] >= df["away_threshold"]
     )
     return df
-
-
-# ---------------------------------------------------------------------------
-# 3. Cells (docs/respiratory_battery.md section 5)
-# ---------------------------------------------------------------------------
 
 
 def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
@@ -382,11 +343,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     expected = 5
     assert len(cells) == expected, f"expected {expected} predeclared cells, got {len(cells)}"
     return cells
-
-
-# ---------------------------------------------------------------------------
-# 4. Bootstrap (algorithm-identical to fluview_battery_screen.py)
-# ---------------------------------------------------------------------------
 
 
 def summarize(
@@ -474,20 +430,10 @@ def score_cell(
     }
 
 
-# ---------------------------------------------------------------------------
-# 5. Reliability check (docs/respiratory_battery.md section 6)
-# ---------------------------------------------------------------------------
-
-
 def compute_reliability(panel: pd.DataFrame) -> dict[str, Any]:
     long = panel.dropna(subset=["ili"]).copy()
     long["team_id"] = long["state"]
     return split_half_reliability(long, "ili", seed=BOOTSTRAP_SEED)
-
-
-# ---------------------------------------------------------------------------
-# 6. Main
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:

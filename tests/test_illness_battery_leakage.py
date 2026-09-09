@@ -56,8 +56,8 @@ def test_asof_resolution_never_sees_a_revision_issued_after_the_cutoff() -> None
     before that later revision must see the OLD (non-illness) state; a
     cutoff on/after it must see the flip."""
 
-    early = pd.Timestamp("2023-10-04T12:00:00Z")  # Wednesday
-    late = pd.Timestamp("2023-10-06T20:00:00Z")  # Friday, after the cutoff below
+    early = pd.Timestamp("2023-10-04T12:00:00Z")
+    late = pd.Timestamp("2023-10-06T20:00:00Z")
 
     injuries = screen.add_is_illness(
         pd.DataFrame(
@@ -138,10 +138,6 @@ def test_a_null_date_modified_row_never_becomes_visible() -> None:
                 "week": [3],
                 "team": ["DAL"],
                 "gsis_id": ["Q"],
-                # Matches nfl_ats.load_injuries()'s own conversion
-                # (pd.to_datetime(..., errors="coerce", utc=True)) -- a
-                # bare [pd.NaT] column would infer a tz-naive dtype instead,
-                # which is not the real calling contract this function sees.
                 "date_modified": pd.to_datetime([None], errors="coerce", utc=True),
                 "report_primary_injury": ["Illness"],
                 "report_secondary_injury": [None],

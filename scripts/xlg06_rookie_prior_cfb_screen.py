@@ -143,16 +143,9 @@ from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 OUT_ROOT = REPO / "artifacts" / "xlg06_rookie_prior_cfb"
 CFB_ROOT = REPO / "data" / "cfb"
 
-# 20,000 per this task's binding instruction (mirrors experiments.py's own D3
-# rationale: 2,000 leaves ~6-7% Monte-Carlo jitter near a gate). Seed frozen
-# before any correlation or reliability number in this script was computed --
-# only join/coverage diagnostics (counts, null rates) had been measured first.
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260818
 
-# QB-first (hard constraint 3): primary population. RB/WR/TE reported
-# separately as secondary coherence checks, never pooled (see module
-# docstring -- usage.overall's scale differs structurally by position).
 PRIMARY_POSITION = "QB"
 SECONDARY_POSITIONS = ("RB", "WR", "TE")
 
@@ -670,7 +663,7 @@ def main() -> None:
         "secondary_position_correlations_player_blocked_secondary": secondary_player,
         "timings": timings,
     }
-    write_stamped_artifact(payload, output / "results.json")  # ENG-38
+    write_stamped_artifact(payload, output / "results.json")
     print(f"\nWrote {output / 'results.json'}", flush=True)
     print(json.dumps(timings, indent=2), flush=True)
 

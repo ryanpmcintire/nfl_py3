@@ -123,9 +123,6 @@ ROBOTS_URL = "https://www.sportsbookreviewsonline.com/robots.txt"
 USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmail.com)"
 DELAY_SECONDS = 1.5
 
-# Every one of the 44 unique raw "Team" tokens actually observed across all
-# 15 fetched season files (see module docstring). Exact-match dict, not a
-# fuzzy/substring matcher -- the token set is finite and known.
 TEAM_MAP: dict[str, str] = {
     "Arizona": "ARI",
     "Atlanta": "ATL",
@@ -151,9 +148,6 @@ TEAM_MAP: dict[str, str] = {
     "LARams": "LA",
     "LVRaiders": "LV",
     "LasVegas": "LV",
-    # Only occurs 2016-17 (n=1 season); unambiguous that year since the
-    # Chargers were still tokenized "SanDiego" (they did not move to LA
-    # until 2017-18) -- measured from the same token scan.
     "LosAngeles": "LA",
     "Miami": "MIA",
     "Minnesota": "MIN",
@@ -161,13 +155,6 @@ TEAM_MAP: dict[str, str] = {
     "NYJets": "NYJ",
     "NewEngland": "NE",
     "NewOrleans": "NO",
-    # Single occurrence, 2013-14, Rot 210, home team beat visiting Oakland
-    # 24-20 on date "1110" (Nov 10 2013). **Measured** against
-    # game_features.parquet (game_id "2013_10_OAK_NYG", home_team=NYG,
-    # home_score=24, away_score=20, gameday 2013-11-10): this is the
-    # Giants, not the Jets -- an initial guess of NYJ (from an unverified
-    # memory of a Jets-Raiders score that week) was wrong; the Jets actually
-    # had a Week 10 bye that season. Corrected after checking the source.
     "NewYork": "NYG",
     "Oakland": "LV",
     "Philadelphia": "PHI",
@@ -179,7 +166,7 @@ TEAM_MAP: dict[str, str] = {
     "Tampa": "TB",
     "TampaBay": "TB",
     "Tennessee": "TEN",
-    "Washingtom": "WAS",  # typo, 2020-21 only
+    "Washingtom": "WAS",
     "Washington": "WAS",
 }
 
@@ -198,11 +185,6 @@ RAW_ROW_COLUMNS = [
     "ML",
     "2H",
 ]
-
-
-# ---------------------------------------------------------------------------
-# 1. Fetch
-# ---------------------------------------------------------------------------
 
 
 def fetch_all(raw_root: Path) -> Path:
@@ -275,11 +257,6 @@ def latest_snapshot(raw_root: Path) -> Path:
     if not candidates:
         raise FileNotFoundError(f"No sbr_odds snapshots with a manifest found under {raw_root}")
     return candidates[-1]
-
-
-# ---------------------------------------------------------------------------
-# 2. Parse
-# ---------------------------------------------------------------------------
 
 
 class _OddsTableParser(HTMLParser):
@@ -385,10 +362,6 @@ def _disambiguate_spread_total(away_value: float, home_value: float) -> tuple[fl
     total = max(away_magnitude, home_magnitude)
     home_favored = home_magnitude <= away_magnitude
     home_spread = spread_magnitude if home_favored else -spread_magnitude
-    # Flag cases where the min/max heuristic is questionable: a "spread" over
-    # 26 points has essentially never been posted in the modern NFL, and a
-    # "total" under 33 is very rare -- either signals the two numbers may not
-    # actually split cleanly into (spread, total) this way.
     ambiguous = spread_magnitude > 26.0 or total < 33.0
     return home_spread, total, ambiguous
 
@@ -405,10 +378,6 @@ def build_games(raw_long: pd.DataFrame, season: int) -> pd.DataFrame:
         vh_pair = {first["VH"], second["VH"]}
         if vh_pair not in ({"V", "H"}, {"N"}):
             raise ValueError(f"Season {season} row {i}: unexpected VH pair {vh_pair}")
-        # SBR row-order convention: first row = away position, second row =
-        # home position -- literal V/H when present; for neutral-site games
-        # ("N", Super Bowl only, ~1/season) this is a positional ASSUMPTION,
-        # not a verified home designation (flagged via neutral_site below).
         away, home = first, second
         neutral_site = first["VH"] == "N"
 
@@ -559,11 +528,6 @@ def write_processed(sbr: pd.DataFrame, out_path: Path, *, raw_snapshot_dir: Path
     manifest_path = out_path.with_suffix(".manifest.json")
     atomic_json(manifest, manifest_path)
     print(f"Wrote {out_path} ({len(sbr)} rows) and {manifest_path}")
-
-
-# ---------------------------------------------------------------------------
-# 3. Validation
-# ---------------------------------------------------------------------------
 
 
 def close_check(sbr: pd.DataFrame, game_features_path: Path) -> pd.DataFrame:
@@ -729,11 +693,6 @@ def coverage_check(
         "per_season": pd.DataFrame(rows).sort_values("season").reset_index(drop=True),
         "unmatched_examples": unmatched_examples,
     }
-
-
-# ---------------------------------------------------------------------------
-# 4. CLI
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:

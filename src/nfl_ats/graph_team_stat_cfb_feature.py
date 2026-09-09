@@ -59,24 +59,12 @@ from nfl_ats.graph_ratings_v2 import (
     katz_feature_columns,
 )
 
-#: The three declared cells, one per CFB team-stat column, frozen in
-#: ``docs/graph_team_stat_cfb_replication.md`` section 3 before any sign was
-#: seen. No fourth cell may be added after the first three are scored.
-#:
-#: The mapping to the NFL screen's cells is deliberately honest rather than
-#: three-for-three: the CFB table has no yards-per-play column, no rush/pass
-#: split, and **no sack data at all**, so the NFL ``off_sack_rate`` cell has no
-#: CFB counterpart. ``off_success_rate`` is declared as the third-best
-#: available team-stat column and is NOT presented as a sack-rate analogue.
 CFB_GRAPH_CELLS: Final[tuple[str, ...]] = (
     "def_epa_per_play",
     "off_epa_per_play",
     "off_success_rate",
 )
 
-#: What each cell replicates on the NFL side, for reporting only. Values are
-#: the NFL ``graph_input_screen`` cell whose construct class this CFB cell
-#: stands in for, plus the nearest same-named NFL cell where one exists.
 CFB_GRAPH_CELL_NFL_COUNTERPART: Final[dict[str, str]] = {
     "def_epa_per_play": (
         "NFL def_yards_per_play (screen P+ 0.711; on-production -0.668, P+ 0.189); "
@@ -93,10 +81,6 @@ CFB_GRAPH_CELL_NFL_COUNTERPART: Final[dict[str, str]] = {
     ),
 }
 
-#: Byte-for-byte the structural configuration
-#: ``scripts/graph_team_stat_screen.py::FROZEN_STRUCTURE`` froze for NFL. Never
-#: retuned on CFB: the point of a replication is the SAME transform on new
-#: football, so a CFB refit would answer a different question.
 CFB_GRAPH_FROZEN_STRUCTURE: Final[dict[str, Any]] = {
     "alpha": 0.85,
     "half_life_weeks": 8.0,
@@ -107,8 +91,6 @@ CFB_GRAPH_FROZEN_STRUCTURE: Final[dict[str, Any]] = {
     "injury_beta": 0.0,
 }
 
-#: Adaptation A1: the graph node key. Kept as module constants so the test
-#: suite asserts against the same names the builder uses.
 CFB_HOME_ID_COLUMN: Final[str] = "home_id"
 CFB_AWAY_ID_COLUMN: Final[str] = "away_id"
 
@@ -191,9 +173,6 @@ def add_cfb_graph_team_stat_feature(games: pd.DataFrame, cell: str) -> pd.DataFr
     column = cfb_graph_column(cell)
 
     graph_input = games.copy()
-    # A1: node identity is the ESPN id, cast through Int64 -> str so 12345 and
-    # 12345.0 cannot become two different nodes. The caller's frame is never
-    # mutated -- graph_input is already a copy.
     graph_input["home_team"] = (
         pd.to_numeric(graph_input[CFB_HOME_ID_COLUMN], errors="raise").astype("int64").astype(str)
     )

@@ -77,7 +77,7 @@ BOOTSTRAP_SAMPLES = 1000
 RIDGE_ALPHA = 10.0
 DISTRIBUTION_FRACTION = 0.20
 MIN_DISTRIBUTION_ROWS = 10
-REDUNDANCY_THRESHOLD = 0.6  # |r| >= this co-clusters two families
+REDUNDANCY_THRESHOLD = 0.6
 
 SELECTION_SEASONS = tuple(range(2013, 2020))
 HOLDOUT_SEASONS = tuple(range(2020, 2026))
@@ -87,10 +87,6 @@ MARKET_ROOT = REPO / "data" / "market" / "raw"
 
 NO_SPLIT_HALF_RELIABILITY_MAX = 0.10
 
-# Explicit per-family category mapping (CATEGORIES from weak_signals.py) --
-# every one of the 83 discovered families accounted for, nothing left to a
-# silent default. market/onfield/health/schedule/environment/attention/
-# offfield/modeling/control per that module's own definitions.
 FAMILY_CATEGORY: dict[str, str] = {
     "active_roster_continuity": "onfield",
     "active_roster_mean_experience": "onfield",
@@ -548,9 +544,6 @@ def main() -> None:
 
     print(f"clusters: {len(clusters)} from {len(survivors)} survivors")
 
-    # ------------------------------------------------------------------
-    # Assemble the per-family report
-    # ------------------------------------------------------------------
     per_family: dict[str, Any] = {}
     for name in family_names:
         rel = reliability_by_family[name]
@@ -644,9 +637,6 @@ def main() -> None:
     )
     print(f"\nwrote {output_dir / 'results.json'}")
 
-    # ------------------------------------------------------------------
-    # Record every family via the same validated path the CLI uses
-    # ------------------------------------------------------------------
     print("=== recording weak signals ===")
     registry_path = default_registry_path()
     registry = load_registry(registry_path)

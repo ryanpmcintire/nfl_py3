@@ -143,9 +143,6 @@ def execute_scheduled_lock(
         / f"{target.season}-week-{target.week:02d}"
         / "weekly_summary.json"
     )
-    # ENG-38: write_stamped_artifact() stamps code_revision/code_dirty onto
-    # the summary and writes it atomically -- a strict superset of the manual
-    # atomic write this replaced, not a second path to keep in sync.
     write_stamped_artifact(summary, summary_path)
 
     report = verifier(target.season, target.week, summary)

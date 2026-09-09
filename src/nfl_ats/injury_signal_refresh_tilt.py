@@ -137,10 +137,8 @@ from nfl_ats.pick_refresh import (
     original_card,
 )
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "injury_signal_refresh_tilt"
 
-#: Predeclared in docs/movement_attribution.md, reused here unchanged.
 SEVERITY: dict[str, float] = {"Out": 4.0, "Doubtful": 3.0, "Questionable": 2.0, "Probable": 1.0}
 SKILL_POSITIONS: frozenset[str] = frozenset({"QB", "RB", "WR", "TE"})
 INJURY_NET_THRESHOLD = 2.0
@@ -150,24 +148,12 @@ SOURCE_OFFICIAL = "official"
 SOURCE_PFT_FALLBACK = "pft_fallback"
 SOURCE_NONE = "none"
 
-#: injury fires, movement below threshold (or no fresh line) -- the pure
-#: front-running population this challenger exists to measure.
 DISAGREEMENT_INJURY_ONLY = "injury_only"
-#: movement fired (>=1.0 pt), injury signal did not -- the market moved for
-#: some other visible-or-invisible reason.
 DISAGREEMENT_MOVEMENT_ONLY = "movement_only"
-#: both mechanisms want to move the pick, and to the SAME side.
 DISAGREEMENT_BOTH_AGREE = "both_agree"
-#: both mechanisms fired, but toward OPPOSITE sides -- a genuine conflict.
 DISAGREEMENT_BOTH_DISAGREE = "both_disagree"
-#: neither mechanism fired this pass.
 DISAGREEMENT_NEITHER = "neither"
 
-# Duplicated verbatim from scripts/movement_attribution.py's TEAM_NICKNAMES
-# (itself extending src/nfl_ats/constants.py's TEAM_ABBREVIATION_ALIASES the
-# same way scripts/ingest_public_betting.py does), per this repo's
-# convention of not importing across scripts/*.py files -- and src/nfl_ats
-# modules never import from scripts/ at all.
 TEAM_NICKNAMES: dict[str, tuple[str, ...]] = {
     "ARI": ("cardinals",),
     "ATL": ("falcons",),
@@ -204,12 +190,6 @@ TEAM_NICKNAMES: dict[str, tuple[str, ...]] = {
 }
 
 
-# ---------------------------------------------------------------------------
-# Shared helpers (duplicated from scripts/movement_attribution.py, per this
-# repo's cross-scripts/src convention -- see module docstring)
-# ---------------------------------------------------------------------------
-
-
 def own_week_tuesday_noon_utc(kickoff_utc: pd.Series) -> pd.Series:
     """Own-week Tuesday noon ET, in UTC. Duplicated (not imported) from
     ``scripts/movement_attribution.py``'s identical helper (itself
@@ -228,11 +208,6 @@ def _canonical_team(code: str) -> str:
     return TEAM_ABBREVIATION_ALIASES.get(str(code), str(code))
 
 
-# ---------------------------------------------------------------------------
-# Fail-open source loaders
-# ---------------------------------------------------------------------------
-
-
 def _latest_official_injuries_fail_open(data_root: Path) -> pd.DataFrame | None:
     """The newest locally ingested official injury-report snapshot, or
     ``None`` on ANY failure (no snapshot fetched yet, a malformed source, a
@@ -245,7 +220,7 @@ def _latest_official_injuries_fail_open(data_root: Path) -> pd.DataFrame | None:
     try:
         snapshot = latest_player_snapshot(data_root / "players" / "raw")
         injuries, _rosters, _snaps = load_player_snapshot(snapshot)
-    except Exception as exc:  # deliberate fail-open, see docstring
+    except Exception as exc:
         warnings.warn(
             f"{CHALLENGER_ID}: no official injury-report snapshot available, falling back "
             f"to PFT news / no signal ({type(exc).__name__}: {exc})",
@@ -270,7 +245,7 @@ def _latest_pft_index_fail_open(data_root: Path) -> pd.DataFrame | None:
         if not candidates:
             raise FileNotFoundError(f"No injury-news snapshot under {root}")
         pft = pd.read_parquet(candidates[-1] / "index.parquet")
-    except Exception as exc:  # deliberate fail-open, see docstring
+    except Exception as exc:
         warnings.warn(
             f"{CHALLENGER_ID}: no PFT injury-news snapshot available, proceeding with no "
             f"fallback signal ({type(exc).__name__}: {exc})",
@@ -293,11 +268,6 @@ def _latest_pft_index_fail_open(data_root: Path) -> pd.DataFrame | None:
     pft = pft.dropna(subset=["lastmod"])
     pft["headline_norm"] = pft["headline_guess"].fillna("")
     return pft
-
-
-# ---------------------------------------------------------------------------
-# The signal itself: docs/movement_attribution.md's INJURY class, live
-# ---------------------------------------------------------------------------
 
 
 def _severity_asof(rows: pd.DataFrame, cutoff: pd.Timestamp) -> pd.DataFrame:
@@ -360,7 +330,7 @@ class InjurySignalReading:
     game_id: str
     picked_team: str
     opponent_team: str
-    source: str  # SOURCE_OFFICIAL / SOURCE_PFT_FALLBACK / SOURCE_NONE
+    source: str
     net_score: float
     threshold: float
     fires: bool
@@ -464,10 +434,6 @@ def classify_disagreement(
         return DISAGREEMENT_MOVEMENT_ONLY
     return DISAGREEMENT_NEITHER
 
-
-# ---------------------------------------------------------------------------
-# The append-only injury-signal ledger
-# ---------------------------------------------------------------------------
 
 INJURY_SIGNAL_LEDGER_COLUMNS: tuple[str, ...] = (
     "revision_recorded_at_utc",

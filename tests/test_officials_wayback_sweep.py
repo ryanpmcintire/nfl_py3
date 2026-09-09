@@ -31,11 +31,6 @@ import scripts.officials_wayback_sweep as sweep  # noqa: E402
 FIXTURES = ROOT / "tests" / "fixtures"
 
 
-# ---------------------------------------------------------------------------
-# Parser
-# ---------------------------------------------------------------------------
-
-
 def test_parses_the_table_strategy_fixture() -> None:
     html = (FIXTURES / "pfr_boxscore_officials_table.html").read_text(encoding="utf-8")
     rows, warnings = sweep.parse_officials_block(html)
@@ -87,11 +82,6 @@ def test_table_strategy_skips_a_literal_header_row() -> None:
 
     assert warnings == []
     assert rows == [("Referee", "Jane Doe")]
-
-
-# ---------------------------------------------------------------------------
-# Backoff / retry schedule (fetch_with_backoff)
-# ---------------------------------------------------------------------------
 
 
 class _ScriptedFetch:
@@ -152,7 +142,6 @@ def test_backoff_gives_up_after_max_attempts_on_persistent_429() -> None:
     assert outcome.status_code == 429
     assert outcome.attempts == 3
     assert outcome.gave_up_after_retries is True
-    # Backoff happens BETWEEN attempts only: 2 sleeps for 3 attempts.
     assert sleeps == [60.0, 120.0]
 
 
@@ -178,22 +167,14 @@ def test_a_non_retryable_status_fails_immediately_without_backoff() -> None:
 def test_rate_limiter_enforces_the_delay_between_calls(monkeypatch: pytest.MonkeyPatch) -> None:
     waited: list[float] = []
     limiter = sweep.RateLimiter(8.0, sleep_fn=waited.append)
-    # wait() reads monotonic() once to compute `elapsed` (when there is a
-    # prior call) and always once more to record the new `_last_call`, so
-    # the first wait() consumes one value and the second consumes two.
     times = iter([0.0, 1.0, 1.0])
 
     monkeypatch.setattr(sweep.time, "monotonic", lambda: next(times))
 
-    limiter.wait()  # baseline, no sleep
-    limiter.wait()  # elapsed=1s, remaining=7s
+    limiter.wait()
+    limiter.wait()
 
     assert waited == [7.0]
-
-
-# ---------------------------------------------------------------------------
-# Schedule loading / season & game_type filtering
-# ---------------------------------------------------------------------------
 
 
 def _write_schedule_fixture(path: Path) -> None:
@@ -220,7 +201,6 @@ def _write_schedule_fixture(path: Path) -> None:
                 "pfr": "201309080abc",
             },
             {
-                # Out of the requested season window -- must be excluded.
                 "game_id": "2015_01_E_F",
                 "season": 2015,
                 "week": 1,
@@ -231,7 +211,6 @@ def _write_schedule_fixture(path: Path) -> None:
                 "pfr": "201509060def",
             },
             {
-                # Postseason -- must be excluded (REG only).
                 "game_id": "2014_21_G_H",
                 "season": 2014,
                 "week": 21,
@@ -242,7 +221,6 @@ def _write_schedule_fixture(path: Path) -> None:
                 "pfr": "201501040ghi",
             },
             {
-                # No pfr id -- must be dropped rather than crash the sweep.
                 "game_id": "2014_02_I_J",
                 "season": 2014,
                 "week": 2,
@@ -264,12 +242,6 @@ def test_load_games_filters_to_reg_season_window_and_drops_missing_pfr(tmp_path:
     games = sweep.load_games(schedule_path, season_start=2013, season_end=2014)
 
     assert list(games["game_id"]) == ["2013_01_C_D", "2014_01_A_B"]
-
-
-# ---------------------------------------------------------------------------
-# run_sweep: resume-skip, hard-stop, no-capture-found, manifest shape,
-# leakage safety
-# ---------------------------------------------------------------------------
 
 
 def _cdx_json(timestamp: str) -> bytes:
@@ -374,8 +346,6 @@ def test_run_sweep_happy_path_writes_manifest_and_parquet_with_leakage_safe_effe
     assert parquet_path.exists()
     frame = pd.read_parquet(parquet_path)
     assert len(frame) == 7
-    # Leakage safety: the effective time is exactly the game's own date --
-    # never the (necessarily later) fetch/capture instant.
     assert (frame["effective_time"] == frame["game_date"]).all()
     assert (frame["effective_time"] == "2014-09-01").all()
     assert set(frame["position"]) == {
@@ -399,7 +369,6 @@ def test_run_sweep_resume_skips_games_already_on_disk_with_zero_new_requests(
     _one_game_schedule(schedule_path, n=1)
     config = _config(tmp_path, schedule_path)
 
-    # First run: fetch the one game for real (via the fake fetch_fn).
     first_fetch = _ScriptedFetch(
         [
             sweep.FetchResult(_cdx_json("20141001000000"), 200, None),
@@ -408,7 +377,6 @@ def test_run_sweep_resume_skips_games_already_on_disk_with_zero_new_requests(
     )
     sweep.run_sweep(config, fetch_fn=first_fetch, sleep_fn=lambda _s: None)
 
-    # Second run, same run_id: must skip the network entirely for that game.
     def _explode(_url: str) -> sweep.FetchResult:
         raise AssertionError("resume must not re-fetch a game already on disk")
 
@@ -424,11 +392,9 @@ def test_run_sweep_hard_stops_after_consecutive_failures_and_issues_no_further_r
     tmp_path: Path,
 ) -> None:
     schedule_path = tmp_path / "schedules.parquet"
-    _one_game_schedule(schedule_path, n=5)  # more games than the failure budget
+    _one_game_schedule(schedule_path, n=5)
     config = _config(tmp_path, schedule_path, max_consecutive_failures=2, max_request_retries=1)
 
-    # Every CDX call 429s; max_request_retries=1 means no backoff sleep is
-    # actually needed for the retry loop itself to finish quickly.
     fetch = _ScriptedFetch([sweep.FetchResult(None, 429, "http_429")] * 10)
     summary = sweep.run_sweep(config, fetch_fn=fetch, sleep_fn=lambda _s: None)
 
@@ -436,9 +402,6 @@ def test_run_sweep_hard_stops_after_consecutive_failures_and_issues_no_further_r
     assert summary["stop_reason"] == "hard_stop_after_2_consecutive_failures"
     assert summary["new_fetch_attempts"] == 2
     assert summary["games_fetched_ok"] == 0
-    # Exactly 2 games attempted, 1 CDX call each (max_request_retries=1) = 2
-    # total requests -- proof the sweep really stopped rather than grinding
-    # through the remaining 3 games in the window.
     assert summary["total_http_requests"] == 2
     assert len(fetch.calls) == 2
 
@@ -450,15 +413,13 @@ def test_no_capture_found_is_not_a_failure_and_does_not_trip_the_hard_stop(
     _one_game_schedule(schedule_path, n=3)
     config = _config(tmp_path, schedule_path, max_consecutive_failures=2)
 
-    # Every CDX call succeeds (200) but finds zero captures -- a content
-    # result, not a fetch failure, so all 3 games should be attempted.
     fetch = _ScriptedFetch([sweep.FetchResult(_EMPTY_CDX_JSON, 200, None)] * 3)
     summary = sweep.run_sweep(config, fetch_fn=fetch, sleep_fn=lambda _s: None)
 
     assert summary["stopped_early"] is False
     assert summary["games_no_capture_found"] == 3
     assert summary["new_fetch_attempts"] == 3
-    assert summary["total_http_requests"] == 3  # one CDX call per game, no replay call
+    assert summary["total_http_requests"] == 3
     assert len(fetch.calls) == 3
 
 
@@ -506,18 +467,6 @@ def test_parses_the_2014_era_ref_info_table_from_a_real_capture() -> None:
     assert len(rows) == 7
 
 
-# ---------------------------------------------------------------------------
-# 2026-09-07 (lane N): newest-capture selection, per-game fallback,
-# --retry-unparsed, one immutable file per fetch, no duplicate manifest rows.
-#
-# Measured on live Wayback captures this day (docs/officials_archive_probe.md):
-# the 2009-2013 run parsed 0 officials on 418/418 pages because the earliest
-# post-game capture of a 2009-2011 boxscore predates PFR's officials block
-# (absent 2012-08-19, present 2012-10-25 on the same URL), while the newest
-# capture of the same URL parses all seven positions.
-# ---------------------------------------------------------------------------
-
-
 def _cdx_json_multi(*timestamps: str) -> bytes:
     header = ["urlkey", "timestamp", "original", "mimetype", "statuscode", "digest", "length"]
     rows = [
@@ -541,8 +490,6 @@ _NO_OFFICIALS_HTML = (
     "</div></body></html>"
 )
 
-# Verbatim structure of the 2026-09-02 capture of 200909100pit (the officials
-# table sits inside an HTML comment in the 2016+ layout).
 _COMMENTED_OFFICIALS_2026_HTML = """
 <div class="placeholder"></div>
 <!--
@@ -635,14 +582,14 @@ def test_fallback_walks_newest_first_and_stops_at_the_first_capture_that_parses(
             sweep.FetchResult(
                 _cdx_json_multi("20241124171706", "20160629163948", "20260902021727"), 200, None
             ),
-            sweep.FetchResult(_NO_OFFICIALS_HTML.encode("utf-8"), 200, None),  # 2026: parses 0
-            sweep.FetchResult(_table_html().encode("utf-8"), 200, None),  # 2024: parses 7
+            sweep.FetchResult(_NO_OFFICIALS_HTML.encode("utf-8"), 200, None),
+            sweep.FetchResult(_table_html().encode("utf-8"), 200, None),
         ]
     )
     summary = sweep.run_sweep(config, fetch_fn=fetch, sleep_fn=lambda _s: None)
 
     assert summary["officials_rows_parsed"] == 7
-    assert summary["total_http_requests"] == 3  # CDX + 2 replays; the third capture never fetched
+    assert summary["total_http_requests"] == 3
     assert summary["fallback_replay_fetches"] == 1
     assert summary["games_parsed_zero"] == 0
     assert "/web/20260902021727id_/" in fetch.calls[1]
@@ -658,7 +605,6 @@ def test_fallback_walks_newest_first_and_stops_at_the_first_capture_that_parses(
         "20241124171706",
     ]
     assert row["attempted_captures"][0]["officials_parsed"] == 0
-    # Both fetched pages are kept on disk, immutable, one file per fetch.
     html_dir = config.raw_root / config.run_id / "html"
     assert sorted(p.name for p in html_dir.iterdir()) == [
         "20140907001xyz__20241124171706.html",
@@ -671,7 +617,6 @@ def test_fallback_budget_is_respected_and_zero_fallbacks_means_one_replay(tmp_pa
     _one_game_schedule(schedule_path, n=1)
     cdx = _cdx_json_multi("20140905101010", "20141006175522", "20241124171706", "20150926165118")
 
-    # fallback_captures=2 -> at most 3 replays even though 4 captures exist.
     config = _config(tmp_path, schedule_path, fallback_captures=2)
     fetch = _ScriptedFetch(
         [sweep.FetchResult(cdx, 200, None)]
@@ -693,7 +638,6 @@ def test_fallback_budget_is_respected_and_zero_fallbacks_means_one_replay(tmp_pa
     assert row["html_file"] is not None
     assert (config.raw_root / config.run_id / row["html_file"]).exists()
 
-    # fallback_captures=0 -> exactly one replay, the newest.
     config0 = _config(tmp_path / "zero", schedule_path, fallback_captures=0)
     fetch0 = _ScriptedFetch(
         [
@@ -777,7 +721,7 @@ def _seed_old_policy_run(config: sweep.SweepConfig, html: str, *, capture_ts: st
 def test_retry_unparsed_off_never_refetches_a_zero_parse_page(tmp_path: Path) -> None:
     schedule_path = tmp_path / "schedules.parquet"
     _one_game_schedule(schedule_path, n=1)
-    config = _config(tmp_path, schedule_path)  # retry_unparsed defaults to False
+    config = _config(tmp_path, schedule_path)
     _seed_old_policy_run(config, _NO_OFFICIALS_HTML, capture_ts="20140905101010")
 
     def _explode(_url: str) -> sweep.FetchResult:
@@ -815,7 +759,7 @@ def test_retry_unparsed_refetches_newer_captures_excluding_the_one_already_on_di
     assert summary["officials_rows_parsed"] == 7
     assert "/web/20260902021727id_/" in fetch.calls[1]
     manifest = json.loads((config.raw_root / config.run_id / "manifest.json").read_text())
-    assert len(manifest["games"]) == 1  # upserted, not duplicated
+    assert len(manifest["games"]) == 1
     row = manifest["games"][0]
     assert row["retried_unparsed"] is True
     assert row["outcome"] == "fetched"
@@ -828,7 +772,6 @@ def test_retry_unparsed_refetches_newer_captures_excluding_the_one_already_on_di
     ]
     assert row["attempted_captures"][0]["from_previous_run"] is True
     assert row["attempted_captures"][0]["html_file"] == "html/20140907001xyz.html"
-    # The old capture is immutable: still on disk, byte-identical.
     assert old_html.read_bytes() == old_bytes
     frame = pd.read_parquet(config.processed_root / config.run_id / "officials_2009_2014.parquet")
     assert (frame["wayback_capture_timestamp"] == "20260902021727").all()
@@ -849,7 +792,7 @@ def test_retry_unparsed_skips_a_page_that_now_parses_under_the_current_parser(
     _seed_old_policy_run(config, _table_html(), capture_ts="20141006175522")
     snapshot_dir = config.raw_root / config.run_id
     manifest = json.loads((snapshot_dir / "manifest.json").read_text())
-    manifest["games"][0]["officials_parsed"] = 0  # stale, as written by the old parser
+    manifest["games"][0]["officials_parsed"] = 0
     (snapshot_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
 
     def _explode(_url: str) -> sweep.FetchResult:
@@ -886,8 +829,6 @@ def test_retry_unparsed_with_no_newer_capture_keeps_the_old_page_without_duplica
     assert row["html_file"] == "html/20140907001xyz.html"
     assert row["officials_parsed"] == 0
     assert "no post-game capture beyond" in row["retry_note"]
-    # A further resume with the same flag re-issues the single CDX call and
-    # still leaves exactly one row for the game.
     fetch2 = _ScriptedFetch([sweep.FetchResult(_cdx_json_multi("20140905101010"), 200, None)])
     summary2 = sweep.run_sweep(config, fetch_fn=fetch2, sleep_fn=lambda _s: None)
     assert summary2["total_http_requests"] == 1
@@ -899,7 +840,6 @@ def test_limit_caps_new_fetches_but_still_reparses_every_page_on_disk(tmp_path: 
     _one_game_schedule(schedule_path, n=3)
     config = _config(tmp_path, schedule_path)
 
-    # Fetch game 1 and game 3 only (game 2 is throttled and left unfetched).
     first = _ScriptedFetch(
         [
             sweep.FetchResult(_cdx_json_multi("20260902021727"), 200, None),
@@ -911,8 +851,6 @@ def test_limit_caps_new_fetches_but_still_reparses_every_page_on_disk(tmp_path: 
     )
     sweep.run_sweep(config, fetch_fn=first, sleep_fn=lambda _s: None)
 
-    # Resume with --limit 0: no network at all, yet BOTH on-disk games are
-    # re-parsed into the parquet (game 3 sits after the unfetched game 2).
     def _explode(_url: str) -> sweep.FetchResult:
         raise AssertionError("--limit 0 must issue no requests")
 

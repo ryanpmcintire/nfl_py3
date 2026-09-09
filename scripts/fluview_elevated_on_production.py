@@ -114,11 +114,6 @@ CELLS: dict[str, dict[str, Any]] = {
 }
 
 
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
-
-
 def run_leg(
     completed: pd.DataFrame,
     leg_season: int,
@@ -354,11 +349,6 @@ def summarize_leg(leg_frame: pd.DataFrame, samples: int, seed: int) -> dict[str,
         return None
     graded = grade(leg_frame)
     return summarize_pair(graded, samples=samples, seed=seed)
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

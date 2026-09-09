@@ -48,10 +48,6 @@ from nfl_ats.spread_explorer import SpreadExplorerGameDistribution, spread_explo
 
 REPO = Path(__file__).resolve().parents[1]
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
 
 def key_number_atoms() -> tuple[np.ndarray, np.ndarray]:
     """A base distribution with real key-number spikes at 3, 7, 10 and 14."""
@@ -127,11 +123,6 @@ def allow_whole_number_pool_lines(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(prediction_safety, "POOL_QUOTES_HALF_POINT_LINES", False)
 
 
-# ---------------------------------------------------------------------------
-# Atoms, tilt, read
-# ---------------------------------------------------------------------------
-
-
 def test_atom_mass_at_the_key_numbers_is_kept_and_stays_local_maximal() -> None:
     margins, counts = key_number_atoms()
     base = counts / counts.sum()
@@ -145,8 +136,6 @@ def test_atom_mass_at_the_key_numbers_is_kept_and_stays_local_maximal() -> None:
     for key in (3.0, 7.0, 10.0, 14.0):
         index = int(np.flatnonzero(margins == key)[0])
         assert mass[index] > mass[index - 1] and mass[index] > mass[index + 1]
-    # Positions never move: the tilt only reweights, so mass at 3 is still the
-    # atom at 3 and the sum is still one.
     assert float((margins * mass).sum()) == pytest.approx(6.0)
     assert float(mass.sum()) == pytest.approx(1.0)
 
@@ -161,7 +150,6 @@ def test_tilt_solver_hits_the_target_and_clamps_outside_the_bracket() -> None:
     lower, _ = tilted_atoms(margins, counts, line=0.0, target=-4.0)
     upper, _ = tilted_atoms(margins, counts, line=0.0, target=+4.0)
     assert upper[margins > 0].sum() > lower[margins > 0].sum()
-    # Documented fallback: an unreachable mean clamps to the nearer bracket end.
     _, high = tilted_atoms(margins, counts, line=0.0, target=1e6)
     _, low = tilted_atoms(margins, counts, line=0.0, target=-1e6)
     assert (high, low) == (THETA_BRACKET, -THETA_BRACKET)
@@ -180,7 +168,6 @@ def test_band_read_pushes_only_on_an_integer_line_and_sums_to_one() -> None:
         assert read.home_cover_probability == pytest.approx(read.cover + 0.5 * read.push)
         assert read.three_way() == (read.cover, read.push, read.loss)
     assert integer.band == BAND_HALF_WIDTH
-    # The band widens only until the declared floor is met.
     sparse_lines = np.concatenate([np.full(30, 12.0), np.full(400, 0.0)])
     sparse_margins = np.concatenate([np.full(30, 14.0), np.zeros(400)])
     widened = band_read(sparse_lines, sparse_margins, line=12.0, point=12.0)
@@ -193,11 +180,6 @@ def test_residual_location_follows_the_probability_method() -> None:
     assert residual_location(residuals, "gaussian") == pytest.approx(1.5)
     with pytest.raises(ValueError, match="residual sample"):
         residual_location(np.array([]), "gaussian_median")
-
-
-# ---------------------------------------------------------------------------
-# Walk-forward leakage
-# ---------------------------------------------------------------------------
 
 
 def test_no_row_uses_its_own_week_a_later_week_or_a_sixth_season_back() -> None:
@@ -239,7 +221,6 @@ def test_no_row_uses_its_own_week_a_later_week_or_a_sixth_season_back() -> None:
         exclude_game_ids={"t1"},
     )
     assert not set(eligible["game_id"]).intersection({"same", "later", "ancient", "t1"})
-    # A completed earlier game does enter and moves the read.
     earlier = poison.iloc[[0]].assign(game_id="earlier", season=2020, week=0)
     earlier["gameday"] = pd.Timestamp("2020-09-01")
     moved = walk_forward_reads(pd.concat([pool, earlier], ignore_index=True), targets, 2.5)
@@ -285,8 +266,6 @@ def test_one_pure_per_game_function_backs_every_served_answer() -> None:
     assert pure == reader.read(3.0, 3.4) == core
     assert pure.cover + pure.push + pure.loss == pytest.approx(1.0)
     assert 0.07 < pure.push < 0.13 and pure.atoms > 10
-    # Walk-forward inside the pure function: a same-week row and the game's
-    # own row leave it bit-for-bit unchanged.
     poison = pd.DataFrame(
         {
             "game_id": ["same", "t1"],
@@ -308,7 +287,6 @@ def test_one_pure_per_game_function_backs_every_served_answer() -> None:
         game_id="t1",
     )
     assert poisoned == pure
-    # The declared band and floor are parameters, not hidden constants.
     wide = discrete_read(pool, 3.0, 3.4, season=2020, week=1, cutoff=cutoff, band=5.0, prior=50)
     assert wide.band == 5.0 and wide.band_games >= 50
     with pytest.raises(ValueError, match="No prior games"):
@@ -352,11 +330,6 @@ def test_frame_helper_aligns_to_the_index_and_matches_the_pure_function() -> Non
     assert reads["prior_rows"].dtype.kind == "i"
 
 
-# ---------------------------------------------------------------------------
-# Served: the push at |line| = 3, the pick unchanged, flag off bit-for-bit
-# ---------------------------------------------------------------------------
-
-
 def test_served_push_at_three_reads_the_lattice_and_never_moves_the_pick(
     model_frame: pd.DataFrame,
 ) -> None:
@@ -372,13 +345,11 @@ def test_served_push_at_three_reads_the_lattice_and_never_moves_the_pick(
         discrete_read=reader,
         discrete_read_log=log,
     )
-    # Everything but the three-way split is bit-for-bit the smooth card.
     untouched = [column for column in baseline.columns if column not in THREE_WAY_COLUMNS]
     pd.testing.assert_frame_equal(baseline[untouched], served[untouched])
     assert (
         baseline["home_cover_probability"].ge(0.5) == served["home_cover_probability"].ge(0.5)
     ).all()
-    # Only the served ATS method reads the lattice; its companions are untouched.
     others = baseline["method"].ne("market_residual")
     pd.testing.assert_frame_equal(
         baseline.loc[others, list(THREE_WAY_COLUMNS)], served.loc[others, list(THREE_WAY_COLUMNS)]
@@ -390,14 +361,11 @@ def test_served_push_at_three_reads_the_lattice_and_never_moves_the_pick(
     assert on_three["push_probability"].between(0.07, 0.13).all()
     assert on_hook["push_probability"].eq(0.0).all()
     validate_three_way_split(ats)
-    # The smooth read at |line| = 3 says far less than the lattice does.
     smooth_three = baseline.loc[
         baseline["method"].eq("market_residual") & baseline["spread_line"].eq(3.0),
         "push_probability",
     ]
     assert (on_three["push_probability"].to_numpy() > smooth_three.to_numpy()).all()
-    # The log carries both reads for every served game, the replaced smooth
-    # split verbatim.
     assert set(log) == set(ats["game_id"].astype(str))
     for game_id, record in log.items():
         row = baseline.loc[
@@ -466,7 +434,6 @@ def test_flag_off_serves_no_reader_and_a_fit_failure_degrades_with_the_error(
     degraded = prediction_cli._served_discrete_push_read(model_frame, request)
     assert degraded is not None and not degraded.served
     assert degraded.error == "no prior games"
-    # With no reader the served card is the smooth card, bit-for-bit.
     baseline = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
     again = score_outcome_week(
         model_frame, season=2020, week=1, min_train_games=80, discrete_read=degraded.reader
@@ -550,7 +517,6 @@ def test_production_reader_prefers_archived_opener_lines_and_degrades_without_th
     assert with_archive.source_model_id == "old"
     assert with_archive.source_path == "opener_evaluation/20260908T000000Z"
     assert with_archive.reader is not None
-    # The archived opener line replaced the feature-table line for those games.
     assert int(np.count_nonzero(with_archive.reader.lines == 9.0)) == 50
     assert with_archive.to_dict()["served"] is True
 
@@ -592,8 +558,6 @@ def test_margin_predict_writes_the_sidecar_with_both_reads(
     assert result.metadata["line_sweep"]["push_read"] == DISCRETE_PUSH_READ_POLICY
     card = pd.read_csv(result.output / "recommendations.csv")
     by_game = {game["game_id"]: game for game in sidecar["games"]}
-    # The card's served split is exactly the pure per-game function applied
-    # to the pool the feature table gives, at the sidecar's recorded point.
     features = pd.read_parquet(features_path)
     pool = prior_pool(features)
     cutoff = pd.Timestamp(
@@ -626,11 +590,6 @@ def test_margin_predict_writes_the_sidecar_with_both_reads(
     ats = sweep.loc[sweep["method"].eq("market_residual")]
     assert np.allclose(ats[list(THREE_WAY_COLUMNS)].sum(axis=1), 1.0)
     assert (ats.loc[~np.isclose(ats["alternative_line"] % 1.0, 0.0), "push_probability"] == 0).all()
-
-
-# ---------------------------------------------------------------------------
-# Spread explorer and the reader-facing sentence
-# ---------------------------------------------------------------------------
 
 
 def test_spread_explorer_three_way_uses_the_reader_when_given() -> None:
@@ -681,11 +640,6 @@ def test_explanation_names_the_push_chance_in_pool_player_words() -> None:
     assert "push" not in tiny
 
 
-# ---------------------------------------------------------------------------
-# Lane K's frozen numbers replay through the module, bit-for-bit
-# ---------------------------------------------------------------------------
-
-
 def _lane_k_root() -> Path:
     override = os.environ.get("NFL_ATS_ARTIFACTS_DIR")
     root = Path(override) if override else REPO / "artifacts"
@@ -726,20 +680,12 @@ def test_lane_k_research_numbers_replay_bit_for_bit_through_the_module() -> None
             ), f"{arm} {column} does not replay bit-for-bit"
 
 
-# ---------------------------------------------------------------------------
-# Lane X review (2026-09-08): alternative-line answers must keep the game's
-# own distribution (conditioned on the quoted line) so cover never rises as
-# the line gets harder; and a per-game read failure must fall back to the
-# smooth read instead of aborting margin-predict.
-# ---------------------------------------------------------------------------
-
-
 def _synthetic_reader() -> DiscretePushReader:
     rng = np.random.default_rng(20260908)
     n = 3000
     lines = rng.choice([-7.0, -3.0, -2.5, 0.0, 2.5, 3.0, 6.5, 7.0, 10.0], size=n)
     margins = np.round(lines + rng.normal(0.0, 13.0, size=n))
-    on_three = rng.random(n) < 0.12  # extra mass on the key number 3
+    on_three = rng.random(n) < 0.12
     margins[on_three] = 3.0
     return DiscretePushReader(lines=lines.astype(float), margins=margins.astype(float))
 
@@ -753,11 +699,9 @@ def test_alternative_lines_keep_the_games_own_distribution() -> None:
         for alt in np.arange(-6.0, 12.5, 0.5)
     ]
     assert (np.diff(np.asarray(covers)) <= 1e-12).all()
-    # Conditioning on the quoted line reproduces the plain read at that line.
     assert reader.three_way(quoted, point, conditioning_line=quoted) == reader.three_way(
         quoted, point
     )
-    # The band and tilt come from the quoted line, not the alternative line.
     conditioned = reader.read(9.0, point, conditioning_line=quoted)
     unconditioned = reader.read(9.0, point)
     assert conditioned.band_games == reader.read(quoted, point).band_games
@@ -821,7 +765,6 @@ def test_scoring_failure_falls_back_to_the_smooth_read() -> None:
     assert "smooth read was served" in (served.error or "")
     assert log == {}
 
-    # No reader: the failure is the caller's, never swallowed.
     smooth_only = ProductionDiscretePushRead(
         policy="test",
         reader=None,

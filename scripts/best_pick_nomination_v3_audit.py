@@ -86,8 +86,6 @@ _paired_delta = _ranker._paired_delta
 DEFAULT_SOURCE = _ranker.DEFAULT_SOURCE
 DEFAULT_MICROSTRUCTURE_SOURCE = _ranker.DEFAULT_MICROSTRUCTURE_SOURCE
 
-# Same seed/sample count as the artifact being audited (20260818T230550Z) --
-# reused deliberately for comparability, not re-chosen after seeing results.
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260818
 
@@ -95,14 +93,6 @@ STORED_ARTIFACT = (
     REPO / "artifacts" / "best_pick_opener_ranker" / "20260818T230550Z" / "summary.json"
 )
 
-# The live production tie-break, exactly matching
-# nfl_ats.best_pick_nomination.select_nominee: primary candidate_dist desc,
-# secondary neg_spread_std desc (== spread_std asc, NaN last under pandas'
-# default na_position="last" regardless of sort direction, matching
-# select_nominee's explicit na_position="last"), tertiary game_id asc.
-# This composition (chooser 6's filter + chooser 8's tie-break, WITHIN the
-# filtered pool) is the one best_pick_nomination.py's own docstring says was
-# "never itself scored as one chooser."
 LIVE_V2_SPEC = ChooserSpec(
     "live_v2_production",
     "candidate_dist",
@@ -120,10 +110,6 @@ def main() -> None:
     work = load_working_frame(DEFAULT_SOURCE)
     work, dispersion_summary = build_dispersion_pool(work, DEFAULT_MICROSTRUCTURE_SOURCE)
 
-    # -----------------------------------------------------------------
-    # 0. Reproduction check against the already-recorded artifact, before
-    #    trusting this frame for anything new.
-    # -----------------------------------------------------------------
     stored = json.loads(STORED_ARTIFACT.read_text(encoding="utf-8"))
     repro: dict[str, Any] = {}
     for name in ("candidate_prob_distance", "dispersion_filtered_candidate", "status_quo_residual"):
@@ -154,11 +140,6 @@ def main() -> None:
             f"population that does not match. Detail: {json.dumps(repro, indent=2)}"
         )
 
-    # -----------------------------------------------------------------
-    # 1. Tie audit: same-kind check as the sweep_robustness collapse
-    #    (docs/best_pick_ranker.md Tier-2 re-read) -- tie-agnostic paired
-    #    deltas for both registered leads.
-    # -----------------------------------------------------------------
     candidate_a = evaluate_chooser(
         AUDITED_SPECS["dispersion_filtered_candidate"],
         work,
@@ -227,14 +208,8 @@ def main() -> None:
         ),
     }
 
-    # -----------------------------------------------------------------
-    # 2. The missing 9th chooser: the LIVE production rule, reproduced on
-    #    this historical population.
-    # -----------------------------------------------------------------
     live_v2 = evaluate_chooser(LIVE_V2_SPEC, work, samples=BOOTSTRAP_SAMPLES, seed=BOOTSTRAP_SEED)
 
-    # Where do candidate A / candidate B actually disagree with the live
-    # rule's nominee? (diagnostic, not part of the bootstrap)
     def _diverging_weeks(a: pd.DataFrame, b: pd.DataFrame) -> list[dict[str, Any]]:
         merged = a[["season", "week", "nominee_game_id"]].merge(
             b[["season", "week", "nominee_game_id"]],
@@ -307,15 +282,15 @@ def main() -> None:
     ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_dir = REPO / "artifacts" / "best_pick_nomination_v3_audit" / ts
     out_dir.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(summary, out_dir / "summary.json")  # ENG-38
+    write_stamped_artifact(summary, out_dir / "summary.json")
     candidate_a["weekly_frame"].to_parquet(out_dir / "dispersion_filtered_candidate.weekly.parquet")
-    stamp_sidecar(out_dir / "dispersion_filtered_candidate.weekly.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "dispersion_filtered_candidate.weekly.parquet")
     candidate_b["weekly_frame"].to_parquet(out_dir / "candidate_prob_distance.weekly.parquet")
-    stamp_sidecar(out_dir / "candidate_prob_distance.weekly.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "candidate_prob_distance.weekly.parquet")
     status_quo["weekly_frame"].to_parquet(out_dir / "status_quo_residual.weekly.parquet")
-    stamp_sidecar(out_dir / "status_quo_residual.weekly.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "status_quo_residual.weekly.parquet")
     live_v2["weekly_frame"].to_parquet(out_dir / "live_v2_production.weekly.parquet")
-    stamp_sidecar(out_dir / "live_v2_production.weekly.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "live_v2_production.weekly.parquet")
     print(f"\nWrote {out_dir}")
 
 

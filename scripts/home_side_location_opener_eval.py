@@ -104,7 +104,7 @@ def record(out: Path, name: str, m: dict, units: str, start: int, end: int, sour
     full_name = f"{FAMILY}_{name}_{start}_{end}"
     registry = Path(os.environ["NFL_ATS_REGISTRY_DIR"]) / "weak_signals.json"
     if registry.exists() and full_name in json.loads(registry.read_text())["signals"]:
-        return  # Already recorded by an earlier partial run of this stage; keep it verbatim.
+        return
     cli(
         out,
         "weak-signals",
@@ -249,9 +249,6 @@ def build(out: Path, archive: pd.DataFrame) -> None:
             rows[f"residual_{name}"] = predicted.predicted_market_residual.to_numpy()
             rows[f"point_{name}"] = rows.spread_line + rows[f"residual_{name}"]
             if name == "base":
-                # The gaussian_median read is a Normal with the fitted week's
-                # residual median and sample standard deviation; S2 re-evaluates
-                # exactly this read at the corrected point.
                 rows["gm_median_base"] = float(np.median(model.residuals))
                 rows["gm_std_base"] = float(np.std(model.residuals, ddof=1))
             else:
@@ -311,8 +308,6 @@ def attach_s2(stream: pd.DataFrame, archive: pd.DataFrame) -> pd.DataFrame:
     frame["point_incumbent"] = np.where(
         opener, frame.spread_line + frame.residual_archive, frame.point_base
     )
-    # S2 is the ALL-bucket research definition; the served policy (S3, 2026-09-08)
-    # zeroes the small buckets, so the replay asks for every bucket explicitly.
     offsets = walk_forward_home_offsets(frame.set_index("game_id"), all_buckets=True).reset_index()
     frame = frame.merge(offsets, on="game_id", validate="one_to_one")
     frame["p_S2"] = gaussian_median_cover_probability(
@@ -426,7 +421,6 @@ def losses(out: Path, archive: pd.DataFrame, stream: pd.DataFrame) -> None:
     for name, m in seasons.items():
         arm, season = name.split("_")
         record(out, f"{arm}_season", m, "accuracy_points", int(season), int(season), path)
-    # S1 only: S2 has no pre-2020 training stream (docs/home_side_location.md).
     early = stream.loc[stream.grade.eq("nflverse_spread") & stream.season.le(2019)].copy()
     early = early.loc[early.home_cover.notna()].reset_index(drop=True)
     replication = {}
@@ -605,9 +599,6 @@ def week1(out: Path, archive: pd.DataFrame, stream: pd.DataFrame) -> None:
         suffixes=("", "_forecast"),
     )
     week["forecast_line_matches"] = week.spread_line.eq(week.spread_line_forecast)
-    # S2 from the live forecast's own point, with offsets fitted on the
-    # archived games of the five trailing seasons (all completed before Week 1
-    # 2026); must equal the stream's walk-forward value.
     trailing = archive.loc[archive.season.ge(2026 - TRAILING_SEASONS)]
     fitted = fit_home_side_offsets(
         trailing.assign(

@@ -116,7 +116,6 @@ from nfl_ats.roster_availability_flag_features import (
 )
 from nfl_ats.transaction_wire_features import canonical_team
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "specialist_absence_fade_refresh_v1"
 
 OVERLAY_STATUS_APPLIED = "specialist_resolved"
@@ -238,7 +237,7 @@ def _opposite(side: str) -> str:
 @dataclass(frozen=True)
 class _InjurySnapshot:
     snapshot_id: str
-    out_teams_by_week: pd.DataFrame  # columns: season, week, team
+    out_teams_by_week: pd.DataFrame
 
 
 def build_specialist_absence_fade_refresh_rows(
@@ -274,11 +273,6 @@ def build_specialist_absence_fade_refresh_rows(
         if "date_modified" in injuries.columns:
             modified = pd.to_datetime(injuries["date_modified"], utc=True, errors="coerce")
             injuries = injuries.loc[modified.le(pd.Timestamp(plan.computed_at_utc))].copy()
-        # specialist_player_slugs is imported, not re-derived, so this module
-        # and roster_availability_flag_features can never disagree on which
-        # positions count as "specialist" -- called here purely to prove the
-        # snapshot has a resolvable player-name universe before it is trusted
-        # (a malformed snapshot raises inside this call, caught below).
         specialist_player_slugs(injuries)
         qualifying = live_specialist_out_qualifying(injuries)
     except (DataContractError, KeyError, ValueError) as error:

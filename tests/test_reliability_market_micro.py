@@ -34,10 +34,6 @@ import reliability_lib as rlib  # noqa: E402
 import reliability_market_micro as sweep  # noqa: E402
 import sagarin_divergence_battery as sag  # noqa: E402
 
-# ---------------------------------------------------------------------------
-# 1. The parent quantities come from the screens' own builders
-# ---------------------------------------------------------------------------
-
 
 def _quote(
     game: str,
@@ -72,13 +68,11 @@ def test_price_dispersion_reproduces_the_screens_own_book_level_prices() -> None
         [
             _quote("G1", "bookA", "HOME", -105.0, "2023-09-05T12:00Z"),
             _quote("G1", "bookA", "AWAY", -115.0, "2023-09-05T12:00Z"),
-            # bookA re-posted later: the -130 above must NOT survive the dedup.
             _quote("G1", "bookA", "HOME", -130.0, "2023-09-04T12:00Z"),
             _quote("G1", "bookB", "HOME", -110.0, "2023-09-05T12:00Z"),
             _quote("G1", "bookB", "AWAY", -110.0, "2023-09-05T12:00Z"),
             _quote("G1", "bookC", "HOME", -120.0, "2023-09-05T12:00Z"),
             _quote("G1", "bookC", "AWAY", -100.0, "2023-09-05T12:00Z"),
-            # Posted after kickoff: never pregame, must be dropped entirely.
             _quote("G1", "bookD", "HOME", +200.0, "2023-09-10T19:00Z"),
             _quote("G1", "bookD", "AWAY", -240.0, "2023-09-10T19:00Z"),
         ]
@@ -91,7 +85,6 @@ def test_price_dispersion_reproduces_the_screens_own_book_level_prices() -> None
     surviving = omb._book_level_spread_prices(quotes)
     expected = float(surviving.groupby("nflverse_game_id")["home_price"].std().iloc[0])
     assert dispersion["price_std"].iloc[0] == pytest.approx(expected)
-    # Hand-computed from the three surviving home prices only.
     assert dispersion["price_std"].iloc[0] == pytest.approx(
         float(np.std([-105.0, -110.0, -120.0], ddof=1))
     )
@@ -181,11 +174,6 @@ def test_the_three_oracle_controls_are_flagged_as_ceilings() -> None:
     assert "ceiling by" in sweep.ORACLE_CAVEAT
 
 
-# ---------------------------------------------------------------------------
-# 2. The split arithmetic, on an answer computable by hand
-# ---------------------------------------------------------------------------
-
-
 def _long_frame(values: dict[tuple[str, int], list[float]], metric: str) -> pd.DataFrame:
     rows = []
     for (team, season), series in values.items():
@@ -195,9 +183,6 @@ def _long_frame(values: dict[tuple[str, int], list[float]], metric: str) -> pd.D
 
 
 def test_recovers_a_hand_computed_correlation_and_its_spearman_brown_step_up() -> None:
-    # Weeks 1..4: the odd half sees weeks 1 and 3, the even half weeks 2 and 4,
-    # so each team-season's two half-means are set directly and the Pearson r
-    # between them is computable by hand.
     odd_means = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
     even_means = [1.0, 3.0, 2.0, 5.0, 4.0, 6.0]
     values = {

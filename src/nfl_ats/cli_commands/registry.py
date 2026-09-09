@@ -224,9 +224,6 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
         plain_summary=args.plain_summary,
         category=args.category,
     )
-    # Load -> record -> save under the registry lock: concurrent lanes
-    # recording at once must queue, never overwrite each other's rows
-    # (2026-09-08: two lanes racing this block lost and corrupted rows).
     with file_lock(path):
         registry, quarantined = _load_weak_signals_for_write(path)
         if signal.name in quarantined and not args.replace:
@@ -237,10 +234,6 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
             )
         registry = record_signal(registry, signal, replace=args.replace)
         _save_weak_signals_for_write(registry, quarantined, path)
-    # Both fields are optional (475 pre-existing rows carry neither), but a
-    # NEW record that skips them is the ledger's raw-description/Uncategorised
-    # fallback silently choosing itself -- warn out loud on stderr so this
-    # never gets buried in the JSON stdout a caller might be parsing.
     if not args.plain_summary:
         print(
             f"warning: {signal.name!r} recorded with no --plain-summary; the public "

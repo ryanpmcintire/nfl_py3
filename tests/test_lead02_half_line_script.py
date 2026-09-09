@@ -57,9 +57,6 @@ def _half_row(**overrides: object) -> dict[str, object]:
     return row
 
 
-# --- ratio computation --------------------------------------------------
-
-
 def test_compute_ratio_divides_half_by_full() -> None:
     df = pd.DataFrame({"half1_spread": [-2.0, -1.0, 0.0], "full_spread": [-4.0, -10.0, -5.0]})
     ratio = compute_ratio(df, 1)
@@ -72,12 +69,8 @@ def test_freeze_cut_is_the_20th_percentile_of_the_ratio_only() -> None:
     assert cut == float(np.quantile(ratio.to_numpy(), 0.20))
 
 
-# --- frozen-cut flag ------------------------------------------------------
-
-
 def test_apply_flag_below_cut_is_true_above_is_false() -> None:
     df = pd.DataFrame({"half1_spread": [-1.0, -3.0, -5.0], "full_spread": [-10.0, -10.0, -10.0]})
-    # ratios: 0.1, 0.3, 0.5
     flagged = apply_flag(df, 1, cut=0.3)
     assert flagged["flag"].tolist() == [True, False, False]
 
@@ -93,15 +86,12 @@ def test_apply_flag_handles_a_sign_flip_ratio_as_flagged() -> None:
     assert flagged["ratio"].iloc[0] < 0
 
 
-# --- join integrity ---------------------------------------------------
-
-
 def test_join_half_leg_only_matches_identical_capture_matchup_book() -> None:
     full = pd.DataFrame([_full_row(), _full_row(capture_ts="20100903160000", book="CAESARS")])
     half = pd.DataFrame(
         [
-            _half_row(),  # matches row 1 (same capture, book)
-            _half_row(book="MIRAGE"),  # different book -- no full-game row to join to
+            _half_row(),
+            _half_row(book="MIRAGE"),
         ]
     )
     merged = join_half_leg(full, half, half_num=1)
@@ -124,9 +114,6 @@ def test_join_half_leg_drops_rows_missing_either_spread() -> None:
     half = pd.DataFrame([_half_row()])
     merged = join_half_leg(full, half, half_num=1)
     assert merged.empty
-
-
-# --- plausibility guard (measured data-quality defect) --------------------
 
 
 def test_filter_plausible_no_longer_checks_full_spread_eng_40_fixed() -> None:
@@ -159,9 +146,6 @@ def test_filter_plausible_drops_an_oversized_half_leg_too() -> None:
     assert plausible.empty
 
 
-# --- dedup to one row per game ---------------------------------------------
-
-
 def test_dedup_keeps_the_latest_capture_per_game() -> None:
     fav = pd.DataFrame(
         {
@@ -187,9 +171,6 @@ def test_eligible_favorites_requires_at_least_three_points() -> None:
     assert fav["full_spread"].tolist() == [-3.0, -7.0]
 
 
-# --- leakage: a game's outcome must never change its flag ------------------
-
-
 def test_flag_is_invariant_to_the_games_outcome() -> None:
     """The flag is a pure function of (full_spread, half_spread, frozen
     cut). Two games identical on those columns but with OPPOSITE outcomes
@@ -200,16 +181,13 @@ def test_flag_is_invariant_to_the_games_outcome() -> None:
     market_only = pd.DataFrame(
         {
             "full_spread": [-10.0, -10.0],
-            "half1_spread": [-3.0, -3.0],  # ratio 0.3 both rows
+            "half1_spread": [-3.0, -3.0],
         }
     )
     cut = 0.4
     flagged = apply_flag(market_only, 1, cut)
     assert flagged["flag"].tolist() == [True, True]
 
-    # Attach two wildly different "outcomes" after the fact and recompute --
-    # the flag column itself (already computed from market data only) must
-    # not need or use either of these to have been correct.
     with_outcome_a = flagged.assign(dog_covered=[1.0, 0.0])
     with_outcome_b = flagged.assign(dog_covered=[0.0, 1.0])
     pd.testing.assert_series_equal(with_outcome_a["flag"], with_outcome_b["flag"], check_names=True)
@@ -222,34 +200,24 @@ def test_add_dog_outcome_uses_schedule_spread_not_vi_spread_for_side() -> None:
 
     outcome_df = pd.DataFrame(
         {
-            "spread_line": [-3.0, 3.0],  # home favored, away favored
-            "result": [10.0, -10.0],  # home_score - away_score
+            "spread_line": [-3.0, 3.0],
+            "result": [10.0, -10.0],
         }
     )
     out = add_dog_outcome(outcome_df)
     assert out.loc[0, "home_is_favorite"] == True  # noqa: E712
     assert out.loc[1, "home_is_favorite"] == False  # noqa: E712
-    # Row 0: home favored by 3, result +10 -> home covers by 7 -> dog (away) does NOT cover.
     assert out.loc[0, "dog_covered"] == 0.0
-    # Row 1: away favored by 3 (home spread_line +3), result -10 -> home lost by 10,
-    # further than the +3 home spread_line implies -> home (the dog) does NOT cover.
     assert out.loc[1, "dog_covered"] == 0.0
-
-
-# --- positive control -------------------------------------------------
 
 
 def test_positive_control_flag_picks_the_top_n_by_realized_margin() -> None:
     df = pd.DataFrame({"dog_margin": [5.0, -3.0, 10.0, 0.5, -1.0]})
     flag = positive_control_flag(df, "dog_margin", n_flag=2)
-    # Exactly the two largest-margin rows (index 2: 10.0, index 0: 5.0) are flagged.
     assert flag.sum() == 2
     assert bool(flag.iloc[2]) is True
     assert bool(flag.iloc[0]) is True
     assert bool(flag.iloc[1]) is False
-
-
-# --- within-block permutation null: block-size diagnostics -----------------
 
 
 def test_within_block_permutation_null_reports_degenerate_single_row_blocks() -> None:
@@ -257,14 +225,13 @@ def test_within_block_permutation_null_reports_degenerate_single_row_blocks() ->
         {
             "flag": [True, False, False, False],
             "dog_covered": [1.0, 0.0, 1.0, 0.0],
-            "week_block": [1, 2, 3, 4],  # every block has exactly one row
+            "week_block": [1, 2, 3, 4],
         }
     )
     result = within_block_permutation_null(
         df, flag_col="flag", value_col="dog_covered", block_col="week_block", draws=50, seed=1
     )
     assert result["n_blocks_multi_row"] == 0
-    # every draw must reproduce the observed gap exactly (nothing can move)
     assert result["null_sd"] == 0.0 or np.isnan(result["null_sd"])
     assert result["draws_used"] == 50
 
@@ -274,7 +241,7 @@ def test_within_block_permutation_null_can_actually_permute_multi_row_blocks() -
         {
             "flag": [True, False, True, False, True, False],
             "dog_covered": [1.0, 0.0, 1.0, 0.0, 0.0, 1.0],
-            "week_block": [1, 1, 1, 1, 1, 1],  # one big block
+            "week_block": [1, 1, 1, 1, 1, 1],
         }
     )
     result = within_block_permutation_null(

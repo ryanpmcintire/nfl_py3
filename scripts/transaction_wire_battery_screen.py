@@ -69,8 +69,8 @@ from nfl_ats.transaction_wire_features import (  # noqa: E402
 
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260826
-SEASON_START = 2014  # PFR true article coverage floor (docs/pfr_transactions_sourcing.md sec 1)
-SEASON_END = 2025  # excludes the partial in-progress 2026 season
+SEASON_START = 2014
+SEASON_END = 2025
 
 DEFAULT_PFR_SNAPSHOT = REPO / "data/raw/pfr_transactions/20260820T011126Z"
 
@@ -85,11 +85,6 @@ def _latest(glob_pattern: str, label: str) -> Path:
 def default_schedules() -> Path:
     """Resolve lazily so importing this module never requires local data."""
     return _latest("data/raw/*/schedules.parquet", "schedules.parquet snapshot")
-
-
-# ---------------------------------------------------------------------------
-# 1. PFR loading: coverage report (section 2) + dated rows (section 1)
-# ---------------------------------------------------------------------------
 
 
 def load_pfr_index(snapshot_dir: Path) -> pd.DataFrame:
@@ -129,10 +124,6 @@ def season_completeness_report(
 
     relevant = pfr_index.loc[pfr_index["transaction_relevant"]].copy()
     relevant["has_date"] = relevant["slug"].map(cache).notna()
-    # Precomputed once (vectorized), not inside the per-season loop below --
-    # NaN url_year/url_month rows produce a (nan, nan) tuple that matches no
-    # season's target-months set, the same "never in scope" outcome the
-    # previous per-row notna() check produced.
     year_month = list(zip(relevant["url_year"], relevant["url_month"], strict=True))
 
     report: dict[int, dict[str, Any]] = {}
@@ -165,10 +156,6 @@ def build_dated_transactions(pfr_index: pd.DataFrame, cache: dict[str, str | Non
     dated = dated.loc[dated["precise_ts"].notna()]
     return dated[["slug", "precise_ts"]].reset_index(drop=True)
 
-
-# ---------------------------------------------------------------------------
-# 2. Game-level frame: team-week counts pivoted to home_*/away_* + home_cover
-# ---------------------------------------------------------------------------
 
 COUNT_COLUMNS: tuple[str, ...] = (
     "n_events_since_freeze",
@@ -213,11 +200,6 @@ def build_game_level_frame(team_week_scored: pd.DataFrame, games: pd.DataFrame) 
     merged = merged.merge(away_side, on="game_id", how="inner")
     merged["week_block"] = merged["season"] * 100 + merged["week"]
     return merged
-
-
-# ---------------------------------------------------------------------------
-# 3. Cells (docs/transaction_wire_battery.md section 4)
-# ---------------------------------------------------------------------------
 
 
 def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
@@ -290,11 +272,6 @@ def build_cells(df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     expected = 7
     assert len(cells) == expected, f"expected {expected} predeclared cells, got {len(cells)}"
     return cells
-
-
-# ---------------------------------------------------------------------------
-# 4. Bootstrap (algorithm-identical to nfl_weather_battery_screen.py / fluview)
-# ---------------------------------------------------------------------------
 
 
 def summarize(
@@ -382,20 +359,10 @@ def score_cell(
     }
 
 
-# ---------------------------------------------------------------------------
-# 5. Reliability check (docs/transaction_wire_battery.md section 5)
-# ---------------------------------------------------------------------------
-
-
 def compute_reliability(team_week_scored: pd.DataFrame) -> dict[str, Any]:
     long = team_week_scored.copy()
     long["team_id"] = long["team"]
     return split_half_reliability(long, "n_events_since_freeze", seed=BOOTSTRAP_SEED)
-
-
-# ---------------------------------------------------------------------------
-# 6. Main
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:

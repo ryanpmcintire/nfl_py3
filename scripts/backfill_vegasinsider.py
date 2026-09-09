@@ -150,16 +150,6 @@ TEAM_NAME_ALIASES = {
 VI_CODE_TO_SCHEDULE_DEFAULTS = {"LAR": "STL", "LAC": "SD", "LV": "OAK"}
 VI_CODE_TO_SCHEDULE_OVERRIDES = {"LAR": {2016: "LA"}}
 
-# LEAD-60: the per-book line-movement pages (data/raw/vegasinsider/<run-id>/
-# line_movement/*.html) title each page with the FULL "<Away Team> @ <Home
-# Team>" name, not the board's 2-3 letter rotation code. Measured 2026-09-05
-# over all 165 cached line_movement files: exactly these 33 distinct strings
-# appear (32 franchises; "N.Y. GIANTS GIANTS" is a VegasInsider page-title
-# concatenation artifact, not a 33rd team). Values are the SAME FRANCHISE_CODES
-# used by the full-game tidy table (LAR covers both St. Louis- and Los
-# Angeles-era Rams, matching VI_CODE_TO_SCHEDULE_DEFAULTS/OVERRIDES above) so
-# half-line rows join on (capture_ts, game_date, away, home, book) exactly
-# like the full-game rows.
 FULL_TEAM_NAME_TO_CODE = {
     "ARIZONA CARDINALS": "ARI",
     "ATLANTA FALCONS": "ATL",
@@ -609,8 +599,6 @@ def classify_line_tokens(tokens: list[str]) -> tuple[float | None, float | None]
         if m:
             value = float(m.group(1))
             if value > 0:
-                # ENG-40: an explicit "+"-signed token with no o/u marker is
-                # this layout's plain total, never a spread (see docstring).
                 if 10 <= value <= 90 and total is None:
                     total = value
                 continue
@@ -925,10 +913,6 @@ LM_TITLE_RE = re.compile(r"class=page_title>\s*<font size=4>([^<]+)</font>", re.
 LM_GAME_DATE_RE = re.compile(r"Game Date:</B>&nbsp;&nbsp;&nbsp;([^<]+)</TD>", re.IGNORECASE)
 LM_GAME_TIME_RE = re.compile(r"Game Time:</B>&nbsp;&nbsp;&nbsp;([^<]+)</TD>", re.IGNORECASE)
 LM_BOOK_TITLE_RE = re.compile(r"([A-Z][A-Z .'&-]{1,30}?)\s+LINE\s+MOVEMENTS", re.IGNORECASE)
-# Data rows are bare `<TR>...</TR>` -- the "bg1"/"bg2" striping class lives on
-# each `<TD>` inside the row, not on the `<TR>` tag itself (measured on the
-# cached files; header rows carry it on a `<TR class=bg0_sub ...>` instead,
-# which this marker check also excludes since header TDs are unclassed).
 LM_ROW_RE = re.compile(r"<TR[^>]*>(.*?)</TR>", re.IGNORECASE | re.DOTALL)
 LM_DATA_ROW_MARKER_RE = re.compile(r'class=["\']?bg[12]["\']?', re.IGNORECASE)
 LM_CELL_RE = re.compile(r"<TD[^>]*>(.*?)</TD>", re.IGNORECASE | re.DOTALL)
@@ -971,7 +955,7 @@ def parse_half_cell_value(text: str) -> float | None:
         value = float(token)
     except ValueError:
         return None
-    if abs(value) > 40:  # half spreads run far tighter than the full-game 80pt guard
+    if abs(value) > 40:
         return None
     return value
 
@@ -1025,7 +1009,6 @@ def extract_book_half_lines(
                 movement = datetime.strptime(
                     f"{anchor.year}/{texts[0]} {texts[1]}", "%Y/%m/%d %I:%M%p"
                 )
-                # December movement histories can precede a January game.
                 if movement.month - anchor.month > 6:
                     movement = movement.replace(year=movement.year - 1)
                 movement = movement.replace(tzinfo=ZoneInfo("America/New_York"))
@@ -1157,7 +1140,6 @@ def build_half_lines(snapshot_dir: Path, capture_ts_values: set[str]) -> pd.Data
                 ).replace(tzinfo=ZoneInfo("America/New_York"))
                 in_play = observed >= kickoff
             except ValueError:
-                # Unknown kickoff cannot establish pregame availability.
                 in_play = True
             for book_name, half1, half2 in books:
                 for half, spread in ((1, half1), (2, half2)):
@@ -1586,11 +1568,6 @@ def process_season(
     parquet_path = artifacts_dir / f"season_{season}.parquet"
     tidy.to_parquet(parquet_path, index=False)
 
-    # LEAD-60 follow-up: half-line archive, parsed from the SAME cached
-    # line_movement/*.html pages, written as a companion table alongside
-    # (never into) the full-game tidy parquet above -- that write is
-    # untouched by anything below, which is what keeps season_<year>.parquet
-    # byte-identical to the pre-LEAD-60 builder for the same inputs.
     nav_classification = classify_missing_half_nav_boards(snapshot_dir, records)
     half_lines = build_half_lines(snapshot_dir, {r.capture_ts for r in ok_records})
     half_lines_path = artifacts_dir / f"half_lines_{season}.parquet"

@@ -41,7 +41,6 @@ from nfl_ats.data import DataContractError, require_columns
 
 DURABILITY_PRIOR_VERSION = "v1"
 
-#: The six candidate columns, in the frozen order of the predeclaration's table.
 DURABILITY_COLUMNS: tuple[str, ...] = (
     "durability_residual",
     "durability_listed_active_residual",
@@ -51,19 +50,10 @@ DURABILITY_COLUMNS: tuple[str, ...] = (
     "roster_reserve_rate_logit_offset",
 )
 
-#: Weekly-roster status codes that mean "on a reserve list, not available".
-#: This is the roster-status-volatility channel PER-13 names, and it is the
-#: only place league suspensions (``SUS``) enter the feature set.
 RESERVE_STATUSES = frozenset({"RES", "PUP", "SUS", "NFI", "EXE", "RSN", "RSR", "E01", "E14", "NON"})
 
-#: Probabilities are clipped before any logit so that a player whose prior rate
-#: shrinks to an endpoint cannot emit an infinite column.
 LOGIT_CLIP = 0.002
 
-#: Bounds on every derived prior strength. The floor keeps a degenerate fold
-#: (no between-player variance detectable) from producing zero shrinkage; the
-#: cap keeps a near-zero excess variance from shrinking every player to the
-#: group mean and silently deleting the feature.
 MIN_PRIOR_STRENGTH = 1.0
 MAX_PRIOR_STRENGTH = 500.0
 
@@ -278,8 +268,6 @@ class DurabilityHistory:
         self._outcome_index = self._build_outcome_index()
         self._roster_index = self._build_roster_index()
 
-    # -- indexing -------------------------------------------------------
-
     def _build_outcome_index(self) -> dict[str, dict[str, np.ndarray]]:
         index: dict[str, dict[str, np.ndarray]] = {}
         scored = self.outcomes["cell_probability"].notna().to_numpy()
@@ -321,18 +309,12 @@ class DurabilityHistory:
             positions = np.asarray(block)
             index[str(player)] = {
                 "key": keys[positions],
-                # Column 5's denominator is roster weeks in snap-covered
-                # seasons only, because outside them "logged no snap" is not
-                # observable. Column 6's denominator is every roster week from
-                # 2009, the 16-season reach PER-13 names.
                 "roster_n": _prefix(covered[positions].astype(float)),
                 "roster_absent": _prefix(absent[positions]),
                 "reserve_n": _prefix(np.ones(positions.size)),
                 "reserve_k": _prefix(reserve[positions]),
             }
         return index
-
-    # -- lookups --------------------------------------------------------
 
     def aggregates(self, rows: pd.DataFrame) -> pd.DataFrame:
         """Strictly-prior counts and sums for each row of ``rows``.
@@ -389,8 +371,6 @@ class DurabilityHistory:
         aggregates = pd.DataFrame(output, index=rows.index)
         aggregates.insert(0, "position_group", rows["position_group"].astype(str).to_numpy())
         return aggregates
-
-    # -- calibration ----------------------------------------------------
 
     def calibration(self, *, before_season: int) -> DurabilityCalibration:
         """Fit every prior strength and group rate on seasons before ``before_season``."""

@@ -27,9 +27,7 @@ from nfl_ats.provenance import sha256_file, write_stamped_artifact
 from nfl_ats.public_board import find_matching_opener_evaluation
 
 OUT = common.REPO / "artifacts/research/laneT"
-#: The atoms MOD-05 named and AGENTS.md makes binding, in absolute points.
 KEY_NUMBERS = (3.0, 7.0, 10.0, 14.0)
-#: KL1 is the primary form; KL1b is the one predeclared sibling (3 and 7 only).
 ARMS: dict[str, tuple[float, ...]] = {"KL1": KEY_NUMBERS, "KL1b": (3.0, 7.0)}
 FAMILY = "mod18_conditional_margin_v1"
 PREFIX = "kl1"
@@ -103,13 +101,8 @@ def restrict(
 def replay(archive: pd.DataFrame, active: dict, archive_path: Path) -> None:
     """Lane K's frozen S3 replay, redirected here; fails closed above 1e-9."""
 
-    # Lane K's construction is imported, not reimplemented; its output root is
-    # redirected so this lane can never rewrite a lane-K artifact.
     lane_k.OUT = OUT
     lane_k.replay(archive, active, archive_path)
-    # Freeze the predeclaration as written, before any measured section is
-    # appended to the living document, so the stamped digest stays checkable.
-    # Bytes, not text: newline translation would break the digest it certifies.
     predeclaration = common.REPO / "docs/key_line_lattice.md"
     (OUT / "predeclaration.md").write_bytes(predeclaration.read_bytes())
     payload = json.loads((OUT / "reproduction.json").read_text())
@@ -282,9 +275,6 @@ def score(archive_path: Path) -> None:
                 bp = group.p_S3.ge(0.5) if kind == "standalone" else group.card_S3
                 graded = (group.margin_vs_open.ne(0) & group.margin_vs_open.notna()).to_numpy()
                 if not bool((cp.to_numpy() != bp.to_numpy())[graded].any()):
-                    # No pick moved, so the paired difference is identically
-                    # zero: a fact for the write-up, never a registry row (a
-                    # bootstrap of zeros reports probability_positive 0.0).
                     skipped.append(f"{arm}_{label}_{kind}")
                     continue
                 cells[f"{PREFIX}_{arm.lower()}_{label}_{kind}"] = common.comparison(
@@ -569,8 +559,6 @@ def main() -> None:
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     os.environ["NFL_ATS_ARTIFACTS_DIR"] = str(OUT)
-    # Never point a research stage at the live registry: the recorder argv is
-    # emitted for serial execution by the coordinator, never run from here.
     os.environ["NFL_ATS_REGISTRY_DIR"] = str(OUT / "registry")
     active = json.loads((common.REPO / "artifacts/active_ats_model.json").read_text())
     match = find_matching_opener_evaluation(common.REPO / "artifacts", active)

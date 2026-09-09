@@ -36,8 +36,6 @@ def _write_manifest(path: Path, payload: dict) -> Path:
 def test_manifest_path_for_matches_the_writers_own_naming_convention(tmp_path: Path) -> None:
     parquet = tmp_path / "game_features_pbp.parquet"
     assert manifest_path_for(parquet) == tmp_path / "game_features_pbp.manifest.json"
-    # Accepts a bare string too -- argparse gives writers a Path, but callers
-    # should not have to care.
     assert manifest_path_for(str(parquet)) == tmp_path / "game_features_pbp.manifest.json"
 
 
@@ -68,7 +66,6 @@ def test_transitive_inheritance_across_two_levels(tmp_path: Path) -> None:
         {"source_snapshot": "20260824T115346Z"},
     )
 
-    # Level 1: exactly what _cmd_build_pbp_features now writes.
     level1_inherited = inherit_source_snapshots([base_manifest])
     assert "source_snapshot" in level1_inherited
     level1_manifest = _write_manifest(
@@ -80,8 +77,6 @@ def test_transitive_inheritance_across_two_levels(tmp_path: Path) -> None:
         },
     )
 
-    # Level 2: exactly what _cmd_build_qb_features now writes -- its only
-    # input is the level-1 manifest, never the base one.
     level2 = inherit_source_snapshots([level1_manifest])
 
     assert level2["source_snapshot"]["snapshot_id"] == "20260824T115346Z"
@@ -138,11 +133,6 @@ def test_later_parent_wins_key_collisions(tmp_path: Path) -> None:
 
 def test_empty_input_returns_an_empty_block() -> None:
     assert inherit_source_snapshots([]) == {}
-
-
-# ---------------------------------------------------------------------------
-# The pool decision-line block rides the same inheritance chain
-# ---------------------------------------------------------------------------
 
 
 _DECISION_LINES = {

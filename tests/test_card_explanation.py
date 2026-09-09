@@ -45,10 +45,6 @@ from nfl_ats.lineage import (
 )
 from nfl_ats.source_freshness_policy import SourcePolicyReport, SourceState
 
-# ---------------------------------------------------------------------------
-# Synthetic fixtures
-# ---------------------------------------------------------------------------
-
 
 def _row(**overrides: object) -> dict[str, object]:
     base: dict[str, object] = {
@@ -151,11 +147,6 @@ def _composition_result(game_id: str) -> FourOverlayCompositionResult:
     )
 
 
-# ---------------------------------------------------------------------------
-# Every field present with explicit no_data states
-# ---------------------------------------------------------------------------
-
-
 def test_explain_pick_with_no_optional_inputs_reports_no_data_everywhere() -> None:
     explanation = explain_pick(_row())
 
@@ -177,7 +168,6 @@ def test_explain_pick_with_missing_market_and_probability_reports_no_data() -> N
     assert explanation.market_line.provenance == NO_DATA
     assert explanation.model_probability.probability is None
     assert explanation.model_probability.provenance == NO_DATA
-    # A missing market/probability degrades the text, never raises.
     assert "no market line is recorded" in explanation.text
     assert "No model probability is recorded" in explanation.text
 
@@ -205,18 +195,12 @@ def test_explain_pick_with_source_report_reports_freshness_states() -> None:
     assert states["player_arrests"] == "degraded"
     assert states["injuries_sportradar"] == NO_DATA
     assert explanation.freshness.provenance == MEASURED_FROM_ARTIFACT
-    # as_of is recoverable for an observed source (evaluated_at - age_minutes).
     odds_entry = next(e for e in explanation.freshness.sources if e.source_id == "odds_opener")
     assert odds_entry.as_of is not None
     unobserved_entry = next(
         e for e in explanation.freshness.sources if e.source_id == "injuries_sportradar"
     )
     assert unobserved_entry.as_of is None
-
-
-# ---------------------------------------------------------------------------
-# Overlay fired vs not
-# ---------------------------------------------------------------------------
 
 
 def test_explain_pick_with_no_overlays_reports_none_fired() -> None:
@@ -256,11 +240,6 @@ def test_overlay_firings_from_composition_extracts_the_named_game() -> None:
     assert "0.380" in firings[0].input_value
 
     assert overlay_firings_from_composition(composition, "no_such_game") == ()
-
-
-# ---------------------------------------------------------------------------
-# Refresh flip vs none vs not-yet
-# ---------------------------------------------------------------------------
 
 
 def test_explain_pick_with_no_refresh_input_is_no_refresh_yet() -> None:
@@ -320,11 +299,6 @@ def test_refresh_change_from_pick_revision_adapts_a_ledger_row() -> None:
     assert refresh_change_from_pick_revision(None) is None
 
 
-# ---------------------------------------------------------------------------
-# Language contract
-# ---------------------------------------------------------------------------
-
-
 def test_check_language_passes_for_ordinary_text() -> None:
     check_language("The model favors LA to cover this game by a small margin.")
 
@@ -359,12 +333,7 @@ def test_template_output_always_passes_the_language_contract() -> None:
     ]
     for kwargs in combos:
         explanation = explain_pick(_row(), **kwargs)  # type: ignore[arg-type]
-        check_language(explanation.text)  # explain_pick already checked; re-assert here
-
-
-# ---------------------------------------------------------------------------
-# JSON round-trip
-# ---------------------------------------------------------------------------
+        check_language(explanation.text)
 
 
 def test_json_round_trip_preserves_every_field(tmp_path: object) -> None:
@@ -385,11 +354,6 @@ def test_json_round_trip_preserves_every_field(tmp_path: object) -> None:
     assert len(restored) == 1
     round_tripped: PickExplanation = restored[0]
     assert round_tripped.to_dict() == explanation.to_dict()
-
-
-# ---------------------------------------------------------------------------
-# explain_card / render_markdown
-# ---------------------------------------------------------------------------
 
 
 def test_explain_card_keys_overlays_and_refresh_by_game_id() -> None:
@@ -420,14 +384,6 @@ def test_render_markdown_includes_every_pick() -> None:
     assert "SF at LA" in markdown
     assert "DEN at KC" in markdown
     check_language(markdown)
-
-
-# ---------------------------------------------------------------------------
-# 2026-09-05: hard structural rules -- no snapshot ids, ISO timestamps,
-# sha-like tokens, or the plumbing words themselves; no wagering/compliance
-# boilerplate. Owner, verbatim: "ive told you repeatedly to drop these
-# fucking legal bullshit words."
-# ---------------------------------------------------------------------------
 
 
 def test_check_language_rejects_a_snapshot_id() -> None:
@@ -463,14 +419,6 @@ def test_check_language_rejects_wagering_and_research_boilerplate() -> None:
             check_language(phrase)
 
 
-# ---------------------------------------------------------------------------
-# 2026-09-05: the plain-English "what tips it" sentence, built from
-# nfl_ats.market_decomposition.explain_game_structured off a real
-# attribution-waterfall entry -- never that function's own .sentence
-# (which uses "because of", forbidden here).
-# ---------------------------------------------------------------------------
-
-
 def _waterfall_entry(**overrides: object) -> dict[str, object]:
     base: dict[str, object] = {
         "picked_side": "HOME",
@@ -493,8 +441,6 @@ def test_explain_pick_names_the_biggest_factors_from_a_waterfall_entry() -> None
     assert "favour LA" in explanation.text
     assert "the market line itself" in explanation.text
     assert "pulls the other way" in explanation.text
-    # "because of" is forbidden by the language contract -- the structured
-    # GameExplanation.sentence uses it, but this module must never emit it.
     assert "because of" not in explanation.text.lower()
     check_language(explanation.text)
 

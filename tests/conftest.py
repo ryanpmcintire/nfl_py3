@@ -68,11 +68,6 @@ def _shared_real_site_content() -> SiteContent:
     copy.
     """
 
-    # The dashboard contracts exercise artifact -> view model -> HTML.  They
-    # do not exercise the market snapshot reader, which has dedicated tests.
-    # Avoid scanning every historical quote parquet merely to derive the
-    # current card's optional dispersion pool; an empty, schema-correct quote
-    # frame takes the production missing-data fallback through the same code.
     empty_quotes = pd.DataFrame(columns=QUOTE_COLUMNS)
     with patch(
         "nfl_ats.best_pick_nomination.load_quote_history",
@@ -81,17 +76,12 @@ def _shared_real_site_content() -> SiteContent:
         return load_site_content(_REPO_ROOT / "artifacts", require_fresh_arrest_overlay=False)
 
 
-# ---------------------------------------------------------------------------
-# Synthetic college-football universe for the XLG-03 benchmark tests
-# ---------------------------------------------------------------------------
-
 CFB_FIXTURE_SEASONS = (2013, 2014)
 CFB_FIXTURE_WEEKS = 14
 CFB_FIXTURE_TEAMS = tuple(range(1, 9))
 CFB_FIXTURE_STRENGTH = {team: (8 - team) * 1.5 for team in CFB_FIXTURE_TEAMS}
-# Crafted irregularities exercised by the feature-table contract tests.
-CFB_GAME_UNRESOLVED = 20130302  # both line abbrs unique to this game
-CFB_GAME_REPAIRED = 20140202  # home abbr unique, away abbr resolvable
+CFB_GAME_UNRESOLVED = 20130302
+CFB_GAME_REPAIRED = 20140202
 CFB_GAME_NO_LINES = 20130502
 CFB_GAME_NO_PBP = 20140402
 

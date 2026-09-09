@@ -118,10 +118,6 @@ def refresh_pick(production_home: pd.Series, net_move: pd.Series) -> pd.Series:
     return production_home.astype(bool).mask(net_move.abs().ge(THRESHOLD), net_move.gt(0))
 
 
-#: Games columns the shared late-week follow computation requires. ``cutoff_utc``
-#: is the refresh instant; the effective evidence cutoff per game is
-#: ``min(kickoff, Sunday pool deadline, cutoff_utc)`` (see
-#: :func:`sharp_book_movement_features`).
 LATE_WEEK_GAMES_COLUMNS = (
     "game_id",
     "commence_time_utc",

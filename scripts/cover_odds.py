@@ -86,25 +86,11 @@ class CoverOddsError(RuntimeError):
 
 
 def _default_artifacts_root() -> Path:
-    # Same env var, same default as `nfl_ats.cli._artifacts_root` --
-    # duplicated rather than imported because this script deliberately does
-    # not import `nfl_ats.cli` (owned by another agent at the time of
-    # writing; see the module docstring).
     return Path(os.environ.get("NFL_ATS_ARTIFACTS_DIR", "artifacts"))
 
 
 def _default_data_root() -> Path:
     return Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
-
-
-# ---------------------------------------------------------------------------
-# Fail-closed loading of the SAME synchronized forecast the published card
-# uses. Mirrors `nfl_ats.public_board.load_public_board_artifacts`'s own
-# validation chain closely (not imported, since that function's return type
-# also loads the line-sweep/explanations this script does not need) so this
-# tool can never answer from a forecast the public site itself would refuse
-# to publish.
-# ---------------------------------------------------------------------------
 
 
 def load_active_forecast(
@@ -152,13 +138,6 @@ def load_active_forecast(
             "docstring."
         )
     return active, forecast_directory, metadata, predictions
-
-
-# ---------------------------------------------------------------------------
-# --game resolution: an exact game_id, or a "matchup" -- team codes joined
-# by any of @ / - _ or whitespace, in either order, or a single team code
-# that plays exactly one game the requested week.
-# ---------------------------------------------------------------------------
 
 
 def _tokenize_game_query(query: str) -> list[str]:
@@ -243,11 +222,6 @@ def _discrete_push_read(
         )
 
 
-# ---------------------------------------------------------------------------
-# The query itself
-# ---------------------------------------------------------------------------
-
-
 def query_cover_odds(
     *,
     season: int,
@@ -299,9 +273,6 @@ def query_cover_odds(
             method="gaussian",
         )[0]
     )
-    # The served push / three-way source (docs/discrete_push_read.md): the
-    # mass-preserving lattice of prior games near the queried line. A fit
-    # failure degrades to the smooth rounded-residual split and says so.
     push_read = _discrete_push_read(features, artifacts_root, active, season=season, week=week)
     home_excl_push, push, home_no_cover = spread_explorer_three_way(
         distribution, spread, discrete_read=push_read.reader if push_read is not None else None
@@ -366,11 +337,6 @@ def query_cover_odds(
         },
         "information_as_of_caveat": caveat,
     }
-
-
-# ---------------------------------------------------------------------------
-# Output
-# ---------------------------------------------------------------------------
 
 
 def format_text(payload: dict[str, Any]) -> str:
@@ -459,9 +425,6 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- a query tool that reads
-# synchronized forecast artifacts and prints cover odds (--json prints to stdout), never writing a
-# file.
 
 
 def main(argv: Sequence[str] | None = None) -> int:

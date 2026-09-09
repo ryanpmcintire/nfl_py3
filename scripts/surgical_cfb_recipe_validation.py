@@ -99,9 +99,6 @@ def derive_cfb_threshold(role_continuity: pd.DataFrame) -> dict[str, Any]:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it re-derives a gating
-# threshold from an already-saved feature table and re-scores already-computed predictions,
-# printing text to stdout only.
 
 
 def main() -> None:
@@ -126,10 +123,7 @@ def main() -> None:
     wide["actual"] = actual.to_numpy()
     wide = wide.dropna(subset=["actual", BASELINE_METHOD, CANDIDATE_METHOD]).reset_index(drop=True)
 
-    wide["magnitude"] = (
-        wide["game_id"].map(per_game_magnitude).fillna(0.0).to_numpy()
-    )  # left-join semantics: no role data (e.g. 2012) == no disruption == 0, matching
-    # the CONTINUITY_NEUTRAL imputation the underlying model run already used.
+    wide["magnitude"] = wide["game_id"].map(per_game_magnitude).fillna(0.0).to_numpy()
 
     actual_arr = wide["actual"].to_numpy(dtype=float)
     baseline_prob = wide[BASELINE_METHOD].to_numpy(dtype=float)
@@ -151,10 +145,6 @@ def main() -> None:
     gated_interval = naive_block_bootstrap_interval(
         actual_arr, baseline_prob, gated_prob, block_ids, samples=SAMPLES, seed=SEED
     )
-    # The sharper question: does gating improve on the ungated candidate
-    # directly (not "is the gated form good", but "did gating help at all")?
-    # Both arms still crossed the SAME baseline, so this is a fair paired
-    # comparison, not a derived difference-of-differences.
     gate_benefit_interval = naive_block_bootstrap_interval(
         actual_arr, candidate_prob, gated_prob, block_ids, samples=SAMPLES, seed=SEED
     )

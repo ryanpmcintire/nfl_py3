@@ -19,10 +19,6 @@ from nfl_ats.graph_ratings_v2 import (
     signed_katz_centrality,
 )
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
 
 def _row(
     week: int,
@@ -87,10 +83,7 @@ def _chalk_and_dog_games(weeks: int = 6) -> pd.DataFrame:
 
     rows = []
     for week in range(1, weeks + 1):
-        # CHALK (home) beats MID by 14 but was favored by 24 -> ats_margin = -10.
         rows.append(_row(week, "CHALK", "MID1", 14.0, 24.0))
-        # MID (home) beats DOG (away) by 14 while favored by 24 -> ats_margin = -10
-        # for MID, i.e. DOG (the away underdog) covers decisively.
         rows.append(_row(week, "MID2", "DOG", 14.0, 24.0))
     return pd.DataFrame(rows)
 
@@ -129,19 +122,12 @@ def _cfb_like_games(weeks: int = 20, teams: int = 8, seed: int = 20260826) -> pd
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Numeric primitives: convergence, the row-Linf constraint, Katz correctness.
-# ---------------------------------------------------------------------------
-
-
 def test_row_linf_constraint_rescales_only_rows_over_the_bound() -> None:
     matrix = np.array([[0.0, 3.0, -4.0], [0.1, 0.0, 0.1], [0.0, 0.0, 0.0]])
     constrained = _constrain_row_linf(matrix, 1.0)
     row_l1 = np.abs(constrained).sum(axis=1)
     assert row_l1[0] == pytest.approx(1.0)
-    # Direction/ratio preserved within the rescaled row.
     assert constrained[0, 1] / constrained[0, 2] == pytest.approx(matrix[0, 1] / matrix[0, 2])
-    # Row already under the bound is untouched.
     np.testing.assert_array_equal(constrained[1], matrix[1])
     np.testing.assert_array_equal(constrained[2], matrix[2])
 
@@ -151,14 +137,13 @@ def test_katz_fixed_point_converges_when_spectral_radius_bound_holds() -> None:
     raw = rng.normal(size=(6, 6))
     np.fill_diagonal(raw, 0.0)
     constrained = _constrain_row_linf(raw, 1.0)
-    alpha = 0.85  # alpha * max_row_l1(<=1) < 1: the module's own validated guarantee.
+    alpha = 0.85
     base = np.ones(6)
     x, converged = _katz_fixed_point(
         constrained, base, alpha=alpha, iterations=500, tolerance=1e-10
     )
     assert converged
     assert np.all(np.isfinite(x))
-    # The fixed point must actually satisfy x = base + alpha * W @ x.
     residual = x - (base + alpha * (constrained @ x))
     assert float(np.abs(residual).max()) < 1e-6
 
@@ -171,17 +156,13 @@ def test_katz_fixed_point_diverges_when_spectral_radius_bound_is_violated() -> N
     """
 
     size = 5
-    # Every row's absolute sum is exactly 5 -- alpha * 5 = 4.25 with alpha=0.85,
-    # far past the spectral-radius bound the module relies on.
     raw = np.full((size, size), 1.0)
     np.fill_diagonal(raw, 0.0)
-    raw[:, 0] = 1.25  # keep row sums at 5 after zeroing the diagonal on row 0
+    raw[:, 0] = 1.25
     base = np.ones(size)
     _, converged = _katz_fixed_point(raw, base, alpha=0.85, iterations=500, tolerance=1e-10)
     assert not converged
 
-    # The SAME matrix, constrained first, converges -- isolating the
-    # constraint as the difference that makes convergence possible.
     constrained = _constrain_row_linf(raw, 1.0)
     _, converged_after_constraint = _katz_fixed_point(
         constrained, base, alpha=0.85, iterations=500, tolerance=1e-10
@@ -209,11 +190,6 @@ def test_signed_katz_matches_the_closed_form_linear_solve() -> None:
 def test_signed_katz_empty_graph_is_the_base_vector() -> None:
     x = signed_katz_centrality(np.zeros((4, 4)), alpha=0.85, max_row_l1=1.0)
     np.testing.assert_allclose(x, np.ones(4))
-
-
-# ---------------------------------------------------------------------------
-# Config validation.
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -247,7 +223,6 @@ def test_alpha_times_max_row_l1_must_be_strictly_below_one() -> None:
 
     with pytest.raises(ValueError, match="spectral radius"):
         GraphRatingV2Config(alpha=0.6, max_row_l1=2.0).validate()
-    # A configuration that keeps the product below 1 is accepted.
     GraphRatingV2Config(alpha=0.5, max_row_l1=0.9).validate()
 
 
@@ -255,7 +230,6 @@ def test_schema_guard_requires_spread_line_only_for_residual_arm() -> None:
     games = _no_market_games().drop(columns=["spread_line"])
     with pytest.raises(ValueError, match="graph_ratings_v2 requires columns"):
         add_graph_ratings_v2_features(games, _config(edge_signal="residual"))
-    # The control arm never touches spread_line.
     add_graph_ratings_v2_features(games, _config(edge_signal="raw_margin"))
 
 
@@ -264,11 +238,6 @@ def test_schema_guard_requires_injury_columns_only_when_the_modifier_is_on() -> 
     add_graph_ratings_v2_features(games, _config(injury_beta=0.0))
     with pytest.raises(ValueError, match="graph_ratings_v2 requires columns"):
         add_graph_ratings_v2_features(games, _config(injury_beta=0.05))
-
-
-# ---------------------------------------------------------------------------
-# Synthetic validation with known answers.
-# ---------------------------------------------------------------------------
 
 
 def test_residual_arm_ranks_who_beats_the_number_not_who_wins() -> None:
@@ -294,9 +263,7 @@ def test_residual_arm_ranks_who_beats_the_number_not_who_wins() -> None:
     dog_residual = residual.loc[
         (residual["week"] == last_week) & (residual["away_team"] == "DOG"), residual_columns[1]
     ].iloc[0]
-    assert (
-        dog_residual > chalk_residual
-    )  # DOG (covers every game) outranks CHALK under residual edges.
+    assert dog_residual > chalk_residual
 
     chalk_control = control.loc[
         (control["week"] == last_week) & (control["home_team"] == "CHALK"), control_columns[0]
@@ -304,9 +271,7 @@ def test_residual_arm_ranks_who_beats_the_number_not_who_wins() -> None:
     dog_control = control.loc[
         (control["week"] == last_week) & (control["away_team"] == "DOG"), control_columns[1]
     ].iloc[0]
-    assert (
-        chalk_control > dog_control
-    )  # CHALK (wins every game) outranks DOG under raw-margin edges.
+    assert chalk_control > dog_control
 
 
 def test_residual_and_raw_margin_arms_agree_when_the_market_is_uninformative() -> None:
@@ -342,20 +307,14 @@ def test_uncompressed_magnitude_scales_the_rating_gap() -> None:
 
     def _raw_gap(margin: float) -> float:
         matrix = np.zeros((2, 2))
-        matrix[0, 1] = margin  # team 0 beat team 1 by `margin`, uncompressed.
+        matrix[0, 1] = margin
         matrix[1, 0] = -margin
-        # A large max_row_l1 keeps the row-sum constraint (tested on its own
-        # in test_row_linf_constraint_rescales_only_rows_over_the_bound and
-        # test_adversarial_blowout_density_stays_finite_under_the_row_constraint)
-        # from binding on a single isolated edge, isolating the property
-        # under test here: whether raw magnitude survives uncompressed.
         x = signed_katz_centrality(matrix, alpha=0.01, max_row_l1=50.0)
         return float(x[0] - x[1])
 
     small_gap = _raw_gap(1.0)
     large_gap = _raw_gap(40.0)
     assert large_gap > small_gap
-    # Not just larger -- meaningfully larger, not "nearly the same edge".
     assert large_gap > small_gap * 1.5
 
 
@@ -405,24 +364,15 @@ def test_nonneg_arm_offense_defense_reward_outscoring_opponents() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Injury modifier: off-by-default contract, and its measurable effect when on.
-# ---------------------------------------------------------------------------
-
-
 def test_injury_discount_is_a_pure_function_of_the_underperformer() -> None:
     assert _injury_discount(0.0, 0.0, 5.0, beta=0.1) == pytest.approx(1.0 / (1.0 + 0.1 * 0.0))
-    # Home over-performed (signal > 0): discount reads AWAY's injury loss.
     assert _injury_discount(home_lost=10.0, away_lost=4.0, signal=5.0, beta=0.1) == pytest.approx(
         1.0 / (1.0 + 0.1 * 4.0)
     )
-    # Away over-performed (signal < 0): discount reads HOME's injury loss.
     assert _injury_discount(home_lost=10.0, away_lost=4.0, signal=-5.0, beta=0.1) == pytest.approx(
         1.0 / (1.0 + 0.1 * 10.0)
     )
-    # beta == 0 is a hard off-switch.
     assert _injury_discount(home_lost=99.0, away_lost=99.0, signal=5.0, beta=0.0) == 1.0
-    # A push (signal == 0) carries no signal regardless of beta.
     assert _injury_discount(home_lost=99.0, away_lost=99.0, signal=0.0, beta=0.5) == 1.0
 
 
@@ -431,11 +381,6 @@ def _games_with_injury_columns(heavy: bool) -> pd.DataFrame:
     for column in HOME_INJURY_VALUE_LOST_COLUMNS + AWAY_INJURY_VALUE_LOST_COLUMNS:
         games[column] = 0.0
     if heavy:
-        # Both game types in _chalk_and_dog_games have ats_margin = -10, i.e.
-        # the HOME team (CHALK, or MID2) is always the side that fell short
-        # of the spread -- the injury discount reads the UNDERPERFORMER's
-        # loss, which is home's here, not away's. CHALK's games specifically
-        # carry the heavy injury load.
         games.loc[games["home_team"] == "CHALK", "home_injury_skill_epa_value_lost"] = 8.0
     return games
 
@@ -472,11 +417,6 @@ def test_injury_modifier_discounts_the_underperformers_edge_when_enabled() -> No
     light_gap = light.loc[light["week"] == last_week, columns[2]].to_numpy(dtype=float)
     heavy_gap = heavy.loc[heavy["week"] == last_week, columns[2]].to_numpy(dtype=float)
     assert not np.allclose(light_gap, heavy_gap)
-
-
-# ---------------------------------------------------------------------------
-# Leakage regression tests.
-# ---------------------------------------------------------------------------
 
 
 def test_current_week_outcomes_cannot_change_current_ratings() -> None:
@@ -532,11 +472,6 @@ def test_future_injury_values_cannot_change_prior_ratings() -> None:
     pd.testing.assert_frame_equal(expected.reset_index(drop=True), actual.reset_index(drop=True))
 
 
-# ---------------------------------------------------------------------------
-# CFB structural fitting (non-ATS coherence diagnostic).
-# ---------------------------------------------------------------------------
-
-
 def test_cfb_structural_coherence_is_finite_and_bounded() -> None:
     games = _cfb_like_games(weeks=12)
     coherence = cfb_structural_coherence(games, _config(edge_signal="residual"))
@@ -563,11 +498,6 @@ def test_select_structural_config_on_cfb_returns_the_best_scoring_candidate() ->
 def test_select_structural_config_on_cfb_rejects_empty_candidates() -> None:
     with pytest.raises(ValueError, match="non-empty"):
         select_structural_config_on_cfb(_cfb_like_games(), [])
-
-
-# ---------------------------------------------------------------------------
-# The team_stat arm: one graph per SCREENED statistic (docs/graph_input_screen.md).
-# ---------------------------------------------------------------------------
 
 
 def _with_team_stat(

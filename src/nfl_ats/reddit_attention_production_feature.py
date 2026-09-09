@@ -73,10 +73,6 @@ from scripts.arctic_shift_battery_screen import (  # noqa: E402
     load_subreddit_daily_counts,
 )
 
-#: The two new columns this module adds. Frozen names, matching the already
-#: -recorded weak-signal registry cell names 1:1 so the lineage between the
-#: bare-baseline screen and this on-production stacking is legible from the
-#: column name alone.
 REDDIT_HOME_RATIO_ELEVATED_COLUMN = "reddit_home_comment_ratio_elevated"
 REDDIT_AWAY_SPIKE_COLUMN = "reddit_away_spike_value"
 REDDIT_ATTENTION_ON_PRODUCTION_FEATURE_COLUMNS = (
@@ -84,8 +80,6 @@ REDDIT_ATTENTION_ON_PRODUCTION_FEATURE_COLUMNS = (
     REDDIT_AWAY_SPIKE_COLUMN,
 )
 
-#: Default location of the Arctic Shift raw daily-count fetch
-#: (``scripts/arctic_shift_battery_fetch.py``; gitignored, per repo convention).
 DEFAULT_RAW_DIR = REPO_ROOT / "data" / "raw" / "arctic_shift"
 
 TeamDaily = dict[str, dict[str, pd.Series]]
@@ -142,10 +136,6 @@ def derive_reddit_attention_features(
     frame["away_team"] = _canonical(frame["away_team"].astype(str))
     frame["spread_line"] = pd.to_numeric(frame["spread_line"], errors="coerce")
 
-    # The baseline sequence: REG rows with a market line, in each team's own
-    # chronological order. Deliberately NOT filtered on the outcome (deviation
-    # 2 in the predeclaration) -- a pregame column may not inherit the frozen
-    # battery's push/unplayed-game drop.
     eligible = frame.loc[
         frame["game_type"].astype(str).eq("REG") & frame["spread_line"].notna()
     ].copy()

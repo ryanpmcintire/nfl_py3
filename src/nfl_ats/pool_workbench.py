@@ -34,21 +34,13 @@ PAGE_FILENAME = "pool.html"
 PAGE_TITLE = "Pool workbench"
 ENTRY_STORAGE_VERSION = 1
 
-# Confirmed Splash-style format (docs/pool_edge_plan.md, owner-corrected 2026-08-20).
 REGULAR_SEASON_GAMES = 272
 PLAYOFF_GAMES = 13
-# SNF/MNF lock early at Sunday 16:00 ET, i.e. min(kickoff, Sunday 16:00 ET).
 SUNDAY_EARLY_LOCK_ET = "Sunday 16:00 ET"
 
-# Columns the active model's recommendations.csv must carry for the workbench.
 _REQUIRED_COLUMNS = frozenset(
     {"game_id", "gameday", "away_team", "home_team", "spread_line", "home_cover_probability"}
 )
-
-
-# ---------------------------------------------------------------------------
-# Pool rules input
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -80,37 +72,9 @@ class PoolRules:
     line_locks_tuesday: bool = True
     picks_due_per_game_kickoff: bool = True
     sunday_early_lock: str = SUNDAY_EARLY_LOCK_ET
-    # The grading target is the frozen Tuesday OPENING line, not the sharp
-    # market close (docs/pool_edge_plan.md:5, "beat the OPENING line the
-    # user's Splash Sports pool grades against"; AGENTS.md's "Grade the
-    # decision at the OPENER" section). "opener" here names the SAME line
-    # `line_locks_tuesday` already describes as frozen -- this field exists
-    # so a consumer can name *which* line without re-deriving it from the
-    # boolean.
     grading_line: str = "opener"
-    # The pool breaks ties on the final score of the week's LAST game
-    # (src/nfl_ats/tiebreaker.py module docstring: "The pool breaks ties on
-    # the final score of the week's LAST game (owner, 2026-09-01...)").
-    # `nfl_ats.tiebreaker` implements the guess itself; this field only
-    # names the rule for the board/report, read-only reference, no logic
-    # duplicated here.
     tiebreak: str = "final_score_last_game"
 
-    #: The owner's per-game pick deadline rule, reused verbatim rather than
-    #: reimplemented: ``min(this game's own kickoff, that week's Sunday
-    #: 16:00 ET lock)`` (owner rule, 2026-08-20, re-confirmed 2026-09-01;
-    #: ``docs/late_week_refresh.md`` "Per-game deadline, not one weekly
-    #: cutoff"). ``ClassVar`` so it is a plain function reference shared by
-    #: every instance -- NOT a dataclass field, so it never appears in
-    #: ``__init__``/``repr``/``==`` and cannot be overridden per instance via
-    #: ``from_dict``. Wrapped in ``staticmethod`` so accessing it through an
-    #: instance (``rules.deadline_rule``) returns the plain two-argument
-    #: function rather than auto-binding ``self`` as its first argument. Use
-    #: :meth:`deadline_for` for the ergonomic per-game call; this attribute
-    #: exists so callers who already have both timestamps in hand (a
-    #: kickoff and a precomputed Sunday lock) can call the exact same
-    #: underlying function directly, e.g.
-    #: ``PoolRules.deadline_rule(kickoff, sunday_lock)``.
     deadline_rule: ClassVar[Callable[[pd.Timestamp, pd.Timestamp], pd.Timestamp]] = staticmethod(
         pick_deadline
     )
@@ -379,11 +343,6 @@ class PoolRules:
         return cls(**overrides)
 
 
-# ---------------------------------------------------------------------------
-# Entry list (reuse the existing forced-pick card)
-# ---------------------------------------------------------------------------
-
-
 def _safe_pool_card(predictions: pd.DataFrame) -> pd.DataFrame:
     """``build_ats_pool_card`` or an empty frame when not buildable."""
 
@@ -433,11 +392,6 @@ def derive_confidence_ranks(predictions: pd.DataFrame) -> pd.DataFrame:
             "game_id",
         ]
     ].copy()
-
-
-# ---------------------------------------------------------------------------
-# Ownership scenarios
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -527,14 +481,7 @@ def build_ownership_scenarios(
     return pd.DataFrame(rows, columns=columns)
 
 
-# ---------------------------------------------------------------------------
-# Rendering (body fragments; public_board.py wraps them in the page shell)
-# ---------------------------------------------------------------------------
-
-
 def _section(kicker: str, title: str, inner: str) -> str:
-    # <h2>: section headers nest directly under the page's single <h1>
-    # (WCAG 1.3.1 Info and Relationships).
     return (
         f'<section style="margin-top:24px;">'
         f'<p class="kicker">{escape(kicker)}</p>'
@@ -648,12 +595,6 @@ def _entry_list_section(
         )
         return _section("Entry list", "This week's forced picks", inner)
 
-    # Deferred import: nfl_ats.public_board imports THIS module, so a
-    # top-level import back would cycle. Same lazy-import pattern
-    # nfl_ats.weekly._cli_runner already uses. Sharing the helper rather than
-    # re-deriving the bands here keeps the pool page's Confidence column
-    # visually identical to the week board's Strength column -- the reader
-    # should not have to learn two encodings for one quantity.
     from nfl_ats.public_board import confidence_meter, confidence_word
 
     rows: list[str] = []

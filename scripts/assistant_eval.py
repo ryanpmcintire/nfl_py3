@@ -100,17 +100,10 @@ def _report_to_json(report: EvalReport) -> dict[str, object]:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it builds its knowledge base
-# from artifacts/ in memory and prints the report (--json prints to stdout), never writing under
-# artifacts/ or registry/.
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
-    # require_fresh_arrest_overlay=False: a read-only rehearsal read, same
-    # default as scripts/build_full_site.py -- this script builds knowledge
-    # in memory only and writes nothing, so a stale arrest snapshot has
-    # nothing real to corrupt.
     content = load_site_content(
         args.artifacts_root,
         data_root=args.data_root,

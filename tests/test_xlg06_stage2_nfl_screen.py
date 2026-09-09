@@ -31,7 +31,6 @@ def _crosswalk() -> pd.DataFrame:
 
 def _stats() -> pd.DataFrame:
     rows = []
-    # A: 2020 rookie REG (2 weeks) + POST row that must not count; 2021 follow-up.
     rows += [
         {
             "player_id": "A",
@@ -65,7 +64,6 @@ def _stats() -> pd.DataFrame:
             "rushing_epa": 50.0,
             "receiving_epa": 50.0,
         },
-        # B: 2020 rookie REG.
         {
             "player_id": "B",
             "season": 2020,
@@ -74,7 +72,6 @@ def _stats() -> pd.DataFrame:
             "rushing_epa": -1.0,
             "receiving_epa": 0.0,
         },
-        # C: 2025 debut (incomplete rookie season) -> excluded.
         {
             "player_id": "C",
             "season": 2025,
@@ -89,7 +86,6 @@ def _stats() -> pd.DataFrame:
 
 def test_eligibility_excludes_without_silence() -> None:
     frame, excluded = build_stage2_population(_crosswalk(), _stats())
-    # D has a null rating, E is a QB (non-skill), C debuts in 2025.
     assert set(frame["gsis_id"]) == {"A", "B"}
     assert excluded["null_rating"] == 1
     assert excluded["incomplete_rookie_season_2025"] == 1

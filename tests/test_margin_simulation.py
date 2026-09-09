@@ -49,8 +49,6 @@ def test_simulation_is_reproducible_and_preserves_auditable_draws() -> None:
 
 
 def test_simulation_derives_three_way_ats_probabilities_from_integer_margins() -> None:
-    # The market model centers each game on its quoted line. These four
-    # residuals therefore imply one cover, two pushes and one loss at line 3.
     model = _model([-1.0, 0.0, 0.0, 1.0])
     game = _games().iloc[[0]]
     result = simulate_margin_distribution(model, game, samples=80_000, seed=7)

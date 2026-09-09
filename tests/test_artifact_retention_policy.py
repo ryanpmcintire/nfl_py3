@@ -26,16 +26,8 @@ from nfl_ats import artifact_retention_policy as retention_policy
 
 RetentionClass = retention_policy.RetentionClass
 
-# ---------------------------------------------------------------------------
-# classify() / is_scratch / is_point_in_time_capture -- pure unit tests
-# ---------------------------------------------------------------------------
-
 
 def test_classify_protected_is_always_evidence() -> None:
-    # Evidence beats every other rule -- a doc-cited raw capture is still
-    # "evidence" in the class vocabulary, not double-labelled as
-    # point_in_time_capture (both are never-prune; the label should still
-    # reflect *why*).
     assert (
         retention_policy.classify("data/raw", "data/raw/20260101T000000Z", protected=True)
         == RetentionClass.EVIDENCE
@@ -58,8 +50,6 @@ def test_classify_data_raw_market_players_are_point_in_time_capture() -> None:
 
 
 def test_classify_raw_segment_inside_mixed_tree_is_point_in_time_capture() -> None:
-    # data/cfb/pbp/raw/... lives under the mixed "data/other" bucket -- no
-    # whole-tree rule covers it, only the literal "raw" path segment.
     assert (
         retention_policy.classify(
             "data/other", "data/cfb/pbp/raw/20260101T000000Z", protected=False
@@ -69,9 +59,6 @@ def test_classify_raw_segment_inside_mixed_tree_is_point_in_time_capture() -> No
 
 
 def test_classify_refresh_triggers_is_point_in_time_capture_without_raw_segment() -> None:
-    # ENG-08's artifacts/refresh_triggers/ has no literal "raw" segment, so
-    # this needs the explicit POINT_IN_TIME_ARTIFACT_PREFIXES entry, not the
-    # generic path heuristic.
     assert (
         retention_policy.classify(
             "artifacts", "artifacts/refresh_triggers/20260901T000000Z", protected=False
@@ -79,21 +66,15 @@ def test_classify_refresh_triggers_is_point_in_time_capture_without_raw_segment(
         == RetentionClass.POINT_IN_TIME_CAPTURE
     )
     assert "artifacts/refresh_triggers" in retention_policy.POINT_IN_TIME_ARTIFACT_PREFIXES
-    # Ancestor-inclusive: a file nested deeper than the immediate stamp dir
-    # still matches.
     assert retention_policy.is_point_in_time_capture(
         "artifacts", "artifacts/refresh_triggers/20260901T000000Z/log.json"
     )
-    # A sibling family with a similar name must NOT match by accident.
     assert not retention_policy.is_point_in_time_capture(
         "artifacts", "artifacts/refresh_triggers_unrelated/x"
     )
 
 
 def test_classify_prospective_scorecards_is_reproducible_by_default() -> None:
-    # ENG-06's derived summary output is re-derivable from the
-    # evidence-protected artifacts/prospective/ ledgers, so it gets no
-    # special-case protection and falls through to "reproducible".
     assert (
         retention_policy.classify(
             "artifacts", "artifacts/prospective_scorecards/20260901T000000Z", protected=False
@@ -131,8 +112,6 @@ def test_classify_default_is_reproducible() -> None:
 
 
 def test_point_in_time_trees_are_exactly_raw_market_players() -> None:
-    # Locks down the whole-tree rule's membership -- a change here is a
-    # policy change, not a refactor, and should be visible in a diff.
     assert (
         frozenset({"data/raw", "data/market", "data/players"})
         == retention_policy.POINT_IN_TIME_TREES
@@ -152,11 +131,6 @@ def test_retention_classes_table_matches_prunability_contract() -> None:
     assert retention_policy.REPRODUCIBLE_MIN_AGE_DAYS == 30
 
 
-# ---------------------------------------------------------------------------
-# Disk budget math
-# ---------------------------------------------------------------------------
-
-
 def test_budget_bytes_for_tree_applies_multiplier() -> None:
     baseline = retention_policy.BUDGET_BASELINE_BYTES["artifacts"]
     assert retention_policy.budget_bytes_for_tree("artifacts", multiplier=2.0) == baseline * 2
@@ -173,9 +147,6 @@ def test_budget_bytes_for_tree_unknown_tree_is_none() -> None:
 
 
 def test_budget_baseline_covers_every_top_level_tree_name() -> None:
-    # top_level_tree_specs() in scripts/artifact_retention.py always
-    # produces exactly these six tree names -- the budget baseline must
-    # have an entry for each one or --budget-check silently skips a tree.
     expected_trees = {
         "artifacts",
         "data/raw",
@@ -187,11 +158,6 @@ def test_budget_baseline_covers_every_top_level_tree_name() -> None:
     assert set(retention_policy.BUDGET_BASELINE_BYTES) == expected_trees
 
 
-# ---------------------------------------------------------------------------
-# Read-only filesystem probes
-# ---------------------------------------------------------------------------
-
-
 def test_measure_free_space_returns_positive_totals(tmp_path: Path) -> None:
     usage = retention_policy.measure_free_space(tmp_path)
     assert usage is not None
@@ -201,7 +167,6 @@ def test_measure_free_space_returns_positive_totals(tmp_path: Path) -> None:
 
 
 def test_measure_free_space_missing_drive_returns_none() -> None:
-    # A drive letter that (almost certainly) does not exist on this machine.
     assert retention_policy.measure_free_space(Path("Z:/definitely/not/a/real/path")) is None
 
 
@@ -227,11 +192,6 @@ def test_read_mirror_manifest_corrupt_json_returns_none(tmp_path: Path) -> None:
     assert retention_policy.read_mirror_manifest(dest) is None
 
 
-# ---------------------------------------------------------------------------
-# Integration: scripts/artifact_retention.py wiring
-# ---------------------------------------------------------------------------
-
-
 def _touch(path: Path, content: bytes = b"x") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(content)
@@ -249,7 +209,6 @@ def policy_repo(tmp_path: Path) -> Path:
 
     repo = tmp_path / "repo"
 
-    # evidence: doc-cited, older run of a two-run family
     _touch(repo / "artifacts" / "cited_family" / "20260101T000000Z" / "out.json", b"cited")
     _touch(repo / "artifacts" / "cited_family" / "20260601T000000Z" / "out.json", b"newer-uncited")
     _touch(
@@ -257,12 +216,9 @@ def policy_repo(tmp_path: Path) -> Path:
         b"See `artifacts/cited_family/20260101T000000Z` for the frozen baseline.",
     )
 
-    # point_in_time_capture: whole-tree rule (data/raw), unreferenced,
-    # older non-newest run of a two-run family
     _touch(repo / "data" / "raw" / "20260101T000000Z" / "schedules.parquet", b"raw-old")
     _touch(repo / "data" / "raw" / "20260601T000000Z" / "schedules.parquet", b"raw-new")
 
-    # point_in_time_capture: literal "raw" segment inside a mixed tree
     _touch(
         repo / "data" / "cfb" / "pbp" / "raw" / "20260101T000000Z" / "pbp.parquet", b"cfb-raw-old"
     )
@@ -270,12 +226,9 @@ def policy_repo(tmp_path: Path) -> Path:
         repo / "data" / "cfb" / "pbp" / "raw" / "20260601T000000Z" / "pbp.parquet", b"cfb-raw-new"
     )
 
-    # scratch: a stray uv cache under artifacts/, two files so the
-    # newest-of-group guard does not swallow the older one
     _touch(repo / "artifacts" / ".uv-cache" / "CACHEDIR.TAG", b"cache-tag")
     _touch(repo / "artifacts" / ".uv-cache" / ".lock", b"cache-lock")
 
-    # reproducible: an old, unreferenced, non-newest experiment run
     _touch(repo / "artifacts" / "margins" / "20260101T000000Z" / "results.json", b"old-margin-run")
     _touch(repo / "artifacts" / "margins" / "20260601T000000Z" / "results.json", b"new-margin-run")
 
@@ -287,8 +240,6 @@ def policy_repo(tmp_path: Path) -> Path:
     for path in repo.rglob("*"):
         if path.is_file():
             _set_mtime(path, days_ago=90)
-    # Make the two scratch files unambiguously ordered: .lock is the
-    # newest-of-group survivor, CACHEDIR.TAG stays a clean candidate.
     _set_mtime(repo / "artifacts" / ".uv-cache" / ".lock", days_ago=5)
 
     return repo
@@ -302,16 +253,10 @@ def test_build_plan_classifies_every_candidate(policy_repo: Path) -> None:
 
 
 def test_point_in_time_capture_never_appears_in_a_prune_plan(policy_repo: Path) -> None:
-    # The binding ENG-19 invariant. older_than_days=0 is the loosest
-    # possible age threshold, so the only thing that could keep a run out
-    # of the plan here is the class-based exclusion, not the age filter.
     plan = artifact_retention.build_plan(policy_repo, older_than_days=0)
     for candidate in plan.candidates:
         assert candidate.retention_class != "point_in_time_capture", candidate.rel
 
-    # Confirm the fixture actually contains unreferenced, non-newest
-    # point-in-time runs that a pre-ENG-19 plan WOULD have listed --
-    # otherwise this test would pass trivially, with nothing to exclude.
     candidate_rels = {c.rel for c in plan.candidates}
     assert "data/raw/20260101T000000Z" not in candidate_rels
     assert "data/cfb/pbp/raw/20260101T000000Z" not in candidate_rels
@@ -336,8 +281,6 @@ def test_build_budget_check_reclaimable_matches_plan(policy_repo: Path) -> None:
         )
     for row in check.rows:
         assert row.reclaimable_bytes == reclaimable_by_tree.get(row.tree, 0)
-    # The synthetic repo is a few hundred bytes per tree; the real,
-    # GB-scale measured baseline makes every tree trivially under budget.
     assert check.any_over_budget is False
 
 
@@ -376,9 +319,7 @@ def test_budget_check_cli_json_reports_over_budget(
     assert payload["mode"] == "budget_check_dry_run_no_delete"
     assert payload["any_over_budget"] is True
     assert any(row["over_budget"] for row in payload["trees"])
-    assert all(
-        "retention_class" not in row for row in payload["trees"]
-    )  # tree rows, not candidates
+    assert all("retention_class" not in row for row in payload["trees"])
 
 
 def test_main_rejects_plan_and_budget_check_together(policy_repo: Path) -> None:
@@ -392,9 +333,6 @@ def test_main_rejects_report_and_budget_check_together(policy_repo: Path) -> Non
 
 
 def test_no_delete_prune_or_apply_function_exists_anywhere() -> None:
-    # Same guarantee as tests/test_artifact_retention.py::
-    # test_main_has_no_delete_flag, re-asserted against both modules this
-    # ENG-19 pass touches -- budget-check is dry-run/read-only too.
     for module in (artifact_retention, retention_policy):
         assert not hasattr(module, "delete_candidates")
         assert not hasattr(module, "prune")

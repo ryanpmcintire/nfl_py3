@@ -23,33 +23,13 @@ class ProjectedPlayer:
     unit: str = "offense"
     gsis_id: str | None = None
     play_probability: float | None = None
-    #: UI-20-AB (2026-09-05): the availability model's own P(starts) for
-    #: this player -- populated for every scored player, but only ever
-    #: RENDERED for the QB slot (a second, smaller "start" number next to
-    #: the main "plays" percentage; see ``board_terminal._lineup_team_html``).
-    #: Distinct from ``model_qb_start_probability`` below, which is the
-    #: active margin model's own forecast input for the one QB it consumed.
     start_probability: float | None = None
     injury_status: str | None = None
     model_role: str = "context_only"
     model_impact_points: float | None = None
     model_impact_note: str | None = None
-    #: UI-20-AB: how ``play_probability`` was produced -- ``"play_probability_model"``
-    #: (``nfl_ats.play_probability``'s walk-forward, calibrated model, for
-    #: every player with a ``gsis_id``) or ``"unavailable"`` (no ``gsis_id``,
-    #: or no predictor was available this run -- ``play_probability`` stays
-    #: ``None``). See ``probability_reason`` for the human-readable "why".
     probability_source: str | None = None
     probability_reason: str | None = None
-    #: Whether THIS player carries a visible injury-report row this week
-    #: (observed strictly before the artifact's own ``generated_at``) --
-    #: purely informational now (rendered next to the player's name/injury
-    #: status), not a gate on whether the percentage is shown. UI-20 legibility
-    #: fix (2026-09-05) briefly used this to hide the percentage for
-    #: undesignated players; that stopgap is retired now that
-    #: ``play_probability`` is a real per-player forecast for everyone
-    #: (UI-20-AB, ``docs/play_probability_model.md``), not a position-level
-    #: base rate -- see ``docs/projected_lineups.md``.
     has_injury_designation: bool = False
 
 
@@ -127,10 +107,6 @@ def team_lineup(raw: Mapping[str, Any]) -> TeamLineup:
     )
 
 
-#: The lineup artifact is REPLACED on every refresh, not accumulated: the
-#: builder always overwrites this stable path, so at most one lineup snapshot
-#: is ever on disk. History lives in the depth-chart snapshots the payload
-#: cites (`depth_snapshot`), not in stamped display copies.
 STABLE_LINEUP_PATH = Path("lineups") / "current" / "lineups.json"
 
 
@@ -139,8 +115,6 @@ def load_lineups(artifacts_root: Path) -> dict[str, tuple[TeamLineup, TeamLineup
     root = artifacts_root / "lineups"
     stable = artifacts_root / STABLE_LINEUP_PATH
     candidates = [stable] if stable.is_file() else []
-    # Legacy stamped runs predate the stable-path replacement policy; prefer
-    # the stable artifact but still honor a surviving stamped copy.
     candidates.extend(
         candidate
         for candidate in sorted(root.glob("*/lineups.json"), reverse=True)
@@ -178,8 +152,6 @@ def validate_lineup_model_sync(
         game_id = str(row.get("game_id"))
         teams = lineups.get(game_id)
         if teams is None:
-            # The predictions artifact also contains historical rows. Only
-            # the current lineup artifact can be checked against the board.
             continue
         for side, team in zip(("home", "away"), teams, strict=True):
             model_id = row.get(f"{side}_projected_qb_id")

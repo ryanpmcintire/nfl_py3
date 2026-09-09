@@ -40,35 +40,16 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# Teams: YR1 and YR1C both change coaches heading into 2026 (year-1); YR1B
-# also changes -- it is paired against YR1C in a both-year-1 game; KEEP does
-# not change (the clean comparison side). OPP1-4 exist only to seed a REG
-# game for each team's 2025 season so `team_season_primary_coach` has a prior
-# row to read.
-
 
 def _tenure_schedules() -> pd.DataFrame:
     rows = [
-        # 2025 REG season: seeds each team's PRIOR coach of record.
         ("2025_01_YR1_OPP1", 2025, "REG", 1, "YR1", "OPP1", "Old1", "OppC1"),
         ("2025_01_YR1B_OPP2", 2025, "REG", 1, "YR1B", "OPP2", "Old2", "OppC2"),
         ("2025_01_YR1C_OPP4", 2025, "REG", 1, "YR1C", "OPP4", "Old3", "OppC4"),
         ("2025_01_KEEP_OPP3", 2025, "REG", 1, "KEEP", "OPP3", "Steady", "OppC3"),
-        # 2026 REG season.
-        # Week 1: the clean flip candidate -- KEEP (not year-1) hosts YR1
-        # (year-1, new coach "New1").
         ("2026_01_KEEP_YR1", 2026, "REG", 1, "KEEP", "YR1", "Steady", "New1"),
-        # Week 1: a both-year-1 game -- neither side is a clean fade target.
         ("2026_01_YR1B_YR1C", 2026, "REG", 1, "YR1B", "YR1C", "New2", "New3"),
-        # Week 9: the SAME clean matchup as week 1, to prove weeks 9+ are
-        # never touched regardless of the coach flags themselves.
         ("2026_09_KEEP_YR1", 2026, "REG", 9, "KEEP", "YR1", "Steady", "New1"),
-        # Week 5: YR1's OWN credited coach changes again (an in-season
-        # interim hire). Used only by the leakage regression below.
         ("2026_05_YR1_OPP1", 2026, "REG", 5, "YR1", "OPP1", "Interim1", "OppC1"),
     ]
     return pd.DataFrame(
@@ -101,27 +82,15 @@ def _predictions() -> pd.DataFrame:
                 "2026-10-29T17:00:00+00:00",
             ],
             "spread_line": [-3.5, 6.0, -3.5],
-            # Home is NOT picked in any row (the away side is favored by the
-            # model each time). Row 3 is deliberately the SAME shape as row 1
-            # (same matchup, same probability) so the week cutoff is the ONLY
-            # thing distinguishing "flips" from "does not flip".
             "home_cover_probability": [0.35, 0.30, 0.35],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. year_one_by_game: derived, pregame-safe
-# ---------------------------------------------------------------------------
 
 
 def test_year_one_by_game_requires_an_observed_contiguous_prior_season() -> None:
     schedules = pd.concat(
         [
             _tenure_schedules(),
-            # NEWTEAM's only appearance anywhere in the data is 2026 -- no
-            # observed prior season, so it must not be flagged even though it
-            # obviously has "a coach" this year.
             pd.DataFrame(
                 [("2026_01_NEWTEAM_OPP1", 2026, "REG", 1, "NEWTEAM", "OPP1", "Brand New", "OppC1")],
                 columns=[
@@ -140,9 +109,9 @@ def test_year_one_by_game_requires_an_observed_contiguous_prior_season() -> None
     )
     flags = year_one_by_game(schedules).set_index("game_id")
 
-    assert bool(flags.loc["2026_01_KEEP_YR1", "year_one_away"]) is True  # YR1: New1 != Old1
-    assert bool(flags.loc["2026_01_KEEP_YR1", "year_one_home"]) is False  # KEEP: Steady == Steady
-    assert bool(flags.loc["2026_01_NEWTEAM_OPP1", "year_one_home"]) is False  # no prior season
+    assert bool(flags.loc["2026_01_KEEP_YR1", "year_one_away"]) is True
+    assert bool(flags.loc["2026_01_KEEP_YR1", "year_one_home"]) is False
+    assert bool(flags.loc["2026_01_NEWTEAM_OPP1", "year_one_home"]) is False
 
 
 def test_year_one_flags_reproduce_the_seven_2026_teams_from_local_schedule_data() -> None:
@@ -179,7 +148,6 @@ def test_year_one_flag_is_leak_safe_against_a_later_week_mutation() -> None:
     assert bool(changed.loc["2026_01_KEEP_YR1", "year_one_away"]) == bool(
         baseline.loc["2026_01_KEEP_YR1", "year_one_away"]
     )
-    # The week-5 row itself is free to move -- only week 1 is insulated.
     assert bool(baseline.loc["2026_05_YR1_OPP1", "year_one_home"]) is True
 
 
@@ -206,11 +174,6 @@ def test_year_one_flag_is_leak_safe_across_the_season_boundary() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# 2. apply_coach_fade_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
-
-
 def test_overlay_flips_the_clean_case_week_one_game() -> None:
     result = apply_coach_fade_overlay(_predictions(), _tenure_schedules())
 
@@ -221,7 +184,6 @@ def test_overlay_flips_the_clean_case_week_one_game() -> None:
     assert flip.opponent_team == "KEEP"
 
     overlaid = result.overlaid_predictions.set_index("game_id")
-    # 0.35 -> 0.65: the pick flips from AWAY (YR1) to HOME (KEEP).
     assert overlaid.loc["2026_01_KEEP_YR1", "home_cover_probability"] == pytest.approx(0.65)
 
 
@@ -278,11 +240,6 @@ def test_overlay_changes_only_home_cover_probability_on_the_flipped_row() -> Non
     )
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     week_nine_only = _predictions().loc[lambda frame: frame["week"].eq(9)]
     result = apply_coach_fade_overlay(week_nine_only, _tenure_schedules())
@@ -300,10 +257,6 @@ def test_disclosure_note_states_the_flip_count_and_the_flipped_game() -> None:
     assert "YR1 -> KEEP" in note
     assert "docs/coach_fade_overlay.md" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_overlay_challenger_decisions: both arms on the ledger
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -366,15 +319,9 @@ def test_record_overlay_challenger_decisions_records_both_arms(tmp_path: Path) -
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The overlay's OWN arm: the flipped game now records HOME (KEEP), which
-    # diverges from what the raw card's home_cover_probability (0.35, an AWAY
-    # pick) would have recorded on the active model's own paper ledger --
-    # exactly the "both arms" divergence this challenger exists to capture.
     assert ledger.loc["2026_01_KEEP_YR1", "pick_side"] == "HOME"
-    # The un-flipped, both-year-1 game keeps the model's own AWAY pick.
     assert ledger.loc["2026_01_YR1B_YR1C", "pick_side"] == "AWAY"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_overlay_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -396,9 +343,6 @@ def test_record_overlay_challenger_refuses_outside_recording_lock_window(tmp_pat
 def test_record_overlay_challenger_refuses_a_fingerprint_mismatch(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_overlay_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = _write_data_root(tmp_path)
 

@@ -88,9 +88,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 DEFAULT_OUTPUT_ROOT = Path("artifacts/bye_edge_fade_stacked")
 DEFAULT_SAMPLES = 20_000
-#: Recorded, fixed seed -- matches the bye-overvaluation screen family's own
-#: bootstrap-seed convention (scripts/bye_overvaluation_screen.py,
-#: scripts/overlay_subset_composition.py both use 20260821).
 DEFAULT_SEED = 20260821
 CONFIDENCE = 0.95
 
@@ -122,9 +119,6 @@ def run_backtest(
     result = apply_bye_edge_fade_overlay(predictions, schedules)
     flip_ids = sorted({flip.game_id for flip in result.flips})
 
-    # build_eval_frame requires a flip-set for every name in OVERLAY_NAMES
-    # (the six existing overlays); pass empty sets for all six so this
-    # overlay is scored ALONE, never stacked on any of them.
     flip_sets: dict[str, set[str]] = {name: set() for name in OVERLAY_NAMES}
     flip_sets[CHALLENGER_ID] = set(flip_ids)
     eval_frame = build_eval_frame(predictions, per_game, flip_sets)

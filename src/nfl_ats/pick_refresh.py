@@ -171,15 +171,6 @@ from nfl_ats.sharp_book_movement_features import (
 )
 from nfl_ats.weekly import CARD_PATH_TABLES
 
-# ---------------------------------------------------------------------------
-# Per-game deadline: min(own kickoff, that week's Sunday 4:00 PM ET)
-# ---------------------------------------------------------------------------
-
-#: Owner directive, 2026-08-20. Every DECISION_TIMES-style Eastern-anchored
-#: timestamp elsewhere in this project (``nfl_ats.odds_backfill``) uses the
-#: same zone; this is a separate constant (not that module's own
-#: ``sun_late_close`` at 16:15 ET) because the pick-lock rule is a distinct,
-#: explicitly-stated 4:00 PM cutoff, not a market-close proxy.
 PICK_LOCK_TIMEZONE = ZoneInfo("America/New_York")
 SUNDAY_PICK_LOCK_LOCAL_TIME = time(16, 0)
 
@@ -203,9 +194,6 @@ def sunday_pick_lock(kickoffs: pd.Series) -> pd.Timestamp:
     return pd.Timestamp(local).tz_convert("UTC")
 
 
-#: Every composition policy id a Tuesday paper ledger may carry. Ordered
-#: oldest first; the last entry is the one currently played
-#: (``nfl_ats.four_overlay_composition.POLICY_ID``).
 PRODUCTION_COMPOSITION_POLICY_IDS: tuple[str, ...] = (
     "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1",
     "overlay_union_coach_division_revenge_player_arrests_v2",
@@ -221,40 +209,12 @@ def pick_deadline(kickoff: pd.Timestamp, sunday_lock: pd.Timestamp) -> pd.Timest
     return min(kickoff, sunday_lock)
 
 
-# ---------------------------------------------------------------------------
-# Observed-movement pick policy (POL-11 addendum, 2026-08-20)
-# ---------------------------------------------------------------------------
-
-#: Frozen from the predeclared 0.5/1.0 measurement grid in
-#: ``docs/observed_movement_channel.md``: 1.0 was the STRONGER arm at BOTH
-#: gradings measured 2026-08-20 [read, registry/weak_signals.json] --
-#: Tuesday-to-close full-slate (``observed_movement_threshold_1_0`` +1.863
-#: accuracy points, probability_positive 0.935, n=1503, vs
-#: ``observed_movement_threshold_0_5`` +1.663 points, P+ 0.873, n=1503) and
-#: the Sunday-morning-realism grading (``observed_movement_threshold_1_0_sunday_am_realism``
-#: +3.254 points, P+ 0.981, n=799, interval [+0.251, +6.266], vs
-#: ``observed_movement_threshold_0_5_sunday_am_realism`` +1.627 points, P+
-#: 0.764, n=799). Every one of those entries is classified
-#: ``unresolved_below_power`` -- an interval crossing zero is never grounds to
-#: reject a signal (AGENTS.md) -- so playing this threshold is an EV decision
-#: under the project's forced-pick standing order (probability_positive far
-#: above 0.5 on both gradings), not a claim that the channel is a resolved
-#: finding. This constant is FROZEN by that predeclaration and is not
-#: re-tuned here.
 MOVEMENT_POLICY_THRESHOLD = 1.0
 MOVEMENT_POLICY_MOVEMENT = "movement_ge_1.0"
 MOVEMENT_POLICY_MODEL_ONLY = "model_only"
 
-#: The promoted MKT-15/CX18 late-week follow, wired into the served refresh
-#: pick by owner order 2026-09-05 (first live fire: the Thursday 2026-09-10
-#: refresh): when the equal-book Wednesday-to-deadline net move reaches the
-#: frozen 0.5-point threshold, the served pick follows the market. It takes
-#: precedence over the 1.0-point latest-consensus rule below; both arms stay
-#: recorded on every row so a later settlement pass can compare them.
 LATE_WEEK_MOVE_FOLLOW_POLICY = "late_week_move_follow_0_5"
 
-#: Every ``movement_policy`` value that means a market arm (rather than the
-#: model's own recompute) governed ``new_pick_side`` this pass.
 MOVEMENT_GOVERNED_POLICIES = (MOVEMENT_POLICY_MOVEMENT, LATE_WEEK_MOVE_FOLLOW_POLICY)
 
 
@@ -363,10 +323,6 @@ def current_captured_home_spread(
     }
 
 
-# ---------------------------------------------------------------------------
-# The append-only pick-revision ledger
-# ---------------------------------------------------------------------------
-
 PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "revision_recorded_at_utc",
     "refresh_run_id",
@@ -409,8 +365,6 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
 )
 
 
-#: Refresh trigger vocabulary (MKT-08). Scheduled passes are clock-dispatched;
-#: a future news-driven pass records "news_event" with the feed as source.
 TRIGGER_CLOCK_DISPATCH = "clock_dispatch"
 TRIGGER_NEWS_EVENT = "news_event"
 TRIGGER_UNKNOWN = "unknown"
@@ -605,11 +559,6 @@ def _published_pick_side(original: pd.DataFrame) -> pd.Series:
     return original.set_index("game_id")["pick_side"].astype(str)
 
 
-# ---------------------------------------------------------------------------
-# The refresh plan: pure computation, no ledger writes
-# ---------------------------------------------------------------------------
-
-
 @dataclass(frozen=True)
 class RefreshedGame:
     """One game's refreshed read, whether or not it ends up changing."""
@@ -634,55 +583,16 @@ class RefreshedGame:
     composed_overlay_flip: bool
     player_arrests_snapshot_id: str
     player_arrests_safe_index_sha256: str
-    #: Which arm governed ``new_pick_side`` this pass:
-    #: ``LATE_WEEK_MOVE_FOLLOW_POLICY`` (the equal-book Wednesday-to-deadline
-    #: net move reached 0.5 points and the pick followed the market),
-    #: ``MOVEMENT_POLICY_MOVEMENT`` (the latest captured consensus line moved
-    #: >=1.0 point and the pick followed it), or ``MOVEMENT_POLICY_MODEL_ONLY``
-    #: (below both thresholds, or no market evidence -- the model's own
-    #: recompute stands, fail-open). The late-week arm takes precedence when
-    #: both fire.
     movement_policy: str
-    #: The governing arm's signed move in home-oriented points: the late-week
-    #: equal-book net move when the late-week arm governs, else the
-    #: current_captured_home_spread - decision_home_spread consensus delta
-    #: (same sign convention as open_move elsewhere in this project) when a
-    #: fresh captured line exists, else the late-week net move when only that
-    #: arm has evidence. ``None`` when no market arm has evidence this pass.
     movement_delta: float | None
-    #: The side the governing (or counterfactual) market arm points at,
-    #: computed whenever ``movement_delta`` is not ``None`` (blank string
-    #: otherwise) -- the candidate side even on passes where the policy did
-    #: not select it.
     movement_pick_side: str
-    #: The model's own recomputed pick (post coach-fade, pre movement-policy
-    #: override) -- always present, the counterfactual arm the
-    #: ``model_only_refresh_incumbent`` challenger tracks. Equals
-    #: ``new_pick_side`` whenever ``movement_policy`` is
-    #: ``MOVEMENT_POLICY_MODEL_ONLY``. NOTE: ``new_home_cover_probability`` is
-    #: always the model's own probability estimate, never altered by the
-    #: movement policy (only the discrete side can be overridden) -- when a
-    #: movement arm governs, ``new_pick_side`` may therefore differ from
-    #: the usual >=0.5-on-``new_home_cover_probability`` rule; that is the one
-    #: deliberate, disclosed exception to that invariant in this codebase,
-    #: fully recoverable from these columns.
     model_only_pick_side: str
     eligible: bool
     ineligible_reason: str
     changed: bool
-    #: The MKT-15/CX18 late-week arm's own evidence, always recorded
-    #: alongside the governor above: equal-book Wednesday-to-deadline net
-    #: move (``None`` when the live intraday archive has no usable quotes
-    #: for this game this pass), the market side at the frozen 0.5-point
-    #: threshold (``""`` when unavailable), and how many of the twelve
-    #: frozen-universe books contributed (0 when unavailable).
     late_week_net_move: float | None = None
     late_week_pick_side: str = ""
     late_week_eligible_books: int = 0
-    #: The 1.0-point latest-consensus arm's own evidence, same shape:
-    #: current_captured_home_spread - decision_home_spread (``None`` when no
-    #: fresh captured line exists for this game) and the side the market
-    #: moved toward (``""`` when unavailable).
     consensus_delta: float | None = None
     consensus_pick_side: str = ""
 
@@ -699,20 +609,9 @@ class RefreshResult:
     feature_table_path: str
     feature_table_sha256: str
     games: tuple[RefreshedGame, ...]
-    #: On the current week's feature table but with no recorded original
-    #: line -- cannot be refreshed, fail closed for these.
     unrefreshable_game_ids: tuple[str, ...]
-    #: In the recorded original card but absent from the current feature
-    #: table (e.g. a stale/mismatched build) -- also cannot be refreshed.
     missing_from_features_game_ids: tuple[str, ...]
-    #: :func:`current_captured_home_spread`'s metadata dict for this pass
-    #: (``fresh``/``reason``/``latest_observed_at_utc``/``games_with_current_line``).
-    #: Empty when there were no refreshable games to look a line up for.
     current_line_metadata: dict[str, Any] = field(default_factory=dict)
-    #: The promoted late-week follow arm's metadata dict for this pass
-    #: (``available``/``reason``/``games_with_exposure``/``games_followed``/
-    #: ``refused_quote_rows``). ``available`` is ``False`` (fail-open) whenever
-    #: the live intraday archive is absent, unusable, or covers no game.
     late_week_metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
@@ -890,17 +789,6 @@ def plan_refresh(
         )
     mismatched_model = sorted(set(original["model_id"].astype(str)) - {model_id})
     if mismatched_model:
-        # 2026-09-09: `model_id` hashes the feature table's digest, so every
-        # daily player-data refresh (lineups_* -> weekly-run
-        # --refresh-player-data) mints a new id and, before this change,
-        # left refresh-picks refusing for the rest of the week -- measured
-        # on the first in-season Wednesday, hours before the Week 1 opener,
-        # with the late-week follow rule still unfired. Recomputing under
-        # CURRENT data is this command's stated purpose, so the identity
-        # that must not drift is the model CONFIGURATION the pool's lines
-        # were locked against, read from the recorded card's own forecast
-        # metadata; a missing artifact or a real configuration change still
-        # fails closed with the same error.
         recorded_configuration = recorded_card_configuration(artifacts_root, original)
         active_configuration = model_configuration(active)
         if recorded_configuration is None or recorded_configuration != active_configuration:
@@ -961,24 +849,10 @@ def plan_refresh(
             columns={"decision_home_spread": "home_spread"}
         )
         overridden = apply_external_lines(refreshable, lines)
-        # MOD-18 lane S promotion (docs/home_side_offset_promotion.md): the
-        # Tuesday card served a home-side point offset per game; the refit at
-        # the same frozen line carries the identical per-game offset so a
-        # late-week switch can only come from new information, never from
-        # silently dropping the correction. Pre-promotion cards (no sidecar)
-        # refit exactly as before.
         center_offset = _served_home_side_center_offset(artifacts_root, active, overridden)
         forecasts = model.predict(
             overridden, probability_method=probability_method, center_offset=center_offset
         )
-        # Lattice reads (docs/discrete_push_read.md, docs/key_line_pick_read.md):
-        # the Tuesday card read its cover / push / loss split off the
-        # key-number lattice on every game, and the side off the same lattice
-        # where the frozen line sits exactly on 3 or 7; the refit applies the
-        # SAME reads in the SAME order at the same frozen line, so with
-        # nothing new the served numbers reproduce bit-for-bit and a late
-        # switch can only come from new information. Pre-promotion cards (no
-        # sidecar) refit exactly as before.
         forecasts = _served_lattice_reads(
             artifacts_root,
             active,
@@ -1015,11 +889,6 @@ def plan_refresh(
 
         original_indexed = original.set_index("game_id")
         policy_ids = set(original["decision_policy_id"].astype(str))
-        # One frozen production composition per week. Both the retired
-        # four-member union (spread-gap flip included, through 2026-09-07) and
-        # the three-member union that replaced it (owner order, 2026-09-07:
-        # no unexplained threshold flips) carry the composed flag this
-        # refresh re-applies, so either is acceptable -- never a mix.
         if len(policy_ids) != 1 or not policy_ids <= set(PRODUCTION_COMPOSITION_POLICY_IDS):
             raise DataContractError(
                 "Refresh requires one frozen production composition policy for the week"
@@ -1194,11 +1063,6 @@ def plan_refresh(
         current_line_metadata=line_metadata,
         late_week_metadata=late_week_metadata,
     )
-
-
-# ---------------------------------------------------------------------------
-# The write path: opt-in, kickoff-guarded, append-only
-# ---------------------------------------------------------------------------
 
 
 def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str, Any]:
@@ -1469,10 +1333,6 @@ def final_pick_per_game(artifacts_root: Path, *, season: int, week: int) -> pd.D
     return result
 
 
-# ---------------------------------------------------------------------------
-# Opt-in CURRENT_PREDICTIONS.md append (never rewrites the Tuesday section)
-# ---------------------------------------------------------------------------
-
 LATE_WEEK_REFRESH_START = "<!-- LATE_WEEK_REFRESH:START -->"
 LATE_WEEK_REFRESH_END = "<!-- LATE_WEEK_REFRESH:END -->"
 
@@ -1629,16 +1489,11 @@ def _served_lattice_reads(
         else KEY_LINE_ATOMS
     )
     try:
-        # Resolved through the module so a test can stand in a synthetic
-        # lattice for the week (the production fit needs the opener archive).
         production = mass_preserving_lattice.fit_production_discrete_push_reader(
             features, artifacts_root, dict(active), season=season, week=week
         )
         if production.reader is None:
             raise ValueError("no discrete lattice for the target week")
-        # The card's split is discrete whenever the lattice served the card:
-        # the key-line read needs the same reader, so a served key-line
-        # sidecar implies a served split even if the push sidecar is absent.
         result = serve_discrete_three_way(
             forecasts,
             frame,

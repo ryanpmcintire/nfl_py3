@@ -73,11 +73,6 @@ def _row(
     }
 
 
-# ---------------------------------------------------------------------------
-# Leakage: the as-of pick-deadline cutoff is binding
-# ---------------------------------------------------------------------------
-
-
 def test_report_filed_after_the_pick_deadline_never_reaches_the_column() -> None:
     """A revision filed AFTER kickoff must be invisible.
 
@@ -145,11 +140,6 @@ def test_other_games_are_unaffected_by_one_games_reports() -> None:
     assert np.isnan(derived.loc["2012_05_CCC_DDD", ILLNESS_AWAY_ACTIVE_GE1_COLUMN])
 
 
-# ---------------------------------------------------------------------------
-# The two columns' own thresholds
-# ---------------------------------------------------------------------------
-
-
 def test_active_excludes_players_not_expected_to_play() -> None:
     """ "Active" illness excludes Out/Doubtful, inherited unchanged from the
     frozen battery: a single ruled-out ill player must not fire the away
@@ -176,11 +166,6 @@ def test_home_column_needs_two_ill_players() -> None:
     with_two = derive_illness_features(games, injuries=two).set_index("game_id")
     assert with_one.loc["2012_05_AAA_BBB", ILLNESS_HOME_GE2_COLUMN] == 0.0
     assert with_two.loc["2012_05_AAA_BBB", ILLNESS_HOME_GE2_COLUMN] == 1.0
-
-
-# ---------------------------------------------------------------------------
-# Additivity and join contracts
-# ---------------------------------------------------------------------------
 
 
 def test_attach_is_purely_additive() -> None:

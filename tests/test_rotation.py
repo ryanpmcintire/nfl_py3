@@ -39,10 +39,6 @@ from nfl_ats.rotation import (
 )
 from nfl_ats.weak_signals import EFFECT_UNITS
 
-# The LIVE ledger is append-only research data: every recorded look changes its
-# contents and its capacity counts, so asserting behaviour against it would make
-# these tests fail the moment the registry does its job. Behaviour is pinned to a
-# frozen copy of the seeded state; the live file gets its own contract test below.
 SEEDED_REGISTRY = Path(__file__).resolve().parent / "data" / "seeded_rotation_registry.json"
 LIVE_REGISTRY = Path(__file__).resolve().parents[1] / "registry" / "rotation_registry.json"
 
@@ -68,20 +64,12 @@ def test_live_ledger_loads_and_validates() -> None:
                 assert window.artifact, name
                 assert window.verdict, name
             if window.verdict == "closed_negative":
-                # AGENTS.md binding taxonomy: the tracked ledger may never
-                # hold a closure that names no admissible ground -- "the
-                # interval contains zero" closed lines for two days before
-                # this was enforced. Legacy tolerance exists only for frozen
-                # test fixtures, never for the live registry.
                 assert window.closing_ground, (
                     f"{name}: closed_negative without an admissible closing_ground; "
                     "an interval containing zero is NOT one (AGENTS.md, binding)"
                 )
                 assert window.probability_positive is not None, name
             if window.effect_units is not None:
-                # Redundant with load-time enforcement in _validate_effect_fields,
-                # pinned here the same way the closed_negative checks above are:
-                # a visible contract on the TRACKED registry, not just the loader.
                 assert window.effect_units in EFFECT_UNITS, (
                     f"{name}: effect_units {window.effect_units!r} is not a known unit"
                 )
@@ -145,13 +133,11 @@ def _synthetic_seasons(
                         "season": season,
                         "week": week,
                         "game_type": "REG",
-                        # Week ordering only needs to be monotone within a season.
                         "gameday": f"{season}-09-01T00:00:00",
                         "result": 3.0,
                     }
                 )
     frame = pd.DataFrame(rows)
-    # Space the weeks out so chronological sorting is unambiguous.
     frame["gameday"] = pd.to_datetime(frame["season"].astype(str) + "-09-01") + pd.to_timedelta(
         (frame["week"] - 1) * 7, unit="D"
     )
@@ -182,7 +168,6 @@ def _features() -> pd.DataFrame:
                 "result": 7.0,
             }
         )
-    # One scheduled-but-unplayed regular-season game: never training data.
     rows.append(
         {
             "game_id": "2011_unplayed",
@@ -273,11 +258,6 @@ def test_overlapping_windows_in_inherits_chain_raise() -> None:
 
 
 def test_two_parents_may_legitimately_have_spent_the_same_seasons() -> None:
-    # Rule 4 retires windows per-family, so two independent families drawing the
-    # same block is explicitly allowed -- and both can then be honest parents of
-    # one candidate. Rejecting that made a truthful `inherits` undeclarable: a
-    # family downstream of both mod07_weak_signal_stack and
-    # best_pick_ranker_opener could name neither, since each spent [2020, 2021].
     payload = _payload(
         first=_family(
             acknowledges_mined_2018_2025=True,
@@ -304,7 +284,6 @@ def test_two_parents_may_legitimately_have_spent_the_same_seasons() -> None:
         child=_family(inherits=["first", "second"], acknowledges_mined_2018_2025=True),
     )
     registry = registry_from_payload(payload)
-    # And the child must still avoid the union of what its ancestors saw.
     assert all(
         not (block[0] <= 2021 and block[1] >= 2020)
         for block in eligible_blocks(registry, "child", size=2)
@@ -322,8 +301,6 @@ def test_assignment_is_earliest_eligible_and_retires_per_family() -> None:
             acknowledges_mined_2018_2025=True,
         )
         registry = assign_window(registry, name)
-    # Windows retire per family, so both independent hypotheses draw the same
-    # earliest block; only the global season-usage table records the overlap.
     assert registry.families["first_opener"].windows[0].seasons == (2020, 2021)
     assert registry.families["second_opener"].windows[0].seasons == (2020, 2021)
 
@@ -338,10 +315,6 @@ def test_assignment_skips_inherited_spent_seasons() -> None:
         acknowledges_mined_2018_2025=True,
     )
     registry = assign_window(registry, "qb_continuity_variant")
-    # 2009-2010 starts sit below the warm-up floor, and 2012-2017 starts all
-    # intersect the inherited 2014-2017 spend -- but [2011, 2013] clears both,
-    # so an inheriting family no longer has to reach into the mined 2018-2025
-    # era for its first window.
     assert registry.families["qb_continuity_variant"].windows[0].seasons == (2011, 2013)
     registry = record_look(
         registry,
@@ -351,21 +324,11 @@ def test_assignment_skips_inherited_spent_seasons() -> None:
         probability_positive=0.42,
     )
     registry = assign_window(registry, "qb_continuity_variant")
-    # Its own [2011, 2013] spend now joins the inherited [2014, 2017], so the
-    # next clean block is the first one past both.
     assert registry.families["qb_continuity_variant"].windows[1].seasons == (2018, 2020)
     assert registry.families["qb_continuity_variant"].status == "open"
 
 
 def test_assignment_respects_the_warmup_floor() -> None:
-    # Rule 9: the first two feature-table seasons (2009-2010) are warm-up
-    # history — enough games to fit a margin model at all, then 200 calibration
-    # prediction rows — so the earliest assignable block starts 2011 even
-    # though the nflverse_spread pool opens in 2009. Both figures are derived:
-    # calibration from calibrate_cover_prediction_stream, and the training term
-    # from fit_margin_model's own preconditions. The floor read 2013 while the
-    # calibration constant was an inherited 400, and 2012 while rule 9 borrowed
-    # the underived 500-game reporting default.
     registry = declare_family(
         _seeded(), "fresh", description="untainted candidate", grade="nflverse_spread"
     )
@@ -374,11 +337,6 @@ def test_assignment_respects_the_warmup_floor() -> None:
 
 
 def test_warmup_floor_is_computed_from_the_thresholds_it_depends_on() -> None:
-    # The floor is arithmetic on the thresholds, not a season somebody typed.
-    # Rule 9 asks whether a window's first week can be SCORED, so the training
-    # term is the feasibility minimum, NOT the conservative reporting default.
-    # Pinning that distinction is the point of this test: an irreversible
-    # decision must not silently inherit an underived number.
     assert rotation.WARMUP_TRAINING_GAMES == MIN_FITTABLE_TRAIN_GAMES
     assert rotation.WARMUP_TRAINING_GAMES != DEFAULT_MIN_TRAIN_GAMES
     assert rotation.WARMUP_CALIBRATION_ROWS == DEFAULT_MIN_CALIBRATION_GAMES
@@ -386,18 +344,10 @@ def test_warmup_floor_is_computed_from_the_thresholds_it_depends_on() -> None:
         rotation.MIN_ELIGIBLE_START_SEASON
         == rotation.FEATURE_TABLE_START_SEASON + rotation.WARMUP_PRIOR_SEASONS
     )
-    # Today's values, recorded so a change to either threshold shows up here as
-    # a visible move in what seasons a fresh family may draw.
     assert rotation.MIN_ELIGIBLE_START_SEASON == 2011
 
 
 def test_warmup_closed_form_is_never_optimistic_about_a_real_schedule() -> None:
-    # The training and calibration requirements are CHAINED: prediction rows
-    # only accrue once the training floor is met, and only whole weeks are
-    # scorable. Naively summing them under-counts, and at the feasibility floor
-    # that error is large enough to matter -- it would claim 2010, a season
-    # whose week 1 has too few prior prediction rows to calibrate. The closed
-    # form must therefore never sit BELOW the exact walk.
     schedule = _synthetic_seasons(seasons=range(2009, 2016))
     exact = earliest_eligible_start_season(schedule)
     assert exact == rotation.MIN_ELIGIBLE_START_SEASON
@@ -409,7 +359,6 @@ def test_warmup_closed_form_is_never_optimistic_about_a_real_schedule() -> None:
 
 
 def test_warmup_floor_tracks_a_raised_training_requirement() -> None:
-    # The exact walk is a function of its inputs, not a hardcoded season.
     schedule = _synthetic_seasons(seasons=range(2009, 2016))
     assert earliest_eligible_start_season(schedule, min_train_games=500) == 2012
     assert earliest_eligible_start_season(schedule, min_train_games=1000) == 2014
@@ -420,13 +369,10 @@ def test_capacity_partition_starts_at_the_warmup_floor() -> None:
     for grade in ("close", "nflverse_spread"):
         assert pools[grade]["total_windows"] == 5
         assert pools[grade]["unspent_blocks"] == [[2020, 2022], [2023, 2025]]
-    # The opener pool starts well past the floor and is untouched by rule 9.
     assert pools["opener"]["total_windows"] == 3
 
 
 def test_confirmation_split_refuses_a_window_with_no_history() -> None:
-    # The floor guards assignment only; a hand-written ledger can still hold a
-    # pre-2013 window, and the split is the fail-closed backstop.
     registry = registry_from_payload(
         _payload(alpha=_family(windows=[_window(seasons=[2009, 2011])]))
     )
@@ -822,7 +768,6 @@ def test_effect_fields_round_trip_through_load_and_save(tmp_path: Path) -> None:
     assert written_window["standard_error"] == pytest.approx(0.87)
     assert written_window["sample_blocks"] == 35
 
-    # A window that never carried the new fields still round-trips as all-None.
     bare = registry_from_payload(_payload(alpha=_family(windows=[_window()])))
     bare_window = registry_payload(bare)["families"]["alpha"]["windows"][0]
     for field in ("effect", "effect_units", "interval", "standard_error", "sample_blocks"):
@@ -968,12 +913,6 @@ def test_cli_rotation_record_accepts_effect_flags(
     assert window["sample_blocks"] == 35
 
 
-# --------------------------------------------------------------------------
-# Era-stratified confirmation windows
-# (docs/era_stratified_windows_proposal.md, owner-approved 2026-08-19)
-# --------------------------------------------------------------------------
-
-
 def _leg(season: int, effect: float, probability_positive: float = 0.6) -> dict[str, Any]:
     return {
         "season": season,
@@ -984,11 +923,6 @@ def _leg(season: int, effect: float, probability_positive: float = 0.6) -> dict[
 
 
 def test_stratified_scoped_to_close_grade_only() -> None:
-    # The proposal's own scope-limit text names only close-graded families.
-    # Opener is explicitly excluded there (six-season archive, "buys little").
-    # nflverse_spread shares close's numeric season pool but is never named in
-    # that sentence, so it is excluded too -- a documented resolution, not a
-    # proposal-stated fact.
     registry = declare_family(_seeded(), "opener_cand", description="x", grade="opener")
     with pytest.raises(RegistryError, match="close-graded only"):
         assign_stratified_window(registry, "opener_cand")
@@ -1001,12 +935,6 @@ def test_stratified_scoped_to_close_grade_only() -> None:
 
 
 def test_stratified_assignment_leg_pair_is_earliest_and_maximally_distant() -> None:
-    # Deterministic leg-pair rule, implemented exactly as proposed: earliest
-    # untouched season + the untouched season maximally distant from it. That
-    # collapses to (min(eligible), max(eligible)) because distance from a
-    # fixed minimum is maximized at the largest remaining eligible season --
-    # verified here by telescoping the family through three successive draws
-    # rather than asserting it algebraically.
     registry = declare_family(
         _seeded(),
         "close_cand",
@@ -1058,10 +986,7 @@ def test_stratified_assignment_is_deterministic_given_the_ledger() -> None:
 
 
 def test_stratified_assignment_refuses_fewer_than_two_eligible_seasons() -> None:
-    # Every close-pool season except one is pre-touched by a hand-built
-    # inherited window, leaving a single eligible season -- not enough for a
-    # leg pair.
-    almost_all = list(range(rotation.MIN_ELIGIBLE_START_SEASON, 2025))  # excludes 2025 only
+    almost_all = list(range(rotation.MIN_ELIGIBLE_START_SEASON, 2025))
     payload = _payload(
         parent=_family(
             grade="close",
@@ -1098,12 +1023,6 @@ def test_stratified_assign_refuses_a_second_unspent_window() -> None:
 
 
 def test_touched_seasons_use_real_legs_not_the_span_between_them() -> None:
-    # The correctness fix this proposal forces: a stratified window's
-    # [min, max] endpoints are its two legs, NOT a contiguous span. A parent
-    # that spends legs (2011, 2025) has touched exactly those two seasons --
-    # everything in between must still be freely eligible to an inheriting
-    # family. Under the old range-overlap logic this would have wrongly
-    # blocked out all of 2011-2025.
     registry = declare_family(
         _seeded(),
         "parent",
@@ -1130,12 +1049,10 @@ def test_touched_seasons_use_real_legs_not_the_span_between_them() -> None:
         inherits=("parent",),
         acknowledges_mined_2018_2025=True,
     )
-    # A contiguous 3-season block entirely inside (2011, 2025) but touching
-    # neither actual leg must be eligible.
     blocks = eligible_blocks(registry, "child", size=3)
     assert (2012, 2014) in blocks
-    assert (2011, 2013) not in blocks  # touches the 2011 leg
-    assert (2023, 2025) not in blocks  # touches the 2025 leg
+    assert (2011, 2013) not in blocks
+    assert (2023, 2025) not in blocks
 
     registry = assign_window(registry, "child", size=3)
     assert registry.families["child"].windows[0].seasons == (2012, 2014)
@@ -1159,23 +1076,10 @@ def test_grade_pool_capacity_uses_real_legs_not_the_span_for_a_stratified_window
         leg_effects=[_leg(2011, 1.0), _leg(2025, 0.3)],
     )
     capacity = registry_status(registry)["grade_pools"]["close"]
-    # The seeded ledger's pbp_drive_bundle/player_qb_continuity windows
-    # already consume (2011,13)/(2014,16)/(2017,19) globally (pinned by
-    # test_capacity_partition_starts_at_the_warmup_floor); parent's
-    # stratified legs (2011, 2025) additionally touch (2023,25) via its 2025
-    # leg, leaving only (2020,22) unspent. Under the pre-fix range-overlap
-    # logic, treating (2011, 2025) as a contiguous SPAN would have wrongly
-    # excluded (2020,22) too, since 2011 <= 2020 and 2022 <= 2025 -- leaving
-    # zero blocks unspent instead of the one this window's real legs leave.
     assert capacity["unspent_blocks"] == [[2020, 2022]]
 
 
 def test_window_kind_disambiguates_a_bare_two_element_seasons_list() -> None:
-    # The registry's resolution to the schema ambiguity flagged in the
-    # implementation task: a bare [a, b] is structurally identical whether it
-    # means "contiguous range a..b" or "leg pair {a, b}". window_kind, not
-    # list shape, decides which -- covered_seasons proves the two windows
-    # below cover different seasons despite an identical seasons field.
     contiguous = (
         registry_from_payload(
             _payload(alpha=_family(grade="close", windows=[_window(seasons=[2013, 2015])]))
@@ -1220,9 +1124,6 @@ def test_stratified_window_wrong_leg_count_raises() -> None:
 
 
 def test_stratified_window_wrong_grade_raises_at_load() -> None:
-    # Belt-and-braces: assign_stratified_window already refuses a non-close
-    # grade; a hand-edited ledger must not be able to smuggle one past
-    # load-time validation either.
     with pytest.raises(RegistryError, match=f"{STRATIFIED_GRADE}-graded only"):
         registry_from_payload(
             _payload(
@@ -1335,11 +1236,6 @@ def test_leg_effects_round_trip_through_load_and_save(tmp_path: Path) -> None:
 
 
 def test_confirmation_split_legs_trains_strictly_before_each_leg_independently() -> None:
-    # docs/era_stratified_windows_proposal.md point 2: EACH leg gets its own
-    # forward-chained cutoff. Leg 2013's training therefore naturally
-    # includes leg 2011's season data (2011 < 2013) -- the proposal only
-    # forbids a leg training on data at or after its OWN scoring season, not
-    # mutual exclusion between legs.
     registry = registry_from_payload(
         _payload(
             alpha=_family(
@@ -1358,9 +1254,6 @@ def test_confirmation_split_legs_trains_strictly_before_each_leg_independently()
     assert leg_2011.training["result"].notna().all()
 
     assert sorted(leg_2013.scoring["season"].unique()) == [2013]
-    # 2011 (the other leg's own season) is legitimately part of leg 2013's
-    # training set: it is strictly before 2013, and nothing here forbids a
-    # later leg from training on an earlier leg's data.
     assert sorted(leg_2013.training["season"].unique()) == [2009, 2010, 2011, 2012]
     assert leg_2013.training["gameday"].max() < leg_2013.scoring["gameday"].min()
 
@@ -1391,9 +1284,6 @@ def test_confirmation_split_raises_for_a_stratified_window() -> None:
 
 
 def test_stratified_leg_count_constant_is_two() -> None:
-    # Pinned: the proposal's worked example and "same data budget per look
-    # (2 seasons)" framing both describe exactly two legs. Extending to 3+ is
-    # explicitly out of scope for this implementation.
     assert STRATIFIED_LEG_COUNT == 2
 
 

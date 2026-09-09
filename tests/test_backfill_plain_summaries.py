@@ -61,11 +61,6 @@ def _never_touch_the_real_registry(tmp_path: Path, monkeypatch: pytest.MonkeyPat
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "isolated_registry"))
 
 
-# ---------------------------------------------------------------------------
-# Fixture builders
-# ---------------------------------------------------------------------------
-
-
 def _cfb_body(
     *,
     arm: str,
@@ -145,11 +140,6 @@ def _write_registry(path: Path, signals: dict[str, dict[str, Any]]) -> Registry:
     return registry
 
 
-# ---------------------------------------------------------------------------
-# banned_tokens_in
-# ---------------------------------------------------------------------------
-
-
 def test_banned_tokens_in_flags_every_known_violation() -> None:
     assert backfill.banned_tokens_in("A short, clean sentence a fan can read.") == []
     assert backfill.banned_tokens_in("This is a wagering recommendation.") != []
@@ -160,11 +150,6 @@ def test_banned_tokens_in_flags_every_known_violation() -> None:
     assert backfill.banned_tokens_in("used a week-blocked bootstrap") != []
     assert backfill.banned_tokens_in("policy mod18_home_side_location_v1 applies") != []
     assert backfill.banned_tokens_in("model a4c757efd2525da6 is active") != []
-
-
-# ---------------------------------------------------------------------------
-# describe_cfb_home_side_location_cell
-# ---------------------------------------------------------------------------
 
 
 def test_cfb_diagnosis_matches_the_worked_example() -> None:
@@ -320,11 +305,6 @@ def test_cfb_malformed_description_raises() -> None:
     body["description"] = "not the expected shape at all"
     with pytest.raises(ValueError, match="does not match"):
         backfill.describe_cfb_home_side_location_cell(signal_from_payload("x", body))
-
-
-# ---------------------------------------------------------------------------
-# describe_nfl_home_side_cell
-# ---------------------------------------------------------------------------
 
 
 def test_nfl_s3_vs_s2_shape() -> None:
@@ -505,11 +485,6 @@ def test_nfl_unrecognized_cell_shape_raises() -> None:
         backfill.describe_nfl_home_side_cell(signal_from_payload(name, body))
 
 
-# ---------------------------------------------------------------------------
-# _select_candidates
-# ---------------------------------------------------------------------------
-
-
 def test_select_candidates_scopes_by_prefix_family_and_excludes_filled_rows(
     tmp_path: Path,
 ) -> None:
@@ -549,7 +524,7 @@ def test_select_candidates_scopes_by_prefix_family_and_excludes_filled_rows(
     )
     assert [s.name for s in by_prefix] == [
         "mod18_home_side_location_cfb_v1_diagnosis_all_all_all_ats_points"
-    ]  # the s2 row is excluded: it already has a plain_summary
+    ]
 
     by_family = backfill._select_candidates(
         registry, prefix=None, family="mod18_home_side_location_v1"
@@ -567,11 +542,6 @@ def test_select_candidates_scopes_by_prefix_family_and_excludes_filled_rows(
 
     none_match = backfill._select_candidates(registry, prefix="does_not_exist_", family=None)
     assert none_match == []
-
-
-# ---------------------------------------------------------------------------
-# run_template_backfill: preview / apply / never-overwrite / skip contract
-# ---------------------------------------------------------------------------
 
 
 def _cfb_fixture_registry(tmp_path: Path) -> Path:
@@ -641,11 +611,8 @@ def test_dry_run_previews_without_writing(tmp_path: Path) -> None:
         apply=False,
     )
 
-    assert registry_path.read_bytes() == before_bytes  # byte-identical: dry-run wrote nothing
+    assert registry_path.read_bytes() == before_bytes
     assert report["applied"] is False
-    # 4 rows share the CFB prefix; one already has a plain_summary and is excluded as a
-    # candidate, so 3 candidates remain: 2 generate cleanly, 1 (the broken description) is
-    # skipped rather than guessed at.
     assert report["candidates"] == 3
     assert report["generated_count"] == 2
     assert report["skipped_count"] == 1
@@ -678,16 +645,13 @@ def test_apply_writes_only_plain_summary_on_matching_rows_lacking_one(tmp_path: 
         before_signal = before.signals[name]
         after_signal = after.signals[name]
         if name in report["recorded"]:
-            assert after_signal.plain_summary  # now filled in
+            assert after_signal.plain_summary
             assert after_signal.plain_summary != before_signal.plain_summary
-            # every OTHER field is byte-identical to what was already recorded
             assert after_signal.__dict__ == {
                 **before_signal.__dict__,
                 "plain_summary": after_signal.plain_summary,
             }
         else:
-            # untouched rows (already-filled, skipped, or outside scope) are
-            # completely unchanged, plain_summary included
             assert after_signal == before_signal
 
 
@@ -790,11 +754,6 @@ def test_nfl_template_set_applies_through_run_template_backfill(tmp_path: Path) 
     assert summary is not None
     assert "reading the home team's win chance from nearby past final scores" in summary
     assert backfill.banned_tokens_in(summary) == []
-
-
-# ---------------------------------------------------------------------------
-# CLI wiring (main())
-# ---------------------------------------------------------------------------
 
 
 def test_main_template_mode_previews_by_default_and_requires_apply_to_write(

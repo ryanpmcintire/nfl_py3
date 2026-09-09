@@ -115,7 +115,7 @@ def load_schedules(path: Path) -> pd.DataFrame:
     df["home_team"] = df["home_team"].replace(TEAM_ABBREVIATION_ALIASES)
     df["away_team"] = df["away_team"].replace(TEAM_ABBREVIATION_ALIASES)
 
-    df = add_ats_outcomes(df)  # ats_margin, home_cover (reused verbatim)
+    df = add_ats_outcomes(df)
     n_before_push_drop = len(df)
     df = df.loc[df["home_cover"].notna()].reset_index(drop=True)
     df.attrs["n_before_push_drop"] = n_before_push_drop

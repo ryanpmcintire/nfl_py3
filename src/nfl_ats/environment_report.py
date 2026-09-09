@@ -72,10 +72,6 @@ from importlib import metadata as importlib_metadata
 from pathlib import Path
 from typing import Any
 
-#: Distributions whose resolved version can change a computed number:
-#: pyproject.toml's direct dependencies plus scipy (a transitive
-#: scikit-learn/numpy dependency this backlog item calls out by name as
-#: "numerically relevant").
 TRACKED_PACKAGES: tuple[str, ...] = (
     "numpy",
     "pandas",
@@ -88,9 +84,6 @@ TRACKED_PACKAGES: tuple[str, ...] = (
     "tabulate",
 )
 
-#: Common BLAS/OpenMP thread-count env vars. Wider than the generic
-#: "*_NUM_THREADS" allow-list rule below because two real backends
-#: (Accelerate/veclib) do not follow that suffix convention.
 THREAD_ENV_VARS: tuple[str, ...] = (
     "OMP_NUM_THREADS",
     "MKL_NUM_THREADS",
@@ -101,8 +94,6 @@ THREAD_ENV_VARS: tuple[str, ...] = (
 )
 
 _SECRET_NAME_PATTERN = re.compile(r"(KEY|TOKEN|SECRET|PASSWORD)", re.IGNORECASE)
-#: Named explicitly so their presence/absence is always reported, even when
-#: not set (an absent credential is a fact worth recording too).
 _KNOWN_SECRET_ENV_VARS: tuple[str, ...] = ("THE_ODDS_API_KEY", "CFBD_API_KEY")
 
 _ALLOWLISTED_ENV_EXACT = frozenset({"PYTHONHASHSEED", "TZ"})
@@ -152,9 +143,6 @@ def _allowlisted_env_vars() -> dict[str, Any]:
     for name, value in os.environ.items():
         if not _is_allowlisted_env_name(name):
             continue
-        # Defensive: an allow-listed prefix could still be named like a
-        # secret (e.g. a hypothetical NFL_ATS_API_KEY). _redact() would catch
-        # this too, but resolving it here keeps the allow-list itself honest.
         values[name] = True if _SECRET_NAME_PATTERN.search(name) else value
     return values
 
@@ -316,12 +304,8 @@ def _blas_summary() -> dict[str, Any]:
     try:
         import numpy as np
 
-        # Typed ``Any``: numpy's own stub declares a strict TypedDict for
-        # mode="dicts", but this is best-effort telemetry against whatever
-        # numpy version is actually installed, so the isinstance guards below
-        # must stay real checks rather than statically-unreachable ones.
         config: Any = np.show_config(mode="dicts")
-    except Exception:  # deliberately broad: this is best-effort telemetry
+    except Exception:
         return {"available": False}
     if not isinstance(config, dict):
         return {"available": True, "detail": None}
@@ -342,9 +326,6 @@ def _blas_summary() -> dict[str, Any]:
 
 
 def _default_project_root() -> Path:
-    # src/nfl_ats/environment_report.py -> parents[2] is the repo root, the
-    # same pattern nfl_ats.cli._repo_root_on_path uses -- robust regardless
-    # of the process's working directory.
     return Path(__file__).resolve().parents[2]
 
 
@@ -408,17 +389,9 @@ def environment_report(
         return {"error": f"{type(error).__name__}: {error}"}
 
 
-# ---------------------------------------------------------------------------
-# compare_environment
-# ---------------------------------------------------------------------------
-
-#: Explicit cosmetic allow-list (dotted leaf paths into a flattened
-#: environment_report() dict). See the module docstring for the rationale
-#: behind each entry. Every leaf NOT on this list, or matched by
-#: :data:`_COSMETIC_PREFIXES`, defaults to reproducibility_affecting.
 _COSMETIC_EXACT_PATHS = frozenset(
     {
-        "python.version",  # full string incl. patch; python.major/.minor cover what matters
+        "python.version",
         "python.micro",
         "python.executable",
         "uv.version",
@@ -426,13 +399,12 @@ _COSMETIC_EXACT_PATHS = frozenset(
         "uv.available",
         "uv.executable",
         "platform.release",
-        "platform.version",  # OS build number
+        "platform.version",
         "platform.processor",
-        "git.dirty",  # a bare boolean; git.revision (reproducibility-affecting) is the pin
+        "git.dirty",
         "generated_at_utc",
     }
 )
-#: Path prefixes treated as cosmetic wholesale (dynamic keys under them).
 _COSMETIC_PREFIXES = ("secrets_detected.",)
 
 

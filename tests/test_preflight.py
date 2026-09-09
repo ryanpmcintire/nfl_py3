@@ -19,11 +19,6 @@ def _completed(
     return subprocess.CompletedProcess(args=[], returncode=returncode, stdout=stdout, stderr=stderr)
 
 
-# ---------------------------------------------------------------------------
-# Pure version-spec parsing
-# ---------------------------------------------------------------------------
-
-
 def test_parse_version_extracts_leading_digits() -> None:
     assert preflight._parse_version("3.12") == (3, 12)
     assert preflight._parse_version("3.12.4") == (3, 12, 4)
@@ -47,13 +42,7 @@ def test_python_satisfies_false_for_out_of_range() -> None:
 def test_python_satisfies_reports_unparsed_clause() -> None:
     satisfied, unparsed = preflight._python_satisfies((3, 12, 0), ">=3.12,~=3.12")
     assert unparsed == ["~=3.12"]
-    # the parseable clause still governs "satisfied" for clauses that DID parse
     assert satisfied is True
-
-
-# ---------------------------------------------------------------------------
-# check_python_version
-# ---------------------------------------------------------------------------
 
 
 def test_check_python_version_reads_pyproject_requires_python(tmp_path: Path) -> None:
@@ -79,11 +68,6 @@ def test_check_python_version_falls_back_when_pyproject_missing(tmp_path: Path) 
     check = preflight.check_python_version(tmp_path, running_version=(3, 12, 4))
     assert check.status == "ok"
     assert "fallback" in check.detail
-
-
-# ---------------------------------------------------------------------------
-# check_uv_available
-# ---------------------------------------------------------------------------
 
 
 def test_check_uv_available_ok_when_executable_found(
@@ -144,11 +128,6 @@ def test_check_uv_available_fails_when_version_command_nonzero(
     assert resolved is None
 
 
-# ---------------------------------------------------------------------------
-# check_uv_cache
-# ---------------------------------------------------------------------------
-
-
 def test_check_uv_cache_fail_when_uv_path_is_none(monkeypatch: pytest.MonkeyPatch) -> None:
     called = False
 
@@ -161,7 +140,7 @@ def test_check_uv_cache_fail_when_uv_path_is_none(monkeypatch: pytest.MonkeyPatc
     check = preflight.check_uv_cache(None)
     assert check.status == "fail"
     assert check.category == "environment"
-    assert called is False  # never shells out when there is no known uv path
+    assert called is False
 
 
 def test_check_uv_cache_ok_when_directory_exists_and_writable(
@@ -176,7 +155,7 @@ def test_check_uv_cache_ok_when_directory_exists_and_writable(
     )
     check = preflight.check_uv_cache(tmp_path / ".tools" / "uv.exe")
     assert check.status == "ok"
-    assert not any(cache_dir.glob(".nfl_ats_preflight_*"))  # probe file removed
+    assert not any(cache_dir.glob(".nfl_ats_preflight_*"))
 
 
 def test_check_uv_cache_warn_when_directory_missing_but_ancestor_writable(
@@ -199,11 +178,6 @@ def test_check_uv_cache_fail_when_command_errors(
     monkeypatch.setattr(preflight.subprocess, "run", lambda *a, **k: _completed(1, stderr="boom"))
     check = preflight.check_uv_cache(tmp_path / ".tools" / "uv.exe")
     assert check.status == "fail"
-
-
-# ---------------------------------------------------------------------------
-# check_git_available / check_hooks_path
-# ---------------------------------------------------------------------------
 
 
 def test_check_git_available_ok_and_fail(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -253,11 +227,6 @@ def test_check_hooks_path_fail_when_unset(tmp_path: Path, monkeypatch: pytest.Mo
     assert "not configured" in check.detail
 
 
-# ---------------------------------------------------------------------------
-# check_writable_directory
-# ---------------------------------------------------------------------------
-
-
 def test_check_writable_directory_ok_for_existing_writable_dir(tmp_path: Path) -> None:
     target = tmp_path / "artifacts"
     target.mkdir()
@@ -270,7 +239,7 @@ def test_check_writable_directory_ok_for_existing_writable_dir(tmp_path: Path) -
 def test_check_writable_directory_warn_for_missing_dir_with_writable_ancestor(
     tmp_path: Path,
 ) -> None:
-    target = tmp_path / "artifacts"  # deliberately not created
+    target = tmp_path / "artifacts"
     check = preflight.check_writable_directory("artifacts directory writable", target)
     assert check.status == "warn"
     assert "does not exist yet" in check.detail
@@ -285,11 +254,6 @@ def test_check_writable_directory_fail_when_probe_fails(
     check = preflight.check_writable_directory("artifacts directory writable", target)
     assert check.status == "fail"
     assert check.remedy is not None
-
-
-# ---------------------------------------------------------------------------
-# Configuration category: source policy and directory overrides
-# ---------------------------------------------------------------------------
 
 
 def test_check_source_policy_reports_presence_without_leaking_value() -> None:
@@ -323,11 +287,6 @@ def test_check_directory_overrides_reports_default_and_override() -> None:
     assert "D:/custom-data" in by_name["directory override: NFL_ATS_DATA_DIR"].detail
 
 
-# ---------------------------------------------------------------------------
-# Research-data category: absence is legitimate, never a failure
-# ---------------------------------------------------------------------------
-
-
 def test_check_research_artifacts_present_vs_absent(tmp_path: Path) -> None:
     processed = tmp_path / "data" / "processed"
     processed.mkdir(parents=True)
@@ -335,26 +294,20 @@ def test_check_research_artifacts_present_vs_absent(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
 
     checks = preflight.check_research_artifacts(tmp_path, artifacts_root)
-    assert checks  # the inventory is non-empty
+    assert checks
     assert all(check.category == "research_data" for check in checks)
 
     present = [check for check in checks if check.status == "ok"]
     absent = [check for check in checks if check.status == "warn"]
-    assert present  # the one file we created shows up as present
-    assert absent  # everything else is legitimately missing on a fresh clone
+    assert present
+    assert absent
     assert any("game_features.parquet" in check.detail for check in present)
 
 
 def test_check_research_artifacts_never_fails(tmp_path: Path) -> None:
-    # Completely empty repo/artifacts roots: every row must still be ok/warn.
     checks = preflight.check_research_artifacts(tmp_path, tmp_path / "artifacts")
     assert all(check.status in ("ok", "warn") for check in checks)
     assert len(checks) == len(_local_inventory(tmp_path, tmp_path / "artifacts"))
-
-
-# ---------------------------------------------------------------------------
-# preflight_exit_code rule (pure, no I/O)
-# ---------------------------------------------------------------------------
 
 
 def _check(
@@ -407,11 +360,6 @@ def test_exit_code_zero_by_default_for_configuration_warn_but_nonzero_strict() -
     assert preflight.preflight_exit_code(report, strict=True) == 1
 
 
-# ---------------------------------------------------------------------------
-# run_preflight integration: all three categories, fully mocked subprocess
-# ---------------------------------------------------------------------------
-
-
 def test_run_preflight_aggregates_all_categories(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -461,26 +409,16 @@ def test_run_preflight_aggregates_all_categories(
     assert len(research_checks) == expected_research_count
     assert all(c.status in ("ok", "warn") for c in research_checks)
 
-    # Nothing in this fully-configured happy path should fail.
     assert report.has_environment_or_configuration_failure() is False
     assert preflight.preflight_exit_code(report) == 0
-    # But the research-data inventory is entirely absent in this bare tmp_path
-    # repo, so --strict must catch it.
     assert preflight.preflight_exit_code(report, strict=True) == 1
 
-    # The report round-trips through JSON (the --json CLI path).
     payload = report.to_dict()
-    json.dumps(payload)  # must not raise
+    json.dumps(payload)
     assert payload["version"] == preflight.PREFLIGHT_VERSION
     assert payload["summary"]["fail"] == 0
 
-    # Secrets passed in via env never appear in the serialized report.
     assert "present-value" not in json.dumps(payload)
-
-
-# ---------------------------------------------------------------------------
-# CLI wiring (registration only; the handler's own logic is covered above)
-# ---------------------------------------------------------------------------
 
 
 def test_cli_registers_preflight_subcommand() -> None:

@@ -110,10 +110,6 @@ from fluview_battery_ingest import STATE_BY_TEAM  # noqa: E402
 DELPHI_ENDPOINT = "https://api.delphi.cmu.edu/epidata/covidcast/"
 DATA_SOURCE = "nssp"
 
-# The three raw (non-smoothed) per-pathogen NSSP ED-visit-percentage signals
-# that are STILL updating as of this ingest (docs/respiratory_battery.md
-# section 1) -- the official "combined" signal stopped updating 2024w39 and
-# is deliberately not fetched; the screen script sums these three itself.
 SIGNALS: list[str] = [
     "pct_ed_visits_covid",
     "pct_ed_visits_influenza",
@@ -122,14 +118,11 @@ SIGNALS: list[str] = [
 
 STATES = sorted(set(STATE_BY_TEAM.values()))
 
-TIME_VALUES_LOW = "202239"  # measured NSSP state-level floor
-TIME_VALUES_HIGH = "202708"  # safety margin past the 2026 season's last week
+TIME_VALUES_LOW = "202239"
+TIME_VALUES_HIGH = "202708"
 ISSUES_LOW = "202239"
-ISSUES_HIGH = "202720"  # safety margin for late revisions past TIME_VALUES_HIGH
+ISSUES_HIGH = "202720"
 
-# Paced to stay under the anonymous 60-requests/hour cap by construction
-# (69 requests this ingest makes, on its own, exceeds 60) rather than
-# relying on 429 backoff to recover from a blown quota.
 RATE_LIMIT_SECONDS = 62.0
 MAX_RETRIES = 6
 INITIAL_BACKOFF = 10.0
@@ -227,7 +220,7 @@ def _load_completed_parts(output_dir: Path) -> dict[str, dict[str, Any]]:
         try:
             completed[path.stem] = json.loads(path.read_text(encoding="utf-8"))
         except (json.JSONDecodeError, UnicodeDecodeError):
-            continue  # a part that never finished writing cleanly -- refetch it
+            continue
     return completed
 
 
@@ -266,7 +259,7 @@ def _assemble_output(output_dir: Path, completed: dict[str, dict[str, Any]]) -> 
     manifest_path = output_dir / "manifest.json"
 
     if not all_rows:
-        return  # nothing completed yet -- leave no (half-formed) output file
+        return
 
     df = pd.DataFrame(all_rows)
     keep_cols = [
@@ -336,7 +329,7 @@ def run_ingest(output_dir: Path, *, resume: bool) -> None:
         )
         _write_part(output_dir, state, signal, result)
         completed[_job_key(state, signal)] = result
-        _assemble_output(output_dir, completed)  # checkpoint after EVERY request
+        _assemble_output(output_dir, completed)
 
     if not completed:
         raise SystemExit(

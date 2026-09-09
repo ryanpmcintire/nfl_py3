@@ -45,15 +45,9 @@ from nfl_ats.clv import week_blocked_bootstrap  # noqa: E402
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 
-# Full scoring-pass population range: wide enough that the walk-forward
-# warm-up floor itself (not a manual cutoff) is what drops 2009-2010 -- the
-# same mechanism docs/proxy_opener_replication.md already used for 2009-2019,
-# extended two seasons to reach SBR's archive ceiling (2021-22 is the last
-# populated season, docs/sbr_odds_archive.md).
 POP_SEASON_START = 2009
 POP_SEASON_END = 2021
 
-# Era scheme, predeclared in docs/sbr_opener_evaluation.md section 4.
 ERAS: tuple[tuple[str, int, int], ...] = (
     ("era_2011_2014", 2011, 2014),
     ("era_2015_2019", 2015, 2019),
@@ -61,9 +55,6 @@ ERAS: tuple[tuple[str, int, int], ...] = (
 )
 POOLED_START, POOLED_END = 2011, 2021
 
-# Task-specified seed for THIS evaluation (docs/sbr_opener_evaluation.md
-# section 5 discloses this differs from the project's older standing
-# opener-bootstrap seed 20260817 used elsewhere).
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260819
 
@@ -147,9 +138,6 @@ def main() -> None:
     }
     pooled_result = slice_result(scored, POOLED_START, POOLED_END, args.samples, args.seed)
 
-    # Cross-check: era A + B pooled should reproduce the already-recorded
-    # proxy_opener_production_rule_2009_2019 registry entry's 2011-2019
-    # population exactly (same script logic, same games).
     ab_cross_check = slice_result(scored, 2011, 2019, args.samples, args.seed)
 
     per_season = per_season_table(scored, POP_SEASON_START, POP_SEASON_END)

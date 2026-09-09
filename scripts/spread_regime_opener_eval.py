@@ -207,8 +207,6 @@ def score(out: Path, archive: pd.DataFrame, stream: pd.DataFrame) -> dict:
         raise ValueError("Candidate archive coverage changed")
     baseline = paired.pick_home_at_open_probability_rule.to_numpy(dtype=bool)
     results = {}
-    # The first block was assigned before this script was run. Subsequent
-    # frozen blocks are assigned only after recording their predecessor.
     for start, end in ((2020, 2021), (2022, 2023), (2024, 2025), (2020, 2025)):
         block = paired.loc[paired.season.between(start, end)]
         base = block.pick_home_at_open_probability_rule.to_numpy(dtype=bool)

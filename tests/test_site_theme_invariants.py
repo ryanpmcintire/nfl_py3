@@ -35,14 +35,9 @@ def _cover_curve(points: list[tuple[float, float]] | None = None, **overrides: o
 
 def test_cover_curve_direct_labels_the_quoted_line() -> None:
     html = _cover_curve()
-    # Selective direct labelling: the quoted line carries the only axis value
-    # label (named in the pool's own terms, never "+0"), and the coin-flip
-    # baseline is named rather than left to the reader.
     assert ">50% &middot; coin flip</span>" in html
     assert ">SEA -3</span>" in html
     assert ">+0</span>" not in html
-    # The plain-language sentence and the market's own legend both restate
-    # the same number in words -- never a chart-only fact.
     assert 'At <b class="cover-line-words num">SEA -3</b>, <b>SEA</b> covers' in html
     assert '<span class="num cover-pct">58%</span>' in html
     assert (
@@ -56,8 +51,6 @@ def test_cover_curve_ships_a_table_view_twin() -> None:
     assert '<details class="table-view"><summary>View as table</summary>' in html
     assert "<th>Line vs. quote</th><th>Confidence</th>" in html
     assert html.count("<tr><td>") == len(_cover_points())
-    # The cover probability carries a diverging tone around 50%, so the
-    # numeral sits inside a span; the offset cell is unchanged.
     assert "<td>-1.0</td>" in html
     assert '<span class="delta pos">55.0%</span>' in html
     assert "<td>+1.0</td>" in html
@@ -80,17 +73,15 @@ def test_cover_curve_shifts_the_whole_series_onto_the_anchor() -> None:
     curve by construction while shape, spacing and monotonicity survive intact.
     """
 
-    points = [(-1.0, 0.55), (0.0, 0.499), (1.0, 0.62)]  # offset 0 disagrees with the anchor
+    points = [(-1.0, 0.55), (0.0, 0.499), (1.0, 0.62)]
     html = _cover_curve(points, anchor_probability=0.62)
     shift = 0.62 - 0.499
 
-    # The quoted line reads the authoritative number, never the swept one.
     assert '<span class="delta pos">62.0%</span>' in html
     assert "49.9%" not in html
-    # Neighbours move by exactly the same constant -- that is what kills the kink.
     assert f'<span class="delta pos">{0.55 + shift:.1%}</span>' in html
     assert f'<span class="delta pos">{0.62 + shift:.1%}</span>' in html
-    assert '<span class="delta pos">55.0%</span>' not in html  # would be the un-shifted value
+    assert '<span class="delta pos">55.0%</span>' not in html
     assert html.count("<tr><td>") == len(points)
 
 
@@ -100,9 +91,6 @@ def test_cover_curve_leaves_an_already_agreeing_series_alone() -> None:
 
     points = [(-1.0, 0.55), (0.0, 0.50), (1.0, 0.62)]
     html = _cover_curve(points, anchor_probability=0.50)
-    # Tone class is not asserted here: it encodes which side of the coin flip a
-    # value sits on (0.50 renders "zero", not "pos"), which is a separate
-    # concern from whether the translation left the values alone.
     for value in (0.55, 0.50, 0.62):
         assert f">{value:.1%}</span>" in html
 
@@ -120,8 +108,6 @@ def test_cover_curve_preserves_gaps_between_neighbouring_points() -> None:
 
 
 def test_cover_curve_carries_its_geometry_in_data_attributes() -> None:
-    # The drag handler is delegated (:func:`viz.cover_curve_script`), so it
-    # recomputes geometry from these attributes -- they are the contract.
     html = _cover_curve(game_id="2030_01_SF_LA")
     for attribute in ("data-points", "data-xmin", "data-xmax", "data-ymin", "data-ymax"):
         assert f"{attribute}=" in html
@@ -142,11 +128,6 @@ def test_cover_curve_without_points_falls_back_to_an_empty_state() -> None:
     assert "<svg" not in html
 
 
-# ---------------------------------------------------------------------------
-# Cover curve: colour carries the probability, but never alone (2026-08-26)
-# ---------------------------------------------------------------------------
-
-
 def test_cover_curve_diverging_fill_uses_the_validated_theme_tokens() -> None:
     """The area fill is split exactly at 50%, using theme.py's validated
     diverging pair -- never a raw hex, never the good/critical status hues."""
@@ -154,9 +135,6 @@ def test_cover_curve_diverging_fill_uses_the_validated_theme_tokens() -> None:
     html = _cover_curve()
     assert "background:var(--div-pos);opacity:0.18;" in html
     assert "background:var(--div-neg);opacity:0.18;" in html
-    # No raw hex colour anywhere -- only role tokens. A numeric HTML entity
-    # like "&#9632;" also matches a bare hex-digit run, so exclude anything
-    # preceded by "&" (every entity in this markup is "&#...;").
     assert not re.search(r"(?<!&)#[0-9a-fA-F]{3,8}\b", html)
 
 
@@ -219,13 +197,12 @@ def test_probability_meter_clamps_out_of_range_probabilities() -> None:
     high = viz.probability_meter(1.4, label="Chance the pick covers", width=200)
     assert ">100%</span>" in high
     assert 'aria-label="Chance the pick covers: 100%"' in high
-    assert f"left:100.0%;{MARKER}" in high  # the marker stops at the track's end
+    assert f"left:100.0%;{MARKER}" in high
 
     low = viz.probability_meter(-0.3, label="Chance the pick covers", width=200)
     assert ">0%</span>" in low
     assert f"left:0.0%;{MARKER}" in low
 
-    # The coin flip is the anchor of the scale, always drawn and always named.
     assert ">coin flip</span>" in high
     assert "background:var(--baseline);" in high
 
@@ -241,8 +218,6 @@ def test_line_journey_needs_two_numbers_before_it_draws() -> None:
 
 
 def test_line_journey_labels_every_mark_it_draws() -> None:
-    # Identity is carried by color + shape + a labelled legend row, never color
-    # alone: two values give two legend entries, three give three.
     two = viz.line_journey(opener=-3.5, fair=-2.9, predicted_close=None)
     assert 'opened <span class="num">-3.5</span>' in two
     assert 'our number <span class="num">-2.9</span>' in two
@@ -251,8 +226,6 @@ def test_line_journey_labels_every_mark_it_draws() -> None:
     three = viz.line_journey(opener=-3.5, fair=-2.9, predicted_close=-3.1)
     assert "opened" in three and "our number" in three and "close guess" in three
     assert three.count('class="fine"') == 3
-    # Shape distinguishes the three marks, so the legend reads without color:
-    # square opener, filled circle for our number, hollow circle for the close.
     assert three.count("border-radius:2px;") == 1
     assert three.count("&#9632;") == 1
     assert three.count("&#9679;") == 1
@@ -265,13 +238,11 @@ def test_season_bars_draws_one_bar_per_row_and_a_reference_line() -> None:
 
     assert html.count("border-radius:4px;background:var(--series-model);") == len(rows)
     for label, value in rows:
-        assert f">{label}</span>" in html  # direct-labelled season
-        assert f">{value:.1%}</span>" in html  # direct-labelled value
-    # The reference guide runs through every bar and is named once, at the foot.
+        assert f">{label}</span>" in html
+        assert f">{value:.1%}</span>" in html
     assert html.count("dashed var(--baseline);") == len(rows)
     assert html.count(">coin flip</span>") == 1
     assert 'aria-label="By season vs. coin flip"' in html
-    # The losing season is drawn recessive rather than dropped.
     assert "opacity:0.55;" in html
     assert html.count("opacity:1.0;") == 2
 
@@ -304,7 +275,6 @@ def test_stat_tile_delta_arrow_follows_the_delta_direction() -> None:
 @pytest.mark.parametrize("kind", ["good", "warning", "critical", "unrecognized"])
 def test_status_line_never_carries_meaning_by_color_alone(kind: str) -> None:
     html = viz.status_line(kind, "Synchronized with the active model")
-    # A glyph badge plus the words, every time: the class only tints them.
     assert "border:1.5px solid currentColor;" in html
     assert "<span>Synchronized with the active model</span>" in html
     assert f'class="status {kind}"' in html
@@ -315,7 +285,6 @@ def test_status_line_glyphs_differ_by_kind() -> None:
     assert len(set(glyphs.values())) == 3
     assert "&#10003;" in glyphs["good"]
     assert "&#215;" in glyphs["critical"]
-    # An unknown kind still ships a glyph rather than degrading to color alone.
     assert "border:1.5px solid currentColor;" in viz.status_line("mystery", "x")
 
 
@@ -360,8 +329,6 @@ def test_stylesheet_defines_light_tokens_and_both_dark_scopes() -> None:
     explicit_dark = _block_after(stylesheet, '.ats[data-theme="dark"] {')
 
     assert "@media (prefers-color-scheme: dark)" in stylesheet
-    # The system-preference scope must stay guarded, or an explicit light choice
-    # loses to the OS on a dark desktop.
     assert '.ats:not([data-theme="light"])' in stylesheet
 
     expected = set(theme.TOKENS_LIGHT)
@@ -383,9 +350,6 @@ def test_every_token_the_components_reference_is_defined_in_the_stylesheet() -> 
 
 
 def test_stacked_card_margin_is_scoped_to_the_stack_not_global() -> None:
-    # The regression the old design shipped: a global `.card + .card` margin also
-    # fires between side-by-side cards in a flex `.row`, dropping every tile
-    # after the first by 14px. The rule must be opt-in under `.stack`.
     stylesheet = theme.stylesheet()
     assert ".stack > .card + .card" in stylesheet
     assert ".ats .card + .card" not in stylesheet

@@ -34,11 +34,6 @@ from nfl_ats.totals import TotalsView, design_matrix
 _FEATURES = ("wind", "temp")
 
 
-# ---------------------------------------------------------------------------
-# 0. The module default is what production is meant to serve
-# ---------------------------------------------------------------------------
-
-
 def test_served_total_method_defaults_to_joint_residual() -> None:
     assert SERVED_TOTAL_METHOD == "joint_residual"
 
@@ -51,19 +46,12 @@ def test_blend_k01_weight_matches_tiebreakers_totals_residual_weight() -> None:
     assert pytest.approx(TOTALS_RESIDUAL_WEIGHT) == BLEND_K01_WEIGHT
 
 
-# ---------------------------------------------------------------------------
-# 1. served_total_blend_k01: today's rule, unchanged
-# ---------------------------------------------------------------------------
-
-
 def test_served_total_blend_k01_matches_todays_formula() -> None:
     view = TotalsView(
         predicted_total=43.42, market_total=43.0, residual=0.42, train_games=4_630, source="x"
     )
     assert served_total_blend_k01(43.0, view) == pytest.approx(43.0 + 0.1 * 0.42)
     assert served_total_blend_k01(43.0, view, weight=0.2) == pytest.approx(43.0 + 0.2 * 0.42)
-    # No view: the market total alone, exactly like build_report's own
-    # "market-only" degrade.
     assert served_total_blend_k01(43.0, None) == pytest.approx(43.0)
 
 
@@ -107,11 +95,6 @@ def test_served_total_blend_k01_is_hash_pinned() -> None:
     assert digest == "7c2a59c26bc5ad64a500f3ddc56c4f09e0f0bdd9616ef6d445ff685f13dde4ed"
 
 
-# ---------------------------------------------------------------------------
-# 2. served_total_joint_residual: the pure blend half
-# ---------------------------------------------------------------------------
-
-
 def test_served_total_joint_residual_blends_at_its_own_weight() -> None:
     view = TotalsView(
         predicted_total=44.6, market_total=44.0, residual=0.6, train_games=3_919, source="x"
@@ -120,11 +103,6 @@ def test_served_total_joint_residual_blends_at_its_own_weight() -> None:
         44.0 + JOINT_TOTAL_BLEND_WEIGHT * 0.6
     )
     assert served_total_joint_residual(44.0, None) is None
-
-
-# ---------------------------------------------------------------------------
-# 3. joint_residual_total_view: I/O + fit, walk-forward cutoff leakage guard
-# ---------------------------------------------------------------------------
 
 
 def _synthetic_features(
@@ -190,7 +168,7 @@ def _write_joint_features_fixture(
     processed = tmp_path / "processed"
     processed.mkdir(parents=True, exist_ok=True)
     served.to_parquet(processed / "game_features_weak_stack.parquet")
-    return features  # the FULLY PLAYED table, for building the honest/leaky comparators
+    return features
 
 
 def test_joint_residual_total_view_trains_only_on_strictly_earlier_weeks(tmp_path: Path) -> None:
@@ -204,14 +182,10 @@ def test_joint_residual_total_view_trains_only_on_strictly_earlier_weeks(tmp_pat
         target_id, tmp_path, feature_columns=_FEATURES, min_train_games=40
     )
     assert view is not None
-    assert view.train_games == 40 * (target_week - 1)  # weeks 1..4, none from week 5 onward
+    assert view.train_games == 40 * (target_week - 1)
     assert view.market_total == pytest.approx(44.0)
     assert view.predicted_total == pytest.approx(view.market_total + view.residual)
 
-    # The decisive comparison: the walked residual must equal a model fit on
-    # STRICTLY earlier weeks only, and must DIFFER from one that also saw the
-    # target week (or later weeks) -- the same "honest vs leaky" pattern
-    # tests/test_totals.py and tests/test_joint_residual_model.py both use.
     population = realised_residual_frame(full_features, feature_columns=_FEATURES)
     honest_train = population.loc[population["week"] < target_week]
     leaky_train = population.loc[population["week"] <= target_week]
@@ -255,7 +229,6 @@ def test_joint_residual_total_view_returns_none_on_missing_inputs(tmp_path: Path
     target_id = f"2000_{target_week:02d}_00"
     _write_joint_features_fixture(tmp_path, target_id=target_id, flip_week=target_week)
 
-    # No table at all under the default path.
     empty_root = tmp_path / "empty"
     assert (
         joint_residual_total_view(
@@ -263,18 +236,12 @@ def test_joint_residual_total_view_returns_none_on_missing_inputs(tmp_path: Path
         )
         is None
     )
-    # A game_id the table does not carry.
     assert (
         joint_residual_total_view(
             "no_such_game", tmp_path, feature_columns=_FEATURES, min_train_games=40
         )
         is None
     )
-
-
-# ---------------------------------------------------------------------------
-# 4. served_total(): the dispatcher's fall-back contract
-# ---------------------------------------------------------------------------
 
 
 def test_served_total_dispatch_prefers_joint_residual_when_a_view_exists() -> None:
@@ -329,11 +296,6 @@ def test_served_total_dispatch_rejects_an_unknown_method() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# 5. build_report wiring: served_total_method / comparison_total_blend_k01
-# ---------------------------------------------------------------------------
-
-
 def _den_kc_fixture() -> tuple[pd.Series, MarketConsensus, pd.DataFrame]:
     schedules = pd.DataFrame(
         {
@@ -373,8 +335,6 @@ def test_build_report_serves_joint_residual_when_both_views_exist() -> None:
     assert report.served_total == pytest.approx(43.0 + JOINT_TOTAL_BLEND_WEIGHT * 0.6)
     assert report.guess_total_line == pytest.approx(report.served_total)
     assert report.comparison_total_blend_k01 == pytest.approx(43.0 + TOTALS_RESIDUAL_WEIGHT * 0.4)
-    # The two arms genuinely differ here -- otherwise this test could pass by
-    # accident even with a broken dispatcher.
     assert report.served_total != pytest.approx(report.comparison_total_blend_k01)
 
 
@@ -389,11 +349,6 @@ def test_build_report_falls_back_to_blend_when_no_joint_view_is_supplied() -> No
     assert report.served_total_method == "blend_k01"
     assert report.served_total == pytest.approx(43.0 + TOTALS_RESIDUAL_WEIGHT * 0.4)
     assert report.served_total == pytest.approx(report.comparison_total_blend_k01)
-
-
-# ---------------------------------------------------------------------------
-# 6. tiebreaker.json carries both totals and the serving method
-# ---------------------------------------------------------------------------
 
 
 def test_tiebreaker_json_payload_carries_served_total_method_and_both_totals() -> None:
@@ -422,6 +377,4 @@ def test_tiebreaker_json_payload_carries_served_total_method_and_both_totals() -
     assert payload["served_total"] == pytest.approx(report.served_total)
     assert payload["served_total_method"] == "joint_residual"
     assert payload["comparison_total_blend_k01"] == pytest.approx(report.comparison_total_blend_k01)
-    # blended_total is retained, unchanged, for readers that predate this
-    # switch -- it always equals the served total.
     assert payload["blended_total"] == pytest.approx(payload["served_total"])

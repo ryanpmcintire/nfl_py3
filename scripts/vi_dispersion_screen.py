@@ -397,14 +397,6 @@ def split_half_reliability(
     }
 
 
-# ---------------------------------------------------------------------------
-# Batch 2 (2026-08-24): orientation-free cells, predeclared in
-# docs/vi_dispersion_screen.md BEFORE these outcomes were computed.
-# Within-season terciles; top-vs-bottom arms; week-blocked primary and
-# season-blocked secondary bootstraps.
-# ---------------------------------------------------------------------------
-
-
 def assign_within_season_terciles(frame: pd.DataFrame, value_col: str) -> pd.Series:
     labels = pd.Series("middle", index=frame.index, dtype="object")
     for _season, grp in frame.groupby("season", sort=True):

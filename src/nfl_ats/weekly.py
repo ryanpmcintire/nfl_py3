@@ -51,36 +51,20 @@ from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.reporting import read_json
 from nfl_ats.snapshots import latest_snapshot
 
-#: The feature table the frozen active model is trained and scored on.
 PLAYER_FEATURE_TABLE = "game_features_player.parquet"
-#: Margin profile of the frozen active model.
 PLAYER_FEATURE_PROFILE = "player"
 
-#: Production manifests holding the snapshot ids the frozen tables were built
-#: from. Re-passing these keeps a weekly rebuild bit-identical upstream of the
-#: schedule refresh; ``--refresh-player-data`` opts into the latest snapshots.
 PBP_FEATURE_MANIFEST = "game_features_pbp.manifest.json"
 PLAYER_FEATURE_MANIFEST = "game_features_player.manifest.json"
 
-#: MOD-07 weak-signal stack (SPEC-4), registered for prospective 2026 scoring in
-#: ``artifacts/prospective/challengers.json``. It finished ``unresolved`` at
-#: ``probability_positive`` 0.8745 against a pre-fixed 0.90 bar; prospective
-#: outcomes are the only way left to resolve it that costs no registry window.
 WEAK_STACK_CHALLENGER_ID = "mod07_weak_signal_stack"
 WEAK_STACK_FEATURE_PROFILE = "weak_stack"
 WEAK_STACK_FEATURE_TABLE = "game_features_weak_stack.parquet"
 WEAK_STACK_FEATURE_MANIFEST = "game_features_weak_stack.manifest.json"
 WEAK_STACK_RATES_TABLE = "weak_stack_availability_rates.parquet"
 WEAK_STACK_EVALUATION_TABLE = "weak_stack_availability_evaluation.csv"
-#: The weak-stack table is enriched from the PBP table, not the player table:
-#: its injury columns carry LEARNED availability semantics under the same names.
 WEAK_STACK_SOURCE_TABLE = "game_features_pbp.parquet"
 
-#: Feature table per card-path profile. The card path must follow whatever
-#: model is ACTIVE rather than a hardcoded profile: the 2026-08-18 promotion
-#: moved production to ``weak_stack`` and left this path building ``player``,
-#: so every weekly run would have rebuilt, reactivated and published the
-#: demoted model while still reporting ``SYNCHRONIZED``.
 CARD_PATH_TABLES = {
     PLAYER_FEATURE_PROFILE: PLAYER_FEATURE_TABLE,
     WEAK_STACK_FEATURE_PROFILE: WEAK_STACK_FEATURE_TABLE,
@@ -294,9 +278,6 @@ def _prospective_steps(
             processed, refresh_player_data=refresh_player_data
         )
     except WeeklyRunError as error:
-        # Planning an OPTIONAL step must never take the card path down. The
-        # card path calls the same helper and lets the error propagate,
-        # because there the table is what the active model scores on.
         return [
             WeeklyStep(
                 number=9,
@@ -457,9 +438,6 @@ def plan_weekly_run(
         )
     )
     if card_profile == WEAK_STACK_FEATURE_PROFILE:
-        # The active profile's table is enriched from the PBP table with LEARNED
-        # availability semantics, so the card cannot be scored until it exists.
-        # Fatal here, unlike the optional challenger build: this IS the card.
         steps.append(
             WeeklyStep(
                 number=3,
@@ -483,9 +461,6 @@ def plan_weekly_run(
                 str(player_table),
                 "--feature-profile",
                 card_profile,
-                # Median promotion (2026-09-07, docs/gaussian_median_promotion.md).
-                # Historical backtests retain the ECDF default, so the weekly
-                # evaluation explicitly matches step 5's probability method.
                 "--probability-method",
                 "gaussian_median",
             ),
@@ -506,10 +481,6 @@ def plan_weekly_run(
                 str(player_table),
                 "--feature-profile",
                 card_profile,
-                # Explicit for the same reason as step 4 above -- this
-                # already matches margin-predict's own promoted default
-                # ("gaussian_median"), named here so the pair stays correct even if
-                # either CLI default is ever changed independently.
                 "--probability-method",
                 "gaussian_median",
             ),
@@ -842,8 +813,6 @@ def run_weekly(
             record["error"] = str(error)
             record["seconds"] = perf_counter() - step_started
             if step.optional:
-                # POL-10 evidence collection: loud, recorded, and not fatal. The
-                # card is already published by the time these run.
                 summary.setdefault("optional_failures", []).append(step.name)
                 print(
                     f"weekly-run OPTIONAL step {step.name} failed: {error}",
@@ -860,11 +829,6 @@ def run_weekly(
         record["seconds"] = perf_counter() - step_started
 
     summary["published"] = published
-    # ENG-14: lift the publish step's source-policy block to the top of the run
-    # summary, so "which sources fed this card, in what state" is answerable
-    # from the weekly-run output without re-walking the step records. Purely a
-    # copy of what `publish-predictions` already returned -- this module neither
-    # evaluates the policy nor can change what it decided.
     for record in executed:
         if record.get("name") != "publish-predictions":
             continue

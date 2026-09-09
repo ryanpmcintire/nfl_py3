@@ -155,11 +155,8 @@ def main() -> int:
         )
     features_path = args.features or build_features(args.output)
     features = pd.read_parquet(features_path)
-    # Retain ALL production training rows. Missing early candidate history uses
-    # the production imputer, never a shortened baseline training window.
     eligible_games = set(features.dropna(subset=list(EXPECTED_LINEUP_LOSS_COLUMNS))["game_id"])
     scoped, seasons = confirmation.scoped_window_frame(features, load_registry(), FAMILY)
-    # Compute and persist reliability before fitting either decision arm.
     build = json.loads((features_path.parent / "build.json").read_text())
     with candidate_profile() as identity:
         baseline = confirmation.run_arm(

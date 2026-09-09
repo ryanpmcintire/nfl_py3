@@ -34,17 +34,10 @@ from nfl_ats.provenance import write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 
-# The 2026 pool: 272 regular-season games across 18 weeks with one Best Pick
-# each, then 13 postseason games with none. The exact weekly split moves nothing
-# (only the count of Best Pick weeks matters), so a representative one is used.
 REGULAR_WEEKS = (16, 16) + (15,) * 16
 POSTSEASON = (13,)
 SEASON_GAMES = sum(REGULAR_WEEKS) + sum(POSTSEASON)
 
-# Measured inputs, all from committed artifacts:
-#   0.5250  forced-pick accuracy at the Tuesday opener, 1,537 paired games
-#           (artifacts/opener_evaluation/, docs/opener_evaluation.md)
-#   0.548   share of our picks that are on the favourite (measured below-fold)
 BASELINE_ACCURACY = 0.5250
 FIELD_SIZES = (5, 10, 25, 50, 100, 250, 1000)
 SAMPLES = 40_000
@@ -183,9 +176,8 @@ def experiment_free_differentiation(results: dict[str, Any]) -> None:
 
     fmt = season_format(best_pick_bonus=1.0)
     probability = np.full(SEASON_GAMES, BASELINE_ACCURACY)
-    coin_flips = np.arange(0, SEASON_GAMES, 3)  # a third of the card carries no edge
+    coin_flips = np.arange(0, SEASON_GAMES, 3)
     probability[coin_flips] = 0.5
-    # Hold the card's overall accuracy at 52.50% by concentrating the edge.
     remaining = np.setdiff1d(np.arange(SEASON_GAMES), coin_flips)
     probability[remaining] = (
         SEASON_GAMES * BASELINE_ACCURACY - 0.5 * coin_flips.size
@@ -235,7 +227,7 @@ def experiment_flip_cost(results: dict[str, Any]) -> None:
     """
 
     fmt = season_format(best_pick_bonus=1.0)
-    weak = np.arange(0, SEASON_GAMES, 5)  # a fifth of the card, evenly spread
+    weak = np.arange(0, SEASON_GAMES, 5)
     rows = []
     for cost in (0.0, 0.005, 0.010, 0.025, 0.050):
         probability = np.full(SEASON_GAMES, 0.5 + cost / 2.0)
@@ -253,7 +245,6 @@ def experiment_flip_cost(results: dict[str, Any]) -> None:
         available = np.array([index for index in weak if base.on_public_side[index]])
         for entrants in (10, 100, 1000):
             field = FieldModel(entrants=entrants, public_lean=0.65)
-            # Splash pools commonly pay roughly the top 15%; carry both objectives.
             places = max(1, round(0.15 * (entrants + 1)))
             for flips in (0, 10, 20, available.size):
                 entry: Entry = base if flips == 0 else deviate(base, available[:flips])
@@ -330,7 +321,7 @@ def main() -> None:
         EXPERIMENTS[name](results)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(results, args.out)  # ENG-38
+    write_stamped_artifact(results, args.out)
     print(f"wrote {args.out} ({', '.join(args.only or list(EXPERIMENTS))})")
 
 

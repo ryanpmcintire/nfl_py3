@@ -81,7 +81,6 @@ BASELINE_PROFILE: MarginFeatureProfile = "weak_stack"
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 
-#: arm name -> (candidate profile, the one column that arm adds)
 CANDIDATE_ARMS: dict[str, tuple[MarginFeatureProfile, str]] = {
     "illness_away": ("weak_stack_illness_away", ILLNESS_AWAY_ACTIVE_GE1_COLUMN),
     "illness_home": ("weak_stack_illness_home", ILLNESS_HOME_GE2_COLUMN),
@@ -90,15 +89,7 @@ CANDIDATE_ARMS: dict[str, tuple[MarginFeatureProfile, str]] = {
 DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_illness.parquet"
 ROTATION_FAMILY = "illness_on_production"
 
-# Rotation-assigned window (docs/illness_on_production.md section 7), read out
-# of `nfl-ats rotation assign` and never hand-picked; overridable via
-# --seasons for the instrument checks, which run on the same window.
 DEFAULT_SEASONS = "2011-2013"
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_window(
@@ -318,11 +309,6 @@ def summarize_pair(
         "n_weeks": int(paired[["season", "week"]].drop_duplicates().shape[0]),
         "n_seasons": int(paired["season"].nunique()),
     }
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

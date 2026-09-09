@@ -42,7 +42,7 @@ def test_boundary_sign_and_overtime_exclusion() -> None:
     result = quarter_margins(plays(), games()).set_index("game_id")
     assert result.loc["a", "first_three_margin"] == 3
     assert result.loc["a", "fourth_margin"] == 7
-    assert result.loc["b", "fourth_margin"] == -7  # OT final -3 is not regulation.
+    assert result.loc["b", "fourth_margin"] == -7
 
 
 def test_missing_boundary_is_not_a_later_score() -> None:

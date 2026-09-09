@@ -89,8 +89,6 @@ from nfl_ats.prospective import (
     nflcom_team_starter_out_counts,
 )
 
-#: Same registered challenger as publish-time tracking -- this ledger is the
-#: refresh-time VIEW of that one challenger's decisions, not a new challenger.
 CHALLENGER_ID = "nflcom_friday_refresh_out2_starters_v1"
 
 NFLCOM_REFRESH_OVERLAY_COLUMNS: tuple[str, ...] = (
@@ -209,14 +207,6 @@ def build_nflcom_refresh_overlay_rows(
     rows: list[dict[str, Any]] = []
     skipped_page_after_deadline: list[str] = []
     for game in eligible_games:
-        # Leakage guard, PER GAME rather than week-wide (corrected 2026-08-25;
-        # see docs/nflcom_friday_refresh.md "2026-08-25 correction"). A game may
-        # only be flagged from a page that predates ITS OWN pick deadline.
-        # RefreshedGame already carries that deadline: min(own kickoff, the
-        # week-wide Sunday 16:00 ET lock). The previous week-wide form compared
-        # against the EARLIEST kickoff of the week, which no Friday-final page
-        # can precede once the week holds a Thursday (or Wednesday) game --
-        # measured unsatisfiable on 7 of 7 real weeks.
         if fetched_at >= pd.Timestamp(game.deadline):
             skipped_page_after_deadline.append(str(game.game_id))
             continue
@@ -263,9 +253,6 @@ def build_nflcom_refresh_overlay_rows(
 
     frame = pd.DataFrame(rows, columns=list(NFLCOM_REFRESH_OVERLAY_COLUMNS))
     if frame.empty:
-        # Every eligible game's own deadline already passed when the page was
-        # fetched (e.g. a Thursday-only pass). Documented no-op, same shape as
-        # the other fail-open exits -- never an exception, never a flip.
         return empty, {
             "skipped": True,
             "reason": (

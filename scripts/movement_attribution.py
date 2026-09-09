@@ -58,11 +58,8 @@ INJURY_NET_THRESHOLD = 2.0
 PFT_NET_THRESHOLD = 1
 WEATHER_WIND_DELTA_MPH = 10.0
 WEATHER_TEMP_DELTA_F = 15.0
-OFFICIAL_INJURY_MAX_SEASON = 2024  # injuries.parquet coverage ends here (measured)
+OFFICIAL_INJURY_MAX_SEASON = 2024
 
-# Extends src/nfl_ats/constants.py's TEAM_ABBREVIATION_ALIASES the same way
-# scripts/ingest_public_betting.py does -- reproduced locally rather than
-# imported, matching that script's own stated convention.
 TEAM_ALIASES = {"OAK": "LV", "SD": "LAC", "STL": "LA", "LAR": "LA", "JAC": "JAX", "WSH": "WAS"}
 
 TEAM_NICKNAMES: dict[str, tuple[str, ...]] = {
@@ -99,11 +96,6 @@ TEAM_NICKNAMES: dict[str, tuple[str, ...]] = {
     "TEN": ("titans",),
     "WAS": ("commanders", "washington", "football team", "redskins"),
 }
-
-
-# ---------------------------------------------------------------------------
-# Shared helpers
-# ---------------------------------------------------------------------------
 
 
 def own_week_tuesday_noon_utc(kickoff_utc: pd.Series) -> pd.Series:
@@ -179,11 +171,6 @@ def score_cell(frame: pd.DataFrame, *, name: str) -> dict[str, Any]:
     }
 
 
-# ---------------------------------------------------------------------------
-# Population construction
-# ---------------------------------------------------------------------------
-
-
 def load_population() -> pd.DataFrame:
     anchor = pd.read_parquet(ANCHOR_ARTIFACT)
     features = pd.read_parquet(GAME_FEATURES)[
@@ -204,11 +191,6 @@ def load_population() -> pd.DataFrame:
     pop["moved_against_team"] = np.where(pick_home, pop["home_team"], pop["away_team"])
     pop["favored_team"] = np.where(pick_home, pop["away_team"], pop["home_team"])
     return pop
-
-
-# ---------------------------------------------------------------------------
-# (a) INJURY attribution
-# ---------------------------------------------------------------------------
 
 
 def _team_week_cutoffs(pop: pd.DataFrame) -> pd.DataFrame:
@@ -354,11 +336,6 @@ def attach_injury_flag(pop: pd.DataFrame) -> pd.DataFrame:
     return pop
 
 
-# ---------------------------------------------------------------------------
-# (b) WEATHER attribution
-# ---------------------------------------------------------------------------
-
-
 def attach_weather_flag(pop: pd.DataFrame) -> pd.DataFrame:
     forecast = pd.read_parquet(FORECAST_ARCHIVE)[
         [
@@ -386,11 +363,6 @@ def attach_weather_flag(pop: pd.DataFrame) -> pd.DataFrame:
     pop["weather_data_usable"] = outdoor & usable
     pop["WEATHER"] = outdoor & usable & deteriorated
     return pop
-
-
-# ---------------------------------------------------------------------------
-# (c) PUBLIC ALIGNMENT attribution
-# ---------------------------------------------------------------------------
 
 
 def attach_public_flag(pop: pd.DataFrame) -> pd.DataFrame:
@@ -458,11 +430,6 @@ def attach_public_flag(pop: pd.DataFrame) -> pd.DataFrame:
     return pop
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
@@ -487,9 +454,6 @@ def main() -> None:
     pop_threshold = pop.loc[pop["open_move"].abs().ge(1.0)].copy()
     print(f"POP_THRESHOLD (|open_move|>=1.0): n={len(pop_threshold)} (anchor target: 290)")
 
-    # ------------------------------------------------------------------
-    # Anchor reproduction check
-    # ------------------------------------------------------------------
     anchor_unfiltered = score_cell(pop, name="anchor_unfiltered")
     anchor_threshold = score_cell(pop_threshold, name="anchor_threshold_ge_1_0")
     print(
@@ -505,9 +469,6 @@ def main() -> None:
         f"(target: n=290, +9.66pts, P+0.935)"
     )
 
-    # ------------------------------------------------------------------
-    # Coverage
-    # ------------------------------------------------------------------
     coverage = {
         pop_name: {
             "n": len(frame),
@@ -529,9 +490,6 @@ def main() -> None:
     }
     print(f"\nCoverage: {coverage}")
 
-    # ------------------------------------------------------------------
-    # Stratified cells
-    # ------------------------------------------------------------------
     cells: list[dict[str, Any]] = [
         {"population": "POP_UNFILTERED", "attribution": "ANCHOR_ALL", **anchor_unfiltered},
         {"population": "POP_THRESHOLD", "attribution": "ANCHOR_ALL", **anchor_threshold},
@@ -556,13 +514,10 @@ def main() -> None:
     cells_frame = pd.json_normalize(cells)
     print("\n" + cells_frame.to_string(index=False))
 
-    # ------------------------------------------------------------------
-    # Proposed weak-signals record commands (never executed here)
-    # ------------------------------------------------------------------
     proposed_records: list[dict[str, Any]] = []
     for c in cells:
         if c["attribution"] == "ANCHOR_ALL":
-            continue  # already recorded under observed_movement_* names
+            continue
         if not np.isfinite(c["paired_delta_point"]):
             continue
         name = f"movement_attribution_{c['population'].lower()}_{c['attribution'].lower()}"
@@ -597,9 +552,6 @@ def main() -> None:
             }
         )
 
-    # ------------------------------------------------------------------
-    # Write artifacts
-    # ------------------------------------------------------------------
     output_dir = args.output_root / run_id()
     export_cols = [
         "game_id",

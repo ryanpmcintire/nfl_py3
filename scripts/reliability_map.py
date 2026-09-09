@@ -80,9 +80,6 @@ N_BOOT = 4000
 V4_PATH = REPO / "data" / "processed" / "game_features_weak_stack_v4.parquet"
 V3_PATH = REPO / "data" / "processed" / "game_features_weak_stack_v3.parquet"
 
-# v3-only families v4 dropped that still fit the "<x>_home"/"<x>_away" pair
-# pattern (task step 2/3) -- pulled onto the v4 frame via a game_id merge so
-# the rest of the pipeline treats them identically to a native v4 column.
 V3_ONLY_PAIR_BASES = (
     "gap_division_revenge",
     "gap_sandwich_spot",
@@ -112,14 +109,8 @@ IDENTIFIER_COLUMNS = frozenset(
     }
 )
 
-# Realized game outcomes -- not pregame predictive features. Reported
-# separately so nobody reads an outcome's own split-half reliability as a
-# feature's.
 OUTCOME_COLUMNS = frozenset({"result", "ats_margin", "home_cover", "away_score", "home_score"})
 
-# home_/away_-prefixed pairs that match the auto-discovery pattern but are a
-# market artifact of the BET, not a trait of a TEAM (juice on either side of
-# the spread). Explicitly excluded rather than swept.
 MARKET_PAIR_EXCLUSIONS = frozenset({"home_spread_odds", "away_spread_odds"})
 
 
@@ -171,8 +162,6 @@ def discover_family_pairs(
             pattern = "prefix" if col.startswith("home_") else "suffix"
             numeric_families[base] = (col, away_col, pattern)
 
-    # Anything shaped like a home/away column that never got claimed above
-    # (e.g. home_cover has no away_cover counterpart at all).
     for col in columns:
         if col in claimed or col in IDENTIFIER_COLUMNS or col in OUTCOME_COLUMNS:
             continue
@@ -247,35 +236,6 @@ def run_sweep(
     return results, skipped
 
 
-# ---------------------------------------------------------------------------
-# Cross-reference: the registry's 99 NFL accuracy_points leads at P+ >= 0.80
-# against the families this map covers.
-#
-# This mapping is INFERRED -- built by reading each lead's ``description``
-# field in registry/weak_signals.json against the family names this script
-# discovers, not by opening every signal's source module. A handful (marked
-# ``read_from_description``) name their source column explicitly in that
-# description (e.g. "game_features_pbp.parquet's home_pbp_off_pass_rate");
-# the rest are this session's best-effort keyword match and should be read
-# as a starting point for a signal-by-signal audit, not a verified fact.
-# ---------------------------------------------------------------------------
-
-# lead name -> (matched family keys or [], status, note)
-# status one of:
-#   "covered_new"                  -- no prior registry reliability; this map
-#                                      now supplies one for a directly-matching
-#                                      family.
-#   "corroborates_existing"        -- registry already has a reliability for
-#                                      this lead; this map supplies an
-#                                      independent, closely-related family
-#                                      number alongside it.
-#   "not_covered_external_source"  -- a real team/market construct, but its
-#                                      data source is not one of these three
-#                                      parquet tables at all (a genuine
-#                                      coverage gap, not a by-design exclusion).
-#   "not_applicable"                -- game/venue-level (AGENTS.md's own
-#                                      example bucket) or a pure model/
-#                                      composition construct, not a feature.
 LEAD_CROSSREF: dict[str, tuple[list[str], str, str]] = {
     "bias_battery_division_revenge_game": (
         ["gap_division_revenge"],
@@ -365,8 +325,6 @@ LEAD_CROSSREF: dict[str, tuple[list[str], str, str]] = {
         "covered_new",
         "Injury value-lost BLOCK; member columns swept.",
     ),
-    # -- Already has a registry reliability; this map corroborates with an
-    # independent, closely related feature-level number.
     "pbp08_pass_mismatch": (
         ["pbp_off_pass_rate", "pbp_off_pass_epa_per_play"],
         "corroborates_existing",
@@ -412,10 +370,6 @@ LEAD_CROSSREF: dict[str, tuple[list[str], str, str]] = {
     ),
 }
 
-# Leads whose description ties them to a real team/market construct that is
-# simply not present in these three parquet tables at all -- a genuine
-# coverage gap, not a by-design exclusion. Grouped by data source for the
-# report rather than repeated per lead.
 NOT_COVERED_EXTERNAL_SOURCE = {
     "best_pick_opener_ranker_dispersion_filtered_candidate_vs_unfiltered": (
         "cross-book opener spread dispersion (market microstructure)"
@@ -513,9 +467,6 @@ NOT_COVERED_EXTERNAL_SOURCE = {
     "surface_familiarity_r3_era_2018_2025": (
         "venue surface x visitor modal surface (venue-level, no team-attributable pair)"
     ),
-    # Added to the registry concurrently by another session mid-audit (this
-    # script observed candidates go 99 -> 100 between runs); triaged the same
-    # way as the rest, not part of the original 99 this task was scoped to.
     "dst_transition_eastbound_interaction": (
         "timezone travel distance x DST transition window (not in this table)"
     ),
@@ -547,8 +498,6 @@ NOT_APPLICABLE = {
     "overlay_subset_holdout_2020_2022_reverse": "composition/holdout design, not a single feature",
 }
 
-# The 10 already-reliable leads this map does NOT independently touch
-# (their data source lives outside these three parquet tables).
 ALREADY_RELIABLE_NOT_CROSSREFERENCED = frozenset(
     {
         "attention_battery_both_cold",

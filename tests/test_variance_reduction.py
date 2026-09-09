@@ -69,11 +69,6 @@ def _synthetic_covariates(predictions: pd.DataFrame, seed: int) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# cuped_adjust: the unbiasedness identity
-# ---------------------------------------------------------------------------
-
-
 def test_cuped_adjust_preserves_mean_for_arbitrary_theta() -> None:
     rng = np.random.default_rng(1)
     n = 500
@@ -81,9 +76,6 @@ def test_cuped_adjust_preserves_mean_for_arbitrary_theta() -> None:
     covariates = rng.normal(size=(n, 4))
     covariates[:, 1] = rng.uniform(-10, 10, size=n)
 
-    # The identity does not depend on theta being any particular value: any
-    # theta leaves the sample mean unchanged, because the centered covariate
-    # sums to exactly zero.
     for theta in (
         np.zeros(4),
         np.ones(4) * 1e6,
@@ -99,13 +91,12 @@ def test_cuped_adjust_matches_manual_ols_and_preserves_mean() -> None:
     n = 2000
     x = rng.normal(size=n)
     noise = rng.normal(scale=0.5, size=n)
-    values = 3.0 * x + noise  # strongly correlated with the covariate
+    values = 3.0 * x + noise
 
     adjusted, theta, means = cuped_adjust(values, x[:, None])
     assert adjusted.mean() == pytest.approx(values.mean(), abs=1e-8)
     assert theta[0] == pytest.approx(3.0, rel=0.05)
     assert means[0] == pytest.approx(x.mean())
-    # Variance should shrink a lot: only the noise term should remain.
     assert np.var(adjusted, ddof=1) < 0.1 * np.var(values, ddof=1)
 
 
@@ -118,18 +109,12 @@ def test_cuped_adjust_handles_2d_series_and_uncorrelated_covariate() -> None:
     assert adjusted.shape == values.shape
     assert theta.shape == (3, 2)
     np.testing.assert_allclose(adjusted.mean(axis=0), values.mean(axis=0), atol=1e-8)
-    # Uncorrelated covariates should not meaningfully inflate variance.
     assert np.var(adjusted[:, 0], ddof=1) == pytest.approx(np.var(values[:, 0], ddof=1), rel=0.2)
 
 
 def test_cuped_adjust_rejects_mismatched_shapes() -> None:
     with pytest.raises(ValueError, match="n_covariates"):
         cuped_adjust(np.zeros(10), np.zeros((9, 2)))
-
-
-# ---------------------------------------------------------------------------
-# build_cuped_covariates
-# ---------------------------------------------------------------------------
 
 
 def test_build_cuped_covariates_derives_expected_columns() -> None:
@@ -145,7 +130,6 @@ def test_build_cuped_covariates_derives_expected_columns() -> None:
     covariates = build_cuped_covariates(features)
     assert list(covariates["abs_spread_line"]) == [3.0, 7.0, 2.5, 6.5]
     assert list(covariates["on_key_number"]) == [1.0, 1.0, 0.0, 0.0]
-    # Missing rest_diff is imputed to 0, not dropped.
     assert list(covariates["abs_rest_diff"]) == [0.0, 0.0, 3.0, 4.0]
     assert covariates["total_line"].isna().sum() == 1
 
@@ -153,11 +137,6 @@ def test_build_cuped_covariates_derives_expected_columns() -> None:
 def test_build_cuped_covariates_requires_core_columns() -> None:
     with pytest.raises(ValueError, match="missing columns"):
         build_cuped_covariates(pd.DataFrame({"game_id": [1]}))
-
-
-# ---------------------------------------------------------------------------
-# fast block bootstrap plumbing
-# ---------------------------------------------------------------------------
 
 
 def test_paired_block_groups_and_fast_bootstrap_recover_known_mean() -> None:
@@ -177,11 +156,6 @@ def test_paired_block_groups_and_fast_bootstrap_recover_known_mean() -> None:
     draws = fast_block_bootstrap_means(values, group_of_row, n_groups, samples=3000, seed=99)
     assert draws.shape == (3000, 1)
     assert draws.mean() == pytest.approx(values.mean(), abs=0.05)
-
-
-# ---------------------------------------------------------------------------
-# covariate_adjusted_paired_comparisons
-# ---------------------------------------------------------------------------
 
 
 def test_covariate_adjusted_matches_raw_point_estimate_and_reference_bootstrap() -> None:
@@ -205,13 +179,8 @@ def test_covariate_adjusted_matches_raw_point_estimate_and_reference_bootstrap()
     for metric in reference["metric"]:
         ref_row = reference.loc[reference["metric"].eq(metric)].iloc[0]
         adj_row = comparisons.loc[comparisons["metric"].eq(metric)].iloc[0]
-        # The point estimate must be identical between the adjusted and raw
-        # (production) estimator: this is the unbiasedness guarantee, not a
-        # coincidence of the random covariates used here.
         assert adj_row["raw_estimate"] == pytest.approx(ref_row["estimate"], abs=1e-9)
         assert adj_row["estimate"] == pytest.approx(ref_row["estimate"], abs=1e-9)
-        # Independent bootstrap draws of the same underlying data should
-        # land in the same ballpark.
         assert adj_row["raw_lower"] == pytest.approx(ref_row["lower"], abs=0.03)
         assert adj_row["raw_upper"] == pytest.approx(ref_row["upper"], abs=0.03)
 
@@ -224,10 +193,6 @@ def test_covariate_adjusted_reports_variance_reduction_for_correlated_covariate(
     direction = np.where(actual >= 0.5, 1.0, -1.0)
     idiosyncratic_noise = rng.normal(scale=0.02, size=n_games)
     baseline_probability = np.clip(0.5 + idiosyncratic_noise, 0.05, 0.95)
-    # The candidate's edge over baseline scales with |spread| -- e.g. a
-    # feature that only helps in blowout-prone games. The resulting
-    # brier_improvement is therefore strongly (though not perfectly) linear
-    # in abs_spread, which is exactly the structure CUPED should remove.
     candidate_probability = np.clip(
         baseline_probability + 0.01 * abs_spread * direction, 0.02, 0.98
     )
@@ -308,11 +273,6 @@ def test_covariate_adjusted_validates_inputs() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# planted effects
-# ---------------------------------------------------------------------------
-
-
 def test_plant_accuracy_effect_hits_target_within_rounding() -> None:
     rng = np.random.default_rng(20)
     n = 9000
@@ -367,10 +327,6 @@ def test_plant_accuracy_effect_with_noise_hits_target_and_is_two_sided() -> None
     baseline_error = np.square(baseline_probability - actual)
     candidate_error = np.square(candidate - actual)
     brier_improvement = baseline_error - candidate_error
-    # With real per-game noise, the candidate should be WORSE than baseline
-    # on plenty of individual games even though better on average -- unlike
-    # the noiseless mechanism, where every game's brier_improvement is
-    # non-negative by construction.
     assert (brier_improvement < 0).mean() > 0.1
     assert (brier_improvement > 0).mean() > 0.1
     assert brier_improvement.mean() > 0.0
@@ -399,11 +355,6 @@ def test_plant_null_candidate_has_zero_expected_accuracy_effect() -> None:
         candidate_accuracy = ((candidate >= 0.5) == actual).mean()
         achieved_deltas.append(candidate_accuracy - baseline_accuracy)
     assert abs(np.mean(achieved_deltas)) < 0.01
-
-
-# ---------------------------------------------------------------------------
-# screening ladder decision rule
-# ---------------------------------------------------------------------------
 
 
 def test_screening_ladder_decision_flags_only_candidates_that_clear_threshold() -> None:
@@ -445,11 +396,6 @@ def test_screening_ladder_decision_flags_only_candidates_that_clear_threshold() 
 def test_screening_ladder_decision_validates_columns() -> None:
     with pytest.raises(ValueError, match="missing columns"):
         screening_ladder_decision(pd.DataFrame({"metric": ["x"]}))
-
-
-# ---------------------------------------------------------------------------
-# required_sample_size
-# ---------------------------------------------------------------------------
 
 
 def test_required_sample_size_interpolates_between_grid_points() -> None:

@@ -77,34 +77,14 @@ from nfl_ats.anytime import (
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_CFB_PREDICTIONS = REPO / "artifacts/cfb_benchmark/20260818T115149Z/predictions.parquet"
 
-# Measured on real CFB market vs market_residual predictions, clean_core
-# window (below, ``measure_real_variance``): ~0.545. Rounded up slightly for
-# a small safety margin.
 MEASURED_PER_GAME_VARIANCE_PROXY = 0.55
 
-# Standing project decision, not a measurement: games within a week are
-# independent events (disjoint teams, no shared outcome mechanism), so the
-# Kish design effect is exactly 1. measure_cfb_intraclass_correlations()
-# below confirms this as a DIAGNOSTIC (three independent CFB comparisons,
-# point estimates -0.0007/+0.0021/+0.0030, all 95% CIs inside
-# [-0.005, +0.010], agreeing with an independently-supplied NFL measurement
-# of -0.0054) -- it does not set this value.
 OPERATING_INTRACLASS_CORRELATION = 0.0
-# The fully conservative, assumption-free worst case (Hoeffding, every game
-# in a block moving in lockstep) -- kept as a labelled floor for stress
-# tests, never the operating value.
 WORST_CASE_INTRACLASS_CORRELATION = 1.0
-# Used only as a calibration STRESS test: does validity survive the
-# operating assumption being wrong in the dangerous direction (true
-# correlation the full worst case while the CS is told to assume
-# independence)?
 STRESS_INTRACLASS_CORRELATION = 1.0
 
 APPENDIX_EFFECTS_ACCURACY_POINTS = (0.5, 1.0, 1.3, 2.0, 3.0)
 
-# Real second and third CFB paired comparisons already on disk (independent
-# candidate models, same clean_core population), used only to confirm the
-# ICC measurement is not an artifact of one specific comparison.
 ADDITIONAL_CFB_COMPARISONS: tuple[tuple[str, Path, str, str], ...] = (
     (
         "cfb_role_experiments",
@@ -119,11 +99,6 @@ ADDITIONAL_CFB_COMPARISONS: tuple[tuple[str, Path, str, str], ...] = (
         "market_residual_variance",
     ),
 )
-
-
-# ---------------------------------------------------------------------------
-# Real CFB inputs
-# ---------------------------------------------------------------------------
 
 
 def paired_accuracy_difference(
@@ -225,11 +200,6 @@ def nfl_scale_block_sizes(n_seasons: int, games_per_week: int = 16, weeks: int =
     return one_season * n_seasons
 
 
-# ---------------------------------------------------------------------------
-# 1. Calibration under peeking -- the deliverable that matters this season
-# ---------------------------------------------------------------------------
-
-
 def run_calibration_study(
     block_sizes: list[int],
     *,
@@ -284,11 +254,6 @@ def run_calibration_study(
         "fixed_sample_false_alarm_rate": fixed_false_alarms / universes,
         "elapsed_seconds": elapsed,
     }
-
-
-# ---------------------------------------------------------------------------
-# 2. Short instrument-property appendix -- NOT optimised, NOT a data request
-# ---------------------------------------------------------------------------
 
 
 def deterministic_games_to_detect(
@@ -360,11 +325,6 @@ def instrument_property_table(
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# 3. A single real-data confirmatory trajectory (self-comparison null)
-# ---------------------------------------------------------------------------
-
-
 def real_data_self_comparison_trace(
     paired: pd.DataFrame, *, assumed_variance_proxy: float, assumed_icc: float, alpha: float
 ) -> pd.DataFrame:
@@ -377,7 +337,7 @@ def real_data_self_comparison_trace(
 
     grouped = paired.groupby(["season", "week"]).size().sort_index()
     block_sizes = np.array(grouped.to_numpy(), dtype=np.float64)
-    block_sums = np.zeros_like(block_sizes)  # baseline minus itself is exactly 0 every game
+    block_sums = np.zeros_like(block_sizes)
     average_block_size = float(block_sizes.mean())
     prior_variance = default_prior_variance(
         average_block_size,
@@ -395,15 +355,7 @@ def real_data_self_comparison_trace(
     )
 
 
-# ---------------------------------------------------------------------------
-# Orchestration
-# ---------------------------------------------------------------------------
-
-
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -427,7 +379,6 @@ def main() -> None:
     print("measured per-game variance (market vs market_residual, clean_core):")
     print(json.dumps(measured, indent=2))
 
-    # -- 0. Measure the intraclass correlation instead of assuming it -----
     print("\n=== intraclass correlation: measured, not assumed ===")
     icc_table = measure_cfb_intraclass_correlations(args.predictions)
     icc_table.to_csv(args.output / "intraclass_correlation_measured.csv", index=False)
@@ -449,7 +400,6 @@ def main() -> None:
     )
     print(f"nfl one season (synthetic): {len(nfl_one_season)} weeks, {sum(nfl_one_season)} games")
 
-    # -- 1. Calibration under peeking, at the OPERATING (independence) ICC --
     print("\n=== calibration under peeking (true effect = 0), operating ICC = 0.0 ===")
     calibration_rows = []
     calibration_configs: list[dict[str, Any]] = [
@@ -512,11 +462,10 @@ def main() -> None:
     calibration_df = pd.DataFrame(calibration_rows)
     calibration_df.to_csv(args.output / "calibration_under_peeking.csv", index=False)
 
-    # -- 2. Short instrument-property appendix -----------------------------
     print("\n=== instrument property: games needed at the operating (independence) ICC ===")
     appendix = instrument_property_table(
         APPENDIX_EFFECTS_ACCURACY_POINTS,
-        nfl_block_size=14.7,  # matches the independently-supplied NFL measurement's scale
+        nfl_block_size=14.7,
         cfb_block_size=measured["average_block_size"],
         proxy=MEASURED_PER_GAME_VARIANCE_PROXY,
         icc=OPERATING_INTRACLASS_CORRELATION,
@@ -526,7 +475,6 @@ def main() -> None:
     appendix.to_csv(args.output / "instrument_property_appendix.csv", index=False)
     print(appendix.to_string(index=False))
 
-    # -- 3. Real-data confirmatory trajectory -------------------------------
     print("\n=== real-data self-comparison null (market vs itself, all clean_core weeks) ===")
     self_trace = real_data_self_comparison_trace(
         paired,

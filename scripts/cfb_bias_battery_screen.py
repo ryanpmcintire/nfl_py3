@@ -66,13 +66,10 @@ PREDECLARATION_SEED = 20260818
 DEFAULT_SAMPLES = 20_000
 DEFAULT_ERA_SAMPLES = 4_000
 
-#: FBS home venues at or above ~4,200 ft elevation. Predeclared, not tuned.
 ALTITUDE_TEAMS = frozenset(
     {"Air Force", "BYU", "Colorado", "Colorado State", "New Mexico", "Utah", "Wyoming"}
 )
 
-#: National brand programs with a documented public betting following.
-#: Predeclared for recognizability, not for any measured trait.
 MARQUEE_PROGRAMS = frozenset(
     {
         "Alabama",
@@ -95,11 +92,6 @@ MARQUEE_PROGRAMS = frozenset(
         "Miami",
     }
 )
-
-
-# ---------------------------------------------------------------------------
-# Loading
-# ---------------------------------------------------------------------------
 
 
 def load_clean_core() -> pd.DataFrame:
@@ -138,11 +130,6 @@ def load_kickoff_weekday() -> pd.DataFrame:
     return pd.DataFrame(
         {"game_id": schedule["game_id"].to_numpy(), "kickoff_weekday": kickoff.dt.day_name()}
     )
-
-
-# ---------------------------------------------------------------------------
-# Team-side long table
-# ---------------------------------------------------------------------------
 
 
 def build_team_side_table(games: pd.DataFrame, weekday: pd.DataFrame) -> pd.DataFrame:
@@ -188,8 +175,6 @@ def build_team_side_table(games: pd.DataFrame, weekday: pd.DataFrame) -> pd.Data
             "side_net_epa_edge": -home_net_epa,
         }
     )
-    # home_cover is NaN on a push; the sign-flip above turns that NaN into NaN
-    # still (1.0 - NaN == NaN), so pushes stay excluded on both sides.
     table = pd.concat([home, away], ignore_index=True)
     table = table.merge(weekday, on="game_id", how="left")
 
@@ -198,13 +183,9 @@ def build_team_side_table(games: pd.DataFrame, weekday: pd.DataFrame) -> pd.Data
     )
     grouped = table.groupby(["team", "season"], sort=False)
 
-    # Win/loss for the RECORD is based on the actual final score, not the ATS
-    # outcome, so a push (side_covers NaN) still counts toward the record.
     played = table["side_result_margin"].notna()
     table["_win"] = ((table["side_result_margin"] > 0) & played).astype(float)
     table["_loss"] = ((table["side_result_margin"] < 0) & played).astype(float)
-    # transform (not apply) keeps the result aligned to the original row
-    # order/index directly -- no MultiIndex reshuffling to undo.
     table["side_wins_entering"] = grouped["_win"].transform(
         lambda s: s.shift(1, fill_value=0.0).cumsum()
     )
@@ -219,9 +200,6 @@ def build_team_side_table(games: pd.DataFrame, weekday: pd.DataFrame) -> pd.Data
 
     table["side_is_finale_proxy"] = table["week"] == grouped["week"].transform("max")
 
-    # Opponent record entering the game: self-join the same team-side table on
-    # (opponent, season, week) rather than recomputing, since the opponent's
-    # own row for this exact game already carries its own entering record.
     opponent_key = table[["team", "season", "week", "side_wins_entering", "side_losses_entering"]]
     opponent_key = opponent_key.rename(
         columns={
@@ -242,14 +220,9 @@ def _percentile_rank(values: pd.Series) -> pd.Series:
     return values.rank(pct=True, method="average")
 
 
-# ---------------------------------------------------------------------------
-# Cell definitions
-# ---------------------------------------------------------------------------
-
 MaskFn = Callable[[pd.DataFrame], pd.Series]
 
 CELLS: list[dict[str, Any]] = [
-    # --- A. Motivation asymmetries ---------------------------------------
     {
         "name": "bowl_eligibility_self",
         "class": "motivation",
@@ -294,7 +267,6 @@ CELLS: list[dict[str, Any]] = [
         "eligible": lambda t: pd.Series(True, index=t.index),
         "flag": lambda t: t["side_is_finale_proxy"],
     },
-    # --- B. Structural spots ----------------------------------------------
     {
         "name": "mactic_short_prep_away",
         "class": "structural",
@@ -337,7 +309,6 @@ CELLS: list[dict[str, Any]] = [
         "eligible": lambda t: t["side_is_home"],
         "flag": lambda t: t["neutral_site"] == 1,
     },
-    # --- C. Pricing lag ------------------------------------------------------
     {
         "name": "off_big_ats_cover_carryover",
         "class": "pricing_lag",
@@ -364,11 +335,8 @@ CELLS: list[dict[str, Any]] = [
         "class": "pricing_lag",
         "direction": "positive",
         "eligible": lambda t: t["side_net_epa_edge"].notna() & t["side_favored_margin"].notna(),
-        # Threshold computed once, inline, on the eligible population itself
-        # (see main()); placeholder replaced before use.
         "flag": None,
     },
-    # --- D. Public premiums --------------------------------------------------
     {
         "name": "marquee_favorite_premium",
         "class": "public_premium",
@@ -393,11 +361,6 @@ CELLS: list[dict[str, Any]] = [
 ]
 
 assert len(CELLS) == 19, f"expected 19 predeclared cells, found {len(CELLS)}"
-
-
-# ---------------------------------------------------------------------------
-# Scoring
-# ---------------------------------------------------------------------------
 
 
 def _delta_metric_fn(frame: pd.DataFrame) -> dict[str, float]:
@@ -485,11 +448,6 @@ def score_cell(
     }
 
 
-# ---------------------------------------------------------------------------
-# Verdict labelling (screening only -- never a closing verdict; see AGENTS.md)
-# ---------------------------------------------------------------------------
-
-
 def _screen_label(result: dict[str, Any]) -> str:
     """A screening lean, not a closing verdict. Every cell stays `unresolved`
     unless the WHOLE interval sits on the wrong side of the predicted
@@ -507,11 +465,6 @@ def _screen_label(result: dict[str, Any]) -> str:
     return "unresolved"
 
 
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
-
-
 def run_battery(
     *, samples: int, era_samples: int, seed: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -526,9 +479,6 @@ def run_battery(
         flush=True,
     )
 
-    # state_quality_market_gap's flag needs its eligible population's own
-    # percentile ranks, computed once inline rather than baked into the
-    # static CELLS table.
     cells = [dict(cell) for cell in CELLS]
     for cell in cells:
         if cell["name"] != "state_quality_market_gap":
@@ -623,7 +573,7 @@ def main() -> None:
         samples=args.samples, era_samples=args.era_samples, seed=args.seed
     )
     results.to_csv(output / "cells.csv", index=False)
-    stamp_sidecar(output / "cells.csv")  # ENG-38
+    stamp_sidecar(output / "cells.csv")
 
     ranked = results.assign(lean_strength=(results["probability_positive"] - 0.5).abs())
     ranked = ranked.sort_values("lean_strength", ascending=False)
@@ -645,10 +595,10 @@ def main() -> None:
 
     commands = propose_record_commands(results)
     (output / "proposed_record_commands.txt").write_text("\n\n".join(commands), encoding="utf-8")
-    stamp_sidecar(output / "proposed_record_commands.txt")  # ENG-38
+    stamp_sidecar(output / "proposed_record_commands.txt")
 
     summary["output"] = str(output)
-    write_stamped_artifact(summary, output / "summary.json")  # ENG-38
+    write_stamped_artifact(summary, output / "summary.json")
     print(f"\nwrote {output / 'summary.json'}", flush=True)
 
 

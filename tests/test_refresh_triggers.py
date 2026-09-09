@@ -47,19 +47,16 @@ from nfl_ats.refresh_triggers import (
 
 SEASON, WEEK = 2026, 2
 
-# A Tue..Mon week: Thursday 2026-09-17 through Monday 2026-09-21 ET
-# (September is EDT, UTC-4). Mirrors tests/test_inactives_refresh_overlay.py's
-# own anchors.
 THU_GAME_ID = "2026_02_AAA_THU"
 SUN_EARLY_GAME_ID = "2026_02_BBB_SUNEARLY"
 SNF_GAME_ID = "2026_02_CCC_SNF"
 MNF_GAME_ID = "2026_02_DDD_MNF"
 
-THU_KICKOFF = pd.Timestamp("2026-09-18T00:15:00Z")  # Thu 8:15pm ET
-SUN_EARLY_KICKOFF = pd.Timestamp("2026-09-20T17:00:00Z")  # Sun 1:00pm ET
-SNF_KICKOFF = pd.Timestamp("2026-09-21T00:20:00Z")  # Sun 8:20pm ET
-MNF_KICKOFF = pd.Timestamp("2026-09-22T00:15:00Z")  # Mon 8:15pm ET
-SUNDAY_LOCK = pd.Timestamp("2026-09-20T20:00:00Z")  # Sun 4:00pm ET
+THU_KICKOFF = pd.Timestamp("2026-09-18T00:15:00Z")
+SUN_EARLY_KICKOFF = pd.Timestamp("2026-09-20T17:00:00Z")
+SNF_KICKOFF = pd.Timestamp("2026-09-21T00:20:00Z")
+MNF_KICKOFF = pd.Timestamp("2026-09-22T00:15:00Z")
+SUNDAY_LOCK = pd.Timestamp("2026-09-20T20:00:00Z")
 
 
 def _write_schedule(repo_root: Path) -> None:
@@ -79,28 +76,18 @@ def _write_schedule(repo_root: Path) -> None:
     atomic_parquet(frame, out)
 
 
-# ---------------------------------------------------------------------------
-# Deadlines: Sunday 1pm, SNF, MNF (early Sunday-4pm lock), Thursday
-# ---------------------------------------------------------------------------
-
-
 def test_schedule_game_windows_deadline_arithmetic(tmp_path: Path) -> None:
     _write_schedule(tmp_path)
     windows = {w.game_id: w for w in schedule_game_windows(tmp_path, season=SEASON, week=WEEK)}
     assert set(windows) == {THU_GAME_ID, SUN_EARLY_GAME_ID, SNF_GAME_ID, MNF_GAME_ID}
 
-    # Thursday: deadline is its own kickoff (well before the week's Sunday lock).
     assert windows[THU_GAME_ID].deadline == THU_KICKOFF
 
-    # Sunday 1pm: deadline is its own kickoff (earlier than the 4pm lock).
     assert windows[SUN_EARLY_GAME_ID].deadline == SUN_EARLY_KICKOFF
 
-    # SNF: locks EARLY at Sunday 4pm ET, not at its own 8:20pm kickoff.
     assert windows[SNF_GAME_ID].deadline == SUNDAY_LOCK
     assert windows[SNF_GAME_ID].deadline < SNF_KICKOFF
 
-    # MNF: also locks EARLY at the same Sunday 4pm ET instant, a full day
-    # before its own Monday kickoff.
     assert windows[MNF_GAME_ID].deadline == SUNDAY_LOCK
     assert windows[MNF_GAME_ID].deadline < MNF_KICKOFF
 
@@ -160,11 +147,11 @@ def test_deadline_validation_mnf_locks_at_sunday_4pm(tmp_path: Path) -> None:
         for w in schedule_game_windows(tmp_path, season=SEASON, week=WEEK)
         if w.game_id == MNF_GAME_ID
     )
-    monday_morning = pd.Timestamp("2026-09-21T14:00:00Z")  # Mon 10am ET
+    monday_morning = pd.Timestamp("2026-09-21T14:00:00Z")
     assert monday_morning < MNF_KICKOFF
     assert not (monday_morning < window.deadline)
 
-    sunday_afternoon = pd.Timestamp("2026-09-20T19:00:00Z")  # Sun 3pm ET
+    sunday_afternoon = pd.Timestamp("2026-09-20T19:00:00Z")
     assert sunday_afternoon < window.deadline
 
 
@@ -178,18 +165,13 @@ def test_deadline_validation_thursday_game(tmp_path: Path) -> None:
     wednesday = pd.Timestamp("2026-09-16T18:00:00Z")
     assert wednesday < window.deadline
     at_kickoff = THU_KICKOFF
-    assert not (at_kickoff < window.deadline)  # strict inequality: at-kickoff is invalid
-
-
-# ---------------------------------------------------------------------------
-# Detector 1: clock checkpoints
-# ---------------------------------------------------------------------------
+    assert not (at_kickoff < window.deadline)
 
 
 def test_detect_clock_checkpoint_triggers(tmp_path: Path) -> None:
     _write_schedule(tmp_path)
     games = schedule_game_windows(tmp_path, season=SEASON, week=WEEK)
-    assert CLOCK_CHECKPOINT_NAMES  # non-empty, sanity
+    assert CLOCK_CHECKPOINT_NAMES
     state = {
         "runs": {
             "refresh_sun@2026-09-20": {
@@ -197,12 +179,10 @@ def test_detect_clock_checkpoint_triggers(tmp_path: Path) -> None:
                 "window_start": "2026-09-20T10:00:00-04:00",
                 "ran_at": "2026-09-20T10:03:11-04:00",
             },
-            # An unrelated job name must never leak into clock_checkpoint triggers.
             "odds_sun_close@2026-09-20": {
                 "status": "OK",
                 "ran_at": "2026-09-20T12:31:00-04:00",
             },
-            # A MISSED occurrence never becomes a trigger.
             "refresh_sat@2026-09-19": {
                 "status": "MISSED",
                 "window_start": "2026-09-19T10:30:00-04:00",
@@ -213,13 +193,9 @@ def test_detect_clock_checkpoint_triggers(tmp_path: Path) -> None:
     assert len(triggers) == len(games)
     assert all(t.trigger_source == TRIGGER_CLOCK_CHECKPOINT for t in triggers)
     assert all(t.checkpoint_name == "refresh_sun" for t in triggers)
-    # ran_at 2026-09-20T10:03:11-04:00 -> 14:03:11Z: after the STATE's own
-    # window_start test above; the fixture's real checkpoint below uses a
-    # 3pm ET run instead, so it lands strictly between the Sunday-1pm
-    # kickoff and the SNF/MNF 4pm-ET early lock -- the illustrative case.
     by_game = {t.game_id: t for t in triggers}
-    assert by_game[THU_GAME_ID].deadline_valid is False  # Thursday's own kickoff already passed
-    assert by_game[SUN_EARLY_GAME_ID].deadline_valid is True  # before its own 1pm ET kickoff
+    assert by_game[THU_GAME_ID].deadline_valid is False
+    assert by_game[SUN_EARLY_GAME_ID].deadline_valid is True
 
 
 def test_detect_clock_checkpoint_triggers_between_sunday_kickoff_and_lock(tmp_path: Path) -> None:
@@ -233,16 +209,16 @@ def test_detect_clock_checkpoint_triggers_between_sunday_kickoff_and_lock(tmp_pa
         "runs": {
             "refresh_sun@2026-09-20": {
                 "status": "OK",
-                "ran_at": "2026-09-20T15:00:00-04:00",  # 19:00Z
+                "ran_at": "2026-09-20T15:00:00-04:00",
             }
         }
     }
     triggers = detect_clock_checkpoint_triggers(state, games, season=SEASON, week=WEEK)
     by_game = {t.game_id: t for t in triggers}
     assert by_game[THU_GAME_ID].deadline_valid is False
-    assert by_game[SUN_EARLY_GAME_ID].deadline_valid is False  # own 1pm ET kickoff already passed
-    assert by_game[SNF_GAME_ID].deadline_valid is True  # 4pm ET lock not yet reached
-    assert by_game[MNF_GAME_ID].deadline_valid is True  # same lock, not yet reached
+    assert by_game[SUN_EARLY_GAME_ID].deadline_valid is False
+    assert by_game[SNF_GAME_ID].deadline_valid is True
+    assert by_game[MNF_GAME_ID].deadline_valid is True
 
 
 def test_detect_clock_checkpoint_triggers_before_any_deadline(tmp_path: Path) -> None:
@@ -252,18 +228,13 @@ def test_detect_clock_checkpoint_triggers_before_any_deadline(tmp_path: Path) ->
         "runs": {
             "refresh_thu@2026-09-17": {
                 "status": "CAUGHT_UP",
-                "ran_at": "2026-09-16T09:00:00-04:00",  # Wednesday: before every deadline
+                "ran_at": "2026-09-16T09:00:00-04:00",
             }
         }
     }
     triggers = detect_clock_checkpoint_triggers(state, games, season=SEASON, week=WEEK)
     assert len(triggers) == len(games)
     assert all(t.deadline_valid for t in triggers)
-
-
-# ---------------------------------------------------------------------------
-# Detector 2: inactives-posted
-# ---------------------------------------------------------------------------
 
 
 def _write_inactives_snapshot(
@@ -340,11 +311,6 @@ def test_detect_inactives_triggers(tmp_path: Path) -> None:
     assert trigger.checkpoint_name is None
 
 
-# ---------------------------------------------------------------------------
-# Detector 3: injury-report-posted (nflverse + Sportradar)
-# ---------------------------------------------------------------------------
-
-
 def test_detect_injury_report_triggers(tmp_path: Path) -> None:
     _write_schedule(tmp_path)
     data_root = tmp_path / "data"
@@ -369,7 +335,6 @@ def test_detect_injury_report_triggers(tmp_path: Path) -> None:
         },
         sportradar_dir / "manifest.json",
     )
-    # A different week's Sportradar snapshot must never leak in.
     other_week_dir = data_root / "raw" / "sportradar_injuries" / "20260910T170000Z"
     other_week_dir.mkdir(parents=True)
     atomic_json(
@@ -389,13 +354,7 @@ def test_detect_injury_report_triggers(tmp_path: Path) -> None:
     assert any("nflverse" in detail for detail in detail_snapshots)
     assert any("sportradar" in detail for detail in detail_snapshots)
     assert any("20260910T170000Z" in detail for detail in detail_snapshots) is False
-    # One row per game per snapshot: 4 games x 2 in-scope snapshots.
     assert len(triggers) == len(games) * 2
-
-
-# ---------------------------------------------------------------------------
-# Detector 4: lineup change between consecutive archived captures
-# ---------------------------------------------------------------------------
 
 
 def _lineup_payload(
@@ -439,7 +398,7 @@ def test_detect_lineup_change_triggers(tmp_path: Path) -> None:
     assert len(triggers) == 1
     trigger = triggers[0]
     assert trigger.trigger_source == TRIGGER_LINEUP_CHANGE
-    assert trigger.game_id == SUN_EARLY_GAME_ID  # only this game's home side changed
+    assert trigger.game_id == SUN_EARLY_GAME_ID
     assert "home" in trigger.detail
     assert trigger.source_capture_time == pd.Timestamp("2026-09-17T12:00:00Z")
 
@@ -474,13 +433,8 @@ def test_archive_lineup_snapshot_is_idempotent_by_generated_at(tmp_path: Path) -
     assert first is not None
     assert first.is_file()
     second = archive_lineup_snapshot(source, archive_dir)
-    assert second is None  # same generated_at already archived
+    assert second is None
     assert len(list(archive_dir.glob("*.json"))) == 1
-
-
-# ---------------------------------------------------------------------------
-# Detector 5: line move beyond MOVEMENT_POLICY_THRESHOLD
-# ---------------------------------------------------------------------------
 
 
 def test_detect_line_move_triggers(tmp_path: Path) -> None:
@@ -523,7 +477,7 @@ def test_detect_line_move_triggers(tmp_path: Path) -> None:
             "bookmaker_key": "book_a",
             "market": "spreads",
             "outcome_side": "HOME",
-            "home_spread_line": -5.0,  # moved 2.0 pts from the -3.0 opener
+            "home_spread_line": -5.0,
         }
     )
     quotes = pd.DataFrame([quote_row], columns=list(QUOTE_COLUMNS))
@@ -544,11 +498,6 @@ def test_detect_line_move_triggers(tmp_path: Path) -> None:
     assert trigger.game_id == SUN_EARLY_GAME_ID
     assert trigger.deadline_valid is True
     assert "-3.0" in trigger.detail or "-3" in trigger.detail
-
-
-# ---------------------------------------------------------------------------
-# Idempotent JSONL append
-# ---------------------------------------------------------------------------
 
 
 def _trigger(game_id: str, source_capture_time: pd.Timestamp) -> RefreshTrigger:
@@ -578,23 +527,16 @@ def test_append_triggers_to_evidence_log_is_idempotent(tmp_path: Path) -> None:
     lines_after_first = path.read_text(encoding="utf-8").splitlines()
     assert len(lines_after_first) == 2
 
-    # Re-running the exact same scan must not duplicate anything.
     written2, skipped2 = append_triggers_to_evidence_log(path, triggers)
     assert (written2, skipped2) == (0, 2)
     lines_after_second = path.read_text(encoding="utf-8").splitlines()
     assert lines_after_second == lines_after_first
 
-    # A genuinely new trigger (different source_capture_time) does append.
     written3, _ = append_triggers_to_evidence_log(
         path, (_trigger("g1", pd.Timestamp("2026-09-20T12:00:00Z")),)
     )
     assert written3 == 1
     assert len(path.read_text(encoding="utf-8").splitlines()) == 3
-
-
-# ---------------------------------------------------------------------------
-# mkt08_trigger_type mapping
-# ---------------------------------------------------------------------------
 
 
 def test_mkt08_trigger_type_mapping() -> None:
@@ -603,11 +545,6 @@ def test_mkt08_trigger_type_mapping() -> None:
     assert mkt08_trigger_type(TRIGGER_INACTIVES_POSTED) == TRIGGER_NEWS_EVENT
     assert mkt08_trigger_type(TRIGGER_INJURY_REPORT_POSTED) == TRIGGER_NEWS_EVENT
     assert mkt08_trigger_type(TRIGGER_LINEUP_CHANGE) == TRIGGER_NEWS_EVENT
-
-
-# ---------------------------------------------------------------------------
-# The prospective comparison scaffold, synthetic rows only
-# ---------------------------------------------------------------------------
 
 
 def _valid_trigger(game_id: str, week: int, *, deadline_valid: bool = True) -> RefreshTrigger:
@@ -636,19 +573,18 @@ def test_compare_trigger_vs_checkpoint_interval_containing_zero_is_unresolved() 
     per AGENTS.md that is NEVER grounds to reject or close this line of
     work: classification must stay unresolved_below_power."""
 
-    # (checkpoint_home, trigger_home, home_covers) per game.
     specs = [
-        (True, True, True),  # agree -> 0
-        (True, False, True),  # disagree, home covers -> checkpoint right, trigger wrong: -1
-        (True, True, True),  # agree -> 0
-        (True, False, False),  # disagree, away covers -> trigger right, checkpoint wrong: +1
-        (True, True, False),  # agree -> 0
-        (True, False, True),  # disagree -> -1
-        (True, True, False),  # agree -> 0
-        (True, False, False),  # disagree -> +1
-        (True, True, True),  # agree -> 0
-        (True, False, True),  # disagree -> -1
-        (True, False, False),  # disagree -> +1
+        (True, True, True),
+        (True, False, True),
+        (True, True, True),
+        (True, False, False),
+        (True, True, False),
+        (True, False, True),
+        (True, True, False),
+        (True, False, False),
+        (True, True, True),
+        (True, False, True),
+        (True, False, False),
     ]
     rows = []
     for i, (checkpoint_home, trigger_home, home_covers) in enumerate(specs):
@@ -669,11 +605,10 @@ def test_compare_trigger_vs_checkpoint_interval_containing_zero_is_unresolved() 
     assert result.n_games == len(rows)
     assert result.n_weeks == len(rows)
     assert result.estimate == 0.0
-    assert result.lower <= 0.0 <= result.upper  # the interval genuinely contains zero
+    assert result.lower <= 0.0 <= result.upper
     assert result.classification == "unresolved_below_power"
     assert result.closing_ground is None
     assert 0.0 <= result.probability_positive <= 1.0
-    # The taxonomy: report probability_positive, never a binary "contains zero".
     assert "probability_positive" in result.detail
 
 

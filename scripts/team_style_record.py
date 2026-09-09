@@ -45,15 +45,12 @@ LEAGUE = "nfl"
 SEASON_START = 2009
 SEASON_END = 2025
 
-# Weakest-link reliability figure embedded in each cell's --reliability flag
-# (measured, scripts/team_style_reliability.py); composite/two-sided cells
-# use the lower of their inputs so the recorded figure is conservative.
 CELL_RELIABILITY: dict[str, float] = {
-    "team_style_distinct_identity": 0.306,  # min over 9 dims (deep_share)
-    "team_style_short_game_identity": 0.408,  # short_pass_share YoY r
-    "team_style_short_game_vs_pressure_defense": 0.278,  # min(0.408 off, 0.278 def proxy)
-    "team_style_pace_mismatch_dog_cover": 0.489,  # seconds_per_play_pace YoY r
-    "team_style_deep_ball_outdoor_wind": 0.306,  # deep_share YoY r
+    "team_style_distinct_identity": 0.306,
+    "team_style_short_game_identity": 0.408,
+    "team_style_short_game_vs_pressure_defense": 0.278,
+    "team_style_pace_mismatch_dog_cover": 0.489,
+    "team_style_deep_ball_outdoor_wind": 0.306,
 }
 
 

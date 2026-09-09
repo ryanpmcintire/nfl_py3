@@ -73,22 +73,12 @@ from nfl_ats.opponent_adjustment import (
     validate_opponent_adjustment_parameters,
 )
 
-# ---------------------------------------------------------------------------
-# Frozen configuration (see docs/cfb_opponent_adjustment.md)
-# ---------------------------------------------------------------------------
-
-# NFL PBP-05 values, taken verbatim. Nothing here is tuned on CFB: the point
-# of the screen is the substitution framing, not a search over penalties.
 CFB_OPPONENT_HALF_LIFE_WEEKS: float = 16.0
 CFB_OPPONENT_RIDGE_ALPHA: float = 10.0
 CFB_OPPONENT_MIN_TEAM_GAMES: int = 64
 
-# The metric the weekly ridge is fit on. The defensive rating falls out of the
-# same fit's opposing-defense block (see the module docstring).
 CFB_OPPONENT_SOURCE_METRIC: str = "off_epa_per_play"
 
-# The raw team-state metrics that have an opponent-adjusted equivalent, and
-# therefore the only columns this screen substitutes.
 CFB_ADJUSTED_METRICS: tuple[str, ...] = ("off_epa_per_play", "def_epa_per_play")
 CFB_ADJUSTED_SUFFIX = "_adjusted"
 
@@ -98,12 +88,6 @@ CFB_OPPONENT_ADJUSTED_FEATURE_COLUMNS: tuple[str, ...] = tuple(
     for side in ("home", "away", "diff")
 )
 
-# POST-HOC CONTROL, not part of the frozen screen (see the results section of
-# docs/cfb_opponent_adjustment.md). The substitution changes two things at
-# once: it adjusts for opponent, and it swaps the raw columns' span-8
-# exponentially weighted game window for a 16-week calendar half-life. These
-# columns hold the second change and drop the first, so the two can be told
-# apart after the fact instead of argued about.
 CFB_TIME_DECAYED_SUFFIX = "_time_decayed"
 CFB_TIME_DECAYED_FEATURE_COLUMNS: tuple[str, ...] = tuple(
     f"{side}_{metric}{CFB_TIME_DECAYED_SUFFIX}"
@@ -129,11 +113,6 @@ _HISTORY_COLUMNS: tuple[str, ...] = (
     "gameday",
     *CFB_ADJUSTED_METRICS,
 )
-
-
-# ---------------------------------------------------------------------------
-# The dimension-neutral column substitution
-# ---------------------------------------------------------------------------
 
 
 def opponent_adjusted_substitution(suffix: str = CFB_ADJUSTED_SUFFIX) -> dict[str, str]:
@@ -174,15 +153,9 @@ def substitute_opponent_adjusted_columns(
 CFB_OPPONENT_ADJUSTED_MODEL_FEATURE_COLUMNS: tuple[str, ...] = (
     substitute_opponent_adjusted_columns()
 )
-# Post-hoc control contract; same width, same positions, no opponent block.
 CFB_TIME_DECAYED_MODEL_FEATURE_COLUMNS: tuple[str, ...] = substitute_opponent_adjusted_columns(
     suffix=CFB_TIME_DECAYED_SUFFIX
 )
-
-
-# ---------------------------------------------------------------------------
-# Point-in-time adjusted columns
-# ---------------------------------------------------------------------------
 
 
 def build_cfb_opponent_history(team_games: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
@@ -349,11 +322,6 @@ def add_cfb_opponent_adjusted_features(
     return result
 
 
-# ---------------------------------------------------------------------------
-# Paired margin-error uncertainty (the primary metric)
-# ---------------------------------------------------------------------------
-
-
 def paired_margin_error_comparison(
     predictions: pd.DataFrame,
     *,
@@ -461,8 +429,6 @@ def paired_margin_error_comparison(
                 "estimate": estimate,
                 "lower": float(np.quantile(draws, tail)),
                 "upper": float(np.quantile(draws, 1.0 - tail)),
-                # Continuous evidence, never a bare pass/fail: the fraction of
-                # blocked resamples in which the candidate beats the baseline.
                 "probability_positive": float(probability_positive_from_draws(draws)),
                 "games": len(paired),
                 "blocks": len(blocks),
@@ -472,11 +438,6 @@ def paired_margin_error_comparison(
             }
         )
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# The screen
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)

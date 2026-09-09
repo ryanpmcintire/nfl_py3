@@ -13,8 +13,6 @@ from scripts.book_leadership import score_leadership
 
 
 def _quotes() -> pd.DataFrame:
-    # Two snapshots; game G: book A moves first (earlier provider stamp),
-    # book B follows in the same capture window; book C never moves.
     return pd.DataFrame(
         [
             {

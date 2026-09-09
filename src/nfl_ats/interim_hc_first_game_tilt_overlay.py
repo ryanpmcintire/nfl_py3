@@ -129,13 +129,8 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "interim_hc_first_game_tilt_overlay"
 
-#: One row per (game_id, team) with no interim-coach data available at all --
-#: the empty, well-typed shape :func:`interim_first_game_flag_by_game_fail_open`
-#: returns on a join failure, so every downstream merge sees a frame with the
-#: right columns/dtypes rather than a bare empty DataFrame.
 _EMPTY_FLAGS_COLUMNS = ("game_id", "team", "entry_id")
 
 
@@ -161,15 +156,11 @@ def interim_first_game_flag_by_game_fail_open(repo_root: Path) -> pd.DataFrame:
     publish.
     """
 
-    # Local import, mirroring _build_interim_coach_trait_data's own local
-    # import of nfl_ats.coach_fade_overlay: keeps this module's import-time
-    # footprint independent of experiment_runner's (a much heavier module),
-    # and avoids any risk of a load-order cycle between the two.
     from nfl_ats.experiment_runner import _build_interim_coach_trait_data
 
     try:
         trait_data = _build_interim_coach_trait_data(repo_root)
-    except Exception as exc:  # deliberate fail-open, see docstring
+    except Exception as exc:
         warnings.warn(
             "interim_hc_first_game_tilt: interim-coach join failed, proceeding with zero "
             f"flags ({type(exc).__name__}: {exc})",

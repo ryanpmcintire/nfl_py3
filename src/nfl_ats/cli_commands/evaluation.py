@@ -1050,11 +1050,6 @@ def register(
     margin_backtest.add_argument(
         "--probability-method",
         choices=RESIDUAL_SMOOTHING_METHODS,
-        # Default UNCHANGED (2026-08-19): this backs historical/research
-        # backtests broadly, so it stays "ecdf" unless a caller explicitly
-        # asks for "gaussian" -- e.g. to build the matching margins/
-        # evaluation a --probability-method gaussian margin-predict forecast
-        # needs to activate SYNCHRONIZED (nfl_ats.active_model).
         default="ecdf",
         help="how home_cover_probability is read off the out-of-time residual "
         "sample for every margin-model method scored (market_residual, fair_margin)",
@@ -1115,9 +1110,6 @@ def register(
         default=_data_root() / "processed" / "game_features_player_value.parquet",
     )
     player_selection.add_argument("--min-edge", type=float, default=0.02)
-    # This command runs the FROZEN selection, so its default is pinned to the
-    # value that selection was scored under. It must not drift with the live
-    # default, or re-running it would stop reproducing the recorded artifact.
     player_selection.add_argument(
         "--min-train-games", type=int, default=FROZEN_PLAYER_MIN_TRAIN_GAMES
     )

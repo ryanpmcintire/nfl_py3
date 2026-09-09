@@ -116,15 +116,9 @@ FALLBACK_ROBOTS_URL = "https://www.rotowire.com/robots.txt"
 USER_AGENT = "nfl-ats-research-snapshot/1.0 (private research; contact: local repo owner)"
 DEFAULT_DELAY_SECONDS = 2.5
 
-# Measured verbatim from a live fetch this session (2026-09-01). Both sources
-# render this exact "no data yet" text rather than omitting the page or
-# erroring, so it is the authoritative "zero games, this is expected" signal,
-# distinct from a fetch failure or an unrecognized-but-populated page.
 PRIMARY_PLACEHOLDER_TEXT = "Please check back soon for NFL Inactive Reports for this Season"
 FALLBACK_PLACEHOLDER_TEXT = "No teams have announced their inactives for this week yet"
 
-# Matches the scheduler rows added in scripts/capture_scheduler.py (see that
-# file's inactives_* Job comments for the T-90 derivation of each window).
 SLOTS = (
     "sun_early",
     "sun_late",
@@ -156,10 +150,6 @@ PARQUET_COLUMNS = [
     "source_url",
 ]
 
-# Inferred wrapper-section class name candidates for a populated /inactives/
-# page (see module docstring: unmeasured, guessed by analogy to /injuries/'s
-# confirmed-real "nfl-o-injury-report__unit"). Tried in order; the first
-# candidate that splits the page into >0 sections is used.
 _SECTION_SPLIT_CANDIDATES = (
     re.compile(r'<section class="nfl-o-inactive-report__unit">'),
     re.compile(r'<section class="nfl-o-inactives-report__unit">'),

@@ -28,7 +28,6 @@ from nfl_ats.data import DataContractError
 from nfl_ats.modeling import regular_season_rows
 from nfl_ats.odds import no_vig_probabilities
 
-# Additive research-only profile; incumbent feature sets stay untouched.
 for _v5_prefix in ("football", "full"):
     FEATURE_SETS[f"{_v5_prefix}_weak_stack_v5"] = (
         *FEATURE_SETS[f"{_v5_prefix}_weak_stack"],
@@ -218,34 +217,10 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_player_participation",
         "full_player_participation",
     ),
-    # MOD-07 candidate profile: only ever fitted on the weak-stack table, which
-    # carries learned-availability injury columns under the same names the fixed
-    # -prior table uses. Never point this profile at game_features_player.parquet.
     "weak_stack": ("football_weak_stack", "full_weak_stack"),
-    # MOD-08 candidate profile (docs/surface_switch_feature_arm.md): weak_stack
-    # plus the surface-switch tilt feature. Same table-pinning caveat as
-    # weak_stack above -- fit only on a table carrying surface_switch_flag
-    # (game_features_weak_stack_surface.parquet for this experiment).
     "weak_stack_surface": ("football_weak_stack_surface", "full_weak_stack_surface"),
-    # MOD-06 candidate profile (docs/mod06_position_prior_shrinkage.md): weak_stack
-    # with the player_values family replaced by player_values_js_prior. Same
-    # table-pinning caveat as weak_stack above -- fit only on a table carrying
-    # the *_js_prior columns (game_features_weak_stack_js_prior.parquet for
-    # this experiment).
     "weak_stack_js_prior": ("football_weak_stack_js_prior", "full_weak_stack_js_prior"),
-    # weak_stack_v3 candidate profile (docs/weak_stack_v3.md), MOD-07's
-    # sequel: weak_stack_surface plus the registry gap columns computed in
-    # nfl_ats.weak_stack_v3_features. Same table-pinning caveat as every
-    # profile above -- fit only on a table carrying those columns
-    # (game_features_weak_stack_v3.parquet for this experiment). Never used
-    # by the active model.
     "weak_stack_v3": ("football_weak_stack_v3", "full_weak_stack_v3"),
-    # weak_stack_v4 candidate profile (docs/weak_stack_v4.md): PRODUCTION
-    # weak_stack plus the six continuous forecast-weather columns built in
-    # nfl_ats.forecast_weather_features. Same table-pinning caveat as every
-    # profile above -- fit only on a table carrying those columns
-    # (game_features_weak_stack_v4.parquet for this experiment). Never used by
-    # the active model.
     "weak_stack_v4": ("football_weak_stack_v4", "full_weak_stack_v4"),
     "weak_stack_v5": ("football_weak_stack_v5", "full_weak_stack_v5"),
     "weak_stack_coord_change": ("football_weak_stack_coord_change", "full_weak_stack_coord_change"),
@@ -254,8 +229,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_spread_regime",
         "full_weak_stack_spread_regime",
     ),
-    # MOD-18 lane Q (docs/home_dog_location.md): weak_stack plus the row-local
-    # home-underdog points (Q1) or that plus its above-seven hinge (Q2).
     "weak_stack_home_dog_points": (
         "football_weak_stack_home_dog_points",
         "full_weak_stack_home_dog_points",
@@ -264,54 +237,26 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_home_dog_hinge_7",
         "full_weak_stack_home_dog_hinge_7",
     ),
-    # MOD-18 lane S (docs/home_side_location.md): weak_stack plus the row-local
-    # symmetric spread-size hinge above seven points.
     "weak_stack_home_side_hinge_7": (
         "football_weak_stack_home_side_hinge_7",
         "full_weak_stack_home_side_hinge_7",
     ),
-    # POSITIVE CONTROL ONLY (docs/weak_stack_v4.md): weak_stack plus OBSERVED
-    # weather. Deliberately leaky, never promotable -- it bounds the weather
-    # channel rather than competing for production.
     "weak_stack_oracle_weather": (
         "football_weak_stack_oracle_weather",
         "full_weak_stack_oracle_weather",
     ),
-    # weak_stack_graph_sack candidate profile (docs/graph_team_stat_on_production.md):
-    # weak_stack plus the one graph-propagated off_sack_rate column. Same
-    # table-pinning caveat as every profile above -- fit only on a table
-    # carrying that column (game_features_weak_stack_graph_sack.parquet for
-    # this experiment). Never used by the active model.
     "weak_stack_graph_sack": (
         "football_weak_stack_graph_sack",
         "full_weak_stack_graph_sack",
     ),
-    # weak_stack_graph_def_ypp candidate profile
-    # (docs/graph_team_stat_def_ypp_on_production.md): weak_stack plus the one
-    # graph-propagated def_yards_per_play column. Same table-pinning caveat as
-    # every profile above -- fit only on a table carrying that column
-    # (game_features_weak_stack_graph_def_ypp.parquet for this experiment).
-    # Never used by the active model.
     "weak_stack_graph_def_ypp": (
         "football_weak_stack_graph_def_ypp",
         "full_weak_stack_graph_def_ypp",
     ),
-    # weak_stack_graph_off_rush_epa candidate profile
-    # (docs/graph_team_stat_off_rush_epa_on_production.md): weak_stack plus the
-    # one graph-propagated off_rush_epa_per_play column. Same table-pinning
-    # caveat as every profile above -- fit only on a table carrying that column
-    # (game_features_weak_stack_graph_off_rush_epa.parquet for this
-    # experiment). Never used by the active model.
     "weak_stack_graph_off_rush_epa": (
         "football_weak_stack_graph_off_rush_epa",
         "full_weak_stack_graph_off_rush_epa",
     ),
-    # weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
-    # (docs/fluview_on_production.md): weak_stack plus exactly one of the two
-    # FluView elevated-illness columns. Same table-pinning caveat as every
-    # profile above -- fit only on a table carrying those columns
-    # (game_features_weak_stack_fluview.parquet for this experiment). Never
-    # used by the active model.
     "weak_stack_fluview_home": (
         "football_weak_stack_fluview_home",
         "full_weak_stack_fluview_home",
@@ -320,12 +265,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_fluview_away",
         "full_weak_stack_fluview_away",
     ),
-    # 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md):
-    # six candidate arms, each PRODUCTION weak_stack plus exactly one new
-    # column. Same table-pinning caveat as every profile above -- fit only on
-    # the widened table that carries the column
-    # (game_features_weak_stack_illness / _reddit / _team_style_pace /
-    # _redzone_third_down.parquet). Never used by the active model.
     "weak_stack_illness_away": (
         "football_weak_stack_illness_away",
         "full_weak_stack_illness_away",
@@ -350,14 +289,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_redzone_third_down",
         "full_weak_stack_redzone_third_down",
     ),
-    # PER-13 Stage 2 candidate profile
-    # (docs/per13_durability_stage2_on_production.md): weak_stack with its nine
-    # availability-derived injury columns REPLACED by versions rebuilt on a
-    # durability-augmented P(plays) -- a replacement, not an addition, so the
-    # column count matches production exactly. Same table-pinning caveat as
-    # every profile above: fit only on a table carrying the *_durability columns
-    # (game_features_weak_stack_durability.parquet). Never used by the active
-    # model.
     "weak_stack_durability": (
         "football_weak_stack_durability",
         "full_weak_stack_durability",
@@ -366,25 +297,12 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_source_availability",
         "full_weak_stack_source_availability",
     ),
-    # LEAD-21/22/40 (docs/schedule_flag_battery.md): three pure-schedule
-    # flags, each PRODUCTION weak_stack plus exactly one new column computed
-    # in nfl_ats.schedule_flag_features from the newest schedules.parquet
-    # snapshot only. Same table-pinning caveat as every profile above -- fit
-    # only on a table carrying that column. Never used by the active model.
     "weak_stack_post_ot": ("football_weak_stack_post_ot", "full_weak_stack_post_ot"),
     "weak_stack_mnf_road": ("football_weak_stack_mnf_road", "full_weak_stack_mnf_road"),
     "weak_stack_home_thursday": (
         "football_weak_stack_home_thursday",
         "full_weak_stack_home_thursday",
     ),
-    # Phase 12 market microstructure leads (docs/market_lead_battery.md,
-    # LEAD-05/LEAD-03): each PRODUCTION weak_stack plus exactly one new
-    # column built entirely from the local point-in-time odds archive
-    # (nfl_ats.market_lead_features). Same table-pinning caveat as every
-    # profile above -- fit only on a table carrying that column
-    # (game_features_weak_stack_opener_softness.parquet /
-    # game_features_weak_stack_ml_divergence.parquet). Never used by the
-    # active model, never mixed with each other.
     "weak_stack_opener_softness": (
         "football_weak_stack_opener_softness",
         "full_weak_stack_opener_softness",
@@ -393,13 +311,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_ml_divergence",
         "full_weak_stack_ml_divergence",
     ),
-    # Wave 2 venue/market-context leads (docs/schedule_flag_battery.md "Wave
-    # 2", LEAD-39/LEAD-41/LEAD-42/LEAD-35): each PRODUCTION weak_stack plus
-    # exactly one new column computed in nfl_ats.schedule_flag_features, fit
-    # directly on the base weak_stack table (no separate candidate-specific
-    # parquet -- every input is either a schedule fact or the Tuesday-opener
-    # market consensus, both computed at runtime). Never used by the active
-    # model, never mixed with each other or with the Wave 1 trio above.
     "weak_stack_new_stadium": ("football_weak_stack_new_stadium", "full_weak_stack_new_stadium"),
     "weak_stack_dome_shootout": (
         "football_weak_stack_dome_shootout",
@@ -410,11 +321,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "full_weak_stack_low_total_div_dog",
     ),
     "weak_stack_sept_heat": ("football_weak_stack_sept_heat", "full_weak_stack_sept_heat"),
-    # Wave 3 public-claim leads on production (docs/schedule_flag_battery.md
-    # "Wave 3", LEAD-57 leads): each PRODUCTION weak_stack plus exactly one
-    # new column computed in nfl_ats.schedule_flag_features, fit directly on
-    # the base weak_stack table. Never used by the active model, never mixed
-    # with each other or with Wave 1/2.
     "weak_stack_road_fav_fade": (
         "football_weak_stack_road_fav_fade",
         "full_weak_stack_road_fav_fade",
@@ -428,7 +334,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_ats_streak_regress",
         "full_weak_stack_ats_streak_regress",
     ),
-    # Wave 4 (docs/schedule_flag_battery.md "Wave 4"), LEAD-26/27/30.
     "weak_stack_opening_drive_epa": (
         "football_weak_stack_opening_drive_epa",
         "full_weak_stack_opening_drive_epa",
@@ -441,7 +346,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_fourth_down_interaction",
         "full_weak_stack_fourth_down_interaction",
     ),
-    # Wave 5 (docs/schedule_flag_battery.md "Wave 5"), LEAD-20/LEAD-25.
     "weak_stack_rookie_qb_debut_fade": (
         "football_weak_stack_rookie_qb_debut_fade",
         "full_weak_stack_rookie_qb_debut_fade",
@@ -450,7 +354,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_qb_revenge",
         "full_weak_stack_qb_revenge",
     ),
-    # Wave 6 (docs/schedule_flag_battery.md "Wave 6"), LEAD-12/LEAD-23/LEAD-14.
     "weak_stack_holdout_slow_start": (
         "football_weak_stack_holdout_slow_start",
         "full_weak_stack_holdout_slow_start",
@@ -463,7 +366,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_suspension_rust",
         "full_weak_stack_suspension_rust",
     ),
-    # docs/officials_crew_leads.md, LEAD-34/LEAD-31.
     "weak_stack_crew_second_meeting_favorite": (
         "football_weak_stack_crew_second_meeting_favorite",
         "full_weak_stack_crew_second_meeting_favorite",
@@ -472,7 +374,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_rookie_crew_underdog",
         "full_weak_stack_rookie_crew_underdog",
     ),
-    # docs/weather_venue_leads.md, LEAD-36/LEAD-37.
     "weak_stack_open_corner_wind_dog": (
         "football_weak_stack_open_corner_wind_dog",
         "full_weak_stack_open_corner_wind_dog",
@@ -481,17 +382,10 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_rain_on_grass_dog",
         "full_weak_stack_rain_on_grass_dog",
     ),
-    # Lane T promotion evaluation (docs/promotion_eval_20260905.md):
-    # weak_stack plus BOTH already-screened Wave 5/Wave 6 columns
-    # (qb_revenge_flag, deadline_integration_drag_flag) at once, testing
-    # composition rather than either column alone. Same table-pinning
-    # caveat as every profile above -- fit only on a table carrying both
-    # columns. Never used by the active model.
     "weak_stack_qb_revenge_deadline_drag": (
         "football_weak_stack_qb_revenge_deadline_drag",
         "full_weak_stack_qb_revenge_deadline_drag",
     ),
-    # Wave 7 (docs/schedule_flag_battery.md "Wave 7"), LEAD-13/LEAD-17.
     "weak_stack_ir_return_reinforcement": (
         "football_weak_stack_ir_return_reinforcement",
         "full_weak_stack_ir_return_reinforcement",
@@ -500,7 +394,6 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_specialist_absence_fade",
         "full_weak_stack_specialist_absence_fade",
     ),
-    # Wave 8 (docs/schedule_flag_battery.md "Wave 8"), LEAD-24 stage 2 / LEAD-16.
     "weak_stack_rookie_wall_dependence": (
         "football_weak_stack_rookie_wall_dependence",
         "full_weak_stack_rookie_wall_dependence",
@@ -509,16 +402,12 @@ _MARGIN_PROFILE_FEATURE_SETS: dict[MarginFeatureProfile, tuple[str, str]] = {
         "football_weak_stack_kicker_change_underdog",
         "full_weak_stack_kicker_change_underdog",
     ),
-    # Wave 9 (docs/schedule_flag_battery.md "Wave 9"), LEAD-15.
     "weak_stack_backup_tenure_gap": (
         "football_weak_stack_backup_tenure_gap",
         "full_weak_stack_backup_tenure_gap",
     ),
 }
 
-# Production's frozen imputer remains SimpleImputer(add_indicator=True).  This
-# sole candidate replaces only the seven source-era indicators; all unrelated
-# columns retain the production treatment.
 _PROFILE_SUPPRESSED_MISSING_INDICATORS: dict[MarginFeatureProfile, tuple[str, ...]] = {
     "weak_stack_source_availability": SOURCE_ERA_ROSTER_CONTINUITY_COLUMNS,
 }
@@ -549,34 +438,6 @@ def _target_values(frame: pd.DataFrame, target: MarginTarget) -> pd.Series:
         return pd.to_numeric(frame["result"], errors="coerce")
     return pd.to_numeric(frame["ats_margin"], errors="coerce")
 
-
-# ---------------------------------------------------------------------------
-# Group-wise (block-wise) ridge penalties
-# ---------------------------------------------------------------------------
-#
-# A single global ``alpha`` assumes every feature block deserves the same
-# penalty. That is wrong whenever blocks differ in signal-to-noise: the market
-# columns are a near-sufficient statistic and want a light penalty, while thin
-# player/availability columns are mostly noise and want a heavy one.
-#
-# Generalized ridge minimises ``||y - X b||^2 + sum_j lambda_j b_j^2``. With
-# ``lambda_j = alpha * m_j`` it is implemented EXACTLY by scaling column ``j``
-# by ``1 / sqrt(m_j)`` and running an ordinary ``Ridge(alpha=alpha)``: writing
-# ``S = diag(1/sqrt(m))`` and ``g`` for the coefficients on the scaled design,
-# ``b = S g`` and ``alpha * ||g||^2 = alpha * sum_j m_j b_j^2``. Algebraically,
-# ``S (S X'X S + alpha I)^-1 S = (X'X + alpha diag(m))^-1``, so no approximation
-# is involved. ``tests/test_margin_groupwise.py`` pins that identity.
-#
-# Why this is not the MOD-06 no-op. The forced pick is ``sign(predicted
-# residual)`` and MOD-06 closed every method whose whole effect is to multiply
-# the prediction by a positive scalar. Group-wise penalties are not such a
-# method: they change the DIRECTION of the coefficient vector, not just its
-# length. In an orthogonal standardised design ``b_j = d_j b_j^OLS / (d_j +
-# lambda_j)``, so proportionality between two penalty vectors would require
-# ``d_j + lambda_j`` to be a common multiple of ``d_j + lambda_j'`` for every
-# ``j`` at once -- impossible once the ``lambda_j`` differ across blocks and the
-# ``d_j`` are not all equal. The prediction therefore becomes a different linear
-# functional of the features, and its sign can flip.
 
 _MISSING_INDICATOR_PREFIX = "missingindicator_"
 
@@ -668,10 +529,6 @@ class SelectiveMissingnessImputer(TransformerMixin, BaseEstimator):
         values = X.to_numpy(dtype=float, copy=True)
         missing = ~np.isfinite(values)
         medians = np.nanmedian(values, axis=0)
-        # A source that is wholly absent in a training split has no value to
-        # impute.  Zero is the same neutral fill SimpleImputer effectively
-        # supplies after dropping an empty feature, while retaining the fixed
-        # feature contract required for chronology.
         medians = np.where(np.isfinite(medians), medians, 0.0)
         self.statistics_ = medians
         suppressed = set(self.suppressed_indicator_columns)
@@ -785,8 +642,6 @@ def make_margin_estimator(
         else:
             imputer = SimpleImputer(strategy="median", add_indicator=True)
         if column_penalties is None:
-            # Frozen path, deliberately untouched: same steps, same objects, no
-            # output container change. Group penalties are strictly opt-in.
             return Pipeline(
                 steps=[
                     ("imputer", imputer),
@@ -802,8 +657,6 @@ def make_margin_estimator(
                 ("regressor", Ridge(alpha=ridge_alpha)),
             ]
         )
-        # Names must survive to the group step so indicator columns can be
-        # matched back to the block they flag.
         pipeline.set_output(transform="pandas")
         return pipeline
     if model_name == "hgb":
@@ -831,8 +684,6 @@ def _smoothed_probability(samples: npt.NDArray[np.float64], threshold: float) ->
     return (successes + 0.5) / (len(samples) + 1.0)
 
 
-# The quoted line plus a symmetric grid of alternative home spreads, spanning
-# the "key number" region around most NFL closing lines in half-point steps.
 LINE_SWEEP_MIN_OFFSET = -4.0
 LINE_SWEEP_MAX_OFFSET = 4.0
 LINE_SWEEP_STEP = 0.5
@@ -886,8 +737,6 @@ def _three_way_probabilities(
         win_count = int(np.count_nonzero(outcomes > line))
         push_count = int(np.count_nonzero(outcomes == line))
     else:
-        # No integer margin can land on a half-point line, so a push is
-        # impossible by construction and the contract requires exactly zero.
         win_count = int(np.count_nonzero(distribution > line))
         push_count = 0
     loss_count = n - win_count - push_count
@@ -905,8 +754,6 @@ class MarginModel:
     training_rows: int
     distribution_rows: int
     training_max_gameday: str
-    #: Per-column ridge penalty multipliers, or ``None`` for a single global
-    #: penalty. Defaulted so every existing construction is unchanged.
     column_penalties: Mapping[str, float] | None = field(default=None)
 
     def _spread(self, frame: pd.DataFrame) -> npt.NDArray[np.float64]:
@@ -1006,12 +853,6 @@ class MarginModel:
         else:
             market_cover_probability = []
 
-        # Computed once, vectorized, rather than refitting a
-        # ``ResidualSmoother`` on the SAME residual sample inside the per-row
-        # loop below. ``None`` when the caller wants the default ECDF path,
-        # so that path's per-row ``_smoothed_probability`` call (identical to
-        # this method's behavior before ``probability_method`` existed) stays
-        # bit-for-bit unchanged.
         mapped_cover_probability: npt.NDArray[np.float64] | None = None
         if self.target != "market" and probability_method != "ecdf":
             mapped_cover_probability = smoothed_home_cover_probability(
@@ -1259,8 +1100,6 @@ def margin_model_metadata(model: MarginModel) -> dict[str, Any]:
         "residual_mean": float(np.mean(model.residuals)),
         "residual_std": float(np.std(model.residuals, ddof=1)),
     }
-    # Emitted only when group penalties are actually in use, so a frozen
-    # single-penalty run keeps a byte-identical metadata payload.
     if model.column_penalties is not None:
         metadata["column_penalties"] = {
             str(column): float(value) for column, value in model.column_penalties.items()

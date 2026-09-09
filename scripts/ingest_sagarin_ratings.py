@@ -134,10 +134,6 @@ TRANSIENT_MARKERS = (b"Temporarily Offline", b"Internet Archive: Temporarily")
 ERA_SAGARIN_COM = "sagarin_com"
 ERA_USATODAY = "usatoday"
 
-# ---------------------------------------------------------------------------
-# Team name -> current nflverse code (relocations/renames folded to current
-# identity per the task brief).
-# ---------------------------------------------------------------------------
 NAME_TO_CODE: dict[str, str] = {
     "ARIZONA CARDINALS": "ARI",
     "ATLANTA FALCONS": "ATL",
@@ -185,11 +181,6 @@ NAME_TO_CODE: dict[str, str] = {
 def team_code_for(name_raw: str) -> str | None:
     key = re.sub(r"\s+", " ", name_raw).strip().upper()
     return NAME_TO_CODE.get(key)
-
-
-# ---------------------------------------------------------------------------
-# Rate limiting + fetch
-# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -281,14 +272,6 @@ def _fetch(url: str, limiter: RateLimiter, *, timeout: int = 30, retries: int = 
             time.sleep(5.0 * (attempt + 1))
             continue
         if not body:
-            # Measured this session: two captures ended up permanently cached
-            # as 0-byte files (fetch "succeeded" -- HTTP 200, no transient
-            # marker -- but curl returned an empty body, most likely from the
-            # same connection instability seen throughout this run). An empty
-            # cached file is indistinguishable from a real fetch to the
-            # `html_path.exists()` resume check, so it would never self-heal
-            # on a later run. Treat empty as a retryable failure instead of a
-            # zero-length success.
             last_error = RuntimeError("empty response body")
             time.sleep(3.0 * (attempt + 1))
             continue
@@ -334,67 +317,27 @@ def cdx_query(url_pattern: str, limiter: RateLimiter, **params: str) -> list[dic
     return collapsed
 
 
-# ---------------------------------------------------------------------------
-# Parsing
-# ---------------------------------------------------------------------------
-
 TAG_RE = re.compile(r"<[^>]+>")
 WS_RE = re.compile(r"[ \t]+")
 
 HOME_ADVANTAGE_4 = re.compile(
     r"HOME ADVANTAGE=\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]"
 )
-# WP19 fix (2026-09-01, docs/sagarin_backfill.md section 9): a transitional
-# 3-bracket HOME ADVANTAGE line, measured on both sagarin.com- and
-# usatoday.com-domain captures spanning roughly Nov 2011 - Sep 2013 (before
-# ELO_SCORE/GOLDEN_MEAN were introduced), one bracket per method -- RATING,
-# ELO_CHESS, PURE POINTS in that order (measured: bracket colors #9900ff /
-# #ff0000 / #0000ff match the team rows' own RATING / ELO_CHESS / PURE
-# POINTS column colors 1:1). Every one of 2012's captures used this format,
-# which the pre-fix 4-then-1-bracket pair never matched, so home_edge_rating
-# came back null for the entire season. Checked only when HOME_ADVANTAGE_4
-# fails to match (that pattern requires all 4 groups, so it never partially
-# matches a 3-bracket line).
 HOME_ADVANTAGE_3 = re.compile(
     r"HOME ADVANTAGE=\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]\s*\[\s*([\d.]+)\]"
 )
-# WP19 fix: one measured capture in this same transitional window (usatoday
-# nfl11@20120109071948, "2012 JANUARY 8 SUNDAY - Wild Card Weekend") used a
-# third, comma-separated, unbracketed layout instead: "HOME EDGE=  3.04,
-# 2.38,  2.74" -- same RATING/ELO_CHESS/PURE POINTS value order (the page's
-# own explanatory text reads "THREE home edges listed for: RATING,
-# ELO_CHESS, PREDICTOR(PURE POINTS)"), just a different label ("HOME EDGE="
-# not "HOME ADVANTAGE=") and separator. Distinct label means no ordering
-# dependency versus HOME_ADVANTAGE_3/_4/_1.
 HOME_EDGE_COMMA = re.compile(r"HOME EDGE=\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)")
 HOME_ADVANTAGE_1 = re.compile(r"HOME ADVANTAGE=\s*([\d.]+)")
 
-# Primary header: covers both "NFL 2014 Ratings through results of ... -
-# Week #6" (sagarin.com) and "NFL 2003 Ratings thru results of SUNDAY,
-# FEBRUARY 1, 2004 - Super Bowl - FINAL" (usatoday; note trailing "FINAL"
-# rather than a leading "Final " prefix, and "thru" instead of "through").
 HEADER_RE = re.compile(
     r"(Final\s+)?NFL\s+(\d{4})\s*(?:Ratings\s*)?(?:through|thru)\s+"
     r"(?:results of|games of)\s+([^\n]*)"
 )
-# Fallback header for the terse earliest era (measured 1998 usatoday sample:
-# "Final 1998 NFL ratings", no as-of date or week at all in the header line
-# -- capture_ts is the only as-of signal available for this era).
 HEADER_TERSE_RE = re.compile(r"(Final\s+)?(\d{4})\s+NFL\s+ratings", re.IGNORECASE)
-# Fallback header for a pre-Week-1 "starting ratings" snapshot (measured this
-# session, sagarin.com era, 2013-09-10 capture: "NFL 2013 Starting Ratings",
-# no games played yet -- every team row is 0-0-0). Distinct from both header
-# patterns above since it has neither a "through/thru results-of/games-of"
-# date clause nor the terse "<year> NFL ratings" word order.
 HEADER_PRESEASON_RE = re.compile(r"NFL\s+(\d{4})\s+Starting\s+Ratings", re.IGNORECASE)
 WEEK_RE = re.compile(r"Week\s*#?\s*(\d+)", re.IGNORECASE)
 TRAILING_FINAL_RE = re.compile(r"\bFINAL\b", re.IGNORECASE)
 
-# Team row, era-tolerant: captures rank, name, RATING, W, L, T, SCHEDL(rank),
-# vs-top10 W-L-T, vs-top16 W-L-T, then an OPTIONAL trailing "| VALUE RANK ..."
-# tail whose method-column count varies by era (the earliest 1998 usatoday
-# era, measured this session, has no method-breakdown columns at all -- the
-# row ends right after vs-top16).
 TEAM_ROW_RE = re.compile(
     r"^\s*(\d{1,2})\s+([A-Za-z][A-Za-z0-9.' ]*?)\s*=\s*([\d.]+)\s+"
     r"(\d+)\s+(\d+)\s+(\d+)\s+"
@@ -468,22 +411,6 @@ def parse_capture_html(raw_html: bytes) -> ParsedCapture:
         home_edge_methods = [float(home4.group(i)) for i in (2, 3, 4)]
         era_format = ERA_SAGARIN_COM
     elif home3 is not None or home_comma is not None:
-        # WP19 fix: both the 3-bracket and comma-separated transitional
-        # layouts carry RATING + ELO_CHESS + PURE POINTS (measured above),
-        # the same 2-method column shape as the single-value USATODAY era --
-        # tagged era_format=ERA_USATODAY so the team-row method-name lookup
-        # (below) resolves to "elo_chess"/"pure_points" instead of generic
-        # "method_0"/"method_1", matching the section 5.1 precedent that
-        # sagarin.com-domain captures already get era_format="usatoday" when
-        # their layout is the simpler one. Only home_edge_rating (group 1,
-        # RATING's own edge) is kept -- the two per-method values are NOT
-        # written into home_edge_golden_mean/home_edge_elo_score, which are
-        # a fixed-position mapping elsewhere in this script that assumes
-        # GOLDEN_MEAN/PURE_POINTS/ELO_SCORE order; writing ELO_CHESS/PURE
-        # POINTS values into those slots would mislabel them, and no
-        # downstream consumer (the frozen sagarin_battery_* predeclaration,
-        # docs/sagarin_backfill.md section 8) uses anything but
-        # home_edge_rating.
         match = home3 if home3 is not None else home_comma
         assert match is not None
         home_edge_rating = float(match.group(1))
@@ -527,8 +454,6 @@ def parse_capture_html(raw_html: bytes) -> ParsedCapture:
             "vs_top16_l": int(match.group(13)),
             "vs_top16_t": int(match.group(14)),
         }
-        # Method columns: sagarin.com era = GOLDEN_MEAN, PURE_POINTS(PREDICTOR),
-        # ELO_SCORE; usatoday era = ELO_CHESS, PURE_POINTS(PREDICTOR).
         if era_format == ERA_SAGARIN_COM:
             method_names = ["golden_mean", "pure_points", "elo_score"]
         elif era_format == ERA_USATODAY:
@@ -560,11 +485,6 @@ def parse_capture_html(raw_html: bytes) -> ParsedCapture:
         era_format=era_format,
         parse_error=parse_error,
     )
-
-
-# ---------------------------------------------------------------------------
-# CDX enumeration
-# ---------------------------------------------------------------------------
 
 
 def enumerate_sagarin_com_captures(limiter: RateLimiter) -> list[dict[str, str]]:
@@ -632,11 +552,6 @@ def enumerate_cached_captures(pages_dir: Path) -> list[dict[str, str]]:
     return rows
 
 
-# ---------------------------------------------------------------------------
-# Ingestion driver
-# ---------------------------------------------------------------------------
-
-
 def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
     if snapshot is not None:
         snapshot_dir = out_dir / snapshot
@@ -668,8 +583,6 @@ def ingest(
 
     captures: list[dict[str, str]] = []
     if reparse_cache_only:
-        # WP19: reparse the existing on-disk cache with a fixed parser --
-        # zero network calls, same capture set as the run being corrected.
         print("Reparse-cache-only mode: skipping CDX, scanning pages/ on disk...")
         captures.extend(enumerate_cached_captures(pages_dir))
         print(f"  found {len(captures)} cached captures on disk")
@@ -836,16 +749,10 @@ def ingest(
     return manifest
 
 
-# ---------------------------------------------------------------------------
-# As-of-Tuesday alignment view
-# ---------------------------------------------------------------------------
-
-
 ET = ZoneInfo("America/New_York")
 
 
 def _previous_or_same_tuesday(d: date) -> date:
-    # Monday=0 ... Sunday=6; Tuesday=1
     days_back = (d.weekday() - 1) % 7
     return d - timedelta(days=days_back)
 
@@ -888,9 +795,6 @@ def build_asof_view(index_frame: pd.DataFrame, week_windows: pd.DataFrame) -> pd
     if index_frame.empty:
         return pd.DataFrame()
 
-    # One row per (season, capture_ts): a capture is one NFL-wide snapshot,
-    # so the "best capture for this week" decision only needs to be made
-    # once per (season, capture_ts), then broadcast to all teams in it.
     captures = (
         index_frame[["season", "capture_ts"]]
         .drop_duplicates()
@@ -903,12 +807,6 @@ def build_asof_view(index_frame: pd.DataFrame, week_windows: pd.DataFrame) -> pd
         season_captures = captures[captures["season"] == season]
         if season_captures.empty:
             continue
-        # `.to_numpy()` on a tz-aware Series returns an object array of
-        # tz-aware `Timestamp`s, which cannot be compared against the naive
-        # `datetime64[ns]` produced by `Timestamp.to_datetime64()` below
-        # (measured this session: "can't compare offset-naive and
-        # offset-aware datetimes"). Force both sides to the same naive-but-
-        # UTC-normalized `datetime64[ns]` representation instead.
         cap_ts = pd.to_datetime(season_captures["capture_ts"], utc=True).to_numpy(
             dtype="datetime64[ns]"
         )
@@ -917,13 +815,6 @@ def build_asof_view(index_frame: pd.DataFrame, week_windows: pd.DataFrame) -> pd
             first_kickoff = wrow["first_kickoff_utc"]
             eligible_tuesday = cap_ts[cap_ts <= tuesday_cutoff.to_datetime64()]
             eligible_prekickoff = cap_ts[cap_ts < first_kickoff.to_datetime64()]
-            # Restore tz-aware UTC (naive datetime64 was only needed for the
-            # comparison itself) so this matches `index_frame["capture_ts"]`'s
-            # dtype for the merge below -- measured this session: a bare
-            # `numpy.datetime64` here produces a naive `datetime64[ns]`
-            # column that pandas refuses to merge against `index_frame`'s
-            # tz-aware `datetime64[us, UTC]` capture_ts ("You are trying to
-            # merge on datetime64[ns] and datetime64[us, UTC] columns").
             best_tuesday = (
                 pd.Timestamp(eligible_tuesday.max(), tz="UTC") if len(eligible_tuesday) else None
             )
@@ -947,9 +838,6 @@ def build_asof_view(index_frame: pd.DataFrame, week_windows: pd.DataFrame) -> pd
     week_capture_map = pd.DataFrame(records)
     if week_capture_map.empty:
         return week_capture_map
-    # Align the merge-key column's exact dtype (unit + tz) to index_frame's
-    # own capture_ts dtype -- pandas' merge refuses mismatched datetime
-    # units/tz-awareness even when both sides are otherwise valid instants.
     week_capture_map["asof_tuesday_capture_ts"] = week_capture_map[
         "asof_tuesday_capture_ts"
     ].astype(index_frame["capture_ts"].dtype)
@@ -962,11 +850,6 @@ def build_asof_view(index_frame: pd.DataFrame, week_windows: pd.DataFrame) -> pd
         suffixes=("", "_row"),
     )
     return merged
-
-
-# ---------------------------------------------------------------------------
-# CLI
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:

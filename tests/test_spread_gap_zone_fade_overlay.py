@@ -41,19 +41,6 @@ from nfl_ats.spread_gap_zone_fade_overlay import (
     record_spread_gap_zone_fade_challenger_decisions,
 )
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# G-lower: |spread_line| == 7.5 exactly (the lower bound, inclusive), model
-#   picks HOME -- should flip to AWAY.
-# G-upper: |spread_line| == 10.0 exactly (the upper bound, inclusive), model
-#   picks AWAY -- should flip to HOME.
-# G-below: |spread_line| == 7.4, just outside the lower bound -- no flip.
-# G-above: |spread_line| == 10.1, just outside the upper bound -- no flip.
-# G-post: same in-zone shape as G-lower, but POST season -- REG-only gate.
-# G-missing-spread: spread_line is NaN -- treated as no signal (not numeric).
-
 
 def _predictions() -> pd.DataFrame:
     return pd.DataFrame(
@@ -76,11 +63,6 @@ def _predictions() -> pd.DataFrame:
             "home_cover_probability": [0.60, 0.30, 0.55, 0.45, 0.65, 0.55],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. apply_spread_gap_zone_fade_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_frozen_bounds_are_the_predeclared_seven_point_five_and_ten() -> None:
@@ -192,11 +174,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_spread_gap_zone_fade_overlay(pd.DataFrame({"game_id": ["G1"]}))
 
 
-# ---------------------------------------------------------------------------
-# 2. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     out_of_zone_only = _predictions().loc[lambda frame: frame["game_id"].eq("2026_05_BELOW")]
     result = apply_spread_gap_zone_fade_overlay(out_of_zone_only)
@@ -215,10 +192,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "AWAYU -> HOMEU" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 3. record_spread_gap_zone_fade_challenger_decisions: dual-tracked, no window
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -273,8 +246,6 @@ def test_record_fade_challenger_decisions_records_the_fade_arm(tmp_path: Path) -
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
     _write_active_model_and_card(artifacts)
-    # data_root is accepted for call-signature parity but never read -- see
-    # the module docstring -- so an unused, non-existent path is sufficient.
     data_root = tmp_path / "data"
     now = datetime(2026, 10, 4, 16, 0, tzinfo=UTC)
 
@@ -289,13 +260,9 @@ def test_record_fade_challenger_decisions_records_the_fade_arm(tmp_path: Path) -
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The fade's own arm diverges from the active model's raw pick (0.60 ->
-    # HOME): the fade flips it to AWAY, since the game sits in the zone.
     assert ledger.loc["2026_05_LOWER_HOME", "pick_side"] == "AWAY"
-    # The out-of-zone game keeps the model's own HOME pick untouched.
     assert ledger.loc["2026_05_BELOW", "pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_spread_gap_zone_fade_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -317,9 +284,6 @@ def test_record_fade_challenger_refuses_outside_recording_lock_window(tmp_path: 
 def test_record_fade_challenger_refuses_a_fingerprint_mismatch(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = tmp_path / "data"
 

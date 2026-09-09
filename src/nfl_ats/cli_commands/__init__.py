@@ -39,9 +39,6 @@ from nfl_ats.cli_commands import (
 
 Registrar = Callable[["argparse._SubParsersAction[argparse.ArgumentParser]", int], None]
 
-#: Registration order == ``nfl-ats --help`` order. Append-only in spirit:
-#: reordering entries renames nothing but does reorder the help listing, which
-#: the contract fixture treats as a behaviour change.
 REGISTRARS: tuple[Registrar, ...] = (
     operations.register_health,
     data.register_player_arrests,

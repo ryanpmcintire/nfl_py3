@@ -185,12 +185,6 @@ def test_fit_margin_models_for_week_matches_score_outcome_week(model_frame: pd.D
     ]
     assert set(target["game_id"]) == set(expected_games)
 
-    # probability_method="ecdf" explicitly: score_outcome_week's OWN default
-    # was promoted to "gaussian" 2026-08-19 (MOD-08,
-    # docs/smooth_cdf_mapping.md), but this test's point is that
-    # fit_margin_models_for_week's refit reproduces score_outcome_week's
-    # per-method computation at a FIXED method -- .predict() below still
-    # defaults to "ecdf" -- not a claim about which method is the default.
     predictions = score_outcome_week(
         model_frame, season=2020, week=1, min_train_games=80, probability_method="ecdf"
     )
@@ -237,9 +231,6 @@ def test_score_outcome_week_line_sweep_matches_score_outcome_week_at_zero_offset
             "push_probability",
             "home_loss_probability",
         ):
-            # The market-only quote uses odds-implied probability, not the
-            # residual distribution swept by this diagnostic. The model
-            # probability mapping must match for the two fitted methods.
             if method == "market" and column == "home_cover_probability":
                 continue
             assert np.allclose(
@@ -318,11 +309,6 @@ def test_walk_forward_key_number_mass_ignores_games_after_the_target_week(
     ranges, never that week 1 is blind to weeks 2-4.
     """
 
-    # The full ``DEFAULT_KEY_NUMBERS`` set is used deliberately rather than a
-    # narrow probe like ``(3, 7)``: with this fixture's small residual pool,
-    # a couple of key numbers can land at 0.0 mass in both the honest and the
-    # leaky fit purely from sparse-sample luck, which would make a narrow
-    # probe pass even under the leaky mutation this test exists to catch.
     baseline = walk_forward_key_number_mass(model_frame, start_season=2020, min_train_games=80)
     corrupted_frame = _with_extreme_future_weeks(model_frame, season=2020, after_week=1)
     corrupted = walk_forward_key_number_mass(corrupted_frame, start_season=2020, min_train_games=80)
@@ -441,7 +427,7 @@ def _reference_bootstrap(
     }
 
 
-@pytest.mark.full  # ENG-11: dominates --durations (many bootstrap samples)
+@pytest.mark.full
 def test_vectorized_bootstrap_matches_reference(model_frame: pd.DataFrame) -> None:
     predictions = walk_forward_outcomes(
         model_frame, start_season=2020, min_train_games=80, min_edge=0.0

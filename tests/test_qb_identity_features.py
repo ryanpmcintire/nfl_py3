@@ -76,39 +76,16 @@ def _rosters(rows: list[tuple[int, str, float]]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["season", "gsis_id", "years_exp"])
 
 
-# ---------------------------------------------------------------------------
-# LEAD-20: rookie-QB debut fade
-# ---------------------------------------------------------------------------
-
-
 def _debut_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            # H1 already has an earlier start (h_prior); R1 is making his very
-            # first archived start, as AWAY, and is a rookie (years_exp 0) ->
-            # away debut rookie, home is not first -> +1.
             _game("h_prior", 2020, "2020-09-06", "AAA", "ZZZ", "H1", "ZQ"),
             _game("g1", 2020, "2020-09-10", "AAA", "BBB", "H1", "R1"),
-            # Mirror: R2 making his very first archived start, as HOME, rookie
-            # -> home debut rookie, away (H1) already started -> -1.
             _game("g2", 2020, "2020-09-13", "CCC", "AAA", "R2", "H1"),
-            # V1's very first ARCHIVED start (this tiny fixture's own
-            # left-censoring), but years_exp is 5 that season -- an
-            # established veteran, NOT a debut.
             _game("g_vet", 2020, "2020-09-06", "DDD", "EEE", "V1", "ZQ2"),
-            # R1's SECOND start (still years_exp 0 this season) -- must NOT be
-            # flagged a second time; only the FIRST start counts.
             _game("g3", 2020, "2020-09-20", "FFF", "BBB", "H1", "R1"),
-            # U1's very first archived start has NO weekly_rosters row at all
-            # for (season, U1) -- unresolved years_exp, never guessed. Dated
-            # after h_prior so H1's own first-archived start is unambiguously
-            # h_prior, not this game.
             _game("g_unresolved", 2020, "2020-09-08", "GGG", "HHH", "H1", "U1"),
-            # Both sides debut as rookies simultaneously -> 0.
             _game("g_both", 2021, "2021-09-12", "III", "JJJ", "R3", "R4"),
-            # A team's only archived appearance is POSTSEASON -- never enters
-            # the REG-only debut population, so this game (and its own
-            # "first-looking" starter) must read 0.
             _game("g_post", 2020, "2021-01-10", "AAA", "KKK", "H1", "PP1", game_type="WC"),
         ]
     )
@@ -125,8 +102,6 @@ def _debut_rosters() -> pd.DataFrame:
             (2020, "ZQ2", 4.0),
             (2021, "R3", 0.0),
             (2021, "R4", 0.0),
-            # U1 deliberately has NO row -- unresolved years_exp.
-            # PP1 deliberately has NO row either (postseason-only starter).
         ]
     )
 
@@ -194,13 +169,10 @@ def test_postseason_game_is_never_flagged() -> None:
 
 def test_describe_rookie_qb_debut_population_diagnostic() -> None:
     diagnostic = describe_rookie_qb_debut_population(_debut_schedule(), _debut_rosters())
-    # First-archived REG starts: H1 (g_prior), ZQ (g_prior), R1 (g1), R2 (g2),
-    # V1 (g_vet), ZQ2 (g_vet), U1 (g_unresolved), R3 (g_both), R4 (g_both) = 9.
-    # (g3 is R1's SECOND start, not counted again; g_post is non-REG.)
     assert diagnostic["n_first_archived_reg_starts"] == 9
-    assert diagnostic["n_confirmed_rookie_debuts"] == 4  # R1, R2, R3, R4
-    assert diagnostic["n_confirmed_non_rookie_first_starts"] == 4  # H1, ZQ, V1, ZQ2
-    assert diagnostic["n_unresolved_years_exp"] == 1  # U1
+    assert diagnostic["n_confirmed_rookie_debuts"] == 4
+    assert diagnostic["n_confirmed_non_rookie_first_starts"] == 4
+    assert diagnostic["n_unresolved_years_exp"] == 1
 
 
 def test_rookie_debut_leakage_ignores_unrelated_outcome_columns() -> None:
@@ -254,11 +226,6 @@ def test_rookie_debut_derive_requires_every_schedule_column() -> None:
     schedule = _debut_schedule().drop(columns=["home_qb_id"])
     with pytest.raises(DataContractError, match="home_qb_id"):
         derive_rookie_qb_debut_fade_features(schedule, _debut_rosters())
-
-
-# ---------------------------------------------------------------------------
-# LEAD-25: quarterback revenge game
-# ---------------------------------------------------------------------------
 
 
 def test_franchise_code_normalization_current_and_historical_codes_match() -> None:
@@ -327,23 +294,16 @@ def test_draft_team_by_gsis_id_keeps_earliest_draft_year_on_duplicate() -> None:
     )
     rosters = pd.DataFrame({"pfr_id": ["p1"], "gsis_id": ["g1"]})
     lookup = draft_team_by_gsis_id(combine, rosters)
-    assert lookup["g1"] == "LV"  # the 2010 (earlier) draft, not the 2012 one
+    assert lookup["g1"] == "LV"
 
 
 def _revenge_schedule() -> pd.DataFrame:
     return _schedule(
         [
-            # Home QB Q1 (drafted by LV) faces away team OAK (-> LV) -> +1.
             _game("r1", 2020, "2020-09-10", "SEA", "OAK", "Q1", "Q9"),
-            # Away QB Q2 (drafted by LAC) faces home team SD (-> LAC) -> -1.
             _game("r2", 2020, "2020-09-13", "SD", "DEN", "Q9", "Q2"),
-            # Mutual revenge: home Q4 drafted by LAC (== away team LAC), away
-            # Q3 drafted by LV (== home team LV) -> both true -> 0.
             _game("r3", 2020, "2020-09-20", "LV", "LAC", "Q4", "Q3"),
-            # Neither drafted by the opponent -> 0.
             _game("r4", 2020, "2020-09-27", "DEN", "SEA", "Q9", "Q9"),
-            # Home QB is not in the lookup at all (unjoined) -> treated as 0
-            # for that side; away also not a revenge -> overall 0.
             _game("r5", 2020, "2020-10-04", "KC", "DEN", "QUNK", "Q9"),
         ]
     )
@@ -355,7 +315,7 @@ def _revenge_lookup() -> dict[str, str]:
         "Q2": "LAC",
         "Q3": "LV",
         "Q4": "LAC",
-        "Q9": "GB",  # never the opponent in any fixture game above
+        "Q9": "GB",
     }
 
 
@@ -396,8 +356,6 @@ def test_qb_revenge_unjoined_qb_is_treated_as_zero_never_guessed() -> None:
 
 def test_qb_revenge_join_diagnostics_counts() -> None:
     diagnostic = qb_revenge_join_diagnostics(_revenge_schedule(), _revenge_lookup())
-    # 5 games x 2 sides = 10 non-null QB-side starts; QUNK is the only one
-    # absent from the lookup.
     assert diagnostic["n_qb_side_starts"] == 10
     assert diagnostic["n_resolved_draft_team"] == 9
     assert diagnostic["join_rate"] == pytest.approx(0.9)
@@ -456,11 +414,6 @@ def test_qb_revenge_derive_requires_every_schedule_column() -> None:
     schedule = _revenge_schedule().drop(columns=["home_qb_id"])
     with pytest.raises(DataContractError, match="home_qb_id"):
         derive_qb_revenge_features(schedule, _revenge_lookup())
-
-
-# ---------------------------------------------------------------------------
-# Registered candidate profiles: production plus exactly the one column
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("key", sorted(qiop.CANDIDATES))

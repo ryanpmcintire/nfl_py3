@@ -83,9 +83,6 @@ OUTPUT_ROOT = REPO / "artifacts" / "best_pick_tiebreak_cfb"
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260818
 
-# Candidate probability sources declared in design.md Section 2.2. Only
-# entries with a `source` are measured this pass; the others are reported as
-# unavailable, per predeclaration.md.
 CANDIDATE_SOURCES: dict[str, dict[str, Any]] = {
     "tiebreak_alpha2000": {
         "mechanism": "re-read home_cover_probability at ridge_alpha=2000 (walk-forward "
@@ -120,11 +117,6 @@ CANDIDATE_SOURCES: dict[str, dict[str, Any]] = {
         "feature_set": "gaussian",
     },
 }
-
-
-# ---------------------------------------------------------------------------
-# 1. CFB sweep harness -- new orchestration, frozen config, no new modeling
-# ---------------------------------------------------------------------------
 
 
 def cfb_sweep_and_point(
@@ -187,11 +179,6 @@ def cfb_sweep_and_point(
     return sweep_frame, point_frame
 
 
-# ---------------------------------------------------------------------------
-# 2. Picks + sweep_robustness (frozen function, imported unchanged)
-# ---------------------------------------------------------------------------
-
-
 def build_picks(point: pd.DataFrame, sweep: pd.DataFrame) -> pd.DataFrame:
     picks = point.copy()
     picks["game_id"] = picks["game_id"].astype(str)
@@ -208,11 +195,6 @@ def build_picks(point: pd.DataFrame, sweep: pd.DataFrame) -> pd.DataFrame:
         picks["game_id"].map(sweep_robustness(sweep_work, picks)).astype(float)
     )
     return picks
-
-
-# ---------------------------------------------------------------------------
-# 3. Tied weeks, addressable population, tie-break nominations
-# ---------------------------------------------------------------------------
 
 
 def tied_weeks_table(picks: pd.DataFrame) -> pd.DataFrame:
@@ -301,11 +283,6 @@ def attach_candidate(
     return out
 
 
-# ---------------------------------------------------------------------------
-# 4. Primary Stage-0 metric: within-tie paired contest
-# ---------------------------------------------------------------------------
-
-
 def pairwise_contest(
     picks: pd.DataFrame, tied: pd.DataFrame, candidate_probability: pd.Series, *, name: str
 ) -> pd.DataFrame:
@@ -332,7 +309,7 @@ def pairwise_contest(
                 if correct_a is None or correct_b is None:
                     continue
                 if correct_a == correct_b:
-                    continue  # both covered or both lost: no information
+                    continue
                 prob_a, prob_b = prob_lookup.get(a), prob_lookup.get(b)
                 if prob_a is None or prob_b is None or pd.isna(prob_a) or pd.isna(prob_b):
                     continue
@@ -340,10 +317,10 @@ def pairwise_contest(
                 margin_a = abs((prob_a if pick_a == "HOME" else 1.0 - prob_a) - 0.5)
                 margin_b = abs((prob_b if pick_b == "HOME" else 1.0 - prob_b) - 0.5)
                 if margin_a == margin_b:
-                    continue  # candidate is uninformative on this pair: censored
+                    continue
                 covering = a if correct_a == 1.0 else b
                 candidate_prefers = a if margin_a > margin_b else b
-                alphabetical_prefers = a  # a < b lexicographically by construction
+                alphabetical_prefers = a
                 rows.append(
                     {
                         "season": int(week_row["season"]),
@@ -383,15 +360,7 @@ def bootstrap_pairwise(pairs: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 5. Driver
-# ---------------------------------------------------------------------------
-
-
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -405,11 +374,6 @@ def main() -> None:
     print("[stage0] walking forward the frozen CFB config (alpha=10, no column penalties) ...")
     sweep, point = cfb_sweep_and_point(features)
 
-    # Reproduction check (a): at line_offset==0 the sweep's alternative line
-    # equals the quoted spread, so line_sweep's home_cover_probability there
-    # must equal predict()'s home_cover_probability from the SAME weekly fit
-    # (line_sweep carries no predicted_margin column of its own -- the center
-    # is shared internally but only the probability is emitted per offset).
     at_offset0 = sweep.loc[sweep["line_offset"] == 0.0].drop_duplicates("game_id")
     check_a = point[["game_id", "home_cover_probability"]].merge(
         at_offset0[["game_id", "home_cover_probability"]],
@@ -425,9 +389,6 @@ def main() -> None:
 
     picks = build_picks(point, sweep)
 
-    # Reproduction check (b): my freshly computed home_cover_probability vs.
-    # the already-stored ecdf_smoothing artifact's feature_set=="ecdf" rows --
-    # licenses treating that artifact's "gaussian" rows as pick-consistent.
     ecdf_stored = pd.read_parquet(args.ecdf_artifact)
     ecdf_stored["game_id"] = ecdf_stored["game_id"].astype(str)
     ecdf_baseline = ecdf_stored.loc[ecdf_stored["feature_set"].eq("ecdf")].set_index("game_id")[
@@ -497,7 +458,6 @@ def main() -> None:
         print("\n=== Within-tie pairwise contest, week-blocked bootstrap ===")
         print(bootstrap.to_string(index=False))
 
-    # clean_core-only cut, for comparability with other CFB screens.
     clean_core_pick_ids = set(picks.loc[picks["evaluation_window"].eq("clean_core"), "game_id"])
     clean_core_pairs = pairs.loc[
         pairs["game_a"].isin(clean_core_pick_ids) & pairs["game_b"].isin(clean_core_pick_ids)

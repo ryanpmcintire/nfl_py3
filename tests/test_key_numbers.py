@@ -15,8 +15,6 @@ from nfl_ats.key_numbers import (
 
 
 def test_implied_key_number_mass_counts_both_directions() -> None:
-    # Two games, five samples each. Game 0: two samples at +3, two at -3, one at 0.
-    # Game 1: all samples at 10.
     distribution = np.array(
         [
             [3.0, 3.1, -3.0, -2.6, 0.2],
@@ -100,10 +98,7 @@ def test_cover_reliability_by_line_bucket_computes_gap_and_drops_pushes() -> Non
     assert under_three["mean_predicted_probability"] == pytest.approx(0.5)
     assert under_three["realized_cover_rate"] == pytest.approx(0.5)
     assert under_three["calibration_gap"] == pytest.approx(0.0)
-    # the "three" bucket's only row has a null home_cover (push) and a null
-    # predicted probability, so it drops out entirely
     assert "three" not in set(reliability["line_bucket"])
-    # bucket order follows the key-number line regions, not alphabetical order
     assert reliability["line_bucket"].tolist() == ["under_3", "seven"]
 
 

@@ -45,11 +45,7 @@ from nfl_ats.pbp import PBP_SNAPSHOT_COLUMNS
 from nfl_ats.players import enrich_with_player_features
 from nfl_ats.prediction_safety import PredictionSafetyError, validate_prediction_card
 
-# ---------------------------------------------------------------------------
-# attach_market_observed_at
-# ---------------------------------------------------------------------------
-
-_TUESDAY_OPENER = pd.Timestamp("2026-09-01T09:05:00Z")  # a real Tuesday
+_TUESDAY_OPENER = pd.Timestamp("2026-09-01T09:05:00Z")
 
 
 def _quote_row(**overrides: Any) -> dict[str, Any]:
@@ -103,10 +99,7 @@ def test_attach_market_observed_at_joins_the_tuesday_opener_by_game_id(tmp_path:
     result = attach_market_observed_at(frame, market_raw_root=tmp_path)
 
     assert result.loc[0, MARKET_OBSERVED_AT_COLUMN] == _TUESDAY_OPENER
-    # A historical row with no matching capture (most of the archive predates
-    # the-odds-api ingestion) is left null, not an error.
     assert pd.isna(result.loc[1, MARKET_OBSERVED_AT_COLUMN])
-    # spread_line -- or any other column -- is never read or modified.
     assert result["spread_line"].tolist() == [-3.0, 1.5]
 
 
@@ -141,11 +134,6 @@ def test_attach_market_observed_at_is_null_safe_with_no_capture_available(
     for result in (no_root, missing_dir, empty_history):
         assert MARKET_OBSERVED_AT_COLUMN in result.columns
         assert result[MARKET_OBSERVED_AT_COLUMN].isna().all()
-
-
-# ---------------------------------------------------------------------------
-# enrich_with_player_features: injury_snapshot_captured_at fallback
-# ---------------------------------------------------------------------------
 
 
 def _games() -> pd.DataFrame:
@@ -190,8 +178,6 @@ def _rosters() -> pd.DataFrame:
 
 
 def _injuries() -> pd.DataFrame:
-    # Team A only -- team B never files a report, exercising the "no
-    # revision was ever visible" branch every week, on both sides in turn.
     return pd.DataFrame(
         {
             "season": [2022, 2022],
@@ -287,8 +273,6 @@ def _pbp() -> pd.DataFrame:
 
 
 def test_injury_observed_at_falls_back_to_the_snapshot_capture_instant() -> None:
-    # Before every game's own decision cutoff (kickoff - 24h, earliest is
-    # 2022-09-10T17:00Z), so the leakage guard never blocks it here.
     captured_at = "2022-09-09T12:00:00Z"
 
     enriched = enrich_with_player_features(
@@ -301,13 +285,8 @@ def test_injury_observed_at_falls_back_to_the_snapshot_capture_instant() -> None
         injury_snapshot_captured_at=captured_at,
     )
 
-    # Team B (away) never files a report in any week: every row falls back
-    # to the snapshot capture instant instead of staying null.
     assert (enriched["away_injury_observed_at"] == pd.Timestamp(captured_at)).all()
-    # Team A (home), week 1: also no revision on record yet -- same fallback.
     assert enriched.loc[0, "home_injury_observed_at"] == pd.Timestamp(captured_at)
-    # Team A (home), week 2: a real revision IS visible -- unaffected by the
-    # fallback, byte-identical to the pre-ENG-23 behaviour.
     assert enriched.loc[1, "home_injury_observed_at"] == pd.Timestamp("2022-09-16T12:00:00Z")
 
 
@@ -321,8 +300,6 @@ def test_injury_observed_at_fallback_omitted_reproduces_the_previous_null_behavi
 
 
 def test_injury_observed_at_fallback_never_fires_after_its_own_decision_cutoff() -> None:
-    # After every game's kickoff in this fixture (latest is 2022-10-02T17:00Z)
-    # -- the fallback must never claim an as-of it cannot prove.
     future_capture = "2022-10-05T00:00:00Z"
 
     enriched = enrich_with_player_features(
@@ -337,13 +314,8 @@ def test_injury_observed_at_fallback_never_fires_after_its_own_decision_cutoff()
 
     assert enriched["away_injury_observed_at"].isna().all()
     assert pd.isna(enriched.loc[0, "home_injury_observed_at"])
-    # The one row with a REAL visible revision is untouched by any of this.
     assert enriched.loc[1, "home_injury_observed_at"] == pd.Timestamp("2022-09-16T12:00:00Z")
 
-
-# ---------------------------------------------------------------------------
-# lineage: market_line / model_input:player_injuries prefer the frame columns
-# ---------------------------------------------------------------------------
 
 PREDICTION_TIMESTAMP = "2026-09-03T14:32:53+00:00"
 FEATURE_BUILD = "2026-09-03T14:31:38+00:00"
@@ -417,8 +389,6 @@ def test_lineage_prefers_frame_level_observed_at_over_the_manifest_fallback() ->
     assert market.lineage.source_captured_at == market_captured
     assert market.lineage.effective_timestamp == market_captured
     assert market.lineage.effective_timestamp_basis == "source_capture"
-    # source_snapshot (WHICH snapshot) is untouched -- the metadata's
-    # manifest names none, so it is still the digest fallback.
     assert market.lineage.source_snapshot == f"feature_table:sha256:{'a' * 64}"
     assert market.lineage.unknown_source_reason == BASE_SNAPSHOT_UNRECORDED
 
@@ -427,8 +397,6 @@ def test_lineage_prefers_frame_level_observed_at_over_the_manifest_fallback() ->
     assert injuries.lineage.source_captured_at == injury_captured
     assert injuries.lineage.effective_timestamp == injury_captured
     assert injuries.lineage.effective_timestamp_basis == "source_capture"
-    # source_snapshot is still the real manifest snapshot -- only
-    # captured_at/effective_timestamp moved to the tighter frame value.
     assert injuries.lineage.source_snapshot == PLAYER_SNAPSHOT
 
     assert validate_card_lineage(lineage) == LINEAGE_CHECKS
@@ -452,15 +420,8 @@ def test_lineage_legacy_frame_without_the_new_columns_is_unaffected() -> None:
     assert injuries.lineage.effective_timestamp_basis == "source_capture"
 
 
-# ---------------------------------------------------------------------------
-# Leakage regression: an observed-at after the prediction timestamp fails
-# closed. Not a new check -- proof that the new columns actually trip the
-# existing ones (prediction_safety.market_timing, lineage_effective_timestamp).
-# ---------------------------------------------------------------------------
-
-
 def test_lineage_effective_timestamp_check_fails_when_injury_observed_at_leaks() -> None:
-    leaking_instant = "2026-09-04T00:00:00+00:00"  # after PREDICTION_TIMESTAMP
+    leaking_instant = "2026-09-04T00:00:00+00:00"
     forecast = _forecast(
         home_injury_observed_at=[leaking_instant, pd.NaT],
         away_injury_observed_at=[pd.NaT, pd.NaT],
@@ -483,10 +444,6 @@ def test_market_timing_check_passes_then_fails_on_a_future_dated_observation(
     predictions, _ = score_week(model_frame, season=2020, week=1, min_train_games=80)
     predictions = predictions.copy()
     predictions["kickoff"] = pd.Timestamp("2026-09-14T17:00:00+00:00")
-    # A real prospective card has no outcome yet -- model_frame's synthetic
-    # home_cover/result/ats_margin (built for backtest scoring) would
-    # otherwise trip the unrelated outcome_embargo check before market_timing
-    # is ever reached.
     for column in ("home_cover", "result", "ats_margin"):
         predictions[column] = np.nan
     created_at = pd.Timestamp("2026-09-10T12:00:00+00:00")
@@ -500,13 +457,6 @@ def test_market_timing_check_passes_then_fails_on_a_future_dated_observation(
     leaking[MARKET_OBSERVED_AT_COLUMN] = pd.Timestamp("2026-09-14T18:00:00+00:00")
     with pytest.raises(PredictionSafetyError, match="market_timing"):
         validate_prediction_card(leaking, min_edge=0.02, prospective=True, created_at=created_at)
-
-
-# ---------------------------------------------------------------------------
-# players.py contract guard: the new keyword-only parameter cannot corrupt an
-# unrelated, already-covered contract check (tests/test_players.py's own
-# ``test_player_contract_guards`` pattern, plus the new kwarg alongside it).
-# ---------------------------------------------------------------------------
 
 
 def test_enrich_with_player_features_still_rejects_bad_arguments_with_the_new_kwarg() -> None:

@@ -158,8 +158,6 @@ def screen(args):
     ratings = pd.read_parquet(args.ratings)
     base = regular_season_rows(pd.read_parquet(args.features)).reset_index(drop=True)
     base["gameday"] = pd.to_datetime(base.gameday)
-    # Conservative pregame boundary for reconstructed annual priors, not a
-    # fabricated historical quote timestamp. S-1 ended months earlier.
     base["prediction_timestamp"] = pd.to_datetime(base.gameday, utc=True) - pd.Timedelta(days=7)
     candidate = attach_unit_prior_features(base, ratings)
     oracle = oracle_features(base, ratings)
@@ -280,8 +278,6 @@ def inventory_main() -> None:
                 unit: sorted(summary) for unit, summary in data.get("units", {}).items()
             }
         inventory.append(entry)
-    # Fail closed if a producer adds a new layout: this audited fallback must
-    # not silently label a newly available coefficient table as missing.
     expected_keys = {"elapsed_seconds", "provenance", "units", "unmapped_positions"}
     expected_summary = {
         "min_plays_per_half",

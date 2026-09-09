@@ -149,8 +149,6 @@ def test_resume_reuses_only_completed_rows_and_retries_failures(tmp_path: Path) 
     cache = INGEST.load_resume_cache(tmp_path, cutoff_mode="pool_decision", mos_model="GFS")
     assert set(cache) == {"ok", "international"}
 
-    # In-place resume rewrites the same attempt log before appending retries,
-    # so failed/superseded rows cannot survive into the final parquet.
     INGEST.rewrite_resume_cache(tmp_path / "results.jsonl", cache)
     rewritten = [
         json.loads(line)

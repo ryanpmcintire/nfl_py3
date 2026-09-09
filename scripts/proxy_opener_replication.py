@@ -50,23 +50,15 @@ from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 
-# Frozen production configuration (artifacts/active_ats_model.json, read
-# 2026-08-19). Single arm -- no candidate, nothing swept.
 FEATURE_PROFILE: MarginFeatureProfile = "weak_stack"
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 
-# Main population range (docs/proxy_opener_replication.md).
 MAIN_SEASON_START = 2009
 MAIN_SEASON_END = 2019
 
-# Calibration overlap range: the only two seasons where both a purchased
-# Tuesday-opener archive and an SBR Open exist together.
 CALIBRATION_SEASONS = (2020, 2021)
 
-# Project's standing opener-bootstrap seed (docs/opener_evaluation.md,
-# scripts/surface_profile_opener_eval.py, scripts/ridge_alpha_promotion_eval.py)
-# -- reused, not a fresh choice. Task-specified sample count.
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260817
 
@@ -442,12 +434,12 @@ def main() -> None:
             else None
         ),
     }
-    write_stamped_artifact(metadata, out_dir / "summary.json")  # ENG-38
+    write_stamped_artifact(metadata, out_dir / "summary.json")
     main_result["scored_frame"].to_parquet(out_dir / "main_scored.parquet")
-    stamp_sidecar(out_dir / "main_scored.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "main_scored.parquet")
     if calibration_result is not None:
         calibration_result["paired_frame"].to_parquet(out_dir / "calibration_paired.parquet")
-        stamp_sidecar(out_dir / "calibration_paired.parquet")  # ENG-38
+        stamp_sidecar(out_dir / "calibration_paired.parquet")
 
     print(f"\nWrote {out_dir}")
 

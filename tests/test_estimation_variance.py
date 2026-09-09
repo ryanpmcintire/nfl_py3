@@ -49,11 +49,6 @@ def _synthetic_frame(n: int, *, seed: int, noise: float = 0.0) -> pd.DataFrame:
     return pd.DataFrame({"x1": x1, "x2": x2, "target": target})
 
 
-# ---------------------------------------------------------------------------
-# bootstrap_row_indices
-# ---------------------------------------------------------------------------
-
-
 def test_bootstrap_row_indices_shape_and_range() -> None:
     indices = bootstrap_row_indices(25, n_boot=10, seed=1)
     assert indices.shape == (10, 25)
@@ -66,11 +61,6 @@ def test_bootstrap_row_indices_rejects_bad_inputs() -> None:
         bootstrap_row_indices(0, n_boot=5, seed=1)
     with pytest.raises(ValueError, match="n_boot must be at least 1"):
         bootstrap_row_indices(10, n_boot=0, seed=1)
-
-
-# ---------------------------------------------------------------------------
-# refit / point predictions
-# ---------------------------------------------------------------------------
 
 
 def test_refit_predicted_values_shape() -> None:
@@ -124,11 +114,6 @@ def test_refit_value_sd_and_bagged_values_shapes() -> None:
     assert np.all(sd >= 0.0)
 
 
-# ---------------------------------------------------------------------------
-# home_cover_probability_from_center pinned against margin._smoothed_probability
-# ---------------------------------------------------------------------------
-
-
 def test_home_cover_probability_matches_smoothed_probability() -> None:
     rng = np.random.default_rng(99)
     residuals = rng.normal(loc=0.6, scale=13.1, size=500)
@@ -144,11 +129,6 @@ def test_home_cover_probability_matches_smoothed_probability() -> None:
     np.testing.assert_allclose(batched, expected, atol=1e-12)
 
 
-# ---------------------------------------------------------------------------
-# shrink_predicted_margin
-# ---------------------------------------------------------------------------
-
-
 def test_shrink_fraction_bounds() -> None:
     spread = np.array([1.0, -2.0, 0.5])
     raw = np.array([3.0, 1.0, -0.5])
@@ -160,11 +140,6 @@ def test_shrink_fraction_bounds() -> None:
         shrink_predicted_margin(spread, raw, shrink_fraction=1.5)
     with pytest.raises(ValueError, match="shrink_fraction"):
         shrink_predicted_margin(spread, raw, shrink_fraction=-0.1)
-
-
-# ---------------------------------------------------------------------------
-# naive_block_bootstrap_interval pinned against paired_feature_comparisons
-# ---------------------------------------------------------------------------
 
 
 def _paired_predictions_frame(n_games: int, *, seed: int) -> pd.DataFrame:
@@ -213,11 +188,6 @@ def test_naive_interval_matches_paired_feature_comparisons() -> None:
     assert result.probability_positive == pytest.approx(
         float(reference_row["probability_positive"]), abs=0.03
     )
-
-
-# ---------------------------------------------------------------------------
-# refit_aware_paired_interval
-# ---------------------------------------------------------------------------
 
 
 def test_refit_aware_interval_with_zero_refit_variance_matches_naive_exactly() -> None:
@@ -282,16 +252,9 @@ def test_refit_aware_interval_requires_matching_draw_counts() -> None:
         refit_aware_paired_interval(actual, baseline, candidate, block_ids)
 
 
-# ---------------------------------------------------------------------------
-# f lever: picks_differ_fraction / mde80 / gate_by_disagreement
-# ---------------------------------------------------------------------------
-
-
 def test_picks_differ_fraction_matches_manual_count() -> None:
     baseline = np.array([0.6, 0.4, 0.5, 0.51])
     candidate = np.array([0.6, 0.6, 0.5, 0.49])
-    # game 0: both >=0.5 agree; game 1: baseline<0.5, candidate>=0.5 differ;
-    # game 2: both exactly 0.5, agree; game 3: baseline>=0.5, candidate<0.5 differ.
     assert picks_differ_fraction(baseline, candidate) == pytest.approx(0.5)
 
 
@@ -337,11 +300,6 @@ def test_paired_interval_is_frozen_dataclass_with_kind_tag() -> None:
     assert interval.block_count is None
     with pytest.raises(AttributeError):
         interval.estimate = 0.02  # type: ignore[misc]
-
-
-# ---------------------------------------------------------------------------
-# D4: the degeneracy guard
-# ---------------------------------------------------------------------------
 
 
 def test_distinct_block_resamples_counts_multisets_not_ordered_tuples() -> None:
@@ -444,11 +402,6 @@ def test_interval_at_the_floor_is_not_flagged_degenerate() -> None:
     assert interval.block_count == blocks
 
 
-# ---------------------------------------------------------------------------
-# D2: paired refits
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize("paired", [True, False])
 def test_paired_refits_match_original_dataframe_algorithm_exactly(paired: bool) -> None:
     """Preselecting numpy matrices must not change any bootstrap prediction."""
@@ -542,7 +495,7 @@ def test_paired_refits_fit_both_arms_on_the_same_resampled_rows() -> None:
     )
 
 
-@pytest.mark.full  # ENG-11: fits many models to measure refit variance
+@pytest.mark.full
 def test_unpaired_refits_overstate_the_refit_variance() -> None:
     """Refitting each arm on its OWN resample breaks the pairing and adds noise
     that would have cancelled, which inflates the interval in the opposite
@@ -578,11 +531,6 @@ def test_unpaired_refits_overstate_the_refit_variance() -> None:
         ).refit_fixed_games_sd
 
     assert spread(unpaired.candidate) > spread(paired.candidate)
-
-
-# ---------------------------------------------------------------------------
-# D2: the variance decomposition and the honest interval
-# ---------------------------------------------------------------------------
 
 
 def test_block_bootstrap_means_matches_the_explicit_loop_distributionally() -> None:
@@ -621,11 +569,6 @@ def test_block_bootstrap_means_matches_the_explicit_loop_distributionally() -> N
     )
 
 
-# ---------------------------------------------------------------------------
-# Separating the training effect from the training-by-game interaction
-# ---------------------------------------------------------------------------
-
-
 def test_refit_common_variance_recovers_a_planted_common_component() -> None:
     """The estimator must return Var(a) -- the part of the refit spread that is
     common across games -- and NOT Var(a) + Var(e), which is what both
@@ -640,8 +583,6 @@ def test_refit_common_variance_recovers_a_planted_common_component() -> None:
     components = refit_common_variance(common + interaction, splits=40, seed=3)
 
     assert components.common == pytest.approx(common_sd**2, rel=0.35)
-    # The fixed-games spread is Var(a) + Var(e)/n and here the interaction
-    # supplies 4x the common term -- adding it whole is the double count.
     assert components.fixed_games == pytest.approx(
         common_sd**2 + interaction_sd**2 / n_games, rel=0.25
     )
@@ -754,8 +695,6 @@ def test_refit_aware_interval_widens_by_the_derived_factor() -> None:
     honest_width = result.honest.upper - result.honest.lower
     assert honest_width > naive_width
     assert honest_width / naive_width == pytest.approx(decomposition.inflation_factor, rel=0.02)
-    # The estimate is the POINT fit's, unmoved by widening -- an interval
-    # routine may widen a number, never move it.
     assert result.honest.estimate == pytest.approx(result.naive.estimate)
 
 
@@ -765,11 +704,6 @@ def test_refit_aware_interval_requires_at_least_two_refit_draws() -> None:
         refit_aware_interval(
             actual, baseline[np.newaxis, :], candidate[np.newaxis, :], block_ids, samples=1_000
         )
-
-
-# ---------------------------------------------------------------------------
-# The cheap path: re-reading an already-recorded interval
-# ---------------------------------------------------------------------------
 
 
 def test_normal_helpers_round_trip() -> None:
@@ -793,7 +727,6 @@ def test_inflate_recorded_interval_agrees_from_interval_or_from_probability() ->
         implied.probability_positive, abs=0.02
     )
     assert from_interval.kind == "recorded_inflated"
-    # Widening lowers confidence in a positive estimate, and never moves it.
     assert from_interval.estimate == pytest.approx(0.537)
     assert from_interval.probability_positive < 0.8735
 

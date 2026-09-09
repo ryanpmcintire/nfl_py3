@@ -275,9 +275,6 @@ def resolve_current_reg_week(repo: Path, now: pd.Timestamp | None = None) -> tup
 
 
 def run_ingest(args: argparse.Namespace) -> Path:
-    # MKT-09: robots permission does not override NFL.com's systematic-
-    # retrieval terms. This tracked policy must be changed only after consent
-    # or a fresh terms review; fail before creating a directory or a request.
     require_acquisition("nfl_com_injuries")
     out_root = args.out
     out_root.mkdir(parents=True, exist_ok=True)
@@ -285,8 +282,6 @@ def run_ingest(args: argparse.Namespace) -> Path:
         snapshot = out_root / args.snapshot
         snapshot.mkdir(parents=True, exist_ok=True)
     elif args.fresh_snapshot:
-        # In-season capture: never resume into a prior directory, so each
-        # Wed/Thu/Fri revision is preserved as its own immutable snapshot.
         snapshot = out_root / run_timestamp()
         snapshot.mkdir(parents=True, exist_ok=True)
     else:
@@ -387,7 +382,7 @@ def run_ingest(args: argparse.Namespace) -> Path:
         frame = pd.DataFrame(columns=columns)
     table_path = snapshot / "injuries.parquet"
     frame.to_parquet(table_path, index=False)
-    stamp_sidecar(table_path)  # ENG-38
+    stamp_sidecar(table_path)
 
     ok_pages = [p for p in manifest_pages if p.get("http_status") == 200]
     failed_pages = [p for p in manifest_pages if p.get("http_status") != 200]
@@ -416,7 +411,7 @@ def run_ingest(args: argparse.Namespace) -> Path:
         },
         "generated_at_utc": utc_now(),
     }
-    write_stamped_artifact(manifest, snapshot / "manifest.json")  # ENG-38
+    write_stamped_artifact(manifest, snapshot / "manifest.json")
     print(f"snapshot: {snapshot} ({len(ok_pages)} ok, {len(failed_pages)} failed)")
     return snapshot
 
@@ -555,7 +550,7 @@ def agreement(snapshot: Path, players_root: Path, artifacts_root: Path) -> dict[
     }
     out_dir = artifacts_root / snapshot.name
     out_dir.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(result, out_dir / "agreement.json")  # ENG-38
+    write_stamped_artifact(result, out_dir / "agreement.json")
     print(json.dumps(result["coverage"], indent=2))
     print(json.dumps(result["status_comparison"]["confusion_top"], indent=2))
     return result

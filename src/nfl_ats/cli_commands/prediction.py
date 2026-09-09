@@ -200,33 +200,14 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
     Returns the metadata document and artifact directory the handler prints."""
 
     features = _load_features(request.features)
-    # ENG-09: refuse before fitting when the feature table this run would fit
-    # on carries an explicit version that contradicts the active model's own
-    # record of what it was fit on. legacy_unversioned (either side has no
-    # stamp yet) is a warning, not a refusal -- see nfl_ats.artifact_contracts.
     fit_compatibility = check_compatible(
         _active_model_for_compatibility(), _feature_table_manifest_for(request.features)
     )
     fit_compatibility.refuse_if_incompatible(action="fit a model on this feature table")
-    # MOD-18 lane S promotion (2026-09-07, docs/home_side_offset_promotion.md):
-    # the served market_residual point carries a walk-forward home-side offset
-    # by spread bucket, fitted from the archived out-of-time opener stream.
-    # The uncorrected read is scored too and kept beside the card so the
-    # paired challenger (home_side_offset_off_incumbent) records it verbatim.
     home_side = _served_home_side_offsets(features, request)
     center_offsets = home_side["center_offsets"] if home_side is not None else None
-    # Discrete push read (docs/discrete_push_read.md, 2026-09-08): the served
-    # push / three-way split comes from the mass-preserving lattice of prior
-    # games near the line; the pick-deciding two-way probability is untouched.
-    # The smooth split it replaces is kept in a sidecar as the paired record.
     discrete = _served_discrete_push_read(features, request)
     discrete_read_log: dict[str, ServedPushRead] = {}
-    # Key-line pick read (docs/key_line_pick_read.md, 2026-09-08): on games
-    # quoted exactly on 3 or 7 the pick-deciding two-way probability is read
-    # off the same lattice at the same served point (offset included). Both
-    # reads per game are kept in a sidecar as the paired record. The policy
-    # follows the reader: when scoring falls back to the smooth split, the
-    # smooth two-way read serves every game and the sidecar says why.
     key_line_log: dict[str, ServedKeyLineRead] = {}
 
     def _score(reader: DiscretePushReader | None) -> pd.DataFrame:
@@ -261,27 +242,15 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             feature_profile=request.feature_profile,
             ridge_alpha=request.ridge_alpha,
             probability_method=request.probability_method,
-            # The paired offset-off arm differs from the served card by the
-            # offset ALONE: it keeps the key-line pick read (at its own,
-            # uncorrected point) so the home_side_offset_off_incumbent
-            # ledger isolates one policy, never two at once.
             discrete_read=discrete.reader if discrete is not None else None,
             key_line_pick_read=key_line,
         )
         if home_side is not None
         else None
     )
-    # ENG-23: join the point-in-time odds capture's observation instant onto
-    # the forecast frame; never touches spread_line or which side is picked.
     predictions = attach_market_observed_at(
         predictions, market_raw_root=_data_root() / "market" / "raw"
     )
-    # The served decision line must be the POOL's line, and the pool quotes
-    # only half points (nfl_ats.prediction_safety.validate_pool_lines). A
-    # whole number here means the card was built against the schedule feed's
-    # spread_line instead -- a line nobody can play, on which the key-number
-    # pick read fires and a push probability is a live outcome. Fail closed
-    # before anything is written; historical evaluation never reaches here.
     validate_pool_lines(predictions)
     safety = validate_outcome_prediction_card(
         predictions,
@@ -295,9 +264,6 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         feature_rows=features.loc[
             features["season"].eq(request.season) & features["week"].eq(request.week)
         ],
-        # ENG-39 follow-up (2026-09-07): an all-zero injury block still fails
-        # unless the newest player snapshot proves the week's reports do not
-        # exist yet (Week 1 locks Monday; the first report lands Wednesday).
         empty_injury_block_reason=injury_reports_absent_reason(
             _data_root() / "players" / "raw", season=request.season, week=request.week
         ),
@@ -331,13 +297,7 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
         "prediction_safety": safety.to_dict(),
         "provenance": artifact_provenance(configuration, request.features),
     }
-    # ENG-09: this forecast's own schema/builder-version contract block,
-    # independent of the feature table's (stamped separately, at build time).
     metadata = stamp(KIND_FORECAST, metadata)
-    # ENG-21: top-level convenience mirror of the same dict artifact_provenance()
-    # already computed under "provenance" -- a reference, not a recomputation --
-    # so weekly-run's margin-predict step metadata carries the environment lock
-    # report without digging into provenance.
     metadata["environment"] = metadata["provenance"]["environment"]
     if home_side is not None and uncorrected is not None:
         metadata["home_side_offset"] = _home_side_offset_summary(
@@ -354,9 +314,6 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
             error=key_line_error,
         )
         metadata["key_line_pick_read"] = key_line_metadata_block(key_line_payload)
-    # ENG-16: every decision-bearing card field says where it came from, and
-    # the lineage audit is release-blocking -- a card that cannot answer that
-    # never reaches the artifact directory.
     card_lineage = build_card_lineage(
         predictions,
         metadata,
@@ -811,7 +768,6 @@ def orchestrate_predict(request: PredictRequest) -> PredictionArtifacts:
     Returns the metadata document and artifact directory the handler prints."""
 
     features = _load_features(request.features)
-    # ENG-09: see the identical comment in _cmd_margin_predict.
     fit_compatibility = check_compatible(
         _active_model_for_compatibility(), _feature_table_manifest_for(request.features)
     )
@@ -825,7 +781,6 @@ def orchestrate_predict(request: PredictRequest) -> PredictionArtifacts:
         min_train_games=request.min_train_games,
         feature_set=request.feature_set,
     )
-    # ENG-23: see the identical comment in orchestrate_margin_predict.
     predictions = attach_market_observed_at(
         predictions, market_raw_root=_data_root() / "market" / "raw"
     )
@@ -859,9 +814,7 @@ def orchestrate_predict(request: PredictRequest) -> PredictionArtifacts:
         "min_train_games": request.min_train_games,
     }
     metadata["provenance"] = artifact_provenance(configuration, request.features)
-    # ENG-09: this forecast's own schema/builder-version contract block.
     metadata = stamp(KIND_FORECAST, metadata)
-    # ENG-16: same lineage contract as margin-predict, on the direct card.
     card_lineage = build_card_lineage(
         predictions,
         metadata,
@@ -936,11 +889,6 @@ def register(
     margin_predict.add_argument(
         "--probability-method",
         choices=RESIDUAL_SMOOTHING_METHODS,
-        # PROMOTED DEFAULT (MOD-06, 2026-09-07, docs/gaussian_median_promotion.md):
-        # this is the SOLE production weekly-forecast entry point, so its
-        # default must match nfl_ats.outcomes.score_outcome_week's own
-        # promoted default -- pinned together by
-        # tests/test_probability_method_promotion.py.
         default="gaussian_median",
         help="how home_cover_probability is read off the out-of-time residual "
         "sample: 'ecdf' is the pre-2026-08-19 raw empirical CDF, 'gaussian' is "

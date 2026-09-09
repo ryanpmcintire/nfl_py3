@@ -15,7 +15,6 @@ from nfl_ats.data import DataContractError
 @pytest.fixture
 def sources():
     depth, rosters, snaps, injuries = _build_synthetic_sources()
-    # Exercise all three loss groups with actual player history and model inputs.
     defense = depth.gsis_id.str.endswith("WR2")
     depth.loc[defense, ["position", "position_group", "depth_rank"]] = ["CB", "secondary", 1]
     depth["decision_at"] = pd.to_datetime(depth.season.astype(str) + "-09-10T19:00:00Z", utc=True)
@@ -194,12 +193,9 @@ def test_end_to_end_late_injury_depth_snaps_and_outcomes_cannot_change_features(
     baseline = loss.attach_expected_lineup_loss_features(
         targets, panel=panel, injuries=injuries, scored_seasons=[2023]
     )
-    # Poison scored-season outcomes: neither booster nor calibration may use them.
     changed = panel.copy()
     changed.loc[changed.season.eq(2023), ["played", "started"]] = True
-    # Cached probabilities have no decision-time guarantee and must be ignored.
     changed["play_probability"] = 0.0
-    # Append revisions that would change every group if made visible.
     late_depth = changed.query("season == 2023 and week == 4").copy()
     late_depth["depth_observed_at"] = late_depth.decision_at + pd.Timedelta(seconds=1)
     late_depth["source_schema"] = "daily_dt"
@@ -222,7 +218,6 @@ def test_end_to_end_late_injury_depth_snaps_and_outcomes_cannot_change_features(
             baseline[f"home_expected_lineup_loss_{group}"].iloc[0]
             - baseline[f"away_expected_lineup_loss_{group}"].iloc[0]
         )
-    # Shared history helper must ignore own current-week snaps.
     poisoned_snaps = snaps.copy()
     mask = poisoned_snaps.season.eq(2023) & poisoned_snaps.week.eq(4)
     poisoned_snaps.loc[mask, ["offense_pct", "defense_pct"]] = 999.0

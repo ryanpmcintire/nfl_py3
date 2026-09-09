@@ -85,9 +85,6 @@ def fetch_season_penalty_types(season: int) -> pd.DataFrame:
     pbp["penalty"] = pd.to_numeric(pbp["penalty"], errors="coerce").fillna(0.0)
     flagged = pbp.loc[pbp["penalty"] == 1].copy()
     if flagged["penalty_type"].isna().any():
-        # MEASURED 2015/2023: every penalty==1 row carries a non-null
-        # penalty_type. Guard rather than silently drop if a future season
-        # ever violates that.
         flagged["penalty_type"] = flagged["penalty_type"].fillna("Unknown")
     flagged["penalty_yards"] = pd.to_numeric(flagged["penalty_yards"], errors="coerce").fillna(0.0)
     flagged["_on_home"] = (flagged["penalty_team"] == flagged["home_team"]).astype(int)

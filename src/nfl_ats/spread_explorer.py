@@ -65,11 +65,6 @@ from nfl_ats.margin import _three_way_probabilities
 from nfl_ats.mass_preserving_lattice import DiscretePushReader, residual_location
 from nfl_ats.outcomes import fit_margin_models_for_week
 
-#: The slider's range and granularity. 0.5-point steps cover both the
-#: half-point AND whole-point lines real NFL spreads actually use (roughly
-#: half of any given week's card sits on a whole number -- see the module
-#: docstring on why push is deliberately not modeled at those lines rather
-#: than the slider excluding them).
 SPREAD_EXPLORER_MIN_LINE = -20.0
 SPREAD_EXPLORER_MAX_LINE = 20.0
 SPREAD_EXPLORER_STEP = 0.5
@@ -223,8 +218,6 @@ def compute_spread_explorer_params(
         aligned = target_indexed.loc[group_ids]
         predicted = model.predict(aligned)
         centers = predicted["predicted_margin"].to_numpy(dtype=float)
-        # Served home-side offset (docs/home_side_offset_promotion.md): the
-        # card's centre is the refit centre plus the per-game offset it served.
         if center_offsets is not None:
             centers = centers + np.asarray(
                 [float(center_offsets.get(str(game_id), 0.0)) for game_id in group_ids],
@@ -235,9 +228,6 @@ def compute_spread_explorer_params(
         gaussian_check = smoothed_home_cover_probability(
             model.residuals, centers, spread, method=probability_method
         )
-        # Served key-line pick read (docs/key_line_pick_read.md): on a touched
-        # game the card's number is the lattice read, reproduced from the
-        # card's own record rather than the Gaussian formula.
         expected = apply_pick_overrides(gaussian_check, group_ids, pick_overrides)
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
         if not np.allclose(expected, supplied, rtol=0.0, atol=1e-9):
@@ -249,7 +239,6 @@ def compute_spread_explorer_params(
                 "with the published pick"
             )
 
-        # The legacy payload field is a location: the browser uses it as loc.
         mean = float(
             np.median(model.residuals)
             if probability_method == "gaussian_median"
@@ -273,20 +262,6 @@ def compute_spread_explorer_params(
                 key_line_pinned=bool(pick_overrides and game_id in pick_overrides),
             )
     return params
-
-
-# ---------------------------------------------------------------------------
-# The widget's own formula -- a pure Abramowitz-Stegun erf approximation,
-# NOT scipy. This is deliberately a re-implementation of what the embedded
-# browser JS computes (see ``public_board._SPREAD_EXPLORER_SCRIPT``), kept in
-# lock-step by ``tests/test_spread_explorer.py``. The point of this function
-# is the build-time consistency assertion in ``public_board.py``: proving the
-# EXACT formula shipped to the browser reproduces the published number, which
-# scipy's more precise implementation cannot demonstrate on its own (that
-# correctness -- that mean/std/center are the production ones -- is already
-# proven above, to floating-point precision, via scipy, inside
-# ``compute_spread_explorer_params``).
-# ---------------------------------------------------------------------------
 
 
 def _erf_abramowitz_stegun(x: float) -> float:
@@ -345,22 +320,9 @@ def spread_explorer_payload(
             "line": round(p.card_line, 3),
         }
         if p.key_line_pinned:
-            # The served number at the quoted line is the key-line lattice
-            # read (docs/key_line_pick_read.md); the widget shows it verbatim
-            # at offset zero and the Gaussian curve everywhere else.
             entry["pinned"] = round(p.card_home_cover_probability, 6)
         payload[game_id] = entry
     return payload
-
-
-# ---------------------------------------------------------------------------
-# Single-game distribution (for scripts/cover_odds.py) -- the FULL residual
-# sample, not just its mean/sd, so callers with no page-weight budget can
-# report an honest push probability via the SAME production discrete-
-# rounding function (``margin._three_way_probabilities``), not a number
-# invented from the Gaussian fit. See the module docstring's "Two call
-# shapes" paragraph.
-# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True)
@@ -380,8 +342,6 @@ class SpreadExplorerGameDistribution:
     card_line: float
     card_home_cover_probability: float
     card_probability_method: str
-    #: docs/key_line_pick_read.md: the card's number at its quoted line is
-    #: the served key-line lattice read, not the smooth formula.
     key_line_pinned: bool = False
 
 
@@ -460,8 +420,6 @@ def compute_spread_explorer_distribution(
             method=probability_method,  # type: ignore[arg-type]
         )[0]
     )
-    # Served key-line pick read (docs/key_line_pick_read.md): a touched
-    # game's card number is the lattice read, reproduced from the record.
     pinned = bool(pick_overrides and str(game_id) in pick_overrides)
     if pinned:
         check = float(apply_pick_overrides([check], [str(game_id)], pick_overrides)[0])
@@ -511,8 +469,6 @@ def spread_explorer_three_way(
         point = distribution.center + residual_location(
             distribution.residuals, distribution.card_probability_method
         )
-        # The distribution is the game's own (conditioned on the quoted line);
-        # only the settlement threshold moves with the hypothetical line.
         return discrete_read.three_way(
             float(line), point, conditioning_line=float(distribution.card_line)
         )

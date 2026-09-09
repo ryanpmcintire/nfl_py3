@@ -137,7 +137,7 @@ def sweep(predictions: pd.DataFrame, *, label: str) -> list[dict[str, Any]]:
 def main() -> None:
     completed = _load_completed()
     seasons = sorted(CLEAN_CORE_SEASONS)
-    half_a = tuple(seasons[0::2])  # alternate seasons -> both halves span the full era
+    half_a = tuple(seasons[0::2])
     half_b = tuple(seasons[1::2])
     print(f"Half A seasons: {half_a}", flush=True)
     print(f"Half B seasons: {half_b}", flush=True)

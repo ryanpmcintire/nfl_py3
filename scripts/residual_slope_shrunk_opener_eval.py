@@ -57,10 +57,7 @@ PREDECLARATION = common.REPO / "docs/residual_slope_shrunk.md"
 FAMILY = lane_r.FAMILY
 ARMS = ("R2", "R2b")
 INCUMBENT_SLOPE = lane_r.INCUMBENT_SLOPE
-#: The one bucket R2b serves the rescale in (lane L's diagnosis, post-hoc).
 RESTRICTED_BUCKET = "10.5+"
-#: A slope needs an intercept, a slope and a residual degree of freedom before
-#: its standard error means anything.
 MIN_SLOPE_ROWS = 4
 DISCOUNT = (
     "Post-hoc refit of a post-hoc mechanism on the mined archive S2/S3 and lane R were all "
@@ -83,11 +80,6 @@ ARM_WORDS = {
         "today"
     ),
 }
-
-
-# ---------------------------------------------------------------------------
-# The predeclared estimator
-# ---------------------------------------------------------------------------
 
 
 def slope_and_standard_error(x: np.ndarray, y: np.ndarray) -> tuple[float, float]:
@@ -173,8 +165,6 @@ def fit_shrunk(prior: pd.DataFrame, *, restricted: bool) -> ShrunkFit:
         games[bucket] = int(mask.sum())
         raw[bucket], errors[bucket] = slope_and_standard_error(x[mask], y[mask])
     if restricted:
-        # Lane R's own 100-game shrinkage, served only where lane L diagnosed
-        # the hole; every other bucket is exactly S3.
         betas = dict.fromkeys(BUCKETS, INCUMBENT_SLOPE)
         fraction = dict.fromkeys(BUCKETS, 0.0)
         count = games[RESTRICTED_BUCKET]
@@ -197,11 +187,6 @@ def finite_json(payload: object) -> object:
     if isinstance(payload, float) and not math.isfinite(payload):
         return None
     return payload
-
-
-# ---------------------------------------------------------------------------
-# Stages
-# ---------------------------------------------------------------------------
 
 
 def beta_column(betas: Mapping[str, float], lines: pd.Series) -> np.ndarray:
@@ -470,12 +455,6 @@ def week1(active: dict, archive_path: Path) -> None:
     print(json.dumps(finite_json(fitted), indent=2), flush=True)
 
 
-# ---------------------------------------------------------------------------
-# Record commands (written, never run: the shared registry is serialised by
-# the coordinator this session)
-# ---------------------------------------------------------------------------
-
-
 def plain_summary(arm: str, label: str, kind: str) -> str:
     return (
         f"{ARM_WORDS[arm]}. This row reports {lane_r.KIND_WORDS[kind]}, "
@@ -546,7 +525,6 @@ def main() -> None:
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     os.environ["NFL_ATS_ARTIFACTS_DIR"] = str(OUT)
-    # Never the live registry: this lane writes its record commands to a file.
     os.environ["NFL_ATS_REGISTRY_DIR"] = str(OUT / "registry")
     active = json.loads((common.REPO / "artifacts/active_ats_model.json").read_text())
     match = find_matching_opener_evaluation(common.REPO / "artifacts", active)

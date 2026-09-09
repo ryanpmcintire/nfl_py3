@@ -94,10 +94,6 @@ from nfl_ats.capture_freshness import (
 from nfl_ats.player_arrests_back_side_overlay import MAX_SNAPSHOT_AGE
 from nfl_ats.public_board import humanize_identifier
 
-#: The three card states. ``complete`` = every observed source inside budget.
-#: ``degraded`` = at least one source fell back to its documented fallback.
-#: ``blocked`` = at least one fail-closed source breached and the card must
-#: not be published.
 COMPLETE = "complete"
 DEGRADED = "degraded"
 BLOCKED = "blocked"
@@ -106,7 +102,6 @@ NOT_DUE = "not_due"
 NOT_CONFIGURED = "not_configured"
 SOURCE_STATES = (*STATES, NOT_DUE, NOT_CONFIGURED)
 
-#: Breach behaviours a source may declare. Only ``BLOCKED`` refuses a publish.
 BREACH_BEHAVIOURS = (DEGRADED, BLOCKED)
 
 _MINUTES_PER_WEEK = 7 * 24 * 60
@@ -120,8 +115,6 @@ _DAY_OFFSETS = {
     "sun": 6,
 }
 
-#: Where the module doc lives, quoted on the card so a degraded line is
-#: readable without reading this file.
 POLICY_DOC = "docs/source_freshness_policy.md"
 
 
@@ -189,22 +182,14 @@ class SourceFreshnessPolicy:
 
     source_id: str
     label: str
-    #: ``(day, "HH:MM", grace_minutes)`` copied from ``SCHEDULE``.
     schedule_jobs: tuple[tuple[str, str, int], ...]
-    #: Named ``SCHEDULE`` entries, so the cadence can be re-derived by hand.
     schedule_job_names: tuple[str, ...]
     location: SourceLocation
-    #: State when no snapshot exists at all.
     on_absent: str
-    #: State when the newest snapshot is older than the budget.
     on_stale: str
-    #: State when the newest snapshot is dated after the evaluation instant.
     on_future_dated: str
-    #: What the card does instead. Plain English; shown in the metadata block.
     fallback: str
-    #: The module that already implements this behaviour.
     enforced_by: str
-    #: Set only to tighten a derived budget to an already-enforced constant.
     budget_override_minutes: int | None = None
     override_reason: str = ""
 
@@ -277,8 +262,6 @@ def _policy(
     )
 
 
-#: The declarative table. Ordered as the card reads: market first, then the
-#: availability feeds, then context.
 SOURCE_FRESHNESS_POLICIES: dict[str, SourceFreshnessPolicy] = {
     policy.source_id: policy
     for policy in (
@@ -288,11 +271,6 @@ SOURCE_FRESHNESS_POLICIES: dict[str, SourceFreshnessPolicy] = {
             (("tue", "09:00", 180),),
             ("odds_tue_open",),
             SourceLocation("snapshot_dir", "data", "market/raw"),
-            # prediction_safety only WARNS on an absent market timestamp and
-            # the manual publish path has never required one, so absent/stale
-            # stay degraded. A quote dated after the decision instant already
-            # FAILS prediction_safety's market_timing check -- naming it
-            # blocked here changes nothing about what is permitted.
             on_absent=DEGRADED,
             on_stale=DEGRADED,
             on_future_dated=BLOCKED,
@@ -355,15 +333,6 @@ SOURCE_FRESHNESS_POLICIES: dict[str, SourceFreshnessPolicy] = {
             "snapshot (ENG-39, docs/injury_timestamp_fallback.md)",
             (("tue", "09:15", 120),),
             ("weekly_lock",),
-            # Documents where the feature build actually reads injuries from
-            # -- data/players/raw -- not the raw capture directory the
-            # "injuries_nflverse" row above watches (that row and this one
-            # answer different questions: "did a capture land" vs "did the
-            # snapshot production reads have a real revision timestamp for
-            # the season being served"). See
-            # player_snapshot_injury_timestamp_observation, the override this
-            # row is meant to be evaluated with; the generic snapshot-dir
-            # scan below is only the fallback when no override is supplied.
             SourceLocation("snapshot_dir", "data", "players/raw"),
             on_absent=DEGRADED,
             on_stale=DEGRADED,
@@ -477,9 +446,6 @@ SOURCE_FRESHNESS_POLICIES: dict[str, SourceFreshnessPolicy] = {
             (("tue", "07:00", 90),),
             ("player_arrests_tue",),
             SourceLocation("snapshot_dir", "data", "raw/player_arrests"),
-            # The ONLY source whose breach refuses a publish, and it already
-            # did before this module existed: card_view passes
-            # require_fresh=True and weekly-run step 7 is fatal.
             on_absent=BLOCKED,
             on_stale=BLOCKED,
             on_future_dated=BLOCKED,
@@ -650,7 +616,6 @@ def _evaluate_one(
     first_kickoff: datetime | None,
 ) -> SourceState:
     budget = policy.budget_minutes
-    # Never neutralize a future-dated observation or a fail-closed source.
     future = observation.observed_at is not None and _as_utc(observation.observed_at) > now
     if not policy.fail_closed and not future:
         if policy.source_id == "injuries_sportradar" and not os.environ.get("SPORTRADAR_API_KEY"):
@@ -773,11 +738,6 @@ def evaluate_sources(
     )
 
 
-# ---------------------------------------------------------------------------
-# On-disk observation (locators shared with ENG-03 -- see the module docstring)
-# ---------------------------------------------------------------------------
-
-
 def observe_from_disk(
     *,
     data_root: Path | None,
@@ -865,7 +825,7 @@ def player_snapshot_injury_timestamp_observation(
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
         snapshot_id = str(manifest.get("snapshot_id", player_snapshot_root.name))
         injuries = pd.read_parquet(injuries_path)
-    except Exception as error:  # report absent, never raise here
+    except Exception as error:
         return SourceObservation(
             source_id, None, f"could not read player snapshot {player_snapshot_root}: {error}"
         )

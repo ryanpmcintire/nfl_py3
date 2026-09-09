@@ -97,16 +97,8 @@ _DAY_INDEX = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun":
 _MINUTES_PER_WEEK = 7 * 24 * 60
 _STAMP_FORMAT = "%Y%m%dT%H%M%SZ"
 
-# Same pattern as scripts/capture_scheduler.SNAPSHOT_NAME, deliberately
-# duplicated rather than imported (see module docstring: no dependency on
-# scripts.capture_scheduler).
 _SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}Z)$")
 
-#: dedupe_dir -> a short human-readable source id, used only for display /
-#: JSON keys. Any dedupe_dir not listed here falls back to a slug of the path
-#: itself (see `_friendly_name`), so a newly added Job with a new dedupe_dir
-#: is never silently dropped from the report -- it just gets a less pretty name
-#: until this table is updated.
 FRIENDLY_NAMES: dict[str, str] = {
     "data/market/raw": "market_odds",
     "data/raw/nflcom_injuries": "nflcom_injuries",
@@ -120,9 +112,6 @@ FRIENDLY_NAMES: dict[str, str] = {
     "data/raw/public_betting_live": "public_betting",
 }
 
-#: dedupe_dir -> (relative file path under it, JSON field) for sources whose
-#: job overwrites one stable artifact in place instead of writing dated
-#: snapshot subdirectories -- see the module docstring's "Two locators" section.
 JSON_FIELD_LOCATORS: dict[str, tuple[str, str]] = {
     "artifacts/lineups": ("current/lineups.json", "generated_at"),
 }
@@ -165,7 +154,7 @@ class SourceFreshness:
     dedupe_dir: str
     enabled_job_count: int
     job_names: tuple[str, ...]
-    newest_artifact_at: str | None  # ISO 8601, UTC
+    newest_artifact_at: str | None
     age_minutes: float | None
     budget_minutes: float | None
     status: Status

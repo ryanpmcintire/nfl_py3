@@ -41,7 +41,6 @@ def test_incumbent_week_fixture_numeric_bytes_unchanged(model_frame: pd.DataFram
         feature_profile="base",
         probability_method="gaussian",
     )
-    # Captured from the existing model_frame fixture before MOD-06 source edits.
     assert hashlib.sha256(
         card.select_dtypes(include="number").to_numpy().tobytes()
     ).hexdigest() == ("daa3008c0f4289e62a80a7b78b6a3d22083cde1457b7187d79acad1a7c3bb0ca")

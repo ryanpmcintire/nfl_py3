@@ -116,9 +116,6 @@ def snapshot_from_root(root: Path) -> Snapshot:
 
 
 def latest_snapshot(raw_root: Path) -> Snapshot:
-    # data/raw also hosts named source directories (injury_news, officials, ...) whose
-    # own manifests must never be mistaken for a schedules snapshot, so a candidate
-    # must carry the snapshot payload itself, not just a manifest.json.
     candidates = sorted(
         path
         for path in raw_root.glob("*")

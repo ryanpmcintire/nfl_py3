@@ -34,12 +34,6 @@ def _load_script(name: str, filename: str):
 screen = _load_script("fluview_battery_screen_test", "fluview_battery_screen.py")
 
 
-# ---------------------------------------------------------------------------
-# cdc_epiweek: validated against real Delphi rows (docs/fluview_battery.md
-# section 3's own worked example), not hand-picked week numbers.
-# ---------------------------------------------------------------------------
-
-
 def test_cdc_epiweek_matches_delphi_validated_example() -> None:
     """``docs/fluview_battery.md`` / the module docstring cites a live-checked
     row: ``ca`` epiweek 201840 has ``release_date`` 2018-10-12 (a Friday), 6
@@ -62,17 +56,8 @@ def test_cdc_epiweek_handles_53_week_years() -> None:
 
     assert screen.cdc_epiweek(pd.Timestamp("2020-12-31")) == 202053
     assert screen.cdc_epiweek(pd.Timestamp("2021-01-01")) == 202053
-    # The ordinary (non-53-week) year boundary: Sat 2019-12-28 is the last
-    # day of week 52 of 2019; the very next day, Sun 2019-12-29, already
-    # starts week 1 of 2020 (that week has >=4 days in the new year).
     assert screen.cdc_epiweek(pd.Timestamp("2019-12-28")) == 201952
     assert screen.cdc_epiweek(pd.Timestamp("2019-12-29")) == 202001
-
-
-# ---------------------------------------------------------------------------
-# Point-in-time-safety canary: a later-arriving revision must never be
-# visible to a decision cutoff strictly before its own release_date.
-# ---------------------------------------------------------------------------
 
 
 def test_checkpoint_table_never_lets_a_later_revision_leak_before_its_release_date() -> None:
@@ -123,10 +108,6 @@ def test_checkpoint_table_carries_forward_newest_known_epiweek_not_latest_revisi
     checkpoints = screen.build_checkpoint_tables(raw)
     checkpoint = checkpoints["zz"]
 
-    # As of 2018-03-01, the freshest KNOWN epiweek is still 201802 (week 2's
-    # ili=2.0) even though a late, stale re-issue of week 1 (ili=1.5) arrived
-    # more recently -- a late revision of an already-superseded old week must
-    # not overwrite the newer week's own as-of reading.
     looked_up = screen.asof_lookup(checkpoint, pd.Series([pd.Timestamp("2018-03-01")]))
     assert looked_up.loc[0, "known_epiweek"] == 201802
     assert looked_up.loc[0, "known_ili"] == 2.0
@@ -155,18 +136,11 @@ def test_checkpoint_table_drops_rows_with_null_release_date_measured_ny_gap() ->
     assert checkpoints["ny"].empty
     assert list(checkpoints["ny"].columns) == ["release_date", "known_epiweek", "known_ili"]
 
-    # Routed through the actual production entry point (``attach_asof_ili``),
-    # which is what guards an empty/all-null-release_date checkpoint from
-    # ever reaching ``asof_lookup``'s ``merge_asof`` at all -- calling
-    # ``merge_asof`` directly against a genuinely empty right frame is not
-    # itself a safe operation (a dtype-only empty frame can raise), so the
-    # production code must short-circuit before that point, not rely on
-    # ``merge_asof`` to fail safe.
     games = pd.DataFrame(
         {
             "home_state": ["ny"],
             "away_state": ["zz"],
-            "cutoff_date": [pd.Timestamp("2026-01-01")],  # far-future cutoff
+            "cutoff_date": [pd.Timestamp("2026-01-01")],
         }
     )
     scored = screen.attach_asof_ili(games, checkpoints)
@@ -200,7 +174,7 @@ def test_attach_asof_ili_end_to_end_never_leaks_a_future_revision() -> None:
         {
             "home_state": ["az"],
             "away_state": ["ca"],
-            "cutoff_date": [pd.Timestamp("2018-05-17")],  # one day before the late revision
+            "cutoff_date": [pd.Timestamp("2018-05-17")],
         }
     )
     scored = screen.attach_asof_ili(games, checkpoints)
@@ -212,12 +186,6 @@ def test_attach_asof_ili_end_to_end_never_leaks_a_future_revision() -> None:
     scored_after = screen.attach_asof_ili(games_after, checkpoints)
     assert scored_after.loc[0, "home_ili"] == 99.0
     assert scored_after.loc[0, "away_ili"] == 88.0
-
-
-# ---------------------------------------------------------------------------
-# Missing-data handling: a missing AS-OF value must poison exclusion, never
-# be silently defaulted to "not elevated" and left inside a scored subset.
-# ---------------------------------------------------------------------------
 
 
 def test_attach_elevated_flags_marks_missing_rather_than_defaulting_silently() -> None:
@@ -244,8 +212,6 @@ def test_attach_elevated_flags_marks_missing_rather_than_defaulting_silently() -
     assert list(scored["home_elevated"]) == [True, False, False]
     assert list(scored["away_elevated"]) == [False, False, False]
 
-    # A state with no frozen threshold at all (below the 10-observation
-    # floor, section 3) must also count as missing, not as "never elevated".
     df2 = pd.DataFrame(
         {"home_ili": [10.0], "away_ili": [10.0], "home_state": ["zz"], "away_state": ["az"]}
     )
@@ -268,8 +234,6 @@ def test_compute_state_thresholds_ignores_missing_values_and_requires_floor() ->
     thresholds = screen.compute_state_thresholds(panel)
     assert "az" in thresholds
     assert "zz" not in thresholds, "a state below the 10-observation floor must get no threshold"
-    # The threshold must be computed on the 10 non-missing values only
-    # (dropna before quantile), not on all 12 rows including the two NaNs.
     assert thresholds["az"] == pd.Series(range(10)).quantile(0.90)
 
 

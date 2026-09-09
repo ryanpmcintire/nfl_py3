@@ -49,17 +49,14 @@ MIN_TRAIN_GAMES = 50
 SEASON, WEEK = 2026, 2
 FEATURE_PROFILE = "player_injuries"
 
-# A Tue..Mon NFL week: Tuesday 2026-09-15 through Monday 2026-09-21, in UTC
-# (September is EDT, UTC-4). Mirrors tests/test_pick_refresh.py's own anchors
-# so the two files agree on what a "week" looks like.
-TNF_KICKOFF = pd.Timestamp("2026-09-18T00:15:00+00:00")  # Thu 8:15pm ET
-SUN_EARLY_KICKOFF = pd.Timestamp("2026-09-20T17:00:00+00:00")  # Sun 1:00pm ET
-SUN_LATE_KICKOFF = pd.Timestamp("2026-09-20T20:25:00+00:00")  # Sun 4:25pm ET
-SNF_KICKOFF = pd.Timestamp("2026-09-21T00:20:00+00:00")  # Sun 8:20pm ET
-MNF_KICKOFF = pd.Timestamp("2026-09-22T00:15:00+00:00")  # Mon 8:15pm ET
-SUNDAY_LOCK = pd.Timestamp("2026-09-20T20:00:00+00:00")  # Sun 4:00pm ET
+TNF_KICKOFF = pd.Timestamp("2026-09-18T00:15:00+00:00")
+SUN_EARLY_KICKOFF = pd.Timestamp("2026-09-20T17:00:00+00:00")
+SUN_LATE_KICKOFF = pd.Timestamp("2026-09-20T20:25:00+00:00")
+SNF_KICKOFF = pd.Timestamp("2026-09-21T00:20:00+00:00")
+MNF_KICKOFF = pd.Timestamp("2026-09-22T00:15:00+00:00")
+SUNDAY_LOCK = pd.Timestamp("2026-09-20T20:00:00+00:00")
 
-NOW = pd.Timestamp("2026-09-20T16:00:00+00:00")  # Sun noon ET, before every deadline
+NOW = pd.Timestamp("2026-09-20T16:00:00+00:00")
 
 POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
 
@@ -97,11 +94,6 @@ GAMES: list[dict[str, Any]] = [
 INJURY_DIFF_DRIVER = "diff_injury_offense_unavailability"
 
 
-# ---------------------------------------------------------------------------
-# Fixture builders
-# ---------------------------------------------------------------------------
-
-
 def _feature_table(target_injury_diff: dict[str, float]) -> pd.DataFrame:
     """Training history plus this week's four unplayed games.
 
@@ -132,13 +124,8 @@ def _feature_table(target_injury_diff: dict[str, float]) -> pd.DataFrame:
             "game_type": "REG",
         }
     )
-    # Every feature except the driver is held flat, so the fitted ridge is a
-    # one-variable model and the direction of the injury effect is
-    # unambiguous: more home unavailability -> a worse home margin.
     for column in FEATURE_SETS[f"full_{FEATURE_PROFILE}"]:
         frame[column] = 0.0
-    # The one driver column: a clean sweep across the range a real inactives
-    # increment moves (a full-time offensive player is 1.0/11 = 0.0909).
     driver = np.linspace(-0.25, 0.25, rows)
     frame[INJURY_DIFF_DRIVER] = driver
     for metric in PLAYER_INJURY_STATE_METRICS:
@@ -147,8 +134,6 @@ def _feature_table(target_injury_diff: dict[str, float]) -> pd.DataFrame:
     frame["home_injury_offense_unavailability"] = np.clip(driver, 0.0, None)
     frame["away_injury_offense_unavailability"] = np.clip(-driver, 0.0, None)
     frame["spread_line"] = 0.0
-    # Deterministic residual spread (sd ~2.1 points) so the gaussian
-    # probability method returns something smooth rather than saturating.
     frame["ats_margin"] = -60.0 * driver + 3.0 * np.sin(index)
     frame["result"] = frame["spread_line"] + frame["ats_margin"]
     frame["home_cover"] = (frame["ats_margin"] > 0).astype(float)
@@ -428,11 +413,6 @@ def env(tmp_path: Path) -> tuple[Path, Path, Path]:
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
     _write_active_manifest(artifacts_root)
-    # Every target game sits just far enough onto the AWAY side of 0.5 that a
-    # full-time away-team inactive crosses it and a 1%-share one does not --
-    # the exact pair the "flips only when the probability crosses 0.5" test
-    # needs. The value is read off the fixture's own fitted response, not
-    # tuned against any real data.
     features = _feature_table({game["game_id"]: -0.01 for game in GAMES})
     features_path = tmp_path / "features.parquet"
     atomic_parquet(features, features_path)
@@ -464,18 +444,10 @@ def _rows(
     )
 
 
-# ---------------------------------------------------------------------------
-# Deadline arithmetic: SNF/MNF are structurally excluded, the 4:25 slot is not
-# ---------------------------------------------------------------------------
-
-
 def test_structural_exclusion_matches_the_measured_slot_table() -> None:
     """docs/inactives_channel.md Section 2's measured playability, in code."""
 
     assert not structurally_excluded(SUN_EARLY_KICKOFF, SUN_EARLY_KICKOFF)
-    # The 4:25 ET slot: deadline is the 4:00 ET lock, EARLIER than kickoff, but
-    # T-90 (2:55 ET) still precedes it -- the naive "deadline < kickoff" test
-    # would wrongly exclude this slot.
     assert SUNDAY_LOCK < SUN_LATE_KICKOFF
     assert not structurally_excluded(SUN_LATE_KICKOFF, SUNDAY_LOCK)
     assert structurally_excluded(SNF_KICKOFF, SUNDAY_LOCK)
@@ -484,11 +456,6 @@ def test_structural_exclusion_matches_the_measured_slot_table() -> None:
 
 def test_inactives_lead_is_the_reported_ninety_minute_convention() -> None:
     assert INACTIVES_LEAD_MINUTES == 90
-
-
-# ---------------------------------------------------------------------------
-# Snapshot selection: in-window, out-of-window, anti-backdating
-# ---------------------------------------------------------------------------
 
 
 def test_only_the_snapshot_captured_before_the_deadline_is_selected(tmp_path: Path) -> None:
@@ -510,9 +477,7 @@ def test_only_the_snapshot_captured_before_the_deadline_is_selected(tmp_path: Pa
         "20260920T153000Z",
         "20260920T190000Z",
     ]
-    chosen = newest_snapshot_before(
-        snapshots, SUN_EARLY_KICKOFF, season=SEASON, week=WEEK
-    )  # deadline == the 1:00pm ET kickoff
+    chosen = newest_snapshot_before(snapshots, SUN_EARLY_KICKOFF, season=SEASON, week=WEEK)
     assert chosen is not None
     assert chosen.snapshot_id == "20260920T153000Z"
 
@@ -530,7 +495,6 @@ def test_a_snapshot_captured_after_kickoff_never_applies(tmp_path: Path) -> None
     )
     snapshots = load_inactives_snapshots(data_root)
     assert newest_snapshot_before(snapshots, SUN_EARLY_KICKOFF, season=SEASON, week=WEEK) is None
-    # A capture at exactly the deadline is also refused (strict inequality).
     _write_inactives_snapshot(
         data_root,
         snapshot_id="20260920T170000Z",
@@ -602,11 +566,6 @@ def test_stale_and_future_dated_snapshots_are_not_available_at_decision_time(
     )
 
 
-# ---------------------------------------------------------------------------
-# The P(plays) = 0 override, through production's own aggregation
-# ---------------------------------------------------------------------------
-
-
 def test_out_is_already_credited_so_the_increment_is_zero(tmp_path: Path) -> None:
     """A player the report already ruled Out adds NOTHING -- no double-count.
 
@@ -665,7 +624,6 @@ def test_out_is_already_credited_so_the_increment_is_zero(tmp_path: Path) -> Non
         surprise, context, season=SEASON, week=WEEK, team="BBB"
     )
     assert listed == 1
-    # production's own arithmetic: severity 1.0 x offense share 1.0 / 11
     assert increments["injury_offense_unavailability"] == pytest.approx(1.0 / 11.0)
     assert increments["injury_skill_unavailability"] == pytest.approx(1.0 / 6.0)
 
@@ -730,11 +688,6 @@ def test_apply_increments_moves_only_the_named_game(tmp_path: Path) -> None:
         adjusted.loc[untouched].reset_index(drop=True),
         features.loc[untouched].reset_index(drop=True),
     )
-
-
-# ---------------------------------------------------------------------------
-# The full pass
-# ---------------------------------------------------------------------------
 
 
 def test_no_snapshot_store_leaves_every_game_on_the_tuesday_card(
@@ -970,13 +923,7 @@ def test_recording_is_opt_in_and_writes_its_own_ledger(env: tuple[Path, Path, Pa
     assert recorded["recorded"] == len(GAMES)
     ledger = pd.read_parquet(artifacts_root / "prospective" / "inactives_refresh_decisions.parquet")
     assert list(ledger.columns) == list(INACTIVES_REFRESH_OVERLAY_COLUMNS)
-    # The played pick ledger is never touched by this overlay.
     assert not (artifacts_root / "prospective" / "pick_revisions.parquet").is_file()
-
-
-# ---------------------------------------------------------------------------
-# Registration
-# ---------------------------------------------------------------------------
 
 
 def _repo_artifacts_root() -> Path:
@@ -998,7 +945,6 @@ def test_challenger_fingerprint_is_stable() -> None:
 
     entry = find_challenger(_repo_artifacts_root(), CHALLENGER_ID)
     assert config_fingerprint(entry["model"]) == entry["config_fingerprint"]
-    # Stable across repeated digests of an equivalent (10 vs 10.0) config.
     equivalent = dict(entry["model"])
     equivalent["ridge_alpha"] = float(equivalent["ridge_alpha"])
     equivalent["min_train_games"] = int(equivalent["min_train_games"])
@@ -1012,7 +958,6 @@ def test_registration_does_not_claim_the_publish_recording_path() -> None:
 
     entry = find_challenger(_repo_artifacts_root(), CHALLENGER_ID)
     command = str(entry["weekly_recording_command"])
-    # The exact string tests/test_cli.py keys off (read, tests/test_cli.py:667).
     assert "nfl-ats publish-predictions --record-decisions" not in command
     assert "refresh-picks" in command
 

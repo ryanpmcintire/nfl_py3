@@ -55,8 +55,8 @@ def test_release_cutoff_and_older_revision():
     base = games()
     enriched = attach_fluview_away_asof_features(base, fluview_raw=raw())
     pd.testing.assert_frame_equal(enriched[base.columns], base, check_exact=True)
-    assert enriched[COLUMN].iloc[0] == 1.0  # same Tuesday release unavailable
-    assert enriched[COLUMN].iloc[1] == 3.0  # old epiweek revision cannot overwrite newer week
+    assert enriched[COLUMN].iloc[0] == 1.0
+    assert enriched[COLUMN].iloc[1] == 3.0
     assert np.isnan(enriched[COLUMN].iloc[2])
 
 

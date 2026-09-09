@@ -48,7 +48,6 @@ DEFAULT_SLEEP_SECONDS = 1.0
 BASE_MARKETS = ("spreads", "totals")
 H2H_MARKET = "h2h"
 
-# (label, day offset from the week's anchor Sunday, local Eastern wall time, with h2h)
 DECISION_TIMES: tuple[tuple[str, int, time, bool], ...] = (
     ("tue_open", -5, time(9, 0), True),
     ("thu_pre_tnf", -3, time(18, 0), False),

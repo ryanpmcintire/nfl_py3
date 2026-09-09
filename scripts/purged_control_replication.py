@@ -50,7 +50,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
-import purged_validate as pv  # scripts/purged_validate.py -- reused by import, not modified
+import purged_validate as pv
 from scipy import stats
 
 from nfl_ats.cfb_benchmark import CFB_BENCHMARK_MIN_TRAIN_GAMES, CFB_BENCHMARK_RIDGE_ALPHA
@@ -68,18 +68,10 @@ SCRATCH = Path(
     r"\c8c5fbdd-027f-438d-b992-979e83a91c2e\scratchpad\purged_control"
 )
 
-#: The exact two magnitudes ``scripts/purged_validate.py::main`` tests.
 MAGNITUDES: tuple[float, ...] = (0.513, 0.53)
 
-#: n_blocks=40 is what the recorded ``positive_control()`` calls use.
 N_BLOCKS = 40
 
-#: Independent seeds per magnitude. 42 -- the recorded control's own seed --
-#: is listed first so its position in the fresh distribution is directly
-#: readable rather than re-derived. Deliberately NOT shared between
-#: magnitudes: each (magnitude, seed) pair below draws its own
-#: ``inject_synthetic_signal`` generator, unlike the recorded script where
-#: both magnitudes reused seed 42's single generator.
 SEEDS: tuple[int, ...] = (42, *range(1, 20))
 
 
@@ -210,12 +202,9 @@ def main() -> None:
 
     table = pd.DataFrame(rows)
     table.to_csv(SCRATCH / "per_seed_raw.csv", index=False)
-    stamp_sidecar(SCRATCH / "per_seed_raw.csv")  # ENG-38
+    stamp_sidecar(SCRATCH / "per_seed_raw.csv")
     with (SCRATCH / "per_seed_raw.json").open("w", encoding="utf-8") as handle:
         json.dump(rows, handle, indent=2, default=str)
-    # ENG-38: rows is a list, not a dict -- write_stamped_artifact requires a
-    # dict payload, so this list-shaped file is stamped via a sidecar instead
-    # of changing its top-level JSON shape.
     stamp_sidecar(SCRATCH / "per_seed_raw.json")
 
     by_magnitude: dict[str, Any] = {}
@@ -239,7 +228,7 @@ def main() -> None:
         "magnitudes": list(MAGNITUDES),
         "by_magnitude": by_magnitude,
     }
-    write_stamped_artifact(summary, SCRATCH / "summary.json")  # ENG-38
+    write_stamped_artifact(summary, SCRATCH / "summary.json")
     print(json.dumps(summary, indent=2, default=str))
     print(f"\nwrote {SCRATCH / 'summary.json'}", flush=True)
 

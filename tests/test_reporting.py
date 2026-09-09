@@ -4,9 +4,6 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-
-# Reuse the synthetic historical-backfill store builders from the clv test
-# module so both suites exercise the same on-disk snapshot contract.
 from test_clv import _event, _spread_book, _store_snapshot
 
 from nfl_ats.estimation_variance import BootstrapDegeneracyError, BootstrapDegeneracyWarning
@@ -116,8 +113,6 @@ def test_block_bootstrap_intervals_flags_a_degenerate_block_count() -> None:
         "a 4-block interval must be flagged; leaving it unflagged is the D4 defect"
     )
 
-    # Same games, same estimates -- only the blocking choice differs. Week
-    # blocking gives 24 blocks and is not flagged.
     week_blocked = block_bootstrap_intervals(predictions, samples=50, block="week", seed=7)
     assert week_blocked["blocks"].eq(24).all()
     assert not week_blocked["degenerate_blocks"].any()
@@ -133,11 +128,6 @@ def test_block_bootstrap_intervals_flags_a_degenerate_block_count() -> None:
             seed=7,
             on_degenerate="raise",
         )
-
-
-# ---------------------------------------------------------------------------
-# Optional CLV columns: season_scorecard against a market-capture archive
-# ---------------------------------------------------------------------------
 
 
 def _clv_predictions() -> pd.DataFrame:
@@ -227,7 +217,6 @@ def test_season_scorecard_marks_clv_unavailable_without_capture_root(
     assert scorecard["clv_status"].eq(CLV_STATUS_CAPTURE_UNAVAILABLE).all()
     assert scorecard["clv_points"].isna().all()
     assert scorecard["clv_games"].eq(0).all()
-    # Same marker when a root is supplied but the directory does not exist.
     missing_root = season_scorecard(predictions, market_capture_root=Path("Z:/no/such/dir"))
     assert missing_root["clv_status"].eq(CLV_STATUS_CAPTURE_UNAVAILABLE).all()
 

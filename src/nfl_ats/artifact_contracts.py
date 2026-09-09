@@ -45,7 +45,6 @@ from typing import Any
 
 from nfl_ats.features import BUILDER_VERSION as FEATURES_BUILDER_VERSION
 
-#: Top-level key a stamped artifact's contract block lives under.
 CONTRACT_KEY = "artifact_contract"
 
 KIND_FEATURE_TABLE = "feature_table"
@@ -55,34 +54,13 @@ KIND_DECISION_LEDGER = "decision_ledger"
 KIND_PICK_REVISION_LEDGER = "pick_revision_ledger"
 KIND_LOCKDAY_PACKAGE = "lockday_package"
 
-#: Builder-version sources for kinds that do not already own a module
-#: constant of their own. ``feature_table`` reuses
-#: ``nfl_ats.features.BUILDER_VERSION`` because that module owns the base
-#: feature-table build path every other family enriches; the kinds below
-#: have no single existing owner, so this module is that owner, bumped here
-#: (and only here) when this contract layer's own construction rules change
-#: for that kind.
 FORECAST_BUILDER_VERSION = "v1"
 CARD_BUILDER_VERSION = "v1"
 DECISION_LEDGER_BUILDER_VERSION = "v1"
 PICK_REVISION_LEDGER_BUILDER_VERSION = "v1"
 LOCKDAY_PACKAGE_BUILDER_VERSION = "v1"
 
-# ---------------------------------------------------------------------------
-# Ledger required-column lists.
-#
-# Read 2026-09-04 directly from the source of truth -- copied, not imported,
-# because nfl_ats.clv and nfl_ats.pick_refresh both import
-# nfl_ats.prediction_safety (for validate_three_way_split), and
-# prediction_safety imports THIS module for CompatibilityReport: an eager
-# top-level `from nfl_ats.clv import PAPER_DECISION_COLUMNS` here would close
-# that loop into a real circular import. tests/test_artifact_contracts.py
-# imports both source tuples directly (tests sit outside the cycle) and
-# asserts they still equal the copies below, so drift is caught mechanically
-# rather than trusted to stay in sync by hand.
-# ---------------------------------------------------------------------------
 
-#: Mirrors ``nfl_ats.clv.PAPER_DECISION_COLUMNS``.
 _DECISION_LEDGER_COLUMNS: tuple[str, ...] = (
     "recorded_at_utc",
     "forecast_artifact",
@@ -119,7 +97,6 @@ _DECISION_LEDGER_COLUMNS: tuple[str, ...] = (
     "is_best_pick",
 )
 
-#: Mirrors ``nfl_ats.pick_refresh.PICK_REVISION_COLUMNS``.
 _PICK_REVISION_LEDGER_COLUMNS: tuple[str, ...] = (
     "revision_recorded_at_utc",
     "refresh_run_id",
@@ -285,10 +262,6 @@ class ArtifactContract:
     schema_version: int | None
     builder_version: str | None
     builder_module: str | None
-    #: True when the source artifact carries no ``artifact_contract`` block at
-    #: all -- i.e. it predates this module. Never conflated with "present but
-    #: reports null fields": those are two different failure shapes, and only
-    #: this one is a warning rather than a mismatch.
     legacy: bool
 
     def to_dict(self) -> dict[str, Any]:

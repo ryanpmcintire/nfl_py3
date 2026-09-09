@@ -57,16 +57,10 @@ from nfl_ats.market_data import NFL_TEAM_NAMES
 from nfl_ats.model_weak_spots import HomeCorrection, WeakSpots
 from nfl_ats.public_board import humanize_identifier
 
-#: Corpus schema version, stamped into every payload's provenance block.
 ASSISTANT_VERSION = 1
 
-#: Minimum query-token length admitted to scoring. Team codes are two
-#: characters (``NE``, ``LA``); single characters only add noise.
 _MIN_TOKEN_LENGTH = 2
 
-#: Filler words dropped before scoring (never before deflect matching,
-#: which runs on the raw query). Without these, ``the`` matches the
-#: ``panthers`` keyword and every ``pick`` question ties every game.
 STOPWORDS = frozenset(
     {
         "the",
@@ -127,9 +121,6 @@ class GlossaryEntry:
     definition: str
 
 
-#: Evergreen definitions only -- no number, no record, no claim that can
-#: go stale. (A stale number here would need the findings-page curation
-#: contract; plain football vocabulary does not.)
 GLOSSARY: tuple[GlossaryEntry, ...] = (
     GlossaryEntry(
         "ATS",
@@ -189,9 +180,6 @@ GLOSSARY: tuple[GlossaryEntry, ...] = (
     ),
 )
 
-#: Extra lookup words per glossary term. Kept minimal on purpose: every
-#: alias is a word that can only mean its term here ("line" is NOT an
-#: alias of anything — it belongs to movement questions).
 GLOSSARY_ALIASES: dict[str, tuple[str, ...]] = {
     "vig": ("juice", "odds"),
     "ATS": ("against the spread",),
@@ -208,8 +196,6 @@ def _team_synonyms() -> dict[str, tuple[str, ...]]:
         if len(parts) > 1:
             aliases.add(" ".join(parts[:-1]).lower())
             aliases.add(parts[0].lower())
-        # "New York" is shared by two teams; keep it off both alias sets
-        # so it can never route a question to the wrong game.
         aliases.discard("new york")
         aliases.discard("new")
         aliases.discard("los angeles")
@@ -220,10 +206,6 @@ def _team_synonyms() -> dict[str, tuple[str, ...]]:
 
 _TEAM_SYNONYMS = _team_synonyms()
 
-#: Canonical topic -> query aliases. Rendered into every page from this
-#: one constant, so the inline-JS port can never drift from the tested
-#: Python matcher (pinned by
-#: ``tests/test_board_assistant.py::test_rendered_synonyms_match_python``).
 SYNONYMS: dict[str, tuple[str, ...]] = {
     "best_pick": (
         "best pick",
@@ -321,8 +303,6 @@ def _team_hits(tokens: frozenset[str]) -> tuple[str, ...]:
             if all(word in tokens for word in alias.split()):
                 hits.append(code)
                 break
-    # Sorted, not detection order: the JS port reads the alphabetically
-    # sorted teams table, and multi-team answers must come out identical.
     return tuple(sorted(hits))
 
 
@@ -375,8 +355,6 @@ _DOG_WORDS = frozenset({"underdog", "underdogs", "dog", "dogs", "upset", "upsets
 _FAVORITE_WORDS = frozenset(
     {"favorite", "favorites", "favourite", "favourites", "fav", "favs", "chalk"}
 )
-#: With "home" and a dog/favourite word, one of these routes to the
-#: weak-spots home split rather than the weekly underdog list.
 _HOME_SPLIT_CONTEXT_WORDS = frozenset(
     {
         "model",
@@ -491,13 +469,6 @@ _WEATHER_WORDS = frozenset(
         "forecast",
     }
 )
-#: ENG-34: "were the sources complete this week" and siblings -- routes to
-#: the single "sources" corpus entry :func:`build_knowledge_for_board`
-#: appends from ``board.source_policy`` (ENG-14's card state). No golden
-#: question collides: the two existing "...-blocked?" accuracy questions
-#: are caught by ``_RECORD_WORDS`` earlier in :func:`answer`'s dispatch, and
-#: the one "...what's your source?" lineup question is caught by the
-#: earlier ``parsed.teams`` block.
 _SOURCE_POLICY_WORDS = frozenset(
     {
         "source",
@@ -511,13 +482,6 @@ _SOURCE_POLICY_WORDS = frozenset(
         "blocked",
     }
 )
-#: UI-20(g) extension (2026-09-05): "what's the tiebreaker" and siblings --
-#: routes to the single "tiebreaker" corpus entry :func:`build_knowledge_for_board`
-#: appends from ``board.tiebreaker``, read straight off ``nfl_ats.publishing``'s
-#: persisted ``tiebreaker.json``. Checked in :func:`answer` AFTER the
-#: deflect set, which no longer catches bare "tiebreaker" (see
-#: :func:`_deflect_rule_sets`'s comment) but still catches an UNRELATED
-#: "guess the exact/final score" question about a regular game.
 _TIEBREAKER_WORDS = frozenset({"tiebreaker", "tiebreak"})
 
 
@@ -568,8 +532,6 @@ def _parse(question: str, knowledge: Mapping[str, Any]) -> _Parsed:
     ordered = _tokens(question)
     tokens = frozenset(ordered)
     teams = _team_hits(tokens)
-    # Uppercase codes disambiguate WAS-the-team from was-the-verb: only
-    # exact all-caps tokens count here, so lowercase prose never matches.
     raw_codes = set(re.findall(r"\b[A-Z]{2,3}\b", question))
     valid = {code for code in _TEAM_SYNONYMS if code.upper() in raw_codes}
     teams = tuple(sorted(set(teams) | set(valid)))
@@ -583,7 +545,6 @@ def _parse(question: str, knowledge: Mapping[str, Any]) -> _Parsed:
                 days.append(day)
     term = _glossary_term_match(ordered, knowledge.get("glossary_terms", ()))
     number: int | None = None
-    # Digit scan ignores the token length floor: "top 5" must read 5.
     raw_words = "".join(char.lower() if char.isalnum() else " " for char in question).split()
     for token in raw_words:
         if token.isdigit():
@@ -639,8 +600,6 @@ def _deflect_entries(season: int, week: int) -> tuple[_Entry, ...]:
         ),
         anchor="index.html",
     )
-    # Rule i fires entries[i]: teaser/buy-points ride the wager entry,
-    # over-under rides score, fade-the-public rides ownership.
     return (
         wager,
         wager,
@@ -689,11 +648,6 @@ def _deflect_rule_sets() -> tuple[tuple[frozenset[str], ...], ...]:
             frozenset({"public", "popular", "everyone", "squares", "sharps"}),
             frozenset({"picking", "picks", "betting", "money", "side", "consensus"}),
         ),
-        # "tiebreaker" itself is a real intent now (UI-20(g) extension,
-        # 2026-09-05: it answers from the published nfl_ats.publishing
-        # tiebreaker.json, never a wagering deflection) -- see
-        # _TIEBREAKER_WORDS below. "exact score"/"final score" alone (a
-        # random game's score, not the pool's tiebreaker) stay deflected.
         (frozenset({"exact score", "final score"}),),
         (
             frozenset({"score", "scoreline"}),
@@ -794,8 +748,6 @@ def build_knowledge(
             anchor="model.html#weak-spots-h",
         )
     )
-    # Home favourite / home underdog split of the same opener evaluation
-    # (2026-09-07): "how does the model do with home underdogs".
     entries.append(
         _Entry(
             entry_id="weak_spots_home_split",
@@ -812,11 +764,6 @@ def build_knowledge(
         )
     )
 
-    # The refresh entry sits ahead of the games so a change-question
-    # with a team name in it still routes to the refresh diff; pure
-    # team questions score zero here and fall through to their game.
-    # It is emitted ONLY when a refresh actually ran — pre-lock there
-    # is nothing to report and clock questions stay with timing.
     if refresh_lines:
         entries.append(
             _Entry(
@@ -925,15 +872,6 @@ def build_knowledge(
         )
 
     for name, description, effect_text, probability_positive in watching_items:
-        # ``description`` is already plain English (a curated blurb, a
-        # recorded plain_summary, or the "Plain-English summary pending"
-        # placeholder -- see board_site_content._watching_lead_view); this
-        # must never hand-build its own sentence out of the raw jargon
-        # fields the way an earlier version of this loop did (2026-09-05
-        # fix, dashboard humanising follow-up to lane AH's audit -- that
-        # jargon reaches a reader the moment the assistant answers a
-        # question about this lead, even though it never appears in the
-        # page's static HTML).
         entries.append(
             _Entry(
                 entry_id=f"watching:{name}",
@@ -1079,7 +1017,6 @@ def build_knowledge(
             ),
         },
     }
-    # Deterministic key order so the golden test is stable.
     reloaded: dict[str, Any] = json.loads(json.dumps(payload, sort_keys=True))
     return reloaded
 
@@ -1166,34 +1103,17 @@ def build_knowledge_for_board(
     )
     knowledge["week_timeline"] = board.week_timeline.text
     knowledge["week_timeline_deadlines"] = dict(board.week_timeline.deadlines)
-    # ENG-04/UI-18: the lineups.json-derived block feeding the QB-starter,
-    # availability, team-injury, and backup-QB intents in answer(). Built
-    # from the SAME per-game TeamLineup objects board_content.py already
-    # attached to each dive -- this never opens an artifact itself. Absent
-    # entirely (empty dict) whenever no game carries both a home and away
-    # lineup, which the lineup intents already treat as "not published".
     lineups_by_game = {
         dive.game_id: (dive.home_lineup, dive.away_lineup)
         for dive in board.dives
         if dive.home_lineup is not None and dive.away_lineup is not None
     }
     knowledge["lineups"] = _build_lineup_knowledge(lineups_by_game, reference=board.generated_at)
-    # ENG-34: the single "sources" entry answering "were the sources
-    # complete this week" -- generic retrieval (_entry_answer/entry()), no
-    # dedicated intent handler needed, same pattern as "record"/"policy".
     knowledge["entries"] = [
         *knowledge["entries"],
         {"id": "sources", "body": _source_policy_body(board.source_policy), "anchor": page},
-        # UI-20(g) extension: the single "tiebreaker" entry, verbatim off
-        # board.tiebreaker (itself read straight from nfl_ats.publishing's
-        # persisted tiebreaker.json -- see nfl_ats.board_content
-        # ._load_tiebreaker_view). Never recomputed here.
         {"id": "tiebreaker", "body": _tiebreaker_body(board.tiebreaker), "anchor": page},
     ]
-    # Re-sort after the merge -- build_knowledge already returns its payload
-    # sorted (top-level AND every nested level) via the same round trip, and
-    # the golden determinism test checks that property on the WHOLE corpus,
-    # so the merged "lineups" block needs the identical treatment.
     resorted: dict[str, Any] = json.loads(json.dumps(knowledge, sort_keys=True))
     return resorted
 
@@ -1307,9 +1227,6 @@ def _ordinal(n: int) -> str:
     return f"{n}{suffix}"
 
 
-#: Liking verbs only count as Best-Pick phrasing beside a pick/game
-#: noun -- "teams like KC" is answered by the teams branch long before
-#: this is reached, and "what's the line like" must not route here.
 _LIKE_NOUNS = frozenset({"pick", "picks", "game", "games", "call", "team", "teams"})
 
 
@@ -1535,18 +1452,12 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
                 text=resolved.text,
                 anchors=(*resolved.anchors, "model.html"),
             )
-    # "what is the home-side push" / "why does the model lean home on big
-    # spreads" -- the served home-side correction (2026-09-08). Ahead of the
-    # home/away split so a push question with a side word still lands here.
     if ("home" in tokens and tokens & {"push", "adjustment", "correction", "lean", "leans"}) or (
         {"forecast", "season"} <= tokens and tokens & _CHANGE_WORDS and not parsed.teams
     ):
         resolved = _entry_answer(knowledge, "weak_spots_home_push")
         if resolved is not None:
             return resolved
-    # "how does the model do with home underdogs" -- the home/away split of
-    # the weak-spots table. Needs a model/spread/record word alongside
-    # "home" + a side word so "which home dogs are we taking" still lists.
     if (
         "home" in tokens
         and tokens & (_DOG_WORDS | _FAVORITE_WORDS)
@@ -1562,19 +1473,11 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
         if resolved is not None:
             return resolved
 
-    # ENG-04/UI-18: "is <player> playing/available" -- checked ahead of the
-    # team block since a resolved player name is a stronger, more specific
-    # signal than any team-code match, and player names never collide with
-    # this module's existing team/topic vocabulary. Only fires beside an
-    # availability/status cue word (see AVAILABILITY_WORDS), and returns
-    # None (falls through) whenever no lineup artifact is published or no
-    # player name resolves, so every other route is unaffected.
     lineup_knowledge = knowledge.get("lineups")
     player_resolved = _lineup_player_availability_answer(tokens, lineup_knowledge)
     if player_resolved is not None:
         return player_resolved
 
-    # Glossary: an explained term, or a bare term on its own.
     if parsed.term is not None and (
         tokens & _EXPLAIN_WORDS or len(tokens) == 1 or "what is" in query.lower()
     ):
@@ -1611,7 +1514,6 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
             topic="week_timeline", text=text, anchors=("index.html#week-timeline-h",)
         )
 
-    # A deadline request takes precedence over team schedule/refresh answers.
     if (
         "deadline" in tokens
         or (
@@ -1640,7 +1542,6 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
             topic="timing", text=str(knowledge["lock_summary"]), anchors=("index.html",)
         )
 
-    # Team questions: confidence, schedule, refresh, or the pick itself.
     if parsed.teams:
         lookup = _game_lookup(knowledge)
         if tokens & _CONFIDENCE_WORDS:
@@ -1688,12 +1589,6 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
                 ),
                 anchors=("index.html",),
             )
-        # ENG-04/UI-18: QB-starter and team-injury questions read ONLY the
-        # published lineups.json block (never guessing), applying the
-        # existing fail-closed forecast/lineup consistency rule -- see
-        # nfl_ats.board_assistant_lineups. Placed ahead of the generic
-        # team-pick blurb below so a team+QB or team+injury question gets
-        # the lineup-specific answer instead of the plain pick summary.
         if tokens & _LINEUP_QB_WORDS and not (tokens & _LINEUP_BACKUP_WORDS):
             qb_resolved = _lineup_qb_starter_answer(parsed.teams, lineup_knowledge)
             if qb_resolved is not None:
@@ -1724,9 +1619,6 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
                 anchors=tuple(str(lookup[game_id]["anchor"]) for game_id in game_ids),
             )
 
-    # Composed lists: rankings, dogs, favorites, day schedules. These
-    # run before the Best Pick so a list question with a liking verb
-    # ("which underdogs do you like") lists instead of nominating.
     if tokens & _RANK_WORDS:
         resolved = _rankings_answer(parsed, knowledge)
         if resolved is not None:
@@ -1735,29 +1627,18 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
         return _dog_favorite_answer(parsed, knowledge, "dogs", "Underdog")
     if tokens & _FAVORITE_WORDS:
         return _dog_favorite_answer(parsed, knowledge, "favorites", "Favorite")
-    # ENG-04/UI-18: "which games have a backup QB" -- a composed list over
-    # every published lineup entry, same fail-closed rule as the per-team
-    # QB question. No team code required, so this runs alongside the other
-    # composed-list intents rather than inside the `if parsed.teams:` block.
     if tokens & _LINEUP_BACKUP_WORDS and tokens & _LINEUP_QB_WORDS:
         return _lineup_backup_qb_games_answer(lineup_knowledge)
-    # Day schedules yield to change- and clock-questions ("what
-    # changed since Tuesday" is about the refresh, not the weekday).
     if parsed.days and not (
         tokens & _CHANGE_WORDS or tokens & {"when", "deadline", "lock", "locked", "locks"}
     ):
         return _days_answer(parsed, knowledge)
 
-    # Best Pick nomination ("lock" belongs here, not to clock
-    # questions: a when/deadline word keeps the query with timing).
     if _best_words(tokens) and not (tokens & {"when", "deadline"}):
         resolved = _entry_answer(knowledge, "best_pick")
         if resolved is not None:
             return resolved
 
-    # Scope answers run ahead of the record: a question naming wins,
-    # injuries, or weather is about board coverage, not the track
-    # record, even when it shares a word like "edge" or "win".
     scope = knowledge.get("scope", {})
     if tokens & _WINNERS_WORDS and "winners" in scope:
         return AssistantAnswer(
@@ -1771,7 +1652,6 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
         return AssistantAnswer(
             topic="scope:weather", text=str(scope["weather"]), anchors=("index.html",)
         )
-    # Single answers from named entries.
     if tokens & _RECORD_WORDS:
         resolved = _entry_answer(knowledge, "record")
         if resolved is not None:
@@ -1780,15 +1660,10 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
         resolved = _entry_answer(knowledge, "policy")
         if resolved is not None:
             return resolved
-    # ENG-34: "were the sources complete this week" -- the single "sources"
-    # entry build_knowledge_for_board appends from board.source_policy.
     if tokens & _SOURCE_POLICY_WORDS:
         resolved = _entry_answer(knowledge, "sources")
         if resolved is not None:
             return resolved
-    # UI-20(g) extension: "what's the tiebreaker" -- the single
-    # "tiebreaker" entry build_knowledge_for_board appends from
-    # board.tiebreaker.
     if tokens & _TIEBREAKER_WORDS:
         resolved = _entry_answer(knowledge, "tiebreaker")
         if resolved is not None:
@@ -1821,12 +1696,6 @@ def _js_string_array(items: tuple[str, ...], *, per_line: int = 8) -> str:
     return "[" + ",\n      ".join(lines) + "]"
 
 
-#: Intent vocabulary shared with the JS port, generated into the page
-#: so the two engines can never drift. Keys mirror the ``_X_WORDS``
-#: sets used by :func:`answer`. ``lineup_qb``/``lineup_backup``/
-#: ``lineup_availability`` (ENG-25) are the ``nfl_ats.board_assistant_lineups``
-#: word sets that gate the four ENG-04 lineup intents (``injury`` already
-#: covers team-injury questions -- see :data:`_INJURY_WORDS`).
 _INTENT_WORDS: dict[str, frozenset[str]] = {
     "explain": _EXPLAIN_WORDS,
     "confidence": _CONFIDENCE_WORDS,
@@ -2680,11 +2549,6 @@ def assistant_section(corpus: Mapping[str, Any]) -> str:
         ("History", "history.html"),
     ]
     links = " ".join(f'<a href="{escape(href)}">{escape(label)}</a>' for label, href in topics)
-    # ENG-05 accessibility contract: the golden-question suite's no-JS check
-    # requires the <noscript> fallback to SAY it needs JavaScript, not just
-    # list links -- the rest of the page (including its own picks table)
-    # already renders unconditionally, so only the assistant itself needs
-    # the callout.
     noscript_note = (
         "This assistant needs JavaScript to answer questions live -- the "
         "rest of this page (including its picks table) works without it. "

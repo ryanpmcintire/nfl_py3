@@ -134,8 +134,6 @@ def test_canonicalize_pbp_rejects_unknown_season_codes_when_widened() -> None:
     frame.loc[0, "season_type"] = "REGULAR"
     with pytest.raises(DataContractError, match="unrecognized season codes"):
         canonicalize_pbp(frame, season=2022, include_postseason=True)
-    # The default path keeps its historical, silent "== REG" comparison so the
-    # frozen regular-season contract cannot start failing on new source values.
     assert len(canonicalize_pbp(frame, season=2022)) == len(frame) - 1
 
 
@@ -149,7 +147,6 @@ def test_postseason_snapshot_reads_back_as_regular_season_only(tmp_path: Path) -
     assert _recorded_scope(reg_only.manifest_path) is False
     assert _recorded_scope(with_post.manifest_path) is True
 
-    # The invariant: what the feature builds see is identical either way.
     pd.testing.assert_frame_equal(load_pbp_snapshot(with_post), load_pbp_snapshot(reg_only))
     widened = load_pbp_snapshot(with_post, include_postseason=True)
     assert set(widened["season_type"]) == {"REG", "POST"}

@@ -132,25 +132,19 @@ SCRATCH_DIR = Path(
     r"\26042060-ffd8-45a7-b2e7-a9b30b87bd34\scratchpad\agent_pre2018"
 )
 
-# Active model config, read 2026-08-19 from the active model manifest.
 FEATURE_PROFILE = "weak_stack"
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 METHOD = "market_residual"
 
-START_SEASON = 2011  # nfl_ats.rotation.MIN_ELIGIBLE_START_SEASON
+START_SEASON = 2011
 END_SEASON = 2017
 
 BOOTSTRAP_SAMPLES = 20_000
-BOOTSTRAP_SEED = 20260819  # fixed, this screen's own date-stamped seed
+BOOTSTRAP_SEED = 20260819
 
-# Exact port of agent_errors/analyze_buckets.py's picked_team_off_bye flag:
-# our own team is off its bye when rest_diff (home_rest - away_rest) favours
-# the side we picked by at least this many days.
 OFF_BYE_REST_DIFF = 6
 
-# Exact port of close_grade_corroborate.py's spread_bin "7.5-10" bin:
-# strictly above 7.0, at or below 10.0.
 SPREAD_GAP_LOW = 7.0
 SPREAD_GAP_HIGH = 10.0
 

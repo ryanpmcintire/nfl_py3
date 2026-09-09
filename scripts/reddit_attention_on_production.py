@@ -82,7 +82,6 @@ BASELINE_PROFILE: MarginFeatureProfile = "weak_stack"
 REGRESSOR = "ridge"
 RIDGE_ALPHA = 10.0
 
-#: arm name -> (candidate profile, the one column that arm adds)
 CANDIDATE_ARMS: dict[str, tuple[MarginFeatureProfile, str]] = {
     "reddit_ratio_home": ("weak_stack_reddit_ratio_home", REDDIT_HOME_RATIO_ELEVATED_COLUMN),
     "reddit_spike_away": ("weak_stack_reddit_spike_away", REDDIT_AWAY_SPIKE_COLUMN),
@@ -91,15 +90,7 @@ CANDIDATE_ARMS: dict[str, tuple[MarginFeatureProfile, str]] = {
 DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_reddit.parquet"
 ROTATION_FAMILY = "reddit_attention_on_production"
 
-# Rotation-assigned window (docs/reddit_attention_on_production.md section 7),
-# read out of `nfl-ats rotation assign` and never hand-picked; overridable via
-# --seasons for the instrument checks, which run on the same window.
 DEFAULT_SEASONS = "2011-2013"
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_window(
@@ -340,11 +331,6 @@ def column_coverage(features: pd.DataFrame, seasons: tuple[int, ...]) -> dict[st
             "firing_rate_of_covered": float(values.mean()) if covered else float("nan"),
         }
     return out
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

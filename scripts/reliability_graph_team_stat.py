@@ -55,9 +55,6 @@ import reliability_map as relmap  # noqa: E402
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  # noqa: E402
 from nfl_ats.weak_signals import default_registry_path, load_registry  # noqa: E402
 
-#: Registry cells whose name does not simply prefix the family name. Each was
-#: read off the entry's own ``source`` artifact directory and description
-#: rather than guessed from the name.
 NAME_OVERRIDES: dict[str, str] = {
     "graph_team_stat_off_sack_rate_on_production": "off_sack_rate",
     "graph_def_ypp_on_production": "def_yards_per_play",

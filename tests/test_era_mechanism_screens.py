@@ -48,19 +48,14 @@ def screens() -> Any:
         pytest.skip(f"local data snapshot required to import the screens module: {error}")
 
 
-# ---------------------------------------------------------------------------
-# 1. imported flag builders reproduce the parent batteries' flags
-# ---------------------------------------------------------------------------
-
-
 def _bye_fixture() -> pd.DataFrame:
     gamedays = [
-        "2020-09-13",  # g1 openers, no prior game for anyone
-        "2020-09-20",  # g2
-        "2020-09-27",  # g3
-        "2020-10-04",  # g4
-        "2020-10-11",  # g5 BBB off a 28-day gap, AAA on 7 days
-        "2020-10-25",  # g6 CCC and BBB BOTH off long gaps
+        "2020-09-13",
+        "2020-09-20",
+        "2020-09-27",
+        "2020-10-04",
+        "2020-10-11",
+        "2020-10-25",
     ]
     return pd.DataFrame(
         {
@@ -81,7 +76,6 @@ def test_bye_base_flag_matches_the_battery_maps(screens: Any) -> None:
     home_pb, away_pb = screens.bye_battery.build_bye_maps(population)
     expected = home_pb.to_numpy(dtype=bool) & ~away_pb.to_numpy(dtype=bool)
     assert list(flag.to_numpy(dtype=bool)) == list(expected)
-    # Only g5 has the home side off a strict bye while the opponent is not.
     assert list(flag.to_numpy(dtype=bool)) == [False, False, False, False, True, False]
 
 
@@ -120,8 +114,6 @@ def test_post_mnf_flag_matches_the_primetime_battery(screens: Any, tmp_path: Pat
 
     frame, diagnostics = screens.build_post_mnf_frame(schedules)
 
-    # Eligible = rows with a strictly prior game this season: NE(g2), NE(g3),
-    # BUF(g4), KC(g4). Flagged = the two whose own prior game was a Monday.
     assert diagnostics["n_eligible_rows"] == 4
     assert diagnostics["n_flag"] == 2
     assert diagnostics["sign_convention"] == -1
@@ -147,11 +139,6 @@ def test_large_divergence_rows_use_the_batterys_threshold(screens: Any) -> None:
     assert list(rows["sagarin_side_home"]) == [False, True, True]
 
 
-# ---------------------------------------------------------------------------
-# 2. changepoint machinery: known answer
-# ---------------------------------------------------------------------------
-
-
 def test_changepoint_finds_a_planted_break(screens: Any) -> None:
     seasons = list(range(2009, 2026))
     series = np.array([0.0] * 8 + [5.0] * 9)
@@ -168,7 +155,6 @@ def test_changepoint_finds_a_planted_break(screens: Any) -> None:
 
 def test_changepoint_respects_the_minimum_segment_length(screens: Any) -> None:
     seasons = list(range(2009, 2026))
-    # The true jump is after the FIRST season, inside the 3-season minimum.
     series = np.array([9.0] + [0.0] * 16)
 
     summary = screens._changepoint_summary(series, seasons)
@@ -176,11 +162,6 @@ def test_changepoint_respects_the_minimum_segment_length(screens: Any) -> None:
     assert screens.era_profile.MIN_SEGMENT_SEASONS == 3
     assert summary["break_index"] >= 3
     assert summary["break_index"] <= len(seasons) - 3
-
-
-# ---------------------------------------------------------------------------
-# 3. coverage-matched population construction
-# ---------------------------------------------------------------------------
 
 
 def test_coverage_matching_keeps_exactly_the_seasons_at_or_above_threshold(
@@ -198,7 +179,6 @@ def test_coverage_matching_keeps_exactly_the_seasons_at_or_above_threshold(
     )
 
     assert era_seasons == [2010, 2011, 2012, 2013, 2014]
-    # 80.0 is at the threshold and is KEPT (>=, not >).
     assert kept == [2010, 2011, 2013, 2014]
     assert dropped == [2012]
 
@@ -214,16 +194,10 @@ def test_coverage_threshold_is_the_frozen_eighty_percent(screens: Any) -> None:
     assert screens.COVERAGE_MATCH_THRESHOLD_PCT == 80.0
 
 
-# ---------------------------------------------------------------------------
-# 4. leakage: the moderator reads only each team's season opener
-# ---------------------------------------------------------------------------
-
-
 def _plays_fixture(late_passer: str) -> pd.DataFrame:
     """One team whose first REG game is week 2, plus later-week plays."""
 
     rows = []
-    # Week 2 opener (week 1 postponed): P1 throws 3, P2 throws 1.
     for passer, count in (("P1", 3), ("P2", 1)):
         rows.extend(
             {
@@ -236,7 +210,6 @@ def _plays_fixture(late_passer: str) -> pd.DataFrame:
             }
             for _ in range(count)
         )
-    # Week 5: a different passer dominates. Must not affect the answer.
     rows.extend(
         {
             "season": 2020,
@@ -257,8 +230,6 @@ def test_opener_starter_reads_only_the_first_game(screens: Any) -> None:
 
     assert list(first["passer_player_id"]) == ["P1"]
     assert list(first["dropbacks"]) == [3]
-    # Perturbing every later week leaves the moderator input untouched: no
-    # game's own week can feed the moderator value it is scored against.
     assert list(second["passer_player_id"]) == ["P1"]
     assert first.equals(second)
 
@@ -277,16 +248,11 @@ def test_install_need_needs_an_immediately_prior_season(screens: Any) -> None:
         (int(row["season"]), row["team"]): row["install_need"] for _, row in moderator.iterrows()
     }
 
-    assert np.isnan(lookup[(2019, "AAA")])  # no observed prior season
+    assert np.isnan(lookup[(2019, "AAA")])
     assert lookup[(2020, "AAA")] is np.False_ or lookup[(2020, "AAA")] == 0.0
-    assert lookup[(2021, "AAA")] == 1.0  # opener QB changed X -> Y
+    assert lookup[(2021, "AAA")] == 1.0
     assert np.isnan(lookup[(2019, "BBB")])
-    assert np.isnan(lookup[(2021, "BBB")])  # 2020 missing: gap, not a prior season
-
-
-# ---------------------------------------------------------------------------
-# statistic arithmetic (the recorded number itself)
-# ---------------------------------------------------------------------------
+    assert np.isnan(lookup[(2021, "BBB")])
 
 
 def test_bye_contrast_statistic_arithmetic(screens: Any) -> None:
@@ -302,9 +268,7 @@ def test_bye_contrast_statistic_arithmetic(screens: Any) -> None:
 
     values = screens.bye_contrast_statistic(frame, frame["install_need"].to_numpy(dtype=bool))
 
-    # install-need arm: flagged cover 1.0, complement cover 1/3, slate share 1/4
     assert values["effect_install_need"] == pytest.approx((1.0 - 1.0 / 3.0) * 100.0 * 0.25)
-    # no-need arm: flagged cover 1.0, complement cover 1/3, slate share 1/4
     assert values["effect_no_need"] == pytest.approx((1.0 - 1.0 / 3.0) * 100.0 * 0.25)
     assert values["contrast_install_minus_no_need"] == pytest.approx(0.0)
 

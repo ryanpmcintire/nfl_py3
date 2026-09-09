@@ -291,10 +291,6 @@ def register(
     player_ingest.add_argument("--snap-start-season", type=int, default=2013)
     player_ingest.add_argument("--snap-end-season", type=int, default=current_year - 1)
     _add_include_postseason_arg(player_ingest)
-    # ENG-39: opt-in only. "drop" (default) reproduces the pre-ENG-39
-    # snapshot byte-for-byte; "week_proxy" tolerates nflverse's 2025 release
-    # dropping date_modified entirely by substituting a leakage-safe,
-    # kickoff-derived proxy timestamp (docs/injury_timestamp_fallback.md).
     player_ingest.add_argument(
         "--timestamp-fallback",
         choices=("drop", "week_proxy"),

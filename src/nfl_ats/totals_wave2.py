@@ -50,18 +50,6 @@ from nfl_ats.totals import (
     load_population as load_population_wave1,
 )
 
-#: The 24 columns this wave adds: ``{home,away}`` crossed with
-#: ``nfl_ats.constants.DRIVE_STATE_METRICS`` (12 entries) -- the walk-forward
-#: state version of every column ``build_pbp_team_game_metrics``
-#: (``src/nfl_ats/pbp.py``) derives from ``build_drive_table``. Frozen order:
-#: home metric, away metric, for each of the 12 metrics in
-#: ``DRIVE_STATE_METRICS``'s own declared order.
-#:
-#: Deliberately excluded (``docs/totals_model_wave2.md``, "Deliberately
-#: excluded"): ``{home,away}_pbp_drives`` (a drive-count column, not part of
-#: ``DRIVE_STATE_METRICS`` and not counted in this work package's frozen "24"),
-#: and every ``diff_*`` column (totals ride sums, not differences -- the same
-#: reason wave 1 excluded its own ``diff_*`` columns).
 WAVE2_DRIVE_FEATURES: tuple[str, ...] = tuple(
     f"{side}_{metric}" for metric in DRIVE_STATE_METRICS for side in ("home", "away")
 )
@@ -71,20 +59,12 @@ if len(WAVE2_DRIVE_FEATURES) != 24:
         f"WAVE2_DRIVE_FEATURES must freeze to exactly 24 columns, got {len(WAVE2_DRIVE_FEATURES)}"
     )
 
-#: The full wave-2 candidate allowlist: wave 1's 41 columns, unchanged and in
-#: their original order, plus the 24 drive columns above. Nothing outside
-#: this tuple enters the wave-2 design matrix.
 WAVE2_FEATURES: tuple[str, ...] = tuple(TOTALS_FEATURES) + WAVE2_DRIVE_FEATURES
 
 _TARGET = "total_residual"
 
-#: The frozen comparator operating point: wave 1's own already-chosen blend
-#: weight (``docs/totals_model.md`` Results, ``nfl_ats.tiebreaker.
-#: TOTALS_RESIDUAL_WEIGHT``). Wave 2 does not get to re-sweep wave 1's k.
 WAVE1_CHOSEN_K = 0.1
 
-#: The positive-control column: an arbitrary, explicit, pre-chosen member of
-#: ``WAVE2_DRIVE_FEATURES``, frozen before any outcome was computed.
 POSITIVE_CONTROL_COLUMN = "home_drive_points_per_drive"
 
 
@@ -121,9 +101,6 @@ def _feature_table_matches_schedules(
     schedule_required = required | {"home_score", "away_score"}
     if not schedule_required.issubset(schedules.columns):
         return False
-    # Include all schedule rows (played and upcoming) in the identity check:
-    # a stale table missing a current target must not look valid merely because
-    # its historical training rows happen to join.
     schedule_ids = schedules["game_id"].astype(str)
     if schedule_ids.duplicated().any() or set(feature_ids) != set(schedule_ids):
         return False

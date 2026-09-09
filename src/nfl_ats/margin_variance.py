@@ -62,15 +62,6 @@ from nfl_ats.margin import (
     make_margin_estimator,
 )
 
-# ---------------------------------------------------------------------------
-# Frozen configuration (see docs/margin_variance.md; fixed before the run)
-# ---------------------------------------------------------------------------
-
-# Pregame context believed to move margin dispersion: mismatch size,
-# expected scoring, pace, early-season sample thinness, and seasonal phase.
-# All are existing canonical CFB columns except abs_spread_line, which is
-# derived (|spread_line|) so the variance model sees mismatch magnitude
-# rather than home/away sign.
 CFB_VARIANCE_FEATURE_COLUMNS: tuple[str, ...] = (
     "abs_spread_line",
     "total_line",
@@ -82,8 +73,6 @@ CFB_VARIANCE_FEATURE_COLUMNS: tuple[str, ...] = (
     "week_cos",
 )
 
-# The per-game scale ratio is clipped to this band (symmetric in log space);
-# the pooled arm is the special case ratio = 1.
 VARIANCE_RATIO_FLOOR: float = 2.0 / 3.0
 VARIANCE_RATIO_CEILING: float = 1.5
 

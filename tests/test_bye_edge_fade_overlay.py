@@ -44,69 +44,19 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# BYETEAM's 2026 REG-season home/away sequence:
-#   week 1  (2026-09-10): home vs OPP1           -- season opener, no prior
-#                                                    game -> gap undefined,
-#                                                    never a bye.
-#   week 3  (2026-09-24, 14 days after week 1):
-#           at TWELVEHOST, home                  -- TWELVEHOST's own gap to
-#                                                    its week-1 game (also
-#                                                    2026-09-10) is 14 days
-#                                                    >= 12 -> TWELVEHOST is
-#                                                    the strict-bye team;
-#                                                    BYETEAM's own gap is
-#                                                    also 14 days (it too
-#                                                    skipped week 2), so this
-#                                                    game is a BOTH-OFF-BYE
-#                                                    case (never flipped).
-#   week 4 (2026-10-01, 7 days after week 3):
-#           at ELEVENHOST                        -- ELEVENHOST's gap to ITS
-#                                                    OWN prior game is
-#                                                    EXACTLY 11 days (below
-#                                                    the strict threshold) --
-#                                                    used for the 11-vs-12-day
-#                                                    boundary test.
-#   week 6 (2026-10-15, 14 days after week 4):
-#           at NEITHERHOST                       -- BYETEAM itself is off a
-#                                                    strict 14-day bye here,
-#                                                    but NEITHERHOST is NOT
-#                                                    (NEITHERHOST played every
-#                                                    week) -- the clean
-#                                                    single-sided flagged case.
-#
-# TWELVEHOST's own sequence: week 1 vs OPP2 (2026-09-10), week 3 vs BYETEAM
-#   (2026-09-24, exactly 14 days later -> strict bye).
-# ELEVENHOST's own sequence: week 1 vs OPP3 (2026-09-10), week 2 vs OPP4
-#   (2026-09-17), week 4 vs BYETEAM (2026-09-28 -- 11 days after week 2,
-#   BELOW the strict threshold).
-# NEITHERHOST plays every week (1, 4, 5, 6) with no gap >= 12 days, so it is
-#   never flagged.
-
 
 def _bye_schedule() -> pd.DataFrame:
     rows = [
-        # game_id, season, week, game_type, gameday, home_team, away_team
         ("2026_01_BYETEAM_OPP1", 2026, 1, "REG", "2026-09-10", "BYETEAM", "OPP1"),
         ("2026_01_TWELVEHOST_OPP2", 2026, 1, "REG", "2026-09-10", "TWELVEHOST", "OPP2"),
         ("2026_01_ELEVENHOST_OPP3", 2026, 1, "REG", "2026-09-10", "ELEVENHOST", "OPP3"),
         ("2026_01_NEITHERHOST_OPP5", 2026, 1, "REG", "2026-09-10", "NEITHERHOST", "OPP5"),
         ("2026_02_ELEVENHOST_OPP4", 2026, 2, "REG", "2026-09-17", "ELEVENHOST", "OPP4"),
-        # week 3: BYETEAM at TWELVEHOST, both off a 14-day strict bye.
         ("2026_03_TWELVEHOST_BYETEAM", 2026, 3, "REG", "2026-09-24", "TWELVEHOST", "BYETEAM"),
-        # week 4: BYETEAM at ELEVENHOST -- ELEVENHOST's own gap is 11 days
-        # (2026-09-17 -> 2026-09-28), below the strict threshold. BYETEAM's
-        # own gap here (2026-09-24 -> 2026-09-28) is only 4 days.
         ("2026_04_ELEVENHOST_BYETEAM", 2026, 4, "REG", "2026-09-28", "ELEVENHOST", "BYETEAM"),
         ("2026_04_NEITHERHOST_OPP6", 2026, 4, "REG", "2026-09-28", "NEITHERHOST", "OPP6"),
         ("2026_05_NEITHERHOST_OPP7", 2026, 5, "REG", "2026-10-05", "NEITHERHOST", "OPP7"),
-        # week 6: BYETEAM (14-day gap from week 4) at NEITHERHOST (played
-        # every week, no bye) -- the clean single-sided flagged case.
         ("2026_06_NEITHERHOST_BYETEAM", 2026, 6, "REG", "2026-10-15", "NEITHERHOST", "BYETEAM"),
-        # A POST-season game with the same flagged shape, for the REG-only gate.
         ("2026_20_POSTHOST_BYETEAM", 2026, 20, "POST", "2026-12-30", "POSTHOST", "BYETEAM"),
     ]
     return pd.DataFrame(
@@ -119,11 +69,11 @@ def _predictions() -> pd.DataFrame:
     return pd.DataFrame(
         {
             "game_id": [
-                "2026_03_TWELVEHOST_BYETEAM",  # both off bye -- never flip
-                "2026_04_ELEVENHOST_BYETEAM",  # 11-day gap -- not a bye -- no flip
-                "2026_06_NEITHERHOST_BYETEAM",  # single-sided flag, pick on bye side -- flip
-                "2026_20_POSTHOST_BYETEAM",  # same flagged shape, POST -- no flip
-                "2026_MISSING_GAME",  # no schedule row -- no flip
+                "2026_03_TWELVEHOST_BYETEAM",
+                "2026_04_ELEVENHOST_BYETEAM",
+                "2026_06_NEITHERHOST_BYETEAM",
+                "2026_20_POSTHOST_BYETEAM",
+                "2026_MISSING_GAME",
             ],
             "season": [2026, 2026, 2026, 2026, 2026],
             "week": [3, 4, 6, 20, 6],
@@ -132,32 +82,16 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["BYETEAM", "BYETEAM", "BYETEAM", "BYETEAM", "MISS_A"],
             "kickoff": ["2026-10-15T17:00:00+00:00"] * 5,
             "spread_line": [-3.0, 2.0, -1.5, -2.0, 1.0],
-            # G-both: both off bye -- flag never fires (XOR is False) -- no
-            #   flip regardless of the model's pick (home pick here).
-            # G-eleven: ELEVENHOST's own gap is 11 days, below the 12-day
-            #   strict threshold -- not flagged -- no flip (away pick here).
-            # G-flag: NEITHERHOST is not off bye, BYETEAM (away) IS off a
-            #   strict 14-day bye, and the model's pick is on BYETEAM (away,
-            #   home_cover_probability < 0.5) -- the bye-holding side --
-            #   should flip to home (NEITHERHOST).
-            # G-post: identical flagged shape to G-flag but POST season --
-            #   REG-only gate blocks it.
-            # G-missing: no schedule row at all -- treated as no signal.
             "home_cover_probability": [0.55, 0.35, 0.40, 0.60, 0.50],
         }
     )
 
 
-# ---------------------------------------------------------------------------
-# 1. bye_edge_flag_by_game: derived, structural (never outcome-based)
-# ---------------------------------------------------------------------------
-
-
 def test_flag_fires_for_a_strict_12_day_gap() -> None:
     flags = bye_edge_flag_by_game(_bye_schedule()).set_index("game_id")
     row = flags.loc["2026_06_NEITHERHOST_BYETEAM"]
-    assert bool(row["away_off_bye"]) is True  # BYETEAM, 14-day gap
-    assert bool(row["home_off_bye"]) is False  # NEITHERHOST, played every week
+    assert bool(row["away_off_bye"]) is True
+    assert bool(row["home_off_bye"]) is False
 
 
 def test_flag_does_not_fire_for_an_11_day_gap() -> None:
@@ -165,14 +99,14 @@ def test_flag_does_not_fire_for_an_11_day_gap() -> None:
 
     flags = bye_edge_flag_by_game(_bye_schedule()).set_index("game_id")
     row = flags.loc["2026_04_ELEVENHOST_BYETEAM"]
-    assert bool(row["home_off_bye"]) is False  # ELEVENHOST's own gap is 11 days
+    assert bool(row["home_off_bye"]) is False
 
 
 def test_flag_fires_for_both_teams_off_a_strict_bye_simultaneously() -> None:
     flags = bye_edge_flag_by_game(_bye_schedule()).set_index("game_id")
     row = flags.loc["2026_03_TWELVEHOST_BYETEAM"]
-    assert bool(row["home_off_bye"]) is True  # TWELVEHOST, 14-day gap
-    assert bool(row["away_off_bye"]) is True  # BYETEAM, 14-day gap
+    assert bool(row["home_off_bye"]) is True
+    assert bool(row["away_off_bye"]) is True
 
 
 def test_flag_is_false_for_a_teams_first_game_of_the_season() -> None:
@@ -235,15 +169,8 @@ def test_flag_is_leak_safe_across_the_season_boundary() -> None:
         baseline.loc[baseline["season"].le(2026)].reset_index(drop=True),
         check_exact=True,
     )
-    # The corrected (within-season) map: a 2027 season-opener must NOT
-    # inherit the 2026 finale's gap -- exactly the bug the fix removed.
     future_flags = changed.set_index("game_id")
     assert bool(future_flags.loc["2027_01_BYETEAM_OPP1", "away_off_bye"]) is False
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_bye_edge_fade_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_a_pick_on_the_strict_bye_holding_side() -> None:
@@ -290,7 +217,7 @@ def test_overlay_does_not_flip_when_the_pick_is_not_on_the_bye_side() -> None:
     predictions = _predictions()
     predictions.loc[
         predictions["game_id"].eq("2026_06_NEITHERHOST_BYETEAM"), "home_cover_probability"
-    ] = 0.65  # already picks home (NEITHERHOST, not the bye team)
+    ] = 0.65
 
     result = apply_bye_edge_fade_overlay(predictions, _bye_schedule())
     assert all(flip.game_id != "2026_06_NEITHERHOST_BYETEAM" for flip in result.flips)
@@ -367,11 +294,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_bye_edge_fade_overlay(pd.DataFrame({"game_id": ["G1"]}), _bye_schedule())
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     matched_only = _predictions().loc[
         lambda frame: frame["game_id"].eq("2026_03_TWELVEHOST_BYETEAM")
@@ -391,10 +313,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "BYETEAM -> NEITHERHOST" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_bye_edge_fade_challenger_decisions: dual-tracked, no window cost
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -476,13 +394,9 @@ def test_record_bye_edge_fade_challenger_decisions_records_the_fade_arm(
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The fade's own arm diverges from the active model's raw pick (0.40 ->
-    # AWAY/BYETEAM, the bye-holding side): the fade flips it to HOME.
     assert ledger.loc["2026_06_NEITHERHOST_BYETEAM", "pick_side"] == "HOME"
-    # The no-signal (11-day-gap) game keeps the model's own AWAY pick.
     assert ledger.loc["2026_04_ELEVENHOST_BYETEAM", "pick_side"] == "AWAY"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_bye_edge_fade_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -508,10 +422,6 @@ def test_record_bye_edge_fade_challenger_refuses_a_fingerprint_mismatch(
 ) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id. This is the fingerprint
-    # stability guard: a retuned/foreign model config must be refused.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = _write_data_root(tmp_path)
 

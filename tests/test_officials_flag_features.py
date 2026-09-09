@@ -71,12 +71,6 @@ def _lines(rows: list[tuple[str, float]]) -> pd.DataFrame:
     return pd.DataFrame(rows, columns=["game_id", "tue_open_home_spread"])
 
 
-# ---------------------------------------------------------------------------
-# Loader / crosswalk integration test (real on-disk fixture, mirrors
-# tests/test_experiment_runner.py's own officials-fixture convention)
-# ---------------------------------------------------------------------------
-
-
 def test_home_away_penalty_game_table_crosswalks_officials_to_game_penalties(
     tmp_path: Path,
 ) -> None:
@@ -97,7 +91,6 @@ def test_home_away_penalty_game_table_crosswalks_officials_to_game_penalties(
                 "season": 2020,
                 "season_type": "REG",
             },
-            # A non-Referee position row for the same game must be excluded.
             {
                 "game_id": "2020090100",
                 "official_name": "UMP_X",
@@ -130,11 +123,6 @@ def test_home_away_penalty_game_table_crosswalks_officials_to_game_penalties(
     assert row["home_minus_away"] == pytest.approx(4.0)
 
 
-# ---------------------------------------------------------------------------
-# LEAD-32: trailing (prior-games-only) home-bias quartile flag, leakage
-# ---------------------------------------------------------------------------
-
-
 def _trailing_bias_fixture() -> pd.DataFrame:
     """One crew-season (REF_A, 2020) with 5 games, ``home_minus_away``
     strictly increasing (1, 2, 3, 4, 100) so the trailing mean of the first 3
@@ -146,15 +134,11 @@ def _trailing_bias_fixture() -> pd.DataFrame:
     module's own ``>= 4`` guard)."""
 
     rows = [
-        _game_row("gA1", "REF_A", 2020, 1, "H", "A", 5.0, 4.0),  # diff 1
-        _game_row("gA2", "REF_A", 2020, 2, "H", "A", 6.0, 4.0),  # diff 2
-        _game_row("gA3", "REF_A", 2020, 3, "H", "A", 7.0, 4.0),  # diff 3
-        _game_row(
-            "gA4", "REF_A", 2020, 4, "H", "A", 8.0, 4.0
-        ),  # diff 4 (trailing so far: (1+2+3)/3=2)
-        _game_row(
-            "gA5", "REF_A", 2020, 5, "H", "A", 104.0, 4.0
-        ),  # diff 100 (trailing: (1+2+3+4)/4=2.5)
+        _game_row("gA1", "REF_A", 2020, 1, "H", "A", 5.0, 4.0),
+        _game_row("gA2", "REF_A", 2020, 2, "H", "A", 6.0, 4.0),
+        _game_row("gA3", "REF_A", 2020, 3, "H", "A", 7.0, 4.0),
+        _game_row("gA4", "REF_A", 2020, 4, "H", "A", 8.0, 4.0),
+        _game_row("gA5", "REF_A", 2020, 5, "H", "A", 104.0, 4.0),
     ]
     for week, diff in enumerate((10.0, 20.0, 30.0, 40.0, 50.0), start=1):
         rows.append(_game_row(f"gB{week}", "REF_B", 2021, week, "H", "A", 4.0 + diff, 4.0))
@@ -165,15 +149,11 @@ def test_trailing_home_bias_requires_minimum_prior_games() -> None:
     table = _trailing_bias_fixture()
     trailing = trailing_home_bias_table(table=table)
     by_game = trailing.set_index("game_id")["trailing_home_bias"]
-    # First TRAILING_HOME_BIAS_MIN_GAMES (3) games of REF_A/2020 have no
-    # valid trailing value yet.
     assert TRAILING_HOME_BIAS_MIN_GAMES == 3
     assert pd.isna(by_game["gA1"])
     assert pd.isna(by_game["gA2"])
     assert pd.isna(by_game["gA3"])
-    # gA4 is REF_A's 4th game: trailing mean of games 1-3 (diffs 1,2,3) = 2.0.
     assert by_game["gA4"] == pytest.approx(2.0)
-    # gA5 is REF_A's 5th game: trailing mean of games 1-4 (diffs 1,2,3,4) = 2.5.
     assert by_game["gA5"] == pytest.approx(2.5)
 
 
@@ -192,10 +172,7 @@ def test_trailing_home_bias_never_uses_this_games_own_penalty_count() -> None:
         "trailing_home_bias"
     ]
 
-    # gA4's own trailing value (built from games 1-3 only) is unchanged.
     assert mutated_trailing["gA4"] == baseline["gA4"]
-    # gA5's trailing value (built from games 1-4, which now includes the
-    # mutated gA4) DOES change.
     assert mutated_trailing["gA5"] != baseline["gA5"]
 
 
@@ -204,15 +181,9 @@ def test_crew_home_bias_flag_is_unsigned_top_quartile_only() -> None:
     trailing = trailing_home_bias_table(table=table)
     flags = derive_crew_home_bias_features(table=table).set_index("game_id")[CREW_HOME_BIAS_COLUMN]
     assert set(flags.unique()).issubset({0.0, 1.0})
-    # Games with no valid trailing value (not yet 3 prior games) are ALWAYS
-    # 0.0, regardless of the quartile cut.
     for game_id in ("gA1", "gA2", "gA3", "gB1", "gB2", "gB3"):
         assert flags[game_id] == 0.0
 
-    # Among the ELIGIBLE (non-NaN trailing) games, the flagged set must be
-    # EXACTLY the top quartile by pd.qcut(4) -- reproduced independently here
-    # rather than hand-guessed, so the test pins the mechanism, not one
-    # fixture's specific numbers.
     eligible = trailing.dropna(subset=["trailing_home_bias"]).set_index("game_id")
     assert len(eligible) >= 4
     expected_top = set(
@@ -223,7 +194,7 @@ def test_crew_home_bias_flag_is_unsigned_top_quartile_only() -> None:
     )
     flagged_ids = set(flags.loc[flags == 1.0].index)
     assert flagged_ids == expected_top
-    assert flagged_ids  # the fixture must actually produce a non-empty top quartile
+    assert flagged_ids
 
 
 def test_crew_home_bias_missing_from_features_raises() -> None:
@@ -231,28 +202,13 @@ def test_crew_home_bias_missing_from_features_raises() -> None:
         derive_crew_home_bias_features(table=pd.DataFrame(columns=["game_id"]))
 
 
-# ---------------------------------------------------------------------------
-# LEAD-34: crew-familiarity second meetings
-# ---------------------------------------------------------------------------
-
-
 def _familiarity_fixture() -> pd.DataFrame:
     return _table(
         [
-            # REF_A's first game this season involving H/A -> not a second
-            # meeting.
             _game_row("g1", "REF_A", 2020, 1, "H", "A", 5.0, 5.0),
-            # REF_A again, same season, week 3, H now plays a NEW opponent C
-            # -> H was seen before (in g1) -> second meeting.
             _game_row("g2", "REF_A", 2020, 3, "H", "C", 5.0, 5.0),
-            # REF_A again, week 5, neither team seen before by this crew this
-            # season -> not a second meeting.
             _game_row("g3", "REF_A", 2020, 5, "D", "E", 5.0, 5.0),
-            # A different official, same season: no shared history with
-            # REF_A -> not a second meeting even though H/A repeat.
             _game_row("g4", "REF_B", 2020, 1, "H", "A", 5.0, 5.0),
-            # REF_A next SEASON: the season boundary resets -- H/A meeting
-            # REF_A again in a new season is NOT a second meeting.
             _game_row("g5", "REF_A", 2021, 1, "H", "A", 5.0, 5.0),
         ]
     )
@@ -293,10 +249,10 @@ def test_second_meeting_favorite_sign_convention() -> None:
     table = _familiarity_fixture()
     lines = _lines(
         [
-            ("g1", 3.0),  # not a second meeting -> 0 regardless of spread
-            ("g2", 3.0),  # second meeting, home favored (positive) -> +1
-            ("g3", -3.0),  # not a second meeting -> 0
-            ("g5", -3.0),  # season boundary reset -> not second meeting -> 0
+            ("g1", 3.0),
+            ("g2", 3.0),
+            ("g3", -3.0),
+            ("g5", -3.0),
         ]
     )
     flags = derive_second_meeting_favorite_features(None, lines, table=table).set_index("game_id")[
@@ -306,7 +262,6 @@ def test_second_meeting_favorite_sign_convention() -> None:
     assert flags["g2"] == 1.0
     assert flags["g3"] == 0.0
     assert flags["g5"] == 0.0
-    # g4 has no opener line row -> missing spread -> 0.
     assert flags["g4"] == 0.0
 
 
@@ -317,7 +272,7 @@ def test_second_meeting_favorite_away_favorite_sign() -> None:
             _game_row("h2", "REF_C", 2022, 3, "H", "Z", 5.0, 5.0),
         ]
     )
-    lines = _lines([("h2", -3.0)])  # away (Z) favored
+    lines = _lines([("h2", -3.0)])
     flags = derive_second_meeting_favorite_features(None, lines, table=table).set_index("game_id")[
         SECOND_MEETING_FAVORITE_COLUMN
     ]
@@ -331,38 +286,27 @@ def test_second_meeting_favorite_requires_game_id_column() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# LEAD-31: rookie-referee censoring and underdog sign convention
-# ---------------------------------------------------------------------------
-
-
 def _rookie_trait_fixture() -> pd.DataFrame:
     return pd.DataFrame(
         [
-            # Left-censored: season 2015 debut, excluded from eligibility
-            # regardless of prior_seasons_experience.
             {
                 "game_id": "r2015",
                 "official_name": "REF_CENSORED",
                 "season": 2015,
                 "prior_seasons_experience": 0,
             },
-            # Genuine rookie: first eligible season, 0 prior seasons.
             {
                 "game_id": "r_rookie",
                 "official_name": "REF_ROOKIE",
                 "season": 2020,
                 "prior_seasons_experience": 0,
             },
-            # Genuine second-year: 1 prior season -- still "rookie" per the
-            # task's own {0,1} definition.
             {
                 "game_id": "r_second_year",
                 "official_name": "REF_SECOND_YEAR",
                 "season": 2020,
                 "prior_seasons_experience": 1,
             },
-            # Veteran: 2 prior seasons -- NOT a rookie crew.
             {
                 "game_id": "r_veteran",
                 "official_name": "REF_VETERAN",
@@ -380,8 +324,6 @@ def test_rookie_eligible_season_floor_excludes_2015() -> None:
     flags = derive_rookie_crew_underdog_features(None, lines, trait=trait).set_index("game_id")[
         ROOKIE_CREW_UNDERDOG_COLUMN
     ]
-    # r2015 would otherwise flag (prior_seasons_experience 0, home underdog)
-    # but season 2015 is excluded from the rookie-eligible population.
     assert flags["r2015"] == 0.0
     assert flags["r_rookie"] == 1.0
 
@@ -390,9 +332,9 @@ def test_rookie_crew_underdog_sign_convention() -> None:
     trait = _rookie_trait_fixture()
     lines = _lines(
         [
-            ("r_rookie", -3.0),  # rookie crew, home underdog -> +1
-            ("r_second_year", 3.0),  # rookie crew (2nd yr), away underdog -> -1
-            ("r_veteran", -3.0),  # veteran crew, home underdog -> 0
+            ("r_rookie", -3.0),
+            ("r_second_year", 3.0),
+            ("r_veteran", -3.0),
         ]
     )
     flags = derive_rookie_crew_underdog_features(None, lines, trait=trait).set_index("game_id")[
@@ -408,12 +350,6 @@ def test_rookie_crew_table_returns_only_the_four_columns() -> None:
     out = rookie_crew_table(trait=trait)
     assert list(out.columns) == ["game_id", "official_name", "season", "prior_seasons_experience"]
     assert len(out) == len(trait)
-
-
-# ---------------------------------------------------------------------------
-# LEAD-32: reliability harness wiring (season-blocked bootstrap, P+,
-# Spearman-Brown, label-shuffle null all present)
-# ---------------------------------------------------------------------------
 
 
 def _reliability_fixture() -> pd.DataFrame:
@@ -442,9 +378,6 @@ def _reliability_fixture() -> pd.DataFrame:
                     )
                 )
     table = _table(rows)
-    # home_minus_away must equal the constructed level+noise directly
-    # (the helper above only fabricates plausible non-negative counts);
-    # overwrite it explicitly so the fixture's intent is unambiguous.
     parts = table["game_id"].str.rsplit("_", n=2, expand=True)
     table["official_name"] = parts[0]
     table["week"] = parts[2].astype(int)
@@ -466,19 +399,10 @@ def test_officials_home_bias_reliability_returns_full_harness_output() -> None:
         assert "pearson_probability_positive" in section
         assert "null_mean_r" in section
         assert "null_sd_r" in section
-    # Spearman-Brown correction is only meaningful for the within-season
-    # split.
     assert within["spearman_brown_full_length_reliability"] is not None
     assert across["spearman_brown_full_length_reliability"] is None
-    # The fixture's construction (a strong, stable per-official level) should
-    # produce a strongly positive, non-degenerate reliability read.
     assert within["pearson_r"] > 0.9
     assert within["pearson_probability_positive"] > 0.5
-
-
-# ---------------------------------------------------------------------------
-# Left-censoring disclosure
-# ---------------------------------------------------------------------------
 
 
 def test_describe_referee_left_censoring_counts_2015_debuts(tmp_path: Path) -> None:

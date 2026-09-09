@@ -234,9 +234,6 @@ def main(argv: list[str] | None = None) -> int:
 
     payload = capture.to_dict()
 
-    # Read back what we are about to write, through the same loader the card
-    # side will use. A capture that does not survive its own round trip is a
-    # defect, and finding it here costs nothing.
     reread = SplashCapture.from_dict(payload, context="round-trip check")
     validate_splash_capture(
         reread,

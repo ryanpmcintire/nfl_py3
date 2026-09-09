@@ -272,11 +272,6 @@ def test_validate_rejects_summary_number_absent_from_cited_fields(
         validate_ledger(rebuilt)
 
 
-#: Numerals the promoted row's pinned caveat legitimately quotes; after the
-#: 2026-08-23 consolidation it is a one-sentence pointer whose ONLY numeral
-#: is the frozen played-card expectation percentage (provenance in
-#: nfl_ats.dashboard.findings_content, guarded by
-#: tests/test_played_card_expectation.py).
 _PROMOTED_CAVEAT_TOKENS = {
     str(PLAYED_CARD_EXPECTATION_PERCENT),
 }
@@ -359,8 +354,6 @@ def test_real_artifacts_build_a_valid_ledger() -> None:
         pytest.skip("live artifacts absent")
     ledger = build_model_ledger(challengers, weak, manifest)
     registered = json.loads(challengers.read_text(encoding="utf-8"))["challengers"]
-    # One promoted-card row plus every registered challenger, including arms
-    # that are superseded, deactivated, or closed before activation.
     assert len(ledger.rows) == len(registered) + 1
     assert ledger.rows[0].status_badge == "PROMOTED"
     assert ledger.rows[0].track_record is not None
@@ -369,10 +362,6 @@ def test_real_artifacts_build_a_valid_ledger() -> None:
     assert len(superseded) == 4
     validate_ledger(ledger)
 
-
-# ---------------------------------------------------------------------------
-# render_ledger_html
-# ---------------------------------------------------------------------------
 
 _TOKEN_RE = re.compile(r"\d[\d,]*(?:\.\d+)?")
 
@@ -425,9 +414,6 @@ def _audit_ledger_numbers(rendered: str, ledger: ModelLedger) -> None:
                 if bound is not None:
                     allowed.update(_float_variants(bound))
         if row.own_probability_positive is not None:
-            # The summary quotes this confidence figure when no registry
-            # entry carries one ("registered evidence xx.x% likely real"),
-            # so it must be traceable too.
             allowed.update(_float_variants(row.own_probability_positive))
         for ref in row.evidence:
             identifiers.append(ref.registry_key)
@@ -566,11 +552,6 @@ def test_render_ledger_html_floors_extreme_p_plus_honestly(
     assert "P+ 1.00" not in rendered
 
 
-# ---------------------------------------------------------------------------
-# 2026-08-24 dimension-3 fix: every interval row carries a P+ cell
-# ---------------------------------------------------------------------------
-
-
 def _pplus_fixtures(tmp_path: Path) -> tuple[Path, Path, Path]:
     """Ledger fixtures mirroring the three real rows the baseline flagged:
     intervals rendered with no P+ anywhere because their ``registry_source``
@@ -628,8 +609,6 @@ def _pplus_fixtures(tmp_path: Path) -> tuple[Path, Path, Path]:
                     },
                 },
                 {
-                    # A row whose evidence block declares NO probability at
-                    # all: the interval must still say P+ is unavailable.
                     "challenger_id": "interval_without_any_probability",
                     "status": "ACTIVE_PROSPECTIVE",
                     "evidence": {"week_blocked_interval_points": [-1.1, 5.0]},
@@ -653,11 +632,11 @@ def test_interval_rows_render_a_p_plus_cell(
     challengers, weak, manifest = _pplus_fixtures(tmp_path)
     rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
     rows = [r for r in re.findall(r"<tr[^>]*>.*?</tr>", rendered) if "<th>" not in r]
-    assert len(rows) == 5  # promoted + four challengers
+    assert len(rows) == 5
     checked = 0
     for row_html in rows:
         if 'class="row-promoted"' in row_html:
-            continue  # proportion-CI interval, no accuracy-points P+
+            continue
         cells = re.findall(r"<td>(.*?)</td>", row_html, flags=re.DOTALL)
         assert len(cells) == 6
         interval_cell = unescape(cells[3])
@@ -728,8 +707,6 @@ def test_own_probability_participates_in_confidence_ordering(
     }
     ranked = sorted(arm_ids, key=lambda a: (-probabilities[a], a))
     assert arm_ids == ranked
-    # The nested 0.976 arm outranks the 0.8745 and 0.813 arms; the arm with
-    # no probability sits last among its ties.
     assert arm_ids.index("nested_own_p_plus") < arm_ids.index("stack_no_registry_source")
     assert arm_ids.index("stack_no_registry_source") < arm_ids.index(
         "scratchpad_source_with_own_p_plus"

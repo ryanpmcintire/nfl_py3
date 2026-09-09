@@ -18,7 +18,6 @@ import pandas as pd
 
 from nfl_ats.spread_regime import BUCKETS, spread_bucket
 
-# Disjoint half-point ranges: 7.5 belongs to the fourth bucket.
 SPREAD_BUCKETS: tuple[tuple[str, float, float, Literal["both", "right", "neither"]], ...] = (
     ("0-3", 0.0, 3.0, "both"),
     ("3.5-6.5", 3.0, 6.5, "right"),
@@ -296,10 +295,6 @@ def build_weak_spots(frame: pd.DataFrame) -> WeakSpots:
         & pick.notna()
     )
     home_pick = pick.eq(True)
-    # Favourite identity follows the saved home line. nflverse convention,
-    # verified on the archive 2026-09-07 (positive home spread -> mean home
-    # result +5.85 over 908 games): a POSITIVE home spread means the HOME team
-    # is favoured. The first cut of this module had the sign reversed.
     favourite = home_pick.eq(spread.gt(0)) & spread.ne(0)
     underdog = ~favourite & spread.ne(0)
     favourite_cover = margin.gt(0).eq(spread.gt(0))

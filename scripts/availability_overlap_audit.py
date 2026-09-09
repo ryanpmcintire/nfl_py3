@@ -152,7 +152,6 @@ def joint_sign_null(contrasts: dict[str, pd.Series], *, samples: int, seed: int)
 
     all_weeks = np.unique(np.concatenate([week_of[name] for name in names]))
     rng = np.random.default_rng(seed)
-    # Pre-bucket each contrast's values by week so a draw is a cheap gather.
     buckets: dict[str, dict[int, np.ndarray]] = {}
     for name in names:
         values = centered[name].to_numpy()
@@ -240,7 +239,6 @@ def main() -> None:
             }
         )
 
-    # Correlation over the games EVERY contrast scored (the honest common ground).
     common = contrasts[names[0]].index
     for name in names[1:]:
         common = common.intersection(contrasts[name].index)
@@ -251,9 +249,6 @@ def main() -> None:
         "matrix": json.loads(correlation.round(4).to_json(orient="split")),
     }
 
-    # The same correlation on the FULL 2,075-game close-graded set, which is where
-    # five of the six contrasts actually live (the 453-game intersection above is
-    # forced small only by the opener window).
     wide_names = [n for n in names if len(contrasts[n]) > 1000]
     wide_common = contrasts[wide_names[0]].index
     for name in wide_names[1:]:
@@ -266,10 +261,6 @@ def main() -> None:
         "effective_independent_measurements": round(m_eff(wide.to_numpy()), 3),
     }
 
-    # The family boundary is NOT recorded anywhere. RWB-16 says "five
-    # measurements, all positive, p = 0.0625" without naming them, so the
-    # sensitivity of that p-value to where the boundary is drawn is itself the
-    # finding. Three defensible boundaries, scored the same way.
     narrow = [n for n in names if n.split()[0] in {"M1", "M2", "M3", "M4", "M7"}]
     same_kind = narrow + [n for n in names if n.split()[0] == "M6"]
     boundaries = {
@@ -306,7 +297,7 @@ def main() -> None:
     print(json.dumps(report, indent=2))
     if args.out is not None:
         args.out.parent.mkdir(parents=True, exist_ok=True)
-        write_stamped_artifact(report, args.out)  # ENG-38
+        write_stamped_artifact(report, args.out)
 
 
 if __name__ == "__main__":

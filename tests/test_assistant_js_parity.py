@@ -53,13 +53,6 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 _HARNESS_PATH = _REPO_ROOT / "tests" / "parity" / "assistant_parity.mjs"
 _SCRIPT_RE = re.compile(r"<script>(.*)</script>", re.S)
 
-#: Lineup-intent phrasings pinned in ``test_board_assistant_lineups.py``'s
-#: own Python-only unit tests, harvested verbatim (not re-derived) so the JS
-#: port is proven against the SAME wording that file already exercises --
-#: run here against the shared golden knowledge below (not that file's own,
-#: differently-staled lineups fixture), so every phrasing still gets a real
-#: answer to compare, just not necessarily via the same fallback branch that
-#: file's assertions target.
 LINEUP_REGRESSION_QUESTIONS: tuple[str, ...] = (
     "Who is starting at QB for the Dolphins?",
     "Who's starting at QB for the Raiders?",
@@ -109,7 +102,7 @@ def parity_knowledge(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]
 
     tmp_path = tmp_path_factory.mktemp("assistant_js_parity")
     _write_lineups_artifact(tmp_path)
-    loaded = load_lineups(tmp_path)  # real nfl_ats.lineup_view parser
+    loaded = load_lineups(tmp_path)
     content = build_fixture_content()
     dives = tuple(
         replace(dive, home_lineup=loaded[dive.game_id][0], away_lineup=loaded[dive.game_id][1])
@@ -184,10 +177,6 @@ def test_python_and_js_engines_agree_on_every_question(
         capture_output=True,
         text=True,
         encoding="utf-8",
-        # Node's JSON.stringify writes raw UTF-8 (unlike Python's ensure_ascii
-        # json.dumps default); without an explicit encoding, subprocess falls
-        # back to the OS locale codepage, which mis-decodes non-ASCII text
-        # (e.g. an em dash) on a non-UTF-8 Windows console.
         check=False,
     )
     assert result.returncode == 0, (

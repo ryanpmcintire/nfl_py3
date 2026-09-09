@@ -94,8 +94,6 @@ def build_predictions(features: pd.DataFrame, archive: pd.DataFrame, config: dic
         if cutoff < archive_cutoff:
             _, offsets, training = weekly_models(features, cutoff, config)
         clean_mean = offsets["production"]
-        # The requested incumbent is the archived rule; candidate offsets exclude
-        # an unarchived opening game even when the inherited archive refit does not.
         offsets["production"] = incumbent_offset
         scoring = scoring.merge(group[["game_id", "tue_open_home_spread"]], on="game_id")
         scoring["spread_line"] = scoring["tue_open_home_spread"]
@@ -234,7 +232,6 @@ def summarize(
 def record_results(directory: Path, *, union: bool = False, replace_signals: bool = False) -> None:
     """Explicit recording mode: all registry mutations go through public CLIs."""
     result = json.loads((directory / "results.json").read_text())
-    # Verdict corrections never alter a measurement or relax a validator.
     for metrics in result["arms"].values():
         metrics["classification"] = (
             "refuted_mechanism" if metrics["interval_high"] < 0 else "unresolved_below_power"

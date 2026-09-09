@@ -62,7 +62,6 @@ def test_pair_enumeration_and_overlap_floor() -> None:
         ("B", "D"),
         ("C", "D"),
     }
-    # A/B together in all 12 weeks (≥10 floor), jointly absent in 5-8.
     ab = pairs.loc[pairs["pair"].map(lambda pair: set(pair) == {"A", "B"})]
     assert len(ab) == 12
     assert int(ab["both_absent"].sum()) == 4

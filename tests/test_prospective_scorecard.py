@@ -46,11 +46,6 @@ from nfl_ats.weak_signals import CLASSIFICATIONS, POOLABLE_CLASSIFICATION
 SEASON = 2099
 CHALLENGER_ID = "test_overlay_challenger"
 
-#: Forbidden phrasing (AGENTS.md, "An interval crossing zero is NOT grounds
-#: for rejection"): a scorecard is a report, never a verdict, and must never
-#: say a signal "failed" or was "rejected", must never write the binary
-#: "contains zero", and must never compute or state a "needs more" games
-#: figure.
 _FORBIDDEN_SUBSTRINGS = ("failed", "rejected", "contains zero", "needs more")
 
 WEEK_KICKOFFS = {
@@ -59,11 +54,8 @@ WEEK_KICKOFFS = {
     3: pd.Timestamp("2099-09-22T17:00:00Z"),
 }
 
-#: (game_id, week, home_team, away_team, decision_home_spread, result,
-#:  active_pick_side, challenger_pick_side)
-#: result is home points minus away points; margin = result - line.
 GAMES: tuple[tuple[str, int, str, str, float, float, str, str], ...] = (
-    ("g1", 1, "HOME1", "AWAY1", -3.0, 13.0, "HOME", "HOME"),  # home covers; both correct
+    ("g1", 1, "HOME1", "AWAY1", -3.0, 13.0, "HOME", "HOME"),
     (
         "g2",
         1,
@@ -73,10 +65,10 @@ GAMES: tuple[tuple[str, int, str, str, float, float, str, str], ...] = (
         -1.0,
         "HOME",
         "AWAY",
-    ),  # away covers; active wrong, challenger right
-    ("g3", 2, "HOME3", "AWAY3", -1.0, 5.0, "HOME", "HOME"),  # home covers; both correct
-    ("g4", 2, "HOME4", "AWAY4", 6.0, -10.0, "AWAY", "AWAY"),  # away covers; both correct
-    ("g5", 3, "HOME5", "AWAY5", 4.0, 4.0, "HOME", "HOME"),  # push on both sides
+    ),
+    ("g3", 2, "HOME3", "AWAY3", -1.0, 5.0, "HOME", "HOME"),
+    ("g4", 2, "HOME4", "AWAY4", 6.0, -10.0, "AWAY", "AWAY"),
+    ("g5", 3, "HOME5", "AWAY5", 4.0, 4.0, "HOME", "HOME"),
     (
         "g6",
         3,
@@ -86,11 +78,9 @@ GAMES: tuple[tuple[str, int, str, str, float, float, str, str], ...] = (
         8.0,
         "AWAY",
         "HOME",
-    ),  # home covers; active wrong, challenger right
+    ),
 )
 
-#: home_cover_probability recorded on each week's own forecast card, used by
-#: the calibration test. Chosen to roughly track the actual outcome.
 PROBABILITIES = {"g1": 0.70, "g2": 0.40, "g3": 0.65, "g4": 0.30, "g5": 0.50, "g6": 0.55}
 
 ACTIVE_FORECAST_ARTIFACT = {
@@ -196,8 +186,6 @@ def _pick_revisions_frame() -> pd.DataFrame:
 
     return pd.DataFrame(
         [
-            # g2: an earlier revision that KEEPS the Tuesday pick, then the
-            # real, later revision that FLIPS it. Only the later one should count.
             row("g2", 1, previous="HOME", new="HOME", recorded_offset_hours=48),
             row("g2", 1, previous="HOME", new="AWAY", recorded_offset_hours=24),
             row("g4", 2, previous="AWAY", new="AWAY", recorded_offset_hours=24),
@@ -283,16 +271,9 @@ def _find_row(rows: list[dict[str, Any]], entrant_id: str) -> dict[str, Any]:
     raise AssertionError(f"No scorecard row for {entrant_id!r}")
 
 
-# ---------------------------------------------------------------------------
-# 1. Coverage
-# ---------------------------------------------------------------------------
-
-
 def test_coverage_counts_games_on_card_vs_games_recorded(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
-    # The challenger only ever recorded 4 of the 6 games on the active
-    # model's card (e.g. it skipped g5/g6 some week).
     _build_full_fixture(artifacts_root, challenger_game_ids={"g1", "g2", "g3", "g4"})
 
     rows = build_season_scorecards(artifacts_root, data_root, _features_frame(), season=SEASON)
@@ -338,11 +319,6 @@ def test_empty_ledgers_report_cleanly_with_no_games_needed_language(tmp_path: Pa
         assert phrase not in lowered
 
 
-# ---------------------------------------------------------------------------
-# 2. Paired delta vs. the active model, with interval + probability_positive
-# ---------------------------------------------------------------------------
-
-
 def test_paired_delta_and_probability_positive_vs_active_model(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
@@ -358,9 +334,6 @@ def test_paired_delta_and_probability_positive_vs_active_model(tmp_path: Path) -
     )
     challenger = _find_row(rows, CHALLENGER_ID)
 
-    # Active model settles correctly on g1, g3, g4 and incorrectly on g2, g6
-    # (g5 is a push on both sides): 3/5 = 60%. The challenger flips g2 and g6
-    # to the winning side and agrees everywhere else: 5/5 = 100%.
     active_accuracy = _find_row(rows, ACTIVE_MODEL_ENTRANT_ID)["accuracy_decision_line"]
     assert active_accuracy == pytest.approx(0.6)
     assert challenger["accuracy_decision_line"] == pytest.approx(1.0)
@@ -368,15 +341,9 @@ def test_paired_delta_and_probability_positive_vs_active_model(tmp_path: Path) -
     paired = challenger["paired_vs_active"]
     assert paired["shared_settled_games"] == 5
     metric = paired["metrics"]["paired_delta_accuracy_points"]
-    # (0 + 1 + 0 + 0 + 1) / 5 * 100 = 40.0 accuracy points, hand-computed.
     assert metric["estimate"] == pytest.approx(40.0)
     assert 0.0 <= metric["probability_positive"] <= 1.0
     assert metric["interval_lower"] <= metric["interval_upper"]
-
-
-# ---------------------------------------------------------------------------
-# 3. Overlay marginal effect: only the games this entrant's pick differs on
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_marginal_effect_on_disagreement_games_only(tmp_path: Path) -> None:
@@ -395,8 +362,6 @@ def test_overlay_marginal_effect_on_disagreement_games_only(tmp_path: Path) -> N
     challenger = _find_row(rows, CHALLENGER_ID)
     marginal = challenger["overlay_marginal"]
 
-    # The challenger disagrees with the active model's chain pick on exactly
-    # g2 and g6, and wins both.
     assert marginal["shared_settled_games"] == 5
     assert marginal["disagreement_games"] == 2
     metric = marginal["metrics"]["marginal_paired_delta_accuracy_points"]
@@ -413,11 +378,6 @@ def test_active_model_row_has_no_overlay_marginal_or_paired_delta(tmp_path: Path
     active = _find_row(rows, ACTIVE_MODEL_ENTRANT_ID)
     assert active["paired_vs_active"] is None
     assert active["overlay_marginal"] is None
-
-
-# ---------------------------------------------------------------------------
-# 4. Refresh effect: Tuesday pick vs. final refresh pick
-# ---------------------------------------------------------------------------
 
 
 def test_refresh_effect_counts_flips_and_uses_the_latest_revision_only(tmp_path: Path) -> None:
@@ -437,26 +397,16 @@ def test_refresh_effect_counts_flips_and_uses_the_latest_revision_only(tmp_path:
     refresh = active["refresh_effect"]
 
     assert refresh["available"] is True
-    assert refresh["revised_games"] == 2  # g2 and g4
-    # g2's LATEST revision flips HOME -> AWAY (the earlier no-op revision to
-    # HOME must not count); g4's revision keeps AWAY -> AWAY.
+    assert refresh["revised_games"] == 2
     assert refresh["flips"] == 1
     assert refresh["kept"] == 1
     assert refresh["settled_games"] == 2
 
     metric = refresh["metrics"]["refresh_paired_delta_accuracy_points"]
-    # g2: previous(HOME) wrong -> 0, new(AWAY) right -> 1, delta=+100.
-    # g4: previous(AWAY) right -> 1, new(AWAY) right -> 1, delta=0.
-    # mean = 50.0 accuracy points, hand-computed.
     assert metric["estimate"] == pytest.approx(50.0)
 
     challenger = _find_row(rows, CHALLENGER_ID)
     assert challenger["refresh_effect"]["available"] is False
-
-
-# ---------------------------------------------------------------------------
-# 5. Calibration: Brier score + reliability bins at the existing bin width
-# ---------------------------------------------------------------------------
 
 
 def test_calibration_brier_score_and_reliability_bins(tmp_path: Path) -> None:
@@ -471,7 +421,6 @@ def test_calibration_brier_score_and_reliability_bins(tmp_path: Path) -> None:
     assert calibration["available"] is True
     assert calibration["settled_games"] == 5
     assert calibration["games_with_recorded_probability"] == 5
-    # actual=[1,0,1,0,1] for g1,g2,g3,g4,g6; probability=[.70,.40,.65,.30,.55].
     expected_brier = (
         (0.7 - 1) ** 2 + (0.4 - 0) ** 2 + (0.65 - 1) ** 2 + (0.3 - 0) ** 2 + (0.55 - 1) ** 2
     ) / 5
@@ -485,18 +434,11 @@ def test_calibration_reports_missing_cards_without_crashing(tmp_path: Path) -> N
     data_root = tmp_path / "data"
     atomic_parquet(_paper_decisions_frame(), artifacts_root / "clv_ledger" / "decisions.parquet")
     _write_registry(artifacts_root)
-    # Deliberately do NOT write any recommendations.csv cards.
 
     rows = build_season_scorecards(artifacts_root, data_root, _features_frame(), season=SEASON)
     active = _find_row(rows, ACTIVE_MODEL_ENTRANT_ID)
     assert active["calibration"]["available"] is False
     assert active["calibration"]["games_with_recorded_probability"] == 0
-
-
-# ---------------------------------------------------------------------------
-# 6. Classification: an interval containing zero is unresolved_below_power,
-#    and so is every other row -- this module never emits a terminal verdict.
-# ---------------------------------------------------------------------------
 
 
 def test_classification_is_always_a_registry_admissible_state(tmp_path: Path) -> None:
@@ -551,11 +493,6 @@ def test_interval_containing_zero_classifies_unresolved_below_power_directly() -
     assert crosses_zero is None
 
 
-# ---------------------------------------------------------------------------
-# 7. The registered (challengers.json) status is surfaced, not overridden
-# ---------------------------------------------------------------------------
-
-
 def test_registered_evidence_is_surfaced_without_changing_the_fresh_classification(
     tmp_path: Path,
 ) -> None:
@@ -569,14 +506,7 @@ def test_registered_evidence_is_surfaced_without_changing_the_fresh_classificati
     assert challenger["challenger_status"] == "ACTIVE_PROSPECTIVE"
     assert challenger["registered_evidence"]["probability_positive"] == pytest.approx(0.87)
     assert challenger["registered_evidence"]["registry_verdict"] == "unresolved"
-    # The registered evidence is informational; this report's own fresh
-    # classification is still the invariant-safe default.
     assert challenger["classification"] == POOLABLE_CLASSIFICATION
-
-
-# ---------------------------------------------------------------------------
-# 8. settled_games is reported; no "games needed" figure ever appears
-# ---------------------------------------------------------------------------
 
 
 def test_settled_games_present_and_forbidden_phrasing_absent_everywhere(tmp_path: Path) -> None:
@@ -603,27 +533,7 @@ def test_settled_games_present_and_forbidden_phrasing_absent_everywhere(tmp_path
     for phrase in _FORBIDDEN_SUBSTRINGS:
         assert phrase not in combined, f"forbidden phrase {phrase!r} leaked into scorecard output"
 
-    # No key anywhere in the payload is literally a "games needed" figure.
     assert "games_needed" not in payload
-
-
-# ---------------------------------------------------------------------------
-# 9. ENG-33: closing-ground CANDIDATE detection and next_admissible_action.
-#
-# BINDING (pasted verbatim, AGENTS.md): an interval or CI that contains zero
-# is NEVER grounds to reject, fail, or close an experiment. At this
-# evaluator's ~2-point resolution, "contains zero" is the EXPECTED outcome
-# for a real small signal. Only two grounds ever close a line of work: (1)
-# refuted mechanism -- a RESOLVED wrong sign (whole interval on the wrong
-# side of zero) or zero split-half reliability; (2) bounded by a positive
-# control proven able to detect an effect that size. Everything else is
-# unresolved_below_power: record it with `nfl-ats weak-signals record`,
-# report probability_positive, never the binary "contains zero". Verdicts
-# flow through `nfl-ats weak-signals record` / `nfl-ats rotation
-# record-look` only -- this module's `closing_ground_candidate` and
-# `next_admissible_action` are advisory reports, never verdicts, and never
-# change `classification`.
-# ---------------------------------------------------------------------------
 
 
 def _empty_rotation_registry() -> rotation_module.Registry:
@@ -680,17 +590,12 @@ def test_predeclared_sign_reads_challenger_declaration_or_reports_reason() -> No
     assert _predeclared_sign(None) == (None, "no_predeclared_sign")
     assert _predeclared_sign({}) == (None, "no_predeclared_sign")
     assert _predeclared_sign({"evidence": "not a dict"}) == (None, "no_predeclared_sign")
-    # Reporting probability_positive IS the predeclared direction under this
-    # repo's "positive favours candidate" convention -- present regardless of
-    # its value.
     assert _predeclared_sign({"evidence": {"probability_positive": 0.87}}) == (1, None)
-    # A signed accuracy-point effect the challenger declared for itself.
     assert _predeclared_sign({"evidence": {"effect_accuracy_points": 3.92}}) == (1, None)
     assert _predeclared_sign({"evidence": {"source_effect_accuracy_points": -7.905401}}) == (
         -1,
         None,
     )
-    # A zero effect and nothing else declares no direction.
     assert _predeclared_sign({"evidence": {"effect_accuracy_points": 0}}) == (
         None,
         "no_predeclared_sign",
@@ -704,7 +609,7 @@ def test_referenced_signal_names_extracts_from_nested_evidence() -> None:
             "parent_cell": {
                 "nested_source": [
                     "registry/weak_signals.json:penalty_crew_holding_tilt_run_heavy",
-                    "registry/weak_signals.json:hc_year_one_fade",  # duplicate, must dedupe
+                    "registry/weak_signals.json:hc_year_one_fade",
                 ]
             },
             "artifact": "artifacts/experiment_runner/20260820T113432Z/metadata.json",
@@ -718,8 +623,6 @@ def test_referenced_signal_names_extracts_from_nested_evidence() -> None:
 
 
 def test_split_half_reliability_perfect_negative_correlation_is_at_or_below_zero() -> None:
-    # Consecutive-week pairs (1,4), (2,3), (3,2), (4,1): first=[1,2,3,4],
-    # second=[4,3,2,1], a perfect negative correlation (r = -1.0).
     per_week = pd.Series([1.0, 4.0, 2.0, 3.0, 3.0, 2.0, 4.0, 1.0], index=range(1, 9))
     result = _split_half_reliability(per_week, samples=200, seed=1)
     assert result["available"] is True
@@ -756,8 +659,6 @@ def test_closing_ground_candidate_wrong_sign_resolved_when_whole_interval_opposi
     assert candidate == WRONG_SIGN_RESOLVED == "wrong_sign_resolved"
     assert evidence["paired_delta_interval"] == [-5.0, -1.0]
     assert evidence["predeclared_sign"] == "positive"
-    # The candidate is advisory only: the module's own classification never
-    # moves off unresolved_below_power, on this or any interval.
     classification, crosses_zero = _classification(
         {"metrics": {"paired_delta_accuracy_points": paired_metric}}
     )
@@ -796,8 +697,6 @@ def test_closing_ground_candidate_null_with_reason_when_no_predeclared_sign() ->
         paired_metric={"interval_lower": -5.0, "interval_upper": -1.0, "estimate": -3.0},
         split_half={"available": False},
     )
-    # No predeclared sign means the wrong-sign ground can never fire, no
-    # matter how one-sided the interval is.
     assert candidate is None
     assert evidence["predeclared_sign"] is None
     assert evidence["predeclared_sign_reason"] == "no_predeclared_sign"
@@ -852,14 +751,10 @@ def test_next_admissible_action_closed_only_when_registry_holds_admissible_closu
     assert action == "closed"
     assert "foo_signal" in detail
     assert "wrong_sign_resolved" in detail
-    # Independently re-verify against the registry the action claims to read
-    # (not just trusting the function's own internals): the cited signal
-    # really is a TERMINAL classification with an admissible closing_ground.
     signal = weak_signal_registry.signals["foo_signal"]
     assert signal.classification in weak_signals_module.TERMINAL_CLASSIFICATIONS
     assert signal.closing_ground in weak_signals_module.CLOSING_GROUNDS[signal.classification]
 
-    # A challenger citing NO closed signal must never get "closed".
     unclosed_action, _detail = _next_admissible_action(
         {"evidence": {"registry_source": "registry/weak_signals.json:not_a_recorded_signal"}},
         has_settled_shared_data=True,
@@ -912,8 +807,6 @@ def test_closed_next_action_requires_an_admissible_registry_closure(tmp_path: Pa
     data_root = tmp_path / "data"
     registry_root = tmp_path / "registry"
     _build_full_fixture(artifacts_root)
-    # Give the registered challenger's own evidence a registry_source
-    # pointing at a signal the registry has already closed admissibly.
     payload = json.loads((artifacts_root / "prospective" / "challengers.json").read_text())
     payload["challengers"][0]["evidence"]["registry_source"] = (
         "registry/weak_signals.json:hc_year_one_fade_test"
@@ -945,7 +838,6 @@ def test_closed_next_action_requires_an_admissible_registry_closure(tmp_path: Pa
             )
         else:
             assert row["next_admissible_action"] != "closed"
-        # classification is untouched either way.
         assert row["classification"] == POOLABLE_CLASSIFICATION
     assert saw_closed, "fixture was built with an admissible closure but no row reported it"
 

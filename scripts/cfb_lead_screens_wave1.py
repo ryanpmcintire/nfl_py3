@@ -77,11 +77,7 @@ ERAS: tuple[tuple[str, int, int], ...] = (("2012_2019", 2012, 2019), ("2021_2025
 
 RIVALRY_MIN_CONSECUTIVE_SEASONS = 8
 
-#: Frozen named list (LEAD-46): no local elevation/venue table exists, so the
-#: ROADMAP's own named Mountain-West altitude outs stand in unchanged.
 ALTITUDE_HOME_TEAMS = frozenset({"Colorado State", "Wyoming", "Air Force", "Utah"})
-#: "Cold" is calendar-proxied (October on) because no local weather/temperature
-#: column exists on the benchmark table; disclosed, not silently assumed.
 ALTITUDE_MONTH_FLOOR = 10
 
 CANDIDATE_COLUMNS: dict[str, str] = {
@@ -117,11 +113,6 @@ SANDWICH_GAP_MESSAGE = (
 )
 
 
-# ---------------------------------------------------------------------------
-# LEAD-48: post-bye prep asymmetry
-# ---------------------------------------------------------------------------
-
-
 def attach_post_bye_flag(
     features: pd.DataFrame, *, schedules: pd.DataFrame | None = None
 ) -> pd.DataFrame:
@@ -152,11 +143,6 @@ def attach_post_bye_flag(
     signed = np.where(both_known & away_off & ~home_off, -1.0, signed)
     frame[CANDIDATE_COLUMNS["post_bye"]] = signed
     return frame.drop(columns=["cfb_home_rest_days", "cfb_away_rest_days"])
-
-
-# ---------------------------------------------------------------------------
-# LEAD-50: rivalry home dog
-# ---------------------------------------------------------------------------
 
 
 def compute_rivalry_pairs(
@@ -220,11 +206,6 @@ def attach_rivalry_home_dog_flag(
     return frame
 
 
-# ---------------------------------------------------------------------------
-# LEAD-46: altitude-plus-cold home
-# ---------------------------------------------------------------------------
-
-
 def attach_altitude_cold_home_flag(features: pd.DataFrame) -> pd.DataFrame:
     """1 iff the HOME team is a frozen altitude program and month >= October."""
 
@@ -246,11 +227,6 @@ def attach_candidate(
     if lead == "altitude_cold":
         return attach_altitude_cold_home_flag(features)
     raise ValueError(f"no scoring attacher for lead {lead!r}")
-
-
-# ---------------------------------------------------------------------------
-# Shared walk-forward harness (mirrors scripts/cfb_option_prep_screen.py)
-# ---------------------------------------------------------------------------
 
 
 def run_walk_forward(
@@ -401,9 +377,6 @@ def summarize_pair(paired: pd.DataFrame, samples: int, seed: int) -> dict[str, A
         "n_games": len(paired.dropna(subset=["baseline_correct", "candidate_correct"])),
         "n_weeks": int(paired[["season", "week"]].drop_duplicates().shape[0]),
         "n_seasons": int(paired["season"].nunique()),
-        # NaN (missing feature value, e.g. a season-opener rest gap) must NOT
-        # count as "flagged nonzero" -- pandas' != treats NaN as unequal to 0,
-        # so notna() is required alongside ne(0.0).
         "n_flagged_nonzero": int((feature_value.notna() & feature_value.ne(0.0)).sum()),
     }
     if paired["season"].nunique() >= 2:

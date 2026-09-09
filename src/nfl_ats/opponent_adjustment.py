@@ -29,8 +29,6 @@ from nfl_ats.constants import (
 )
 from nfl_ats.data import DataContractError, require_columns
 
-# Every opponent-adjustment history table needs these columns, whatever the
-# league: who played whom, when, and in which ordered week.
 OPPONENT_HISTORY_COLUMNS: tuple[str, ...] = ("team", "opponent", "season", "week", "gameday")
 
 

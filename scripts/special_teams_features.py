@@ -154,9 +154,6 @@ def _fg_residuals(raw: pd.DataFrame) -> pd.DataFrame:
     fg["distance_bucket"] = pd.cut(
         fg["kick_distance"], bins=FG_DISTANCE_BINS, labels=FG_DISTANCE_LABELS
     )
-    # Season-and-distance-bucket league make rate, computed from THIS season's
-    # own attempts only (self-referential in the same documented sense as
-    # nflverse's own pass_oe -- see module docstring).
     league_rate = fg.groupby(["season", "distance_bucket"], observed=True)["made"].transform("mean")
     fg["fg_residual"] = fg["made"] - league_rate
     fg["team"] = _alias(fg["posteam"])
@@ -185,10 +182,6 @@ def _punt_rows(raw: pd.DataFrame) -> pd.DataFrame:
         )
     punt = _numeric(punt, ["kick_distance", "return_yards", "yardline_100", "touchback"])
     punt["is_blocked"] = punt["punt_blocked"].fillna(0).eq(1).astype(float)
-    # Standard net-punting formula: gross kick distance minus the return,
-    # capped at (yardline_100 - 20) on a touchback -- the ball is only ever
-    # "worth" up to the receiving team's 20 (verified against a real row,
-    # see module docstring).
     normal_net = punt["kick_distance"] - punt["return_yards"].fillna(0.0)
     touchback_net = punt["yardline_100"] - 20.0
     punt["net_yards"] = np.where(punt["touchback"].fillna(0).eq(1), touchback_net, normal_net)
@@ -384,7 +377,7 @@ def main() -> None:
         raw = _fetch_season(season)
         total_raw_rows += len(raw)
         frags = aggregate_season(raw)
-        del raw  # discard the season's raw frame before the next fetch
+        del raw
         fg_game_parts.append(frags["fg_game"])
         fg_season_parts.append(frags["fg_season"])
         kick_game_parts.append(frags["kick_game"])

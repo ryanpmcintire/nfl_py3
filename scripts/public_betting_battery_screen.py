@@ -213,11 +213,6 @@ def _row(ci: dict[str, pd.DataFrame], metric: str, n: int) -> dict[str, Any]:
         "season_lower": float(season_row["lower"]),
         "season_upper": float(season_row["upper"]),
         "season_probability_positive": float(season_row["probability_positive"]),
-        # Only true when BOTH blocks' whole interval sits below zero -- the
-        # sole condition (AGENTS.md) under which `refuted_mechanism` /
-        # `wrong_sign_resolved` may be proposed instead of
-        # `unresolved_below_power`. An interval crossing zero, in either
-        # block, is never proposed as a closure.
         "resolved_wrong_sign": week_resolved_wrong_sign and season_resolved_wrong_sign,
     }
 
@@ -278,9 +273,6 @@ def _cell_record(
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:
@@ -313,9 +305,6 @@ def main() -> None:
     staleness = _staleness_summary(latest)
     print(f"Staleness (hours before kickoff) summary: {staleness}")
 
-    # ==================================================================
-    # Cell A: fade-heavy-public
-    # ==================================================================
     print("\n=== Cell A: fade-heavy-public ===")
     both_pct = latest["spread_home_bet_pct"].notna() & latest["spread_away_bet_pct"].notna()
     heavy = both_pct & (
@@ -344,7 +333,6 @@ def main() -> None:
             ),
         )
 
-    # Cell A.2: opener-grade variant, 2020-2025 subset
     print("Building tue_open pairing for the opener-grade variant")
     tue_pairing = build_pairing_table(
         args.market_root,
@@ -384,9 +372,6 @@ def main() -> None:
     else:
         print("  A.2: empty population (no overlap between archive readings and tue_open archive)")
 
-    # ==================================================================
-    # Cell B: follow-sharp-divergence (era2 only)
-    # ==================================================================
     print("\n=== Cell B: follow-sharp-divergence (era2) ===")
     era2 = latest.loc[latest["era"].eq("era2_scoreboard_response")].copy()
     era2 = era2.loc[
@@ -426,9 +411,6 @@ def main() -> None:
     else:
         print("  B.1: empty population")
 
-    # ==================================================================
-    # Cell C: public-vs-our-model interaction
-    # ==================================================================
     print("\n=== Cell C: public-vs-our-model interaction ===")
     predictions = pd.read_parquet(args.predictions)
     model = predictions.loc[
@@ -494,9 +476,6 @@ def main() -> None:
     else:
         print("  C: empty population")
 
-    # ------------------------------------------------------------------
-    # Write artifacts
-    # ------------------------------------------------------------------
     output_dir = args.output_root / run_id()
     atomic_parquet(latest, output_dir / "base_population.parquet")
     atomic_parquet(a_pop, output_dir / "cell_a_close.parquet")

@@ -25,22 +25,10 @@ ODDS_API_PROVIDER = "the-odds-api"
 ODDS_API_SPORT = "americanfootball_nfl"
 ODDS_API_URL = f"https://api.the-odds-api.com/v4/sports/{ODDS_API_SPORT}/odds/"
 
-#: The pool's wall clock. The pool publishes its lock in US Eastern time
-#: ("Spreads lock: Tue, Sep 8, 2026, 12:00 PM"), so the lock is declared in
-#: that zone and converted to UTC per calendar day -- never as a fixed UTC
-#: offset, which would drift by an hour across the DST change.
 POOL_TIMEZONE = ZoneInfo("America/New_York")
 
-#: The one declared pool spread-lock time (owner, 2026-09-08, quoting the
-#: pool: "Spreads lock: Tue, Sep 8, 2026, 12:00 PM"). Every guard, report and
-#: opener rule that needs the lock reads THIS name: ``tuesday_opener_quotes``
-#: (the live opener prefers quotes at or after it), ``scripts/refresh_now.py``
-#: (refuses a Tuesday capture before it) and ``scripts/tuesday_line_gap.py``
-#: (its default ``--lock``). The scheduler's ``odds_tue_open`` job is pinned
-#: to land after it by ``tests/test_pool_spread_lock.py``.
 POOL_SPREAD_LOCK_ET = time(12, 0)
 
-#: ``opener_basis`` values returned by :func:`tuesday_opener_quotes`.
 OPENER_BASIS_POST_LOCK = "post_lock"
 OPENER_BASIS_PRE_LOCK_FALLBACK = "pre_lock_fallback"
 
@@ -570,22 +558,16 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
     history["observed_at_utc"] = pd.to_datetime(history["observed_at_utc"], utc=True)
     history["commence_time_utc"] = pd.to_datetime(history["commence_time_utc"], utc=True)
     spreads = history.loc[history["market"].eq("spreads") & history["outcome_side"].eq("HOME")]
-    # The game's OWN Tuesday in the pool's zone, pregame only (the shared
-    # filter; see own_week_tuesday_quotes for why the ET date, not the UTC
-    # day, decides).
     tuesday = own_week_tuesday_quotes(spreads).copy()
     if tuesday.empty:
         return pd.DataFrame(columns=columns)
     lock = _pool_lock_for_observations(tuesday["observed_at_utc"])
-    # 0 for a post-lock quote, 1 for a pre-lock one: sorting on it first puts
-    # every post-lock quote ahead of every pre-lock quote within a book.
     tuesday["_pre_lock"] = tuesday["observed_at_utc"].lt(lock).astype(int)
     earliest_per_book = (
         tuesday.sort_values(["_pre_lock", "observed_at_utc"])
         .groupby(["nflverse_game_id", "bookmaker_key"], as_index=False, dropna=False)
         .head(1)
     )
-    # A game with any post-lock book takes the median over post-lock books only.
     game_best = earliest_per_book.groupby("nflverse_game_id", dropna=False)["_pre_lock"].transform(
         "min"
     )

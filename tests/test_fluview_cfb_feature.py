@@ -45,9 +45,6 @@ from nfl_ats.fluview_cfb_feature import (
 
 THRESHOLDS = {"oh": 4.0, "tx": 4.0, "wy": 4.0}
 
-#: Two schools in the SAME state (ids 1 and 2 both in Ohio) plus one in Texas,
-#: mirroring the real two-program states (OH hosts Ohio State and Cincinnati,
-#: CA hosts four FBS programs, ...).
 TEAM_STATES = pd.DataFrame(
     {
         "season": [2018, 2018, 2018, 2019, 2019, 2019],
@@ -94,11 +91,6 @@ def _fluview_raw() -> pd.DataFrame:
     )
 
 
-# ---------------------------------------------------------------------------
-# 1. Cutoff arithmetic -- the CFB-specific weekday cases
-# ---------------------------------------------------------------------------
-
-
 def test_cutoff_is_the_tuesday_on_or_before_gameday_for_every_weekday() -> None:
     """The frozen NFL formula ``(weekday - 1) % 7`` must land on the Tuesday on
     or before the gameday for all seven weekdays, and must NEVER be after
@@ -109,9 +101,8 @@ def test_cutoff_is_the_tuesday_on_or_before_gameday_for_every_weekday() -> None:
     cutoffs = cutoff_dates(pd.Series(gamedays))
 
     assert (cutoffs <= gamedays).all()
-    assert (cutoffs.dt.weekday == 1).all()  # Monday=0, so Tuesday=1
+    assert (cutoffs.dt.weekday == 1).all()
     assert (gamedays - cutoffs).dt.days.max() <= 6
-    # Tuesday 2018-11-13 -> itself; Monday 2018-11-12 -> the PREVIOUS Tuesday.
     assert cutoffs.iloc[1] == pd.Timestamp("2018-11-13")
     assert cutoffs.iloc[0] == pd.Timestamp("2018-11-06")
 
@@ -119,11 +110,6 @@ def test_cutoff_is_the_tuesday_on_or_before_gameday_for_every_weekday() -> None:
 def test_cutoff_never_lands_after_kickoff_on_the_working_frame() -> None:
     frame = attach_cfb_market_states(_games(), TEAM_STATES)
     assert (frame["cutoff_date"] <= frame["gameday"]).all()
-
-
-# ---------------------------------------------------------------------------
-# 2. Leakage
-# ---------------------------------------------------------------------------
 
 
 def test_a_revision_released_after_the_cutoff_is_invisible() -> None:
@@ -137,7 +123,6 @@ def test_a_revision_released_after_the_cutoff_is_invisible() -> None:
         games, fluview_raw=_fluview_raw(), team_states=TEAM_STATES, thresholds=THRESHOLDS
     )
     derived = derived.set_index("game_id")
-    # 101/103 are Ohio home games at a January cutoff: the OLD, not-elevated value.
     assert derived.loc[101, CFB_FLUVIEW_HOME_ELEVATED_COLUMN] == 0.0
     assert derived.loc[103, CFB_FLUVIEW_HOME_ELEVATED_COLUMN] == 0.0
 
@@ -175,8 +160,6 @@ def test_a_late_reissue_of_an_older_epiweek_never_overwrites_a_newer_one() -> No
         games, fluview_raw=fluview, team_states=TEAM_STATES, thresholds=THRESHOLDS
     )
     derived = derived.set_index("game_id")
-    # The freshest EPIWEEK known as of 2018-07-31 is 201810 (ili 1.0), not the
-    # late-reissued 201801 (ili 99.0).
     assert derived.loc[101, CFB_FLUVIEW_HOME_ELEVATED_COLUMN] == 0.0
 
 
@@ -192,11 +175,6 @@ def test_a_state_with_no_resolvable_checkpoint_is_nan_not_defaulted() -> None:
     assert derived[CFB_FLUVIEW_HOME_ELEVATED_COLUMN].isna().all()
     assert derived[CFB_FLUVIEW_AWAY_ELEVATED_COLUMN].isna().all()
     assert diagnostics["n_home_missing"] == len(derived)
-
-
-# ---------------------------------------------------------------------------
-# 3. Join correctness
-# ---------------------------------------------------------------------------
 
 
 def test_state_join_is_by_season_and_team_id_and_carries_a_venue_move() -> None:
@@ -257,13 +235,7 @@ def test_two_schools_in_one_state_share_a_single_panel_row_per_week() -> None:
 
     oh_week_1 = panel.loc[panel["state"].eq("oh") & panel["week"].eq(1)]
     assert len(oh_week_1) == 1
-    # The neutral-site game (104) contributes no panel row at all.
     assert not (panel["season"].eq(2018) & panel["week"].eq(3)).any()
-
-
-# ---------------------------------------------------------------------------
-# 4. Additive-merge / contract discipline
-# ---------------------------------------------------------------------------
 
 
 def test_attach_is_purely_additive() -> None:

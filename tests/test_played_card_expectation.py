@@ -43,8 +43,6 @@ def test_expectation_hero_is_the_approx_sign_on_55_percent() -> None:
 
     assert findings_content.PLAYED_CARD_EXPECTATION_PERCENT == 55
     assert findings_content.PLAYED_CARD_EXPECTATION_HERO == "\u224855%"
-    # The approx sign must be the real character, not an HTML entity: the
-    # models-page summary path escapes its text, which would mangle "&#8776;".
     assert "&#" not in findings_content.PLAYED_CARD_EXPECTATION_HERO
 
 
@@ -90,9 +88,6 @@ def test_ladder_rungs_render_the_pinned_sentences_in_fixed_order() -> None:
 
     with_chain = findings_content.ladder_rungs(_CHAIN)
     assert with_chain == (
-        # The baseline grades are no longer pinned here as constants: they
-        # live on The Model page, read from the active model's own artifacts
-        # (AGENTS.md "No number on the site may go stale", 2026-09-05).
         "Coin flip: 50%. The model's current opener and close grades are on The Model page.",
         (
             "Played chain (model alone \u2192 coach fade \u2192 arrests): 54.2% measured "
@@ -124,7 +119,6 @@ def test_ladder_rungs_render_the_pinned_sentences_in_fixed_order() -> None:
             "probability."
         ),
     )
-    # Without a chain artifact the played rung omits itself; nothing else moves.
     without_chain = findings_content.ladder_rungs(None)
     assert without_chain == (
         with_chain[0],

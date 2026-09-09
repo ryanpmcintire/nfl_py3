@@ -242,10 +242,6 @@ def entry_slice_masks(games: pd.DataFrame) -> dict[str, pd.Series]:
     }
 
 
-#: Entry -> (kind, quantity/flag column, human note). ``kind`` in
-#: {"trait", "venue", "exposure"}. Every trait/venue entry sharing a
-#: quantity+season-range gets the SAME reliability number (the battery
-#: inherits the trait's number, per the attention_battery_* precedent).
 ENTRY_CONSTRUCT: dict[str, dict[str, str]] = {
     f"{PREFIX}confidence_bucket_lt0p02": {"kind": "trait", "quantity": "confidence_distance"},
     f"{PREFIX}confidence_bucket_0p02_0p05": {"kind": "trait", "quantity": "confidence_distance"},
@@ -286,10 +282,6 @@ ENTRY_CONSTRUCT: dict[str, dict[str, str]] = {
     f"{PREFIX}week_third_late": {"kind": "exposure", "quantity": "week_third_late_flag"},
 }
 
-#: Used only when an entry's PRIMARY construct is flagged
-#: `not_applicable_compositional_constraint` -- falls back to the
-#: categorical flag's own EXPOSURE reliability, which is diagnosed by the
-#: same random-half check before it is trusted either.
 FALLBACK_CONSTRUCT: dict[str, dict[str, str]] = {
     f"{PREFIX}rest_diff_away_more_rested": {"kind": "exposure", "quantity": "rest_diff_lt0_flag"},
     f"{PREFIX}rest_diff_even": {"kind": "exposure", "quantity": "rest_diff_eq0_flag"},
@@ -409,22 +401,9 @@ _METHOD_FOR_KIND = {
 }
 _METRIC_COL_FOR_KIND = {"trait": "value", "venue": "value", "exposure": "exposure"}
 
-#: Reseeds for :func:`random_half_diagnostic`, and its own seed base -- kept
-#: distinct from :data:`rlib.RELIABILITY_SEED` so the diagnostic's random
-#: draws never collide with the real measurement's bootstrap draws.
 DIAGNOSTIC_N_RESEEDS = 20
 DIAGNOSTIC_BASE_SEED = 90101
 
-#: A construct is flagged `not_applicable_compositional_constraint` when
-#: EITHER its random-half-reseed mean reliability is more than this far
-#: from the real odd/even measurement (the true split's reading carries no
-#: information beyond what pure randomization already produces) OR the real
-#: measurement and the random-half mean are BOTH negative with
-#: |value| >= COMPOSITIONAL_MAGNITUDE_FLOOR (a durable negative that
-#: survives replacing genuine time order with noise). Round numbers chosen
-#: for this sweep, not fitted to any one cell -- every real/diagnostic pair
-#: is reported alongside the flag so a reader can apply a stricter or
-#: looser threshold. See :func:`is_compositional_artifact`.
 COMPOSITIONAL_GAP_THRESHOLD = 0.5
 COMPOSITIONAL_MAGNITUDE_FLOOR = 0.30
 
@@ -521,11 +500,6 @@ def main() -> int:
     masks = entry_slice_masks(games)
     print(f"population: {games.shape}, pushes already excluded")
 
-    # Cache one (measurement, compositional-diagnostic) pair per
-    # (kind, quantity, seasons) -- entries sharing a quantity+season-range
-    # inherit the same numbers, same as the attention_battery_*/
-    # graph_team_stat_* precedent, and the diagnostic (20 reseeds) is only
-    # ever run once per distinct construct.
     construct_cache: dict[tuple[str, str, tuple[int, int]], dict[str, Any]] = {}
 
     def measure_and_diagnose(kind: str, quantity: str, seasons: tuple[int, int]) -> dict[str, Any]:
@@ -652,9 +626,6 @@ def main() -> int:
     controls: dict[str, dict[str, list[dict[str, Any]]]] = {}
     for window in windows:
         restricted = games.loc[games["season"].between(window[0], window[1])]
-        # positive_control only needs season/week/unit_col -- reuse each unit
-        # structure's own shape (team-week, 2 rows/game, for trait+exposure
-        # entries; venue, 1 row/game keyed on home_team, for total_bucket_*).
         team_week_frame = build_trait_frame(restricted, "confidence_distance")
         venue_frame = build_venue_frame(restricted, "total_line")
         controls[f"{window[0]}-{window[1]}"] = {

@@ -96,22 +96,10 @@ THIN_COLUMNS: tuple[str, ...] = (
 )
 STATE_COLUMNS: tuple[str, ...] = tuple(c for c in BASE_COLUMNS if c not in THIN_COLUMNS)
 
-#: n_blocks=40 is the setting the recorded positive control used
-#: (``scripts/purged_validate.py``), so the overwrite stage reproduces it
-#: rather than measuring a different configuration.
 DEFAULT_N_BLOCKS = 40
 
-#: Planted magnitudes, expressed as the population forced-pick accuracy of the
-#: carrier ("+1.3 points" == 0.513). Spans the scale of every effect this
-#: project tracks, from below its resolution to well above it.
 MAGNITUDES: tuple[float, ...] = (0.505, 0.510, 0.513, 0.520, 0.530)
 
-#: Real carrier columns for the collinear plant, chosen to span the R^2 of a
-#: column against the rest of the standardised design (measured on the full
-#: 12,500-game table: 0.026 / 0.230 / 0.431 / 0.755 / 0.868). The team-state
-#: block is excluded on purpose: every one of its columns sits above R^2 0.997
-#: (``diff_x`` is ``home_x - away_x`` by construction), so dropping one from
-#: the baseline arm removes no information and the contrast is degenerate.
 REAL_CARRIERS: tuple[str, ...] = (
     "rest_diff",
     "week_cos",
@@ -121,11 +109,6 @@ REAL_CARRIERS: tuple[str, ...] = (
 )
 
 PLANT_COLUMN = "planted_carrier"
-
-
-# ---------------------------------------------------------------------------
-# Loading and folds
-# ---------------------------------------------------------------------------
 
 
 def load_completed() -> pd.DataFrame:
@@ -149,11 +132,6 @@ def build_folds(completed: pd.DataFrame, *, n_blocks: int) -> list[PurgedFold]:
         purge_weeks=DEFAULT_PURGE_WEEKS,
         embargo_weeks=DEFAULT_EMBARGO_WEEKS,
     )
-
-
-# ---------------------------------------------------------------------------
-# One arm = one feature contract + one ridge configuration, scored on every fold
-# ---------------------------------------------------------------------------
 
 
 def score_arm(
@@ -291,11 +269,6 @@ def fold_diagnostics(scored: pd.DataFrame) -> dict[str, float]:
     }
 
 
-# ---------------------------------------------------------------------------
-# Stage 1: the recorded positive control, as a level AND as a paired delta
-# ---------------------------------------------------------------------------
-
-
 def stage_overwrite(
     completed: pd.DataFrame,
     folds: list[PurgedFold],
@@ -345,11 +318,6 @@ def stage_overwrite(
                 flush=True,
             )
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# Stage 2: additive plants that leave the real target in place
-# ---------------------------------------------------------------------------
 
 
 def stage_additive(
@@ -411,11 +379,6 @@ def stage_additive(
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------------------
-# Stage 3: real contrasts, both estimators, identical folds
-# ---------------------------------------------------------------------------
-
-
 def real_contrast_specs() -> dict[str, dict[str, Any]]:
     """Mean-model contrasts only.
 
@@ -444,11 +407,6 @@ def real_contrast_specs() -> dict[str, dict[str, Any]]:
             "columns": tuple(c for c in BASE_COLUMNS if c not in CFB_EXPERIENCE_FEATURES)
         },
         "drop_total_line": {"columns": tuple(c for c in BASE_COLUMNS if c != "total_line")},
-        # Three deliberately LARGE contrasts. Without them every contrast in
-        # this list sits inside the evaluator's own resolution, the regression
-        # of one estimator on the other has no signal to fit, and a sign
-        # disagreement between two readings of zero would be misread as
-        # distortion. These give the regression a range to work over.
         "drop_spread_line": {"columns": tuple(c for c in BASE_COLUMNS if c != "spread_line")},
         "market_columns_only": {"columns": CFB_MARKET_FEATURES},
         "alpha_1e6": {"columns": BASE_COLUMNS, "ridge_alpha": 1_000_000.0},
@@ -522,16 +480,11 @@ def stage_real(
                 {
                     "contrast": str(record["candidate_feature_set"]),
                     "estimator": key,
-                    # paired_feature_comparisons works in accuracy fractions;
-                    # this project reports accuracy POINTS everywhere else.
                     "estimate": 100.0 * float(record["estimate"]),
                     "lower": 100.0 * float(record["lower"]),
                     "upper": 100.0 * float(record["upper"]),
                     "probability_positive": float(record["probability_positive"]),
                     "paired_games": int(record["paired_games"]),
-                    # Diagnostics: this arm's own level and its own
-                    # full-minus-sign gap, so a delta gap can be attributed to
-                    # the candidate arm's location rather than guessed at.
                     "arm_level_full": 100.0
                     * arm_accuracy(scored[str(record["candidate_feature_set"])], "full_home"),
                     "arm_level_sign": 100.0
@@ -548,12 +501,6 @@ def stage_real(
                     ),
                 }
             )
-    # How much the residual location is WORTH on real data, on this instrument:
-    # the same games scored with and without it, week-blocked. The NFL analogue
-    # is docs/residual_location.md's +2.12 points for the production reader over
-    # sign(predicted_market_residual); this is the CFB purged-CV reading of the
-    # identical question, and it is the context any "the calibration step is a
-    # defect" claim has to survive.
     location_frame = pd.concat(
         [
             _as_paired_predictions({"base_full": scored["base"]}, "full_home"),
@@ -614,11 +561,6 @@ def stage_real(
     return table, regression
 
 
-# ---------------------------------------------------------------------------
-# Stage 4: mechanism
-# ---------------------------------------------------------------------------
-
-
 def stage_mechanism(
     completed: pd.DataFrame,
     *,
@@ -655,8 +597,6 @@ def stage_mechanism(
                 else BASE_COLUMNS
             )
             for replicate in range(replicates):
-                # crc32, not hash(): str hashing is salted per process, which
-                # would make this stage's seeds irreproducible across runs.
                 seed = 900_000 + 37 * replicate + zlib.crc32(str(condition).encode()) % 1000
                 if construction == "overwrite":
                     planted = inject_synthetic_signal(
@@ -703,11 +643,6 @@ def stage_mechanism(
                 flush=True,
             )
     return pd.DataFrame(rows)
-
-
-# ---------------------------------------------------------------------------
-# Summaries
-# ---------------------------------------------------------------------------
 
 
 def _mean_ci(values: np.ndarray) -> dict[str, float]:
@@ -767,10 +702,6 @@ def summarize_overwrite(table: pd.DataFrame) -> pd.DataFrame:
             ("level_sign", group["level_sign_candidate"] - 50.0, truth),
             ("delta_full", group["delta_full"], truth),
             ("delta_sign", group["delta_sign"], truth),
-            # Paired WITHIN a replicate: both estimators read the identical
-            # fitted model, so their difference isolates the calibration step
-            # and cancels the plant draw's own variance. Truth is 0 -- a
-            # calibration step that neither helps nor hurts the measurement.
             (
                 "gap_level_full_minus_sign",
                 group["level_full_candidate"] - group["level_sign_candidate"],
@@ -848,10 +779,6 @@ def additive_recovery_slopes(table: pd.DataFrame) -> pd.DataFrame:
                 "runs": gap["n"],
             }
         )
-    # Does one estimator's delta predict the other's? Slope 1 means no
-    # attenuation from the calibration step; sign disagreements are split by
-    # effect size, because two readings of a null must disagree about half the
-    # time whatever the estimator does.
     x = table["delta_full"].to_numpy(dtype=float)
     y = table["delta_sign"].to_numpy(dtype=float)
     fit = np.polyfit(x, y, 1)
@@ -948,7 +875,7 @@ def resummarize(directory: Path) -> None:
     if overwrite_path.exists():
         overview = summarize_overwrite(pd.read_csv(overwrite_path))
         overview.to_csv(directory / "overwrite_summary.csv", index=False)
-        stamp_sidecar(directory / "overwrite_summary.csv")  # ENG-38
+        stamp_sidecar(directory / "overwrite_summary.csv")
         print("=== overwrite ===")
         print(overview.to_string(index=False), flush=True)
     additive_path = directory / "additive_raw.csv"
@@ -956,10 +883,10 @@ def resummarize(directory: Path) -> None:
         raw = pd.read_csv(additive_path)
         overview = summarize_additive(raw)
         overview.to_csv(directory / "additive_summary.csv", index=False)
-        stamp_sidecar(directory / "additive_summary.csv")  # ENG-38
+        stamp_sidecar(directory / "additive_summary.csv")
         slopes = additive_recovery_slopes(raw)
         slopes.to_csv(directory / "additive_recovery_slopes.csv", index=False)
-        stamp_sidecar(directory / "additive_recovery_slopes.csv")  # ENG-38
+        stamp_sidecar(directory / "additive_recovery_slopes.csv")
         print("=== additive ===")
         print(overview.to_string(index=False), flush=True)
         print("=== additive recovery slopes ===")
@@ -1018,14 +945,9 @@ def resummarize(directory: Path) -> None:
             .reset_index()
         )
         grouped.to_csv(directory / "mechanism_summary.csv", index=False)
-        stamp_sidecar(directory / "mechanism_summary.csv")  # ENG-38
+        stamp_sidecar(directory / "mechanism_summary.csv")
         print("=== mechanism ===")
         print(grouped.to_string(index=False), flush=True)
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> None:
@@ -1088,10 +1010,10 @@ def main() -> None:
         )
         table = pd.concat([full, thin], ignore_index=True)
         table.to_csv(output / "overwrite_raw.csv", index=False)
-        stamp_sidecar(output / "overwrite_raw.csv")  # ENG-38
+        stamp_sidecar(output / "overwrite_raw.csv")
         overview = summarize_overwrite(table)
         overview.to_csv(output / "overwrite_summary.csv", index=False)
-        stamp_sidecar(output / "overwrite_summary.csv")  # ENG-38
+        stamp_sidecar(output / "overwrite_summary.csv")
         summary["overwrite_seconds"] = time.time() - t0
         summary["overwrite"] = overview.to_dict(orient="records")
         print(overview.to_string(index=False), flush=True)
@@ -1100,13 +1022,13 @@ def main() -> None:
         t0 = time.time()
         table = stage_additive(completed, folds, replicates=args.replicates)
         table.to_csv(output / "additive_raw.csv", index=False)
-        stamp_sidecar(output / "additive_raw.csv")  # ENG-38
+        stamp_sidecar(output / "additive_raw.csv")
         overview = summarize_additive(table)
         overview.to_csv(output / "additive_summary.csv", index=False)
-        stamp_sidecar(output / "additive_summary.csv")  # ENG-38
+        stamp_sidecar(output / "additive_summary.csv")
         slopes = additive_recovery_slopes(table)
         slopes.to_csv(output / "additive_recovery_slopes.csv", index=False)
-        stamp_sidecar(output / "additive_recovery_slopes.csv")  # ENG-38
+        stamp_sidecar(output / "additive_recovery_slopes.csv")
         summary["additive_seconds"] = time.time() - t0
         summary["additive"] = overview.to_dict(orient="records")
         summary["additive_recovery_slopes"] = slopes.to_dict(orient="records")
@@ -1117,7 +1039,7 @@ def main() -> None:
         t0 = time.time()
         table, regression = stage_real(completed, folds, samples=args.bootstrap_samples)
         table.to_csv(output / "real_contrasts.csv", index=False)
-        stamp_sidecar(output / "real_contrasts.csv")  # ENG-38
+        stamp_sidecar(output / "real_contrasts.csv")
         summary["real_seconds"] = time.time() - t0
         summary["real_contrasts"] = table.to_dict(orient="records")
         summary["real_regression"] = regression
@@ -1128,7 +1050,7 @@ def main() -> None:
         t0 = time.time()
         table = stage_mechanism(completed, replicates=args.mechanism_replicates)
         table.to_csv(output / "mechanism_raw.csv", index=False)
-        stamp_sidecar(output / "mechanism_raw.csv")  # ENG-38
+        stamp_sidecar(output / "mechanism_raw.csv")
         grouped = (
             table.groupby(["construction", "knob", "value"], sort=True)[
                 [
@@ -1145,12 +1067,12 @@ def main() -> None:
             .reset_index()
         )
         grouped.to_csv(output / "mechanism_summary.csv", index=False)
-        stamp_sidecar(output / "mechanism_summary.csv")  # ENG-38
+        stamp_sidecar(output / "mechanism_summary.csv")
         summary["mechanism_seconds"] = time.time() - t0
         summary["mechanism"] = grouped.to_dict(orient="records")
         print(grouped.to_string(index=False), flush=True)
 
-    write_stamped_artifact(summary, output / "summary.json")  # ENG-38
+    write_stamped_artifact(summary, output / "summary.json")
     print(f"\nwrote {output / 'summary.json'}", flush=True)
 
 

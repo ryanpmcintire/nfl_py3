@@ -339,11 +339,6 @@ def main() -> None:
     opener_df, opener_note = _opener_graded_features(df, repo_root=REPO, market_root=None)
     print(f"  {opener_note}")
     n_opener_before_push_drop = len(opener_df)
-    # Opener regrading recomputes home_cover off the OPENER line, which can push
-    # a game that did not push at the close (and vice versa) -- re-drop pushes
-    # here rather than trusting the close-grade push-drop from load_population,
-    # matching roof_decision_screen.py's build_long_table doing the same after
-    # its own opener regrade.
     opener_df = opener_df.loc[opener_df["home_cover"].notna()].reset_index(drop=True)
     opener_pushes_dropped = n_opener_before_push_drop - len(opener_df)
     opener_df["week_block"] = opener_df["season"] * 100 + opener_df["week"]

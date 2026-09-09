@@ -77,7 +77,6 @@ def main() -> None:
     args = parser.parse_args()
 
     payload = json.loads(args.results.read_text(encoding="utf-8"))
-    # Timestamp directory name is the results.json's parent directory name.
     timestamp = args.results.parent.name
     source = SOURCE.format(timestamp=timestamp)
 

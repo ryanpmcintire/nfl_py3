@@ -159,22 +159,18 @@ from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E4
 OUT_ROOT = REPO / "artifacts" / "cfb_james_stein_unit"
 CFB_FEATURES_PATH = REPO / "data" / "processed" / "cfb_game_features.parquet"
 
-# ---------------------------------------------------------------------------
-# Constants -- mirrored NFL starting points (flagged, decision 3) and new
-# CFB-specific choices (flagged, decision-adjacent, see module docstring).
-# ---------------------------------------------------------------------------
-VALUE_PRIOR_ACTIONS = 200.0  # players.py value_prior_snaps default, reused verbatim
-VALUE_SPAN = 16  # players.py value_span default, reused verbatim
-STREAK_CAP = 4  # cfb_role_features.FROZEN_STREAK_CAP, reused for active-roster departure
-QB_MIN_PASS_ATTEMPTS = 5  # new: full-corpus passer identification threshold, flagged
-EPA_CLIP = 5.0  # mirrors VALUE_EPA_CLIP in cfb_value_weighted_continuity_screen.py
-MIN_EXPERIENCED_POOL = 20  # new: below this, prior_g/tau fall back to 0.0/epsilon
-JS_EPSILON = 1e-4  # positive-part floor on tau_between; flagged underived (decision 4)
+VALUE_PRIOR_ACTIONS = 200.0
+VALUE_SPAN = 16
+STREAK_CAP = 4
+QB_MIN_PASS_ATTEMPTS = 5
+EPA_CLIP = 5.0
+MIN_EXPERIENCED_POOL = 20
+JS_EPSILON = 1e-4
 
 BOOTSTRAP_SAMPLES = 20_000
-BOOTSTRAP_SEED = 20260818  # frozen before any accuracy number was seen
+BOOTSTRAP_SEED = 20260818
 
-BASELINE_ARM = ROLE_BENCHMARK_BASELINE_ARM  # "cfb_benchmark_v1", the frozen XLG-03 arm
+BASELINE_ARM = ROLE_BENCHMARK_BASELINE_ARM
 CANDIDATE_ARM = "cfb_benchmark_v1_js_unit_value"
 CANDIDATE_COLUMNS = (
     "home_skill_unit_value",
@@ -182,11 +178,6 @@ CANDIDATE_COLUMNS = (
     "diff_skill_unit_value",
 )
 JS_ROLE_COLUMNS = (*CFB_MODEL_FEATURE_COLUMNS, *CANDIDATE_COLUMNS)
-
-
-# ---------------------------------------------------------------------------
-# Step 1: load pbp and build the credited skill-production table
-# ---------------------------------------------------------------------------
 
 
 def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -295,19 +286,11 @@ def build_credited_production(
     return player_game
 
 
-# ---------------------------------------------------------------------------
-# Step 2: walk-forward state simulation -- OLD (shrink-to-zero) and NEW
-# (James-Stein toward a position prior) constructs computed together, since
-# they share the same active-roster iteration and only differ in the
-# per-player shrinkage formula.
-# ---------------------------------------------------------------------------
-
-
 @dataclass
 class _UnitTrail:
-    value_state: float = math.nan  # EWM of per-game credited skill EPA (clipped)
-    actions_state: float = math.nan  # EWM of per-game credited action count
-    career_actions: float = 0.0  # running total, mirrors career_offense_snaps
+    value_state: float = math.nan
+    actions_state: float = math.nan
+    career_actions: float = 0.0
     appearances: int = 0
     missed_streak: int = 0
     last_season: int = -1
@@ -518,11 +501,6 @@ def simulate_unit_value(
     return result, diag
 
 
-# ---------------------------------------------------------------------------
-# Step 3: split-half reliability (BEFORE the accuracy screen; AGENTS.md)
-# ---------------------------------------------------------------------------
-
-
 def split_half_reliability(
     team_value: pd.DataFrame, value_column: str, *, seed: int, n_boot: int = 4000
 ) -> dict[str, Any]:
@@ -573,12 +551,6 @@ def split_half_reliability(
         "spearman_brown_full_length_reliability": sb,
         "probability_positive": float(probability_positive_from_draws(boots)),
     }
-
-
-# ---------------------------------------------------------------------------
-# Step 4: attach the NEW (James-Stein) construct to canonical games and run
-# the accuracy screen against the frozen XLG-03 benchmark
-# ---------------------------------------------------------------------------
 
 
 def attach_unit_value(
@@ -765,11 +737,6 @@ def _describe(values: list[float]) -> dict[str, float]:
     }
 
 
-# ---------------------------------------------------------------------------
-# main
-# ---------------------------------------------------------------------------
-
-
 def main() -> None:
     started = time.perf_counter()
     timings: dict[str, float] = {}
@@ -874,15 +841,15 @@ def main() -> None:
 
     print("\n=== Step 5: write artifacts ===", flush=True)
     atomic_parquet(team_value, output / "team_value.parquet")
-    stamp_sidecar(output / "team_value.parquet")  # ENG-38
+    stamp_sidecar(output / "team_value.parquet")
     atomic_parquet(benchmark["predictions"], output / "predictions.parquet")
-    stamp_sidecar(output / "predictions.parquet")  # ENG-38
+    stamp_sidecar(output / "predictions.parquet")
     atomic_csv(benchmark["summary"], output / "summary.csv")
-    stamp_sidecar(output / "summary.csv")  # ENG-38
+    stamp_sidecar(output / "summary.csv")
     atomic_csv(benchmark["season_summary"], output / "season_summary.csv")
-    stamp_sidecar(output / "season_summary.csv")  # ENG-38
+    stamp_sidecar(output / "season_summary.csv")
     atomic_csv(paired, output / "paired_comparisons.csv")
-    stamp_sidecar(output / "paired_comparisons.csv")  # ENG-38
+    stamp_sidecar(output / "paired_comparisons.csv")
     atomic_json(reliability_results, output / "split_half_reliability.json")
     atomic_json(sim_report, output / "simulation_diagnostics.json")
     atomic_json(qb_diag, output / "qb_identification_diagnostics.json")
@@ -916,7 +883,7 @@ def main() -> None:
         "screen_summary": screen_summary,
         "timing": timings,
     }
-    write_stamped_artifact(metadata, output / "metadata.json")  # ENG-38
+    write_stamped_artifact(metadata, output / "metadata.json")
     print(f"\nWrote artifacts to {output}", flush=True)
     print(f"Total runtime: {timings['total_seconds']:.1f}s", flush=True)
 

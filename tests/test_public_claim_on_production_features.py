@@ -83,11 +83,6 @@ def _opener_lines(rows: dict[str, tuple[float | None, float | None]]) -> pd.Data
     )
 
 
-# ---------------------------------------------------------------------------
-# road_fav_big_fade
-# ---------------------------------------------------------------------------
-
-
 def test_road_fav_big_fade_away_favorite_is_positive() -> None:
     """Away favored by 7+ at the opener (home_spread <= -7) -> +1 (back home)."""
 
@@ -135,7 +130,7 @@ def test_road_fav_big_fade_uses_the_opener_not_the_schedules_own_close() -> None
     with the opener, and the flag follows the OPENER."""
 
     schedule = _schedule([_game("g6", 2020, "2020-09-13", "AAA", "BBB", spread_line=-2.0)])
-    lines = _opener_lines({"g6": (-9.0, 45.0)})  # opener: away favored by 9
+    lines = _opener_lines({"g6": (-9.0, 45.0)})
     derived = derive_road_fav_big_fade_features(schedule, lines).set_index("game_id")
     assert derived.loc["g6", ROAD_FAV_BIG_FADE_COLUMN] == 1.0
 
@@ -149,21 +144,16 @@ def test_attach_road_fav_big_fade_is_purely_additive() -> None:
     pd.testing.assert_frame_equal(features, widened[features.columns], check_exact=True)
 
 
-# ---------------------------------------------------------------------------
-# division_dog / week1_dog (shared shape)
-# ---------------------------------------------------------------------------
-
-
 def test_division_dog_home_underdog_is_positive() -> None:
     schedule = _schedule([_game("d1", 2020, "2020-09-13", "AAA", "BBB", div_game=1)])
-    lines = _opener_lines({"d1": (-3.0, 45.0)})  # home underdog
+    lines = _opener_lines({"d1": (-3.0, 45.0)})
     derived = derive_division_dog_features(schedule, lines).set_index("game_id")
     assert derived.loc["d1", DIVISION_DOG_COLUMN] == 1.0
 
 
 def test_division_dog_away_underdog_is_negative() -> None:
     schedule = _schedule([_game("d2", 2020, "2020-09-13", "AAA", "BBB", div_game=1)])
-    lines = _opener_lines({"d2": (3.0, 45.0)})  # home favored, away is the dog
+    lines = _opener_lines({"d2": (3.0, 45.0)})
     derived = derive_division_dog_features(schedule, lines).set_index("game_id")
     assert derived.loc["d2", DIVISION_DOG_COLUMN] == -1.0
 
@@ -224,7 +214,7 @@ def test_week1_dog_week_two_is_zero_even_if_it_would_otherwise_qualify() -> None
 
 def test_week1_dog_uses_the_opener_not_the_schedules_own_close() -> None:
     schedule = _schedule([_game("w4", 2020, "2020-09-10", "AAA", "BBB", week=1, spread_line=3.0)])
-    lines = _opener_lines({"w4": (-1.0, 45.0)})  # opener disagrees with the close
+    lines = _opener_lines({"w4": (-1.0, 45.0)})
     derived = derive_week1_dog_features(schedule, lines).set_index("game_id")
     assert derived.loc["w4", WEEK1_DOG_COLUMN] == 1.0
 
@@ -239,14 +229,7 @@ def test_attach_division_dog_and_week1_dog_are_purely_additive() -> None:
     assert sorted(set(widened2.columns) - set(features.columns)) == [WEEK1_DOG_COLUMN]
 
 
-# ---------------------------------------------------------------------------
-# ats_streak_regress
-# ---------------------------------------------------------------------------
-
-
 def _streak_schedule() -> pd.DataFrame:
-    # AAA loses ATS three straight weeks (result < spread_line each time),
-    # then meets BBB (no streak) in week 4 -> home (AAA) qualifies -> +1.
     return _schedule(
         [
             _game("s1", 2020, "2020-09-10", "AAA", "ZZZ", week=1, result=-10.0, spread_line=-3.0),
@@ -267,7 +250,6 @@ def test_ats_streak_regress_a_cover_resets_the_streak() -> None:
         [
             _game("r1", 2020, "2020-09-10", "AAA", "ZZZ", week=1, result=-10.0, spread_line=-3.0),
             _game("r2", 2020, "2020-09-17", "YYY", "AAA", week=2, result=3.0, spread_line=-1.0),
-            # AAA COVERS here (result 5 > spread -2 from AAA's home perspective).
             _game("r3", 2020, "2020-09-24", "AAA", "XXX", week=3, result=5.0, spread_line=-2.0),
             _game("r4", 2020, "2020-10-01", "AAA", "BBB", week=4, result=None, spread_line=None),
         ]
@@ -281,15 +263,12 @@ def test_ats_streak_regress_a_push_neither_extends_nor_resets() -> None:
         [
             _game("p1", 2020, "2020-09-10", "AAA", "ZZZ", week=1, result=-10.0, spread_line=-3.0),
             _game("p2", 2020, "2020-09-17", "YYY", "AAA", week=2, result=3.0, spread_line=-1.0),
-            # Push: AAA's home game, result exactly equals spread_line.
             _game("p3", 2020, "2020-09-24", "AAA", "XXX", week=3, result=-2.0, spread_line=-2.0),
-            # Third genuine loss.
             _game("p4", 2020, "2020-10-01", "YYY", "AAA", week=4, result=3.0, spread_line=-1.0),
             _game("p5", 2020, "2020-10-08", "AAA", "BBB", week=5, result=None, spread_line=None),
         ]
     )
     derived = derive_ats_streak_regress_features(schedule).set_index("game_id")
-    # AAA's streak: loss, loss, PUSH (skipped), loss => 3 losses entering p5.
     assert derived.loc["p5", ATS_STREAK_REGRESS_COLUMN] == 1.0
 
 
@@ -299,7 +278,6 @@ def test_ats_streak_regress_resets_at_season_boundary() -> None:
             _game("b1", 2020, "2020-09-10", "AAA", "ZZZ", week=1, result=-10.0, spread_line=-3.0),
             _game("b2", 2020, "2020-09-17", "YYY", "AAA", week=2, result=3.0, spread_line=-1.0),
             _game("b3", 2020, "2020-09-24", "AAA", "XXX", week=3, result=0.0, spread_line=3.0),
-            # Next SEASON's week 1: the 2020 streak does not carry over.
             _game("b4", 2021, "2021-09-12", "AAA", "BBB", week=1, result=None, spread_line=None),
         ]
     )
@@ -363,7 +341,6 @@ def test_ats_streak_regress_a_later_games_flag_may_depend_on_an_earlier_result()
     assert before.loc["s4", ATS_STREAK_REGRESS_COLUMN] == 1.0
 
     mutated = schedule.copy()
-    # AAA now COVERS in week 3 instead of losing -> streak breaks before s4.
     mutated.loc[mutated["game_id"] == "s3", "result"] = 10.0
     after = derive_ats_streak_regress_features(mutated).set_index("game_id")
     assert after.loc["s4", ATS_STREAK_REGRESS_COLUMN] == 0.0
@@ -383,11 +360,6 @@ def test_derive_ats_streak_regress_requires_every_schedule_column() -> None:
         derive_ats_streak_regress_features(schedule)
 
 
-# ---------------------------------------------------------------------------
-# Join contracts (mirrors every sibling *_production_feature module)
-# ---------------------------------------------------------------------------
-
-
 def test_attach_requires_the_join_key() -> None:
     schedule = _schedule([_game("z1", 2020, "2020-09-13", "AAA", "BBB", div_game=1)])
     lines = _opener_lines({"z1": (-3.0, 45.0)})
@@ -403,10 +375,6 @@ def test_attach_refuses_to_overwrite_an_existing_column() -> None:
     with pytest.raises(DataContractError, match=DIVISION_DOG_COLUMN):
         attach_division_dog_features(features, schedule=schedule, opener_lines=lines)
 
-
-# ---------------------------------------------------------------------------
-# Registered candidate profiles: production plus exactly the one column
-# ---------------------------------------------------------------------------
 
 WAVE_3_CANDIDATES = ("road_fav_big_fade", "division_dog", "week1_dog", "ats_streak_regress")
 

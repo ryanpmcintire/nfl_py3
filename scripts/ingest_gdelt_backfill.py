@@ -101,12 +101,6 @@ TEAM_ARTICLES: dict[str, list[str]] = _load_team_articles()
 
 GDELT_ENDPOINT = "https://api.gdeltproject.org/api/v2/doc/doc"
 
-# Broadened vs. the 20260819 pilot's 3-domain list (espn.com, nfl.com,
-# cbssports.com). All 8 are sports-only outlets by reputation (inferred, not
-# independently re-verified per-domain this session) -- chosen to cut
-# single-day zero-inflation in the raw daily article count while staying off
-# the entertainment-crossover domains the scout doc measured as noisy on an
-# unfiltered team-name query.
 DOMAIN_ALLOWLIST = [
     "espn.com",
     "nfl.com",
@@ -118,10 +112,6 @@ DOMAIN_ALLOWLIST = [
     "sportingnews.com",
 ]
 
-# GDELT DOC 2.0's documented reliable floor is 2017-01-01. End date pushed to
-# mid-February to safely cover the 2025 season's full REG Week 18 slate
-# (early January 2026) plus a trailing buffer for as-of-Saturday cutoffs on
-# the final week.
 DEFAULT_START = "20170101000000"
 DEFAULT_END = "20260215000000"
 
@@ -292,7 +282,6 @@ def run_ingest(output_dir: Path, *, resume: bool, time_budget_seconds: float | N
         n_run_this_session += 1
         if not result["parsed_ok"]:
             print(f"    WARNING: parse failed, retries={result['retries']}", flush=True)
-        # Checkpoint after every request.
         manifest["n_requests_so_far"] = len(manifest["requests"])
         manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 

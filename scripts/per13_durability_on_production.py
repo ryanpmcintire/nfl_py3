@@ -84,21 +84,12 @@ DEFAULT_FEATURES = REPO_ROOT / "data/processed/game_features_weak_stack_durabili
 ROTATION_FAMILY = "per13_durability_on_production"
 OPENER_ROTATION_FAMILY = "per13_durability_on_production_opener"
 
-#: The one column the positive control leaks into. Frozen in the predeclaration
-#: (sec 6) before the window was drawn.
 CONTROL_COLUMN = "diff_injury_offense_unavailability_durability"
 
-#: Rotation-assigned window; overridable via --seasons for the instrument
-#: checks, which run on the same window.
 DEFAULT_SEASONS = "2011-2013"
 DEFAULT_OPENER_ARTIFACT = (
     REPO_ROOT / "artifacts/opener_evaluation/20260819T174244Z/per_game.parquet"
 )
-
-
-# ---------------------------------------------------------------------------
-# The evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_window(
@@ -372,11 +363,6 @@ def separation_report(features: pd.DataFrame, seasons: tuple[int, ...]) -> dict[
         "games_by_column": per_column,
         "by_season": by_season.to_dict(orient="records"),
     }
-
-
-# ---------------------------------------------------------------------------
-# Entry point
-# ---------------------------------------------------------------------------
 
 
 def main() -> int:

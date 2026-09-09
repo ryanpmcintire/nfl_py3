@@ -31,10 +31,6 @@ from nfl_ats.injury_report_hygiene import (
     select_earliest_revision_per_player_week,
 )
 
-# ---------------------------------------------------------------------------
-# Frozen designation string classification
-# ---------------------------------------------------------------------------
-
 
 def test_every_frozen_string_classifies_into_its_own_bucket() -> None:
     for text in PERSONAL_MATTER_DESIGNATIONS:
@@ -93,11 +89,6 @@ def test_canonical_text_lowercases_strips_and_handles_missing() -> None:
     assert canonical_text("") is None
 
 
-# ---------------------------------------------------------------------------
-# Position grouping
-# ---------------------------------------------------------------------------
-
-
 def test_concussion_position_group_matches_frozen_predeclared_sets() -> None:
     for position in CONCUSSION_SKILL_POSITIONS:
         assert concussion_position_group(position) == "skill"
@@ -107,10 +98,6 @@ def test_concussion_position_group_matches_frozen_predeclared_sets() -> None:
     for position in ("CB", "LB", "S", "SAF", "FS", "SS"):
         assert concussion_position_group(position) == "other"
 
-
-# ---------------------------------------------------------------------------
-# Canonicalization + earliest-revision selection
-# ---------------------------------------------------------------------------
 
 _INJURY_COLUMNS = (
     "season",
@@ -176,12 +163,8 @@ def test_select_earliest_revision_per_player_week_keeps_earliest_and_counts_mult
     assert multi_revision_count == 1
     assert len(earliest) == 2
     p1_row = earliest.loc[earliest["gsis_id"] == "P1"].iloc[0]
-    assert p1_row["report_status"] == "Out"  # earliest revision kept, not the later "Doubtful"
+    assert p1_row["report_status"] == "Out"
 
-
-# ---------------------------------------------------------------------------
-# Sunday-action join
-# ---------------------------------------------------------------------------
 
 _ROSTER_COLUMNS = (
     "season",
@@ -259,17 +242,12 @@ def test_attach_played_outcome_true_when_snaps_present_false_when_absent() -> No
         ]
     )
     rosters = pd.DataFrame([_roster_row("P1", "PFR_P1"), _roster_row("P2", "PFR_P2")])
-    snaps = pd.DataFrame([_snap_row("PFR_P1", 10.0)])  # only P1 recorded snaps
+    snaps = pd.DataFrame([_snap_row("PFR_P1", 10.0)])
 
     result = attach_played_outcome(population, snaps, rosters)
     played_by_player = dict(zip(result["gsis_id"], result["played"], strict=True))
     assert played_by_player["P1"] is True
     assert played_by_player["P2"] is False
-
-
-# ---------------------------------------------------------------------------
-# Season-blocked bootstrap
-# ---------------------------------------------------------------------------
 
 
 def _rate_frame() -> pd.DataFrame:
@@ -281,7 +259,6 @@ def _rate_frame() -> pd.DataFrame:
                 {
                     "season": season,
                     "group": "a" if index < 15 else "b",
-                    # group "a" outcomes average ~0.8, group "b" ~0.3
                     "outcome": float(rng.random() < (0.8 if index < 15 else 0.3)),
                 }
             )
@@ -321,11 +298,6 @@ def test_season_block_bootstrap_gap_raises_on_empty_group() -> None:
         )
 
 
-# ---------------------------------------------------------------------------
-# Leakage: the outcome must never change population/classification columns
-# ---------------------------------------------------------------------------
-
-
 def _leakage_population() -> pd.DataFrame:
     return pd.DataFrame(
         [
@@ -357,8 +329,6 @@ def test_outcome_never_changes_the_population_or_designation_columns() -> None:
             for gsis_id in ("P1", "P2", "P3", "P4", "P5")
         ]
     )
-    # A snap table for an unrelated player: every population row is absent
-    # from it, so every population row resolves played=False.
     none_played_snaps = pd.DataFrame([_snap_row("PFR_UNRELATED", 10.0, player="Unrelated")])
 
     frame_all_played, _ = build_player_week_frame(
@@ -387,7 +357,7 @@ def test_outcome_never_changes_the_population_or_designation_columns() -> None:
 
     designations = dict(zip(left["gsis_id"], left["designation"], strict=True))
     assert designations == {
-        "P1": "injury",  # concussion is a genuine injury designation
+        "P1": "injury",
         "P2": "injury",
         "P3": "personal_matter",
         "P4": "injury",

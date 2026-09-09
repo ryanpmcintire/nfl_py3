@@ -29,10 +29,6 @@ from typing import Any
 
 from nfl_ats.board_assistant import answer
 
-#: The only categories a golden-question row may carry -- keeps the JSON
-#: fixture and this module's per-category reporting in lockstep; an
-#: unrecognized category is a fixture bug (caught by :func:`load_questions`),
-#: not a silently-ignored row.
 CATEGORIES: tuple[str, ...] = (
     "routing",
     "unsupported_fallback",
@@ -42,15 +38,6 @@ CATEGORIES: tuple[str, ...] = (
     "accessibility_text",
 )
 
-#: Substrings that mark a number in an answer as source-anchored -- a named
-#: probability/record/timestamp origin, not a bare digit. Matched
-#: case-insensitively against the FULL answer text (not positionally next to
-#: the number): every numeric answer template in
-#: ``nfl_ats.board_assistant``/``nfl_ats.board_assistant_lineups`` already
-#: puts its anchor phrase in the same sentence as its number, so a
-#: text-level check is precise enough without brittle proximity parsing, and
-#: stays honest because this marker list is closed and reviewed here, not
-#: inferred at check time.
 PROVENANCE_MARKERS: tuple[str, ...] = (
     "cover probability",
     "as of ",

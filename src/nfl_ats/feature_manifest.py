@@ -42,11 +42,6 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-#: Manifest keys, across every enrichment writer in
-#: ``nfl_ats.cli_commands.features``, that name an immutable upstream
-#: capture. Mirrors the ``manifest_snapshot_key`` values registered on
-#: ``nfl_ats.lineage.FAMILY_BUILDERS`` -- kept as a plain tuple here (not an
-#: import) so this module has no dependency on the lineage layer.
 SNAPSHOT_KEYS: tuple[str, ...] = (
     "source_snapshot",
     "source_pbp_snapshot",
@@ -56,20 +51,10 @@ SNAPSHOT_KEYS: tuple[str, ...] = (
     "source_participation_snapshot",
 )
 
-#: Key a derived manifest stores its merged upstream block under.
 SOURCE_SNAPSHOTS_KEY = "source_snapshots"
 
-#: Key the base ``build-features`` manifest records the pool decision-line
-#: captures under (``nfl_ats.pool_decision_lines.decision_lines_manifest_block``).
-#: It rides the same inheritance chain as :data:`SNAPSHOT_KEYS` -- copied into
-#: every derived manifest's :data:`SOURCE_SNAPSHOTS_KEY` block by
-#: :func:`inherit_source_snapshots` -- because the question it answers ("which
-#: number was this pick formed against") is asked of the card, which is built
-#: from a table several enrichment steps downstream of the base build.
 DECISION_LINES_KEY = "decision_lines"
 
-#: Reason recorded when a caller names a parent manifest path that could not
-#: be read (missing file, or not valid JSON).
 UPSTREAM_ABSENT_REASON = "upstream manifest absent"
 
 

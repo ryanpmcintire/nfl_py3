@@ -85,9 +85,6 @@ def test_applies_matches_reports_unmatched_and_rejects_bad_category(tmp_path: Pa
     report = apply_signal_summaries.apply_signal_summaries(summaries_path, registry_path)
 
     assert report["summaries_found"] is True
-    # alpha gets both fields; beta's plain_summary applies but its category is
-    # rejected (invalid), so beta still changed (plain_summary alone) -> counted
-    # in applied, and the bad category is reported separately.
     assert set(report["applied_names"]) == {"alpha", "beta"}
     assert report["unmatched_names"] == ["ghost_signal_not_in_registry"]
     assert len(report["rejected_invalid_category"]) == 1
@@ -96,7 +93,6 @@ def test_applies_matches_reports_unmatched_and_rejects_bad_category(tmp_path: Pa
     updated = load_registry(registry_path)
     assert updated.signals["alpha"].category == "onfield"
     assert updated.signals["alpha"].plain_summary == "A short sentence a fan can read on its own."
-    # beta's category was rejected, so it stays unset even though plain_summary applied.
     assert updated.signals["beta"].category is None
     assert updated.signals["beta"].plain_summary == "Also short."
 
@@ -125,7 +121,6 @@ def test_never_alters_any_field_other_than_plain_summary_and_category(tmp_path: 
     assert after.source == before.source
     assert after.interval == before.interval
     assert after.classification == before.classification
-    # Only these two changed.
     assert before.category is None and after.category == "health"
     assert before.plain_summary is None and after.plain_summary == "Plain words."
 

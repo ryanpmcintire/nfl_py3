@@ -43,21 +43,6 @@ from nfl_ats.prospective_scoring import (
     load_challenger_decisions,
 )
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# G-clean: divisional, total 40 (<=42), home dog by 3, model picks AWAY ->
-#   flips to HOME.
-# G-nondiv: same total/spread shape but NOT divisional -> no flip.
-# G-hightotal: divisional, home dog, but total 43 (>42) -> no flip.
-# G-homefav: divisional, low total, but home is the FAVORITE (spread +3),
-#   not the dog -> no flip.
-# G-alreadyhome: divisional, low total, home dog, but model already picks
-#   HOME -> already correct, untouched.
-# G-post: same in-zone shape as G-clean but POST season -> REG-only gate.
-# G-missingtotal: total_line is NaN -> treated as not eligible.
-
 
 def _predictions() -> pd.DataFrame:
     return pd.DataFrame(
@@ -83,11 +68,6 @@ def _predictions() -> pd.DataFrame:
             "home_cover_probability": [0.35, 0.35, 0.35, 0.35, 0.60, 0.35, 0.35],
         }
     )
-
-
-# ---------------------------------------------------------------------------
-# 1. apply_low_total_div_home_dog_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_frozen_total_max_is_forty_two() -> None:
@@ -180,11 +160,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_low_total_div_home_dog_overlay(pd.DataFrame({"game_id": ["G1"]}))
 
 
-# ---------------------------------------------------------------------------
-# 2. overlay_disclosure_note
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     only_nondiv = _predictions().loc[lambda frame: frame["game_id"].eq("2026_05_NONDIV")]
     result = apply_low_total_div_home_dog_overlay(only_nondiv)
@@ -201,10 +176,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "AWAY -> HOME" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 3. record_low_total_div_home_dog_challenger_decisions
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -261,8 +232,6 @@ def test_record_challenger_decisions_records_the_overlay_arm(tmp_path: Path) -> 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
     _write_active_model_and_card(artifacts)
-    # data_root is accepted for call-signature parity but never read -- see
-    # the module docstring -- so an unused, non-existent path is sufficient.
     data_root = tmp_path / "data"
     now = datetime(2026, 10, 4, 16, 0, tzinfo=UTC)
 
@@ -285,7 +254,6 @@ def test_record_challenger_decisions_records_the_overlay_arm(tmp_path: Path) -> 
     assert paired["pick_side"].tolist() == ["HOME", "AWAY"]
     paired_bytes = paired_path.read_bytes()
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_low_total_div_home_dog_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -364,11 +332,6 @@ def test_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
         },
     }
     assert config_fingerprint(artifact_model_config(metadata)) == config_fingerprint(_MODEL_CONFIG)
-
-
-# ---------------------------------------------------------------------------
-# 4. Registration self-consistency (the TRACKED registry entry)
-# ---------------------------------------------------------------------------
 
 
 def test_real_registry_entry_fingerprint_is_internally_consistent() -> None:

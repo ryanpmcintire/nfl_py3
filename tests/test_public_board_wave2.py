@@ -41,10 +41,6 @@ from nfl_ats.board_site_content import (
     SeasonGradeRow,
 )
 
-# ---------------------------------------------------------------------------
-# (g) Tiebreaker guess
-# ---------------------------------------------------------------------------
-
 
 def test_tiebreaker_panel_shows_not_published_by_default() -> None:
     """The shared fixture never sets ``tiebreaker`` -- ``BoardContent``'s
@@ -76,8 +72,6 @@ def test_tiebreaker_panel_renders_a_real_guess() -> None:
     assert "blended total 43.04" in html
     assert "implied margin KC by 2.75" in html
     assert "guess KC 22 - DEN 19" in html
-    # ``TIEBREAKER_NUDGE_NOTE`` contains an apostrophe that ``escape()``
-    # turns into ``&#x27;`` on render -- check the escape-safe part.
     assert "starts from the market" in html
 
 
@@ -142,11 +136,6 @@ def test_tiebreaker_panel_omits_guess_score_when_not_supplied() -> None:
     assert ", guess" not in html
 
 
-# ---------------------------------------------------------------------------
-# (h) History: opener vs close, side by side
-# ---------------------------------------------------------------------------
-
-
 def _history_fixture(
     *,
     season_grades: tuple[SeasonGradeRow, ...] = (),
@@ -184,8 +173,6 @@ def test_history_grading_section_renders_season_rows_and_caption() -> None:
     assert "Opener vs close, side by side" in html
     assert "54.5%" in html and "55.3%" in html
     assert "-0.8%" in html
-    # ``HISTORY_GRADE_CAPTION`` contains apostrophes that ``escape()`` turns
-    # into ``&#x27;`` on render -- check the escape-safe part.
     assert "close is the market at its sharpest" in html
     assert "settles picks at the OPENER" in html
 

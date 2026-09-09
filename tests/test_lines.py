@@ -94,7 +94,6 @@ def test_rescore_at_lines_reevaluates_distribution_at_supplied_line(
         + rescored["home_loss_probability"]
     )
     assert np.allclose(total, 1.0)
-    # Half-point supplied lines can never push.
     assert rescored.loc[rescored["spread_line"].eq(0.5), "push_probability"].eq(0.0).all()
 
 

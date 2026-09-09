@@ -65,11 +65,6 @@ FULL_CREW = (
 )
 
 
-# ---------------------------------------------------------------------------
-# Synthetic fixtures
-# ---------------------------------------------------------------------------
-
-
 def _crew_html(pairs: tuple[tuple[str, str], ...]) -> str:
     rows = "".join(f"<tr><th>{position}</th><td>{name}</td></tr>" for position, name in pairs)
     return f'<html><body><table id="ref_info"><tbody>{rows}</tbody></table></body></html>'
@@ -212,11 +207,6 @@ def _no_cross_test_cache() -> Any:
     clear_cache()
 
 
-# ---------------------------------------------------------------------------
-# Run discovery and parsing
-# ---------------------------------------------------------------------------
-
-
 def test_the_retyped_source_id_matches_the_sweep_scripts_own() -> None:
     """``ARCHIVE_SOURCE`` is retyped rather than imported; pin it equal.
 
@@ -325,11 +315,6 @@ def test_down_judge_is_folded_into_head_linesman() -> None:
     assert normalize_position("Referee") == "Referee"
 
 
-# ---------------------------------------------------------------------------
-# Canonical table
-# ---------------------------------------------------------------------------
-
-
 def test_canonical_table_has_the_frozen_columns_and_schedule_derived_fields(
     tmp_path: Path,
 ) -> None:
@@ -339,7 +324,6 @@ def test_canonical_table_has_the_frozen_columns_and_schedule_derived_fields(
     assert list(table.columns) == list(CANONICAL_CREW_COLUMNS)
     row = table.iloc[0]
     assert row["game_id"] == "2014_01_GB_SEA"
-    # season/week/gameday/old_game_id come from the SCHEDULE, the authority.
     assert row["old_game_id"] == "2014090400"
     assert int(row["season"]) == 2014
     assert int(row["week"]) == 1
@@ -401,7 +385,7 @@ def test_a_game_captured_by_two_runs_resolves_to_the_newest_capture(tmp_path: Pa
     _write_run(raw_root, "20260908T090000Z", [(newer, FULL_CREW)])
 
     rows = load_archive_crew_rows(repo_root=REPO_ROOT, raw_root=raw_root)
-    assert len(rows) == 14  # both runs' rows are read
+    assert len(rows) == 14
 
     table = canonical_crew_table(repo_root=REPO_ROOT, raw_root=raw_root, schedules=_schedules())
     assert len(table) == 1
@@ -409,7 +393,7 @@ def test_a_game_captured_by_two_runs_resolves_to_the_newest_capture(tmp_path: Pa
     assert row["source_run_id"] == "20260908T090000Z"
     assert row["wayback_capture_timestamp"] == "20151201000000"
     assert row["referee"] == "Ed Hochuli"
-    assert int(row["n_crew_rows"]) == 7  # only the winning run's rows survive
+    assert int(row["n_crew_rows"]) == 7
 
 
 def test_a_crew_row_with_no_schedule_game_fails_closed(tmp_path: Path) -> None:
@@ -440,11 +424,6 @@ def test_an_empty_archive_yields_an_empty_canonical_table(tmp_path: Path) -> Non
     assert list(table.columns) == list(CANONICAL_CREW_COLUMNS)
 
 
-# ---------------------------------------------------------------------------
-# LEAKAGE regression tests (AGENTS.md: one per new feature family)
-# ---------------------------------------------------------------------------
-
-
 def test_a_capture_at_or_before_kickoff_fails_closed(tmp_path: Path) -> None:
     """LEAKAGE. The archive's whole timing claim is that its captures are
     strictly POST-game, so it can only ever support historical crew
@@ -454,18 +433,14 @@ def test_a_capture_at_or_before_kickoff_fails_closed(tmp_path: Path) -> None:
     data, not early knowledge, and must fail closed rather than be trusted
     as a pregame capture."""
 
-    raw_root = _one_game_archive(tmp_path, capture_ts="20140903120000")  # game is 2014-09-04
+    raw_root = _one_game_archive(tmp_path, capture_ts="20140903120000")
     with pytest.raises(OfficialsArchiveError, match="after the game's own day"):
         canonical_crew_table(repo_root=REPO_ROOT, raw_root=raw_root, schedules=_schedules())
 
-    # Same calendar day is refused too: nothing in the timestamp separates a
-    # 10am pre-game placeholder from an evening capture, and the sweep's own
-    # CDX bound is gameday + 1 day.
     same_day = _one_game_archive(tmp_path / "sameday", capture_ts="20140904235959")
     with pytest.raises(OfficialsArchiveError, match=ARCHIVE_TIMING_CLASS):
         canonical_crew_table(repo_root=REPO_ROOT, raw_root=same_day, schedules=_schedules())
 
-    # The day after is the first admissible capture.
     ok = _one_game_archive(tmp_path / "nextday", capture_ts="20140905000000")
     table = canonical_crew_table(repo_root=REPO_ROOT, raw_root=ok, schedules=_schedules())
     assert len(table) == 1
@@ -496,7 +471,7 @@ def test_archive_rows_are_refused_by_the_prospective_channel() -> None:
     and are refused rather than silently accepted."""
 
     merged = load_officials(feed=_feed(), include_archive=False)
-    refuse_archive_rows(merged, channel="crew_tilt_refresh_v1")  # no source column: the raw feed
+    refuse_archive_rows(merged, channel="crew_tilt_refresh_v1")
 
     with_archive = pd.DataFrame({"official_name": ["Ed Hochuli"], "source": [ARCHIVE_SOURCE]})
     with pytest.raises(OfficialsArchiveError, match=ARCHIVE_TIMING_CLASS):
@@ -511,11 +486,6 @@ def test_the_prospective_loader_never_includes_the_archive(tmp_path: Path) -> No
     frame = load_officials_for_prospective_channel(tmp_path, feed=feed)
     pd.testing.assert_frame_equal(frame, feed)
     assert "source" not in frame.columns
-
-
-# ---------------------------------------------------------------------------
-# The merged table: nflverse wins, the archive fills earlier seasons
-# ---------------------------------------------------------------------------
 
 
 def test_the_shipped_default_returns_the_feed_bit_for_bit(tmp_path: Path) -> None:
@@ -555,7 +525,6 @@ def test_every_2015_2025_row_survives_the_merge_bit_for_bit(tmp_path: Path) -> N
     ].reset_index(drop=True)
     pd.testing.assert_frame_equal(nflverse_slice, feed.astype({"jersey_number": "Int32"}))
 
-    # Same statement addressed by SEASON rather than by provenance label.
     modern = merged.loc[merged["season"].between(2015, 2025), list(NFLVERSE_OFFICIALS_COLUMNS)]
     pd.testing.assert_frame_equal(
         modern.reset_index(drop=True), feed.astype({"jersey_number": "Int32"})
@@ -563,7 +532,6 @@ def test_every_2015_2025_row_survives_the_merge_bit_for_bit(tmp_path: Path) -> N
     assert modern["jersey_number"].notna().all()
     assert list(modern["jersey_number"].astype("int32")) == list(feed["jersey_number"])
 
-    # ... and the archive really did add its season.
     assert set(merged.loc[merged["source"] == ARCHIVE_SOURCE, "season"]) == {2014}
     assert len(merged) == len(feed) + 7
 
@@ -579,7 +547,7 @@ def test_nflverse_wins_on_overlap(tmp_path: Path) -> None:
         [
             {
                 "game_id": "2014_01_GB_SEA",
-                "old_game_id": "2014091000",  # collides with the feed
+                "old_game_id": "2014091000",
                 "season": 2014,
                 "week": 1,
                 "gameday": "2014-09-04",
@@ -629,11 +597,6 @@ def test_a_feed_with_no_archive_available_is_returned_with_provenance(tmp_path: 
     merged = load_officials(REPO_ROOT, feed=feed, include_archive=True, raw_root=empty)
     assert set(merged["source"]) == {NFLVERSE_SOURCE}
     assert len(merged) == len(feed)
-
-
-# ---------------------------------------------------------------------------
-# Coverage description and caching
-# ---------------------------------------------------------------------------
 
 
 def test_describe_archive_coverage_reports_per_season(tmp_path: Path) -> None:

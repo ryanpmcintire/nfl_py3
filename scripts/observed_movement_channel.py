@@ -114,19 +114,10 @@ INTRADAY_SEASONS: tuple[int, ...] = (2023, 2024, 2025)
 EASTERN = ZoneInfo("America/New_York")
 THRESHOLDS: tuple[float, ...] = (0.5, 1.0)
 
-# Amendment 2026-08-20 (owner refinement): the true per-game pick deadline
-# is min(kickoff, Sunday 16:00 ET) -- picks cannot change after that. 16 is
-# the realizable/primary cutoff; 13 is kept as a deliberately conservative
-# comparison point (strictly inside the true deadline for every game).
 SUNDAY_CUTOFFS: tuple[tuple[int, str, bool], ...] = (
     (16, "sunday_1600_realism", True),
     (13, "sunday_1300_conservative", False),
 )
-
-
-# ---------------------------------------------------------------------------
-# Pick-rule helpers
-# ---------------------------------------------------------------------------
 
 
 def _oracle_pick(open_move: pd.Series, production_pick: pd.Series) -> pd.Series:
@@ -245,11 +236,6 @@ def _score_cell(
     return cell
 
 
-# ---------------------------------------------------------------------------
-# Sunday-morning realism: per-game cutoff + intraday consensus
-# ---------------------------------------------------------------------------
-
-
 def _true_week_correct(quotes: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
     """Restrict quotes to each game's own scheduled (season, week).
 
@@ -289,10 +275,6 @@ def _sunday_cutoff_et_utc(commence_utc: pd.Series, hour: int) -> pd.Series:
     """
 
     local = commence_utc.dt.tz_convert(EASTERN)
-    # All arithmetic done in naive wall-clock time, then localized exactly
-    # once -- adding a fixed Timedelta to an already tz-aware timestamp
-    # would add absolute duration, not wall-clock hours, and silently drift
-    # by an hour across a DST boundary.
     naive_date = local.dt.tz_localize(None).dt.normalize()
     days_ahead = (6 - local.dt.weekday) % 7
     sunday_naive_date = naive_date + pd.to_timedelta(days_ahead, unit="D")
@@ -394,11 +376,6 @@ def _spread_at_cutoff(
     return spread, int(n_missing), n_deadline_bound
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=DEFAULT_ROOT)
@@ -430,8 +407,6 @@ def main() -> None:
 
     cells: list[dict[str, Any]] = []
 
-    # Load the intraday archive + per-game kickoff table once, shared by
-    # Arm 1's deadline-bound disclosure and every Arm 3 cutoff variant.
     print("\nLoading intraday_hourly archive (2023-2025) + per-game kickoff table")
     intraday_quotes, kickoff_table = _load_intraday_with_kickoff(args.root, features)
     n_deadline_bound_1600 = 0
@@ -451,9 +426,6 @@ def main() -> None:
         f"SNF/MNF/late-Sunday-afternoon): {n_deadline_bound_1600} of {n_games_2023_2025}"
     )
 
-    # ===================================================================
-    # Arm 1 -- Oracle, full-slate (Tuesday -> Close)
-    # ===================================================================
     print("\n=== Arm 1: Oracle (Tuesday -> Close), full-slate ===")
     scored["oracle_pick_home"] = _oracle_pick(scored["open_move"], scored[production_pick_col])
     n_zero_move = int(scored["open_move"].eq(0.0).sum())
@@ -497,9 +469,6 @@ def main() -> None:
         f"week_P+={cell1['paired_delta_week_probability_positive']:.3f}"
     )
 
-    # ===================================================================
-    # Arm 2 -- Threshold overlays (Tuesday -> Close)
-    # ===================================================================
     for threshold in THRESHOLDS:
         label = f"threshold_{str(threshold).replace('.', '_')}"
         print(f"\n=== Arm 2: threshold overlay >= {threshold} (Tuesday -> Close) ===")
@@ -526,11 +495,6 @@ def main() -> None:
             f"agrees_already={cell['model_agrees_already_fraction']:.3f}"
         )
 
-    # ===================================================================
-    # Arm 3 -- Sunday realism (2023-2025 intraday_hourly only), two cutoffs:
-    # 16:00 ET (true deadline, realizable/primary) and 13:00 ET
-    # (conservative comparison, strictly inside the true deadline).
-    # ===================================================================
     realism_frames: dict[str, pd.DataFrame] = {}
     realism_coverage: dict[str, dict[str, int]] = {}
     primary_cell_r1: dict[str, Any] | None = None
@@ -620,15 +584,8 @@ def main() -> None:
             )
 
     assert primary_cell_r1 is not None, "16:00 ET cutoff must be present in SUNDAY_CUTOFFS"
-    realism = realism_frames[
-        "sunday_1600_realism"
-    ]  # the primary/realizable population, for artifacts
+    realism = realism_frames["sunday_1600_realism"]
 
-    # ------------------------------------------------------------------
-    # EV statement: what a Sunday refresh would have been worth, plainly.
-    # Primary read is the TRUE deadline (16:00 ET); the 13:00 conservative
-    # cutoff is reported alongside for comparison, not as the headline.
-    # ------------------------------------------------------------------
     mean_abs_move_primary = (
         float(realism["sunday_open_move"].abs().mean()) if len(realism) else float("nan")
     )
@@ -658,11 +615,6 @@ def main() -> None:
     }
     print(f"\nEV statement: {ev_statement['plain_statement']}")
 
-    # ------------------------------------------------------------------
-    # Propose (never execute) weak-signals record commands, pre-scaled to
-    # accuracy_points (fraction * 100) -- see module docstring on the x100
-    # unit bug this deliberately avoids.
-    # ------------------------------------------------------------------
     proposed_records: list[dict[str, Any]] = []
     for c in cells:
         name = f"observed_movement_{c['cell']}"
@@ -702,9 +654,6 @@ def main() -> None:
         print(f"  [P+={record['week_probability_positive']:.3f}] {record['cell']}")
         print(f"    {record['proposed_command']}")
 
-    # ------------------------------------------------------------------
-    # Write artifacts
-    # ------------------------------------------------------------------
     output_dir = args.output_root / run_id()
     atomic_parquet(scored, output_dir / "per_game_tue_close.parquet")
     for cutoff_label, frame in realism_frames.items():

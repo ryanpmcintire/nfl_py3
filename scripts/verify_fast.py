@@ -43,13 +43,6 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 UV = REPO / ".tools" / "uv.exe"
-# pytest's default basetemp (a numbered dir under the OS temp dir, shared per
-# OS user) collides with any other pytest process running concurrently under
-# the same account -- measured 2026-09-04 on this repo's multi-agent fleet
-# sessions: a concurrent run's numbered-dir cleanup hit
-# `PermissionError: Access is denied` scanning another run's still-open
-# directory (pytest INTERNALERROR, not a real test failure). Give this run
-# its own directory, keyed by PID, instead.
 _BASETEMP = Path(tempfile.gettempdir()) / f"nfl_ats_verify_fast_{os.getpid()}"
 
 STEPS: list[tuple[str, list[str]]] = [

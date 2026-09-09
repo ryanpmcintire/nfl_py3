@@ -42,10 +42,6 @@ FIXTURE = REPO_ROOT / "tests" / "fixtures" / "cli_contract.json"
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 from cli_contract_snapshot import normalize_years, snapshot  # noqa: E402
 
-# --------------------------------------------------------------------------
-# 1. the pinned parser contract
-# --------------------------------------------------------------------------
-
 
 def _current_contract() -> dict[str, Any]:
     return dict(normalize_years(snapshot(cli.build_parser())))
@@ -108,11 +104,6 @@ def test_handlers_live_in_the_command_packages() -> None:
     walk(contract["root"])
     assert modules
     assert all(m.startswith("nfl_ats.cli_commands.") for m in modules), sorted(modules)
-
-
-# --------------------------------------------------------------------------
-# 2. the four public workflows: parse -> orchestrate -> write
-# --------------------------------------------------------------------------
 
 
 def _parse(argv: list[str]) -> argparse.Namespace:
@@ -189,8 +180,6 @@ def test_publish_predictions_parse_and_validate(tmp_path: Path) -> None:
     assert request.readme == tmp_path / "README.md"
     assert request.with_board is False
     assert request.record_decisions is False
-    # --board-destination keeps its historical default so the `or` in the
-    # orchestrator can never be handed two Nones on the real CLI path.
     assert request.board_destination == Path("docs/index.html")
     assert request.site_destination is None
 
@@ -346,14 +335,6 @@ def test_library_errors_still_exit_two_with_the_error_prefix(
     assert capsys.readouterr().err == "error: no feature table\n"
 
 
-# --------------------------------------------------------------------------
-# 3. import weight
-# --------------------------------------------------------------------------
-
-#: Measured 2026-09-04 on the post-ENG-10 tree, and identical to the pre-split
-#: module: ``nfl_ats.cli`` eagerly imports every command module, so the whole
-#: scientific stack loads. This is a ceiling, not an endorsement -- the test
-#: exists so a NEW heavy dependency cannot slip onto the CLI import path.
 HEAVY_IMPORT_BASELINE = frozenset({"joblib", "numpy", "pandas", "pyarrow", "scipy", "sklearn"})
 
 

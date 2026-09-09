@@ -69,11 +69,6 @@ DESCRIPTION_SUFFIX = (
 )
 
 
-# --------------------------------------------------------------------------
-# Extra game-level fields the parent battery doesn't compute
-# --------------------------------------------------------------------------
-
-
 def attach_followup_fields(
     games: pd.DataFrame, long_df: pd.DataFrame, game_df: pd.DataFrame
 ) -> pd.DataFrame:
@@ -93,11 +88,6 @@ def attach_followup_fields(
     out["combined_z"] = out["home_z"] + out["away_z"]
 
     return out.reset_index()
-
-
-# --------------------------------------------------------------------------
-# Cells 1-3: subset-vs-complement, reuse base.summarize_population verbatim
-# --------------------------------------------------------------------------
 
 
 def build_subset_cells(game_df: pd.DataFrame) -> dict[str, dict[str, Any]]:
@@ -165,11 +155,6 @@ def build_subset_cells(game_df: pd.DataFrame) -> dict[str, dict[str, Any]]:
     }
 
     return cells
-
-
-# --------------------------------------------------------------------------
-# Cell 4: continuous tilt via block-bootstrapped OLS slope
-# --------------------------------------------------------------------------
 
 
 def block_bootstrap_slope(
@@ -256,7 +241,6 @@ def summarize_slope_cell(
     lower_slope, upper_slope = (
         np.quantile(slope_pts_draws, [0.025, 0.975]) if len(slope_pts_draws) else (np.nan, np.nan)
     )
-    # Predicted sign is positive (higher combined_z -> higher home_cover).
     prob_positive_anchored = (
         float(probability_positive_from_draws(anchored_draws)) if len(anchored_draws) else np.nan
     )
@@ -284,11 +268,6 @@ def summarize_slope_cell(
     }
 
 
-# --------------------------------------------------------------------------
-# Main
-# --------------------------------------------------------------------------
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--scratch", type=Path, default=base.DEFAULT_SCRATCH)
@@ -311,9 +290,6 @@ def main() -> None:
 
     long_df = base.build_team_game_long(games, team_views)
     game_df = base.attach_game_level(games, long_df)
-    # game_df already carries weekday/gametime -- attach_game_level's `out`
-    # starts as a copy of `games`, which includes every schedules.parquet
-    # column (verified: no merge needed).
     game_df = attach_followup_fields(games, long_df, game_df)
 
     results = []

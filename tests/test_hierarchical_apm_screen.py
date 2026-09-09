@@ -19,16 +19,12 @@ def test_shrinkage_endpoints_and_passthrough() -> None:
     flat = {"intercept": 1.0, "offense_player::A": 4.0, "offense_player::B": 0.0}
     lookup = {("A", 2020): "OFF_SKILL", ("B", 2020): "OFF_SKILL"}
     counts = {"A": 100, "B": 100}
-    # k=0 recovers the flat fit exactly.
     exact = apply_hierarchical_shrinkage(flat, lookup, counts, 2020, shrinkage_k=0.0)
     assert exact["offense_player::A"] == pytest.approx(4.0)
-    # Huge k collapses everyone to the unit mean (2.0).
     pooled = apply_hierarchical_shrinkage(flat, lookup, counts, 2020, shrinkage_k=1e12)
     assert pooled["offense_player::A"] == pytest.approx(2.0)
     assert pooled["offense_player::B"] == pytest.approx(2.0)
-    # Intercept and team effects pass through untouched.
     assert pooled["intercept"] == pytest.approx(1.0)
-    # Players without a unit pass through untouched.
     assert apply_hierarchical_shrinkage(flat, {}, counts, 2020)[
         "offense_player::A"
     ] == pytest.approx(4.0)
@@ -46,8 +42,6 @@ def test_offense_and_defense_pool_separately() -> None:
     shrunk = apply_hierarchical_shrinkage(
         flat, lookup, {"A": 100, "B": 100}, 2020, shrinkage_k=100.0
     )
-    # Weight 0.5 each way against the per-side unit mean (offense mean 2.0,
-    # defense mean -4.0 from its lone member): sides never average together.
     assert shrunk["offense_player::A"] == pytest.approx(3.0)
     assert shrunk["offense_player::B"] == pytest.approx(1.0)
     assert shrunk["defense_player::A"] == pytest.approx(-4.0)

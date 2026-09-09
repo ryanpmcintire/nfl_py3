@@ -82,19 +82,11 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 
 SEASON = 2026
 WEEK = 2
-#: Sunday 1:00 PM ET kickoff; its pick deadline is that day's 16:00 ET lock.
 KICKOFF = pd.Timestamp("2026-09-20T17:00:00+00:00")
-#: Monday-night kickoff -- deadline is the SUNDAY 16:00 ET lock, which a
-#: Wednesday capture still precedes (the SNF/MNF playability claim).
 MNF_KICKOFF = pd.Timestamp("2026-09-22T00:15:00+00:00")
-WEDNESDAY_CAPTURE = "2026-09-16T19:00:00Z"  # Wed 15:00 ET
+WEDNESDAY_CAPTURE = "2026-09-16T19:00:00Z"
 SATURDAY_PASS = pd.Timestamp("2026-09-19T15:00:00+00:00")
 TUESDAY_RECORD = pd.Timestamp("2026-09-15T16:00:00+00:00")
-
-
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
 
 
 def _lookup() -> CrewTraitLookup:
@@ -239,11 +231,6 @@ def patched_traits(monkeypatch: pytest.MonkeyPatch) -> dict[str, int]:
     return quartiles
 
 
-# ---------------------------------------------------------------------------
-# 1. The tilt magnitudes are the cells' OWN measured values
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     ("artifact", "signal", "expected_gap", "sign", "tilt"),
     [
@@ -287,18 +274,11 @@ def test_tilt_magnitudes_are_the_registry_cells_own_measured_gaps(
     assert float(gap_match.group(1)) == pytest.approx(expected_gap, abs=1e-4)
     assert int(sign_match.group(1)) == sign
 
-    # The signed home-cover gap is sign * raw_gap_pct (experiment_runner's own
-    # raw_gap_pct = sign * (subset_cover - complement_cover) * 100).
     assert tilt == pytest.approx(sign * expected_gap / 100.0, abs=1e-15)
 
 
 def test_heavy_underdog_threshold_is_the_screens_own_default() -> None:
     assert HEAVY_UNDERDOG_THRESHOLD == 7.0
-
-
-# ---------------------------------------------------------------------------
-# 2. The forward adapter reproduces the screen's own builders
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("trait", ["holding", "flag_rate"])
@@ -345,16 +325,9 @@ def test_forward_lookup_buckets_a_season_the_builders_never_saw() -> None:
     """The hop the builders structurally cannot make: next season, no games."""
 
     lookup = _lookup()
-    # 2026 is absent from the fixture's lagged table; it must fall back to the
-    # referee's 2025 mean bucketed against the FROZEN cutpoints.
     assert lookup.holding_quartile("r8", 2026) == 4
     assert lookup.holding_quartile("r1", 2026) == 1
     assert lookup.holding_quartile("nobody", 2026) is None
-
-
-# ---------------------------------------------------------------------------
-# 3. Flag correctness and the additive tilt
-# ---------------------------------------------------------------------------
 
 
 def test_holding_cell_fires_only_for_a_run_heavy_home_and_a_top_holding_crew() -> None:
@@ -370,7 +343,6 @@ def test_holding_cell_fires_only_for_a_run_heavy_home_and_a_top_holding_crew() -
     assert not fired.high_flag_underdog_flag
     assert fired.tilt_points == pytest.approx(HOLDING_RUN_HEAVY_TILT)
 
-    # Top-quartile crew but the home team is not run-heavy.
     assert not crew_tilt_flags(
         referee="r8",
         season=2026,
@@ -378,7 +350,6 @@ def test_holding_cell_fires_only_for_a_run_heavy_home_and_a_top_holding_crew() -
         decision_home_spread=-2.5,
         lookup=lookup,
     ).holding_tilt_flag
-    # Run-heavy home team but a bottom-quartile holding crew.
     assert not crew_tilt_flags(
         referee="r1",
         season=2026,
@@ -390,7 +361,6 @@ def test_holding_cell_fires_only_for_a_run_heavy_home_and_a_top_holding_crew() -
 
 def test_underdog_cell_uses_the_frozen_tuesday_line_and_the_screens_threshold() -> None:
     lookup = _lookup()
-    # Home getting exactly 7 points at the frozen Tuesday line fires.
     fired = crew_tilt_flags(
         referee="r8",
         season=2026,
@@ -401,8 +371,6 @@ def test_underdog_cell_uses_the_frozen_tuesday_line_and_the_screens_threshold() 
     assert fired.high_flag_underdog_flag
     assert fired.tilt_points == pytest.approx(HIGH_FLAG_UNDERDOG_TILT)
 
-    # 6.5 points is not a heavy underdog; a home FAVORITE is the opposite side
-    # of the convention and must never fire.
     for spread in (-6.5, 7.0):
         assert not crew_tilt_flags(
             referee="r8",
@@ -411,7 +379,6 @@ def test_underdog_cell_uses_the_frozen_tuesday_line_and_the_screens_threshold() 
             decision_home_spread=spread,
             lookup=lookup,
         ).high_flag_underdog_flag
-    # No line at all: no flag, never a crash.
     assert not crew_tilt_flags(
         referee="r8",
         season=2026,
@@ -447,11 +414,6 @@ def test_no_effect_outside_the_flagged_populations() -> None:
     assert tilted_probability(0.5123, 0.0) == pytest.approx(0.5123)
 
 
-# ---------------------------------------------------------------------------
-# 4. Deadline window and anti-backdating
-# ---------------------------------------------------------------------------
-
-
 def test_snapshot_before_the_deadline_applies_and_can_flip(
     tmp_path: Path, patched_traits: dict[str, int]
 ) -> None:
@@ -462,7 +424,7 @@ def test_snapshot_before_the_deadline_applies_and_can_flip(
         captured_at_utc=WEDNESDAY_CAPTURE,
         assignments={"g_flag": "r8", "g_clean": "r4"},
     )
-    patched_traits["g_flag"] = 1  # run-heavy home
+    patched_traits["g_flag"] = 1
     patched_traits["g_clean"] = 3
 
     plan = _plan(
@@ -478,7 +440,6 @@ def test_snapshot_before_the_deadline_applies_and_can_flip(
 
     flagged = by_game.loc["g_flag"]
     assert bool(flagged["holding_tilt_flag"])
-    # 0.52 - 0.0599... = 0.4601 -> crosses 0.5 -> the pick flips.
     assert flagged["tilted_home_cover_probability"] == pytest.approx(0.52 + HOLDING_RUN_HEAVY_TILT)
     assert bool(flagged["crew_tilt_flip"])
     assert flagged["crew_would_be_pick_side"] == "AWAY"
@@ -509,7 +470,7 @@ def test_a_wednesday_capture_is_in_window_for_a_monday_night_game(
     assert len(rows) == 1
     assert diagnostics["snapshot_after_deadline_skipped_game_ids"] == []
     game = plan.games[0]
-    assert game.deadline < game.kickoff  # the Sunday lock, not its own kickoff
+    assert game.deadline < game.kickoff
     assert bool(rows.iloc[0]["holding_tilt_flag"])
 
 
@@ -522,7 +483,7 @@ def test_a_snapshot_at_or_after_the_deadline_never_applies(
     _write_crew_snapshot(
         data_root,
         snapshot_id="20260921T000000Z",
-        captured_at_utc="2026-09-21T00:00:00Z",  # after Sunday's kickoff
+        captured_at_utc="2026-09-21T00:00:00Z",
         assignments={"g_flag": "r8"},
     )
     patched_traits["g_flag"] = 1
@@ -588,11 +549,6 @@ def test_latest_crew_snapshot_prefers_the_newest_capture(tmp_path: Path) -> None
     assert snapshot is not None
     assert snapshot.snapshot_id == "20260918T190000Z"
     assert snapshot.referee_by_game_id == {"g": "r8"}
-
-
-# ---------------------------------------------------------------------------
-# 5. Played-pick invariance and the opt-in recorder
-# ---------------------------------------------------------------------------
 
 
 def test_the_movement_policy_pick_is_never_disturbed_by_a_zero_tilt(
@@ -670,11 +626,6 @@ def test_recording_outside_the_lock_window_writes_no_rows(
     assert not (artifacts_root / "prospective" / "crew_tilt_refresh_decisions.parquet").exists()
 
 
-# ---------------------------------------------------------------------------
-# 6. Registration: fingerprint stability
-# ---------------------------------------------------------------------------
-
-
 def _registered_entry() -> dict[str, Any]:
     payload = json.loads(
         (_REPO_ROOT / "artifacts" / "prospective" / "challengers.json").read_text(encoding="utf-8")
@@ -689,7 +640,6 @@ def test_registered_challenger_fingerprint_is_stable() -> None:
     assert entry["status"] == "ACTIVE_PROSPECTIVE"
     fingerprint = config_fingerprint(entry["model"])
     assert entry["config_fingerprint"] == fingerprint
-    # Stable across repeated computation and key ordering.
     reordered = dict(reversed(list(entry["model"].items())))
     assert config_fingerprint(reordered) == fingerprint
 

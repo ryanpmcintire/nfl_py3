@@ -58,12 +58,6 @@ def _accuracy_and_ci(predictions: pd.DataFrame, *, samples: int, seed: int) -> d
         .loc[mask]
         .mean()
     )
-    # A separate diagnostic, not the headline number: the forced pick using
-    # ONLY sign(predicted_margin - spread_line), bypassing the out-of-time
-    # calibration/residual sample entirely. Comparing this to `accuracy`
-    # isolates whether the calibration step (leakage channel #2 in
-    # docs/purged_cv.md) is adding noise on top of the purge/embargo split
-    # itself -- see the positive-control section of that doc.
     raw = market_residual["predicted_margin"] - market_residual["spread_line"]
     raw_sign_point = float(
         ((raw.gt(0)).astype(float) == market_residual["home_cover"]).loc[mask].mean()
@@ -99,9 +93,9 @@ def headline_run() -> dict[str, Any]:
         ),
     }
     result.predictions.to_parquet(SCRATCH / "headline_predictions.parquet")
-    stamp_sidecar(SCRATCH / "headline_predictions.parquet")  # ENG-38
+    stamp_sidecar(SCRATCH / "headline_predictions.parquet")
     result.fold_summary.to_csv(SCRATCH / "headline_fold_summary.csv", index=False)
-    stamp_sidecar(SCRATCH / "headline_fold_summary.csv")  # ENG-38
+    stamp_sidecar(SCRATCH / "headline_fold_summary.csv")
     print(json.dumps(payload, indent=2, default=str))
     return payload
 
@@ -154,10 +148,6 @@ def positive_control(*, target_accuracy: float, n_blocks: int, label: str) -> di
     print(f"=== Positive control ({label}, target={target_accuracy}) ===", flush=True)
     df = _load()
     injected = inject_synthetic_signal(df, target_accuracy=target_accuracy, seed=42)
-    # Population-truth check: the generative process's OWN accuracy, measured
-    # directly on the 12,500-row sample with no model in between. Confirms
-    # ``inject_synthetic_signal`` actually delivers what it claims before
-    # asking whether purged CV can recover it.
     population_accuracy = float(
         (np.sign(injected["synthetic_signal"]) == np.sign(injected["ats_margin"])).mean()
     )
@@ -212,14 +202,6 @@ def main() -> None:
         target_accuracy=0.53, n_blocks=40, label="3pt_clear_signal"
     )
 
-    # permute_target destroys every team-persistent structure in the target,
-    # so it cannot tell a leaky split from a clean one (see purged_cv.py's
-    # docstring). team_persistent_null keeps the one property real team
-    # strength has that permute_target throws away -- a persistent
-    # per-(team, season) component -- while still being independent of every
-    # real feature (true population accuracy is exactly 50%). This is the
-    # control that actually exercises the shared-team feature-proximity
-    # channel purge/embargo are meant to guard.
     team_null = partial(team_persistent_null, team_sigma=8.0, noise_sigma=13.0)
     results["team_persistent_purged"] = negative_control(
         n_blocks=20,
@@ -238,7 +220,7 @@ def main() -> None:
         null_fn=team_null,
     )
 
-    write_stamped_artifact(results, SCRATCH / "validation_results.json")  # ENG-38
+    write_stamped_artifact(results, SCRATCH / "validation_results.json")
     print(f"\nWrote {SCRATCH / 'validation_results.json'}")
 
 

@@ -90,19 +90,11 @@ _QUESTIONS_PATH = (
     Path(__file__).resolve().parent / "fixtures" / "assistant_golden" / "questions.json"
 )
 
-#: Same refresh-diff text ``test_board_assistant.py``/``test_assistant_battery.py``
-#: use for their "refresh" intent coverage -- fixture DATA, not code, so
-#: reusing it verbatim keeps this file's "what changed since Tuesday"
-#: expectations matching the SAME MIA/LV refresh those files already proved,
-#: rather than inventing a second, divergent refresh line.
 _REFRESH_LINES = (
     "MIA at LV refresh (refresh_sat): pick now MIA (Tuesday card: LV); "
     "frozen Tuesday line (home +3.5); line moved +1.5 points.",
 )
 
-# Read once at import time -- a pure, cheap JSON parse (no artifact I/O),
-# the same way ``test_assistant_battery.py`` defines its ``BATTERY`` tuple
-# at module scope, so it's usable both directly and as parametrize input.
 GOLDEN_QUESTIONS = load_questions(_QUESTIONS_PATH)
 
 
@@ -244,7 +236,7 @@ def golden_environment(tmp_path_factory: pytest.TempPathFactory) -> SimpleNamesp
 
     tmp_path = tmp_path_factory.mktemp("assistant_golden")
     _write_lineups_artifact(tmp_path)
-    loaded = load_lineups(tmp_path)  # real nfl_ats.lineup_view parser
+    loaded = load_lineups(tmp_path)
     content = replace(build_fixture_content(), refresh_lines=_REFRESH_LINES)
     dives = tuple(
         replace(dive, home_lineup=loaded[dive.game_id][0], away_lineup=loaded[dive.game_id][1])
@@ -271,13 +263,7 @@ def golden_report(golden_environment: SimpleNamespace) -> EvalReport:
     )
 
 
-# ---------------------------------------------------------------------------
-# Corpus shape.
-# ---------------------------------------------------------------------------
-
-
 def test_golden_fixture_has_60_to_120_rows_covering_every_category() -> None:
-    # Cap raised 112 -> 120 on 2026-09-07 for the two weak-spots home-split rows.
     assert 60 <= len(GOLDEN_QUESTIONS) <= 120
     assert {case.category for case in GOLDEN_QUESTIONS} == set(CATEGORIES)
 
@@ -329,12 +315,6 @@ def test_golden_fixture_covers_every_router_intent() -> None:
     assert not missing, f"golden corpus never exercises: {sorted(missing)}"
 
 
-# ---------------------------------------------------------------------------
-# Pass rate: 100% overall and per category (aggregate report, plus one
-# parametrized test per question for isolated pass/fail reporting).
-# ---------------------------------------------------------------------------
-
-
 def test_golden_report_is_100_percent_overall_and_per_category(golden_report: EvalReport) -> None:
     if not golden_report.overall_pass:
         pytest.fail(render_report(golden_report))
@@ -354,11 +334,6 @@ def test_each_golden_question_passes(golden_environment: SimpleNamespace, case) 
     assert report.overall_pass, render_report(report)
 
 
-# ---------------------------------------------------------------------------
-# Numeric provenance: never a bare number.
-# ---------------------------------------------------------------------------
-
-
 def test_numeric_provenance_answers_never_print_a_bare_number(
     golden_environment: SimpleNamespace,
 ) -> None:
@@ -370,13 +345,6 @@ def test_numeric_provenance_answers_never_print_a_bare_number(
         assert has_provenance_anchor(resolved.text), (
             f"{case.question!r} prints a number with no provenance anchor: {resolved.text!r}"
         )
-
-
-# ---------------------------------------------------------------------------
-# Stale-data behaviour: a second knowledge object, aged past the documented
-# 48h budget (nfl_ats.board_assistant_lineups.LINEUP_STALE_BUDGET_HOURS),
-# must never name a starter and must always carry the stale-fallback text.
-# ---------------------------------------------------------------------------
 
 
 def test_stale_knowledge_never_names_a_starter(golden_environment: SimpleNamespace) -> None:
@@ -410,15 +378,6 @@ def test_stale_data_rows_are_graded_against_a_genuinely_different_knowledge(
         assert fresh.text != stale.text
 
 
-# ---------------------------------------------------------------------------
-# Accessibility contract: labelled input, keyboard-reachable submit, a live
-# region for answers, and a <noscript> fallback that keeps the picks table
-# visible and explains that the ASSISTANT needs JavaScript (the rest of the
-# page does not). Runs against the real ``board_terminal.render`` output,
-# not just ``assistant_section`` in isolation.
-# ---------------------------------------------------------------------------
-
-
 def _assistant_section_html(full_page_html: str) -> str:
     match = re.search(r'<section class="assistant"[^>]*>.*?</section>', full_page_html, re.S)
     assert match is not None, 'no <section class="assistant"> in the rendered page'
@@ -437,7 +396,7 @@ def test_chat_panel_submit_is_keyboard_reachable(golden_environment: SimpleNames
     assert '<form class="assistant-form">' in section
     assert 'type="submit"' in section
     assert 'tabindex="-1"' not in section
-    assert "onclick" not in section  # answered via the form's submit event, never a bare click
+    assert "onclick" not in section
 
 
 def test_chat_panel_has_a_live_region_for_answers(golden_environment: SimpleNamespace) -> None:

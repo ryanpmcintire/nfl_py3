@@ -2,109 +2,14 @@
 
 from __future__ import annotations
 
-# Smallest training set `margin.fit_margin_model` can actually fit. This is
-# DERIVED, and exactly, from that function's own preconditions rather than
-# chosen: it requires len(training) >= 50, int(0.20 * n) >= min_distribution_rows
-# (10), and n - int(0.20 * n) >= 40. All three are first satisfied together at
-# n = 50 and the middle one fails at 49 (int(9.8) = 9), so 50 is the true
-# feasibility boundary. Below it the estimator raises; at or above it, it fits.
-#
-# This is a FEASIBILITY floor and answers only "can a model be produced at all".
-# It deliberately says nothing about whether the fit is any good.
 MIN_FITTABLE_TRAIN_GAMES = 50
 
-# Default completed games required in front of a target week before a
-# walk-forward model is fitted, used as a reporting/quality guard.
-#
-# STILL UNDERIVED at 500, and measurement says no derivable value exists,
-# because the quantity it was meant to protect has no threshold. Measured two
-# ways on 2026-08-17:
-#
-#   * NFL, holding warm test rows fixed (2012-2025, 3,573 games) and truncating
-#     training to the most recent N: forced-pick ATS accuracy is FLAT from
-#     N=50 to the full ~2,600 (.509 / .499 / .508), and every paired delta
-#     straddles zero. Brier and residual MAE degrade smoothly with no cliff at
-#     500 or anywhere else, and the Brier half is fully repaired by the
-#     already-derived 200-row calibration floor (raw .313 -> calibrated .2504
-#     at N=50).
-#   * CFB, 12,500 games: the segment this floor REFUSES (train rows < 500)
-#     scores 0.4906, week-blocked [0.4313, 0.5511], probability_positive 0.376
-#     on 12 independent blocks -- unresolved and leaning mildly negative, not
-#     demonstrably bad.
-#
-# The real failure mode below ~500 is OVER-CONFIDENCE rather than error: mean
-# |predicted residual| is 8.84 at N=50 against 1.68 at full training. That is a
-# regularization problem, not a sample-size threshold, and a cliff is the wrong
-# instrument for it.
-#
-# What changed on 2026-08-17 is that this number no longer gates an
-# irreversible decision. The rotation registry's warm-up floor -- which
-# permanently determines which seasons any future family may draw -- now
-# derives from MIN_FITTABLE_TRAIN_GAMES above, because rule 9 asks whether a
-# window's first week can be SCORED, which is a feasibility question. 500
-# survives here only as a default for reporting runs, where being conservative
-# costs nothing and binds nothing (every NFL evaluation window sits over 1,000
-# games clear of it).
-#
-# Frozen, predeclared runs pin their own FROZEN_* copies (see `experiments.py`)
-# so that changing this value cannot retroactively alter a recorded artifact.
-# Never point a frozen run at this constant.
 DEFAULT_MIN_TRAIN_GAMES = 500
 
-# Minimum prior out-of-sample prediction rows before the cover-probability
-# stream is calibrated rather than passed through raw.
-#
-# DERIVED, unlike the training floor above. Measured on the real 2009-2025
-# walk-forward stream by opening the gate and bucketing calibrated-vs-raw Brier
-# by the history each week's calibrator actually had: 100-199 rows makes Brier
-# worse (0.206 -> 0.284, on 16 games), while 200-399 already improves it
-# (0.269 -> 0.250, on 204 games). 200 is the smallest demonstrated-safe value.
-# See `calibration.calibrate_cover_prediction_stream` for the full note.
 DEFAULT_MIN_CALIBRATION_GAMES = 200
 
-# Fraction of a team's end-of-season state carried into the next season, after
-# regressing toward the league mean:
-#   current = league_mean + retention ** gap * (current - league_mean)
-#
-# MEASURED 2026-08-17 AND WRONG AT 0.67 -- roughly twice what the data
-# supports. Three independent routes agree, none of them overlapping 0.67:
-#
-#   * Fitting the retention slope per metric and horizon across 486
-#     season-to-season transitions: all 24 metric x horizon cells have a 95%
-#     upper bound below 0.67. At the first-4-games horizon the constant
-#     actually governs, the median fitted value is 0.337 (range 0.195-0.382).
-#   * The shipped feature table's own behaviour: the slope of
-#     `result ~ diff_point_diff` is 0.333 in week 1 against 0.588 in weeks
-#     9-18, a ratio of 0.566, implying 0.67 x 0.566 = 0.379.
-#   * Plain regression of next-season on prior-season point differential, both
-#     centred within season: 0.400, season-blocked 95% [0.347, 0.460] over the
-#     full next season and 0.475 [0.391, 0.573] over its first four games.
-#
-# So the honest value is around 0.35-0.45, and at 0.67 the carried state is
-# inflated enough that carrying NOTHING forward beats it on full-season point
-# differential (RMSE 6.16 at retention 0 vs 6.38 at 0.67, and 5.75 at ~0.30).
-#
-# NOT YET CHANGED, deliberately: this constant shapes the feature table, so
-# moving it moves every prediction and is a scored change needing a screen on
-# CFB first (free under rotation rule 8) rather than a quiet edit. It is named
-# here, rather than repeated as a literal in five modules, so that the fix is
-# one edit and the defect is visible while it waits. A single global value is
-# itself an undefended assumption -- the fitted retention ranges from 0.195
-# (`off_turnover_rate`) to 0.382 (`off_sack_rate`) -- so per-metric values
-# should be considered at the same time.
-#
-# A shared ridge coefficient cannot absorb this. With EWM span 8 the offseason
-# initial condition still carries weight 0.78/0.60/0.47/0.37 after 1-4 games,
-# so it is load-bearing for roughly weeks 1-6 -- about a third of the slate --
-# while the coefficient is fit mostly on late-season rows. The early-season
-# state feature is over-weighted by about 1.8x and no single coefficient fixes
-# a week-varying scale error.
 DEFAULT_OFFSEASON_RETENTION = 0.67
 
-# Regular-season games in a pre-2021 NFL season (16 games x 32 teams / 2). The
-# schedule expanded to 272 in 2021, so this is the conservative figure for
-# counting how many prior seasons a warm-up requirement consumes at the start
-# of the feature table, which is the only place the question arises.
 EARLY_SEASON_GAME_COUNT = 256
 
 SCHEDULE_REQUIRED_COLUMNS = (
@@ -119,9 +24,6 @@ SCHEDULE_REQUIRED_COLUMNS = (
     "spread_line",
 )
 
-# nflverse schedules retain some historical abbreviations while its current
-# team-stat feeds use stable franchise IDs. Feature state must use one identity
-# across both sources and across relocations.
 TEAM_ABBREVIATION_ALIASES = {
     "ARZ": "ARI",
     "BLT": "BAL",
@@ -142,8 +44,6 @@ TEAM_STATS_REQUIRED_COLUMNS = (
     "rushing_epa",
 )
 
-# Each value is measured from one team's perspective in a completed game. The
-# feature builder turns it into an exponentially weighted, pregame team state.
 STATE_METRICS = (
     "off_epa_per_play",
     "off_pass_epa_per_play",
@@ -162,9 +62,6 @@ STATE_METRICS = (
     "def_sack_rate",
 )
 
-# Play-by-play states live in the optional enriched feature table. Keeping the
-# names explicit makes changes to the play filter or aggregation contract
-# reviewable instead of silently changing a model's inputs.
 PBP_STATE_METRICS = (
     "pbp_off_epa_per_play",
     "pbp_off_early_down_epa",
@@ -184,9 +81,6 @@ PBP_STATE_METRICS = (
     "pbp_sack_rate",
 )
 
-# Each source metric is modeled as an offense effect plus an opposing-defense
-# effect at a weekly cutoff. The derived name describes the expected result of
-# the actual matchup, rather than either team's unadjusted rolling average.
 PBP_OPPONENT_ADJUSTMENT_METRICS = (
     ("pbp_off_epa_per_play", "pbp_matchup_epa_per_play"),
     ("pbp_off_early_down_epa", "pbp_matchup_early_down_epa"),
@@ -221,9 +115,6 @@ QB_STATE_METRICS = (
     "qb_explosive_pass_rate",
 )
 
-# PER-02's novel named-backup fields.  Starter probability/value remains
-# owned by ``PLAYER_QB_STATE_METRICS``; keeping ownership disjoint preserves
-# the feature-registry invariant while profiles can opt into both families.
 QB_DEPTH_STATE_METRICS = (
     "depth_qb_start_probability",
     "depth_qb_expected_epa_per_dropback",
@@ -238,10 +129,6 @@ QB_DEPTH_STATE_METRICS = (
     "depth_qb_backup_adjustment_cpoe",
 )
 
-# These conservative player features are derived only from earlier-game snaps,
-# earlier-week roster rows, and injury revisions visible at the declared
-# decision timestamp. They are kept in small research families so QB,
-# availability, and continuity signal can be admitted or rejected separately.
 PLAYER_QB_STATE_METRICS = (
     "qb_expected_epa_per_dropback",
     "qb_starter_epa_per_dropback",
@@ -269,19 +156,11 @@ PLAYER_CONTINUITY_STATE_METRICS = (
     "active_roster_continuity",
     "active_roster_mean_experience",
 )
-# Prior-season snap mass retained on the latest safely observable current-
-# season roster. This is deliberately isolated from ``player_continuity`` so
-# building the columns cannot alter any established model profile.
 ROSTER_RETURNING_SNAP_STATE_METRICS = (
     "returning_offense_snap_share",
     "returning_defense_snap_share",
     "returning_special_teams_snap_share",
 )
-# WP15 / MOD-13 (docs/missingness_audit.md): these seven columns share the
-# source-era transition measured in the audit.  Keep the list explicit rather
-# than deriving it from the wider continuity family: active-roster continuity
-# and mean experience have different, sporadic missingness and are outside the
-# predeclared experiment.
 SOURCE_ERA_ROSTER_CONTINUITY_COLUMNS = (
     "diff_defense_lineup_continuity",
     "diff_front_lineup_continuity",
@@ -302,8 +181,6 @@ PLAYER_PARTICIPATION_STATE_METRICS = (
 PLAYER_STATE_METRICS = (
     PLAYER_QB_STATE_METRICS + PLAYER_INJURY_STATE_METRICS + PLAYER_CONTINUITY_STATE_METRICS
 )
-# The participation family is opt-in so rebuilding the established v2 player
-# table without a participation snapshot preserves its exact feature contract.
 PLAYER_ALL_STATE_METRICS = (
     PLAYER_STATE_METRICS + PLAYER_VALUE_STATE_METRICS + ROSTER_RETURNING_SNAP_STATE_METRICS
 )
@@ -323,10 +200,6 @@ GRAPH_FEATURE_COLUMNS = (
     "schedule_predicted_margin",
 )
 
-# Peer-reviewed opener-bias signals (MOD-07). They are computed from the
-# schedules frame alone and ride along in the canonical table, but they stay
-# out of MODEL_FEATURE_COLUMNS on purpose: the frozen feature sets must keep
-# their exact contract, so only an explicitly opted-in profile may read them.
 BIAS_METRICS = (
     "bias_playoff_holdover",
     "bias_prior_week_ats",
@@ -339,20 +212,8 @@ BIAS_FEATURE_COLUMNS = tuple(
     for column in (f"{metric}_home", f"{metric}_away", f"{metric}_diff")
 )
 
-# Surface-switch tilt candidate (docs/surface_switch_feature_arm.md), the
-# feature_arm sibling of the already-live surface_switch_tilt_overlay pick-
-# level challenger. Computed from schedules alone (this season's full REG
-# modal home surface, a structural stadium fact fixed before Week 1 -- never
-# an outcome column) and ridden along in the canonical table on the same
-# BIAS_METRICS precedent: it stays out of MODEL_FEATURE_COLUMNS, so only an
-# explicitly opted-in profile (weak_stack_surface) may read it.
 SURFACE_SWITCH_FEATURE_COLUMNS = ("surface_switch_flag",)
 
-# ENV-03 reusable travel-geometry family. These structural schedule features
-# are built by ``nfl_ats.travel_geometry`` from the checked-in stadium
-# coordinate registry and strictly at-or-before same-season home-venue
-# history. They deliberately stay out of MODEL_FEATURE_COLUMNS and every
-# FEATURE_SET: completing the feature contract is not a promotion decision.
 TRAVEL_GEOMETRY_FEATURE_COLUMNS = (
     "travel_home_distance_mi",
     "travel_away_distance_mi",
@@ -366,9 +227,6 @@ TRAVEL_GEOMETRY_FEATURE_COLUMNS = (
     "travel_away_prior_game_distance_mi",
 )
 
-# ENV-04 reusable rest-context family. These schedule-only columns are built
-# chronologically by ``nfl_ats.rest_context`` and deliberately remain outside
-# MODEL_FEATURE_COLUMNS and every FEATURE_SET: registration is not promotion.
 REST_CONTEXT_FEATURE_COLUMNS = (
     "rest_home_days",
     "rest_away_days",
@@ -382,15 +240,6 @@ REST_CONTEXT_FEATURE_COLUMNS = (
     "rest_away_consecutive_road_games",
 )
 
-# weak_stack_v4 candidate profile (docs/weak_stack_v4.md): the six continuous
-# forecast-weather columns joined by game_id from the completed
-# kickoff-nearest archive. weak_stack_v3 already tested fifteen hand-coded
-# situational FLAGS and was refused at the opener on EV, and the registered
-# forecast-weather signals are that same cell shape (the strongest fires on
-# 1.51% of the slate), so this family hands ridge the RAW variables instead.
-# Same BIAS_METRICS/SURFACE_SWITCH_FEATURE_COLUMNS precedent: these stay out
-# of MODEL_FEATURE_COLUMNS, so only the explicitly opted-in weak_stack_v4
-# profile reads them. Built in nfl_ats.forecast_weather_features.
 FORECAST_WEATHER_FEATURE_COLUMNS = (
     "forecast_temp_f",
     "forecast_wind_mph",
@@ -400,10 +249,6 @@ FORECAST_WEATHER_FEATURE_COLUMNS = (
     "forecast_wind_mph_outdoor",
 )
 
-# POSITIVE CONTROL ONLY: the weather that ACTUALLY happened, which is not
-# knowable before kickoff. Never a production feature -- only the opted-in
-# weak_stack_oracle_weather profile reads it, and that profile exists solely
-# to bound what perfect weather knowledge could ever be worth.
 OBSERVED_WEATHER_FEATURE_COLUMNS = (
     "observed_temp_f",
     "observed_wind_mph",
@@ -412,181 +257,39 @@ OBSERVED_WEATHER_FEATURE_COLUMNS = (
     "observed_wind_mph_outdoor",
 )
 
-# weak_stack_graph_sack candidate profile (docs/graph_team_stat_on_production.md):
-# the ONE graph-propagated `team_stat` column that led the 38-family screen
-# (docs/graph_ratings_v2_screen.md section 8, off_sack_rate, +2.949 accuracy
-# points against a BARE market baseline), tested here stacked on PRODUCTION
-# weak_stack instead -- the project's own "composition is not the signal"
-# lesson is that a component positive alone can go negative once stacked on
-# what is actually played. Computed by `add_graph_ratings_v2_features` at the
-# structural configuration frozen in docs/graph_ratings_v2_screen.md section 5
-# (inherited, not refit, here) and additively joined by game_id in
-# nfl_ats.graph_team_stat_production_feature. Same BIAS_METRICS/
-# SURFACE_SWITCH_FEATURE_COLUMNS precedent: stays out of MODEL_FEATURE_COLUMNS,
-# so only the explicitly opted-in weak_stack_graph_sack profile reads it.
 GRAPH_TEAM_STAT_OFF_SACK_RATE_FEATURE_COLUMNS = ("graph_v2_team_stat_off_sack_rate_katz_diff",)
 
-# weak_stack_graph_def_ypp candidate profile (docs/graph_team_stat_def_ypp_on_production.md):
-# the ONE graph-propagated `team_stat` column that LED the 38-family screen by
-# the CONSERVATIVE, null-adjusted reference (docs/graph_ratings_v2_screen.md
-# section 8, def_yards_per_play, 95.5th percentile of its own permutation null,
-# +2.145 accuracy points against a null centred at +0.279 -- the least
-# artifact-contaminated of the three cells the doc names), tested here stacked
-# on PRODUCTION weak_stack instead of a bare baseline -- same "composition is
-# not the signal" reasoning as weak_stack_graph_sack above. Computed by
-# `add_graph_ratings_v2_features` at the SAME structural configuration frozen
-# in docs/graph_ratings_v2_screen.md section 5 (inherited, not refit, here) and
-# additively joined by game_id in nfl_ats.graph_team_stat_def_ypp_production_feature.
-# Same BIAS_METRICS/SURFACE_SWITCH_FEATURE_COLUMNS precedent: stays out of
-# MODEL_FEATURE_COLUMNS, so only the explicitly opted-in
-# weak_stack_graph_def_ypp profile reads it.
 GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS = (
     "graph_v2_team_stat_def_yards_per_play_katz_diff",
 )
 
-# weak_stack_graph_off_rush_epa candidate profile
-# (docs/graph_team_stat_off_rush_epa_on_production.md): the ONE graph-propagated
-# `team_stat` column carrying the HIGHEST split-half reliability recorded
-# anywhere in this family (registry graph_input_screen_off_rush_epa_per_play,
-# 0.987, +1.996 accuracy points P+ 0.828 on a disjoint opener-graded 2020-2025
-# holdout), whose 38-family screen row is nonetheless the WEAKEST of the three
-# cells the screen carried forward once the artifact is removed
-# (docs/graph_ratings_v2_screen.md section 8, off_rush_epa_per_play, +1.609
-# points vs zero at P+ 0.911 but only the 53.5th percentile of its own
-# permutation null, which centres at +1.450 -- "essentially all of its apparent
-# edge is the artifact", that doc's own words). Tested here stacked on
-# PRODUCTION weak_stack instead of a bare baseline -- same "composition is not
-# the signal" reasoning as weak_stack_graph_sack and weak_stack_graph_def_ypp
-# above, both of which went negative that way. Computed by
-# `add_graph_ratings_v2_features` at the SAME structural configuration frozen in
-# docs/graph_ratings_v2_screen.md section 5 (inherited, not refit, here) and
-# additively joined by game_id in
-# nfl_ats.graph_team_stat_off_rush_epa_production_feature. Same BIAS_METRICS/
-# SURFACE_SWITCH_FEATURE_COLUMNS precedent: stays out of MODEL_FEATURE_COLUMNS,
-# so only the explicitly opted-in weak_stack_graph_off_rush_epa profile reads it.
 GRAPH_TEAM_STAT_OFF_RUSH_EPA_FEATURE_COLUMNS = (
     "graph_v2_team_stat_off_rush_epa_per_play_katz_diff",
 )
 
-# weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
-# (docs/fluview_on_production.md): the two FluView home-market illness
-# indicators that led docs/fluview_battery.md's five-cell screen against a
-# BARE market baseline (fluview_away_market_elevated +0.368 accuracy points
-# P+ 0.883, fluview_home_market_elevated +0.309 P+ 0.818 -- both week-blocked,
-# recorded 2026-08-20), tested here stacked on PRODUCTION weak_stack instead
-# -- the project's own "composition is not the signal" lesson is that a
-# component positive alone can go negative once stacked on what is actually
-# played. Computed at the frozen as-of/threshold construction
-# (nfl_ats.fluview_production_feature, reusing scripts/fluview_battery_screen.py's
-# checkpoint/merge_asof mechanism unchanged) and additively joined by game_id.
-# Same BIAS_METRICS/SURFACE_SWITCH_FEATURE_COLUMNS precedent: these stay out
-# of MODEL_FEATURE_COLUMNS, so only the explicitly opted-in
-# weak_stack_fluview_home/_away profiles read them. Each profile carries
-# EXACTLY ONE of the two columns -- the same "one new column" shape as
-# weak_stack_graph_sack above -- even though both live in the same widened
-# parquet table (game_features_weak_stack_fluview.parquet).
 FLUVIEW_HOME_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = ("fluview_home_market_elevated",)
 FLUVIEW_AWAY_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = ("fluview_away_market_elevated",)
 
-# ---------------------------------------------------------------------------
-# 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md)
-#
-# Four registry constructs that have never been measured as a feature column on
-# top of the chain that is actually PLAYED, each ranked in that document's
-# section 1 BEFORE any outcome number existed. Every tuple below follows the
-# same BIAS_METRICS/SURFACE_SWITCH_FEATURE_COLUMNS precedent every candidate
-# family above uses: the columns stay OUT of MODEL_FEATURE_COLUMNS, so only the
-# explicitly opted-in candidate profile reads them, and each profile carries
-# EXACTLY ONE new column even where two share one widened parquet table.
-# ---------------------------------------------------------------------------
 
-# weak_stack_illness_away / weak_stack_illness_home candidate profiles
-# (docs/illness_on_production.md): the two leading cells of the illness
-# -designation battery (docs/illness_battery.md), split-half reliability 0.702
-# -- the highest of any construct in the sweep that is not an attention-volume
-# series. Distinct from the FluView columns above: those measure CDC REGIONAL
-# influenza-like-illness activity, these measure the CLUB'S OWN injury-report
-# illness designations, resolved as-of each game's own pick deadline.
-# Computed in nfl_ats.illness_production_feature; both live in
-# game_features_weak_stack_illness.parquet.
 ILLNESS_AWAY_ACTIVE_GE1_ON_PRODUCTION_FEATURE_COLUMNS = ("illness_away_active_ge1",)
 ILLNESS_HOME_GE2_ON_PRODUCTION_FEATURE_COLUMNS = ("illness_home_ge2",)
 
-# weak_stack_reddit_ratio_home / weak_stack_reddit_spike_away candidate
-# profiles (docs/reddit_attention_on_production.md): the two leading cells of
-# the Arctic Shift subreddit battery (docs/arctic_shift_ats_battery.md). The
-# attention channel has never been stacked on production in any form, neither
-# Reddit nor GDELT. Both are Tuesday-ending, within-(team, season) trailing
-# z-scores, so they are scale-free with respect to Reddit's own growth.
-# Computed in nfl_ats.reddit_attention_production_feature; both live in
-# game_features_weak_stack_reddit.parquet.
 REDDIT_HOME_RATIO_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS = ("reddit_home_comment_ratio_elevated",)
 REDDIT_AWAY_SPIKE_ON_PRODUCTION_FEATURE_COLUMNS = ("reddit_away_spike_value",)
 
-# weak_stack_team_style_pace candidate profile
-# (docs/team_style_pace_on_production.md): the top-quartile absolute gap in
-# prior-season league-centred seconds_per_play pace between the two teams
-# (registry team_style_pace_mismatch_dog_cover, reliability 0.489 -- the
-# highest in the team-style battery). An ABSOLUTE GAP is something a linear
-# ridge cannot form from its inputs, and production carries no pace feature at
-# all. Quartile threshold recomputed expanding over strictly PRIOR seasons,
-# never over the whole panel the original screen used. Computed in
-# nfl_ats.team_style_pace_production_feature.
 TEAM_STYLE_PACE_MISMATCH_ON_PRODUCTION_FEATURE_COLUMNS = ("team_style_pace_mismatch_flag",)
 
-# weak_stack_redzone_third_down candidate profile
-# (docs/redzone_reversion_on_production.md): the signed home-minus-away
-# indicator of a prior-season top-quartile league-centred third-down
-# conversion rate (registry redzone_reversion_c3_third_down_over_fade,
-# reliability 0.407, the battery's strongest lean). A mean-REVERSION construct
-# -- fade last season's over-performer -- not a better measurement of current
-# quality. Quartile threshold recomputed expanding over strictly PRIOR
-# seasons. Computed in nfl_ats.redzone_reversion_production_feature.
 REDZONE_THIRD_DOWN_OVER_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("redzone_third_down_over_fade_diff",)
 
-# weak_stack_post_ot / weak_stack_mnf_road / weak_stack_home_thursday candidate
-# profiles (docs/schedule_flag_battery.md, LEAD-21/LEAD-22/LEAD-40): three
-# pregame-safe pure-schedule flags, each PRODUCTION weak_stack plus exactly one
-# new column, computed in nfl_ats.schedule_flag_features from the newest
-# data/raw/*/schedules.parquet snapshot only (no other data source). Each is
-# its own rotation family, screened on top of PRODUCTION and graded at the
-# opener. Signed home-minus-away encodings follow the redzone/team-style
-# precedent above; the sign is chosen so a POSITIVE fitted coefficient means
-# "fading the flagged side helped" (docs/schedule_flag_battery.md states each
-# construct's predeclared direction).
 POST_OT_FATIGUE_ON_PRODUCTION_FEATURE_COLUMNS = ("post_ot_fatigue_flag",)
 MNF_ROAD_SHORT_WEEK_ON_PRODUCTION_FEATURE_COLUMNS = ("mnf_road_short_week_flag",)
 HOME_THURSDAY_ON_PRODUCTION_FEATURE_COLUMNS = ("home_thursday_flag",)
 
-# Wave 2 venue/market-context candidate profiles (docs/schedule_flag_battery.md
-# "Wave 2", LEAD-39/LEAD-41/LEAD-42/LEAD-35): four more pure-schedule (plus,
-# for LEAD-41/LEAD-42, the Tuesday-OPENER market consensus) flags, each
-# PRODUCTION weak_stack plus exactly one new column, computed in
-# nfl_ats.schedule_flag_features. Same additive-only, one-rotation-family-
-# each discipline as the Wave 1 trio directly above.
 NEW_STADIUM_HOME_ON_PRODUCTION_FEATURE_COLUMNS = ("new_stadium_home_flag",)
 DOME_SHOOTOUT_FAVORITE_ON_PRODUCTION_FEATURE_COLUMNS = ("dome_shootout_favorite_flag",)
 LOW_TOTAL_DIV_HOME_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("low_total_div_home_dog_flag",)
 SEPT_HEAT_HOME_ON_PRODUCTION_FEATURE_COLUMNS = ("sept_heat_home_flag",)
 
-# weak_stack_v3 candidate profile (docs/weak_stack_v3.md): every NFL registry
-# signal with probability_positive >= 0.60 in accuracy_points units, not
-# already inside FEATURE_SETS["football_weak_stack"], that is buildable this
-# session from data already local to the repo. Same BIAS_METRICS/
-# SURFACE_SWITCH_FEATURE_COLUMNS precedent: these stay out of
-# MODEL_FEATURE_COLUMNS, so only the explicitly opted-in weak_stack_v3
-# profile reads them. Three sub-families, computed in
-# nfl_ats.weak_stack_v3_features from the newest schedules snapshot (and,
-# for penalty rate, the newest PBP snapshot) alone -- never from
-# result/spread_line -- ported from already-reviewed constructs rather than
-# re-derived: division_revenge/sandwich_spot mirror
-# nfl_ats.experiment_runner.FLAG_BUILDERS' division_revenge_game/
-# sandwich_spot; post_blowout_win_letdown/loss_bounce mirror
-# scripts/nfl_bias_battery_screen.py's identically-named hypotheses;
-# diff_penalty_rate_prior mirrors scripts/weak_stack_v2_eval.py's already-
-# verified reconstruction of the registered `penalty_discipline` signal;
-# the two travel/rest flags mirror scripts/nfl_travel_rest_battery_screen.py
-# cells 4 and 8 (registry/stadium_coordinates.json).
 GAP_V3_BIAS_METRICS = (
     "gap_division_revenge",
     "gap_sandwich_spot",
@@ -598,31 +301,12 @@ GAP_V3_BIAS_FEATURE_COLUMNS = tuple(
     for metric in GAP_V3_BIAS_METRICS
     for column in (f"{metric}_home", f"{metric}_away", f"{metric}_diff")
 )
-# diff-only, matching diff_penalty_rate_prior's own home/away-optional
-# precedent in scripts/weak_stack_v2_eval.py (the registry's
-# `weak_stack_v2_penalty_only`/`penalty_discipline` entries score this exact
-# column name).
 GAP_V3_PENALTY_FEATURE_COLUMNS = ("diff_penalty_rate_prior",)
-# Both game-level, not home/away-split: thursday_pure is a plain calendar
-# fact about the game itself, and return_trip_hangover is inherently a
-# home-side-only construct (the home team's own preceding road trip), same
-# shape precedent as SURFACE_SWITCH_FEATURE_COLUMNS' single unsigned column.
 GAP_V3_TRAVEL_FEATURE_COLUMNS = (
     "gap_thursday_pure_flag",
     "gap_return_trip_hangover_flag",
 )
 
-# MOD-06's one live arm (docs/mod06_position_prior_shrinkage.md):
-# players.py's PLAYER_VALUE_STATE_METRICS shrink a thin player's per-snap
-# value rate toward ZERO via career/(career+value_prior_snaps). The candidate
-# is the SAME two metrics, computed identically except the shrinkage target
-# is a point-in-time-safe, data-derived position/channel prior instead of
-# zero (``players.py::enrich_with_player_features(value_shrinkage_target=
-# "position_prior")``, an opt-in parameter -- the default "zero" path is
-# bit-identical to today's production feature). Distinct column names so a
-# feature_arm baseline/candidate pair can be fit from the SAME features file
-# (the runner's own constraint) without one arm overwriting the other's
-# values under an identical name.
 PLAYER_VALUE_JS_PRIOR_STATE_METRICS = (
     "injury_skill_epa_value_lost_js_prior",
     "injury_defense_disruption_value_lost_js_prior",
@@ -706,7 +390,6 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "graph_team_stat_off_rush_epa_per_play": GRAPH_TEAM_STAT_OFF_RUSH_EPA_FEATURE_COLUMNS,
     "fluview_home_elevated_on_production": FLUVIEW_HOME_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS,
     "fluview_away_elevated_on_production": FLUVIEW_AWAY_ELEVATED_ON_PRODUCTION_FEATURE_COLUMNS,
-    # 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md)
     "illness_away_active_ge1_on_production": (
         ILLNESS_AWAY_ACTIVE_GE1_ON_PRODUCTION_FEATURE_COLUMNS
     ),
@@ -721,7 +404,6 @@ FEATURE_FAMILIES: dict[str, tuple[str, ...]] = {
     "redzone_third_down_over_fade_on_production": (
         REDZONE_THIRD_DOWN_OVER_FADE_ON_PRODUCTION_FEATURE_COLUMNS
     ),
-    # LEAD-21/22/40 (docs/schedule_flag_battery.md): pure-schedule flags.
     "post_ot_fatigue_on_production": POST_OT_FATIGUE_ON_PRODUCTION_FEATURE_COLUMNS,
     "mnf_road_short_week_on_production": MNF_ROAD_SHORT_WEEK_ON_PRODUCTION_FEATURE_COLUMNS,
     "home_thursday_on_production": HOME_THURSDAY_ON_PRODUCTION_FEATURE_COLUMNS,
@@ -888,21 +570,10 @@ FEATURE_SETS["football_player_participation"] = (
 FEATURE_SETS["full_player_participation"] = (
     FEATURE_SETS["full_player_value"] + FEATURE_FAMILIES["player_participation_values"]
 )
-# MOD-07 weak-signal stack (SPEC-4): the surviving weak signals -- the player
-# value composite, plus the documented early-season opener biases -- in one set.
-# The injury columns of the candidate table carry LEARNED availability semantics
-# by construction (it is built through build-learned-availability-features), so
-# no separate availability family appears here; the two tables must never be
-# mixed in one run. Bias columns stay out of every frozen set: only these two
-# entries admit them.
 FEATURE_SETS["football_weak_stack"] = (
     FEATURE_SETS["football_player_value"] + FEATURE_FAMILIES["bias"]
 )
 FEATURE_SETS["full_weak_stack"] = FEATURE_SETS["full_player_value"] + FEATURE_FAMILIES["bias"]
-# MOD-13 candidate (docs/missingness_audit.md, predeclared 2026-09-01): retain
-# the seven continuity values but replace their seven implicit learned missing
-# indicators with one explicit source-level flag.  The candidate-only imputer
-# suppression lives in nfl_ats.margin; production weak_stack is untouched.
 ROSTER_CONTINUITY_DATA_AVAILABLE = "roster_continuity_data_available"
 FEATURE_FAMILIES["roster_continuity_source_availability"] = (ROSTER_CONTINUITY_DATA_AVAILABLE,)
 FEATURE_SETS["football_weak_stack_source_availability"] = (
@@ -911,24 +582,12 @@ FEATURE_SETS["football_weak_stack_source_availability"] = (
 FEATURE_SETS["full_weak_stack_source_availability"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["roster_continuity_source_availability"]
 )
-# MOD-08 candidate profile (docs/surface_switch_feature_arm.md): weak_stack
-# plus the surface-switch tilt feature, wiring the project's strongest
-# prospective lead in as a training-time FEATURE rather than a post-prediction
-# pick-level overlay. Declared for a feature_arm experiment comparing it
-# against weak_stack itself; never mixed with any other profile.
 FEATURE_SETS["football_weak_stack_surface"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["surface_switch"]
 )
 FEATURE_SETS["full_weak_stack_surface"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["surface_switch"]
 )
-# MOD-06 candidate profile (docs/mod06_position_prior_shrinkage.md): weak_stack
-# with the player_values family REPLACED by its js_prior counterpart (same two
-# underlying metrics, shrunk toward a data-derived position/channel prior
-# instead of zero) -- everything else (bias, injuries, continuity, QB) held
-# identical, isolating exactly the shrinkage-target variable under test.
-# Declared for a feature_arm experiment comparing it against weak_stack
-# itself; never mixed with any other profile.
 FEATURE_SETS["football_weak_stack_js_prior"] = (
     tuple(
         column
@@ -945,12 +604,6 @@ FEATURE_SETS["full_weak_stack_js_prior"] = (
     )
     + FEATURE_FAMILIES["player_values_js_prior"]
 )
-# weak_stack_v3 candidate profile (docs/weak_stack_v3.md): weak_stack_surface
-# (weak_stack + surface_switch_flag, itself a registry gap candidate --
-# surface_switch_feature_arm, P+ 0.6181 -- reused rather than re-added) plus
-# the three new gap sub-families above. Declared for a feature_arm-style
-# opener-graded comparison against the active weak_stack profile; never
-# mixed with any other profile, and never referenced by the active model.
 FEATURE_SETS["football_weak_stack_v3"] = (
     FEATURE_SETS["football_weak_stack_surface"]
     + FEATURE_FAMILIES["gap_v3_bias"]
@@ -963,41 +616,18 @@ FEATURE_SETS["full_weak_stack_v3"] = (
     + FEATURE_FAMILIES["gap_v3_penalty"]
     + FEATURE_FAMILIES["gap_v3_travel"]
 )
-# weak_stack_v4 candidate profile (docs/weak_stack_v4.md): PRODUCTION
-# weak_stack plus the forecast-weather family. Deliberately built on
-# weak_stack and NOT on weak_stack_v3 or weak_stack_surface -- the question is
-# whether forecast weather adds to PRODUCTION, and stacking it onto a profile
-# already refused at the opener would confound the answer. Declared for an
-# opener-graded comparison against the active weak_stack profile; never mixed
-# with any other profile, and never referenced by the active model.
 FEATURE_SETS["football_weak_stack_v4"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["forecast_weather"]
 )
 FEATURE_SETS["full_weak_stack_v4"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["forecast_weather"]
 )
-# POSITIVE CONTROL ONLY (docs/weak_stack_v4.md, "wind oracle"): production
-# weak_stack plus the weather that ACTUALLY happened. Deliberately leaky and
-# NEVER promotable -- it exists to bound the whole weather channel. If a model
-# handed perfect weather cannot beat the baseline, no improvement in
-# forecasting can, which is the admissible `bounded_by_control` ground; if it
-# can, the oracle-minus-forecast gap is exactly the headroom a better wind
-# source could buy.
 FEATURE_SETS["football_weak_stack_oracle_weather"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["observed_weather"]
 )
 FEATURE_SETS["full_weak_stack_oracle_weather"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["observed_weather"]
 )
-# weak_stack_graph_sack candidate profile (docs/graph_team_stat_on_production.md):
-# PRODUCTION weak_stack plus the one graph_team_stat_off_sack_rate column.
-# Built on PRODUCTION weak_stack directly, never on weak_stack_v3/_surface/_v4
-# -- same reasoning as weak_stack_v4 above, stated there and restated here:
-# the question is whether the graph feature adds to what is actually played,
-# and stacking it onto an undecided/refused profile would confound the
-# answer. Declared for a close-graded rotation-window comparison against the
-# active weak_stack profile; never mixed with any other candidate profile,
-# and never referenced by the active model.
 FEATURE_SETS["football_weak_stack_graph_sack"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_off_sack_rate"]
 )
@@ -1005,16 +635,6 @@ FEATURE_SETS["full_weak_stack_graph_sack"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_off_sack_rate"]
 )
 
-# weak_stack_graph_def_ypp candidate profile
-# (docs/graph_team_stat_def_ypp_on_production.md): PRODUCTION weak_stack plus
-# the one graph_team_stat_def_yards_per_play column. Built on PRODUCTION
-# weak_stack directly, never on weak_stack_v3/_surface/_v4/_graph_sack -- same
-# reasoning as weak_stack_graph_sack above, stated there and restated here:
-# the question is whether the graph feature adds to what is actually played,
-# and stacking it onto an undecided/refused profile would confound the
-# answer. Declared for a close-graded rotation-window comparison against the
-# active weak_stack profile; never mixed with any other candidate profile,
-# and never referenced by the active model.
 FEATURE_SETS["football_weak_stack_graph_def_ypp"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_def_yards_per_play"]
 )
@@ -1022,17 +642,6 @@ FEATURE_SETS["full_weak_stack_graph_def_ypp"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_def_yards_per_play"]
 )
 
-# weak_stack_graph_off_rush_epa candidate profile
-# (docs/graph_team_stat_off_rush_epa_on_production.md): PRODUCTION weak_stack
-# plus the one graph_team_stat_off_rush_epa_per_play column. Built on PRODUCTION
-# weak_stack directly, never on
-# weak_stack_v3/_surface/_v4/_graph_sack/_graph_def_ypp -- same reasoning as
-# weak_stack_graph_sack above, stated there and restated here: the question is
-# whether the graph feature adds to what is actually played, and stacking it
-# onto an undecided/refused profile would confound the answer. Declared for a
-# close-graded rotation-window comparison against the active weak_stack
-# profile; never mixed with any other candidate profile, and never referenced
-# by the active model.
 FEATURE_SETS["football_weak_stack_graph_off_rush_epa"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_off_rush_epa_per_play"]
 )
@@ -1040,16 +649,6 @@ FEATURE_SETS["full_weak_stack_graph_off_rush_epa"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["graph_team_stat_off_rush_epa_per_play"]
 )
 
-# weak_stack_fluview_home / weak_stack_fluview_away candidate profiles
-# (docs/fluview_on_production.md): PRODUCTION weak_stack plus exactly one of
-# the two FluView elevated-illness columns. Built on PRODUCTION weak_stack
-# directly, never on weak_stack_v3/_surface/_v4/_graph_sack -- same reasoning
-# as weak_stack_graph_sack above, stated there and restated here: the
-# question is whether the FluView feature adds to what is actually played,
-# and stacking it onto an undecided/refused profile would confound the
-# answer. Declared for a close-graded rotation-window comparison against the
-# active weak_stack profile; never mixed with any other candidate profile,
-# and never referenced by the active model.
 FEATURE_SETS["football_weak_stack_fluview_home"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["fluview_home_elevated_on_production"]
 )
@@ -1063,16 +662,6 @@ FEATURE_SETS["full_weak_stack_fluview_away"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["fluview_away_elevated_on_production"]
 )
 
-# 2026-09-01 on-production sweep (docs/on_production_sweep_20260901.md): six
-# candidate arms across four constructs, each PRODUCTION weak_stack plus
-# exactly ONE new column. Every one is built on the PRODUCTION table directly,
-# never on weak_stack_v3/_surface/_v4/_graph_*/_fluview -- same reasoning
-# weak_stack_graph_sack states above and every sibling restates: the question
-# is whether the candidate adds to what is actually PLAYED, and stacking it
-# onto a profile already refused or still undecided would confound the answer.
-# Declared for close-graded rotation-window comparisons against the active
-# weak_stack profile; never mixed with each other, and never referenced by the
-# active model.
 FEATURE_SETS["football_weak_stack_illness_away"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["illness_away_active_ge1_on_production"]
 )
@@ -1112,14 +701,6 @@ FEATURE_SETS["full_weak_stack_redzone_third_down"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["redzone_third_down_over_fade_on_production"]
 )
 
-# weak_stack_post_ot / weak_stack_mnf_road / weak_stack_home_thursday candidate
-# profiles (docs/schedule_flag_battery.md, LEAD-21/LEAD-22/LEAD-40): each
-# PRODUCTION weak_stack plus exactly ONE new pure-schedule column. Built on the
-# PRODUCTION table directly, same reasoning as every sibling above -- the
-# question is whether the candidate adds to what is actually PLAYED. Declared
-# for opener-graded rotation-window comparisons against the active weak_stack
-# profile; never mixed with each other, and never referenced by the active
-# model.
 FEATURE_SETS["football_weak_stack_post_ot"] = (
     FEATURE_SETS["football_weak_stack"] + FEATURE_FAMILIES["post_ot_fatigue_on_production"]
 )
@@ -1139,19 +720,6 @@ FEATURE_SETS["full_weak_stack_home_thursday"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["home_thursday_on_production"]
 )
 
-# PER-13 Stage 2 candidate profile
-# (docs/per13_durability_stage2_on_production.md): production weak_stack with
-# its NINE availability-derived injury columns REPLACED by versions rebuilt on
-# a durability-augmented P(plays). A replacement, not an addition -- same
-# construct, better probability -- so the candidate carries the same column
-# count as production and nothing can be credited to a wider design matrix.
-# The nine are exactly the columns whose value multiplies
-# players._injury_unavailability (players.py:833 and :948); every other
-# injury-adjacent family (player_continuity, player_qb) is built from rosters,
-# snaps and quarterback history and is left alone. Same table-pinning caveat as
-# every candidate profile above -- fit only on a table carrying the *_durability
-# columns (game_features_weak_stack_durability.parquet for this experiment).
-# Never used by the active model, never mixed with another candidate profile.
 PER13_DURABILITY_SUFFIX = "_durability"
 PER13_DURABILITY_SWAPPED_BASE_COLUMNS = (
     FEATURE_FAMILIES["player_injuries"] + FEATURE_FAMILIES["player_values"]
@@ -1165,10 +733,6 @@ PER13_DURABILITY_VALUE_FEATURE_COLUMNS = tuple(
 PER13_DURABILITY_ON_PRODUCTION_FEATURE_COLUMNS = (
     PER13_DURABILITY_INJURY_FEATURE_COLUMNS + PER13_DURABILITY_VALUE_FEATURE_COLUMNS
 )
-# Registered as two families rather than one so the block structure mirrors
-# production's own split exactly: the candidate profile differs from weak_stack
-# only in which two blocks it draws, which is what keeps a group-wise ridge
-# penalty comparable between the arms.
 FEATURE_FAMILIES["player_injuries_durability"] = PER13_DURABILITY_INJURY_FEATURE_COLUMNS
 FEATURE_FAMILIES["player_values_durability"] = PER13_DURABILITY_VALUE_FEATURE_COLUMNS
 FEATURE_SETS["football_weak_stack_durability"] = (
@@ -1205,30 +769,9 @@ OUTCOME_COLUMNS = (
     "home_score",
 )
 
-# ---------------------------------------------------------------------------
-# Phase 12 market microstructure leads (docs/market_lead_battery.md), LEAD-05
-# and LEAD-03: two candidate columns built entirely from the local
-# point-in-time odds archive (nfl_ats.market_lead_features), each PRODUCTION
-# weak_stack plus exactly ONE new column. Same additive-only discipline as
-# every on-production sweep above: built on the PRODUCTION table directly,
-# never on another candidate profile, never referenced by the active model.
-# ---------------------------------------------------------------------------
 
-# weak_stack_opener_softness candidate profile (LEAD-05, opener-softness book
-# ranking): a signed {-1, 0, +1} column that fades the side implied ONLY by
-# the walk-forward-identified softest book's Tuesday opener when it disagrees
-# with the consensus Tuesday opener's favorite. Computed in
-# nfl_ats.market_lead_features.derive_opener_softness_fade_features; lives in
-# game_features_weak_stack_opener_softness.parquet.
 OPENER_SOFTNESS_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("opener_softness_fade_signal",)
 
-# weak_stack_ml_divergence candidate profile (LEAD-03, moneyline-spread
-# divergence): a signed {-1, 0, +1} column siding WITH the no-vig
-# moneyline-implied home win probability when it diverges from a
-# walk-forward spread-implied home win probability by >= 3 percentage
-# points. Computed in
-# nfl_ats.market_lead_features.derive_ml_spread_divergence_features; lives in
-# game_features_weak_stack_ml_divergence.parquet.
 ML_SPREAD_DIVERGENCE_ON_PRODUCTION_FEATURE_COLUMNS = ("ml_spread_divergence_signal",)
 
 FEATURE_FAMILIES["opener_softness_fade_on_production"] = (
@@ -1251,18 +794,6 @@ FEATURE_SETS["full_weak_stack_ml_divergence"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["ml_spread_divergence_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Wave 2 venue/market-context leads (docs/schedule_flag_battery.md "Wave 2"),
-# LEAD-39/LEAD-41/LEAD-42/LEAD-35: four pure-schedule (plus, for LEAD-41/
-# LEAD-42, the Tuesday-opener market consensus) candidate columns, each
-# PRODUCTION weak_stack plus exactly ONE new column. Same additive-only
-# discipline as every on-production sweep above: built on the PRODUCTION
-# table directly, never on another candidate profile, never referenced by
-# the active model. Appended as post-literal dict assignments (matching the
-# Phase 12 market-microstructure block immediately above) rather than edited
-# into the FEATURE_FAMILIES dict literal, since other fleet lanes append to
-# this same file concurrently.
-# ---------------------------------------------------------------------------
 
 FEATURE_FAMILIES["new_stadium_home_on_production"] = NEW_STADIUM_HOME_ON_PRODUCTION_FEATURE_COLUMNS
 FEATURE_FAMILIES["dome_shootout_favorite_on_production"] = (
@@ -1298,21 +829,6 @@ FEATURE_SETS["full_weak_stack_sept_heat"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["sept_heat_home_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Wave 3 public-claim leads on production (docs/schedule_flag_battery.md
-# "Wave 3", LEAD-57 leads): four candidate columns condensing the strongest
-# public-handicapper claims from docs/public_claim_battery.md (registry
-# family public_claim_battery) into single-column stacks on PRODUCTION
-# weak_stack. Three read the Tuesday-OPENER market consensus
-# (nfl_ats.schedule_flag_features.default_opener_lines); the fourth
-# (ats_streak_regress) reads only the schedule's own CLOSE result/spread_line
-# to build each team's own prior-games cover history, matching
-# docs/public_claim_battery.md's own close-graded convention for that streak
-# (a frozen, predeclared design choice). Same additive-only discipline as
-# every on-production sweep above: built on the PRODUCTION table directly,
-# never on another candidate profile, never referenced by the active model,
-# never mixed with each other or with Wave 1/2.
-# ---------------------------------------------------------------------------
 
 ROAD_FAV_BIG_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("road_fav_big_fade_flag",)
 DIVISION_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("division_dog_flag",)
@@ -1353,18 +869,6 @@ FEATURE_SETS["full_weak_stack_ats_streak_regress"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["ats_streak_regress_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Wave 4 PBP coaching-trait leads on production (docs/schedule_flag_battery.md
-# "Wave 4", LEAD-26/LEAD-27/LEAD-30): three candidate columns built from
-# lane J's leak-safe rolling PBP-trait builders
-# (nfl_ats.pbp_coaching_traits), each PRODUCTION weak_stack plus exactly ONE
-# new column. Same additive-only discipline as every on-production sweep
-# above: built on the PRODUCTION table directly, never on another candidate
-# profile, never referenced by the active model, never mixed with each other
-# or with Wave 1/2/3. Appended as post-literal dict assignments (matching
-# every prior wave's own concurrency-safe convention), since other fleet
-# lanes append to this same file concurrently.
-# ---------------------------------------------------------------------------
 
 OPENING_DRIVE_EPA_ON_PRODUCTION_FEATURE_COLUMNS = ("opening_drive_epa",)
 Q3_POINT_DIFF_ON_PRODUCTION_FEATURE_COLUMNS = ("q3_point_diff",)
@@ -1399,18 +903,6 @@ FEATURE_SETS["full_weak_stack_fourth_down_interaction"] = (
     + FEATURE_FAMILIES["fourth_down_aggression_interaction_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Wave 5 quarterback-identity leads on production (docs/schedule_flag_battery.md
-# "Wave 5", LEAD-20/LEAD-25): two candidate columns built from
-# nfl_ats.qb_identity_features (listed schedule starters plus local
-# roster/combine data), each PRODUCTION weak_stack plus exactly ONE new
-# column. Same additive-only discipline as every on-production sweep above:
-# built on the PRODUCTION table directly, never on another candidate profile,
-# never referenced by the active model, never mixed with each other or with
-# Waves 1-4. Appended as post-literal dict assignments (matching every prior
-# wave's own concurrency-safe convention), since other fleet lanes append to
-# this same file concurrently.
-# ---------------------------------------------------------------------------
 
 ROOKIE_QB_DEBUT_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("rookie_qb_debut_fade_flag",)
 QB_REVENGE_ON_PRODUCTION_FEATURE_COLUMNS = ("qb_revenge_flag",)
@@ -1433,18 +925,6 @@ FEATURE_SETS["full_weak_stack_qb_revenge"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["qb_revenge_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Wave 6 transaction-wire leads on production (docs/schedule_flag_battery.md
-# "Wave 6", LEAD-12/LEAD-23/LEAD-14): three candidate columns built from
-# nfl_ats.transaction_flag_features (the local PFR transaction-wire index
-# plus local snap-count history), each PRODUCTION weak_stack plus exactly
-# ONE new column. Same additive-only discipline as every on-production sweep
-# above: built on the PRODUCTION table directly, never on another candidate
-# profile, never referenced by the active model, never mixed with each other
-# or with prior waves. Appended as post-literal dict assignments (matching
-# every prior wave's own concurrency-safe convention), since other fleet
-# lanes append to this same file concurrently.
-# ---------------------------------------------------------------------------
 
 HOLDOUT_SLOW_START_ON_PRODUCTION_FEATURE_COLUMNS = ("holdout_slow_start_flag",)
 DEADLINE_INTEGRATION_DRAG_ON_PRODUCTION_FEATURE_COLUMNS = ("deadline_integration_drag_flag",)
@@ -1480,17 +960,6 @@ FEATURE_SETS["full_weak_stack_suspension_rust"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["suspension_return_rust_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Officiating-crew leads on production (docs/officials_crew_leads.md,
-# LEAD-34/LEAD-31): two candidate columns built from
-# nfl_ats.officials_flag_features (the referee battery's own
-# officials/game_penalties snapshot, crosswalked to game_features), each
-# PRODUCTION weak_stack plus exactly ONE new column. LEAD-32
-# (crew_home_bias_on_production) is NOT wired here: its own predeclared
-# Stage-1 reliability gate (P+ > 0.5) was not met (measured 0.325), so per
-# that doc's own pre-committed rule its Stage-2 screen is not run this
-# session. Same additive-only discipline as every on-production sweep above.
-# ---------------------------------------------------------------------------
 
 CREW_SECOND_MEETING_FAVORITE_ON_PRODUCTION_FEATURE_COLUMNS = ("crew_second_meeting_favorite_flag",)
 ROOKIE_CREW_UNDERDOG_ON_PRODUCTION_FEATURE_COLUMNS = ("rookie_crew_underdog_flag",)
@@ -1516,22 +985,6 @@ FEATURE_SETS["full_weak_stack_rookie_crew_underdog"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["rookie_crew_underdog_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Weather/venue leads on production (docs/weather_venue_leads.md, ROADMAP
-# LEAD-36/LEAD-37): two candidate columns built from
-# nfl_ats.weather_venue_flag_features (open-corner venue x observed wind,
-# and a grass-surface x forecast-precipitation proxy), each PRODUCTION
-# weak_stack plus exactly ONE new column. LEAD-36's own wind/roof inputs are
-# the schedule's OBSERVED game-time actuals (disclosed non-pregame
-# mechanism/upper-bound screen, matching the venue-blind
-# weather_battery_high_wind_* registry precedent); LEAD-37 uses the
-# validated pool_decision forecast archive's forecast_precip_prob_pct, a
-# genuinely pregame-safe proxy. LEAD-38 (snow-game home prep) is NOT wired
-# here: no local observed snow/precipitation column exists and the forecast
-# proxy does not cover a snow-specific signal either -- see
-# docs/weather_venue_leads.md's source-gap note. Same additive-only
-# discipline as every on-production sweep above.
-# ---------------------------------------------------------------------------
 
 OPEN_CORNER_WIND_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("open_corner_wind_dog_flag",)
 RAIN_ON_GRASS_DOG_ON_PRODUCTION_FEATURE_COLUMNS = ("rain_on_grass_dog_flag",)
@@ -1556,18 +1009,6 @@ FEATURE_SETS["full_weak_stack_rain_on_grass_dog"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["rain_on_grass_dog_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Lane T promotion evaluation (docs/promotion_eval_20260905.md): stacks the
-# two already-screened Wave 5/Wave 6 candidate columns (qb_revenge_flag,
-# deadline_integration_drag_flag) onto ONE profile to test composition, per
-# the "composition is not the signal" project lesson -- a column positive
-# alone can be negative or zero once stacked with another. Reuses the SAME
-# two FEATURE_FAMILIES entries already declared for their own individual
-# on-production profiles above (qb_revenge_on_production,
-# deadline_integration_drag_on_production); no new FEATURE_FAMILIES key,
-# since both columns already belong to a family. Never used by the active
-# model.
-# ---------------------------------------------------------------------------
 
 FEATURE_SETS["football_weak_stack_qb_revenge_deadline_drag"] = (
     FEATURE_SETS["football_weak_stack"]
@@ -1580,16 +1021,6 @@ FEATURE_SETS["full_weak_stack_qb_revenge_deadline_drag"] = (
     + FEATURE_FAMILIES["deadline_integration_drag_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Wave 7 roster-availability leads on production (docs/schedule_flag_battery.md
-# "Wave 7", LEAD-13/LEAD-17): two candidate columns built from
-# nfl_ats.roster_availability_flag_features (the local PFR transaction-wire
-# index plus the pinned local snap-count/injury-report snapshots), each
-# PRODUCTION weak_stack plus exactly ONE new column. Same additive-only
-# discipline as every on-production sweep above: built on the PRODUCTION
-# table directly, never on another candidate profile, never referenced by
-# the active model, never mixed with each other or with prior waves.
-# ---------------------------------------------------------------------------
 
 IR_RETURN_REINFORCEMENT_ON_PRODUCTION_FEATURE_COLUMNS = ("ir_return_reinforcement_flag",)
 SPECIALIST_ABSENCE_FADE_ON_PRODUCTION_FEATURE_COLUMNS = ("specialist_absence_fade_flag",)
@@ -1614,14 +1045,6 @@ FEATURE_SETS["full_weak_stack_specialist_absence_fade"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["specialist_absence_fade_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Wave 8 (docs/schedule_flag_battery.md "Wave 8", LEAD-24 stage 2 / LEAD-16):
-# two candidate columns built from nfl_ats.rookie_kicker_flag_features (the
-# rookie-wall dependence metric reused from nfl_ats.rookie_wall, and the
-# local PFR transaction-wire index plus the pinned local snap-count
-# snapshot), each PRODUCTION weak_stack plus exactly ONE new column. Same
-# additive-only discipline as every on-production sweep above.
-# ---------------------------------------------------------------------------
 
 ROOKIE_WALL_DEPENDENCE_ON_PRODUCTION_FEATURE_COLUMNS = ("rookie_wall_dependence_fade_flag",)
 KICKER_CHANGE_UNDERDOG_ON_PRODUCTION_FEATURE_COLUMNS = ("kicker_change_underdog_flag",)
@@ -1646,12 +1069,6 @@ FEATURE_SETS["full_weak_stack_kicker_change_underdog"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["kicker_change_underdog_on_production"]
 )
 
-# ---------------------------------------------------------------------------
-# Wave 9 (docs/schedule_flag_battery.md "Wave 9"), LEAD-15: backup
-# tenure-gap valuation, built from nfl_ats.backup_tenure_flag_features.
-# PRODUCTION weak_stack plus exactly ONE new column, same additive-only
-# discipline as every on-production sweep above.
-# ---------------------------------------------------------------------------
 
 BACKUP_TENURE_GAP_ON_PRODUCTION_FEATURE_COLUMNS = ("backup_tenure_gap_flag",)
 
@@ -1666,14 +1083,6 @@ FEATURE_SETS["full_weak_stack_backup_tenure_gap"] = (
     FEATURE_SETS["full_weak_stack"] + FEATURE_FAMILIES["backup_tenure_gap_on_production"]
 )
 
-# 2026-09-07 fleet research profiles (measured, not played; see ROADMAP MOD-07
-# and PER-09): each candidate column must belong to a declared feature family
-# so the groupwise penalty resolver (nfl_ats.margin.resolve_feature_groups)
-# never defaults silently. weak_stack_v5 adds the continuous FluView
-# away-market ILI as-of column (docs/weak_stack_v5.md); weak_stack_apm_unit
-# adds the six season-lagged hierarchical APM unit ratings
-# (docs/apm_unit_feature_on_production.md). Literal column names here on
-# purpose: constants.py must not import the feature modules that import it.
 FEATURE_FAMILIES["fluview_away_ili_asof_on_production"] = ("fluview_away_market_ili_asof",)
 FEATURE_FAMILIES["apm_unit_on_production"] = (
     "home_apm_off_rating",
@@ -1684,7 +1093,6 @@ FEATURE_FAMILIES["apm_unit_on_production"] = (
     "apm_def_rating_diff",
 )
 
-# MOD-18 additive research profile, frozen in docs/spread_regime_program.md.
 from nfl_ats.spread_regime import SPREAD_REGIME_COLUMNS  # noqa: E402
 
 FEATURE_FAMILIES["spread_regime"] = SPREAD_REGIME_COLUMNS
@@ -1694,16 +1102,11 @@ for _regime_prefix in ("football", "full"):
         *SPREAD_REGIME_COLUMNS,
     )
 
-# MOD-18 lane Q additive research profiles, frozen in docs/home_dog_location.md:
-# weak_stack plus the row-local home-underdog points (Q1) or the same plus its
-# above-seven hinge (Q2). Never used by the active model.
 from nfl_ats.home_dog_location import (  # noqa: E402
     HOME_DOG_HINGE_COLUMNS,
     HOME_DOG_POINTS_COLUMNS,
 )
 
-# Families must be disjoint: Q1's column and Q2's extra hinge column are two
-# families; the Q2 feature set carries both.
 FEATURE_FAMILIES["home_dog_location_points"] = HOME_DOG_POINTS_COLUMNS
 FEATURE_FAMILIES["home_dog_location_hinge"] = HOME_DOG_HINGE_COLUMNS[1:]
 for _home_dog_prefix in ("football", "full"):
@@ -1716,9 +1119,6 @@ for _home_dog_prefix in ("football", "full"):
         *HOME_DOG_HINGE_COLUMNS,
     )
 
-# MOD-18 lane S additive research profile, frozen in docs/home_side_location.md:
-# weak_stack plus the row-local symmetric spread-size hinge above seven
-# points (S1). Never used by the active model.
 from nfl_ats.home_side_location import HOME_SIDE_HINGE_COLUMNS  # noqa: E402
 
 FEATURE_FAMILIES["home_side_location_hinge"] = HOME_SIDE_HINGE_COLUMNS
@@ -1729,7 +1129,6 @@ for _home_side_prefix in ("football", "full"):
     )
 
 
-# PER-07: research-only September staff turnover; incumbent untouched.
 FEATURE_FAMILIES["per07_coord_change_on_production"] = (
     "coord_new_oc_diff",
     "coord_new_dc_diff",

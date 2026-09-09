@@ -41,8 +41,6 @@ def cli(out: Path, *args: str) -> str:
         arguments[i] = arguments[i].replace("Five frozen arms", "Two frozen arms")
     if arguments[0] not in {"weak-signals", "rotation"}:
         return original_cli(out, *arguments)
-    # Execute the actual parser and handler, retaining exact CLI argv; avoid
-    # reimporting the entire application for each diagnostic cell.
     from nfl_ats.cli import main as cli_main
 
     stdout, stderr = io.StringIO(), io.StringIO()
@@ -163,8 +161,6 @@ def diagnosis(out: Path, archive: pd.DataFrame, stream: pd.DataFrame) -> None:
 
 
 def record_cells(out: Path) -> None:
-    # Diagnosis D is a read-only signed bias, not a candidate improvement.
-    # Keep its full cells in diagnosis.parquet, outside the effect pool.
     frame = pd.read_parquet(out / "paired.parquet")
     for season, group in frame.groupby("season"):
         for arm in ARMS:
@@ -293,7 +289,7 @@ def replay(out: Path) -> None:
         if command["returncode"]:
             continue
         if any(value.startswith(FAMILY + "_D_") for value in argv):
-            continue  # Invalid diagnostic records are not comparative effects.
+            continue
         start = next(
             (i for i, value in enumerate(argv) if value in {"weak-signals", "rotation"}), None
         )

@@ -38,7 +38,6 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "gaussian_mean_mapping_incumbent"
 
 _REQUIRED_PREDICTION_COLUMNS = frozenset(
@@ -153,8 +152,6 @@ def apply_gaussian_mean_mapping_incumbent_overlay(
         aligned = target_indexed.loc[group_ids]
         predicted = model.predict(aligned)
         centers = predicted["predicted_margin"].to_numpy(dtype=float)
-        # Served home-side offset (docs/home_side_offset_promotion.md): the
-        # card's centre is the refit centre plus the per-game offset it served.
         if center_offsets is not None:
             centers = centers + np.asarray(
                 [float(center_offsets.get(str(game_id), 0.0)) for game_id in group_ids],
@@ -165,8 +162,6 @@ def apply_gaussian_mean_mapping_incumbent_overlay(
         gaussian_check = smoothed_home_cover_probability(
             model.residuals, centers, spread, method="gaussian_median"
         )
-        # Served key-line pick read (docs/key_line_pick_read.md): a touched
-        # game's card number is the lattice read, reproduced from the record.
         gaussian_check = apply_pick_overrides(gaussian_check, group_ids, pick_overrides)
         supplied = group["home_cover_probability"].to_numpy(dtype=float)
         if not np.allclose(gaussian_check, supplied, rtol=0.0, atol=1e-9):

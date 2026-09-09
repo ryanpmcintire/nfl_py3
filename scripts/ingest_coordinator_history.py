@@ -102,7 +102,6 @@ def parse_revision(
             if pd.isna(observed) or observed > pd.Timestamp(cutoff):
                 raise ValueError("Revision requires a real timestamp no later than cutoff")
             content = revision.get("slots", {}).get("main", {}).get("content", "")
-            # Never expand transclusions: the current template can rewrite historical text.
             names: dict[str, set[str]] = {}
             for line in content.splitlines():
                 line = re.sub(
@@ -138,7 +137,6 @@ def parse_revision(
                         "coach": "HC",
                     }[match[1].lower()]
                     person = linked_person(match[2])
-                # Unparseable duplicate labels make the role unavailable too.
                 names.setdefault(role, set()).add(person or "")
             for role, people in names.items():
                 if len(people) != 1 or "" in people:
@@ -278,8 +276,6 @@ def capture(
     return destination
 
 
-# Canonical pages retain pre-move revisions; historical titles are separately
-# recorded, and redirects returned by the API are retained in raw responses.
 TEAM_NAMES = dict(
     zip(
         [
@@ -592,8 +588,6 @@ def audit_capture(destination: Path) -> dict[str, Any]:
                 }
             )
     changes = []
-    # Count changed observed identities; omitted/unparseable vacancies do not
-    # become assumed continuity and the audit explicitly reports this scope.
     for (season, team, role), group in history.loc[
         history.season.between(2022, 2025) & history.role.isin(["OC", "DC"])
     ].groupby(["season", "team", "role"]):

@@ -49,8 +49,6 @@ CENTRAL = "America/Chicago"
 MOUNTAIN = "America/Denver"
 HAWAII = "Pacific/Honolulu"
 
-# (team_id, school, city, state, zone) -- hand-assigned, every zone checked
-# against the school's real venue location.
 FIXTURE_TEAMS = [
     (1, "Washington", "Seattle", "WA", WEST),
     (2, "Rutgers", "Piscataway", "NJ", EASTERN),
@@ -62,41 +60,16 @@ FIXTURE_TEAMS = [
     (8, "Idaho", "Moscow", "ID", WEST),
 ]
 
-# game_id, week, home_id, away_id, kickoff (UTC), neutral_site, then the four
-# HAND-COMPUTED expected flags in column order.
 FIXTURE_GAMES = [
-    # 12:00 EDT, Pacific visitor at an Eastern host: early + west + eastern
-    # host; venue -4 minus body -7 = 3 hours eastbound.
     ("g1", 5, 2, 1, "2019-09-28T16:00:00Z", 0, (1.0, 1.0, 1.0, 0.0)),
-    # 12:00 CDT = 13:00 EDT, Arizona visitor at a Central host: early + west,
-    # NOT an Eastern host; venue -5 minus body -7 = 2 hours -> eastbound.
     ("g2", 5, 6, 3, "2019-09-28T17:00:00Z", 0, (1.0, 0.0, 1.0, 0.0)),
-    # DST BOUNDARY, same two teams seven weeks later: 12:00 CST = 13:00 EST.
-    # Central is now -6, Arizona still -7, so the gap is 1 hour and the
-    # eastbound cell switches OFF while the body-clock cells stay ON.
     ("g3", 12, 6, 3, "2019-11-16T18:00:00Z", 0, (1.0, 0.0, 0.0, 0.0)),
-    # 20:30 EDT: night window, not early.
     ("g4", 5, 2, 1, "2019-09-29T00:30:00Z", 0, (0.0, 0.0, 1.0, 1.0)),
-    # 01:30 EDT the following calendar day at Hawaii: carried forward to
-    # minute 1530, so it reads as the previous evening's LATE window and never
-    # as an early kickoff. Westbound (-10 minus -7 = -3), so no eastbound flag.
     ("g5", 5, 7, 1, "2019-09-29T05:30:00Z", 0, (0.0, 0.0, 0.0, 1.0)),
-    # SPLIT STATE, non-default city: Idaho plays in Moscow, which is Pacific,
-    # not the state's Mountain default -- so this IS a west body clock.
     ("g6", 5, 2, 8, "2019-09-28T16:00:00Z", 0, (1.0, 1.0, 1.0, 0.0)),
-    # SPLIT STATE, non-default city: UTEP plays in El Paso, which is Mountain,
-    # not Texas's Central default -- and Mountain is excluded from the WEST
-    # set exactly as Denver is on the NFL side. Still 2 hours eastbound.
     ("g7", 5, 2, 4, "2019-09-28T16:00:00Z", 0, (0.0, 0.0, 1.0, 0.0)),
-    # Hawaii body clock is excluded from the WEST set (its dose is 5-6 hours,
-    # not the NFL construct's 2-3), but the timezone-general eastbound cell
-    # still covers it: -4 minus -10 = 6 hours.
     ("g8", 5, 2, 7, "2019-09-28T16:00:00Z", 0, (0.0, 0.0, 1.0, 0.0)),
-    # NEUTRAL SITE: the host's listed venue is not where this is played, so the
-    # game's own timezone is unknown and every cell is NaN, never 0.
     ("g9", 5, 2, 1, "2019-09-28T16:00:00Z", 1, (np.nan, np.nan, np.nan, np.nan)),
-    # Split state, DEFAULT city, Eastern half of Tennessee: Knoxville host, so
-    # this is an Eastern host receiving a Pacific visitor at 12:00 EDT.
     ("g10", 5, 5, 1, "2019-09-28T16:00:00Z", 0, (1.0, 1.0, 1.0, 0.0)),
 ]
 
@@ -156,11 +129,6 @@ def fixture_games() -> pd.DataFrame:
     return frame
 
 
-# ---------------------------------------------------------------------------
-# (c) known-answer fixtures, one hand-computed expectation per cell
-# ---------------------------------------------------------------------------
-
-
 def test_known_answer_flags_per_cell(
     fixture_games: pd.DataFrame, fixture_zones: pd.DataFrame
 ) -> None:
@@ -192,7 +160,6 @@ def test_dst_boundary_flips_the_eastbound_cell(
 
     derived, diagnostics = derive_cfb_body_clock_features(fixture_games, team_zones=fixture_zones)
     context = diagnostics["context"].set_index(fixture_games["game_id"].to_numpy())
-    # Central host, Arizona visitor: 2 hours apart in CDT, 1 hour apart in CST.
     assert context.loc["g2", "tz_delta_eastbound"] == pytest.approx(2.0)
     assert context.loc["g3", "tz_delta_eastbound"] == pytest.approx(1.0)
     derived = derived.set_index("game_id")
@@ -206,20 +173,15 @@ def test_past_midnight_kickoff_is_carried_into_the_late_window() -> None:
     kickoffs = pd.Series(
         pd.to_datetime(
             [
-                "2019-09-28T16:00:00Z",  # 12:00 EDT
-                "2019-09-29T05:30:00Z",  # 01:30 EDT, the previous night's game
-                "2019-11-16T18:00:00Z",  # 13:00 EST
+                "2019-09-28T16:00:00Z",
+                "2019-09-29T05:30:00Z",
+                "2019-11-16T18:00:00Z",
             ],
             utc=True,
         )
     )
     minutes = eastern_kickoff_minutes(kickoffs)
     assert minutes.tolist() == [720.0, 1530.0, 780.0]
-
-
-# ---------------------------------------------------------------------------
-# (d) neutral-site handling matches the predeclared rule
-# ---------------------------------------------------------------------------
 
 
 def test_neutral_site_rows_are_nan_on_every_cell(
@@ -242,13 +204,7 @@ def test_neutral_site_row_is_kept_not_dropped(
     assert len(merged) == len(fixture_games)
     assert diagnostics["n_neutral_site"] == 1
     assert diagnostics["n_applicable"] == len(fixture_games) - 1
-    # additive merge: every pre-existing column comes back bit-identical
     pd.testing.assert_frame_equal(merged.loc[:, fixture_games.columns], fixture_games)
-
-
-# ---------------------------------------------------------------------------
-# (a) LEAKAGE regression
-# ---------------------------------------------------------------------------
 
 
 def _shuffled_outcomes(frame: pd.DataFrame, seed: int) -> pd.DataFrame:
@@ -301,11 +257,6 @@ def test_columns_depend_only_on_declared_pregame_inputs() -> None:
     pd.testing.assert_frame_equal(base, trimmed)
 
 
-# ---------------------------------------------------------------------------
-# (b) JOIN correctness on the real population
-# ---------------------------------------------------------------------------
-
-
 @requires_population
 def test_team_info_join_covers_the_whole_population_on_both_sides() -> None:
     features = pd.read_parquet(FEATURES_PATH)
@@ -352,11 +303,6 @@ def test_every_state_in_the_population_has_a_declared_zone() -> None:
     assert used["body_zone"].notna().all()
     for state in used["state"].dropna().unique():
         assert str(state) in STATE_TIMEZONES or str(state) in SPLIT_STATES
-
-
-# ---------------------------------------------------------------------------
-# the state -> timezone map itself
-# ---------------------------------------------------------------------------
 
 
 def test_split_state_cities_resolve_away_from_their_state_default() -> None:

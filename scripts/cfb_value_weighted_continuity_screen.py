@@ -125,23 +125,14 @@ from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # noqa: E4
 OUT_ROOT = REPO / "artifacts" / "cfb_value_weighted_continuity"
 CFB_FEATURES_PATH = REPO / "data" / "processed" / "cfb_game_features.parquet"
 
-# New, CFB-specific constants: mirrored from NFL's participation-rating
-# shrinkage (participation.py:29-30) as a first pass per predeclaration
-# section 2 / adjudicated decision 5. EXPLICITLY UNDERIVED for CFB's
-# different play volume and EPA distribution -- flagged in every output.
 VALUE_RELIABILITY_PRIOR_PLAYS = 500.0
 VALUE_EPA_CLIP = 5.0
 
 BOOTSTRAP_SAMPLES = 20_000
-BOOTSTRAP_SEED = 20260819  # frozen for this run before any accuracy number was seen
+BOOTSTRAP_SEED = 20260819
 
 CANDIDATE_ARM = "cfb_benchmark_v1_value_roles"
 VALUE_ROLE_COLUMNS = (*CFB_MODEL_FEATURE_COLUMNS, *CFB_ROLE_FEATURE_COLUMNS)
-
-
-# ---------------------------------------------------------------------------
-# Step 1: load pbp (+EPA) and build the credited-action tables
-# ---------------------------------------------------------------------------
 
 
 def load_inputs() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -289,19 +280,14 @@ def build_epa_lookup(
     return lookup, diagnostics
 
 
-# ---------------------------------------------------------------------------
-# Step 2: the new trait -- value-weighted role continuity
-# ---------------------------------------------------------------------------
-
-
 @dataclass
 class _ValuePlayerTrail:
-    state: float = math.nan  # usage-share EWM state, identical to the plain family
+    state: float = math.nan
     appearances: int = 0
     missed_streak: int = 0
     last_season: int = -1
-    value_state: float = math.nan  # EWM of clipped per-game mean credited-play EPA
-    career_plays: int = 0  # cumulative credited plays for this (team, player, action_type)
+    value_state: float = math.nan
+    career_plays: int = 0
 
 
 @dataclass
@@ -483,11 +469,6 @@ def split_half_reliability(
         "spearman_brown_full_length_reliability": sb,
         "probability_positive": float(probability_positive_from_draws(boots)),
     }
-
-
-# ---------------------------------------------------------------------------
-# Step 3: accuracy screen -- baseline vs baseline + value-weighted continuity
-# ---------------------------------------------------------------------------
 
 
 def value_role_benchmark(
@@ -727,17 +708,17 @@ def main() -> None:
 
     print("\n=== Step 5: write artifacts ===", flush=True)
     atomic_parquet(value_continuity, output / "value_continuity.parquet")
-    stamp_sidecar(output / "value_continuity.parquet")  # ENG-38
+    stamp_sidecar(output / "value_continuity.parquet")
     atomic_parquet(benchmark["predictions"], output / "predictions.parquet")
-    stamp_sidecar(output / "predictions.parquet")  # ENG-38
+    stamp_sidecar(output / "predictions.parquet")
     atomic_csv(benchmark["summary"], output / "summary.csv")
-    stamp_sidecar(output / "summary.csv")  # ENG-38
+    stamp_sidecar(output / "summary.csv")
     atomic_csv(benchmark["season_summary"], output / "season_summary.csv")
-    stamp_sidecar(output / "season_summary.csv")  # ENG-38
+    stamp_sidecar(output / "season_summary.csv")
     atomic_csv(paired, output / "paired_comparisons.csv")
-    stamp_sidecar(output / "paired_comparisons.csv")  # ENG-38
+    stamp_sidecar(output / "paired_comparisons.csv")
     atomic_csv(coverage, output / "coverage.csv")
-    stamp_sidecar(output / "coverage.csv")  # ENG-38
+    stamp_sidecar(output / "coverage.csv")
     atomic_json(reliability_results, output / "split_half_reliability.json")
     atomic_json(diagnostics_report, output / "value_diagnostics.json")
 
@@ -762,7 +743,7 @@ def main() -> None:
         "screen_summary": screen_summary,
         "timing": timings,
     }
-    write_stamped_artifact(metadata, output / "metadata.json")  # ENG-38
+    write_stamped_artifact(metadata, output / "metadata.json")
     print(f"\nWrote artifacts to {output}", flush=True)
     print(f"Total runtime: {timings['total_seconds']:.1f}s", flush=True)
 

@@ -78,7 +78,7 @@ TEAM_SEASON_PATH = OUT_DIR / "cfb_special_teams_team_season.parquet"
 PBP_ROOT = REPO / "data" / "cfb" / "pbp" / "raw"
 FEATURES_PATH = REPO / "data" / "processed" / "cfb_game_features.parquet"
 
-SEASON_START = 2005  # 2004 excluded: see predeclaration doc feasibility section
+SEASON_START = 2005
 SEASON_END = 2025
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260819
@@ -188,7 +188,6 @@ def _build_season_fragments(season: int, path: Path) -> dict[str, pd.DataFrame]:
     punt = _classified(punt)
     ko = _classified(ko)
 
-    # --- punt_net_yards, grouped by the KICKING team (pos_team_id) ---
     punt["kick_distance"] = punt["text"].map(_parse_kick_distance)
     punt["return_yards_for_net"] = np.where(punt["is_real_return"], punt["statYardage"], 0.0)
     normal_net = punt["kick_distance"] - punt["return_yards_for_net"]
@@ -202,7 +201,6 @@ def _build_season_fragments(season: int, path: Path) -> dict[str, pd.DataFrame]:
         .rename(columns={"pos_team_id": "team_id"})
     )
 
-    # --- punt_return_yards, grouped by the RETURNING team (def_pos_team_id) ---
     punt_real = punt.loc[punt["is_real_return"]].copy()
     punt_return_season = (
         punt_real.groupby(["season", "def_pos_team_id"], sort=False)
@@ -211,7 +209,6 @@ def _build_season_fragments(season: int, path: Path) -> dict[str, pd.DataFrame]:
         .rename(columns={"def_pos_team_id": "team_id"})
     )
 
-    # --- kickoff_return_yards, grouped by the RETURNING team (def_pos_team_id) ---
     ko_real = ko.loc[ko["is_real_return"]].copy()
     kickoff_return_season = (
         ko_real.groupby(["season", "def_pos_team_id"], sort=False)
@@ -266,8 +263,6 @@ def build_team_season() -> tuple[pd.DataFrame, dict[str, Any]]:
     team_season = team_season.merge(kickoff_return, on=["season", "team_id"], how="outer")
     team_season = team_season.sort_values(["season", "team_id"]).reset_index(drop=True)
 
-    # League-center each dimension within its own season (era-drift removal,
-    # identical convention to special_teams_features.py::add_league_centered).
     for dim in RAW_DIMENSIONS:
         league_mean = team_season.groupby("season")[dim].transform("mean")
         team_season[f"{dim}_centered"] = team_season[dim] - league_mean

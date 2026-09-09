@@ -57,10 +57,6 @@ from scripts.fluview_battery_screen import (  # noqa: E402
     compute_state_thresholds,
 )
 
-#: The two candidate columns. Named with a ``cfb_`` prefix so a CFB column can
-#: never be confused with the NFL ``fluview_home_market_elevated`` /
-#: ``fluview_away_market_elevated`` columns that already exist in
-#: ``nfl_ats.fluview_production_feature`` and in the weak-signal registry.
 CFB_FLUVIEW_HOME_ELEVATED_COLUMN = "cfb_fluview_home_market_elevated"
 CFB_FLUVIEW_AWAY_ELEVATED_COLUMN = "cfb_fluview_away_market_elevated"
 CFB_FLUVIEW_FEATURE_COLUMNS = (
@@ -68,10 +64,6 @@ CFB_FLUVIEW_FEATURE_COLUMNS = (
     CFB_FLUVIEW_AWAY_ELEVATED_COLUMN,
 )
 
-#: cfbfastR-data ``team_info`` columns this module needs. ``state`` sits beside
-#: ``venue_id``/``venue_name``/``city``/``zip``/``latitude``/``longitude``, so
-#: it is the school's own listed VENUE state -- the home-market state the
-#: mechanism is about -- and it is per-season, so a venue change is carried.
 TEAM_INFO_COLUMNS = ("team_id", "school", "venue_id", "venue_name", "city", "state")
 
 _REQUIRED_COLUMNS = {
@@ -83,11 +75,6 @@ _REQUIRED_COLUMNS = {
     "away_id",
     "neutral_site",
 }
-
-
-# ---------------------------------------------------------------------------
-# Input resolution (lazy, so importing this module never requires local data)
-# ---------------------------------------------------------------------------
 
 
 def _latest(glob_pattern: str, label: str) -> Path:
@@ -164,11 +151,6 @@ def load_fluview_panel(paths: tuple[Path, ...] | None = None) -> pd.DataFrame:
             "snapshots -- the two snapshots are meant to cover disjoint regions"
         )
     return panel
-
-
-# ---------------------------------------------------------------------------
-# Feature construction
-# ---------------------------------------------------------------------------
 
 
 def cutoff_dates(gameday: pd.Series) -> pd.Series:

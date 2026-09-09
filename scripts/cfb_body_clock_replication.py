@@ -97,34 +97,20 @@ from scripts._common import summarize as summarize_two_group  # noqa: E402
 DEFAULT_FEATURES = REPO_ROOT / "data" / "processed" / "cfb_game_features.parquet"
 ARTIFACT_ROOT = REPO_ROOT / "artifacts" / "cfb_body_clock_replication"
 
-#: docs/cfb_body_clock_replication.md section 7 -- 1,000 samples and seed
-#: 20260901, matching the sibling CFB replication harness for comparability.
 BOOTSTRAP_SAMPLES = 1_000
 SEED = 20260901
 PERMUTATIONS = 200
 
-#: The NFL screens' own bootstrap size for the subset-vs-complement estimator
-#: (docs/body_clock_screen.md: "20,000 samples"). Kept at the NFL figure so the
-#: commensurable comparison is commensurable in its uncertainty too.
 TWO_GROUP_SAMPLES = 20_000
 
-#: docs/cfb_body_clock_replication.md section 7 -- the benchmark's own declared
-#: 2020 regime gap. Magnitudes are reported per era and NEVER averaged across a
-#: sign flip (owner rule "era magnitude, not presence").
 ERAS: tuple[tuple[str, int, int], ...] = (("2012_2019", 2012, 2019), ("2021_2025", 2021, 2025))
 
-#: Cell key -> the NFL registry entry it replicates, so every artifact says so.
 NFL_SIBLINGS: dict[str, str] = {
     "west_road_early": "body_clock_west_road_early",
     "east_host_west_visitor_early": "body_clock_east_host_west_visitor_early",
     "eastbound_multizone": "travel_rest_eastbound_multizone",
     "night_west_road": "body_clock_night_west_road_ge2000et",
 }
-
-
-# ---------------------------------------------------------------------------
-# population
-# ---------------------------------------------------------------------------
 
 
 def load_population(features_path: Path) -> tuple[pd.DataFrame, dict[str, Any], pd.DataFrame]:
@@ -136,11 +122,6 @@ def load_population(features_path: Path) -> tuple[pd.DataFrame, dict[str, Any], 
     attached, diagnostics = attach_cfb_body_clock_features(features, team_zones=zones)
     attached = attached.sort_values(["gameday", "game_id"]).reset_index(drop=True)
     return attached, diagnostics, zones
-
-
-# ---------------------------------------------------------------------------
-# the evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_walk_forward(
@@ -337,11 +318,6 @@ def summarize_pair(paired: pd.DataFrame, samples: int, seed: int) -> dict[str, A
     return summary
 
 
-# ---------------------------------------------------------------------------
-# the NFL-commensurable estimator: subset-vs-complement home_cover gap
-# ---------------------------------------------------------------------------
-
-
 def two_group_gap(
     attached: pd.DataFrame, scored_seasons: tuple[int, ...], column: str, *, seed: int
 ) -> dict[str, Any]:
@@ -377,11 +353,6 @@ def two_group_gap(
         "week_blocked": week,
         "season_blocked": season,
     }
-
-
-# ---------------------------------------------------------------------------
-# entry point
-# ---------------------------------------------------------------------------
 
 
 def _print_pair(label: str, summary: dict[str, Any] | None) -> None:

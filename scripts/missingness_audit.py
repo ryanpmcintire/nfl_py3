@@ -75,14 +75,9 @@ from nfl_ats.modeling import regular_season_rows  # noqa: E402
 
 DEFAULT_PARQUET = REPO_ROOT / "data" / "processed" / "game_features_weak_stack.parquet"
 
-# Step-function thresholds for the "source-era" classification: a column
-# counts as source-era if some season is at-or-above STEP_HIGH missing and
-# some other season is at-or-below STEP_LOW missing.
 STEP_HIGH = 0.95
 STEP_LOW = 0.05
 
-# A missing/present state occurring in under this fraction of the reference
-# season's training rows is flagged as a 2026 Week 1 extrapolation risk.
 RARE_THRESHOLD = 0.01
 
 INDICATOR_PREFIX = "missingindicator_"
@@ -251,7 +246,7 @@ def fit_production_recipe(
         feature_profile=profile,
         ridge_alpha=ridge_alpha,
     )
-    _ = columns  # feature_columns come from margin_feature_columns(target, profile) inside fit
+    _ = columns
     return model, training
 
 
@@ -490,8 +485,6 @@ def build_argparser() -> argparse.ArgumentParser:
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only; the ENG-29 scanner confirms zero write sites -- it prints Markdown/JSON to
-# stdout only and writes nothing under artifacts/ or registry/.
 
 
 def main(argv: Sequence[str] | None = None) -> int:

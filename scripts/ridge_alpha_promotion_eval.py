@@ -98,20 +98,14 @@ from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 
 REPO = Path(__file__).resolve().parents[1]
 
-# --- Frozen configuration -----------------------------------------------
-# Active production model, per artifacts/active_ats_model.json (read this
-# session): feature_profile="weak_stack", regressor="ridge", ridge_alpha=10.0,
-# target="market_residual", calibration="none".
 PROFILE: MarginFeatureProfile = "weak_stack"
 REGRESSOR = "ridge"
 BASELINE_ALPHA = 10.0
-# docs/ridge_alpha.md section 4's named candidate -- not chosen by this
-# script; read from the document, not re-derived.
 CANDIDATE_ALPHA = 2_000.0
 
 OPENER_BOOTSTRAP_SAMPLES = 20_000
-OPENER_BOOTSTRAP_SEED = 20260817  # matches docs/opener_evaluation.md's predeclared seed
-NFLVERSE_BOOTSTRAP_SAMPLES = 2_000  # matches the ridge_alpha_screen.py CFB precedent
+OPENER_BOOTSTRAP_SEED = 20260817
+NFLVERSE_BOOTSTRAP_SAMPLES = 2_000
 NFLVERSE_BOOTSTRAP_SEED = 20260818
 
 LINE_BUCKET_EDGES: tuple[float, ...] = (0.0, 3.0, 7.0, 10.0, float("inf"))
@@ -125,11 +119,6 @@ def _config(ridge_alpha: float) -> dict[str, Any]:
         "ridge_alpha": ridge_alpha,
         "target": "market_residual",
     }
-
-
-# ---------------------------------------------------------------------------
-# Opener-grade evaluation with cover probabilities retained
-# ---------------------------------------------------------------------------
 
 
 def evaluate_arm(
@@ -239,8 +228,6 @@ def evaluate_arm(
     result["correct_at_close"] = pick_correct(
         result["pick_home_at_close"], result["margin_vs_close"]
     )
-    # Binary actual outcome for Brier/log-loss, NaN on a push (excluded),
-    # matching nfl_ats.outcomes.summarize_predictions' convention exactly.
     result["actual_home_cover_open"] = np.where(
         result["margin_vs_open"] > 0.0, 1.0, np.where(result["margin_vs_open"] < 0.0, 0.0, np.nan)
     )
@@ -327,7 +314,6 @@ def _brier_metric_fn(prob_col: str, base_prob_col: str, actual_col: str) -> Any:
         cand_ll = np.mean(-(actual * np.log(clip(cand)) + (1 - actual) * np.log(1.0 - clip(cand))))
         base_ll = np.mean(-(actual * np.log(clip(base)) + (1 - actual) * np.log(1.0 - clip(base))))
         return {
-            # Oriented so positive = candidate better (lower Brier/log-loss).
             "brier_improvement": float(base_brier - cand_brier),
             "log_loss_improvement": float(base_ll - cand_ll),
         }
@@ -479,11 +465,6 @@ def run_opener_grade(
     }
 
 
-# ---------------------------------------------------------------------------
-# nflverse_spread grade, full history (completeness)
-# ---------------------------------------------------------------------------
-
-
 def run_nflverse_grade(
     *,
     features: pd.DataFrame,
@@ -615,13 +596,13 @@ def main() -> None:
         ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         out_dir = REPO / "artifacts" / "ridge_alpha_promotion" / ts
     out_dir.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(opener_report, out_dir / "opener_summary.json")  # ENG-38
+    write_stamped_artifact(opener_report, out_dir / "opener_summary.json")
     opener_result["paired_frame"].to_parquet(out_dir / "opener_paired.parquet")
-    stamp_sidecar(out_dir / "opener_paired.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_paired.parquet")
     opener_result["baseline_frame"].to_parquet(out_dir / "opener_baseline.parquet")
-    stamp_sidecar(out_dir / "opener_baseline.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_baseline.parquet")
     opener_result["candidate_frame"].to_parquet(out_dir / "opener_candidate.parquet")
-    stamp_sidecar(out_dir / "opener_candidate.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "opener_candidate.parquet")
 
     if not args.skip_nflverse:
         print("\n=== nflverse_spread grade (completeness): full history ===")
@@ -634,7 +615,7 @@ def main() -> None:
             seed=args.nflverse_seed,
         )
         print(json.dumps(nflverse_result, indent=2, default=str))
-        write_stamped_artifact(nflverse_result, out_dir / "nflverse_summary.json")  # ENG-38
+        write_stamped_artifact(nflverse_result, out_dir / "nflverse_summary.json")
 
     print(f"\nWrote {out_dir}")
 

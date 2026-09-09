@@ -29,8 +29,6 @@ from nfl_ats.data import DataContractError
 from nfl_ats.margin import MarginModel, fit_market_baseline, make_margin_estimator
 from nfl_ats.outcomes import outcome_bootstrap_intervals, summarize_outcome_method
 
-# Frozen benchmark configuration; fixed upfront to mirror the active NFL
-# market-residual configuration, never tuned on the evaluation window.
 CFB_BENCHMARK_TARGET = "market_residual"
 CFB_BENCHMARK_REGRESSOR = "ridge"
 CFB_BENCHMARK_RIDGE_ALPHA = 10.0
@@ -161,7 +159,6 @@ def _score_week(weekly_games: pd.DataFrame, models: dict[str, MarginModel]) -> l
         batch["train_rows"] = model.training_rows
         batch["distribution_rows"] = model.distribution_rows
         batch["train_max_gameday"] = model.training_max_gameday
-        # The benchmark is a forced-pick instrument, not a wagering policy.
         batch["bet_side"] = "PASS"
         batch["bet_odds"] = np.nan
         batches.append(batch)

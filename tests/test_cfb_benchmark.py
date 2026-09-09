@@ -25,7 +25,6 @@ def test_walk_forward_benchmark_contracts(cfb_features_frame: pd.DataFrame) -> N
     assert predictions["evaluation_window"].eq("clean_core").all()
     assert predictions["bet_side"].eq("PASS").all()
 
-    # Chronological integrity: training never reaches the scored game's date.
     cutoffs = pd.to_datetime(predictions["train_max_gameday"])
     assert (cutoffs < predictions["gameday"]).all()
 
@@ -36,8 +35,6 @@ def test_walk_forward_benchmark_contracts(cfb_features_frame: pd.DataFrame) -> N
         check_names=False,
     )
     assert market["predicted_market_residual"].eq(0.0).all()
-    # Fixture odds are -105 home / -115 away, so the no-vig market baseline
-    # always picks the away side: an explicit ~50% forced-pick control.
     assert market["home_cover_probability"].lt(0.5).all()
 
     residual = predictions.loc[predictions["method"].eq("market_residual")]

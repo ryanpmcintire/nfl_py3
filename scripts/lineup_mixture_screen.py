@@ -147,8 +147,6 @@ def live_scenarios(base, source):
             if observed >= decision:
                 raise ValueError("Serving lineup is not before decision")
             for player in game[side]["players"]:
-                # Unidentified slots have no linked snap history and contribute zero
-                # under LEAD-62; do not fabricate their availability probabilities.
                 if player["gsis_id"] is None:
                     continue
                 rows.append(
@@ -295,7 +293,6 @@ def main():
         )
         forecast = pd.read_csv(forecast_path)
         live_rows = pd.DataFrame(evaluate_rows(current, model, candidate, live))
-        # Preserve published forecast's baseline probabilities exactly; apply only lineup delta.
         forecast = forecast.loc[forecast.method.eq(active["method"])].set_index("game_id")
         if not forecast.index.is_unique:
             raise ValueError("Active forecast must contain one row per game")

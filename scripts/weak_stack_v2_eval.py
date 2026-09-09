@@ -83,18 +83,13 @@ RESULTS_MD = Path(
 
 RIDGE_ALPHA = 10.0
 OPENER_SAMPLES = 20_000
-OPENER_SEED = 20260817  # this project's standing opener-bootstrap seed
+OPENER_SEED = 20260817
 NFLVERSE_START_SEASON = 2018
 
 BASELINE_FEATURES_PATH = REPO / "data/processed/game_features_weak_stack.parquet"
 NARROWED_FEATURES_PATH = REPO / "data/processed/game_features_player.parquet"
 MARKET_ROOT = REPO / "data/market/raw"
 PBP_RAW_ROOT = REPO / "data/pbp/raw"
-
-
-# ---------------------------------------------------------------------------
-# Step 1.2: penalty_discipline as a new diff-only stacker column
-# ---------------------------------------------------------------------------
 
 
 def _canonical(team: pd.Series) -> pd.Series:
@@ -141,10 +136,6 @@ def add_penalty_discipline_feature(features: pd.DataFrame, rate: pd.DataFrame) -
 
     result = features.copy()
     for side in ("home", "away"):
-        # Every matched row's join key is season == prev_season, and
-        # prev_season = rate_season + 1 by construction above, so a match can
-        # only ever pull a STRICTLY EARLIER season's plays. No self-merge, no
-        # same-season leakage, checked separately in _leak_safety_selfcheck.
         joined = result[["game_id", "season", f"{side}_team"]].merge(
             lag[["team", "prev_season", "prior_rate"]],
             left_on=["season", f"{side}_team"],
@@ -166,15 +157,8 @@ def _leak_safety_selfcheck(rate: pd.DataFrame) -> None:
     lag = rate.copy()
     lag["prev_season"] = lag["season"] + 1
     for _, row in lag.iterrows():
-        # The season this rate is attached FORWARD to (prev_season) must be
-        # strictly greater than the season the plays were drawn from.
         assert row["prev_season"] > row["season"], "penalty rate must lag strictly backward"
     print(f"  leak-safety self-check passed on {len(lag)} team-season rate rows")
-
-
-# ---------------------------------------------------------------------------
-# Step 1.2 (continued): wire weak_stack_v2 into margin.py's runtime registries
-# ---------------------------------------------------------------------------
 
 
 def register_weak_stack_v2_profile() -> None:
@@ -195,11 +179,6 @@ def register_weak_stack_v2_profile() -> None:
         "football_weak_stack_v2",
         "full_weak_stack_v2",
     )
-    # nfl_ats.outcomes did `from nfl_ats.margin import MARGIN_FEATURE_PROFILES`,
-    # which bound its OWN name to the original tuple object at import time --
-    # rebinding margin_mod's attribute above does not reach it. Patch the
-    # outcomes-module name directly so walk_forward_outcomes (used only for
-    # the nflverse-grade completeness read) accepts the new profile too.
     outcomes_mod.MARGIN_FEATURE_PROFILES = margin_mod.MARGIN_FEATURE_PROFILES
     print(
         "  registered runtime profile weak_stack_v2 -> "
@@ -207,11 +186,6 @@ def register_weak_stack_v2_profile() -> None:
         f"({len(constants_mod.FEATURE_SETS['full_weak_stack'])} + "
         f"{len(penalty_family)} penalty)"
     )
-
-
-# ---------------------------------------------------------------------------
-# Paired scoring, one arm pair at a time (reuses evaluate_arm unmodified)
-# ---------------------------------------------------------------------------
 
 
 def _config(profile: str) -> dict[str, Any]:
@@ -440,7 +414,7 @@ def main() -> None:
     print(json.dumps(arm_a["summary"], indent=2, default=str))
     results["arms"]["A_narrowed_only"] = arm_a["summary"]
     arm_a["paired"].to_parquet(out_dir / "arm_A_paired.parquet")
-    stamp_sidecar(out_dir / "arm_A_paired.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "arm_A_paired.parquet")
     print(f"Elapsed so far: {time.time() - started:.1f}s")
 
     print("\n=== Arm B: v2 stack (narrowed + penalty) vs active baseline ===")
@@ -455,7 +429,7 @@ def main() -> None:
     print(json.dumps(arm_b["summary"], indent=2, default=str))
     results["arms"]["B_v2_stack"] = arm_b["summary"]
     arm_b["paired"].to_parquet(out_dir / "arm_B_paired.parquet")
-    stamp_sidecar(out_dir / "arm_B_paired.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "arm_B_paired.parquet")
     print(f"Elapsed so far: {time.time() - started:.1f}s")
 
     print("\n=== Arm C: penalty only (learned severity unchanged) vs active baseline ===")
@@ -470,7 +444,7 @@ def main() -> None:
     print(json.dumps(arm_c["summary"], indent=2, default=str))
     results["arms"]["C_penalty_only"] = arm_c["summary"]
     arm_c["paired"].to_parquet(out_dir / "arm_C_paired.parquet")
-    stamp_sidecar(out_dir / "arm_C_paired.parquet")  # ENG-38
+    stamp_sidecar(out_dir / "arm_C_paired.parquet")
 
     print("\n=== nflverse_spread grade (completeness): full 2018+ history ===")
     t_nf0 = time.perf_counter()
@@ -495,7 +469,7 @@ def main() -> None:
     results["nflverse_grade"] = nflverse_results
 
     results["elapsed_seconds"] = time.time() - started
-    write_stamped_artifact(results, out_dir / "summary.json")  # ENG-38
+    write_stamped_artifact(results, out_dir / "summary.json")
     print(f"\nWrote {out_dir}")
 
 

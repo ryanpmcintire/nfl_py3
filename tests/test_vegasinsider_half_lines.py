@@ -137,11 +137,6 @@ def _data_row(
     return f"<TR>{tds}</TR>"
 
 
-# ---------------------------------------------------------------------------
-# parse_half_cell_value: token-level parsing
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize(
     "token,expected",
     [
@@ -154,7 +149,7 @@ def _data_row(
         ("INDXX", None),
         ("IND XX", None),
         ("", None),
-        ("CIN", None),  # malformed/truncated cell: no usable number
+        ("CIN", None),
     ],
 )
 def test_parse_half_cell_value(token: str, expected: float | None) -> None:
@@ -162,21 +157,12 @@ def test_parse_half_cell_value(token: str, expected: float | None) -> None:
 
 
 def test_normalize_full_team_name_handles_the_giants_title_artifact() -> None:
-    # VegasInsider's page title literally renders "N.Y. Giants Giants" (a
-    # city-alias + mascot concatenation bug on their end); measured across
-    # all 165 cached line_movement files, so it must resolve like the clean
-    # "New York Giants" string does.
     assert biv.normalize_full_team_name("New York Giants") == "NYG"
     assert biv.normalize_full_team_name("N.Y. Giants Giants") == "NYG"
     assert biv.normalize_full_team_name("St. Louis Rams") == "LAR"
     assert biv.normalize_full_team_name("Los Angeles Rams") == "LAR"
     assert biv.normalize_full_team_name("Oakland Raiders") == "LV"
     assert biv.normalize_full_team_name("Not A Real Team") is None
-
-
-# ---------------------------------------------------------------------------
-# Fixture 1: full game + 1H + 2H columns, two rows (last row wins per half)
-# ---------------------------------------------------------------------------
 
 
 def test_parse_page_with_full_and_half_columns() -> None:
@@ -221,9 +207,6 @@ def test_parse_page_with_full_and_half_columns() -> None:
 
 
 def test_last_row_wins_when_half_becomes_unavailable_again() -> None:
-    # 1H posted early, then withdrawn ("XX") on the final row: the LAST
-    # *usable* reading should still win, not a stale earlier one silently
-    # dropped, and not a None overwrite of a real number.
     rows = _data_row(
         "10/05",
         "9:00am",
@@ -247,14 +230,7 @@ def test_last_row_wins_when_half_becomes_unavailable_again() -> None:
     assert books == [("CAESARS", -11.0, None)]
 
 
-# ---------------------------------------------------------------------------
-# Fixture 2: a page with no half section at all
-# ---------------------------------------------------------------------------
-
-
 def test_book_section_without_half_columns_yields_none_for_both_halves() -> None:
-    # Full game columns only (8 cells, no 1H/2H) -- a genuinely narrower
-    # table than the standard 12-column layout.
     narrow_row = (
         '<TR><TD class="bg2">10/08</TD><TD class="bg2">9:00am</TD>'
         '<TD class="bg2">IND XX</TD><TD class="bg2">TEN XX</TD>'
@@ -267,19 +243,10 @@ def test_book_section_without_half_columns_yields_none_for_both_halves() -> None
 
 
 def test_page_missing_page_title_is_not_a_line_movement_page() -> None:
-    # Measured: 5/165 cached "line_movement" files are actually a mis-fetched
-    # VegasInsider homepage (wrong wayback redirect target), not a real
-    # movement page. They must be recognised and skipped, not mis-parsed.
     homepage_html = (
         "<html><body><div class='viHeaderNorm'>TODAY'S TOP BETTING TRENDS</div></body></html>"
     )
     assert biv.parse_line_movement_page(homepage_html) is None
-
-
-# ---------------------------------------------------------------------------
-# build_half_lines: end-to-end over cached files, season-scoping, and the
-# point-in-time / leakage discipline.
-# ---------------------------------------------------------------------------
 
 
 def _write_lm_file(lm_dir: Path, capture_ts: str, html: str, suffix: str = "aaaa1111") -> Path:
@@ -314,10 +281,10 @@ def test_build_half_lines_end_to_end(tmp_path: Path) -> None:
 
     assert frame["in_play"].all()
     assert list(frame.columns) == biv.HALF_LINES_COLUMNS
-    assert len(frame) == 2  # one row per half for the one book
+    assert len(frame) == 2
     assert set(frame["half"]) == {1, 2}
-    assert frame["total_line"].isna().all()  # measured: no half total exists in this source
-    assert frame["spread_price"].isna().all()  # measured: no half price exists in this source
+    assert frame["total_line"].isna().all()
+    assert frame["spread_price"].isna().all()
     half1_row = frame.loc[frame["half"] == 1].iloc[0]
     half2_row = frame.loc[frame["half"] == 2].iloc[0]
     assert half1_row["spread_line"] == pytest.approx(-12.5)
@@ -329,9 +296,6 @@ def test_build_half_lines_end_to_end(tmp_path: Path) -> None:
 
 
 def test_build_half_lines_filters_by_capture_ts_values(tmp_path: Path) -> None:
-    # Two seasons' worth of files can share one line_movement/ cache dir;
-    # build_half_lines for one season must not pull in the other season's
-    # captures.
     snapshot_dir = tmp_path / "run"
     lm_dir = snapshot_dir / "line_movement"
     rows = _data_row(
@@ -355,7 +319,7 @@ def test_build_half_lines_filters_by_capture_ts_values(tmp_path: Path) -> None:
     frame_2006 = biv.build_half_lines(snapshot_dir, {"20061005080503"})
 
     assert set(frame_2006["capture_ts"]) == {"20061005080503"}
-    assert len(frame_2006) == 2  # half 1 + half 2 rows for the single in-scope file
+    assert len(frame_2006) == 2
 
 
 def test_future_movement_is_rejected_not_backdated(tmp_path: Path) -> None:
@@ -393,7 +357,7 @@ def test_future_movement_is_rejected_not_backdated(tmp_path: Path) -> None:
         )
     )
     html = _lm_page(book_sections=_book_section("E", "CAESARS", rows))
-    capture_ts = "20061005080503"  # earlier than the last row's own 10/08 date on purpose
+    capture_ts = "20061005080503"
     _write_lm_file(lm_dir, capture_ts, html)
 
     frame = biv.build_half_lines(snapshot_dir, {capture_ts})
@@ -421,11 +385,6 @@ def test_unparsed_line_movement_files_are_counted_not_silently_dropped(tmp_path:
 
     assert frame.empty
     assert frame.attrs["unparsed_line_movement_files"] == 1
-
-
-# ---------------------------------------------------------------------------
-# classify_missing_half_nav_boards
-# ---------------------------------------------------------------------------
 
 
 def _snapshot_record(capture_ts: str, file: str) -> biv.SnapshotRecord:
@@ -472,11 +431,6 @@ def test_classify_missing_half_nav_boards(tmp_path: Path) -> None:
     }
     assert classifications["20051001023412"] == "layout_variant_legacy_board"
     assert classifications["20061005080503"] == "genuinely_absent"
-
-
-# ---------------------------------------------------------------------------
-# compute_half_line_coverage: join rate against the full-game tidy rows
-# ---------------------------------------------------------------------------
 
 
 def test_compute_half_line_coverage_join_rate() -> None:
@@ -547,7 +501,6 @@ def test_compute_half_line_coverage_join_rate() -> None:
     assert stats["rows_with_half2_spread"] == 1
     assert stats["rows_with_half1_total"] == 0
     assert stats["rows_with_half2_total"] == 0
-    # 2 of the 3 (capture, matchup, book) keys in half_lines also exist in tidy
     assert stats["distinct_capture_matchup_book_keys_half_lines"] == 2
     assert stats["half_line_keys_present_in_full_game_tidy"] == 1
     assert stats["half_line_key_join_rate_against_full_game_tidy"] == pytest.approx(0.5)

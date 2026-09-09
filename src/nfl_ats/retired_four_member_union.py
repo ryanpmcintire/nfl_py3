@@ -60,7 +60,7 @@ def record_retired_four_member_union_decisions(
     No schedule or arrest source is loaded a second time.
     """
 
-    del data_root  # the primary paper ledger already froze every required input
+    del data_root
     entry = find_challenger(artifacts_root, INCUMBENT_CHALLENGER_ID)
     status = str(entry.get("status"))
     if status != ACTIVE_CHALLENGER_STATUS:

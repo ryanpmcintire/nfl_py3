@@ -132,7 +132,6 @@ def load_schedule() -> pd.DataFrame:
         ],
     )
     df["gameday"] = pd.to_datetime(df["gameday"])
-    # Tuesday on/before gameday: Monday=0..Sunday=6, Tuesday=1.
     days_since_tuesday = (df["gameday"].dt.weekday - 1) % 7
     df["tuesday_date"] = df["gameday"] - pd.to_timedelta(days_since_tuesday, unit="D")
     df["decision_at_utc"] = tuesday_checkpoint_timestamps(df["tuesday_date"])
@@ -150,9 +149,6 @@ def load_stadium_counties() -> pd.DataFrame:
 def asof_merge_aqi(games: pd.DataFrame, aqi: pd.DataFrame) -> pd.DataFrame:
     aqi = aqi.copy()
     aqi["aqi_date"] = pd.to_datetime(aqi.pop("date"))
-    # A daily AQI summarizes the complete local calendar day. At a Tuesday
-    # decision checkpoint, Tuesday's eventual daily value is future
-    # information; the earliest safe archive proxy is therefore Monday.
     aqi["aqi_available_date"] = aqi["aqi_date"] + pd.Timedelta(days=1)
     aqi = aqi.sort_values("aqi_available_date")
     games_sorted = games.sort_values("tuesday_date")
@@ -303,7 +299,6 @@ def asof_merge_drought(games: pd.DataFrame, drought: pd.DataFrame) -> pd.DataFra
 def primary_drought_category(row: pd.Series) -> str:
     if pd.isna(row.get("drought_d0")):
         return "no_data"
-    # d0..d4 are CUMULATIVE percentages ("at least this severe"), per USDM convention.
     for level in ["d4", "d3", "d2", "d1", "d0"]:
         val = row.get(f"drought_{level}")
         if pd.notna(val) and val >= 50.0:
@@ -351,24 +346,15 @@ def main() -> None:
     joined["is_dome_or_closed"] = joined["roof"].isin(["dome", "closed"])
     joined["is_outdoor_exposed"] = joined["roof"].isin(["outdoors", "open"])
 
-    # `merge_asof(direction="backward")` silently carries the LAST available
-    # archive value forward for any tuesday_date past the archive's own max
-    # date (both archives stop at end-of-2025) -- e.g. a 2026 game's Tuesday
-    # would match the same stale late-2025 AQI/drought reading rather than a
-    # real 2026 measurement. Track staleness explicitly rather than letting a
-    # match-found/match-missing boolean claim "100% coverage" when a chunk of
-    # it is actually carried-forward stale data.
     joined["aqi_staleness_days"] = (joined["tuesday_date"] - joined["aqi_date"]).dt.days
     joined["drought_staleness_days"] = (
         joined["decision_at_utc"] - joined["drought_available_at_utc"]
     ).dt.total_seconds() / 86_400.0
-    # AQI is daily, drought weekly; beyond ~10 days a match is archive
-    # exhaustion carry-forward, not a real as-of-Tuesday reading.
     STALE_THRESHOLD_DAYS = 10
     joined["aqi_is_stale_carryforward"] = joined["aqi_staleness_days"] > STALE_THRESHOLD_DAYS
     joined["drought_is_stale_carryforward"] = joined["drought_staleness_days"] > (
         STALE_THRESHOLD_DAYS + 7
-    )  # drought rows are weekly, so allow one extra week before flagging
+    )
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     joined.to_parquet(args.out, index=False)
@@ -379,7 +365,6 @@ def main() -> None:
     print(f"\nWrote {args.out} ({len(joined)} in-scope games)")
     print(f"Wrote {out_of_scope_path} ({len(out_of_scope_games)} out-of-scope international games)")
 
-    # --- Per-season coverage report ---
     joined["has_aqi"] = joined["aqi"].notna()
     joined["has_drought"] = joined["drought_d0"].notna()
     joined["has_fresh_aqi"] = joined["has_aqi"] & ~joined["aqi_is_stale_carryforward"]

@@ -47,34 +47,16 @@ from nfl_ats.data import DataContractError
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# ---------------------------------------------------------------------------
-# Frozen thresholds (docs/cfb_rest_bye_replication.md section 3)
-# ---------------------------------------------------------------------------
 
-#: NFL ``travel_rest_home_off_bye`` / ``travel_rest_away_off_bye``: rest >= 13
-#: days, a SIDE-SPECIFIC ABSOLUTE threshold. Transcribed verbatim; see the
-#: predeclaration section 3 for why 13 survives the CFB calendar unchanged.
 OFF_BYE_REST_DAYS = 13
 
-#: NFL ``bye_overval_home_edge_post2011``: "off strict bye" is a >= 12-day gap
-#: (``scripts/venue_milestone_screen.py``'s ``POST_BYE_GAP_DAYS=12``,
-#: ``docs/bye_overvaluation_screen.md`` "Strict bye definition").
 STRICT_BYE_GAP_DAYS = 12
 
-#: NFL ``travel_rest_short_week_road``: away rest <= 5 days.
 SHORT_WEEK_REST_DAYS = 5
 
-#: Declared sensitivity arms, frozen with the primaries and never substituted
-#: for them (predeclaration section 3). 12 is the CFB-calendar-widened off-bye
-#: gap (a Saturday -> open date -> Thursday turnaround is 12 days, not 13); 6
-#: is the CFB-calendar-widened short week (Saturday -> Friday).
 OFF_BYE_SENSITIVITY_REST_DAYS = 12
 SHORT_WEEK_SENSITIVITY_REST_DAYS = 6
 
-# ---------------------------------------------------------------------------
-# Column names. ``cfb_`` prefixed so a CFB column can never be confused with
-# the NFL flags of the same construct in registry/weak_signals.json.
-# ---------------------------------------------------------------------------
 
 CFB_HOME_OFF_BYE_COLUMN = "cfb_rest_home_off_bye"
 CFB_AWAY_OFF_BYE_COLUMN = "cfb_rest_away_off_bye"
@@ -85,7 +67,6 @@ CFB_HOME_OFF_BYE_GAP12_COLUMN = "cfb_rest_home_off_bye_gap12"
 CFB_AWAY_OFF_BYE_GAP12_COLUMN = "cfb_rest_away_off_bye_gap12"
 CFB_SHORT_WEEK_ROAD_LE6_COLUMN = "cfb_rest_short_week_road_le6"
 
-#: The four predeclared cells, in the order section 3 declares them.
 CFB_REST_BYE_PRIMARY_COLUMNS = (
     CFB_HOME_OFF_BYE_COLUMN,
     CFB_AWAY_OFF_BYE_COLUMN,
@@ -102,12 +83,10 @@ CFB_REST_BYE_FEATURE_COLUMNS = (
     *CFB_REST_BYE_SENSITIVITY_COLUMNS,
 )
 
-#: Per-side rest columns the derivation adds alongside the cells.
 CFB_SIDE_REST_COLUMNS = ("cfb_home_rest_days", "cfb_away_rest_days")
 
 _REQUIRED_COLUMNS = {"game_id", "season", "week", "gameday", "home_id", "away_id"}
 
-#: The team-season panel metrics section 7 computes split-half reliability on.
 CFB_REST_PANEL_METRICS = (
     "own_rest_days",
     "own_off_bye_13",
@@ -117,9 +96,6 @@ CFB_REST_PANEL_METRICS = (
     "own_short_week_6",
 )
 
-#: Which panel metric carries each candidate column's own propensity. Home and
-#: away cells share one entry on purpose: it is the SAME team-season trait,
-#: read off a different side of the game (section 7).
 CFB_REST_CELL_PANEL_METRIC: dict[str, str] = {
     CFB_HOME_OFF_BYE_COLUMN: "own_off_bye_13",
     CFB_AWAY_OFF_BYE_COLUMN: "own_off_bye_13",
@@ -129,11 +105,6 @@ CFB_REST_CELL_PANEL_METRIC: dict[str, str] = {
     CFB_AWAY_OFF_BYE_GAP12_COLUMN: "own_off_bye_12",
     CFB_SHORT_WEEK_ROAD_LE6_COLUMN: "own_short_week_6",
 }
-
-
-# ---------------------------------------------------------------------------
-# Per-side rest derivation
-# ---------------------------------------------------------------------------
 
 
 def default_cfb_schedules(cfb_root: Path | None = None) -> pd.DataFrame:
@@ -289,8 +260,6 @@ def derive_cfb_rest_bye_features(
     for column, values in cells.items():
         derived[column] = values
 
-    # Season is already an int64 column (derive_side_rest casts it), so the
-    # groupby keys stringify as "2012", never "2012.0".
     season = pd.Series(rested["season"].to_numpy(dtype="int64"))
     coverage: dict[str, dict[str, float]] = {}
     for column in CFB_REST_BYE_FEATURE_COLUMNS:

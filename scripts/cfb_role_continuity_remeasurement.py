@@ -358,7 +358,7 @@ def main() -> None:
     results["recorded_for_reference"] = RECORDED
     results["timing_seconds"] = time.time() - started
     out_path = OUT_DIR / "role_continuity_remeasurement.json"
-    write_stamped_artifact(results, out_path)  # ENG-38
+    write_stamped_artifact(results, out_path)
     print(f"\nWrote {out_path} in {results['timing_seconds']:.1f}s", flush=True)
 
 

@@ -61,7 +61,7 @@ DEFAULT_INJURIES_PATH = (
 DEFAULT_PLAYER_SNAPSHOT = REPO / "data" / "players" / "raw" / "20260817T184901Z"
 SEASON_START = 2013
 SEASON_END = 2025
-ERA_BOUNDARY = 2018  # 2013-2017 vs 2018-2025, per docs/injury_report_hygiene.md
+ERA_BOUNDARY = 2018
 
 
 def _era_split(frame: pd.DataFrame) -> dict[str, pd.DataFrame]:

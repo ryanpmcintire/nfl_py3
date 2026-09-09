@@ -46,14 +46,11 @@ _BASELINE: dict[str, object] = {
     "prior_win_pct": 0.5,
     "opp_prior_win_pct": 0.5,
     "ats_streak_len": 0.0,
-    # Outcome-only columns: build_claims must never read these. Included
-    # only so the leakage test has something to shuffle.
     "team_covered": 1.0,
     "team_score_margin": 3.0,
 }
 
 _ROWS: dict[str, dict[str, object]] = {
-    # --- claim 2: primetime dog ---
     "primetime_dog_pos_thu": {"weekday": "Thursday", "team_spread": -2.5},
     "primetime_dog_neg_thu_favorite": {"weekday": "Thursday", "team_spread": 2.5},
     "primetime_dog_neg_saturday_night": {
@@ -71,24 +68,19 @@ _ROWS: dict[str, dict[str, object]] = {
         "gametime_hour": 13.0,
         "team_spread": -1.0,
     },
-    # --- claim 3: post-bye back ---
     "post_bye_pos": {"own_rest": 13.0},
     "post_bye_pos_boundary": {"own_rest": 12.0},
     "post_bye_neg": {"own_rest": 7.0},
     "post_bye_missing": {"own_rest": float("nan")},
-    # --- claim 4: division dog ---
     "division_dog_pos": {"div_game": 1, "team_spread": -2.0},
     "division_dog_neg_favorite": {"div_game": 1, "team_spread": 2.0},
     "division_dog_neg_nondiv": {"div_game": 0, "team_spread": -2.0},
-    # --- claim 5: big road favorite fade ---
     "road_fav_pos_boundary": {"is_home": False, "team_spread": 7.0},
     "road_fav_neg_below_threshold": {"is_home": False, "team_spread": 6.5},
     "road_fav_neg_home_favorite": {"is_home": True, "team_spread": 7.0},
-    # --- claim 6: home dog 3+ ---
     "home_dog_pos_boundary": {"is_home": True, "team_spread": -3.0},
     "home_dog_neg_above_threshold": {"is_home": True, "team_spread": -2.5},
     "home_dog_neg_road_dog": {"is_home": False, "team_spread": -3.0},
-    # --- claim 7: upset-letdown fade ---
     "upset_letdown_pos": {"prior_team_spread": -3.0, "prior_score_margin": 7.0},
     "upset_letdown_neg_was_favorite": {"prior_team_spread": 3.0, "prior_score_margin": 7.0},
     "upset_letdown_neg_lost": {"prior_team_spread": -3.0, "prior_score_margin": -7.0},
@@ -96,15 +88,12 @@ _ROWS: dict[str, dict[str, object]] = {
         "prior_team_spread": float("nan"),
         "prior_score_margin": float("nan"),
     },
-    # --- claim 8: 21+ blowout-loss bounce ---
     "blowout_bounce_pos": {"prior_score_margin": -24.0},
     "blowout_bounce_pos_boundary": {"prior_score_margin": -21.0},
     "blowout_bounce_neg_smaller_loss": {"prior_score_margin": -14.0},
-    # --- claim 9: Week 1 dog ---
     "week1_dog_pos": {"week": 1, "team_spread": -2.0},
     "week1_dog_neg_favorite": {"week": 1, "team_spread": 2.0},
     "week1_dog_neg_week2": {"week": 2, "team_spread": -2.0},
-    # --- claim 10: weeks 17-18 proxy elimination fade ---
     "eliminated_pos": {
         "week": 17,
         "prior_games": 14,
@@ -133,7 +122,6 @@ _ROWS: dict[str, dict[str, object]] = {
         "prior_win_pct": 0.30,
         "opp_prior_win_pct": 0.70,
     },
-    # --- claim 12: ATS losing streak regression ---
     "ats_streak_pos": {"ats_streak_len": 3.0},
     "ats_streak_pos_longer": {"ats_streak_len": 5.0},
     "ats_streak_neg_below_threshold": {"ats_streak_len": 2.0},
@@ -166,7 +154,7 @@ def test_post_bye_back_flag_and_eligibility() -> None:
     spec = screen.build_claims(_fixture_frame())["public_claim_post_bye_back"]
     flag, eligible = spec["flag"], spec["eligible"]
     assert flag["post_bye_pos"]
-    assert flag["post_bye_pos_boundary"]  # >=12 is inclusive
+    assert flag["post_bye_pos_boundary"]
     assert not flag["post_bye_neg"]
     assert not eligible["post_bye_missing"], "NaN own_rest must be excluded, not defaulted"
     assert eligible["post_bye_pos"]
@@ -181,14 +169,14 @@ def test_division_dog_flag() -> None:
 
 def test_road_favorite_big_fade_flag() -> None:
     flag = screen.build_claims(_fixture_frame())["public_claim_road_fav_big_fade"]["flag"]
-    assert flag["road_fav_pos_boundary"]  # >=7 is inclusive
+    assert flag["road_fav_pos_boundary"]
     assert not flag["road_fav_neg_below_threshold"]
     assert not flag["road_fav_neg_home_favorite"], "must require road, not just big favorite"
 
 
 def test_home_dog_3plus_flag() -> None:
     flag = screen.build_claims(_fixture_frame())["public_claim_home_dog_3plus"]["flag"]
-    assert flag["home_dog_pos_boundary"]  # <=-3 is inclusive
+    assert flag["home_dog_pos_boundary"]
     assert not flag["home_dog_neg_above_threshold"]
     assert not flag["home_dog_neg_road_dog"], "must require home, not just a 3+ point dog"
 
@@ -204,7 +192,7 @@ def test_upset_letdown_fade_flag() -> None:
 def test_blowout_loss_bounce_21_flag() -> None:
     flag = screen.build_claims(_fixture_frame())["public_claim_blowout_loss_bounce_21"]["flag"]
     assert flag["blowout_bounce_pos"]
-    assert flag["blowout_bounce_pos_boundary"]  # <=-21 is inclusive
+    assert flag["blowout_bounce_pos_boundary"]
     assert not flag["blowout_bounce_neg_smaller_loss"]
 
 

@@ -25,16 +25,11 @@ import pandas as pd
 
 from nfl_ats.constants import STATE_METRICS
 
-# The canonical team-state columns the public page is allowed to read. These are
-# the pregame team states, the documented output of build_team_states.
 TEAM_STATE_METRICS: tuple[str, ...] = STATE_METRICS
 STATE_COLUMNS: tuple[str, ...] = tuple(f"state_{m}" for m in STATE_METRICS)
 
 IDENTIFIER_COLUMNS = ("game_id", "season", "gameday", "team")
 
-# Headline metrics shown in the at-a-glance overview and the matchup comparer.
-# A short, opinionated subset keeps the page readable; every metric is still
-# available in each team's per-season trend table.
 DEFAULT_TREND_METRICS: tuple[str, ...] = (
     "off_epa_per_play",
     "def_epa_per_play",
@@ -42,7 +37,6 @@ DEFAULT_TREND_METRICS: tuple[str, ...] = (
     "ats_residual",
 )
 
-# Author copy for table headers / axis ticks -- not data, so inline (no i18n).
 METRIC_LABELS: dict[str, str] = {
     "off_epa_per_play": "Offense EPA/play",
     "off_pass_epa_per_play": "Pass EPA/play",
@@ -62,39 +56,22 @@ METRIC_LABELS: dict[str, str] = {
 }
 
 
-#: Plain-language explanation for every metric, written for a reader who has
-#: never seen this dashboard. First-grade rule: no undefined pronouns, no
-#: unexplained jargon. Each sentence says what the number is, where it comes
-#: from, and which direction is good.
-#: Which DIRECTION is good for each metric, +1 = higher is better,
-#: -1 = lower is better.
-#:
-#: Added 2026-08-25 to fix a real defect the owner caught: the semantic-colour
-#: pass tinted every signed value by its SIGN, so "Defense EPA/play allowed"
-#: -- where a negative number is a good defence -- rendered red. The colour was
-#: telling the reader the opposite of the help text sitting beside it.
-#:
-#: This is NOT "offence positive, defence negative", which is the tempting
-#: shortcut and is wrong twice over: an offence's turnover and sack rates are
-#: LOWER-is-better, and a defence's takeaway and sack rates are HIGHER-is-better.
-#: Every metric is listed explicitly so a new one cannot inherit a default that
-#: happens to be backwards.
 METRIC_GOOD_DIRECTION: dict[str, int] = {
     "off_epa_per_play": 1,
     "off_pass_epa_per_play": 1,
     "off_rush_epa_per_play": 1,
     "off_cpoe": 1,
     "off_yards_per_play": 1,
-    "off_turnover_rate": -1,  # the offence giving the ball away
-    "off_sack_rate": -1,  # the offence's quarterback being sacked
+    "off_turnover_rate": -1,
+    "off_sack_rate": -1,
     "point_diff": 1,
     "ats_residual": 1,
-    "def_epa_per_play": -1,  # points the defence GIVES UP
+    "def_epa_per_play": -1,
     "def_pass_epa_per_play": -1,
     "def_rush_epa_per_play": -1,
     "def_yards_per_play": -1,
-    "def_takeaway_rate": 1,  # the defence taking the ball away
-    "def_sack_rate": 1,  # the defence sacking the quarterback
+    "def_takeaway_rate": 1,
+    "def_sack_rate": 1,
 }
 
 
@@ -255,8 +232,6 @@ def aggregate_team_trends(
 
     latest_season = int(long["season"].max())
     latest_season_long = long.loc[long["season"] == latest_season]
-    # One row per (team, metric): each team's season-average pregame state and
-    # its z (team average minus the league mean for that season/metric).
     latest = latest_season_long.groupby(["team", "metric"])["value"].mean().reset_index()
     league_mean_by_metric = latest_season_long.groupby("metric")["value"].mean().to_dict()
     latest["league_mean"] = latest["metric"].map(league_mean_by_metric)
@@ -332,8 +307,6 @@ def make_schema_fixture(
     rng = np.random.default_rng(seed)
     rows: list[dict[str, object]] = []
     for team in teams:
-        # One stable base per (team, metric) so each team shows a coherent,
-        # distinct trend; a small per-game wobble keeps it realistic.
         bases = {column: float(rng.normal(0.0, 0.3)) for column in state_columns}
         for season in seasons:
             for game in range(1, games_per_season + 1):

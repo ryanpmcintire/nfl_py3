@@ -52,18 +52,12 @@ from nfl_ats.data import DataContractError, require_columns
 
 CFB_FEATURE_VERSION = "v1"
 
-# The regular season spans weeks 1-16 in the schedule source.
 CFB_WEEK_PERIOD = 16.0
 
-# BCS automatic-qualifier / power conferences as named by the schedule source.
-# Declared once; used only as a coarse conference control, never tuned.
 CFB_POWER_CONFERENCES = frozenset(
     {"ACC", "Big 12", "Big East", "Big Ten", "Pac-10", "Pac-12", "SEC"}
 )
 
-# Pregame team-state metrics measured per completed game and turned into a
-# strictly-lagged exponentially weighted state (NFL span/maturity/offseason
-# parameters taken verbatim).
 CFB_STATE_METRICS = (
     "off_epa_per_play",
     "off_success_rate",
@@ -91,7 +85,6 @@ CFB_TEAM_STATE_FEATURES = tuple(
     for metric in CFB_STATE_METRICS
     for column in (f"home_{metric}", f"away_{metric}", f"diff_{metric}")
 )
-# The frozen model feature contract for the CFB market-residual benchmark.
 CFB_MODEL_FEATURE_COLUMNS = (
     *CFB_MARKET_FEATURES,
     *CFB_CONTEXT_FEATURES,
@@ -184,11 +177,6 @@ _LINE_LOAD_COLUMNS = (
 )
 
 
-# ---------------------------------------------------------------------------
-# Snapshot loading (play-by-play spans multiple snapshots)
-# ---------------------------------------------------------------------------
-
-
 def cfb_season_partitions(cfb_root: Path, source: str) -> dict[int, Path]:
     """Map each ingested season to its newest snapshot partition."""
 
@@ -235,11 +223,6 @@ def load_cfb_benchmark_inputs(
     return schedules, lines, pbp
 
 
-# ---------------------------------------------------------------------------
-# Schedule normalization
-# ---------------------------------------------------------------------------
-
-
 def _filtered_schedule(
     schedules: pd.DataFrame, start_season: int, end_season: int
 ) -> tuple[pd.DataFrame, dict[str, int]]:
@@ -275,11 +258,6 @@ def _filtered_schedule(
     for column in ("home_conference", "away_conference"):
         result[column] = result[column].astype("string")
     return result.sort_values(["gameday", "game_id"]).reset_index(drop=True), audit
-
-
-# ---------------------------------------------------------------------------
-# Market spread orientation and aggregation
-# ---------------------------------------------------------------------------
 
 
 def _season_abbr_map(pairs: pd.DataFrame) -> dict[str, int]:
@@ -515,11 +493,6 @@ def build_cfb_market_table(
     return market, audit
 
 
-# ---------------------------------------------------------------------------
-# Team-game metrics from play-by-play
-# ---------------------------------------------------------------------------
-
-
 def cfb_competitive_plays(pbp: pd.DataFrame) -> pd.DataFrame:
     """Apply the documented CFB play filter, mirroring the NFL v1 filter.
 
@@ -617,11 +590,6 @@ def build_cfb_team_game_metrics(pbp: pd.DataFrame) -> tuple[pd.DataFrame, dict[s
         "team_games": len(result),
         "unpaired_games_dropped": unpaired,
     }
-
-
-# ---------------------------------------------------------------------------
-# Exponentially weighted pregame state (NFL parameters verbatim)
-# ---------------------------------------------------------------------------
 
 
 def build_cfb_team_states(
@@ -737,11 +705,6 @@ def attach_cfb_team_states(
     for metric in CFB_STATE_METRICS:
         result[f"diff_{metric}"] = result[f"home_{metric}"] - result[f"away_{metric}"]
     return result
-
-
-# ---------------------------------------------------------------------------
-# Rest and assembly
-# ---------------------------------------------------------------------------
 
 
 def _rest_base_schedule(

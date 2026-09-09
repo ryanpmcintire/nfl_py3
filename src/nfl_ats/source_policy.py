@@ -57,7 +57,7 @@ def load_source_policies(path: Path = DEFAULT_REGISTRY) -> dict[str, SourcePolic
             raise SourcePolicyError(f"Invalid policy for source {source_id}: {error}") from error
         if policy.risk not in VALID_RISKS:
             raise SourcePolicyError(f"Invalid risk for source {source_id}: {policy.risk}")
-        if type(policy.acquisition_allowed) is not bool:  # bool, not truthy strings/integers
+        if type(policy.acquisition_allowed) is not bool:
             raise SourcePolicyError(f"acquisition_allowed must be boolean for {source_id}")
         if policy.raw_retention not in VALID_RAW_RETENTION:
             raise SourcePolicyError(f"Invalid raw retention for source {source_id}")

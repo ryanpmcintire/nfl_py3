@@ -140,11 +140,6 @@ FloatArray = NDArray[np.float64]
 EdgeSignal = Literal["residual", "raw_margin", "team_stat"]
 Propagation = Literal["signed_katz", "nonneg_pagerank"]
 
-#: Per-team injury value-lost components (``player_value`` profile), summed
-#: to a single team-game total. Matches the two columns
-#: ``nfl_ats.surgical_gating.VALUE_LOST_DIFF_COLUMNS`` differences, but here
-#: read as home/away TOTALS rather than a diff, since the injury modifier
-#: needs to know which SIDE was hurt, not just the gap between them.
 HOME_INJURY_VALUE_LOST_COLUMNS: tuple[str, ...] = (
     "home_injury_skill_epa_value_lost",
     "home_injury_defense_disruption_value_lost",
@@ -284,11 +279,6 @@ def katz_feature_columns(config: GraphRatingV2Config) -> tuple[str, ...]:
         f"away_{prefix}_defense",
         f"{prefix}_matchup_diff",
     )
-
-
-# --------------------------------------------------------------------------
-# Small numeric primitives, independently testable.
-# --------------------------------------------------------------------------
 
 
 def _standardize(values: FloatArray) -> FloatArray:
@@ -479,10 +469,6 @@ def _sum_injury_value_lost(game: pd.Series, columns: tuple[str, ...]) -> float:
     return total
 
 
-# --------------------------------------------------------------------------
-# The leak-safe weekly walk-forward.
-# --------------------------------------------------------------------------
-
 _BASE_REQUIRED_COLUMNS = (
     "season",
     "week",
@@ -659,12 +645,6 @@ def add_graph_ratings_v2_features(
 
             discounted = signal * discount
             if discounted != 0.0:
-                # signed_katz_centrality iterates x = v + alpha * W @ x (no transpose), so
-                # W[recipient, sender] is the entry that adds sender's score into recipient's
-                # -- the opposite index order from the nonneg arm below, which feeds a
-                # row-stochastic transition into transition.T @ scores instead. A positive
-                # `discounted` means home outperformed away, so home is the recipient of a
-                # positive endorsement from away, and away is the recipient of a negative one.
                 signed_matrix[home_index, away_index] += discounted
                 signed_matrix[away_index, home_index] += -discounted
 
@@ -686,11 +666,6 @@ def add_graph_ratings_v2_features(
     for column in columns:
         result[column] = pd.to_numeric(result[column], errors="coerce")
     return result.sort_values(["gameday", "game_id"]).reset_index(drop=True)
-
-
-# --------------------------------------------------------------------------
-# CFB structural fitting (the XLG "fit where affordable" pattern).
-# --------------------------------------------------------------------------
 
 
 def cfb_structural_coherence(cfb_games: pd.DataFrame, config: GraphRatingV2Config) -> float:

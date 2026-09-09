@@ -105,17 +105,10 @@ from nfl_ats.provenance import artifact_provenance, write_experiment_artifact  #
 DEFAULT_FEATURES = REPO_ROOT / "data" / "processed" / "cfb_game_features.parquet"
 ARTIFACT_ROOT = REPO_ROOT / "artifacts" / "cfb_rest_bye_replication"
 
-#: docs/cfb_rest_bye_replication.md section 7 -- 1,000 samples for comparability
-#: with the sibling CFB replication harnesses, seed = today's date per repo
-#: convention.
 BOOTSTRAP_SAMPLES = 1_000
 SEED = 20260901
 PERMUTATIONS = 200
 
-#: docs/cfb_rest_bye_replication.md section 7 -- the benchmark's own declared
-#: 2020 regime gap is the boundary, the same one the FluView CFB replication
-#: uses. Magnitudes are reported per era and NEVER averaged across a sign flip
-#: (owner rule "era magnitude, not presence").
 ERAS: tuple[tuple[str, int, int], ...] = (("2012_2019", 2012, 2019), ("2021_2025", 2021, 2025))
 
 OVERLAP_DISCLOSURE = (
@@ -173,11 +166,6 @@ CELLS: dict[str, dict[str, str]] = {
         "predicted_direction": "positive home_cover edge",
     },
 }
-
-
-# ---------------------------------------------------------------------------
-# population
-# ---------------------------------------------------------------------------
 
 
 def load_population(features_path: Path) -> tuple[pd.DataFrame, dict[str, Any]]:
@@ -238,11 +226,6 @@ def reliability_readings(panel: pd.DataFrame, seed: int) -> dict[str, dict[str, 
             for metric in CFB_REST_PANEL_METRICS
         },
     }
-
-
-# ---------------------------------------------------------------------------
-# the evaluator
-# ---------------------------------------------------------------------------
 
 
 def run_walk_forward(
@@ -440,11 +423,6 @@ def summarize_pair(paired: pd.DataFrame, samples: int, seed: int) -> dict[str, A
         summary["season_blocked_ci95"] = None
         summary["season_blocked_probability_positive"] = None
     return summary
-
-
-# ---------------------------------------------------------------------------
-# entry point
-# ---------------------------------------------------------------------------
 
 
 def _print_pair(label: str, summary: dict[str, Any] | None) -> None:

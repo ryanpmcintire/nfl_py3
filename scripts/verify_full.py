@@ -57,20 +57,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 UV = REPO / ".tools" / "uv.exe"
-# pytest's default basetemp (a numbered dir under the OS temp dir, shared per
-# OS user) collides with any other pytest process running concurrently under
-# the same account -- measured 2026-09-04 on this repo's multi-agent fleet
-# sessions: a concurrent run's numbered-dir cleanup hit
-# `PermissionError: Access is denied` scanning another run's still-open
-# directory (a pytest INTERNALERROR, not a real test failure). This is the
-# one deliberate addition to the otherwise-unchanged AGENTS.md pytest
-# invocation below: it changes WHERE pytest writes temp files, not what runs
-# or what counts as pass/fail.
 _BASETEMP = Path(tempfile.gettempdir()) / f"nfl_ats_verify_full_{os.getpid()}"
 
-# The four AGENTS.md "Required verification" gates, unchanged -- same
-# commands, same order, no --no-sync (this is the release gate, not the fast
-# PR loop; it should always run against a freshly-synced environment).
 STEPS: list[tuple[str, list[str]]] = [
     ("ruff format --check .", [str(UV), "run", "ruff", "format", "--check", "."]),
     ("ruff check .", [str(UV), "run", "ruff", "check", "."]),

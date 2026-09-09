@@ -40,8 +40,6 @@ def test_weak_stack_graph_def_ypp_profile_is_registered_and_disjoint_from_produc
         assert set(FEATURE_SETS[name]).isdisjoint(
             GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS
         )
-    # weak_stack_graph_def_ypp = weak_stack plus exactly the one new column --
-    # never used by the active model.
     graph_def_ypp_columns = set(
         margin_feature_columns("market_residual", "weak_stack_graph_def_ypp")
     )
@@ -50,15 +48,6 @@ def test_weak_stack_graph_def_ypp_profile_is_registered_and_disjoint_from_produc
         GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS
     )
     assert len(GRAPH_TEAM_STAT_DEF_YARDS_PER_PLAY_FEATURE_COLUMNS) == 1
-
-
-# ---------------------------------------------------------------------------
-# Synthetic schedule: 8 teams, 4 games/week. games_seen reaches the frozen
-# min_games=16 threshold exactly at the end of week 4 (4 games/week x 4 weeks
-# = 16), so week 5 is the first week with a non-NaN graph rating -- enough to
-# exercise both the "still warming up" (NaN) and "rated" branches without a
-# large fixture.
-# ---------------------------------------------------------------------------
 
 
 def _schedule(n_weeks: int) -> pd.DataFrame:
@@ -75,9 +64,6 @@ def _schedule(n_weeks: int) -> pd.DataFrame:
                     "home_team": home,
                     "away_team": away,
                     "result": 3.0 if (week + index) % 2 == 0 else -3.0,
-                    # Vary the raw def_yards_per_play differential so the graph
-                    # has a real signal to propagate rather than an all-zero
-                    # matrix.
                     "home_def_yards_per_play": 5.2 + 0.05 * index,
                     "away_def_yards_per_play": 5.6 - 0.05 * index,
                 }
@@ -143,17 +129,12 @@ def test_attach_graph_def_ypp_feature_is_leak_safe_across_a_future_week() -> Non
     mutated.loc[perturbed_week, "away_def_yards_per_play"] = 2.0
     changed = attach_graph_def_ypp_feature(mutated).set_index("game_id")
 
-    # Only the DERIVED graph column is compared here -- week 6's own raw
-    # pass-through columns (result, home/away_def_yards_per_play) differ from
-    # baseline by construction, since those are exactly what was mutated.
     unaffected = baseline.index[~baseline.index.str.startswith("2021_07_")]
     pd.testing.assert_series_equal(
         changed.loc[unaffected, GRAPH_DEF_YPP_COLUMN],
         baseline.loc[unaffected, GRAPH_DEF_YPP_COLUMN],
         check_exact=True,
     )
-    # The perturbation is not simply inert: week 7 (downstream of week 6's
-    # now-perturbed values) changes.
     following_week = baseline.index.str.startswith("2021_07_")
     assert not changed.loc[following_week, GRAPH_DEF_YPP_COLUMN].equals(
         baseline.loc[following_week, GRAPH_DEF_YPP_COLUMN]

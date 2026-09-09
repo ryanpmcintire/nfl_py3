@@ -50,10 +50,6 @@ from nfl_ats.findings_registry import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
-# ---------------------------------------------------------------------------
-# Fixtures
-# ---------------------------------------------------------------------------
-
 
 def _signal_payload(**overrides: Any) -> dict[str, Any]:
     body: dict[str, Any] = {
@@ -101,14 +97,9 @@ class _Finding:
         self.registry_fingerprints = registry_fingerprints
 
 
-# ---------------------------------------------------------------------------
-# Fingerprinting
-# ---------------------------------------------------------------------------
-
-
 def test_fingerprint_is_stable_and_content_sensitive() -> None:
     payload = {"a": 1, "b": [1, 2, 3]}
-    assert fingerprint(payload) == fingerprint(dict(payload))  # key order doesn't matter
+    assert fingerprint(payload) == fingerprint(dict(payload))
     assert fingerprint(payload) != fingerprint({**payload, "a": 2})
 
 
@@ -173,11 +164,6 @@ def test_load_weak_signal_registry_missing_file_is_empty(tmp_path: Path) -> None
     assert registry.signals == {}
 
 
-# ---------------------------------------------------------------------------
-# validate_curation
-# ---------------------------------------------------------------------------
-
-
 def test_validate_curation_passes_a_correctly_cited_finding() -> None:
     entries = {
         "weak_signal:alpha": RegistryEntry(
@@ -199,7 +185,7 @@ def test_validate_curation_passes_a_correctly_cited_finding() -> None:
     finding = _Finding(
         "q", registry_keys=("weak_signal:alpha",), registry_fingerprints=("deadbeef",)
     )
-    validate_curation([finding], entries)  # must not raise
+    validate_curation([finding], entries)
 
 
 def test_validate_curation_rejects_a_nonexistent_key() -> None:
@@ -262,8 +248,6 @@ def test_a_registry_entry_changing_under_a_curation_entry_raises() -> None:
     prove the SAME curated fingerprint no longer validates."""
 
     original = _weak_signal_registry(alpha=_signal_payload(effect=0.5))
-    # Build entries directly from the in-memory registry to avoid touching
-    # the real tracked files for this synthetic scenario.
     from nfl_ats.findings_registry import _weak_signal_entry
 
     entry_before = _weak_signal_entry(original.signals["alpha"])
@@ -272,9 +256,9 @@ def test_a_registry_entry_changing_under_a_curation_entry_raises() -> None:
         registry_keys=("weak_signal:alpha",),
         registry_fingerprints=(entry_before.fingerprint,),
     )
-    validate_curation([finding], {"weak_signal:alpha": entry_before})  # passes against the original
+    validate_curation([finding], {"weak_signal:alpha": entry_before})
 
-    corrected = _weak_signal_registry(alpha=_signal_payload(effect=0.9))  # the "new evidence"
+    corrected = _weak_signal_registry(alpha=_signal_payload(effect=0.9))
     entry_after = _weak_signal_entry(corrected.signals["alpha"])
     with pytest.raises(CurationError, match="is stale against"):
         validate_curation([finding], {"weak_signal:alpha": entry_after})
@@ -291,8 +275,6 @@ def test_real_findings_content_validates_against_the_tracked_registries() -> Non
 
     challengers = load_prospective_challengers(REPO_ROOT / "artifacts")
     entries = load_all_entries(registry_root=REPO_ROOT / "registry", challengers=challengers)
-    # Include hand-written lead blurbs too; they use the same fingerprint
-    # contract but are easy to miss when only curated cards are audited.
     validate_curation((*findings_content.FINDINGS, *findings_content.LEAD_BLURBS), entries)
 
 
@@ -338,11 +320,6 @@ def test_every_non_evergreen_finding_names_at_least_one_key() -> None:
             assert len(finding.registry_keys) == len(finding.registry_fingerprints)
 
 
-# ---------------------------------------------------------------------------
-# top_open_leads
-# ---------------------------------------------------------------------------
-
-
 def test_top_open_leads_renders_from_a_synthetic_fixture() -> None:
     registry = _weak_signal_registry(
         strong=_signal_payload(probability_positive=0.95, description="a strong lean"),
@@ -350,7 +327,7 @@ def test_top_open_leads_renders_from_a_synthetic_fixture() -> None:
     )
     leads = top_open_leads(registry)
     assert len(leads) == 2
-    assert leads[0].name == "strong"  # ranked by |P+ - 0.5|, most extreme first
+    assert leads[0].name == "strong"
     assert isinstance(leads[0], WatchingLead)
 
 
@@ -392,7 +369,7 @@ def test_top_open_leads_collapses_close_and_opener_pair_to_the_opener_grade() ->
     )
     leads = top_open_leads(registry)
     assert len(leads) == 1
-    assert leads[0].name == "foo_opener"  # opener grade wins even though less extreme
+    assert leads[0].name == "foo_opener"
 
 
 def test_top_open_leads_collapses_a_battery_to_its_most_striking_cell() -> None:
@@ -434,11 +411,6 @@ def test_top_open_leads_filters_by_league() -> None:
     )
     leads = top_open_leads(registry, leagues=("nfl",))
     assert [lead.name for lead in leads] == ["nfl_sig"]
-
-
-# ---------------------------------------------------------------------------
-# recent_registry_activity -- "Research this week" (dashboard queue UI-20(b))
-# ---------------------------------------------------------------------------
 
 
 def _rotation_registry_with_window(name: str = "rot_family", **window_overrides: Any) -> Any:
@@ -495,11 +467,6 @@ def test_recent_registry_activity_includes_a_signal_recorded_inside_the_window()
     assert category == "onfield"
     entry = entries[0]
     assert entry.key == f"{STORE_WEAK_SIGNAL}:recent"
-    # No genuine plain_summary was recorded on this fixture signal -- this
-    # must be None, NEVER the raw description (2026-09-05 fix, dashboard
-    # humanising follow-up: the removed silent fallback to `description` is
-    # exactly how research jargon reached the findings page; a renderer
-    # shows a "plain-English summary pending" placeholder instead).
     assert entry.plain_summary is None
     assert entry.direction_sentence is not None
     assert "Leans FOR" in entry.direction_sentence
@@ -547,7 +514,7 @@ def test_recent_registry_activity_badges_a_terminal_classification_as_resolved()
     entry = entries[0]
     assert entry.closed is True
     assert entry.closed_label == CLOSED_ACTIVITY_BADGE_TEXT
-    assert "failed" not in entry.closed_label.lower()  # render-semantics contract
+    assert "failed" not in entry.closed_label.lower()
 
 
 def test_recent_registry_activity_excludes_instrument_checks() -> None:
@@ -597,7 +564,6 @@ def test_recent_registry_activity_includes_a_rotation_window_screened_this_week(
     assert category == STORE_ROTATION
     entry = entries[0]
     assert entry.key == f"{STORE_ROTATION}:rot_family"
-    # This legacy family has no summary: never substitute research prose.
     assert entry.plain_summary is None
 
 

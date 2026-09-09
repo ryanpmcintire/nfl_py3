@@ -50,18 +50,6 @@ from nfl_ats.dashboard.findings_content import (
 from nfl_ats.dashboard.viz import p_plus_text
 from nfl_ats.findings_registry import fingerprint
 
-#: The two interval units a :class:`TrackRecord` can carry (2026-08-31
-#: browser-QA fix): the PROMOTED row's interval is a season accuracy-
-#: proportion CI (a rate, 0..1, correctly percent-formatted -- e.g.
-#: ``[0.508, 0.535]`` -> ``[50.8%, 53.5%]``); every CHALLENGER row's interval
-#: comes from an ``evidence`` field whose own name says "points" (
-#: ``week_blocked_interval_points`` / ``interval_points`` /
-#: ``source_interval_points`` -- see :data:`_INTERVAL_KEYS`), i.e. an
-#: accuracy-POINTS effect delta, which must never be multiplied by 100 and
-#: shown with a ``%`` sign (that bug rendered e.g. accuracy-points interval
-#: ``[0.29, 2.038]`` as ``[29.0%, 203.8%]`` on the generated page). A
-#: renderer must branch on this field rather than ever guessing a unit from
-#: a number's magnitude.
 IntervalUnit = Literal["accuracy_rate", "accuracy_points"]
 
 STATUS_BADGE_PROMOTED = "PROMOTED"
@@ -115,9 +103,6 @@ class TrackRecord:
     accuracy: float | None
     interval_low: float | None
     interval_high: float | None
-    #: See :data:`IntervalUnit` -- ``"accuracy_rate"`` for the promoted row's
-    #: season-CI proportion, ``"accuracy_points"`` for every challenger row's
-    #: points-effect interval. A renderer must format the two differently.
     interval_unit: IntervalUnit
     grade: str
     artifact_ref: str | None
@@ -139,10 +124,6 @@ class LedgerRow:
     evidence: tuple[EvidenceRef, ...]
     summary_sentence: str
     agreement: Agreement | None
-    #: ``probability_positive`` recorded directly in the challenger's own
-    #: evidence block (2026-08-24 dimension-3 fix): rows whose
-    #: ``registry_source`` names no weak_signals key still carry a measured
-    #: P+, and an interval rendered without its P+ was exactly the gap.
     own_probability_positive: float | None = None
 
 
@@ -273,7 +254,6 @@ def _promoted_row(manifest: Mapping[str, Any], model_id: str) -> LedgerRow:
             accuracy=_as_float(evaluation.get("accuracy")),
             interval_low=low,
             interval_high=high,
-            # Season accuracy-proportion CI -- a rate, correctly percent-formatted.
             interval_unit="accuracy_rate",
             grade="close",
             artifact_ref=(
@@ -306,12 +286,6 @@ def _challenger_row(
     refs = _link_evidence(challenger_id, evidence_block, signals)
     row = LedgerRow(
         arm_id=challenger_id,
-        # Mirrors ``public_board._humanize``'s fallback (duplicated rather
-        # than imported: importing from ``public_board`` here would cycle,
-        # since IT imports ``build_and_render`` from this module) -- a
-        # challenger not yet in ``CHALLENGER_DISPLAY_NAMES`` must still
-        # render as words, never its raw snake_case id (owner mandate,
-        # 2026-09-05).
         display_name=CHALLENGER_DISPLAY_NAMES.get(challenger_id, challenger_id.replace("_", " ")),
         status_badge=badge,
         track_record=_challenger_track_record(evidence_block),
@@ -415,8 +389,6 @@ def _challenger_track_record(evidence_block: Mapping[str, Any]) -> TrackRecord |
         accuracy=accuracy,
         interval_low=interval[0] if interval else None,
         interval_high=interval[1] if interval else None,
-        # Every _INTERVAL_KEYS candidate is a *_points key -- an
-        # accuracy-points effect delta, never a rate.
         interval_unit="accuracy_points",
         grade="opener" if opener_hit else "close",
         artifact_ref=artifact_ref,
@@ -470,10 +442,6 @@ def _sort_key(row: LedgerRow) -> tuple[int, float, str]:
 def _with_summary(row: LedgerRow) -> LedgerRow:
     parts: list[str] = []
     track = row.track_record
-    # 2026-08-23 consolidation law (owner directive): the PROMOTED row is the
-    # played card and must not re-quote its own track record -- the picks page
-    # carries the one expectation number and the collapsed ladder carries the
-    # history. Every other row's track record IS the row's data and stays.
     promoted = row.status_badge == STATUS_BADGE_PROMOTED
     if track is not None and not promoted:
         if track.accuracy is not None:
@@ -498,17 +466,8 @@ def _with_summary(row: LedgerRow) -> LedgerRow:
             default=None,
         )
         if best is not None:
-            # ``.1f``-percent, not ``.0%``: matches one of
-            # ``_allowed_number_strings``'s pinned formats
-            # (``f"{value * 100:.1f}"``) exactly, so the audit below can
-            # verify this number against the cited field it came from --
-            # a bare rounded integer (e.g. "100" for 0.995) would quote a
-            # number no cited field produces.
             parts.append(f"best evidence {best * 100:.1f}% likely real")
     elif row.own_probability_positive is not None:
-        # No linked registry entry carries a confidence figure, but the
-        # challenger's own registration does -- quote it rather than
-        # leaving an interval bare.
         parts.append(f"registered evidence {row.own_probability_positive * 100:.1f}% likely real")
     if row.agreement is not None:
         parts.append(
@@ -516,14 +475,7 @@ def _with_summary(row: LedgerRow) -> LedgerRow:
             f"{row.agreement.disagree} disagree over "
             f"{row.agreement.vs_promoted_games} shared games"
         )
-    # Promoted card only (2026-08-23 consolidation revision): the summary no
-    # longer re-quotes the selection-inflation arithmetic -- it names it and
-    # points at the picks page's collapsed ladder, the one place the full
-    # number set lives. See LEDGER_PROMOTED_CAVEAT in
-    # nfl_ats.dashboard.findings_content.
     if row.status_badge == STATUS_BADGE_PROMOTED:
-        # ``summary`` rejoins with ". " and appends its own full stop, so the
-        # sentence constant ships without one.
         parts.append(LEDGER_PROMOTED_CAVEAT.removesuffix("."))
     summary = "" if not parts else ". ".join(parts) + "."
     return LedgerRow(
@@ -576,9 +528,6 @@ def _allowed_number_strings(row: LedgerRow) -> set[str]:
             ]
         )
     if row.status_badge == STATUS_BADGE_PROMOTED:
-        # The promoted summary's caveat quotes exactly one numeral: the
-        # pinned played-card expectation percentage ("≈55%", rendered via
-        # PLAYED_CARD_EXPECTATION_HERO inside LEDGER_PROMOTED_CAVEAT).
         values.append(float(PLAYED_CARD_EXPECTATION_PERCENT))
     allowed: set[str] = {str(len(row.evidence))}
     for value in values:
@@ -855,8 +804,6 @@ def _interval_cell_text(row: LedgerRow) -> str:
         return "-"
     cell = f"[{track.interval_low:.3f}, {track.interval_high:.3f}]"
     if row.status_badge == STATUS_BADGE_PROMOTED:
-        # The promoted row's interval is a season accuracy-proportion CI, not
-        # an accuracy-points effect interval -- no P+ applies to it.
         return cell
     probability = _row_probability(row)
     shown = _DASH if probability is None else p_plus_text(probability)

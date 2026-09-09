@@ -35,7 +35,6 @@ def lineup_draws(
     """
     if scenarios < 1:
         raise ValueError("scenarios must be positive")
-    # Select visibility using the existing LEAD-62 contract even for bench rows.
     visible = _visible_panel(players)
     visible["lineup_group"] = _lineup_group(visible.position, visible.position_group)
     output = {}
@@ -44,7 +43,6 @@ def lineup_draws(
         p = rows.play_probability.to_numpy(dtype=float)
         if not np.isfinite(p).all() or ((p < 0) | (p > 1)).any():
             raise DataContractError("Every sampled player requires a finite probability in [0,1]")
-        # Team-specific seed avoids changing draws when unrelated teams are added.
         digest = hashlib.sha256(str(key).encode()).digest()
         rng = np.random.default_rng(seed + int.from_bytes(digest[:4], "little"))
         uniforms = rng.random((scenarios, len(rows)))

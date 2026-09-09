@@ -66,7 +66,6 @@ def _hungarian_assignment(
                 -math.log(candidate.probability) if candidate.probability > 0.0 else zero_cost
             )
 
-    # One-indexed implementation of the shortest augmenting-path form.
     rows, columns = cost.shape
     row_potential = np.zeros(rows + 1, dtype=float)
     column_potential = np.zeros(columns + 1, dtype=float)

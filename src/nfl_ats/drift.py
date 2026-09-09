@@ -52,51 +52,30 @@ import pandas as pd
 from nfl_ats.constants import FEATURE_FAMILIES
 from nfl_ats.io import atomic_csv, atomic_json, run_id
 
-# ---------------------------------------------------------------------------
-# Alert thresholds. Deliberately conservative: monitoring that cries wolf gets
-# ignored, so the warn tier marks "look at this", the alert tier marks "do not
-# publish blind". Neither tier is a verdict about any signal's effect.
-# ---------------------------------------------------------------------------
-
-#: PSI tiers (standard convention: <0.10 stable, 0.10-0.25 moderate, >0.25 major).
 FEATURE_PSI_WARN = 0.10
 FEATURE_PSI_ALERT = 0.25
 
-#: Standardized mean shift ((current mean - reference mean) / reference sd).
 MEAN_SHIFT_SD_WARN = 0.50
 MEAN_SHIFT_SD_ALERT = 1.00
 
-#: Null-rate change in percentage points versus the reference window.
 MISSINGNESS_DELTA_PP_WARN = 10.0
 MISSINGNESS_DELTA_PP_ALERT = 25.0
 
-#: Probability drift: share of current probabilities outside the reference
-#: central 90% band, and the absolute mean shift.
 PROBABILITY_BAND_SHARE_WARN = 0.20
 PROBABILITY_MEAN_SHIFT_WARN = 0.05
 
-#: Calibration drift: recent-window Brier minus prior-history Brier.
 CALIBRATION_BRIER_DELTA_WARN = 0.02
 CALIBRATION_BRIER_DELTA_ALERT = 0.04
 
-#: Minimum settled games before a calibration comparison means anything at all.
 CALIBRATION_MIN_RECENT_GAMES = 32
 CALIBRATION_MIN_PRIOR_GAMES = 200
 
-#: Probability drift needs at least this many games on each side to be scored.
 PROBABILITY_MIN_GAMES = 5
 
-#: Minimum current-window games before a PSI number means anything. A 16-game
-#: week against decile bins averages 1.6 games per bin, which reads ~0.2 PSI
-#: under a TRUE null -- measured this session on gaussian draws -- so below
-#: this floor the value is reported but its status stays unscored rather than
-#: crying wolf every September.
 FEATURE_PSI_MIN_GAMES = 50
 
-#: ECE bins.
 _CALIBRATION_ECE_BINS = 10
 
-#: Floor used inside the PSI ratio to avoid division by zero.
 _PSI_EPSILON = 1e-6
 
 _STATUS_RANK = {"ok": 0, "insufficient_history": 1, "warn": 2, "alert": 3}
@@ -179,11 +158,6 @@ def psi(current: pd.Series, reference: pd.Series, bins: int = 10) -> float:
     shares_ref = np.maximum(counts_ref / counts_ref.sum(), _PSI_EPSILON)
     shares_cur = np.maximum(counts_cur / counts_cur.sum(), _PSI_EPSILON)
     return float(np.sum((shares_cur - shares_ref) * np.log(shares_cur / shares_ref)))
-
-
-# ---------------------------------------------------------------------------
-# 1. Feature and missingness drift
-# ---------------------------------------------------------------------------
 
 
 def feature_drift_table(
@@ -313,11 +287,6 @@ def summarize_feature_drift(table: pd.DataFrame) -> dict[str, Any]:
     return summary
 
 
-# ---------------------------------------------------------------------------
-# 2. Probability drift
-# ---------------------------------------------------------------------------
-
-
 def probability_drift_summary(
     current_probabilities: pd.Series,
     reference_probabilities: pd.Series,
@@ -358,11 +327,6 @@ def probability_drift_summary(
         "reference_band_high": band_high,
         "share_outside_band": share_outside,
     }
-
-
-# ---------------------------------------------------------------------------
-# 3. Calibration drift
-# ---------------------------------------------------------------------------
 
 
 def _brier(probabilities: np.ndarray, outcomes: np.ndarray) -> float:
@@ -451,11 +415,6 @@ def calibration_drift_summary(
     elif delta_brier >= CALIBRATION_BRIER_DELTA_WARN:
         summary["status"] = "warn"
     return summary
-
-
-# ---------------------------------------------------------------------------
-# 4. The weekly report
-# ---------------------------------------------------------------------------
 
 
 def reference_window(

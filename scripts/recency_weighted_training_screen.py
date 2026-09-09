@@ -68,10 +68,6 @@ REPO = Path(__file__).resolve().parents[1]
 DEFAULT_CFB_FEATURES = REPO / "data/processed/cfb_game_features.parquet"
 
 BASELINE_ARM = "ecdf"
-# Frozen exactly as docs/residual_location.md sec 5 predeclared -- no arm
-# additions (the document's own text notes a wider/longer-half-life grid
-# would be "worth adding" given distribution_rows now runs to 2,499, but the
-# orchestrator running this predeclaration instructed running it frozen).
 HALF_LIFE_SWEEP: tuple[float, ...] = (100.0, 200.0, 400.0, 800.0)
 
 _PASSTHROUGH = (
@@ -254,9 +250,6 @@ def paired_evidence(predictions: pd.DataFrame, *, samples: int, seed: int) -> pd
 
 
 READ_ONLY_SCRIPT = True
-# ENG-29: read-only with respect to artifacts/ and registry/; the ENG-29 scanner confirms its only
-# write sites resolve to a caller-supplied `--output`/`--out` path with no artifacts/ or registry/
-# default, never a governed tree by default.
 
 
 def main() -> None:

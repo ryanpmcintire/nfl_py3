@@ -56,9 +56,6 @@ import spread_regime_opener_eval as common  # noqa: E402
 
 from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
-#: Fields of a ``comparison()`` cell that describe the MEASUREMENT rather than
-#: its summary. Every one of them must reproduce before a corrected
-#: ``probability_positive`` is accepted for that row.
 MEASUREMENT_FIELDS = (
     "delta",
     "lower",
@@ -183,8 +180,6 @@ def _lane_v() -> Cells:
                 (tag,),
                 lambda scored, current=tag: lane_v.held_out_groups(scored, current),
             )
-            # ``_accuracy_cells`` keys on the lowercased tag; lane V's own
-            # ``cell_name`` splits the window from the arm, so restate it.
             for key, metrics in grid.items():
                 label_kind = key[len(f"{lane_v.PREFIX}_{tag.lower()}_") :]
                 label, _, kind = label_kind.rpartition("_")
@@ -192,10 +187,6 @@ def _lane_v() -> Cells:
     return cells
 
 
-#: The 2026-09-08 fleet ran lanes S and Q out of a session scratchpad rather
-#: than ``artifacts/``, and their registry rows name that directory. It is a
-#: temporary directory: when it is gone these rows stop being re-measurable from
-#: disk, which is a fact about where the lane wrote, not about the signals.
 SCRATCHPAD = Path(
     r"C:\Users\Ryan\AppData\Local\Temp\claude\F--Repos-nfl-py3"
     r"\dcbb74c0-77a9-470f-8e6e-713bc3331924\scratchpad"
@@ -245,8 +236,6 @@ def _season_and_bucket_cells(lane: Path, arms: tuple[str, ...]) -> Cells:
 
 @cache
 def _lane_s() -> Cells:
-    # Cached: lane S files its seasons and its buckets under two different
-    # sources, so this rebuild is asked for twice per pass.
     return _season_and_bucket_cells(SCRATCHPAD / "laneS", ("S1", "S2"))
 
 
@@ -283,7 +272,6 @@ def _lane_t_mapping() -> Cells:
     return cells
 
 
-#: One entry per lane: the ``source`` its registry rows name, and the rebuild.
 LANES: dict[str, tuple[Path, Callable[[], Cells]]] = {
     "laneG": (REPO / "artifacts/research/laneG/cells.json", _lane_g),
     "laneI": (REPO / "artifacts/research/laneI/cells.json", _lane_i),
@@ -366,9 +354,6 @@ def build_report() -> dict[str, Any]:
             qualified = f"{key}@{int(seasons[0])}_{int(seasons[1])}" if key else None
             fresh = (cells.get(qualified) or cells.get(key)) if key else None
             if fresh is None:
-                # A cell in which no graded pick moved is identically zero, so
-                # the lanes skip it and so does the rebuild. Those rows are the
-                # ones the 2026-09-08 zero-atom pass already restated to 0.5.
                 no_op = payload["effect"] == 0.0 and payload.get("interval") == [0.0, 0.0]
                 problems.append(
                     {
@@ -570,7 +555,7 @@ def main() -> None:
     if args.apply:
         report["application"] = apply_corrections(report)
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    write_stamped_artifact(report, args.report)  # ENG-38
+    write_stamped_artifact(report, args.report)
     summary = {
         lane: {k: v for k, v in stats.items() if k != "problems"}
         for lane, stats in report["lanes"].items()

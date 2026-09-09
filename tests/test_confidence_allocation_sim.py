@@ -32,10 +32,6 @@ from scripts.confidence_allocation_sim import (
     walk_forward_calibration,
 )
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
 
 def _score(confidence: np.ndarray, correct: np.ndarray, game_ids: np.ndarray) -> float:
     points = assign_points(confidence, game_ids)
@@ -83,11 +79,6 @@ def _archive_row(*, week: int, game: int, push: bool, season: int = 2024) -> dic
     }
 
 
-# ---------------------------------------------------------------------------
-# Rank validity
-# ---------------------------------------------------------------------------
-
-
 @pytest.mark.parametrize("n", [1, 2, 5, 14, 16])
 def test_assign_points_is_a_distinct_1_to_n_ranking(n: int) -> None:
     rng = np.random.default_rng(n)
@@ -101,10 +92,7 @@ def test_assign_points_breaks_ties_by_game_id_ascending() -> None:
     confidence = np.array([0.5, 0.5, 0.9])
     game_ids = np.array(["b", "a", "z"])
     points = assign_points(confidence, game_ids)
-    # "z" (index 2) has the highest confidence alone -> the top point value.
     assert points[2] == 3
-    # The 0.5 tie between "a" (index 1) and "b" (index 0) breaks by game_id
-    # ascending: "a" outranks "b".
     assert points[1] == 2
     assert points[0] == 1
 
@@ -115,15 +103,7 @@ def test_assign_points_handles_all_tied_confidence() -> None:
     game_ids = np.array([f"g{i}" for i in range(n)])
     points = assign_points(confidence, game_ids)
     assert sorted(points.tolist()) == list(range(1, n + 1))
-    # Fully tied: ascending game_id order gets descending point values.
     assert points.tolist() == list(range(n, 0, -1))
-
-
-# ---------------------------------------------------------------------------
-# Oracle positive control: dominance is a combinatorial fact, not a
-# statistical one -- it must hold for ANY confidence array on the SAME fixed
-# correctness pattern.
-# ---------------------------------------------------------------------------
 
 
 @pytest.mark.parametrize("n,seed", [(1, 0), (5, 1), (14, 2), (16, 3)])
@@ -142,8 +122,6 @@ def test_oracle_achieves_the_analytic_maximum_and_dominates(n: int, seed: int) -
     market_score = _score(market_confidence, correct, game_ids)
     flat_expected = k * (n + 1) / 2.0
 
-    # Oracle assigns the top-k point values to the k correct picks -- the
-    # score-maximizing permutation for this fixed pattern by construction.
     analytic_max = float(sum(range(n - k + 1, n + 1)))
     assert oracle_score == analytic_max
     assert oracle_score >= edge_score
@@ -161,11 +139,6 @@ def test_oracle_dominates_every_week_of_a_synthetic_multi_week_run() -> None:
         if strategy == "oracle":
             continue
         assert (points_by_week["oracle"] >= points_by_week[strategy] - 1e-9).all()
-
-
-# ---------------------------------------------------------------------------
-# Calibration honesty: a leakage regression test
-# ---------------------------------------------------------------------------
 
 
 def test_calibration_uses_only_strictly_earlier_weeks() -> None:
@@ -187,8 +160,6 @@ def test_calibration_uses_only_strictly_earlier_weeks() -> None:
 
     mutated = frame.copy()
     later = mutated["week"].ge(4)
-    # Flip every later week's outcome. If an earlier week's calibrator had
-    # peeked at this, its calibrated values would change.
     mutated.loc[later, "home_covered"] = ~mutated.loc[later, "home_covered"]
     perturbed = walk_forward_calibration(mutated, min_train=50)
 
@@ -197,17 +168,8 @@ def test_calibration_uses_only_strictly_earlier_weeks() -> None:
         baseline.loc[earlier, "calibrated_probability_at_open"].reset_index(drop=True),
         perturbed.loc[earlier, "calibrated_probability_at_open"].reset_index(drop=True),
     )
-    # Sanity: the test is not vacuous -- calibration really is applied to
-    # (and could have leaked into) at least one of the earlier weeks, and at
-    # least one later week's training set actually differs between the two
-    # frames.
     assert bool(baseline.loc[earlier, "calibration_applied"].any())
     assert not perturbed.loc[later, "home_covered"].equals(frame.loc[later, "home_covered"])
-
-
-# ---------------------------------------------------------------------------
-# Determinism under a fixed seed
-# ---------------------------------------------------------------------------
 
 
 def test_run_simulation_is_deterministic_under_a_fixed_seed() -> None:
@@ -224,11 +186,6 @@ def test_run_simulation_differs_under_a_different_seed() -> None:
     flat_a = result_a.loc[result_a["strategy"].eq("flat"), "probability_first"].to_numpy()
     flat_b = result_b.loc[result_b["strategy"].eq("flat"), "probability_first"].to_numpy()
     assert not np.array_equal(flat_a, flat_b)
-
-
-# ---------------------------------------------------------------------------
-# Tie-credit closed form vs. brute-force enumeration
-# ---------------------------------------------------------------------------
 
 
 def test_probability_first_matches_brute_force_tie_credit() -> None:
@@ -257,15 +214,9 @@ def test_probability_first_matches_brute_force_tie_credit() -> None:
     assert shared == pytest.approx(total_shared)
 
 
-# ---------------------------------------------------------------------------
-# Archive loader contract: drop pushes, enforce the graded-game floor
-# ---------------------------------------------------------------------------
-
-
 def test_load_archive_drops_pushes_and_enforces_min_graded_games(tmp_path: Path) -> None:
     rows = [_archive_row(week=1, game=i, push=False) for i in range(10)]
     rows += [_archive_row(week=1, game=10 + i, push=True) for i in range(2)]
-    # Week 2 has only 5 graded games, below MIN_GRADED_GAMES -> dropped whole.
     rows += [_archive_row(week=2, game=i, push=False) for i in range(5)]
     frame = pd.DataFrame(rows)
     path = tmp_path / "per_game.parquet"
@@ -285,6 +236,4 @@ def test_measure_favorite_share_matches_a_hand_computed_case() -> None:
             "pick_home_at_open_probability_rule": [True, False, False, True, True],
         }
     )
-    # Favorite games only (drop the pick'em row): HOME/True match, HOME/False
-    # no match, AWAY/False match, AWAY/True no match -> 2 of 4 match.
     assert measure_favorite_share(frame) == pytest.approx(0.5)

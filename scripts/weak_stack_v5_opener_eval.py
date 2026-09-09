@@ -17,7 +17,7 @@ from nfl_ats.fluview_production_feature import (
     attach_fluview_away_asof_features,
     default_fluview_raw_path,
 )
-from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact  # ENG-38
+from nfl_ats.provenance import stamp_sidecar, write_stamped_artifact
 from scripts.weak_stack_v4_opener_eval import paired_frame
 
 REPO = Path(__file__).resolve().parents[1]
@@ -125,7 +125,7 @@ def main() -> None:
     features = attach_fluview_away_asof_features(base_features)
     pd.testing.assert_frame_equal(features[base_features.columns], base_features, check_exact=True)
     features.to_parquet(out / "features.parquet")
-    stamp_sidecar(out / "features.parquet")  # ENG-38 provenance
+    stamp_sidecar(out / "features.parquet")
     baseline = pd.read_parquet(BASELINE / "per_game.parquet")
     assert len(baseline) == 1537
     replay = opener_pick_evaluation(
@@ -193,8 +193,8 @@ def main() -> None:
         ("opener_candidate", candidate),
     ]:
         frame.to_parquet(out / f"{name}.parquet")
-        stamp_sidecar(out / f"{name}.parquet")  # ENG-38 provenance
-    write_stamped_artifact(result, out / "opener_summary.json")  # ENG-38 provenance
+        stamp_sidecar(out / f"{name}.parquet")
+    write_stamped_artifact(result, out / "opener_summary.json")
     print(json.dumps(result, indent=2), flush=True)
     print(f"Wrote {out}", flush=True)
 

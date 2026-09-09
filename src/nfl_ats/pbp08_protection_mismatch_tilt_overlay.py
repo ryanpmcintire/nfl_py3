@@ -65,16 +65,8 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.provenance import sha256_file
 
-#: Registered in artifacts/prospective/challengers.json.
 CHALLENGER_ID = "pbp08_protection_mismatch_tilt_overlay"
 
-#: The screen's own first season. The expanding quartile thresholds are built
-#: from ALL strictly-earlier week-blocks, so truncating the history changes the
-#: thresholds and therefore the flags: measured 2026-08-25, feeding only three
-#: seasons produced 3 leans in Week 1 2026 where the full 2009-onward pool
-#: produces 4. Cost is not a reason to truncate -- the full build measured
-#: 1.1 seconds -- so the flag build is always handed the whole history, exactly
-#: as ``scripts/pbp08_matchup_screen.py`` does.
 SCREEN_SEASON_START = 2009
 
 
@@ -194,9 +186,6 @@ def apply_pbp08_protection_mismatch_tilt(
     model_side = pd.Series(np.where(probabilities.ge(0.5), "HOME", "AWAY"), index=base.index)
     backed = base["game_id"].astype(str).map(lean)
 
-    # Flip exactly the rows where a lean exists and the model is on the other
-    # side of it -- the asymmetric case. A row with no lean, or one the model
-    # already agrees with, is left byte-identical.
     should_flip = backed.notna() & backed.ne(model_side)
 
     overlaid = base.copy()

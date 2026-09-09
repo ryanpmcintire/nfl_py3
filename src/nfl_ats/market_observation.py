@@ -33,18 +33,8 @@ import pandas as pd
 
 from nfl_ats.market_data import QUOTE_COLUMNS, load_quote_history, tuesday_opener_quotes
 
-#: Column name :mod:`nfl_ats.prediction_safety` already looks for first (see
-#: ``_prospective_checks``'s ``market_observed_at_utc`` / ``line_observed_at_utc``
-#: / ``observed_at_utc`` fallback chain) and :mod:`nfl_ats.lineage` now prefers
-#: for the ``market_line`` record when present.
 MARKET_OBSERVED_AT_COLUMN = "market_observed_at_utc"
 
-#: Which rule produced that instant: ``"post_lock"`` (the opener is the
-#: earliest Tuesday quote at or after the pool's spread lock,
-#: ``nfl_ats.market_data.POOL_SPREAD_LOCK_ET``) or ``"pre_lock_fallback"``
-#: (no post-lock Tuesday quote existed, so the earliest Tuesday quote stood
-#: in and may predate the lock). Null when no capture matched the game.
-#: Provenance only, like the instant beside it: never read by a pick rule.
 MARKET_OPENER_BASIS_COLUMN = "market_opener_basis"
 
 

@@ -67,14 +67,14 @@ def test_explicit_weights_apply_half_life_decay_and_quadrature_uncertainty() -> 
             _adjustment(
                 adjustment=2.0,
                 uncertainty=0.4,
-                effective="2026-08-02T16:00:00Z",  # exactly 30 days old
+                effective="2026-08-02T16:00:00Z",
             ),
             _adjustment(
                 component="roster",
                 adjustment=-1.0,
                 uncertainty=0.3,
                 source_id="source-b",
-                effective="2026-08-22T16:00:00Z",  # exactly 10 days old
+                effective="2026-08-22T16:00:00Z",
             ),
         ]
     )

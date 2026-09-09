@@ -38,11 +38,9 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-#: Frozen Stage-3 prior parameters (docs/xlg06_stage3_prior_spec.md §10).
 PRIOR_SPEC_DEFAULT = (
     REPO_ROOT / "artifacts" / "xlg06_stage3_prior" / "20260903T191431Z" / "prior_spec.json"
 )
-#: Frozen crosswalk population (docs/xlg06_stage2_crosswalk.md).
 CROSSWALK_DEFAULT = (
     REPO_ROOT
     / "artifacts"

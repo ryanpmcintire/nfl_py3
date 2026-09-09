@@ -70,11 +70,11 @@ DIMENSIONS = (
     "block_rate",
 )
 MIN_SEASON_SAMPLE = {
-    "fg_oe": 15,  # ~30 FG attempts/team/season typical; 15 is a partial-season floor
-    "punt_net_yards": 20,  # ~65-80 punts/team/season typical
-    "punt_return_yards": 10,  # returns have fallen with rule changes; keep the floor low
-    "kickoff_return_yards": 10,  # same, sharper drop post-2023/2024 rule changes
-    "block_rate": 30,  # rare event; needs the combined FG+punt denominator
+    "fg_oe": 15,
+    "punt_net_yards": 20,
+    "punt_return_yards": 10,
+    "kickoff_return_yards": 10,
+    "block_rate": 30,
 }
 COUNT_COLUMN = {
     "fg_oe": "n_fg_attempts",

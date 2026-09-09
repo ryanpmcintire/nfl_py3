@@ -37,11 +37,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 LIVE_REGISTRY = REPO_ROOT / "registry" / "rotation_registry.json"
 
 
-# ---------------------------------------------------------------------------
-# Payload builders (mirrors tests/test_rotation.py's own helpers).
-# ---------------------------------------------------------------------------
-
-
 def _payload(**families: dict[str, Any]) -> dict[str, Any]:
     return {"version": rotation.ROTATION_REGISTRY_VERSION, "notes": [], "families": families}
 
@@ -80,17 +75,11 @@ def _window_payload(**overrides: Any) -> dict[str, Any]:
     return window
 
 
-# ---------------------------------------------------------------------------
-# 1. window_width_out_of_range -- loads fine (the strict loader never checked
-#    width), so built via the normal payload path.
-# ---------------------------------------------------------------------------
-
-
 def test_validate_flags_contiguous_window_wider_than_assign_window_limit() -> None:
     start = 2011
-    too_wide_end = start + MAX_WINDOW_SIZE  # one season past the limit
-    just_right_end = start + MAX_WINDOW_SIZE - 1  # exactly at the limit
-    too_narrow_end = start + MIN_WINDOW_SIZE - 2  # one season short of the floor
+    too_wide_end = start + MAX_WINDOW_SIZE
+    just_right_end = start + MAX_WINDOW_SIZE - 1
+    too_narrow_end = start + MIN_WINDOW_SIZE - 2
 
     registry = registry_from_payload(
         _payload(
@@ -146,21 +135,7 @@ def test_validate_flags_contiguous_window_wider_than_assign_window_limit() -> No
     assert "just_right" not in by_family
 
 
-# ---------------------------------------------------------------------------
-# 1b. window_width_out_of_range's grandfather exception (ROADMAP.md ENG-37,
-#     2026-09-05): a specific, dated, pre-validator width violation is
-#     downgraded to a warning -- but ONLY that exact (family, seasons) pair,
-#     and ONLY when the window predates the validator. Everything else that
-#     is merely wide, or merely old, still errors.
-# ---------------------------------------------------------------------------
-
-
 def test_grandfather_exception_requires_the_exact_seasons_match() -> None:
-    # Same family name as the one real grandfathered entry
-    # (rotation.GRANDFATHERED_WIDTH_VIOLATIONS["pbp_drive_bundle"] ==
-    # (2013, 2017)), but a DIFFERENT 5-season window, assigned before the
-    # validator existed. The grandfather note names an exact window, not a
-    # blanket amnesty for the family -- this must still error.
     registry = registry_from_payload(
         _payload(
             pbp_drive_bundle=_family_payload(
@@ -184,10 +159,6 @@ def test_grandfather_exception_requires_the_exact_seasons_match() -> None:
 
 
 def test_grandfather_exception_never_applies_to_a_window_assigned_after_the_validator() -> None:
-    # The exact grandfathered seasons, but assigned ON the validator's own
-    # introduction date -- the date safety net must still refuse to
-    # downgrade this, proving the exception cannot silently widen to cover a
-    # future violation of the same width.
     from nfl_ats.rotation import GRANDFATHERED_WIDTH_VIOLATIONS, VALIDATOR_INTRODUCED_AT
 
     family_name = "pbp_drive_bundle"
@@ -257,13 +228,6 @@ def test_grandfather_exception_downgrades_only_the_named_family_and_seasons() ->
     assert by_family["unrelated_wide_family"].severity == "error"
 
 
-# ---------------------------------------------------------------------------
-# 2. overlapping_windows_within_family -- the strict loader already hard
-#    -refuses this, so it is only reachable on a Registry assembled directly
-#    from dataclasses, never on a registry that ever went through load.
-# ---------------------------------------------------------------------------
-
-
 def test_validate_flags_overlapping_windows_bypassing_the_hard_loader() -> None:
     with pytest.raises(rotation.RegistryError, match="overlapping windows"):
         registry_from_payload(
@@ -327,11 +291,6 @@ def test_validate_flags_overlapping_windows_bypassing_the_hard_loader() -> None:
     assert matches[0].family == "overlapper"
 
 
-# ---------------------------------------------------------------------------
-# 3. missing_mined_acknowledgment -- same relationship to the hard loader.
-# ---------------------------------------------------------------------------
-
-
 def test_validate_flags_missing_mined_acknowledgment_bypassing_the_hard_loader() -> None:
     with pytest.raises(rotation.RegistryError, match="acknowledges_mined_2018_2025"):
         registry_from_payload(
@@ -380,12 +339,6 @@ def test_validate_flags_missing_mined_acknowledgment_bypassing_the_hard_loader()
     assert matches[0].family == "unacknowledged"
 
 
-# ---------------------------------------------------------------------------
-# 4. status_look_with_no_window -- also loads fine (the strict loader never
-#    checked the status/window relationship).
-# ---------------------------------------------------------------------------
-
-
 def test_validate_flags_terminal_status_with_no_spent_window() -> None:
     registry = registry_from_payload(
         _payload(
@@ -422,38 +375,17 @@ def test_validate_returns_no_issues_for_a_clean_registry() -> None:
     assert validate_registry(registry) == []
 
 
-# ---------------------------------------------------------------------------
-# The live tracked ledger.
-# ---------------------------------------------------------------------------
-
-
 def test_validate_against_the_live_registry_finds_pbp_drive_bundle_and_writes_nothing() -> None:
     before = LIVE_REGISTRY.read_bytes()
     registry = load_registry(LIVE_REGISTRY)
     issues = validate_registry(registry)
 
     width_issues = {i.family: i for i in issues if i.code == "window_width_out_of_range"}
-    # Measured 2026-09-04 (read registry/rotation_registry.json directly):
-    # pbp_drive_bundle holds a CONTIGUOUS [2013, 2017] window -- 5 seasons,
-    # one wider than MAX_WINDOW_SIZE -- and is the one real violation.
-    # ROADMAP.md ENG-37 (2026-09-05): the project owner grandfathered this
-    # SPECIFIC window (assigned 2026-08-13, before the validator existed) --
-    # see rotation.GRANDFATHERED_WIDTH_VIOLATIONS -- so it now reports as a
-    # warning, not an error; the CLI's error_count is therefore 0 on the live
-    # registry (measured via `nfl-ats rotation validate`).
     assert "pbp_drive_bundle" in width_issues
     assert width_issues["pbp_drive_bundle"].severity == "warning"
     assert "grandfathered" in width_issues["pbp_drive_bundle"].message.lower()
     assert not any(issue.severity == "error" for issue in issues)
 
-    # fluview_elevated_on_production's [2011, 2025] (the ROADMAP.md ENG-27 DoD's
-    # own named example) is NOT flagged, correctly: its window_kind is
-    # "stratified" (read directly from the JSON this session), i.e. two
-    # single-season legs (2011 and 2025), not a 15-season contiguous span --
-    # assign_stratified_window deliberately pairs the earliest eligible season
-    # with the one maximally distant from it (docs/era_stratified_windows_proposal.md),
-    # so a wide leg gap is the intended design, not a violation of
-    # assign_window's contiguous-window width limit.
     fluview = registry.families["fluview_elevated_on_production"]
     assert fluview.windows[0].window_kind == "stratified"
     assert "fluview_elevated_on_production" not in width_issues
@@ -468,12 +400,7 @@ def test_validate_registry_is_json_serializable() -> None:
         {"severity": i.severity, "code": i.code, "family": i.family, "message": i.message}
         for i in issues
     ]
-    json.dumps(payload)  # must not raise
-
-
-# ---------------------------------------------------------------------------
-# save_registry: warns, never refuses.
-# ---------------------------------------------------------------------------
+    json.dumps(payload)
 
 
 def test_save_registry_warns_but_does_not_refuse_a_width_violation(
@@ -496,7 +423,7 @@ def test_save_registry_warns_but_does_not_refuse_a_width_violation(
         )
     )
     destination = tmp_path / "rotation_registry.json"
-    rotation.save_registry(registry, destination)  # must not raise
+    rotation.save_registry(registry, destination)
     assert destination.is_file()
     stderr = capsys.readouterr().err
     assert "window_width_out_of_range" in stderr
@@ -504,11 +431,6 @@ def test_save_registry_warns_but_does_not_refuse_a_width_violation(
 
     reloaded = load_registry(destination)
     assert reloaded.families["too_wide"].windows[0].seasons == (2009, 2017)
-
-
-# ---------------------------------------------------------------------------
-# CLI: nfl-ats rotation validate.
-# ---------------------------------------------------------------------------
 
 
 def test_cli_rotation_validate_exits_nonzero_on_error(
@@ -544,7 +466,6 @@ def test_cli_rotation_validate_exits_nonzero_on_error(
     assert payload["error_count"] == 1
     assert payload["issues"][0]["code"] == "window_width_out_of_range"
 
-    # Never writes: validate is read-only.
     assert (registry_dir / "rotation_registry.json").is_file()
 
 

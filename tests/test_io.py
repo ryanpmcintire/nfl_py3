@@ -76,14 +76,6 @@ def test_json_default_serialises_summary_value_types(tmp_path) -> None:
         json.dumps({"o": object()}, default=json_default)
 
 
-# ---------------------------------------------------------------------------
-# 2026-09-08: concurrent writers (two research lanes recording into the same
-# registry at once) corrupted registry/weak_signals.json because every writer
-# shared ONE temp name. Per-writer temp names keep bytes apart; the lock keeps
-# read-modify-write sequences from losing each other's rows.
-# ---------------------------------------------------------------------------
-
-
 def test_atomic_json_survives_concurrent_writers(tmp_path: Path) -> None:
     import threading
 
@@ -126,7 +118,6 @@ def test_file_lock_is_exclusive_and_breaks_stale_locks(tmp_path: Path) -> None:
             pass
     assert not lock_path.exists()
 
-    # An abandoned lock (a crashed writer) is broken once it is stale.
     lock_path.write_text("", encoding="utf-8")
     stale = time.time() - io_module.STALE_LOCK_SECONDS - 5
     os.utime(lock_path, (stale, stale))

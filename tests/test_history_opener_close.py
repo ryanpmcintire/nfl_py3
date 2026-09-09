@@ -99,11 +99,6 @@ def _game(season: int, week: int, opener: float | None, close: float | None) -> 
     }
 
 
-# ---------------------------------------------------------------------------
-# The shared week counter
-# ---------------------------------------------------------------------------
-
-
 def test_week_counter_reports_both_records_and_their_difference() -> None:
     graded = _archive_frame(
         [
@@ -171,11 +166,6 @@ def test_week_counter_ignores_a_table_without_the_grade_columns() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Reading the archive, keyed to the active model
-# ---------------------------------------------------------------------------
-
-
 def test_archive_week_grades_reads_every_finished_week(tmp_path: Path) -> None:
     _write_opener_evaluation(
         tmp_path,
@@ -237,11 +227,6 @@ def test_archive_week_grades_empty_without_an_active_model(tmp_path: Path) -> No
     assert bsc._archive_week_grades(tmp_path, {}) == ()
 
 
-# ---------------------------------------------------------------------------
-# Merging recorded weeks with archived ones
-# ---------------------------------------------------------------------------
-
-
 def _grade(season: int, week: int, opener_wins: int, settled: int) -> HistoryWeekGrade:
     return HistoryWeekGrade(
         season=season,
@@ -277,11 +262,6 @@ def test_combined_week_grades_lets_the_recorded_week_win_its_slot() -> None:
 def test_combined_week_grades_with_nothing_recorded_yet() -> None:
     archived = (_grade(2025, 1, 5, 10),)
     assert bsc._combined_week_grades((), archived) == archived
-
-
-# ---------------------------------------------------------------------------
-# What the page says
-# ---------------------------------------------------------------------------
 
 
 def _history_content(week_grades: tuple[HistoryWeekGrade, ...], caption: str) -> HistoryPageContent:
@@ -335,11 +315,6 @@ def test_the_week_caption_stays_in_pool_player_words() -> None:
     assert not re.search(r"[0-9a-f]{8,}", text)
     for token in ("P+", "week-blocked", "raw model", "probability rule", "opener-graded"):
         assert token not in text
-
-
-# ---------------------------------------------------------------------------
-# The two tables on the page must agree
-# ---------------------------------------------------------------------------
 
 
 def _real_active() -> dict[str, object] | None:

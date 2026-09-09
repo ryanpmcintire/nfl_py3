@@ -42,26 +42,9 @@ from nfl_ats.prospective_scoring import (
 )
 from nfl_ats.snapshots import write_snapshot
 
-# ---------------------------------------------------------------------------
-# Shared fixtures
-# ---------------------------------------------------------------------------
-#
-# BKUP starts "Franchise" weeks 1-3 (3 prior starts by week 4), then
-#   "Journeyman" in week 4 -- eligible and flagged.
-# STARTQB starts "Ace" every week -- never flagged.
-# EARLYBKUP starts "Vet" week 1, "Rookie" week 2 -- only 1 prior start, so
-#   week 2 is NOT eligible even though the QB changed (the eligibility
-#   floor).
-# BKUP2 mirrors BKUP's shape (flagged by week 4 on "Substitute" after 3
-#   "Captain" starts), meeting BKUP in week 5 while BOTH are still flagged
-#   -- the "no clean direction" case.
-# OPP1-14 exist only to seed a schedule row for each tracked team; their own
-#   QB history is irrelevant to the assertions.
-
 
 def _qb_schedule() -> pd.DataFrame:
     rows = [
-        # game_id, season, game_type, week, gameday, home_team, away_team, home_qb, away_qb
         ("2026_01_BKUP_OPP1", 2026, "REG", 1, "2026-09-10", "BKUP", "OPP1", "Franchise", "OppQB1"),
         ("2026_02_OPP2_BKUP", 2026, "REG", 2, "2026-09-17", "OPP2", "BKUP", "OppQB2", "Franchise"),
         ("2026_03_BKUP_OPP3", 2026, "REG", 3, "2026-09-24", "BKUP", "OPP3", "Franchise", "OppQB3"),
@@ -233,29 +216,15 @@ def _predictions() -> pd.DataFrame:
             "away_team": ["BKUP", "EARLYBKUP", "BKUP", "BKUP", "OPP14", "MISS_A"],
             "kickoff": ["2026-10-01T17:00:00+00:00"] * 6,
             "spread_line": [-3.0, 2.0, -1.5, -3.0, -2.5, 1.0],
-            # G-clean: model picks AWAY (BKUP, flagged) against a non-flagged
-            # home -- against the clean case -- should flip to HOME.
-            # G-early: model picks AWAY (EARLYBKUP, not yet eligible) -- no
-            # signal, no flip.
-            # G-both: model picks HOME (BKUP2, flagged) against BKUP (also
-            # flagged) -- no clean direction, no flip.
-            # G-post: same shape as G-clean but POST season -- REG-only gate.
-            # G-plain: neither side has any QB history -- no signal.
-            # G-missing: no schedule row at all -- treated as no signal.
             "home_cover_probability": [0.30, 0.40, 0.60, 0.30, 0.55, 0.50],
         }
     )
 
 
-# ---------------------------------------------------------------------------
-# 1. backup_qb_flag_by_game: derived, pregame-safe
-# ---------------------------------------------------------------------------
-
-
 def test_backup_flag_fires_after_three_prior_starts_with_a_different_qb() -> None:
     flags = backup_qb_flag_by_game(_qb_schedule()).set_index("game_id")
-    assert bool(flags.loc["2026_04_STARTQB_BKUP", "backup_away"]) is True  # BKUP: Journeyman
-    assert bool(flags.loc["2026_04_STARTQB_BKUP", "backup_home"]) is False  # STARTQB: Ace==Ace
+    assert bool(flags.loc["2026_04_STARTQB_BKUP", "backup_away"]) is True
+    assert bool(flags.loc["2026_04_STARTQB_BKUP", "backup_home"]) is False
 
 
 def test_backup_flag_requires_the_eligibility_floor() -> None:
@@ -330,11 +299,6 @@ def test_backup_flag_is_leak_safe_across_the_season_boundary() -> None:
         baseline.loc[baseline["season"].le(2026)].reset_index(drop=True),
         check_exact=True,
     )
-
-
-# ---------------------------------------------------------------------------
-# 2. apply_backup_qb_fade_overlay: the pick-level transform
-# ---------------------------------------------------------------------------
 
 
 def test_overlay_flips_away_from_the_clean_case_backup_start() -> None:
@@ -440,11 +404,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
         apply_backup_qb_fade_overlay(pd.DataFrame({"game_id": ["G1"]}), _qb_schedule())
 
 
-# ---------------------------------------------------------------------------
-# 3. overlay_disclosure_note: the plain-English provenance sentence
-# ---------------------------------------------------------------------------
-
-
 def test_disclosure_note_is_empty_when_nothing_flipped() -> None:
     plain_only = _predictions().loc[lambda frame: frame["game_id"].eq("2026_05_OPP13_OPP14")]
     result = apply_backup_qb_fade_overlay(plain_only, _qb_schedule())
@@ -462,10 +421,6 @@ def test_disclosure_note_states_the_flip_count_and_does_not_claim_production() -
     assert "BKUP -> STARTQB" in note
     assert "not applied to the published card" in note
 
-
-# ---------------------------------------------------------------------------
-# 4. record_backup_qb_fade_challenger_decisions: dual-tracked, no window
-# ---------------------------------------------------------------------------
 
 _MODEL_CONFIG = {
     "method": "market_residual",
@@ -545,13 +500,9 @@ def test_record_fade_challenger_decisions_records_the_fade_arm(tmp_path: Path) -
     assert (ledger["bet_side"] == "PASS").all()
     assert ledger["edge"].isna().all()
 
-    # The fade's own arm diverges from the active model's raw pick (0.30 ->
-    # AWAY): the fade flips it to HOME (STARTQB), away from the backup start.
     assert ledger.loc["2026_04_STARTQB_BKUP", "pick_side"] == "HOME"
-    # The no-signal game keeps the model's own HOME pick.
     assert ledger.loc["2026_05_OPP13_OPP14", "pick_side"] == "HOME"
 
-    # Re-running is a no-op: append-only, never rewrites.
     again = record_backup_qb_fade_challenger_decisions(artifacts, data_root, now=now)
     assert again["recorded"] == 0
     assert again["already_recorded"] == 2
@@ -573,9 +524,6 @@ def test_record_fade_challenger_refuses_outside_recording_lock_window(tmp_path: 
 def test_record_fade_challenger_refuses_a_fingerprint_mismatch(tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
-    # The active model's OWN configuration moved (a promotion) since this
-    # challenger was pinned -- recording must refuse, not silently switch
-    # base models under the same challenger id.
     _write_active_model_and_card(artifacts, ridge_alpha=1.0)
     data_root = _write_data_root(tmp_path)
 

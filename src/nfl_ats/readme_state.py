@@ -175,8 +175,6 @@ def _rotation_summary_line(registry_root: Path) -> str:
         counts[family.status] = counts.get(family.status, 0) + 1
     open_count = counts.get("open", 0)
     stub_count = counts.get(rotation.COVERAGE_STUB_STATUS, 0)
-    # Count the terminal statuses explicitly rather than as "everything that is
-    # not open": coverage stubs are neither open nor closed (ENG-37).
     terminal_count = sum(
         counts.get(status, 0) for status in ("confirmed", "closed_negative", "retired")
     )

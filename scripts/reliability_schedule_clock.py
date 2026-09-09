@@ -92,29 +92,9 @@ MANIFEST_PATH = Path(
     "592413d4-e0ee-41ee-9508-ee10cac18dd5/scratchpad/orchD_manifest.json"
 )
 
-#: A hazard the ORCH-D coordinator surfaced (session message, 2026-09-01) and
-#: this script independently reproduced on its OWN data before acting on it:
-#: a quantity whose team-season total is effectively FIXED (rest days sum to
-#: a season-length budget; a once-or-near-once-per-season flag like a bye or
-#: a Thursday game has almost nowhere else to land) makes odd/even-week
-#: split-half means MUTUALLY EXCLUSIVE across the two halves for many units,
-#: which manufactures a strongly NEGATIVE Pearson r regardless of any real
-#: week-to-week persistence. The diagnostic: reassign each team-season's
-#: observations to two RANDOM (not true-week-parity) halves and remeasure. A
-#: genuine trait's between-team variance survives an arbitrary reshuffling
-#: (true r and random-half r stay close IN SIGN, both positive) -- that is
-#: the expected, reassuring shape for kick_min / away_travel_mi /
-#: tz_delta_eastbound / prev_own_travel_mi below, all confirmed clean this
-#: way. A negative correlation that ALSO reproduces under random reshuffling
-#: is not a week-order effect at all -- it is the sparsity/mutual-exclusivity
-#: artifact, and recording it as a reliability would plant exactly the
-#: booby-trap AGENTS.md's "reliability is a closing ground" rule warns about
-#: (a fabricated ``no_split_half_reliability`` candidate on an untested
-#: construct). Such entries are reported as ``STATUS_NOT_APPLICABLE_COMPOSITIONAL``
-#: and are NEVER passed to ``set-reliability``.
 STATUS_NOT_APPLICABLE_COMPOSITIONAL = "not_applicable_compositional_constraint"
 RANDOM_HALF_RESEEDS = 8
-RANDOM_HALF_N_BOOT = 200  # only the point r is used; a full 4000-draw CI is not needed here.
+RANDOM_HALF_N_BOOT = 200
 
 
 def random_half_diagnostic(
@@ -182,33 +162,11 @@ def random_half_diagnostic(
     }
 
 
-# ---------------------------------------------------------------------------
-# 1. Population loaders -- every one of these delegates to the owning
-#    screen's own ``load_population``/``build_cells``. Nothing here
-#    re-derives a flag; the redteam masks (section 3) reuse the same
-#    constants (``WEST_TZS``, ``NIGHT_KICK_MIN_MIN``) the owning screens
-#    define, because neither ``edge_audit_redteam.run_claim3``'s
-#    ``night_pop``/``west_road_pop`` populations nor the plain "night"/
-#    "west" masks are exported as standalone flags anywhere.
-# ---------------------------------------------------------------------------
-
-
 def load_body_clock_df() -> pd.DataFrame:
     coords = bcs.load_coords(bcs.DEFAULT_COORDS_PATH)
     return bcs.load_population(bcs.default_schedules(), coords)
 
 
-#: The registry's own recorded names for the 4 dose-bucket cells drop
-#: "_west_road_" from body_clock_night_screen's actual cell keys (registry:
-#: "body_clock_night_dose_1300" vs. the screen's
-#: "body_clock_night_west_road_dose_1300") -- read: registry/weak_signals.json
-#: lines 1465,1493,1521,1549 vs. scripts/body_clock_night_screen.py:108-130.
-#: The manifest's own description for these entries already flags a
-#: "copy-bug suspicion" on their recorded EFFECT numbers
-#: (docs/registry_correlation_audit_20260822.md); this alias fixes ONLY the
-#: name lookup used to reach the correct, well-defined dose-bucket FLAG for
-#: reliability purposes -- it does not touch, and has no bearing on, the
-#: effect-number discrepancy already on file.
 _DOSE_NAME_ALIAS = {
     "body_clock_night_west_road_dose_1300": "body_clock_night_dose_1300",
     "body_clock_night_west_road_dose_1400_1659": "body_clock_night_dose_1400_1659",
@@ -236,15 +194,6 @@ def load_travel_rest_df() -> pd.DataFrame:
 
 def load_dst_df() -> pd.DataFrame:
     return dsts.build_population(dsts.DEFAULT_SCHEDULES, dsts.DEFAULT_COORDS_PATH)
-
-
-# ---------------------------------------------------------------------------
-# 2. Team-week long-frame builders for METHOD_TRAIT quantities. These are
-#    plain reshapes of columns the owning screen's own ``load_population``
-#    already computed (kick_min, away_travel_mi, tz_delta_eastbound,
-#    home_rest, away_rest, prev_own_travel_mi) -- no new quantity is derived
-#    here, only which side of the game the observation belongs to.
-# ---------------------------------------------------------------------------
 
 
 def two_sided_long(df: pd.DataFrame, metric: str) -> pd.DataFrame:
@@ -282,19 +231,6 @@ def one_sided_exposure_long(
     )
 
 
-# ---------------------------------------------------------------------------
-# 3. Redteam population masks (scripts/edge_audit_redteam.py:596-652).
-#    ``west_night`` is EXACTLY body_clock_night_screen's own
-#    ``body_clock_night_west_road_ge2000et`` flag (verified in the test
-#    file by Series equality) -- reused, not recomputed independently.
-#    ``night_arr`` / ``away_west`` are the same two-line boolean comparisons
-#    edge_audit_redteam.py:599-601 and body_clock_night_screen.py:55,58 use
-#    inline (neither module exports them as standalone flags), built here
-#    from the SAME imported constants (``bcs.WEST_TZS``,
-#    ``bcns.NIGHT_KICK_MIN_MIN``).
-# ---------------------------------------------------------------------------
-
-
 def redteam_masks(bc_df: pd.DataFrame) -> dict[str, pd.Series]:
     away_west = bc_df["away_body_tz"].isin(bcs.WEST_TZS).fillna(False)
     true_home = (bc_df["location"] == "Home").fillna(False)
@@ -318,19 +254,10 @@ def redteam_distance_join(bc_df: pd.DataFrame, tr_df: pd.DataFrame) -> pd.Series
     return joined["away_travel_mi"].notna()
 
 
-# ---------------------------------------------------------------------------
-# 4. Manifest
-# ---------------------------------------------------------------------------
-
-
 def load_manifest_entries() -> list[dict[str, Any]]:
     payload = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
     return list(payload["groups"]["schedule_clock"]["entries"])
 
-
-# ---------------------------------------------------------------------------
-# 5. Measurement dispatch
-# ---------------------------------------------------------------------------
 
 KICK_MIN_PROVENANCE = (
     "kick_min: continuous kickoff time of day in minutes past midnight ET, computed by "
@@ -425,14 +352,12 @@ def measure_travel_rest_exposures(tr_df: pd.DataFrame, tr_cells: dict) -> dict[s
 
 def measure_dst_exposures(dst_df: pd.DataFrame, dst_cells: dict) -> dict[str, dict]:
     out = {}
-    # Unrestricted population (population == everyone): standard symmetric exposure.
     for name in ("dst_fall_transition_shock", "dst_placebo_shifted_window"):
         long = game_flag_to_team_week(dst_df, dst_cells[name]["flag"])
         out[name] = _measure_with_compositional_check(
             long, "exposure", method=METHOD_EXPOSURE, seasons=(2009, 2025)
         )
 
-    # Restricted population, one-sided (team-identity flag: home/away is ARI).
     for name, team_col in (
         ("dst_arizona_home_shield", "home_team"),
         ("dst_arizona_away_shield", "away_team"),
@@ -445,8 +370,6 @@ def measure_dst_exposures(dst_df: pd.DataFrame, dst_cells: dict) -> dict[str, di
             long, "exposure", method=METHOD_EXPOSURE, seasons=(2009, 2025)
         )
 
-    # Restricted population (eastbound-only games), symmetric (D1 calendar window
-    # applies to both teams in the game equally).
     name = "dst_transition_eastbound_interaction"
     pop = dst_cells[name]["population"]
     pop_df = dst_df.loc[pop].reset_index(drop=True)
@@ -467,11 +390,6 @@ def measure_redteam_exposure(bc_df: pd.DataFrame, tr_df: pd.DataFrame, masks: di
     return _measure_with_compositional_check(
         long, "exposure", method=METHOD_EXPOSURE, seasons=(2009, 2025)
     )
-
-
-# ---------------------------------------------------------------------------
-# 6. Entry -> flag / population, for half_season_replication (reported only)
-# ---------------------------------------------------------------------------
 
 
 def entry_flag_and_population(
@@ -553,11 +471,6 @@ for _n in (
     BATTERY_OF[_n] = "dst"
 
 
-# ---------------------------------------------------------------------------
-# 7. Main sweep
-# ---------------------------------------------------------------------------
-
-
 def run_sweep() -> tuple[dict[str, Any], dict[str, Any]]:
     started = time.time()
     entries = load_manifest_entries()
@@ -578,7 +491,7 @@ def run_sweep() -> tuple[dict[str, Any], dict[str, Any]]:
     ok_distance = redteam_distance_join(bc_df, tr_df)
 
     season_ranges = {tuple(e["seasons"]) for e in entries if e["name"] in bc_cells}
-    season_ranges.add((2009, 2025))  # redteam increment entry, shares the family
+    season_ranges.add((2009, 2025))
     print(f"kick_min season ranges to measure: {sorted(season_ranges)}")
     kick_min_by_range = measure_kick_min_family(bc_df, season_ranges)
 
@@ -587,7 +500,6 @@ def run_sweep() -> tuple[dict[str, Any], dict[str, Any]]:
     dst_exposures = measure_dst_exposures(dst_df, dst_cells)
     redteam_exposure = measure_redteam_exposure(bc_df, tr_df, masks)
 
-    # entry name -> (measurement dict, parent-quantity label, method-tag)
     measurement_of: dict[str, tuple[dict, str, str]] = {}
     for e in entries:
         name = e["name"]

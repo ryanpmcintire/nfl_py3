@@ -79,11 +79,6 @@ def _rated_weeks(frame: pd.DataFrame, column: str) -> pd.Series:
     return frame.loc[frame[column].notna(), "week"].drop_duplicates().sort_values()
 
 
-# ---------------------------------------------------------------------------
-# 1. Leakage: week w reads only games through w-1
-# ---------------------------------------------------------------------------
-
-
 def test_future_cell_values_cannot_change_prior_week_ratings() -> None:
     """Violently perturbing a future week's statistic leaves every prior week's
     graph column byte-identical."""
@@ -157,11 +152,6 @@ def test_a_removed_future_week_cannot_change_prior_ratings() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# 2. Join correctness
-# ---------------------------------------------------------------------------
-
-
 def test_join_is_by_game_id_and_survives_a_shuffled_input() -> None:
     """Every game keeps its OWN rating when the caller's rows arrive in a
     different order, and the caller's order is what comes back."""
@@ -203,11 +193,6 @@ def test_missing_columns_are_named() -> None:
     games = _cfb_like_games().drop(columns=["home_id"])
     with pytest.raises(DataContractError, match="home_id"):
         add_cfb_graph_team_stat_feature(games, CELL)
-
-
-# ---------------------------------------------------------------------------
-# 3. Adaptation A1: node identity is the ESPN id, not the team name
-# ---------------------------------------------------------------------------
 
 
 def test_a_rebranded_program_stays_one_graph_node() -> None:
@@ -257,11 +242,6 @@ def test_float_and_integer_ids_resolve_to_the_same_node() -> None:
     as_float["away_id"] = as_float["away_id"].astype(float)
     rerun = add_cfb_graph_team_stat_feature(as_float, CELL)
     pd.testing.assert_series_equal(baseline[column], rerun[column])
-
-
-# ---------------------------------------------------------------------------
-# 4. The frozen contract
-# ---------------------------------------------------------------------------
 
 
 def test_only_the_three_predeclared_cells_are_accepted() -> None:

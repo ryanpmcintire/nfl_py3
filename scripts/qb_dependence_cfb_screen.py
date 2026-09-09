@@ -85,15 +85,9 @@ CANDIDATE_FEATURE_COLUMNS: tuple[str, ...] = (
     "diff_off_pass_rate",
 )
 
-# BINDING (task instruction): 20,000 samples, on_degenerate="raise" -- an
-# interval containing zero never rejects on its own, but a look this script
-# records must not silently under-report its own block count.
 BOOTSTRAP_SAMPLES = 20_000
 BOOTSTRAP_SEED = 20260818
 
-# Predeclared gate (docs/qb_dependence.md, mirroring SPEC-5's screen
-# convention). Applied here mechanically as printed diagnostics only -- this
-# script does not record a verdict; a reviewing orchestrator/human does.
 ACCURACY_CLEAR_THRESHOLD = 0.75
 BRIER_CLEAR_THRESHOLD = 0.90
 
@@ -377,11 +371,11 @@ def main() -> None:
         features.loc[:, ["game_id", *CFB_QB_DEPENDENCE_COLUMNS]],
         output / "qb_dependence_features.parquet",
     )
-    stamp_sidecar(output / "qb_dependence_features.parquet")  # ENG-38
+    stamp_sidecar(output / "qb_dependence_features.parquet")
     atomic_parquet(predictions, output / "predictions.parquet")
-    stamp_sidecar(output / "predictions.parquet")  # ENG-38
+    stamp_sidecar(output / "predictions.parquet")
     atomic_csv(paired, output / "paired_comparisons.csv")
-    stamp_sidecar(output / "paired_comparisons.csv")  # ENG-38
+    stamp_sidecar(output / "paired_comparisons.csv")
     atomic_json(reliability_payload, output / "reliability_audit.json")
     atomic_json(power, output / "mde80.json")
     atomic_json(coverage, output / "column_coverage.json")
@@ -412,7 +406,7 @@ def main() -> None:
         },
         "timing": timings,
     }
-    write_stamped_artifact(metadata, output / "metadata.json")  # ENG-38
+    write_stamped_artifact(metadata, output / "metadata.json")
     print(f"\nWrote artifacts to {output}", flush=True)
     print(f"Total runtime: {timings['total_seconds']:.1f}s", flush=True)
 

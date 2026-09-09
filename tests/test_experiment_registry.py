@@ -85,20 +85,14 @@ from nfl_ats.script_contracts import scan_script
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_ROOT = REPO_ROOT / "scripts"
 
-# ---------------------------------------------------------------------------
-# Enforcement
-# ---------------------------------------------------------------------------
 
-# Trigger condition, UNCHANGED from the pre-ENG-29 grep-based gate on purpose:
-# widening it (e.g. to also trigger on any mention of "registry", or on
-# to_csv/to_parquet/mkdir-style writes) would sweep dozens of unrelated,
-# never-audited scripts into this gate's scope as an accidental side effect
-# of a ticket about HOW compliance is declared, not WHICH scripts must
-# comply. ENG-29 replaces the compliance *mechanism* (allowlist entry ->
-# scanner-verified declaration or helper call); it deliberately does not
-# also expand the *trigger*.
 _JSON_WRITE_MARKERS = ("json.dump(", "json.dumps(", "atomic_json(")
-_PROVENANCE_HELPER_NAMES = ("write_experiment_artifact", "write_stamped_artifact", "stamp_sidecar")
+_PROVENANCE_HELPER_NAMES = (
+    "write_experiment_artifact",
+    "write_stamped_artifact",
+    "stamp_sidecar",
+    "save_experiment_record",
+)
 
 
 def _writes_artifacts_json_without_helper(path: Path) -> bool:
@@ -190,11 +184,6 @@ def test_read_only_declarations_are_scanner_verified() -> None:
     )
 
 
-# ---------------------------------------------------------------------------
-# Backfill
-# ---------------------------------------------------------------------------
-
-
 def _load_backfill_module() -> ModuleType:
     path = SCRIPTS_ROOT / "backfill_experiment_registry.py"
     spec = importlib.util.spec_from_file_location("backfill_experiment_registry", path)
@@ -214,7 +203,6 @@ def test_backfill_produces_registry_rows_that_parse(tmp_path: Path) -> None:
     artifacts_root = tmp_path / "artifacts"
     registry_root = tmp_path / "registry"
 
-    # A cli.py-shaped metadata.json: a "provenance" block to lift.
     _make_run(
         artifacts_root / "demo_command" / "20260101T000000Z",
         "metadata.json",
@@ -231,7 +219,6 @@ def test_backfill_produces_registry_rows_that_parse(tmp_path: Path) -> None:
             },
         },
     )
-    # A bare run.json: the provenance dict IS the whole file.
     _make_run(
         artifacts_root / "other_command" / "20260102T000000Z",
         "run.json",
@@ -243,8 +230,6 @@ def test_backfill_produces_registry_rows_that_parse(tmp_path: Path) -> None:
             "uv_lock_sha256": "lockdef",
         },
     )
-    # A dual-provenance file (the availability-ablation shape): both should
-    # be noted, one used, and the row still has to parse.
     _make_run(
         artifacts_root / "dual_command" / "20260103T000000Z",
         "metadata.json",
@@ -283,7 +268,7 @@ def test_backfill_produces_registry_rows_that_parse(tmp_path: Path) -> None:
     dual_row = load_experiment_record(
         registry_root / "experiments" / "dual-command" / "20260103T000000Z.json"
     )
-    assert dual_row.config_hash == "base1"  # alphabetically-first key, deterministic
+    assert dual_row.config_hash == "base1"
     assert "learned_provenance" in (dual_row.backfill_note or "")
 
 
@@ -294,13 +279,11 @@ def test_backfill_invents_nothing_for_a_run_without_recoverable_provenance(
     artifacts_root = tmp_path / "artifacts"
     registry_root = tmp_path / "registry"
 
-    # metadata.json with no provenance-shaped block anywhere.
     _make_run(
         artifacts_root / "bare_metadata" / "20260101T000000Z",
         "metadata.json",
         {"games": 10, "note": "no code revision recorded here"},
     )
-    # A run directory with no metadata.json/run.json at all.
     (artifacts_root / "totally_bare" / "20260102T000000Z").mkdir(parents=True)
 
     summary = backfill.run_backfill(artifacts_root, registry_root)
@@ -313,7 +296,6 @@ def test_backfill_invents_nothing_for_a_run_without_recoverable_provenance(
     assert "no metadata.json or run.json" in doc
     assert "no artifact_provenance()-shaped block" in doc
 
-    # No registry rows were fabricated for either directory.
     rows = list((registry_root / "experiments").glob("*/*.json"))
     assert rows == []
 
@@ -344,12 +326,6 @@ def test_backfill_is_idempotent(tmp_path: Path) -> None:
     assert first == second
 
 
-# ---------------------------------------------------------------------------
-# The real deliverable: every row already committed under
-# registry/experiments/ must itself parse and be honestly labeled.
-# ---------------------------------------------------------------------------
-
-
 def _save_row(registry_root: Path, command: str, stamp: str, **overrides: object) -> None:
     payload: dict[str, object] = {
         "experiment_id": f"{command}/{stamp}",
@@ -375,7 +351,6 @@ def test_verify_experiment_links_finds_existing_and_flags_missing(tmp_path: Path
     existing = artifacts_root / "demo-command" / "20260101T000000Z"
     existing.mkdir(parents=True)
     _save_row(registry_root, "demo-command", "20260101T000000Z")
-    # A row whose artifact_directory points nowhere.
     _save_row(
         registry_root,
         "other-command",
@@ -387,10 +362,8 @@ def test_verify_experiment_links_finds_existing_and_flags_missing(tmp_path: Path
     by_id = {r.experiment_id: r for r in results}
     assert by_id["demo-command/20260101T000000Z"].exists is True
     assert by_id["other-command/20260102T000000Z"].exists is False
-    # Only the path-style source (run.json) avoids the source_not_a_path flag.
     assert "source_not_a_path" in by_id["demo-command/20260101T000000Z"].flags
     assert "source_not_a_path" not in by_id["other-command/20260102T000000Z"].flags
-    # Absolute stored paths are reported, not silently re-based.
     abs_row = tmp_path / "abs_command" / "20260103T000000Z"
     abs_row.mkdir(parents=True)
     _save_row(
@@ -420,7 +393,7 @@ def test_verify_experiment_links_flags_unsafe_id(tmp_path: Path) -> None:
 def test_committed_registry_experiment_rows_all_parse() -> None:
     experiments_root = REPO_ROOT / "registry" / "experiments"
     if not experiments_root.is_dir():
-        return  # nothing backfilled yet in this checkout
+        return
     rows = sorted(experiments_root.glob("*/*.json"))
     assert rows, "expected at least one backfilled experiment row"
     for path in rows:

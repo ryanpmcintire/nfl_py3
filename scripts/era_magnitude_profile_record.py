@@ -152,7 +152,7 @@ def build_record(name: str, payload: dict[str, Any], sig: dict[str, Any]) -> dic
         print(f"skip {name}: era_2020_2025 insufficient_data")
         return None
 
-    if "week_blocked" in era:  # six subset-vs-complement signals
+    if "week_blocked" in era:
         wb = era["week_blocked"]
         effect = era["effect"]
         lower, upper = wb["lower"], wb["upper"]
@@ -160,7 +160,7 @@ def build_record(name: str, payload: dict[str, Any], sig: dict[str, Any]) -> dic
         sample_games = era["n_total"]
         sample_blocks = wb["block_count"]
         classification_block = era["mechanical_classification"]
-    else:  # production_model_opener_proxy_edge
+    else:
         effect = era["estimate"]
         lower, upper = era["lower"], era["upper"]
         prob_positive = era["probability_positive"]
@@ -170,10 +170,6 @@ def build_record(name: str, payload: dict[str, Any], sig: dict[str, Any]) -> dic
 
     trend = dict(sig.get("season_trend", {}))
     if "modulator" not in trend and "modulator" in sig:
-        # production_model_opener_proxy_edge stores its modulator at the signal
-        # level (a different population -- true-opener-only sub-slice -- than
-        # the slope/changepoint's full 2011-2025 series), not nested under
-        # season_trend like the six subset-vs-complement signals.
         trend["modulator"] = sig["modulator"]
     notes = _slope_notes(trend)
     notes += (

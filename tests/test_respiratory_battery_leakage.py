@@ -35,21 +35,14 @@ def test_epiweek_to_release_date_round_trips_through_cdc_epiweek() -> None:
     ``fluview_battery_screen.cdc_epiweek``, landing on the LAST day (a
     Saturday) of that epiweek -- not merely some day inside it."""
 
-    # Derived from real calendar dates (never hand-picked WW numbers) so
-    # every epiweek tested is guaranteed to actually exist -- some years
-    # have 52 CDC weeks and some have 53, so a hardcoded "...53" can silently
-    # overflow into week 1 of the following year.
     anchor_dates = pd.to_datetime(
         ["2017-10-05", "2020-01-02", "2023-01-05", "2024-12-30", "2026-08-22"]
     )
     for anchor in anchor_dates:
         epiweek = screen.cdc_epiweek(anchor)
         release_date = screen.epiweek_to_release_date(epiweek)
-        assert release_date.dayofweek == 5  # Saturday
+        assert release_date.dayofweek == 5
         assert screen.cdc_epiweek(release_date) == epiweek
-        # The following day belongs to the NEXT epiweek -- confirms this is
-        # the epiweek's LAST day, the conservative (latest-possible) anchor
-        # docs/respiratory_battery.md section 3 requires.
         next_day = release_date + pd.Timedelta(days=1)
         assert screen.cdc_epiweek(next_day) != epiweek
 
@@ -67,7 +60,7 @@ def test_asof_lookup_never_sees_a_revision_issued_after_the_cutoff() -> None:
             "region": ["zz", "zz"],
             "pathogen_signal": ["pct_ed_visits_covid", "pct_ed_visits_covid"],
             "time_value": [202301, 202301],
-            "issue": [202305, 202320],  # early issue, then a much later revision
+            "issue": [202305, 202320],
             "lag": [4, 19],
             "value": [1.0, 99.0],
         }
@@ -79,11 +72,6 @@ def test_asof_lookup_never_sees_a_revision_issued_after_the_cutoff() -> None:
     release_late = screen.epiweek_to_release_date(202320)
     assert release_late > release_early
 
-    # String round-trip (not a hardcoded dtype=...): matches how
-    # ``_to_fluview_shape`` derives ``release_date`` and how
-    # ``load_schedules`` derives real games' ``cutoff_date`` (schedules.
-    # parquet's ``gameday`` is stored as plain strings), so this test's
-    # dtype matches production by the same construction, not by luck.
     cutoffs = pd.to_datetime(
         pd.Series([release_late - pd.Timedelta(days=1), release_late]).astype(str)
     )
@@ -126,9 +114,6 @@ def test_respiratory_total_requires_all_three_pathogens_non_missing() -> None:
             }
         )
 
-    # covid and influenza both report a real as-of value for the home
-    # state; RSV never reports at all for that state (an upstream coverage
-    # gap, not a "zero illness" reading).
     raw = pd.concat(
         [_single_row_raw(covid), _single_row_raw(influenza), _empty_raw(rsv)],
         ignore_index=True,
@@ -138,7 +123,7 @@ def test_respiratory_total_requires_all_three_pathogens_non_missing() -> None:
     games = pd.DataFrame(
         {
             "home_state": ["hs"],
-            "away_state": ["as"],  # a state with no data at all, either side
+            "away_state": ["as"],
             "cutoff_date": pd.to_datetime(pd.Series([cutoff]).astype(str)),
         }
     )

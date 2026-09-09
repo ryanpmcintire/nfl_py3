@@ -87,7 +87,6 @@ from nfl_ats.players import _stable_crosswalk, canonicalize_rosters, latest_play
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: The one new column each candidate profile adds. Frozen names.
 ROOKIE_QB_DEBUT_FADE_COLUMN = ROOKIE_QB_DEBUT_FADE_ON_PRODUCTION_FEATURE_COLUMNS[0]
 QB_REVENGE_COLUMN = QB_REVENGE_ON_PRODUCTION_FEATURE_COLUMNS[0]
 
@@ -112,12 +111,6 @@ _QB_REVENGE_REQUIRED_SCHEDULE_COLUMNS = {
     "away_qb_id",
 }
 
-#: Frozen 2026-09-05 against ``data/raw/combine/20260822T143152Z/combine.parquet``
-#: -- exhaustively covers every one of the 36 unique ``draft_team`` values
-#: observed in that snapshot. Historical franchise names map to the CURRENT
-#: canonical abbreviation, matching ``nfl_ats.constants.TEAM_ABBREVIATION_ALIASES``'s
-#: own OAK->LV / SD->LAC / STL,SL->LA canonicalization of the schedule's own
-#: historical codes, so both sides of the revenge join share one code space.
 DRAFT_TEAM_NAME_TO_CODE: dict[str, str] = {
     "Arizona Cardinals": "ARI",
     "Atlanta Falcons": "ATL",
@@ -157,11 +150,6 @@ DRAFT_TEAM_NAME_TO_CODE: dict[str, str] = {
     "Washington Football Team": "WAS",
     "Washington Redskins": "WAS",
 }
-
-
-# ---------------------------------------------------------------------------
-# Shared loaders
-# ---------------------------------------------------------------------------
 
 
 def _require_schedule_columns(schedule: pd.DataFrame, required: set[str]) -> None:
@@ -212,11 +200,6 @@ def default_combine(repo_root: Path | None = None) -> pd.DataFrame:
     """Load the newest local combine snapshot."""
 
     return pd.read_parquet(latest_combine_snapshot(repo_root))
-
-
-# ---------------------------------------------------------------------------
-# LEAD-20: rookie-QB debut fade
-# ---------------------------------------------------------------------------
 
 
 def _first_reg_start_table(schedule: pd.DataFrame) -> pd.DataFrame:
@@ -304,7 +287,7 @@ def oracle_derive_rookie_qb_debut_fade_features(
     debut = debut.merge(
         years_exp, left_on=["season", "qb_id"], right_on=["season", "gsis_id"], how="left"
     )
-    debut["is_debut_rookie"] = debut["years_exp"].eq(0.0)  # NaN-safe: NaN == 0.0 is False
+    debut["is_debut_rookie"] = debut["years_exp"].eq(0.0)
 
     home_flags = debut.loc[debut["is_home"], ["game_id", "is_debut_rookie"]].rename(
         columns={"is_debut_rookie": "home_debut_rookie"}
@@ -361,11 +344,6 @@ def attach_rookie_qb_debut_fade_features(
     )
     merged.index = features.index
     return merged
-
-
-# ---------------------------------------------------------------------------
-# LEAD-25: quarterback revenge game
-# ---------------------------------------------------------------------------
 
 
 def _canonical_schedule_team(codes: pd.Series) -> pd.Series:
@@ -621,7 +599,6 @@ def derive_rookie_qb_debut_fade_features(
         if "kickoff" in history
         else _schedule_kickoff_utc(history)
     )
-    # Use previous-day starter history; never invent a game-completion timestamp.
     starts = (
         pd.concat(
             [

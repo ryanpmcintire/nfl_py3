@@ -65,8 +65,6 @@ class TestExpandingQuartiles:
         values = pd.Series(np.concatenate([prior, [0.01, 0.5, 0.99]]))
         blocks = pd.Series([202601] * MIN_QUANTILE_POOL + [202602] * 3)
         codes = expanding_quartile_flags(values, blocks)
-        # The prior block itself is unassigned; the later block is scored
-        # against the prior block's own quartiles.
         assert set(codes[:MIN_QUANTILE_POOL]) == {QUARTILE_UNASSIGNED}
         assert list(codes[MIN_QUANTILE_POOL:]) == [QUARTILE_BOTTOM, 1, QUARTILE_TOP]
 
@@ -85,14 +83,14 @@ class TestExpandingQuartiles:
 
 class TestTilt:
     def test_a_pick_on_the_flagged_offense_flips_to_the_defense(self) -> None:
-        card = _card({"g1": 0.62})  # model holds HOME
+        card = _card({"g1": 0.62})
         result = apply_pbp08_protection_mismatch_tilt(card, _flags([("g1", "AWAY")]))
         assert result.flip_count == 1
         assert result.flips[0].flipped_to_team == "AWY"
         assert result.overlaid_predictions.loc[0, "home_cover_probability"] == pytest.approx(0.38)
 
     def test_a_pick_already_on_the_defense_is_left_alone(self) -> None:
-        card = _card({"g1": 0.62})  # model holds HOME, and HOME is the lean
+        card = _card({"g1": 0.62})
         result = apply_pbp08_protection_mismatch_tilt(card, _flags([("g1", "HOME")]))
         assert result.flip_count == 0
         assert result.overlaid_predictions.loc[0, "home_cover_probability"] == pytest.approx(0.62)
@@ -110,9 +108,7 @@ class TestTilt:
         assert result.flip_count == 0
 
     def test_the_overlay_is_asymmetric_and_never_moves_a_pick_onto_a_flagged_offense(self) -> None:
-        # HOME's offense is the flagged one, so the lean backs AWAY. A model
-        # already on AWAY must not be flipped ONTO the flagged offense.
-        card = _card({"g1": 0.30})  # model holds AWAY
+        card = _card({"g1": 0.30})
         result = apply_pbp08_protection_mismatch_tilt(card, _flags([("g1", "AWAY")]))
         assert result.flip_count == 0
         assert result.overlaid_predictions.loc[0, "home_cover_probability"] == pytest.approx(0.30)
