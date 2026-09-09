@@ -1786,6 +1786,10 @@ def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> i
     entry = _job_health_entry(state, job.name)
     entry["last_manual_run_at"] = datetime.now(tz=ET).isoformat(timespec="seconds")
     entry["last_manual_status"] = f"{status}{' (dry)' if dry else ''}"
+    # Recorded unconditionally (OK included) so a caller -- --rehearse-all --
+    # can show the "last non-empty output line" for every job from this
+    # structured field rather than re-parsing this function's own stdout.
+    entry["last_manual_detail"] = detail[:300]
     if status != "OK":
         entry["last_error"] = detail[:300]
     save_state(state)
@@ -1793,6 +1797,157 @@ def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> i
     if detail:
         print(detail)
     return 0 if status == "OK" else 1
+
+
+#: --rehearse-all's default skip list: lineups_* are full 15-35 minute
+#: weekly-runs (one per weekday, seven jobs), backup_data is a long
+#: off-device mirror, and verify_full_weekly is a multi-minute CPU-bound
+#: pytest run -- none of the three belongs in a "run every job once, fast"
+#: sweep. Exposed as a real default rather than only living in argparse so
+#: a caller of ``rehearse_all`` directly (tests included) gets the same
+#: behaviour as the CLI without repeating the literal.
+DEFAULT_REHEARSE_SKIP_PREFIX = "lineups_,backup_data,verify_full_weekly"
+
+#: weekly_lock (scripts/scheduled_weekly_lock.py) "deliberately has no
+#: season/week flags: the verified schedule must identify exactly one game
+#: week whose line-lock Tuesday is today" -- its own module docstring. A
+#: --rehearse-all dry run never supplies --season/--week, so on any day that
+#: is not the week's lock Tuesday this job refuses BY DESIGN, not because of
+#: a defect. --rehearse-all reports a failure here under its own heading
+#: instead of alongside real defects, per the 2026-09-09 task that added
+#: this command -- but it still counts toward every total and the exit
+#: code; only its PRESENTATION differs. Nothing else is special-cased.
+REHEARSE_EXPECTED_FAILURES: frozenset[str] = frozenset({"weekly_lock"})
+
+
+def _last_nonempty_line(text: str, *, limit: int = 120) -> str:
+    """The last non-blank line of ``text``, truncated to ``limit`` chars.
+
+    ``execute_job``'s ``detail`` can itself span several lines (a multi-line
+    stderr tail); the LAST one is the one most likely to name the actual
+    failure, matching ``failure_detail``'s own "keep the end, not the
+    start" reasoning one level up.
+    """
+
+    for line in reversed(text.splitlines()):
+        stripped = line.strip()
+        if stripped:
+            return stripped[:limit]
+    return ""
+
+
+def _rehearsal_jobs(*, skip_prefix: str, only_prefix: str) -> list[Job]:
+    skip_prefixes = tuple(part for part in skip_prefix.split(",") if part)
+    only_prefixes = tuple(part for part in only_prefix.split(",") if part)
+    return [
+        job
+        for job in SCHEDULE
+        if job.enabled
+        and not job.name.startswith(skip_prefixes)
+        and (not only_prefixes or job.name.startswith(only_prefixes))
+    ]
+
+
+def render_rehearsal_table(rows: list[dict[str, Any]]) -> str:
+    header = f"{'job':<34} {'when':<11} {'seconds':>8}  {'verdict':<20} last line (<=120 chars)"
+    lines = [header, "-" * len(header)]
+    for row in rows:
+        lines.append(
+            f"{row['job']:<34} {row['when']:<11} {row['seconds']:>7.1f}s  "
+            f"{row['verdict']:<20} {row['last_line']}"
+        )
+    return "\n".join(lines)
+
+
+def render_rehearsal_summary(rows: list[dict[str, Any]]) -> str:
+    non_ok = [row for row in rows if row["code"] != 0]
+    expected = [row for row in non_ok if row["job"] in REHEARSE_EXPECTED_FAILURES]
+    unexpected = [row for row in non_ok if row["job"] not in REHEARSE_EXPECTED_FAILURES]
+
+    lines = ["SUMMARY"]
+    if expected:
+        lines.append(
+            "  expected on a non-lock day (weekly_lock's by-design refusal without "
+            "--season/--week; still counted below):"
+        )
+        for row in expected:
+            lines.append(f"    {row['job']}: {row['verdict']} -- {row['last_line']}")
+    if unexpected:
+        lines.append("  failed:")
+        for row in unexpected:
+            lines.append(f"    {row['job']}: {row['verdict']} -- {row['last_line']}")
+    if not non_ok:
+        lines.append("  (no failures)")
+    lines.append(f"total {len(rows)} ok {len(rows) - len(non_ok)} failed {len(non_ok)}")
+    return "\n".join(lines)
+
+
+def rehearse_all(
+    state: dict[str, Any],
+    *,
+    skip_prefix: str = DEFAULT_REHEARSE_SKIP_PREFIX,
+    only_prefix: str = "",
+    stop_on_fail: bool = False,
+) -> int:
+    """Execute every ENABLED job's real argv once, via the exact ``--run-job
+    NAME --dry`` code path (``run_job_manually(job, state, dry=True)``),
+    sequentially in ``SCHEDULE`` order.
+
+    Built 2026-09-09 to replace the ad-hoc loop a session used to hand-run
+    every enabled non-lineup job one at a time: that loop's own pass/fail
+    column regex-matched the wrong token, so the scheduler log had to be
+    read separately to find the truth. Every verdict here instead comes
+    from ``run_job_manually``'s own return code and the
+    ``last_manual_status``/``last_manual_detail`` fields it just wrote into
+    ``state["job_health"][job.name]`` -- never from parsing this function's
+    own printed table.
+
+    ``skip_prefix`` (default ``DEFAULT_REHEARSE_SKIP_PREFIX``) and
+    ``only_prefix`` are comma-separated job-name prefixes; a job is included
+    only when it is enabled, does not start with any ``skip_prefix`` entry,
+    and (when ``only_prefix`` is non-empty) starts with one of its entries.
+    ``stop_on_fail`` halts after the first non-OK job instead of continuing
+    through the full list (default: keep going, matching the manual loop
+    this replaces).
+
+    See ``REHEARSE_EXPECTED_FAILURES`` for the one named, by-design
+    exception to "every non-OK job is a defect".
+    """
+
+    jobs = _rehearsal_jobs(skip_prefix=skip_prefix, only_prefix=only_prefix)
+    log(
+        f"REHEARSE-ALL start ({len(jobs)} jobs; skip_prefix={skip_prefix!r} "
+        f"only_prefix={only_prefix!r} stop_on_fail={stop_on_fail})"
+    )
+
+    rows: list[dict[str, Any]] = []
+    for job in jobs:
+        started = time.monotonic()
+        code = run_job_manually(job, state, dry=True)
+        elapsed = time.monotonic() - started
+        entry = state.get("job_health", {}).get(job.name, {})
+        verdict = str(entry.get("last_manual_status", "FAIL" if code else "OK"))
+        last_line = _last_nonempty_line(str(entry.get("last_manual_detail", "")))
+        rows.append(
+            {
+                "job": job.name,
+                "when": f"{job.day} {job.at}",
+                "seconds": elapsed,
+                "code": code,
+                "verdict": verdict,
+                "last_line": last_line,
+            }
+        )
+        if code != 0 and stop_on_fail:
+            break
+
+    print(render_rehearsal_table(rows))
+    print()
+    print(render_rehearsal_summary(rows))
+
+    failed = sum(1 for row in rows if row["code"] != 0)
+    log(f"REHEARSE-ALL end (total {len(rows)} ok {len(rows) - failed} failed {failed})")
+    return 1 if failed else 0
 
 
 def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False) -> None:
@@ -2230,6 +2385,32 @@ def main(argv: list[str] | None = None) -> int:
             "a ledger or the card"
         ),
     )
+    parser.add_argument(
+        "--rehearse-all",
+        action="store_true",
+        help=(
+            "execute every ENABLED job's real argv once via run_job_manually(dry=True), "
+            "in SCHEDULE order (the one-shot replacement for hand-running --run-job NAME "
+            "--dry job by job). Prints a table + SUMMARY; exit 1 if any job failed."
+        ),
+    )
+    parser.add_argument(
+        "--skip-prefix",
+        default=DEFAULT_REHEARSE_SKIP_PREFIX,
+        help=(
+            "with --rehearse-all: comma-separated job-name prefixes to skip (default: %(default)s)"
+        ),
+    )
+    parser.add_argument(
+        "--only-prefix",
+        default="",
+        help="with --rehearse-all: comma-separated job-name prefixes to include (default: all)",
+    )
+    parser.add_argument(
+        "--stop-on-fail",
+        action="store_true",
+        help="with --rehearse-all: stop at the first non-OK job (default: keep going)",
+    )
     args = parser.parse_args(argv)
 
     state = load_state()
@@ -2252,6 +2433,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.dry:
         print("--dry only applies with --run-job", file=sys.stderr)
         return 2
+
+    if args.rehearse_all:
+        return rehearse_all(
+            state,
+            skip_prefix=args.skip_prefix,
+            only_prefix=args.only_prefix,
+            stop_on_fail=args.stop_on_fail,
+        )
 
     if args.acknowledge_missed:
         if not args.reason:

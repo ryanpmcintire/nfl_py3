@@ -386,6 +386,18 @@ re-run a window that already ran, and entries older than 60 days are pruned. A
 record for a `catch_up` job that ran late additionally carries
 `"caught_up": true` alongside `"status": "CAUGHT_UP"`.
 
+## Rehearse every job
+
+```powershell
+.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --rehearse-all
+```
+
+Runs every enabled job's real argv once via `--run-job NAME --dry`
+(`--skip-prefix` defaults to `lineups_,backup_data,verify_full_weekly`;
+`--only-prefix` narrows to a subset; `weekly_lock` is expected to fail outside
+its lock Tuesday). This is the one-shot form of the AGENTS.md rule that any
+job added or edited in a session is exercised in that session.
+
 ## Observability (ENG-03)
 
 `--status` answers "what is scheduled and what ran". It cannot answer two
