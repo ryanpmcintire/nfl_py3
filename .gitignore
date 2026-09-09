@@ -86,3 +86,4 @@ data/scheduler_log.txt
 
 # Pool board captures identify a real-money account and a live, unlocked card.
 data/splash/**
+data/lock_failures/

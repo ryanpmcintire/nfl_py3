@@ -68,8 +68,10 @@ def test_live_roadmap_has_unique_assignable_items() -> None:
 
     # 266 since 2026-09-07: MOD-18 (spread-size regime) was opened;
     # 268 since 2026-09-08: ENG-41 (nflverse season rollover -- the current
-    # season was unreachable through nflreadpy before its own Wednesday opener).
-    assert len(items) == 268
+    # season was unreachable through nflreadpy before its own Wednesday opener);
+    # 269 since 2026-09-09: ENG-42 (opener-day refresh path, Wednesday inactives,
+    # heartbeat keep-alive, lock override).
+    assert len(items) == 269
     assert all(item.phase != "Unassigned" for item in items)
 
 

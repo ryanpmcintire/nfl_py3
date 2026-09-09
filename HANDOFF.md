@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T20:40:24.610934+00:00`
+Refreshed at: `2026-09-09T20:41:02.963737+00:00`
 
 ## Start here
 
@@ -20,24 +20,12 @@ Refreshed at: `2026-09-09T20:40:24.610934+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `2f3cce51af68` — Keep the late-week refresh alive on opener day: configuration identity, a Wednesday inactives pair, a heartbeat that survives long jobs
-- Pending change set: 16 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `f1c4db52309f` — Let a missed or wrongly recorded lock be re-recorded: named-week and replace overrides, Week 1 re-recorded on the pool's lines
+- Pending change set: 4 paths
+  - `M  .gitignore`
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `A  data/lock_failures/20260909T200217Z-scheduled-lock.log`
-  - `M  docs/capture_scheduling.md`
-  - `M  docs/index.html`
-  - `M  scripts/scheduled_weekly_lock.py`
-  - `M  src/nfl_ats/cli_commands/operations.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/clv.py`
-  - `M  src/nfl_ats/scheduled_lock.py`
-  - `M  src/nfl_ats/weekly.py`
-  - `M  tests/fixtures/cli_contract.json`
-  - `M  tests/test_clv.py`
-  - `M  tests/test_scheduled_lock.py`
-  - `M  tiebreaker.json`
+  - `D  data/lock_failures/20260909T200217Z-scheduled-lock.log`
+  - `M  tests/test_roadmap_inventory.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
