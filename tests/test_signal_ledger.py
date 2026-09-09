@@ -322,8 +322,22 @@ def test_on_the_card_is_derived_from_the_policy_composition_mapping() -> None:
     assert names == [
         "bias_battery_division_revenge_game",
         "bias_battery_division_revenge_game_opener",
+        "bye_overval_fade_full_slate_post2011",
+        "forecast_weather_kn_precip_high_total_full",
+        "forecast_weather_kn_precip_high_total_pre2020",
+        "forecast_weather_temp_gap_cold_visitor",
         "hc_year_one_fade",
+        "interim_hc_first_game",
+        "motivation_ladder_tank_zone_wk14_18",
+        "pbp08_protection_mismatch",
         "player_arrests_recent_14d_back_side_policy_opener",
+        "unserved_tilt_on_played_card_bye_edge_fade_overlay",
+        "unserved_tilt_on_played_card_forecast_cold_visitor_tilt_overlay",
+        "unserved_tilt_on_played_card_forecast_weather_kn_precip_high_total_tilt_overlay",
+        "unserved_tilt_on_played_card_interim_hc_first_game_tilt_overlay",
+        "unserved_tilt_on_played_card_pbp08_protection_mismatch_tilt_overlay",
+        "unserved_tilt_on_played_card_tank_zone_fade_tilt_overlay",
+        "weather_followup_temp_gap_cold_visitor",
     ]
 
     registry = _registry(**{name: _signal_payload() for name in names})

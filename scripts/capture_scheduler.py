@@ -65,11 +65,11 @@ HEARTBEAT_STALE_AFTER_SECONDS = POLL_SECONDS * 3
 
 READ_ONLY_SCRIPT = True
 READ_ONLY_EXCEPTIONS: dict[int, str] = {
-    1100: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
-    1102: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
-    1129: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
-    1143: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
-    1252: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+    1201: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1203: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1230: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
+    1244: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1353: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
 }
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
@@ -187,6 +187,76 @@ def _nflverse_injuries_job(day: str) -> Job:
         dedupe_dir="data/raw/nflverse_injuries",
         dedupe_minutes=240,
         added_on="2026-09-08",
+        catch_up=True,
+    )
+
+
+def _nflverse_injuries_pm_job(day: str) -> Job:
+    return Job(
+        f"nflverse_injuries_{day}_pm",
+        day,
+        "16:30",
+        120,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "nflverse_injuries_ingest.py"),
+        ],
+        True,
+        "2026-09-09: the 06:00 capture runs BEFORE the league publishes that day's own "
+        "report, so every same-day consumer reads yesterday's. Measured on Week 1 "
+        "Wednesday: the 06:00 ET capture (data/raw/nflverse_injuries/20260909T100005Z) "
+        "held 11 2026 rows -- NE and SEA only, published Tuesday for the Wednesday "
+        "opener -- while the 16:10 ET capture (20260909T201039Z) held 29, adding SF and "
+        "LA for the Thursday game. The 12:00 lineups_wed refit therefore scored SF at LA "
+        "with an all-zero injury block on the very day both teams filed. This second "
+        "same-day pass lands after the afternoon filings and before the evening refit. "
+        "catch_up=True for the same reason the 06:00 job carries it: a late bulk "
+        "snapshot is still a valid, un-mislabelled one.",
+        dedupe_dir="data/raw/nflverse_injuries",
+        dedupe_minutes=120,
+        added_on="2026-09-09",
+        catch_up=True,
+    )
+
+
+def _player_snapshot_pm_job(day: str) -> Job:
+    return Job(
+        f"player_snapshot_{day}_pm",
+        day,
+        "16:45",
+        120,
+        _cli(
+            "player-ingest",
+            "--injury-start-season",
+            "2009",
+            "--injury-end-season",
+            "2026",
+            "--roster-start-season",
+            "2009",
+            "--roster-end-season",
+            "2026",
+            "--snap-start-season",
+            "2013",
+            "--snap-end-season",
+            "2025",
+            "--include-postseason",
+            "--timestamp-fallback",
+            "week_proxy",
+        ),
+        True,
+        "2026-09-09: the consumed half of nflverse_injuries_<day>_pm. Measured the same "
+        "day with this exact argv: the 06:28 ET snapshot 20260909T102833Z recorded "
+        "n_proxy_rows_per_season 2026=11, the 17:52 ET snapshot 20260909T215234Z "
+        "recorded 29, and rebuilding the weak_stack table on the newer one moved SF at "
+        "LA from an exactly-zero injury block to -0.140 points of predicted residual and "
+        "the SF pick from 55.58% to 56.01%. 16:45 ET is 15m after its capture "
+        "counterpart, matching the 06:00/06:15 spacing.",
+        dedupe_dir="data/players/raw",
+        dedupe_minutes=120,
+        added_on="2026-09-09",
         catch_up=True,
     )
 
@@ -636,6 +706,37 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(_nflverse_injuries_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
     *(_player_snapshot_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
+    *(_nflverse_injuries_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
+    *(_player_snapshot_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
+    *(
+        Job(
+            f"lineups_{day}_pm",
+            day,
+            at,
+            120,
+            LINEUP_CAPTURE,
+            True,
+            "2026-09-09: a capture nothing rebuilds the feature table from is not on the "
+            "card. lineups_<day> refits at 12:00 ET off the 06:15 snapshot, so a report "
+            "filed that afternoon cannot reach a pick until the next day's noon refit -- "
+            "and for a Thursday game there is no next day. This runs the same "
+            "refresh_lineup_forecast.py argv the noon job runs, so it inherits that "
+            "job's fail-closed behaviour unchanged. The TIME is set by the week_proxy "
+            "horizon, not by the filing time: canonicalize_injuries stamps an undated "
+            "report at its own game's kickoff minus 24h, and lineage.py refuses a card "
+            "whose effective_timestamp is still in the future, so a refit before that "
+            "horizon aborts rather than prices the report. Measured 2026-09-09: the "
+            "Thursday SF at LA rows captured at 16:10 ET carry effective_observed_at "
+            "2026-09-10T00:35Z (kickoff 2026-09-11T00:35Z minus 24h), so a 17:05 ET "
+            "refit would have failed exactly the way lineups_tue failed on 2026-09-08. "
+            "wed 20:45 clears a Thursday-night kickoff's horizon; sat 13:30 clears the "
+            "Sunday 13:00 ET horizon that carries most of the slate.",
+            dedupe_dir="artifacts/margin_predictions",
+            dedupe_minutes=120,
+            added_on="2026-09-09",
+        )
+        for day, at in (("wed", "20:45"), ("sat", "13:30"))
+    ),
     Job(
         "inactives_sun_early",
         "sun",

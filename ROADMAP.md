@@ -418,9 +418,36 @@ in the session scratchpad, not in the repo.
   slow start 0.000 (4 flagged games league-wide, none in window); **trade-
   deadline integration drag +0.658 [-0.220, +1.595] P+ 0.883** (70 flagged
   games, 25 acquisitions); suspension-return rust +0.219 P+ 0.607;
-  rookie-crew underdog -1.097 [-2.691, +0.222] P+ 0.046; crew second-meeting
-  favourite -0.658 P+ 0.325. All `unresolved_below_power` except the one
-  admissible closure named.
+  rookie-crew underdog -1.097 [-2.691, +0.222] P+ 0.046 **on the 2020-2021
+  window only, for the SHIPPED feed-only build (2015-2025 officials feed,
+  season floor 2016), against production** — superseded as the family's
+  headline, see the rookie-crew row below; crew second-meeting favourite
+  -0.658 P+ 0.325. All `unresolved_below_power` except the one admissible
+  closure named.
+- **Rookie-crew underdog, reconciled (2026-09-09,
+  `docs/rookie_crew_reconciliation.md`, family
+  `rookie_crew_reconciliation`).** Two reads of this rule disagreed in sign
+  and the disagreement was mechanical, not empirical: the -1.097 above is the
+  shipped feed-only flag vs production on 456 games, while the officials
+  battery's **+0.73 P+ 0.97** is an archive-vs-feed DELTA against the rule's
+  own previous build, not a vs-production effect. Re-measured through the
+  served opener harness on `opener_evaluation/20260909T183120Z` (replay gate
+  passed, 1,537 games, gap 3.8e-15, 0 pick disagreements), 2020-2025, 1,503
+  non-push, week-blocked 20,000 draws seed 20260821: the reconciled rule
+  (archive-extended referee table, season floor 2010, close-proxy line before
+  2020) is **+0.200 [-0.198, +0.602] P+ 0.843 standalone** and **+0.133
+  [-0.198, +0.467] P+ 0.790 as a marginal on the played three-member card**;
+  the same shipped feed-only flag under the FIXED probability wiring is
+  -0.599 P+ 0.049 (2020-2025) and -1.316 P+ 0.040 (2020-2021), so the
+  2026-09-08 ECDF defect is NOT what moved the sign — the rule change is.
+  Era magnitudes on the card: 2020-2021 **+0.439 P+ 0.936**, 2022-2023 0.000
+  P+ 0.503, 2024-2025 0.000 P+ 0.492. Crew trait season-to-season split-half
+  reliability **+0.0756 [-0.0201, +0.1453] P+ 0.951** (255 referee-season
+  pairs), so `no_split_half_reliability` is not available to close this
+  family. All twelve cells `unresolved_below_power`. EV-positive on the
+  played card and NOT yet served: crew assignments publish Wednesday, so the
+  vehicle is the late-week refresh path (`nfl_ats.crew_tilt_refresh_overlay`),
+  not the Tuesday lock.
 - **CFB free screens on the XLG-03 benchmark:** post-bye home pooled -0.022
   P+ 0.428, era 2012-2019 +0.262 P+ 0.915, era 2021-2025 -0.446
   [-0.763, -0.166] `refuted_mechanism` for that era slice; rivalry home dog

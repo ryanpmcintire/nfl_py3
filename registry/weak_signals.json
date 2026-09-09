@@ -118843,6 +118843,342 @@
       "source": "scripts/roof_decision_screen.py; artifacts/roof_decision_screen/20260820T111226Z/results.json; <scratchpad>/roof_decision_screen/predeclaration.md",
       "standard_error": null
     },
+    "rookie_crew_reconciled_card_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: marginal on top of the served three-member card (coach fade, division revenge, player arrests).",
+      "effect": 0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        0.0,
+        1.1111111111111112
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "On top of the card the rookie-referee lean is worth about four tenths of a percentage point in 2020-2021 -- every one of its six-season gain comes from these two seasons.",
+      "probability_positive": 0.93565,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_card_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: marginal on top of the served three-member card (coach fade, division revenge, player arrests).",
+      "effect": 0.1330671989354624,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.19775873434410018,
+        0.4666666666666667
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "Added on top of the three rules the card already plays, the rookie-referee lean changes six picks across six seasons and wins two more of them than it loses -- about an eighth of a percentage point of accuracy.",
+      "probability_positive": 0.790375,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_card_2022_2023": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: marginal on top of the served three-member card (coach fade, division revenge, player arrests).",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.5905511811023622,
+        0.5736137667304015
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "On top of the card the rookie-referee lean changed two picks in 2022-2023 and split them -- exactly level.",
+      "probability_positive": 0.502575,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_card_2024_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: marginal on top of the served three-member card (coach fade, division revenge, player arrests).",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.5649717514124294,
+        0.5639097744360902
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "On top of the card the rookie-referee lean changed two picks in 2024-2025 and split them -- exactly level.",
+      "probability_positive": 0.492275,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_reliability_odd_even_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A within-season half-season split of a rate this noisy is the weaker instrument of the two and its interval spans zero on both sides; it neither confirms nor refutes the season-to-season persistence, and a single near-zero reliability estimate whose interval contains zero is not the zero-reliability closing ground.",
+      "closing_ground": null,
+      "description": "Companion within-season split-half of the same crew trait: a head referee's underdog-cover rate on odd weeks against even weeks of the same season (290 referee-seasons, minimum 3 games per half, Spearman-Brown corrected value -0.0377, season-blocked bootstrap, seed 20260821). Reported alongside the season-to-season pairing, which is the predeclared primary.",
+      "effect": -0.018506389077394908,
+      "effect_units": "correlation",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.1268656007592877,
+        0.09274825174200205
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "Splitting each referee's season in half by odd and even weeks finds no signal either way -- half a season is too few games to see a tendency this faint.",
+      "probability_positive": 0.344,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 17,
+      "sample_games": 4280,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_reliability_season_pairs_2009_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Reliability is small but POSITIVE and the interval only just includes zero (probability_positive 0.9505), so the trait is not shown to be noise and no_split_half_reliability is NOT available as a closing ground for this family.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the crew trait the rookie-crew rule depends on: a head referee's underdog-cover rate in a season, paired with the same referee's rate in the following season (255 referee-season pairs, 16 seasons, season-blocked bootstrap, seed 20260821, label-shuffle null mean 0.0144 sd 0.0584). This is the year-to-year persistence question; tenure itself is not measured because it increments by construction.",
+      "effect": 0.07560595296493113,
+      "effect_units": "correlation",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.02006039384309791,
+        0.14526696542230066
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "Referees carry a faint tendency from one season to the next in how often the underdog covers their games -- faint, but pointing the same way year after year rather than washing out.",
+      "probability_positive": 0.9505,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 16,
+      "sample_games": 4280,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_shipped_feed_arm_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Reconciliation control: the SHIPPED feed-only rookie-crew flag (2015-2025 officials feed, season floor 2016, Tuesday-opener line only) re-scored against production under the FIXED probability wiring (gaussian_median read from the active manifest, served home-side offset). Isolates the rule change from the 2026-09-08 probability-method fix: forcing the retired ecdf default reproduces the same delta to the digit, so the wiring defect is not what moved the sign.",
+      "effect": -1.3157894736842104,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -2.9213483146067416,
+        0.211864406779661
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "The older, narrower way of spotting a rookie referee -- which could only see crews from 2016 on -- loses about six tenths of a percentage point over 2020-2025. Widening it to the full officiating archive is what turns it around.",
+      "probability_positive": 0.040075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/wiring_isolation/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_shipped_feed_arm_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Reconciliation control: the SHIPPED feed-only rookie-crew flag (2015-2025 officials feed, season floor 2016, Tuesday-opener line only) re-scored against production under the FIXED probability wiring (gaussian_median read from the active manifest, served home-side offset). Isolates the rule change from the 2026-09-08 probability-method fix: forcing the retired ecdf default reproduces the same delta to the digit, so the wiring defect is not what moved the sign.",
+      "effect": -0.5988023952095809,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -1.3377926421404682,
+        0.13071895424836602
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "The older, narrower way of spotting a rookie referee -- which could only see crews from 2016 on -- loses about six tenths of a percentage point over 2020-2025. Widening it to the full officiating archive is what turns it around.",
+      "probability_positive": 0.0494,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/wiring_isolation/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_standalone_2020_2021": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: standalone against the raw model's own opener picks.",
+      "effect": 0.43859649122807015,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        0.0,
+        1.1111111111111112
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "In 2020-2021 the rookie-referee lean was worth about four tenths of a percentage point on its own. These are the two seasons with the most rookie referees on the field.",
+      "probability_positive": 0.93565,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_standalone_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: standalone against the raw model's own opener picks.",
+      "effect": 0.19960079840319359,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.1982815598149372,
+        0.6020066889632107
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "When a rookie referee has the game, the model leans a little toward the underdog. Played on its own across 2020-2025 that is worth about a fifth of a percentage point of extra accuracy -- roughly three extra right picks in fifteen hundred games -- and it changed eleven picks in six seasons.",
+      "probability_positive": 0.842775,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_standalone_2022_2023": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: standalone against the raw model's own opener picks.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.5905511811023622,
+        0.5747126436781609
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "In 2022-2023 the rookie-referee lean changed four picks and finished exactly level. A dead heat in one era, not an absence.",
+      "probability_positive": 0.5043,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
+    "rookie_crew_reconciled_standalone_2024_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval crosses zero at this evaluator's ~2-point resolution -- the EXPECTED shape for a real-but-small signal and never grounds to close (AGENTS.md). Neither admissible closing ground applies: the sign is not resolved wrong (no interval sits wholly below zero) and no positive control was proven able to detect an effect this size and found it absent. The underlying crew trait has nonzero season-to-season split-half reliability (Pearson r 0.0756, probability_positive 0.9505), so no_split_half_reliability does not apply.",
+      "closing_ground": null,
+      "description": "Rookie officiating crew, underdog side, reconciled definition: head referee with at most 1 prior season on the archive-extended 2009-2025 referee table, season floor 2010 (derived from the archive's own first season, replacing the shipped constant 2016), signed +1 when the home team is the underdog and -1 when the away team is, at the Tuesday-opener consensus line with the archived nflverse spread as a close proxy before 2020; entered as ONE feature column on top of production weak_stack and graded at the Tuesday opener with the served home-side offset against artifacts/opener_evaluation/20260909T183120Z. Predeclared in docs/rookie_crew_reconciliation.md before scoring; week-blocked bootstrap, 20000 draws, seed 20260821, within-week correlation zero. Arm: standalone against the raw model's own opener picks.",
+      "effect": 0.18761726078799248,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.5714285714285714,
+        0.9633911368015414
+      ],
+      "league": "nfl",
+      "notes": "Second look at a window already read on 2026-09-05 and 2026-09-08; descriptive, not independent confirmation. Correlated with the officials_archive_battery family, which measures the same rule against a different baseline.",
+      "plain_summary": "In 2024-2025 the rookie-referee lean was worth about two tenths of a percentage point on its own, on five changed picks.",
+      "probability_positive": 0.6663,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.07560595296493113,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
+      "standard_error": null
+    },
     "rookie_crew_underdog_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -120046,6 +120382,566 @@
       ],
       "source": "artifacts/roster_availability_flags_on_production/specialist_absence_fade/20260905T152740Z/results.json",
       "standard_error": null
+    },
+    "spread_hole_c1_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.3333, 0.0919] accuracy points reaches or crosses zero; probability_positive 0.0323. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.6304347826,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -3.3333333333,
+        0.0919159964
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 96.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 57.6% to 56.0% right against the opening line on lines of 0-6.5 in 2020-25, changing 96 picks; about 3% likely to help.",
+      "probability_positive": 0.03235,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.8725990816
+    },
+    "spread_hole_c1_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-7.7519, 0.0000] accuracy points reaches or crosses zero; probability_positive 0.0224. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 10.5+, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -3.8167938931,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -7.7519379845,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 7.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 51.1% to 47.3% right against the opening line on lines of 10.5+ in 2020-25, changing 7 picks; about 2% likely to help.",
+      "probability_positive": 0.022375,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 1.9472933632
+    },
+    "spread_hole_c1_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.9412, 5.7143] accuracy points reaches or crosses zero; probability_positive 0.7103. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -2.9411764706,
+        5.7142857143
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 3.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 50.0% to 51.4% right against the opening line on lines of 7 in 2020-25, changing 3 picks; about 71% likely to help.",
+      "probability_positive": 0.7103,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 2.2908039767
+    },
+    "spread_hole_c1_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.2857, 1.0811] accuracy points reaches or crosses zero; probability_positive 0.2909. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.5154639175,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -2.2857142857,
+        1.0810810811
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 3.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 51.5% to 51.0% right against the opening line on lines of 7.5-10 in 2020-25, changing 3 picks; about 29% likely to help.",
+      "probability_positive": 0.2909,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.8896686659
+    },
+    "spread_hole_c1_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Week-blocked interval [-2.8686, -0.1993] accuracy points sits entirely below zero, and the season-blocked interval [-2.7116, -0.3356] does too: a RESOLVED wrong sign for this arm as a replacement for the played card, which is the one admissible closing ground here. Sub-bucket cells of the same window stay unresolved.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.5302727878,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -2.8685790527,
+        -0.1993355482
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 109.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 55.9% to 54.4% right against the opening line overall in 2020-25, changing 109 picks; about 1% likely to help.",
+      "probability_positive": 0.01195,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.6803645207
+    },
+    "spread_hole_c1_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.1591, -0.0891] accuracy points reaches or crosses zero; probability_positive 0.0222. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -2.0833333333,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -4.1591398422,
+        -0.0891245756
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 131.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 56.2% to 54.1% right against the opening line on lines of 0-6.5 in 2020-25, changing 131 picks; about 2% likely to help.",
+      "probability_positive": 0.0222,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 1.0444493291
+    },
+    "spread_hole_c1_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-8.7591, 0.8065] accuracy points reaches or crosses zero; probability_positive 0.0604. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 10.5+, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -3.8167938931,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -8.7591240876,
+        0.8064516129
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 11.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 47.3% to 43.5% right against the opening line on lines of 10.5+ in 2020-25, changing 11 picks; about 6% likely to help.",
+      "probability_positive": 0.06035,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 2.4751672789
+    },
+    "spread_hole_c1_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.0000, 8.9744] accuracy points reaches or crosses zero; probability_positive 0.7935. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 2.7027027027,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -4.0,
+        8.9743589744
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 8.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 51.4% to 54.1% right against the opening line on lines of 7 in 2020-25, changing 8 picks; about 79% likely to help.",
+      "probability_positive": 0.793475,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 3.222998384
+    },
+    "spread_hole_c1_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.1414, 0.9901] accuracy points reaches or crosses zero; probability_positive 0.1595. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.0309278351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -3.1413612565,
+        0.9900990099
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 4.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 51.5% to 50.5% right against the opening line on lines of 7.5-10 in 2020-25, changing 4 picks; about 16% likely to help.",
+      "probability_positive": 0.15945,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 1.0252340298
+    },
+    "spread_hole_c1_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Week-blocked interval [-3.4853, -0.2677] accuracy points sits entirely below zero, and the season-blocked interval [-3.0423, -0.8898] does too: a RESOLVED wrong sign for this arm as a replacement for the played card, which is the one admissible closing ground here. Sub-bucket cells of the same window stay unresolved.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.8629407851,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -3.4852546917,
+        -0.2677331399
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 154.",
+      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 54.6% to 52.7% right against the opening line overall in 2020-25, changing 154 picks; about 1% likely to help.",
+      "probability_positive": 0.0106,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.8174872824
+    },
+    "spread_hole_r1_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.4656, 0.5218] accuracy points reaches or crosses zero; probability_positive 0.4992. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -0.4655601951,
+        0.5217732459
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 10.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 57.6% to 57.6% right against the opening line on lines of 0-6.5 in 2020-25, changing 10 picks; about 50% likely to help.",
+      "probability_positive": 0.4992,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.2545560437
+    },
+    "spread_hole_r1_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.2727, 2.2727] accuracy points reaches or crosses zero; probability_positive 0.5039. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 10.5+, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -2.2727272727,
+        2.2727272727
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 2.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 51.1% to 51.1% right against the opening line on lines of 10.5+ in 2020-25, changing 2 picks; about 50% likely to help.",
+      "probability_positive": 0.503925,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 1.0924830481
+    },
+    "spread_hole_r1_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Exact dead heat: the arm changed ZERO picks in this bucket, so every bootstrap draw of the paired delta is exactly 0 and the standard error is degenerate by construction (the recorder refuses a zero standard_error, so the field is omitted). probability_positive is 0.5, the correct value for a no-op under nfl_ats.evidence_conventions.probability_positive_from_draws. Nothing is closed by a no-op.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025). Picks changed: 0. Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are changed none of the 74 games with a 7-point line, so the card was identical there.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": null
+    },
+    "spread_hole_r1_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.4826, 0.0000] accuracy points reaches or crosses zero; probability_positive 0.0240. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -1.5463917526,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -3.4825870647,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 3.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 51.5% to 50.0% right against the opening line on lines of 7.5-10 in 2020-25, changing 3 picks; about 2% likely to help.",
+      "probability_positive": 0.024,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.8793664682
+    },
+    "spread_hole_r1_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.6689, 0.2665] accuracy points reaches or crosses zero; probability_positive 0.2056. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.1996007984,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -0.6688963211,
+        0.2664890073
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 15.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 55.9% to 55.7% right against the opening line overall in 2020-25, changing 15 picks; about 21% likely to help.",
+      "probability_positive": 0.2056,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.2394164161
+    },
+    "spread_hole_r1_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.9083, 0.3656] accuracy points reaches or crosses zero; probability_positive 0.2014. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.2717391304,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -0.9082652134,
+        0.365630713
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 15.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 56.2% to 55.9% right against the opening line on lines of 0-6.5 in 2020-25, changing 15 picks; about 20% likely to help.",
+      "probability_positive": 0.20145,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.3240941304
+    },
+    "spread_hole_r1_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.6129, 3.4783] accuracy points reaches or crosses zero; probability_positive 0.7139. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 10.5+, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.7633587786,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -1.6129032258,
+        3.4782608696
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 3.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 47.3% to 48.1% right against the opening line on lines of 10.5+ in 2020-25, changing 3 picks; about 71% likely to help.",
+      "probability_positive": 0.7139,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 1.335045528
+    },
+    "spread_hole_r1_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Exact dead heat: the arm changed ZERO picks in this bucket, so every bootstrap draw of the paired delta is exactly 0 and the standard error is degenerate by construction (the recorder refuses a zero standard_error, so the field is omitted). probability_positive is 0.5, the correct value for a no-op under nfl_ats.evidence_conventions.probability_positive_from_draws. Nothing is closed by a no-op.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025). Picks changed: 0. Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are changed none of the 74 games with a 7-point line, so the model's own picks were identical there.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": null
+    },
+    "spread_hole_r1_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.1667, -0.4975] accuracy points reaches or crosses zero; probability_positive 0.0083. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -2.0618556701,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -4.1666666667,
+        -0.4975124378
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 4.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 51.5% to 49.5% right against the opening line on lines of 7.5-10 in 2020-25, changing 4 picks; about 1% likely to help.",
+      "probability_positive": 0.008325,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.9855671799
+    },
+    "spread_hole_r1_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.9862, 0.1965] accuracy points reaches or crosses zero; probability_positive 0.0893. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
+      "effect": -0.3992015968,
+      "effect_units": "accuracy_points",
+      "family": "mod18_spread_hole_v1",
+      "interval": [
+        -0.9861932939,
+        0.1964636542
+      ],
+      "league": "nfl",
+      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 22.",
+      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 54.6% to 54.2% right against the opening line overall in 2020-25, changing 22 picks; about 9% likely to help.",
+      "probability_positive": 0.08935,
+      "recorded_at": "2026-09-09",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
+      "standard_error": 0.2950109296
     },
     "st_player_rating_reliability": {
       "category": "onfield",
@@ -122803,566 +123699,6 @@
       ],
       "source": "artifacts/xlg06_stage2_nfl/20260903T170528Z/results.json",
       "standard_error": null
-    },
-    "spread_hole_c1_card_0_6p5_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-3.3333, 0.0919] accuracy points reaches or crosses zero; probability_positive 0.0323. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -1.6304347826,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -3.3333333333,
-        0.0919159964
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 96.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 57.6% to 56.0% right against the opening line on lines of 0-6.5 in 2020-25, changing 96 picks; about 3% likely to help.",
-      "probability_positive": 0.03235,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 107,
-      "sample_games": 1104,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.8725990816
-    },
-    "spread_hole_c1_card_10p5plus_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-7.7519, 0.0000] accuracy points reaches or crosses zero; probability_positive 0.0224. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 10.5+, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -3.8167938931,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -7.7519379845,
-        0.0
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 7.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 51.1% to 47.3% right against the opening line on lines of 10.5+ in 2020-25, changing 7 picks; about 2% likely to help.",
-      "probability_positive": 0.022375,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 77,
-      "sample_games": 131,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 1.9472933632
-    },
-    "spread_hole_c1_card_7_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-2.9412, 5.7143] accuracy points reaches or crosses zero; probability_positive 0.7103. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": 1.3513513514,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -2.9411764706,
-        5.7142857143
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 3.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 50.0% to 51.4% right against the opening line on lines of 7 in 2020-25, changing 3 picks; about 71% likely to help.",
-      "probability_positive": 0.7103,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 56,
-      "sample_games": 74,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 2.2908039767
-    },
-    "spread_hole_c1_card_7p5_10_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-2.2857, 1.0811] accuracy points reaches or crosses zero; probability_positive 0.2909. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -0.5154639175,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -2.2857142857,
-        1.0810810811
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 3.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 51.5% to 51.0% right against the opening line on lines of 7.5-10 in 2020-25, changing 3 picks; about 29% likely to help.",
-      "probability_positive": 0.2909,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 91,
-      "sample_games": 194,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.8896686659
-    },
-    "spread_hole_c1_card_overall_2020_2025": {
-      "category": "modeling",
-      "classification": "refuted_mechanism",
-      "classification_evidence": "Week-blocked interval [-2.8686, -0.1993] accuracy points sits entirely below zero, and the season-blocked interval [-2.7116, -0.3356] does too: a RESOLVED wrong sign for this arm as a replacement for the played card, which is the one admissible closing ground here. Sub-bucket cells of the same window stay unresolved.",
-      "closing_ground": "wrong_sign_resolved",
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -1.5302727878,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -2.8685790527,
-        -0.1993355482
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 109.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 55.9% to 54.4% right against the opening line overall in 2020-25, changing 109 picks; about 1% likely to help.",
-      "probability_positive": 0.01195,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 107,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.6803645207
-    },
-    "spread_hole_c1_standalone_0_6p5_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-4.1591, -0.0891] accuracy points reaches or crosses zero; probability_positive 0.0222. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -2.0833333333,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -4.1591398422,
-        -0.0891245756
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 131.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 56.2% to 54.1% right against the opening line on lines of 0-6.5 in 2020-25, changing 131 picks; about 2% likely to help.",
-      "probability_positive": 0.0222,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 107,
-      "sample_games": 1104,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 1.0444493291
-    },
-    "spread_hole_c1_standalone_10p5plus_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-8.7591, 0.8065] accuracy points reaches or crosses zero; probability_positive 0.0604. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 10.5+, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -3.8167938931,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -8.7591240876,
-        0.8064516129
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 11.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 47.3% to 43.5% right against the opening line on lines of 10.5+ in 2020-25, changing 11 picks; about 6% likely to help.",
-      "probability_positive": 0.06035,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 77,
-      "sample_games": 131,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 2.4751672789
-    },
-    "spread_hole_c1_standalone_7_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-4.0000, 8.9744] accuracy points reaches or crosses zero; probability_positive 0.7935. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": 2.7027027027,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -4.0,
-        8.9743589744
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 8.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 51.4% to 54.1% right against the opening line on lines of 7 in 2020-25, changing 8 picks; about 79% likely to help.",
-      "probability_positive": 0.793475,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 56,
-      "sample_games": 74,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 3.222998384
-    },
-    "spread_hole_c1_standalone_7p5_10_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-3.1414, 0.9901] accuracy points reaches or crosses zero; probability_positive 0.1595. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -1.0309278351,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -3.1413612565,
-        0.9900990099
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 4.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 51.5% to 50.5% right against the opening line on lines of 7.5-10 in 2020-25, changing 4 picks; about 16% likely to help.",
-      "probability_positive": 0.15945,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 91,
-      "sample_games": 194,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 1.0252340298
-    },
-    "spread_hole_c1_standalone_overall_2020_2025": {
-      "category": "modeling",
-      "classification": "refuted_mechanism",
-      "classification_evidence": "Week-blocked interval [-3.4853, -0.2677] accuracy points sits entirely below zero, and the season-blocked interval [-3.0423, -0.8898] does too: a RESOLVED wrong sign for this arm as a replacement for the played card, which is the one admissible closing ground here. Sub-bucket cells of the same window stay unresolved.",
-      "closing_ground": "wrong_sign_resolved",
-      "description": "MOD-18 lane F arm C1: eight home-oriented row-local spread-regime ridge features (signed bucket indicators, signed |spread|, signed distance to 3/7/10/14), alpha 10; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -1.8629407851,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -3.4852546917,
-        -0.2677331399
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 154.",
-      "plain_summary": "Telling the model how big the spread is, in more detail moved the card from 54.6% to 52.7% right against the opening line overall in 2020-25, changing 154 picks; about 1% likely to help.",
-      "probability_positive": 0.0106,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 107,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.8174872824
-    },
-    "spread_hole_r1_card_0_6p5_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-0.4656, 0.5218] accuracy points reaches or crosses zero; probability_positive 0.4992. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": 0.0,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -0.4655601951,
-        0.5217732459
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 10.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 57.6% to 57.6% right against the opening line on lines of 0-6.5 in 2020-25, changing 10 picks; about 50% likely to help.",
-      "probability_positive": 0.4992,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 107,
-      "sample_games": 1104,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.2545560437
-    },
-    "spread_hole_r1_card_10p5plus_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-2.2727, 2.2727] accuracy points reaches or crosses zero; probability_positive 0.5039. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 10.5+, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": 0.0,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -2.2727272727,
-        2.2727272727
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 2.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 51.1% to 51.1% right against the opening line on lines of 10.5+ in 2020-25, changing 2 picks; about 50% likely to help.",
-      "probability_positive": 0.503925,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 77,
-      "sample_games": 131,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 1.0924830481
-    },
-    "spread_hole_r1_card_7_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Exact dead heat: the arm changed ZERO picks in this bucket, so every bootstrap draw of the paired delta is exactly 0 and the standard error is degenerate by construction (the recorder refuses a zero standard_error, so the field is omitted). probability_positive is 0.5, the correct value for a no-op under nfl_ats.evidence_conventions.probability_positive_from_draws. Nothing is closed by a no-op.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": 0.0,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        0.0,
-        0.0
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025). Picks changed: 0. Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are changed none of the 74 games with a 7-point line, so the card was identical there.",
-      "probability_positive": 0.5,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 56,
-      "sample_games": 74,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": null
-    },
-    "spread_hole_r1_card_7p5_10_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-3.4826, 0.0000] accuracy points reaches or crosses zero; probability_positive 0.0240. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -1.5463917526,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -3.4825870647,
-        0.0
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 3.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 51.5% to 50.0% right against the opening line on lines of 7.5-10 in 2020-25, changing 3 picks; about 2% likely to help.",
-      "probability_positive": 0.024,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 91,
-      "sample_games": 194,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.8793664682
-    },
-    "spread_hole_r1_card_overall_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-0.6689, 0.2665] accuracy points reaches or crosses zero; probability_positive 0.2056. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -0.1996007984,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -0.6688963211,
-        0.2664890073
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 15.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 55.9% to 55.7% right against the opening line overall in 2020-25, changing 15 picks; about 21% likely to help.",
-      "probability_positive": 0.2056,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 107,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.2394164161
-    },
-    "spread_hole_r1_standalone_0_6p5_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-0.9083, 0.3656] accuracy points reaches or crosses zero; probability_positive 0.2014. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 0-6.5, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -0.2717391304,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -0.9082652134,
-        0.365630713
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 15.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 56.2% to 55.9% right against the opening line on lines of 0-6.5 in 2020-25, changing 15 picks; about 20% likely to help.",
-      "probability_positive": 0.20145,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 107,
-      "sample_games": 1104,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.3240941304
-    },
-    "spread_hole_r1_standalone_10p5plus_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-1.6129, 3.4783] accuracy points reaches or crosses zero; probability_positive 0.7139. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 10.5+, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": 0.7633587786,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -1.6129032258,
-        3.4782608696
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 3.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 47.3% to 48.1% right against the opening line on lines of 10.5+ in 2020-25, changing 3 picks; about 71% likely to help.",
-      "probability_positive": 0.7139,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 77,
-      "sample_games": 131,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 1.335045528
-    },
-    "spread_hole_r1_standalone_7_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Exact dead heat: the arm changed ZERO picks in this bucket, so every bootstrap draw of the paired delta is exactly 0 and the standard error is degenerate by construction (the recorder refuses a zero standard_error, so the field is omitted). probability_positive is 0.5, the correct value for a no-op under nfl_ats.evidence_conventions.probability_positive_from_draws. Nothing is closed by a no-op.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of exactly 7, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": 0.0,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        0.0,
-        0.0
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025). Picks changed: 0. Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are changed none of the 74 games with a 7-point line, so the model's own picks were identical there.",
-      "probability_positive": 0.5,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 56,
-      "sample_games": 74,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": null
-    },
-    "spread_hole_r1_standalone_7p5_10_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-4.1667, -0.4975] accuracy points reaches or crosses zero; probability_positive 0.0083. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, on lines of 7.5-10, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -2.0618556701,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -4.1666666667,
-        -0.4975124378
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 4.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 51.5% to 49.5% right against the opening line on lines of 7.5-10 in 2020-25, changing 4 picks; about 1% likely to help.",
-      "probability_positive": 0.008325,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 91,
-      "sample_games": 194,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.9855671799
-    },
-    "spread_hole_r1_standalone_overall_2020_2025": {
-      "category": "modeling",
-      "classification": "unresolved_below_power",
-      "classification_evidence": "Week-blocked interval [-0.9862, 0.1965] accuracy points reaches or crosses zero; probability_positive 0.0893. No reliability floor and no positive control bound this cell, so it is unresolved, not closed.",
-      "closing_ground": null,
-      "description": "MOD-18 lane F arm R1: the six season-form columns replaced by their residual after a walk-forward regression on the game's own spread, removing the line's linear share from that block; paired forced-pick accuracy on the model's own picks before the card versus the active model c657058903f3232b at the OPENER, overall, on the 1,537-game archive (1,503 non-push), each arm serving its own walk-forward S3 home-side offsets.",
-      "effect": -0.3992015968,
-      "effect_units": "accuracy_points",
-      "family": "mod18_spread_hole_v1",
-      "interval": [
-        -0.9861932939,
-        0.1964636542
-      ],
-      "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes H, K and L; the R1 arm was motivated by a decomposition computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1,537 games). Week-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Picks changed: 22.",
-      "plain_summary": "Stopping the model from double-counting how good the teams are, which the spread already says moved the card from 54.6% to 54.2% right against the opening line overall in 2020-25, changing 22 picks; about 9% likely to help.",
-      "probability_positive": 0.08935,
-      "recorded_at": "2026-09-09",
-      "reliability": null,
-      "sample_blocks": 107,
-      "sample_games": 1503,
-      "seasons": [
-        2020,
-        2025
-      ],
-      "source": "artifacts/spread_hole_diagnosis/20260909T212843Z/arms/arm_results.json; docs/spread_hole_diagnosis.md",
-      "standard_error": 0.2950109296
     }
   },
   "version": 1

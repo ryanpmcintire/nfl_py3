@@ -2650,6 +2650,10 @@ _CHALLENGER_BLURBS: dict[str, str] = {
         "The former card keeps its mid-spread fade alongside coach, division revenge "
         "and player-arrest adjustments, measured against the current card on the same games."
     ),
+    "overlay_three_member_union_retired_20260909": (
+        "The former card used only the coach, division revenge and player-arrest "
+        "adjustments, measured against the current card on the same games."
+    ),
     "spread_gap_zone_fade_overlay": (
         "Flips every pick where the market's spread sits between 7.5 and 10 points, "
         "regardless of which side the model liked. This unexplained threshold flip "

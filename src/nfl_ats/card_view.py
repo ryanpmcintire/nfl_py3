@@ -61,6 +61,7 @@ from nfl_ats.coach_fade_overlay import (
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
 from nfl_ats.four_overlay_composition import (
+    FAIL_CLOSED_MEMBERS,
     FourOverlayCompositionResult,
     apply_four_overlay_composition_for_publication,
 )
@@ -402,7 +403,8 @@ def resolve_card_view(
             disabled = [
                 member.member_id
                 for member in production_overlay.members
-                if member.status != "applied" or not member.enabled
+                if member.member_id in FAIL_CLOSED_MEMBERS
+                and (member.status != "applied" or not member.enabled)
             ]
             if disabled:
                 raise DataContractError(

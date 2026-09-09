@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T21:57:51.372156+00:00`
+Refreshed at: `2026-09-09T22:34:34.941660+00:00`
 
 ## Start here
 
@@ -20,10 +20,29 @@ Refreshed at: `2026-09-09T21:57:51.372156+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `eae9fb449f50` — The big-spread hole, explained: the results family leans favourite-ward +0.5 to +4.2 pts as the line grows and the rest nearly cancels it; the mapping cannot move a forced pick; C1 spread-regime refit -1.53 pts through the card (resolved wrong sign), R1 orthogonalised form -0.20 P+ 0.21; 20 cells recorded
-- Pending change set: 2 paths
-  - ` M artifacts/prospective/challengers.json`
+- Baseline commit: `cf3375f2a0e1` — Registry: the twenty spread-hole cells from the diagnosis lane
+- Pending change set: 32 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `A  docs/rookie_crew_reconciliation.md`
+  - `A  docs/unserved_tilt_marginals.md`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260909T220047Z.json`
   - `M  registry/weak_signals.json`
+  - `M  scripts/best_pick_deadline_renomination_eval.py`
+  - `M  scripts/capture_scheduler.py`
+  - `A  scripts/rookie_crew_reconciliation_eval.py`
+  - `A  scripts/rookie_crew_wiring_isolation.py`
+  - `A  scripts/unserved_tilt_marginals.py`
+  - `M  src/nfl_ats/card_view.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - ...and 12 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -37,13 +56,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260909T183120Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-09T18:26:45.306207+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-09T22:00:47.601862+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T20:28:14.938666+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T22:23:20.587786+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

@@ -500,7 +500,7 @@ def test_publication_helper_builds_required_production_sources(tmp_path: Path) -
     )
 
     assert result["decision_policy_id"] == (
-        "overlay_union_coach_division_revenge_player_arrests_v2"
+        "overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3"
     )
     assert result["overlay_enabled"] is True
     assert result["overlay_flip_count"] == 0

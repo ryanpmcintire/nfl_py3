@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -26,9 +27,30 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from nfl_ats.bye_edge_fade_overlay import POST_BYE_GAP_DAYS, apply_bye_edge_fade_overlay
 from nfl_ats.coach_fade_overlay import OVERLAY_WEEK_MAX, apply_coach_fade_overlay
 from nfl_ats.data import DataContractError
 from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
+from nfl_ats.forecast_cold_visitor_tilt_overlay import (
+    STATION_MAP_RELATIVE_PATH,
+    TEMP_GAP_THRESHOLD_F,
+    apply_forecast_cold_visitor_tilt_overlay,
+    fetch_tuesday_noon_forecast_temps_fail_open,
+)
+from nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay import (
+    HIGH_TOTAL_THRESHOLD,
+    PRECIP_PROB_THRESHOLD_PCT,
+    apply_precip_high_total_tilt_overlay,
+)
+from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
+    fetch_kickoff_nearest_forecasts_fail_open,
+    games_for_forecast_fetch,
+)
+from nfl_ats.interim_hc_first_game_tilt_overlay import apply_interim_hc_first_game_tilt_overlay
+from nfl_ats.pbp08_protection_mismatch_tilt_overlay import (
+    apply_pbp08_protection_mismatch_tilt,
+    flags_for_week_fail_open,
+)
 from nfl_ats.player_arrests_back_side_overlay import (
     MAX_SNAPSHOT_AGE,
     WINDOW_DAYS,
@@ -36,19 +58,47 @@ from nfl_ats.player_arrests_back_side_overlay import (
     apply_player_arrests_back_side_overlay,
     load_latest_complete_arrest_snapshot,
 )
+from nfl_ats.tank_zone_fade_tilt_overlay import (
+    OVERLAY_WEEK_MAX as TANK_ZONE_WEEK_MAX,
+)
+from nfl_ats.tank_zone_fade_tilt_overlay import (
+    OVERLAY_WEEK_MIN as TANK_ZONE_WEEK_MIN,
+)
+from nfl_ats.tank_zone_fade_tilt_overlay import (
+    apply_tank_zone_fade_tilt_overlay,
+)
 
-POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_v2"
+POLICY_ID = "overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3"
 INCUMBENT_CHALLENGER_ID = "overlay_production_chain_coach_arrest_incumbent"
+RETIRED_THREE_MEMBER_CHALLENGER_ID = "overlay_three_member_union_retired_20260909"
 
 COACH_FADE = "coach_fade"
 DIVISION_REVENGE_TILT = "division_revenge_tilt"
 PLAYER_ARRESTS_BACK_SIDE_POLICY = "player_arrests_back_side_policy"
+BYE_EDGE_FADE = "bye_edge_fade"
+FORECAST_COLD_VISITOR_TILT = "forecast_cold_visitor_tilt"
+PBP08_PROTECTION_MISMATCH_TILT = "pbp08_protection_mismatch_tilt"
+INTERIM_HC_FIRST_GAME_TILT = "interim_hc_first_game_tilt"
+TANK_ZONE_FADE_TILT = "tank_zone_fade_tilt"
+PRECIP_HIGH_TOTAL_TILT = "precip_high_total_tilt"
 SPREAD_GAP_ZONE_FADE = "spread_gap_zone_fade"
 
 COMPOSITION_ORDER = (
     COACH_FADE,
     DIVISION_REVENGE_TILT,
     PLAYER_ARRESTS_BACK_SIDE_POLICY,
+    BYE_EDGE_FADE,
+    FORECAST_COLD_VISITOR_TILT,
+    PBP08_PROTECTION_MISMATCH_TILT,
+    INTERIM_HC_FIRST_GAME_TILT,
+    TANK_ZONE_FADE_TILT,
+    PRECIP_HIGH_TOTAL_TILT,
+)
+
+INPUT_UNAVAILABLE_STATUS = "disabled_input_unavailable"
+
+FAIL_CLOSED_MEMBERS: frozenset[str] = frozenset(
+    {COACH_FADE, DIVISION_REVENGE_TILT, PLAYER_ARRESTS_BACK_SIDE_POLICY}
 )
 
 MEMBER_REGISTRY_EVIDENCE: dict[str, tuple[str, ...]] = {
@@ -58,6 +108,32 @@ MEMBER_REGISTRY_EVIDENCE: dict[str, tuple[str, ...]] = {
         "bias_battery_division_revenge_game_opener",
     ),
     PLAYER_ARRESTS_BACK_SIDE_POLICY: ("player_arrests_recent_14d_back_side_policy_opener",),
+    BYE_EDGE_FADE: (
+        "bye_overval_fade_full_slate_post2011",
+        "unserved_tilt_on_played_card_bye_edge_fade_overlay",
+    ),
+    FORECAST_COLD_VISITOR_TILT: (
+        "forecast_weather_temp_gap_cold_visitor",
+        "weather_followup_temp_gap_cold_visitor",
+        "unserved_tilt_on_played_card_forecast_cold_visitor_tilt_overlay",
+    ),
+    PBP08_PROTECTION_MISMATCH_TILT: (
+        "pbp08_protection_mismatch",
+        "unserved_tilt_on_played_card_pbp08_protection_mismatch_tilt_overlay",
+    ),
+    INTERIM_HC_FIRST_GAME_TILT: (
+        "interim_hc_first_game",
+        "unserved_tilt_on_played_card_interim_hc_first_game_tilt_overlay",
+    ),
+    TANK_ZONE_FADE_TILT: (
+        "motivation_ladder_tank_zone_wk14_18",
+        "unserved_tilt_on_played_card_tank_zone_fade_tilt_overlay",
+    ),
+    PRECIP_HIGH_TOTAL_TILT: (
+        "forecast_weather_kn_precip_high_total_full",
+        "forecast_weather_kn_precip_high_total_pre2020",
+        "unserved_tilt_on_played_card_forecast_weather_kn_precip_high_total_tilt_overlay",
+    ),
 }
 
 
@@ -107,6 +183,69 @@ def policy_definition() -> dict[str, Any]:
                     "sole_affected_side_only": True,
                 },
                 "production_error_contract": "fail_closed",
+            },
+            {
+                "member_id": BYE_EDGE_FADE,
+                "implementation": "nfl_ats.bye_edge_fade_overlay.apply_bye_edge_fade_overlay",
+                "parameters": {"enabled": True, "post_bye_gap_days": POST_BYE_GAP_DAYS},
+                "production_error_contract": "propagate",
+            },
+            {
+                "member_id": FORECAST_COLD_VISITOR_TILT,
+                "implementation": (
+                    "nfl_ats.forecast_cold_visitor_tilt_overlay."
+                    "apply_forecast_cold_visitor_tilt_overlay"
+                ),
+                "parameters": {
+                    "enabled": True,
+                    "temp_gap_threshold_f": TEMP_GAP_THRESHOLD_F,
+                    "cutoff_mode": "tuesday_noon",
+                },
+                "production_error_contract": "missing_forecast_disables_member",
+            },
+            {
+                "member_id": PBP08_PROTECTION_MISMATCH_TILT,
+                "implementation": (
+                    "nfl_ats.pbp08_protection_mismatch_tilt_overlay."
+                    "apply_pbp08_protection_mismatch_tilt"
+                ),
+                "parameters": {"enabled": True},
+                "production_error_contract": "missing_flags_disables_member",
+            },
+            {
+                "member_id": INTERIM_HC_FIRST_GAME_TILT,
+                "implementation": (
+                    "nfl_ats.interim_hc_first_game_tilt_overlay."
+                    "apply_interim_hc_first_game_tilt_overlay"
+                ),
+                "parameters": {"enabled": True},
+                "production_error_contract": "missing_repo_root_disables_member",
+            },
+            {
+                "member_id": TANK_ZONE_FADE_TILT,
+                "implementation": (
+                    "nfl_ats.tank_zone_fade_tilt_overlay.apply_tank_zone_fade_tilt_overlay"
+                ),
+                "parameters": {
+                    "enabled": True,
+                    "week_min": TANK_ZONE_WEEK_MIN,
+                    "week_max": TANK_ZONE_WEEK_MAX,
+                },
+                "production_error_contract": "propagate",
+            },
+            {
+                "member_id": PRECIP_HIGH_TOTAL_TILT,
+                "implementation": (
+                    "nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay."
+                    "apply_precip_high_total_tilt_overlay"
+                ),
+                "parameters": {
+                    "enabled": True,
+                    "precip_prob_threshold_pct": PRECIP_PROB_THRESHOLD_PCT,
+                    "high_total_threshold": HIGH_TOTAL_THRESHOLD,
+                    "cutoff_mode": "kickoff_nearest",
+                },
+                "production_error_contract": "missing_forecast_disables_member",
             },
         ],
     }
@@ -229,12 +368,75 @@ def _member_provenance(
     )
 
 
+def _empty_temp_forecasts(raw: pd.DataFrame) -> pd.DataFrame:
+    return pd.DataFrame(
+        {"game_id": raw["game_id"].astype(str), "forecast_temp_f": np.nan}
+    ).reset_index(drop=True)
+
+
+def _empty_precip_forecasts(raw: pd.DataFrame) -> pd.DataFrame:
+    return pd.DataFrame(
+        {"game_id": raw["game_id"].astype(str), "forecast_precip_prob_pct": np.nan}
+    ).reset_index(drop=True)
+
+
+def _empty_protection_flags() -> pd.DataFrame:
+    return pd.DataFrame(columns=["game_id", "back_side"])
+
+
+@dataclass(frozen=True)
+class _DisabledMemberResult:
+    """A member that never ran, shaped like the overlay result it stands in for."""
+
+    overlaid_predictions: pd.DataFrame
+    flips: tuple[Any, ...]
+    enabled: bool
+
+
+def _guarded_member(
+    member_id: str,
+    order: int,
+    raw: pd.DataFrame,
+    apply: Callable[[bool], Any],
+    *,
+    available: bool,
+) -> MemberProvenance:
+    """Run one added member, disabling it rather than raising on a missing input."""
+
+    disabled = _DisabledMemberResult(raw.reset_index(drop=True).copy(), (), False)
+    if not available:
+        return _member_provenance(
+            member_id,
+            order,
+            disabled,
+            raw,
+            status=INPUT_UNAVAILABLE_STATUS,
+            detail=f"{member_id} received no usable input and contributed no flips",
+        )
+    try:
+        result = apply(True)
+    except DataContractError as error:
+        return _member_provenance(
+            member_id,
+            order,
+            disabled,
+            raw,
+            status="disabled_contract_error",
+            detail=str(error),
+        )
+    return _member_provenance(member_id, order, result, raw)
+
+
 def apply_four_overlay_composition(
     predictions: pd.DataFrame,
     schedules: pd.DataFrame,
     incidents: pd.DataFrame,
     *,
     arrest_snapshot: ArrestSnapshot,
+    forecasts_tuesday_noon: pd.DataFrame | None = None,
+    forecasts_kickoff_nearest: pd.DataFrame | None = None,
+    protection_flags: pd.DataFrame | None = None,
+    repo_root: Path | None = None,
 ) -> FourOverlayCompositionResult:
     """Apply the frozen joint-OR policy using already-loaded, frozen inputs.
 
@@ -243,6 +445,12 @@ def apply_four_overlay_composition(
     once, so overlaps agree instead of cancelling.  The year-1 coach member
     retains its established production fail-open behavior for
     :class:`DataContractError`; all other member errors propagate.
+
+    The six members added 2026-09-09 each need an input this function cannot
+    load for itself.  A caller that has nothing to supply passes ``None`` and
+    that member is reported as ``disabled_input_unavailable`` with zero flips,
+    which is how a research caller with a miniature fixture schedule gets a
+    well-defined card instead of an exception.
     """
 
     required = {
@@ -295,6 +503,81 @@ def apply_four_overlay_composition(
     arrests = apply_player_arrests_back_side_overlay(raw, incidents)
     member_rows.append(_member_provenance(PLAYER_ARRESTS_BACK_SIDE_POLICY, 2, arrests, raw))
 
+    member_rows.append(
+        _guarded_member(
+            BYE_EDGE_FADE,
+            3,
+            raw,
+            lambda enabled: apply_bye_edge_fade_overlay(raw, schedules, enabled=enabled),
+            available=True,
+        )
+    )
+    member_rows.append(
+        _guarded_member(
+            FORECAST_COLD_VISITOR_TILT,
+            4,
+            raw,
+            lambda enabled: apply_forecast_cold_visitor_tilt_overlay(
+                raw,
+                schedules,
+                forecasts_tuesday_noon
+                if forecasts_tuesday_noon is not None
+                else _empty_temp_forecasts(raw),
+                enabled=enabled,
+            ),
+            available=forecasts_tuesday_noon is not None,
+        )
+    )
+    member_rows.append(
+        _guarded_member(
+            PBP08_PROTECTION_MISMATCH_TILT,
+            5,
+            raw,
+            lambda enabled: apply_pbp08_protection_mismatch_tilt(
+                raw,
+                protection_flags if protection_flags is not None else _empty_protection_flags(),
+                enabled=enabled,
+            ),
+            available=protection_flags is not None,
+        )
+    )
+    member_rows.append(
+        _guarded_member(
+            INTERIM_HC_FIRST_GAME_TILT,
+            6,
+            raw,
+            lambda enabled: apply_interim_hc_first_game_tilt_overlay(
+                raw, repo_root if repo_root is not None else Path("."), enabled=enabled
+            ),
+            available=repo_root is not None,
+        )
+    )
+    member_rows.append(
+        _guarded_member(
+            TANK_ZONE_FADE_TILT,
+            7,
+            raw,
+            lambda enabled: apply_tank_zone_fade_tilt_overlay(raw, schedules, enabled=enabled),
+            available=True,
+        )
+    )
+    member_rows.append(
+        _guarded_member(
+            PRECIP_HIGH_TOTAL_TILT,
+            8,
+            raw,
+            lambda enabled: apply_precip_high_total_tilt_overlay(
+                raw,
+                schedules,
+                forecasts_kickoff_nearest
+                if forecasts_kickoff_nearest is not None
+                else _empty_precip_forecasts(raw),
+                enabled=enabled,
+            ),
+            available=forecasts_kickoff_nearest is not None and "total_line" in raw.columns,
+        )
+    )
+
     flips_by_game: dict[str, list[str]] = {}
     for member in member_rows:
         for game_id in member.flipped_game_ids:
@@ -332,45 +615,117 @@ def apply_four_overlay_composition(
     )
 
 
+def protection_flags_for_card(predictions: pd.DataFrame, data_root: Path) -> pd.DataFrame:
+    """The PBP-08 lean table for every (season, week) on the card, fail-open."""
+
+    weeks = (
+        predictions[["season", "week"]]
+        .dropna()
+        .astype(int)
+        .drop_duplicates()
+        .sort_values(["season", "week"])
+    )
+    frames = [
+        flags_for_week_fail_open(data_root, season=int(str(row.season)), week=int(str(row.week)))
+        for row in weeks.itertuples()
+    ]
+    frames = [frame for frame in frames if not frame.empty]
+    if not frames:
+        return _empty_protection_flags()
+    return pd.concat(frames, ignore_index=True)
+
+
+def forecasts_for_card(
+    predictions: pd.DataFrame, schedules: pd.DataFrame, registry_root: Path
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Tuesday-noon and kickoff-nearest forecasts for the card, both fail-open.
+
+    Every failure mode of the two fetches is already folded into an all-NaN
+    frame by their own wrappers, which reads downstream as "no game flagged".
+    Neither weather member can block a publish.
+    """
+
+    if "kickoff" not in predictions.columns:
+        return _empty_temp_forecasts(predictions), _empty_precip_forecasts(predictions)
+    try:
+        games = games_for_forecast_fetch(predictions, schedules)
+    except (KeyError, ValueError, DataContractError):
+        return _empty_temp_forecasts(predictions), _empty_precip_forecasts(predictions)
+    station_map_path = registry_root / STATION_MAP_RELATIVE_PATH
+    tuesday = fetch_tuesday_noon_forecast_temps_fail_open(games, station_map_path)
+    kickoff_nearest = fetch_kickoff_nearest_forecasts_fail_open(games, station_map_path)
+    return tuesday, kickoff_nearest
+
+
 def apply_four_overlay_composition_for_publication(
     predictions: pd.DataFrame,
     schedules: pd.DataFrame,
     data_root: Path,
     *,
     now: datetime | None = None,
+    repo_root: Path | None = None,
+    forecasts_tuesday_noon: pd.DataFrame | None = None,
+    forecasts_kickoff_nearest: pd.DataFrame | None = None,
 ) -> FourOverlayCompositionResult:
     """Load the mandatory fresh arrest input and apply the frozen policy.
 
     ``load_latest_complete_arrest_snapshot`` is intentionally outside a
     ``try`` block: every availability, completeness, freshness and integrity
     error fails closed before a publishable composition result can exist.
+    The six members added 2026-09-09 are the opposite posture by their own
+    module contracts -- each loads through a fail-open helper, so a missing
+    snapshot or a failed fetch reads as zero flips rather than a broken
+    publish. A caller that already fetched the weather may pass it in so the
+    network is not hit twice.
     """
 
     snapshot = load_latest_complete_arrest_snapshot(data_root, now=now)
     incidents = pd.read_parquet(
         snapshot.safe_index_path, columns=["record_id", "incident_date", "team"]
     )
+    root = repo_root if repo_root is not None else data_root.resolve().parent
+    if forecasts_tuesday_noon is None or forecasts_kickoff_nearest is None:
+        fetched_tuesday, fetched_kickoff = forecasts_for_card(
+            predictions, schedules, root / "registry"
+        )
+        if forecasts_tuesday_noon is None:
+            forecasts_tuesday_noon = fetched_tuesday
+        if forecasts_kickoff_nearest is None:
+            forecasts_kickoff_nearest = fetched_kickoff
     return apply_four_overlay_composition(
         predictions,
         schedules,
         incidents,
         arrest_snapshot=snapshot,
+        forecasts_tuesday_noon=forecasts_tuesday_noon,
+        forecasts_kickoff_nearest=forecasts_kickoff_nearest,
+        protection_flags=protection_flags_for_card(predictions, data_root),
+        repo_root=root,
     )
 
 
 __all__ = [
+    "BYE_EDGE_FADE",
     "COACH_FADE",
     "COMPOSITION_ORDER",
     "DIVISION_REVENGE_TILT",
+    "FORECAST_COLD_VISITOR_TILT",
     "INCUMBENT_CHALLENGER_ID",
+    "INTERIM_HC_FIRST_GAME_TILT",
+    "PBP08_PROTECTION_MISMATCH_TILT",
     "PLAYER_ARRESTS_BACK_SIDE_POLICY",
     "POLICY_FINGERPRINT",
     "POLICY_ID",
+    "PRECIP_HIGH_TOTAL_TILT",
+    "RETIRED_THREE_MEMBER_CHALLENGER_ID",
     "SPREAD_GAP_ZONE_FADE",
+    "TANK_ZONE_FADE_TILT",
     "FourOverlayCompositionResult",
     "GameProvenance",
     "MemberProvenance",
     "apply_four_overlay_composition",
     "apply_four_overlay_composition_for_publication",
+    "forecasts_for_card",
     "policy_definition",
+    "protection_flags_for_card",
 ]

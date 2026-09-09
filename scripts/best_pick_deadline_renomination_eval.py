@@ -47,6 +47,7 @@ from nfl_ats.best_pick_nomination import (  # noqa: E402
     select_nominee,
 )
 from nfl_ats.clv import week_blocked_bootstrap  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 from nfl_ats.sharp_book_movement_features import (  # noqa: E402
     THRESHOLD,
     late_week_follow_frame,
@@ -429,9 +430,7 @@ def main() -> None:
         stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
         out_dir = args.repo / "artifacts" / FAMILY / stamp
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "summary.json").write_text(
-        json.dumps(summary, indent=2, default=str), encoding="utf-8"
-    )
+    write_stamped_artifact(json.loads(json.dumps(summary, default=str)), out_dir / "summary.json")
     weekly.to_parquet(out_dir / "weekly.parquet")
     weekly.to_csv(out_dir / "weekly.csv", index=False)
     print(f"\nWrote {out_dir}")

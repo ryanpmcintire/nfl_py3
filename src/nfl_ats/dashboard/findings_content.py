@@ -206,6 +206,9 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "overlay_four_member_union_retired_20260907": (
         "Former card: three rules plus the spread-gap flip"
     ),
+    "overlay_three_member_union_retired_20260909": (
+        "Former card: coach, division revenge and player-arrest rules only"
+    ),
     "era_weighted_half_life_8": "Era-weighted refit (half-life 8)",
     "forecast_cold_visitor_tilt": "Cold-visitor weather tilt",
     "forecast_weather_kn_warm_team_cold_late_tilt": "Warm-team cold-late weather tilt",
@@ -243,6 +246,8 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "best_pick_sunday_renomination": "Best Pick re-nominated Sunday morning",
     "tiebreaker_low_side_shade": "Tiebreaker guess shaded one point under",
 }
+
+
 MARKET_TEAM_FORM_MODEL_PCT = 51.1
 
 FULL_PLAYER_LAYER_PCT = 52.1

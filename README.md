@@ -13,7 +13,7 @@ and evaluates model choices with nested chronological walk-forward tests.
 
 Active model: weak stack (market residual). Its distinct close-graded chronological 2018-2025 evaluation classified **1,085 of 2,075 non-push games correctly (52.29%)**. The 95% range was 50.17%-54.34%. The model's baseline comparison is the separate opener-graded accuracy rule documented in `docs/opener_evaluation.md`.
 
-**Production policy active:** three situational rules run independently against the computer's first pick and flip it once when any one of them fires: coach fade, division revenge, and player arrests. This week they changed 2 picks. The spread-only threshold adjustment is retired because it has no explained mechanism. Its archive comparison reuses 127 similar combinations scored on the same games; it is not independent evidence of future accuracy. The planning estimate remains ≈55%. Paired prospective tracking against the former four-adjustment card begins at the Week 1 lock. Rules: coach fade, division revenge tilt, player arrests back side policy. See docs/spread_gap_zone_retired.md.
+**Production policy active:** three situational rules run independently against the computer's first pick and flip it once when any one of them fires: coach fade, division revenge, and player arrests. This week they changed 5 picks. The spread-only threshold adjustment is retired because it has no explained mechanism. Its archive comparison reuses 127 similar combinations scored on the same games; it is not independent evidence of future accuracy. The planning estimate remains ≈55%. Paired prospective tracking against the former four-adjustment card begins at the Week 1 lock. Rules: coach fade, division revenge tilt, player arrests back side policy, bye edge fade, forecast cold visitor tilt, pbp08 protection mismatch tilt, interim hc first game tilt, tank zone fade tilt, precip high total tilt. See docs/spread_gap_zone_retired.md.
 
 **Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games.
 
@@ -22,7 +22,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.2%            |
 | Thu, Sep 10 | SF at LA   | SF +3.5          | 55.6%            |
 | Sun, Sep 13 | ARI at LAC | ARI +9.5         | 64.2%            |
-| Sun, Sep 13 | ATL at PIT | ATL +3.5         | 55.9%            |
+| Sun, Sep 13 | ATL at PIT | PIT -3.5         | 55.9%            |
 | Sun, Sep 13 | BAL at IND | IND +3.5         | 55.4%            |
 | Sun, Sep 13 | BUF at HOU | HOU +1.5         | 54.2%            |
 | Sun, Sep 13 | CHI at CAR | CAR +2.5         | 51.6%            |
@@ -30,11 +30,11 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Sep 13 | DAL at NYG | DAL -2.5         | 50.2%            |
 | Sun, Sep 13 | GB at MIN  | MIN -1.5         | 54.1%            |
 | Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 56.1%            |
-| Sun, Sep 13 | NO at DET  | DET -6.5         | 52.3%            |
+| Sun, Sep 13 | NO at DET  | NO +6.5          | 52.3%            |
 | Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 51.6%            |
 | Sun, Sep 13 | TB at CIN  | CIN -3.5         | 50.9%            |
 | Sun, Sep 13 | WAS at PHI | WAS +5.5         | 63.3%            |
-| Mon, Sep 14 | DEN at KC  | KC -2.5          | 51.8%            |
+| Mon, Sep 14 | DEN at KC  | DEN +2.5         | 51.8%            |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -65,7 +65,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 4,399 results recorded -- 4,388 unresolved_below_power, 11 closed (11 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 4,411 results recorded -- 4,400 unresolved_below_power, 11 closed (11 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 436 declared research families -- 70 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 44 of 50 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

@@ -120,18 +120,30 @@ def test_policy_identity_and_joint_or_members_are_frozen() -> None:
         definition, sort_keys=True, separators=(",", ":"), ensure_ascii=True
     ).encode("utf-8")
 
-    assert composition.POLICY_ID == "overlay_union_coach_division_revenge_player_arrests_v2"
+    assert composition.POLICY_ID == (
+        "overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3"
+    )
     assert composition.INCUMBENT_CHALLENGER_ID == "overlay_production_chain_coach_arrest_incumbent"
+    assert (
+        composition.RETIRED_THREE_MEMBER_CHALLENGER_ID
+        == "overlay_three_member_union_retired_20260909"
+    )
     assert composition.COMPOSITION_ORDER == (
         "coach_fade",
         "division_revenge_tilt",
         "player_arrests_back_side_policy",
+        "bye_edge_fade",
+        "forecast_cold_visitor_tilt",
+        "pbp08_protection_mismatch_tilt",
+        "interim_hc_first_game_tilt",
+        "tank_zone_fade_tilt",
+        "precip_high_total_tilt",
     )
     assert definition["semantics"] == "joint_or_against_raw_card_complement_once"
     assert hashlib.sha256(encoded).hexdigest() == composition.POLICY_FINGERPRINT
     assert (
         composition.POLICY_FINGERPRINT
-        == "cc6bf21557dc28df26e2610a5d402eb46d730775e2c6911d965dd8c9a2ef2225"
+        == "4bc0cc7724ac0f82f5ce2dfac44a2485b486e4ff15e63af593f2d16fce956b35"
     )
 
 
@@ -174,6 +186,20 @@ def test_on_the_card_registry_names_flattens_every_member() -> None:
             "bias_battery_division_revenge_game",
             "bias_battery_division_revenge_game_opener",
             "player_arrests_recent_14d_back_side_policy_opener",
+            "bye_overval_fade_full_slate_post2011",
+            "unserved_tilt_on_played_card_bye_edge_fade_overlay",
+            "forecast_weather_temp_gap_cold_visitor",
+            "weather_followup_temp_gap_cold_visitor",
+            "unserved_tilt_on_played_card_forecast_cold_visitor_tilt_overlay",
+            "pbp08_protection_mismatch",
+            "unserved_tilt_on_played_card_pbp08_protection_mismatch_tilt_overlay",
+            "interim_hc_first_game",
+            "unserved_tilt_on_played_card_interim_hc_first_game_tilt_overlay",
+            "motivation_ladder_tank_zone_wk14_18",
+            "unserved_tilt_on_played_card_tank_zone_fade_tilt_overlay",
+            "forecast_weather_kn_precip_high_total_full",
+            "forecast_weather_kn_precip_high_total_pre2020",
+            "unserved_tilt_on_played_card_forecast_weather_kn_precip_high_total_tilt_overlay",
         }
     )
 
@@ -186,6 +212,12 @@ def test_composition_reuses_each_member_and_unions_its_flip_set() -> None:
         ("G_COACH",),
         ("G_DIV",),
         ("G_ARREST",),
+        (),
+        (),
+        (),
+        (),
+        (),
+        (),
     ]
     assert result.union_flipped_game_ids == (
         "G_COACH",
@@ -242,7 +274,7 @@ def test_members_are_evaluated_in_declared_order_against_the_same_raw_card(
 
     result = _apply()
 
-    assert tuple(member for member, _frame_id in calls) == composition.COMPOSITION_ORDER
+    assert tuple(member for member, _frame_id in calls) == composition.COMPOSITION_ORDER[:3]
     assert len({frame_id for _member, frame_id in calls}) == 1
     assert tuple(member.member_id for member in result.members) == composition.COMPOSITION_ORDER
 

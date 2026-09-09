@@ -1447,6 +1447,9 @@ _LEGACY_PAPER_DECISION_DEFAULTS: dict[str, Any] = {
 
 _FOUR_OVERLAY_POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1"
 _THREE_OVERLAY_POLICY_ID = "overlay_union_coach_division_revenge_player_arrests_v2"
+_NINE_OVERLAY_POLICY_ID = (
+    "overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3"
+)
 _COMPOSITION_POLICY_MEMBER_FLIPS: dict[str, tuple[str, ...]] = {
     _FOUR_OVERLAY_POLICY_ID: (
         "coach_fade_flip",
@@ -1455,6 +1458,14 @@ _COMPOSITION_POLICY_MEMBER_FLIPS: dict[str, tuple[str, ...]] = {
         "spread_gap_zone_flip",
     ),
     _THREE_OVERLAY_POLICY_ID: (
+        "coach_fade_flip",
+        "division_revenge_flip",
+        "player_arrests_flip",
+    ),
+}
+
+_PARTIAL_COMPOSITION_POLICY_MEMBER_FLIPS: dict[str, tuple[str, ...]] = {
+    _NINE_OVERLAY_POLICY_ID: (
         "coach_fade_flip",
         "division_revenge_flip",
         "player_arrests_flip",
@@ -1525,6 +1536,21 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
             raise DataContractError(
                 "Three-member composition rows must never carry a spread-gap zone flip "
                 "(retired from the played card 2026-09-07)"
+            )
+    for policy_id, member_columns in _PARTIAL_COMPOSITION_POLICY_MEMBER_FLIPS.items():
+        composed = ledger["decision_policy_id"].astype(str).eq(policy_id)
+        if not composed.any():
+            continue
+        member_flip = ledger.loc[composed, list(member_columns)].astype(bool).any(axis=1)
+        declared_flip = ledger.loc[composed, "composed_overlay_flip"].astype(bool)
+        observed_flip = (
+            ledger.loc[composed, "model_pick_side"]
+            .astype(str)
+            .ne(ledger.loc[composed, "pick_side"].astype(str))
+        )
+        if not observed_flip.equals(declared_flip) or bool((member_flip & ~declared_flip).any()):
+            raise DataContractError(
+                f"Composition rows for {policy_id} violate the raw-card OR-union invariant"
             )
     return ledger[list(PAPER_DECISION_COLUMNS)]
 

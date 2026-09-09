@@ -46,7 +46,7 @@ def _registry_root() -> Path:
 
 
 def _print_json(payload: dict[str, Any]) -> None:
-    print(json.dumps(payload, indent=2, sort_keys=True))
+    print(json.dumps(payload, indent=2, sort_keys=True, default=str))
 
 
 def _load_features(path: Path) -> pd.DataFrame:

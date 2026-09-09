@@ -2781,6 +2781,67 @@
       "status": "ACTIVE_PROSPECTIVE",
       "weekly_generation_command": "Uses the synchronized active forecast.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions"
+    },
+    {
+      "challenger_id": "overlay_three_member_union_retired_20260909",
+      "config_fingerprint": "bc77638d47e2748c",
+      "control_policy": {
+        "base_pick_rule": "home_cover_probability >= 0.5 selects HOME; otherwise AWAY",
+        "composition_rule": "Joint OR against the same model card; complement once when any member fires.",
+        "game_type": "REG",
+        "grade": "Tuesday opener decision line",
+        "members_in_order": [
+          "coach_fade",
+          "division_revenge_tilt",
+          "player_arrests_back_side_policy"
+        ],
+        "policy_schema_version": 1
+      },
+      "control_policy_configuration_sha256": "094be2fd66f0892488441179eb81f67b1eccdbec9f3ffedb4495cb3af450a428",
+      "control_policy_fingerprint": "094be2fd66f08924",
+      "control_policy_fingerprint_method": "nfl_ats.provenance.configuration_hash(control_policy); control_policy_fingerprint is the first 16 hexadecimal characters",
+      "correlation_and_reuse_warning": "Paired game-for-game with the nine-member played card and overlapping every standalone member overlay; never pool these rows as independent.",
+      "evidence": {
+        "grade": "opener",
+        "played_minus_control_accuracy_points": 0.998003992015968,
+        "played_nine_member_accuracy": 0.5688622754491018,
+        "promotion_reason": "Six registered tilt overlays were measured for the first time as marginals on top of this three-member card at the opener grade. Each of the six has week-blocked probability_positive above 0.5, and their joint OR scores +0.9980 accuracy points on 1,503 graded games (55.8882% -> 56.8862%), week-blocked 95% [-0.6618, +2.6560], probability_positive 0.8827 (season-blocked 0.9404). AGENTS.md's forced-pick rule plays the favoured side of that bet; the interval containing zero is not grounds to decline.",
+        "retired_three_member_accuracy": 0.5588822355289421,
+        "reuse_disclosure": "The archive comparison re-uses the same frozen 2020-2025 opener outcomes the composition study already scored. It motivates the expected-value decision; it is not fresh confirmation, and the member set was chosen by the sign of each member's own marginal on that same archive.",
+        "scored_games": 1503,
+        "season_block_interval_points": [
+          -0.3795066413662239,
+          2.269503546099291
+        ],
+        "season_block_probability_played_better": 0.940425,
+        "source": "artifacts/unserved_tilt_marginals/20260909T210338Z/result.json; docs/unserved_tilt_marginals.md",
+        "week_block_interval_points": [
+          -0.6618243258050235,
+          2.6560424966799467
+        ],
+        "week_block_probability_played_better": 0.8827
+      },
+      "known_gap": "Dedicated recorder reconstructs the retired union from the primary ledger's own coach/division/arrest member flip columns and the frozen model side; the generic prospective-record path is forbidden.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "prospective_protocol": "Track the retired three-member OR union against the nine-member played card at the same frozen Tuesday spread. Reconstruct from primary ledger inputs; complement the model side once. No new historical selection. See docs/unserved_tilt_marginals.md.",
+      "reader_summary": "The former card: coach, division revenge and player-arrest adjustments only, tracked against the current card on the same games.",
+      "registered_at_utc": "2026-09-09T00:00:00+00:00",
+      "registered_by": "Serving the six unserved tilt adjustments that beat the played card on expected value, 2026-09-09.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "Retired three-member union retained as a paired prospective challenger against the nine-member played card.",
+      "weekly_generation_command": "N/A -- reuses the synchronized active forecast and the primary ledger's frozen member flip columns.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_retired_three_member_union_decisions)"
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

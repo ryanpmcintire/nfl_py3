@@ -197,6 +197,7 @@ def sunday_pick_lock(kickoffs: pd.Series) -> pd.Timestamp:
 PRODUCTION_COMPOSITION_POLICY_IDS: tuple[str, ...] = (
     "overlay_union_coach_division_revenge_player_arrests_spread_gap_v1",
     "overlay_union_coach_division_revenge_player_arrests_v2",
+    "overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3",
 )
 
 
