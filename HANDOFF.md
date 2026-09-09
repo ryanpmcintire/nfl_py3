@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T23:49:55.602151+00:00`
+Refreshed at: `2026-09-09T23:53:02.291704+00:00`
 
 ## Start here
 
@@ -20,20 +20,16 @@ Refreshed at: `2026-09-09T23:49:55.602151+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `284f6723445c` — Ledger integrity: one command re-records every Tuesday ledger from a named forecast (scoped to pre-kickoff rows); the crash that silenced 23 arms at the lock is fixed and every recorder is fail-open with failures named in the result; 37 of 44 arms now hold Week 1 rows. Spread hole: group penalty, line-constrained and target-changed arms all lose through the card (T1 removes the lean and costs 0.67 pts); the 7.5-10 ceiling is +0.33 on the card at most. Era-weighted refit -1.73 through the card (resolved). Fade-the-public -1.15 P+ 0.23; heavy-handle side is the live direction.
-- Pending change set: 12 paths
-  - `A  docs/handle_follow_on_card.md`
-  - `A  docs/injury_signal_on_refresh_card.md`
-  - `A  docs/sharp_weighted_follow.md`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/lockday_verify.py`
-  - `A  scripts/sharp_weighted_follow.py`
-  - `A  scripts/sharp_weighted_follow_record.py`
-  - `A  scripts/sharp_weighted_follow_run_records.py`
-  - `M  src/nfl_ats/clv.py`
-  - `M  src/nfl_ats/four_overlay_incumbent.py`
-  - `M  src/nfl_ats/retired_four_member_union.py`
-  - `M  src/nfl_ats/retired_three_member_union.py`
+- Baseline commit: `6297bdc8a994` — Four more arms record: composition recorders accept every known composition policy id (the id bump orphaned three of them), mod07's standalone recorder is named in lockday_verify. Docs and scripts from the injury-tilt, handle-follow and sharp-book lanes.
+- Pending change set: 8 paths
+  - ` M CURRENT_PREDICTIONS.md`
+  - `A  docs/best_pick_bucket_confidence.md`
+  - `A  docs/served_card_harness.md`
+  - `A  scripts/best_pick_bucket_confidence_eval.py`
+  - `M  scripts/spread_hole_arms.py`
+  - `M  scripts/unserved_tilt_marginals.py`
+  - `M  src/nfl_ats/unserved_tilt_marginals.py`
+  - ` M tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -53,7 +49,7 @@ The 52.29% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T23:13:48.616141+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T23:49:50.538161+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

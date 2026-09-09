@@ -22,9 +22,23 @@ from nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay import (
 from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
     apply_warm_team_cold_late_tilt_overlay,
 )
+from nfl_ats.four_overlay_composition import (
+    BYE_EDGE_FADE,
+    COACH_FADE,
+    COMPOSITION_ORDER,
+    DIVISION_REVENGE_TILT,
+    FORECAST_COLD_VISITOR_TILT,
+    INTERIM_HC_FIRST_GAME_TILT,
+    PBP08_PROTECTION_MISMATCH_TILT,
+    PLAYER_ARRESTS_BACK_SIDE_POLICY,
+    POLICY_ID,
+    PRECIP_HIGH_TOTAL_TILT,
+    TANK_ZONE_FADE_TILT,
+)
 from nfl_ats.injury_value_tilt_overlay import apply_injury_value_tilt_overlay
 from nfl_ats.interim_hc_first_game_tilt_overlay import apply_interim_hc_first_game_tilt_overlay
 from nfl_ats.overlay_composition import (
+    DEFAULT_FEATURES,
     DEFAULT_INCIDENTS,
     blocked_bootstrap_matrix,
     build_delta_matrix,
@@ -50,6 +64,7 @@ from nfl_ats.pbp08_protection_mismatch_tilt_overlay import (
     latest_schedules as latest_pbp08_schedules,
 )
 from nfl_ats.provenance import sha256_file, write_stamped_artifact
+from nfl_ats.snapshots import latest_snapshot, load_snapshot
 from nfl_ats.special_teams_return_tilt_overlay import apply_special_teams_return_tilt_overlay
 from nfl_ats.spread_gap_zone_fade_overlay import apply_spread_gap_zone_fade_overlay
 from nfl_ats.surface_switch_tilt_overlay import apply_surface_switch_tilt_overlay
@@ -70,6 +85,10 @@ SERVED_MEMBERS: tuple[str, ...] = (
     "division_revenge_tilt",
     "player_arrests_back_side_policy",
 )
+
+SERVED_CARD_MEMBERS: tuple[str, ...] = COMPOSITION_ORDER
+
+CARD_CHOICES: tuple[str, ...] = ("served", "three")
 
 CANDIDATE_MEMBERS: tuple[str, ...] = (
     "tank_zone_fade_tilt_overlay",
@@ -322,6 +341,109 @@ def build_served_flip_set(
     return union, members
 
 
+def build_served_card_flip_sets(
+    predictions: pd.DataFrame,
+    schedules: pd.DataFrame,
+    per_game: pd.DataFrame,
+    data_root: Path,
+    repo_root: Path,
+    features: Path,
+    incidents: Path,
+) -> dict[str, set[str]]:
+    """Every member of the SERVED nine-member policy, on the opener archive."""
+
+    archive_ids = set(predictions["game_id"].astype(str))
+    total_lines = schedules[["game_id", "total_line"]].drop_duplicates("game_id")
+    with_total = predictions.merge(total_lines, on="game_id", how="left", validate="one_to_one")
+    forecasts_tue = pd.read_parquet(data_root / TUESDAY_NOON_ARCHIVE)
+    forecasts_kn = pd.read_parquet(data_root / KICKOFF_NEAREST_ARCHIVE)
+    pbp08_flags, _snapshot = build_pbp08_flag_table(data_root)
+    pbp08_flags = pbp08_flags.loc[pbp08_flags["game_id"].astype(str).isin(archive_ids)]
+
+    members: dict[str, set[str]] = {}
+
+    def register(name: str, result: Any, frame: pd.DataFrame) -> None:
+        ids = _flip_ids(result)
+        _verify_complement(frame, name, result, ids)
+        members[name] = ids
+
+    register(
+        COACH_FADE,
+        apply_coach_fade_overlay(predictions, schedules, enabled=True),
+        predictions,
+    )
+    register(
+        DIVISION_REVENGE_TILT,
+        apply_division_revenge_tilt_overlay(predictions, schedules, enabled=True),
+        predictions,
+    )
+    arrest_ids, _scored = reconstruct_arrest_flip_set(per_game, features, incidents)
+    members[PLAYER_ARRESTS_BACK_SIDE_POLICY] = {str(game_id) for game_id in arrest_ids}
+    register(
+        BYE_EDGE_FADE,
+        apply_bye_edge_fade_overlay(predictions, schedules),
+        predictions,
+    )
+    register(
+        FORECAST_COLD_VISITOR_TILT,
+        apply_forecast_cold_visitor_tilt_overlay(predictions, schedules, forecasts_tue),
+        predictions,
+    )
+    register(
+        PBP08_PROTECTION_MISMATCH_TILT,
+        apply_pbp08_protection_mismatch_tilt(predictions, pbp08_flags),
+        predictions,
+    )
+    register(
+        INTERIM_HC_FIRST_GAME_TILT,
+        apply_interim_hc_first_game_tilt_overlay(predictions, repo_root),
+        predictions,
+    )
+    register(
+        TANK_ZONE_FADE_TILT,
+        apply_tank_zone_fade_tilt_overlay(predictions, schedules),
+        predictions,
+    )
+    register(
+        PRECIP_HIGH_TOTAL_TILT,
+        apply_precip_high_total_tilt_overlay(with_total, schedules, forecasts_kn),
+        with_total,
+    )
+    missing = [name for name in SERVED_CARD_MEMBERS if name not in members]
+    if missing:
+        raise ValueError(f"served policy {POLICY_ID} members not built: {', '.join(missing)}")
+    return {name: members[name] for name in SERVED_CARD_MEMBERS}
+
+
+def served_card_flip_set(
+    per_game: pd.DataFrame,
+    *,
+    data_root: Path,
+    repo_root: Path,
+    features: Path = DEFAULT_FEATURES,
+    incidents: Path = DEFAULT_INCIDENTS,
+    schedules: pd.DataFrame | None = None,
+    card: str = "served",
+) -> tuple[set[str], dict[str, set[str]]]:
+    """OR-union flip set of the card actually played, on one opener archive."""
+
+    if card not in CARD_CHOICES:
+        raise ValueError(f"card must be one of {CARD_CHOICES}, got {card!r}")
+    if schedules is None:
+        snapshot = latest_snapshot(data_root / "raw")
+        schedules, _team_stats = load_snapshot(snapshot)
+    predictions = build_predictions_frame(per_game, schedules)
+    if card == "three":
+        return build_served_flip_set(predictions, schedules, per_game, features, incidents)
+    members = build_served_card_flip_sets(
+        predictions, schedules, per_game, data_root, repo_root, features, incidents
+    )
+    union: set[str] = set()
+    for ids in members.values():
+        union |= ids
+    return union, members
+
+
 def _season_rows(
     eval_frame: pd.DataFrame, valid_mask: np.ndarray, deltas: np.ndarray, column: int
 ) -> list[dict[str, Any]]:
@@ -350,19 +472,30 @@ def run_unserved_tilt_marginals(
     output_root: Path = DEFAULT_OUTPUT_ROOT,
     samples: int = DEFAULT_SAMPLES,
     seed: int = DEFAULT_SEED,
+    card: str = "served",
 ) -> dict[str, Any]:
     """Score every candidate tilt as a marginal on top of the played card."""
 
     started = perf_counter()
+    if card not in CARD_CHOICES:
+        raise ValueError(f"card must be one of {CARD_CHOICES}, got {card!r}")
     per_game_artifact = per_game_artifact.resolve()
     metadata = json.loads(per_game_artifact.with_name("metadata.json").read_text(encoding="utf-8"))
     per_game, schedules, player_features, snapshot_name, player_feature_path = load_inputs(
         per_game_artifact, data_root
     )
     predictions = build_predictions_frame(per_game, schedules)
-    served_ids, served_members = build_served_flip_set(
-        predictions, schedules, per_game, features, incidents
-    )
+    if card == "three":
+        served_ids, served_members = build_served_flip_set(
+            predictions, schedules, per_game, features, incidents
+        )
+    else:
+        served_members = build_served_card_flip_sets(
+            predictions, schedules, per_game, data_root, repo_root, features, incidents
+        )
+        served_ids = set()
+        for ids in served_members.values():
+            served_ids |= ids
     candidate_flips, candidate_notes = build_candidate_flip_sets(
         predictions, schedules, player_features, data_root, repo_root
     )
@@ -577,7 +710,9 @@ def run_unserved_tilt_marginals(
             "nothing."
         ),
         "served_policy": {
-            "members": list(SERVED_MEMBERS),
+            "card": card,
+            "policy_id": POLICY_ID if card == "served" else "three_member_union",
+            "members": list(SERVED_CARD_MEMBERS if card == "served" else SERVED_MEMBERS),
             "member_flip_counts": {name: len(ids) for name, ids in served_members.items()},
             "union_flip_count": len(served_ids),
         },
@@ -640,9 +775,13 @@ def run_unserved_tilt_marginals(
 
 __all__ = [
     "CANDIDATE_MEMBERS",
+    "CARD_CHOICES",
+    "SERVED_CARD_MEMBERS",
     "SERVED_MEMBERS",
     "build_candidate_flip_sets",
     "build_pbp08_flag_table",
+    "build_served_card_flip_sets",
     "build_served_flip_set",
     "run_unserved_tilt_marginals",
+    "served_card_flip_set",
 ]

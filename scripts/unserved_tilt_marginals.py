@@ -9,6 +9,7 @@ from pathlib import Path
 from nfl_ats.overlay_composition import DEFAULT_FEATURES, DEFAULT_INCIDENTS
 from nfl_ats.public_board import find_matching_opener_evaluation
 from nfl_ats.unserved_tilt_marginals import (
+    CARD_CHOICES,
     DEFAULT_OUTPUT_ROOT,
     DEFAULT_SAMPLES,
     DEFAULT_SEED,
@@ -28,6 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     parser.add_argument("--samples", type=int, default=DEFAULT_SAMPLES)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument("--card", choices=CARD_CHOICES, default="served")
     args = parser.parse_args(argv)
     if args.per_game_artifact is None:
         match = find_matching_opener_evaluation(args.output_root.parent)

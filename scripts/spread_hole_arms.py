@@ -34,6 +34,11 @@ from nfl_ats.overlay_composition import (  # noqa: E402
     run_overlays,
 )
 from nfl_ats.spread_regime import attach_spread_regime, spread_bucket  # noqa: E402
+from nfl_ats.unserved_tilt_marginals import (  # noqa: E402
+    CARD_CHOICES,
+    SERVED_CARD_MEMBERS,
+    served_card_flip_set,
+)
 
 RESULTS_COLUMNS = (
     "home_point_diff",
@@ -257,19 +262,37 @@ def walk_forward(features: pd.DataFrame, market_root: Path, arms: tuple[str, ...
     return output
 
 
-def card_correct(per_game: pd.DataFrame, data_root: Path, features: Path, incidents: Path):
-    """Played three-member OR union recomputed against one incoming card."""
+def card_correct(
+    per_game: pd.DataFrame,
+    data_root: Path,
+    features: Path,
+    incidents: Path,
+    *,
+    card: str = "served",
+    repo_root: Path = REPO,
+):
+    """The played card's OR union recomputed against one incoming card."""
 
     _unused, schedules, player_features, _name, _path = load_inputs_from_frame(per_game, data_root)
-    predictions = build_predictions_frame(per_game, schedules)
-    results = run_overlays(predictions, schedules, player_features)
-    flips: set[str] = set()
-    for name in CARD_MEMBERS:
-        if name == "player_arrests_back_side_policy":
-            arrest_ids, _scored = reconstruct_arrest_flip_set(per_game, features, incidents)
-            flips |= arrest_ids
-        else:
-            flips |= {flip.game_id for flip in results[name].flips}
+    if card == "served":
+        flips, _members = served_card_flip_set(
+            per_game,
+            data_root=data_root,
+            repo_root=repo_root,
+            features=features,
+            incidents=incidents,
+            schedules=schedules,
+        )
+    else:
+        predictions = build_predictions_frame(per_game, schedules)
+        results = run_overlays(predictions, schedules, player_features)
+        flips = set()
+        for name in CARD_MEMBERS:
+            if name == "player_arrests_back_side_policy":
+                arrest_ids, _scored = reconstruct_arrest_flip_set(per_game, features, incidents)
+                flips |= arrest_ids
+            else:
+                flips |= {flip.game_id for flip in results[name].flips}
     base = per_game.set_index("game_id")["correct_at_open_probability_rule"].astype(float)
     flipped = pd.Series(base.index.isin(flips), index=base.index)
     card = pd.Series(np.where(flipped, 1.0 - base, base), index=base.index)
@@ -316,6 +339,8 @@ def main() -> int:
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--min-train-games", type=int, default=500)
     parser.add_argument("--arms", default="incumbent,C1,R1")
+    parser.add_argument("--card", choices=CARD_CHOICES, default="served")
+    parser.add_argument("--repo-root", type=Path, default=REPO)
     args = parser.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
@@ -356,7 +381,14 @@ def main() -> int:
     for arm in arms:
         frame = cards[arm]
         frame.to_parquet(args.out / f"per_game_{arm}.parquet", index=False)
-        series, flips = card_correct(frame, args.data_root, features_path, incidents)
+        series, flips = card_correct(
+            frame,
+            args.data_root,
+            features_path,
+            incidents,
+            card=args.card,
+            repo_root=args.repo_root,
+        )
         card_series[arm] = series
         flip_counts[arm] = len(flips)
 
@@ -419,7 +451,8 @@ def main() -> int:
         "arms": list(arms),
         "samples": SAMPLES,
         "seed": SEED,
-        "card_members": list(CARD_MEMBERS),
+        "card": args.card,
+        "card_members": list(SERVED_CARD_MEMBERS if args.card == "served" else CARD_MEMBERS),
         "card_flip_counts": flip_counts,
         "reproduction": reproduction,
         "results": rows,
