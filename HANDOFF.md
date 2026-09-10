@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T04:24:35.668227+00:00`
+Refreshed at: `2026-09-10T04:36:55.378256+00:00`
 
 ## Start here
 
@@ -20,26 +20,12 @@ Refreshed at: `2026-09-10T04:24:35.668227+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `503908fea848` — Board: 'What changed this week' panel (baseline = the oldest card on the pool's own lines; Week 1 lists the three pass-protection changes and the star move); member labels in pool-player words. First 2026 result graded and on the board (NE +3.5 won, 1-0). Expected-lineup-loss refit is a refresh-path feature (0 of 6,814 team-weeks visible by Tuesday noon) and loses through the card (-0.73, P+ 0.06); kept as a challenger.
-- Pending change set: 18 paths
+- Baseline commit: `1c8be11175e1` — Late-week follow: half a point is enough on spreads of 10.5 or more (+0.25 over flat 1.0, P+ 0.79 / 0.98 season; on a spread that big even half a point from the books that move first is a signal); flat-1.0 arm recorded as the OFF challenger; served week-rules headline 58.2%
+- Pending change set: 4 paths
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/findings.html`
-  - `M  docs/follow_threshold_by_line.md`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/late_week_refresh.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/artifact_contracts.py`
-  - `M  src/nfl_ats/board_assistant.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/late_week_move_follow_refresh_overlay.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  src/nfl_ats/sharp_book_movement_features.py`
-  - `M  tests/test_snapshot_diff.py`
+  - `A  docs/big_spread_reduced_model.md`
+  - `M  registry/weak_signals.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
