@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T03:14:51.598470+00:00`
+Refreshed at: `2026-09-10T03:18:59.582867+00:00`
 
 ## Start here
 
@@ -20,25 +20,16 @@ Refreshed at: `2026-09-10T03:14:51.598470+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ef60021d9d21` — Week 2 lock rehearsal fixes: lockday_verify knows today's three served arms (0 missing, 0 pending), a replace-week after a kickoff no longer bricks later refresh passes, settle grades the equal-book and model-only OFF arms
-- Pending change set: 17 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/late_week_refresh.md`
-  - `M  docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `M  src/nfl_ats/board_assistant.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `A  src/nfl_ats/consensus_movement_refresh_overlay.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  src/nfl_ats/settlement.py`
-  - `M  tests/test_pick_refresh.py`
+- Baseline commit: `b9bd3dd7fb17` — Retire the 1.0-point consensus rule from the served chain (-1.6 through the chain, 30-43 on the picks it changed; recorded as a paired OFF challenger); served week-rules headline 58.0%
+- Pending change set: 8 paths
+  - `M  docs/capture_scheduling.md`
+  - `A  docs/line_size_shrinkage.md`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/cfb_served_tilts_replication.py`
+  - `A  scripts/check_splash_board.py`
+  - `M  scripts/ingest_injury_news.py`
+  - `M  scripts/scheduled_weekly_lock.py`
+  - `M  tests/test_capture_scheduler.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

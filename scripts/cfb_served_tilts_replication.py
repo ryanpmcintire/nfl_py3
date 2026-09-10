@@ -38,6 +38,7 @@ from nfl_ats.cfb_benchmark import CFB_CLEAN_CORE_SEASONS  # noqa: E402
 from nfl_ats.cfb_features import cfb_competitive_plays  # noqa: E402
 from nfl_ats.cfb_qb_dependence import split_half_reliability  # noqa: E402
 from nfl_ats.clv import pick_correct, week_blocked_bootstrap  # noqa: E402
+from nfl_ats.provenance import write_stamped_artifact  # noqa: E402
 
 FEATURES_PATH = DATA_ROOT / "data" / "processed" / "cfb_game_features.parquet"
 BENCHMARK_PATH = (
@@ -1016,8 +1017,8 @@ def main() -> int:
     timestamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
     output_dir = ARTIFACT_ROOT / timestamp
     output_dir.mkdir(parents=True, exist_ok=True)
-    (output_dir / "results.json").write_text(
-        json.dumps(payload, indent=2, sort_keys=True, default=float), encoding="utf-8"
+    write_stamped_artifact(
+        json.loads(json.dumps(payload, sort_keys=True, default=float)), output_dir / "results.json"
     )
     print(f"wrote {output_dir / 'results.json'}")
     return 0

@@ -82,6 +82,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import sys
 import time
 import urllib.error
@@ -99,6 +100,12 @@ USER_AGENT = "nfl-ats-research/0.1 (private research; contact ryanpmcintire@gmai
 CRAWL_DELAY_SECONDS = 10.0
 SITEMAP_NS = "{http://www.sitemaps.org/schemas/sitemap/0.9}"
 SNAPSHOT_DIR_RE = re.compile(r"^\d{8}T\d{6}Z$")
+HUB_URL = "https://www.nbcsports.com/nfl/profootballtalk"
+HUB_ARTICLE_RE = re.compile(
+    r'href="(https://www\.nbcsports\.com/nfl/profootballtalk/[^"]+/news/[^"?#]+)"'
+)
+DATE_PUBLISHED_RE = re.compile(r'"datePublished"\s*:\s*"([^"]+)"')
+HEADLINE_RE = re.compile(r'"headline"\s*:\s*"([^"]+)"')
 
 
 def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
@@ -127,6 +134,45 @@ def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
     snapshot_dir = out_dir / new_id
     snapshot_dir.mkdir(parents=True, exist_ok=True)
     return snapshot_dir
+
+
+def _latest_existing_snapshot(out_dir: Path, *, exclude: Path) -> Path | None:
+    """Most recent existing snapshot dir under out_dir, other than exclude."""
+
+    candidates = sorted(
+        path
+        for path in out_dir.glob("*")
+        if path.is_dir() and SNAPSHOT_DIR_RE.match(path.name) and path != exclude
+    )
+    return candidates[-1] if candidates else None
+
+
+def create_fresh_snapshot_dir(
+    out_dir: Path, *, refetch_months: set[str], now: datetime | None = None
+) -> tuple[Path, list[str]]:
+    """New timestamped snapshot dir; prior months copied forward except refetch_months."""
+
+    now = now or datetime.now(UTC)
+    new_id = now.strftime("%Y%m%dT%H%M%SZ")
+    snapshot_dir = out_dir / new_id
+    snapshot_dir.mkdir(parents=True, exist_ok=True)
+
+    previous = _latest_existing_snapshot(out_dir, exclude=snapshot_dir)
+    copied_forward: list[str] = []
+    if previous is not None:
+        src_monthly = previous / "monthly"
+        dst_monthly = snapshot_dir / "monthly"
+        dst_monthly.mkdir(parents=True, exist_ok=True)
+        for path in sorted(src_monthly.glob("*.parquet")):
+            month = path.stem
+            if month in refetch_months:
+                continue
+            shutil.copy2(path, dst_monthly / path.name)
+            copied_forward.append(month)
+        src_current = previous / "current.parquet"
+        if src_current.is_file():
+            shutil.copy2(src_current, snapshot_dir / "current.parquet")
+    return snapshot_dir, copied_forward
 
 
 INJURY_KEYWORDS = [
@@ -264,6 +310,52 @@ def parse_monthly_sitemap(raw: bytes, month: str) -> pd.DataFrame:
     return frame
 
 
+def fetch_hub_article_urls(limiter: RateLimiter, *, hub_url: str = HUB_URL) -> list[str]:
+    """Article urls linked from the live PFT hub page (the post-2026-06 URL scheme)."""
+
+    raw = _fetch(hub_url, limiter).decode("utf-8", errors="ignore")
+    return sorted(set(HUB_ARTICLE_RE.findall(raw)))
+
+
+def fetch_current_articles(
+    urls: list[str], limiter: RateLimiter, *, existing_urls: frozenset[str] = frozenset()
+) -> pd.DataFrame:
+    """Per-article JSON-LD datePublished for injury-keyword-matched hub urls not already indexed."""
+
+    rows: list[dict[str, object]] = []
+    for url in urls:
+        if url in existing_urls:
+            continue
+        slug = url.rstrip("/").rsplit("/", 1)[-1]
+        matched = _slug_matches_injury_keyword(slug)
+        if not matched:
+            continue
+        try:
+            raw = _fetch(url, limiter).decode("utf-8", errors="ignore")
+        except Exception as error:
+            print(f"  FAILED hub article {url}: {error}", file=sys.stderr)
+            continue
+        date_matches = DATE_PUBLISHED_RE.findall(raw)
+        if not date_matches:
+            continue
+        published = date_matches[0]
+        rows.append(
+            {
+                "month": published[:7].replace("-", ""),
+                "url": url,
+                "lastmod": published,
+                "slug": slug,
+                "headline_guess": slug.replace("-", " "),
+                "matched_keywords": "|".join(matched),
+                "injury_relevant": True,
+            }
+        )
+    frame = pd.DataFrame(rows)
+    if not frame.empty:
+        frame["lastmod"] = pd.to_datetime(frame["lastmod"], errors="coerce", utc=True)
+    return frame
+
+
 def ingest(
     out_dir: Path,
     start: str,
@@ -307,9 +399,37 @@ def ingest(
             f"{int(frame['injury_relevant'].sum()) if len(frame) else 0} injury-relevant"
         )
 
+    current_path = out_dir / "current.parquet"
+    existing_current = pd.read_parquet(current_path) if current_path.exists() else pd.DataFrame()
+    hub_new = 0
+    hub_failed: str | None = None
+    current_combined = existing_current
+    try:
+        hub_urls = fetch_hub_article_urls(limiter)
+        existing_urls = (
+            frozenset(existing_current["url"]) if not existing_current.empty else frozenset()
+        )
+        fresh = fetch_current_articles(hub_urls, limiter, existing_urls=existing_urls)
+        hub_new = len(fresh)
+        current_combined = (
+            pd.concat([existing_current, fresh], ignore_index=True)
+            if not existing_current.empty
+            else fresh
+        )
+        if not current_combined.empty:
+            current_combined = current_combined.drop_duplicates("url", keep="last")
+            current_combined.to_parquet(current_path, index=False)
+        print(f"  hub page: {len(hub_urls)} article links, {hub_new} new injury-relevant")
+    except Exception as error:
+        hub_failed = f"{type(error).__name__}: {error}"
+        print(f"  FAILED hub page pass: {hub_failed}", file=sys.stderr)
+
     all_monthly = sorted(monthly_dir.glob("*.parquet"))
-    if all_monthly:
-        combined = pd.concat([pd.read_parquet(p) for p in all_monthly], ignore_index=True)
+    frames = [pd.read_parquet(p) for p in all_monthly]
+    if not current_combined.empty:
+        frames.append(current_combined)
+    if frames:
+        combined = pd.concat(frames, ignore_index=True)
         combined = combined.sort_values(["lastmod", "url"]).reset_index(drop=True)
         combined.to_parquet(out_dir / "index.parquet", index=False)
     else:
@@ -317,11 +437,15 @@ def ingest(
 
     manifest = {
         "source": "https://www.nbcsports.com/sitemap.xml (ProFootballTalk NFL articles)",
+        "hub_source": HUB_URL,
         "fetched_at": datetime.now(UTC).isoformat(),
         "requested_range": [start, end],
         "months_processed_this_run": processed,
         "months_skipped_already_present": skipped,
         "months_failed": failed,
+        "hub_new_injury_relevant_this_run": hub_new,
+        "hub_fetch_failed": hub_failed,
+        "hub_cumulative_rows": len(current_combined),
         "crawl_delay_seconds_honored": CRAWL_DELAY_SECONDS,
         "user_agent": USER_AGENT,
         "cumulative_index_rows": len(combined),
@@ -366,9 +490,6 @@ def verify_sample(
     sample_dir = out_dir / "sample_articles"
     sample_dir.mkdir(parents=True, exist_ok=True)
 
-    date_published_re = re.compile(r'"datePublished"\s*:\s*"([^"]+)"')
-    headline_re = re.compile(r'"headline"\s*:\s*"([^"]+)"')
-
     for _, row in candidates.iterrows():
         url = str(row["url"])
         slug = str(row["slug"])
@@ -378,8 +499,8 @@ def verify_sample(
         except Exception as error:
             print(f"  FAILED: {error}", file=sys.stderr)
             continue
-        date_matches = date_published_re.findall(raw)
-        headline_matches = headline_re.findall(raw)
+        date_matches = DATE_PUBLISHED_RE.findall(raw)
+        headline_matches = HEADLINE_RE.findall(raw)
         record = {
             "url": url,
             "slug": slug,
@@ -411,8 +532,22 @@ def main() -> None:
         ),
     )
     parser.add_argument("--start", default="200909", help="YYYYMM, inclusive")
-    parser.add_argument("--end", default="202606", help="YYYYMM, inclusive")
+    parser.add_argument("--end", default="202702", help="YYYYMM, inclusive")
     parser.add_argument("--force", action="store_true", help="Refetch months already on disk")
+    parser.add_argument(
+        "--fresh-snapshot",
+        action="store_true",
+        help=(
+            "Write into a NEW UTC-timestamped snapshot directory instead of resuming "
+            "the most recent one. Months already cached in the most recent existing "
+            "snapshot are copied forward with zero network requests; only the current "
+            "UTC month's chunk is force-refetched (it is still gaining new articles). "
+            "Mirrors ingest_transaction_news.py's --fresh-snapshot (ENG-32): "
+            "nfl_ats.capture_freshness reads the snapshot DIRECTORY NAME as the "
+            "capture instant, so a scheduled job resuming the same directory forever "
+            "would never look fresh even after a successful run."
+        ),
+    )
     parser.add_argument(
         "--verify-sample",
         metavar="YYYYMM",
@@ -423,8 +558,18 @@ def main() -> None:
     args = parser.parse_args()
 
     args.out.mkdir(parents=True, exist_ok=True)
-    snapshot_dir = resolve_snapshot_dir(args.out, args.snapshot)
-    print(f"Snapshot directory: {snapshot_dir}")
+    if args.fresh_snapshot:
+        current_month = datetime.now(UTC).strftime("%Y%m")
+        snapshot_dir, copied_forward = create_fresh_snapshot_dir(
+            args.out, refetch_months={current_month}
+        )
+        print(
+            f"Fresh snapshot directory: {snapshot_dir} "
+            f"(copied forward, no network: {copied_forward or 'none'})"
+        )
+    else:
+        snapshot_dir = resolve_snapshot_dir(args.out, args.snapshot)
+        print(f"Snapshot directory: {snapshot_dir}")
     limiter = RateLimiter(CRAWL_DELAY_SECONDS)
 
     if args.verify_sample:

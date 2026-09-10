@@ -6,13 +6,15 @@ Scheduler and into this repository.
 
 ## What runs
 
-`scripts/capture_scheduler.py` holds the whole schedule in `SCHEDULE`, 33 jobs.
+`scripts/capture_scheduler.py` holds the whole schedule in `SCHEDULE`, 81 jobs
+(72 enabled, counted 2026-09-09).
 The table below calls out the core cadence and the lock-day job; `SCHEDULE` is
 the authoritative complete inventory.
 
 | Job | When (ET) | Grace | Season-guarded | Catch-up |
 |---|---|---|---|---|
 | `odds_tue_open` | Tue 12:05 (just after the pool's noon spread lock) | 180m | no | no |
+| `splash_board_tue` | Tue 12:05 (retries every 3m) | **15m** | yes | no |
 | `weekly_lock` | Tue 12:20 | 120m | yes | no |
 | `odds_thu_tnf` | Thu 18:00 | 90m | no | no |
 | `odds_sat` | Sat 12:00 | 180m | no | no |
@@ -23,6 +25,8 @@ the authoritative complete inventory.
 | `public_betting_sun` | Sun 12:00 | 45m | no | no |
 | `injuries_wed` / `injuries_thu` / `injuries_fri` | Wed/Thu/Fri 17:30 | 240m | yes | no |
 | `injuries_sat` | Sat 10:00 | 240m | yes | no |
+| `injury_news_wed` / `_thu` / `_fri` / `_sat` / `_sun` | Wed-Sun 16:00 | 120m | yes | no |
+| `injury_news_sun_early` | Sun 11:30 | 20m | yes | no |
 | `refresh_thu` | Thu 15:00 | 240m | yes | no |
 | `refresh_sat` | Sat 10:30 | 300m | yes | no |
 | `refresh_sun` | Sun 10:00 (`--publish-card`) | 300m | yes | no |
@@ -45,17 +49,74 @@ motivated `catch_up` (see "Four ways a job does not run"),
 player-arrests capture"), the seven `inactives_*` rows are WP17's new
 capture channel (see "The official inactives capture (WP17)"), and
 `referee_assignments_wed` is WP22's new capture (see "The weekly
-referee-assignments capture (WP22)").
+referee-assignments capture (WP22)"). The `injury_news_*` jobs (added
+2026-09-09) run `scripts/ingest_injury_news.py --fresh-snapshot`, the
+ProFootballTalk headline archive `docs/injury_news_sourcing.md` built and
+`docs/follow_news_gate.md`'s served injury-news veto (`follow_news_for_game`
+in `src/nfl_ats/injury_signal_refresh_tilt.py`) reads as its fallback source
+whenever the official nflverse injury rows carry no usable timestamp for the
+live season. Before this job existed, that fallback had never been
+scheduled, so the veto read no news and never fired live; `16:00` clears
+before the same-day `nflverse_injuries_<day>_pm` (16:30) and
+`lineups_thu_pm` (17:00) jobs it sits ahead of, and `injury_news_sun_early`
+(11:30) is a second same-day pass ahead of `refresh_sun_inactives_early`
+(11:55).
+
+### Lock-day runbook: capture the pool board between 12:00 and 12:05 ET
+
+**This is the one step on lock day a machine cannot do.** The pool grades on the
+Splash Sports board, whose spreads lock Tuesday at 12:00 ET, and
+`scripts/capture_splash_lines.py` is a conversion of board text someone read off
+the page — nothing in this repository scrapes the site. The owner reads that
+board in a browser; an agent with browser tools can read it too. Either way the
+week is dead in the water until the read becomes a capture file.
+
+1. **12:00–12:05 ET, Tuesday.** Open the contest board and copy the matchup
+   blocks — the page renders them as `CHI   Sun, Sep 13 1:00 PM   CAR` followed
+   by the two `TEAM ±N.5` option rows — into a scratch text file.
+2. Convert it:
+   `.\.tools\uv.exe run --no-sync python scripts\capture_splash_lines.py --season 2026 --week 2 --text-file board.txt`
+   (add `--dry` to see the JSON without writing, `--replace` to overwrite an
+   existing capture for the week). The script validates before it writes: half
+   points only, nflverse game ids, both sides of every spread exact opposites.
+   A capture that fails validation is not written at all.
+3. At **12:05** `splash_board_tue` asks whether that file exists and validates.
+   It exits 1 in about a second with the week name and the command above when it
+   does not, and retries every three minutes until its window closes at 12:20,
+   so a board read that lands at 12:10 still clears the lock.
+
+What the capture JSON has to contain: exactly the fields in
+`data/splash/2026_week01_20260908_noon.json` **minus the contest and entry
+identifiers** (`contest.channel`, `contest.contest_id`, `contest.slate_id` and
+the whole `submitted_entry` block, which are never committed and are not read by
+anything). The reader (`nfl_ats.splash_lines.SplashCapture.from_dict`) requires
+`season`, `week`, `captured_at_et` and `games`, and each game needs `game_id`,
+`away`, `home`, `away_line`, `home_spread` and `kickoff_et`; `source`,
+`capture_method`, `picks_lock_et`, `convention` and `note` are filled in for you
+by `capture_splash_lines.py`. `home_spread` is positive when the HOME team is
+favored, and equals the away side's printed number.
+
+If the board is captured after 12:20, the lock's prerequisite is already
+recorded as failed for the day. Capture it anyway and run the lock by hand:
+`.\.tools\uv.exe run --no-sync python scripts\capture_scheduler.py --run-job weekly_lock`.
 
 ### The Tuesday paper-forecast lock
 
-`weekly_lock` starts at **12:20 ET Tuesday**, after `odds_tue_open` (12:05, the
-first odds capture of the day, landing just after the pool locks its spreads at
-noon) has an `OK` or `ALREADY-CAPTURED` state record. Its 120-minute grace closes
+`weekly_lock` starts at **12:20 ET Tuesday**, after both `odds_tue_open` (12:05,
+the first odds capture of the day, landing just after the pool locks its spreads
+at noon) and `splash_board_tue` (12:05, the pool-board check above) have an `OK`
+or `ALREADY-CAPTURED` state record. Its 120-minute grace closes
 at 14:20. The pool's picks remain editable until their game deadlines (each
 game's kickoff, Sunday games by 4:00 PM ET), so a lock after noon costs nothing;
 this job freezes the auditable opener-time paper decision
 used by the research ledgers.
+
+`scripts/scheduled_weekly_lock.py` runs the same board check as its first step,
+before anything expensive, so a hand-run lock stops in seconds with the same one
+line instead of after the refit. Measured 2026-09-09: a Week 2 lock with no
+Week 2 board spent 7m58s refitting and then failed closed on the
+`pool_line_source` prediction-safety check because three served games carried
+whole-number nflverse lines; the same command now exits 1 in 3.2s.
 
 The scheduler invokes `scripts/scheduled_weekly_lock.py` without season or week
 arguments. The script derives exactly one target from the latest hash-verified
@@ -69,9 +130,13 @@ occurrence one-shot; a complete existing paper-ledger week returns
 closed instead of trying to append or repair first-write-wins decisions. The job
 has no catch-up mode, so it cannot run after its declared safe window. Its JSON
 summary is retained under ignored `artifacts/scheduled_locks/` for audit.
-If the opener is missing or failed through 14:20, the sweep writes a durable
-`MISSED weekly_lock` state row with `blocked_by: [odds_tue_open]`; it never keeps
-showing a harmless-looking `waiting` message and never runs the forecast late.
+A prerequisite that has not succeeded is announced the moment the dependent
+job's window opens: the poll logs one `BLOCKED weekly_lock (window ..., closes
+14:20): prerequisites not successful: splash_board_tue=FAIL(1)` line, remembered
+on the job's health entry so a per-minute poll cannot turn one alarm into 120.
+If the prerequisite is still unsatisfied at 14:20 the sweep writes a durable
+`MISSED weekly_lock` state row with `blocked_by`; it never keeps showing a
+harmless-looking `waiting` message and never runs the forecast late.
 
 ## Why not Windows Task Scheduler
 

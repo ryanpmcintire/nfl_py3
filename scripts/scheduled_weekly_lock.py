@@ -13,6 +13,11 @@ with the actual error past the cut and gone. Every failure now persists the
 child's COMPLETE stdout, stderr and traceback under ``FAILURE_LOG_DIR`` and
 leads the reported error with that path, so the 200-character survivor still
 says where the whole story lives.
+
+Step one is ``scripts/check_splash_board.py``'s pool-board check, which costs
+milliseconds: without it a week whose Splash board was never captured spent
+about eight minutes refitting before the ``pool_line_source`` safety check
+refused the card.
 """
 
 from __future__ import annotations
@@ -32,8 +37,9 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "src"))
 sys.path.insert(0, str(REPO))
 
-from nfl_ats.scheduled_lock import execute_scheduled_lock  # noqa: E402
+from nfl_ats.scheduled_lock import execute_scheduled_lock, resolve_lock_target  # noqa: E402
 from nfl_ats.snapshots import latest_snapshot, load_verified_snapshot  # noqa: E402
+from scripts.check_splash_board import PoolBoardMissing, require_captured_board  # noqa: E402
 from scripts.lockday_verify import verify  # noqa: E402
 
 ET = ZoneInfo("America/New_York")
@@ -156,12 +162,15 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     args = _parse_args(argv)
+    now = datetime.now(tz=ET)
     try:
         schedules, _ = load_verified_snapshot(latest_snapshot(REPO / "data" / "raw"))
+        target = resolve_lock_target(schedules, now=now, season=args.season, week=args.week)
+        require_captured_board(REPO / "data", target.season, target.week)
         result = execute_scheduled_lock(
             schedules,
             artifacts_root=REPO / "artifacts",
-            now=datetime.now(tz=ET),
+            now=now,
             weekly_runner=_run_weekly,
             season=args.season,
             week=args.week,
@@ -170,6 +179,10 @@ def main(argv: list[str] | None = None) -> int:
                 REPO / "artifacts", season=season, week=week, run_summary=summary
             ),
         )
+    except PoolBoardMissing as error:
+        print(str(error), file=sys.stderr)
+        print(json.dumps({"status": "missing_pool_board", "error": str(error)}))
+        return 1
     except Exception as error:
         log_path = getattr(error, "log_path", None)
         if not isinstance(log_path, Path):

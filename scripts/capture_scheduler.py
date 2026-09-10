@@ -65,11 +65,11 @@ HEARTBEAT_STALE_AFTER_SECONDS = POLL_SECONDS * 3
 
 READ_ONLY_SCRIPT = True
 READ_ONLY_EXCEPTIONS: dict[int, str] = {
-    1228: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
-    1230: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
-    1257: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
-    1271: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
-    1380: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+    1322: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1324: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1351: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
+    1365: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1474: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
 }
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
@@ -313,6 +313,44 @@ def _player_snapshot_job(day: str) -> Job:
     )
 
 
+def _injury_news_job(day: str) -> Job:
+    """PFT injury-news headline refresh feeding follow_news_for_game's live veto."""
+
+    return Job(
+        f"injury_news_{day}",
+        day,
+        "16:00",
+        120,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "ingest_injury_news.py"),
+            "--fresh-snapshot",
+        ],
+        True,
+        "2026-09-09: docs/follow_news_gate.md's served F3p veto reads "
+        "load_news_sources/follow_news_for_game (injury_signal_refresh_tilt.py), whose "
+        "ProFootballTalk fallback is the ONLY reader for the live 2026 season -- the "
+        "official nflverse injury rows carry no date_modified this season "
+        "(_season_has_readable_official_rows is False) -- and this bulk PFT scrape "
+        "(ingest_injury_news.py) had never been scheduled, so the veto reads no news "
+        "and never fires live. --fresh-snapshot (added this session, mirrors "
+        "ingest_transaction_news.py's ENG-32 pattern) copies every prior month's "
+        "parquet forward with zero network requests and force-refetches only the "
+        "current month; without it a scheduled run would fetch the current month "
+        "once and then skip it forever. 16:00 ET clears before nflverse_injuries_"
+        "<day>_pm (16:30) and lineups_thu_pm (17:00), the consumers the news reader "
+        "sits ahead of. catch_up=False: a late bulk headline pull past this window is "
+        "still useful but is no longer the timely same-day read this slot is for.",
+        dedupe_dir="data/raw/injury_news",
+        dedupe_minutes=120,
+        added_on="2026-09-09",
+        catch_up=False,
+    )
+
+
 def _inactives_capture(slot: str) -> list[str]:
     return [
         str(UV),
@@ -360,6 +398,36 @@ SCHEDULE: tuple[Job, ...] = (
         dedupe_minutes=90,
     ),
     Job(
+        "splash_board_tue",
+        "tue",
+        "12:05",
+        15,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "check_splash_board.py"),
+        ],
+        True,
+        "Does data/splash hold a validated capture of the board the pool grades "
+        "on for the week the 12:20 lock is about to record? The board is a HAND "
+        "read -- capture_splash_lines.py converts text someone copied off the "
+        "page, nothing scrapes the site -- so the one manual step in the whole "
+        "lock day had no job watching it. Measured 2026-09-09: with only Week 1 "
+        "captured, a Week 2 lock spends ~8 minutes refitting and then fails "
+        "closed on pool_line_source because three served games carry "
+        "whole-number nflverse lines. This asks the same question in a second, "
+        "at 12:05, and weekly_lock requires it. Retries every 3 minutes inside "
+        "the 15-minute window so a board read that lands at 12:10 still clears "
+        "the 12:20 lock; if it lands later, capture it and run "
+        "--run-job weekly_lock by hand.",
+        added_on="2026-09-09",
+        catch_up=False,
+        retry_backoff_minutes=3,
+        max_retries=4,
+    ),
+    Job(
         "weekly_lock",
         "tue",
         "12:20",
@@ -374,10 +442,11 @@ SCHEDULE: tuple[Job, ...] = (
         True,
         "Lock-day paper forecast, formed on the line the pool locked at noon. "
         "Runs only for an actual scheduled game week, after the 12:05 opener "
-        "succeeds, and closes at 14:20; picks are due at each game's own "
-        "kickoff (Sunday 4 PM ET cap), so a lock after noon costs nothing.",
+        "and the 12:05 pool-board check both succeed, and closes at 14:20; "
+        "picks are due at each game's own kickoff (Sunday 4 PM ET cap), so a "
+        "lock after noon costs nothing.",
         added_on="2026-09-02",
-        requires=("odds_tue_open",),
+        requires=("odds_tue_open", "splash_board_tue"),
     ),
     Job(
         "airnow_tue_checkpoint",
@@ -708,6 +777,31 @@ SCHEDULE: tuple[Job, ...] = (
     *(_player_snapshot_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
     *(_nflverse_injuries_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
     *(_player_snapshot_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
+    *(_injury_news_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
+    Job(
+        "injury_news_sun_early",
+        "sun",
+        "11:30",
+        20,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "ingest_injury_news.py"),
+            "--fresh-snapshot",
+        ],
+        True,
+        "2026-09-09: a second same-day PFT pull ahead of refresh_sun_inactives_early "
+        "(11:55, closing 12:50 before the 13:00 ET slate) so Sunday-morning injury "
+        "news filed since the 16:00 Saturday pull can still veto a Sunday follow "
+        "before that refresh reads it. 20m grace closes at 11:50, five minutes clear "
+        "of 11:55.",
+        dedupe_dir="data/raw/injury_news",
+        dedupe_minutes=120,
+        added_on="2026-09-09",
+        catch_up=False,
+    ),
     *(
         Job(
             f"lineups_{day}_pm",
@@ -1438,22 +1532,54 @@ def due_jobs(now: datetime, state: dict[str, Any]) -> list[tuple[Job, datetime]]
             continue
         if predates_job(job, start):
             continue
-        if not prerequisites_satisfied(job, start, state):
+        if not start <= now <= start + timedelta(minutes=job.grace_minutes):
             continue
-        if start <= now <= start + timedelta(minutes=job.grace_minutes):
-            due.append((job, start))
+        blocked = unsatisfied_prerequisites(job, start, state)
+        if blocked:
+            note_blocked(job, start, blocked, state)
+            continue
+        due.append((job, start))
     return due
+
+
+def unsatisfied_prerequisites(job: Job, start: datetime, state: dict[str, Any]) -> list[str]:
+    """Declared dependencies with no successful same-date record, as ``name=status``."""
+
+    accepted = {"OK", "ALREADY-CAPTURED"}
+    blocked = []
+    for required_name in job.requires:
+        record = state["runs"].get(f"{required_name}@{start.date().isoformat()}", {})
+        if record.get("status") not in accepted:
+            blocked.append(f"{required_name}={record.get('status', 'no record')}")
+    return blocked
 
 
 def prerequisites_satisfied(job: Job, start: datetime, state: dict[str, Any]) -> bool:
     """Require successful same-date scheduler records for declared dependencies."""
 
-    accepted = {"OK", "ALREADY-CAPTURED"}
-    for required_name in job.requires:
-        record = state["runs"].get(f"{required_name}@{start.date().isoformat()}", {})
-        if record.get("status") not in accepted:
-            return False
-    return True
+    return not unsatisfied_prerequisites(job, start, state)
+
+
+def note_blocked(job: Job, start: datetime, blocked: list[str], state: dict[str, Any]) -> None:
+    """Log ONCE per occurrence that a prerequisite is holding this job back.
+
+    Added 2026-09-09: a blocked job used to be skipped in silence for its whole
+    window and only surfaced as MISSED once the window closed -- for
+    ``weekly_lock`` that is two hours after the fact, on the one day of the
+    week the card is recorded. The notice is remembered on the job's health
+    entry so the daemon's per-minute poll cannot turn one alarm into 120.
+    """
+
+    entry = _job_health_entry(state, job.name)
+    key = f"{job.name}@{start.date().isoformat()}"
+    if entry.get("last_blocked_notice") == key:
+        return
+    entry["last_blocked_notice"] = key
+    closes = (start + timedelta(minutes=job.grace_minutes)).strftime("%H:%M")
+    log(
+        f"BLOCKED {job.name} (window {start.isoformat()}, closes {closes}): "
+        f"prerequisites not successful: {', '.join(blocked)}"
+    )
 
 
 def record_already_captured(job: Job, start: datetime, age: float, state: dict[str, Any]) -> None:

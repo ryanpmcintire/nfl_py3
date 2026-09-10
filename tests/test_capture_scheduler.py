@@ -860,7 +860,7 @@ def test_tuesday_opener_is_captured_after_the_pool_locks_at_noon() -> None:
     assert opener_start == datetime(2026, 9, 8, 12, 5, tzinfo=ET)
     assert opener_start > pool_lock
     assert lock_start == datetime(2026, 9, 8, 12, 20, tzinfo=ET)
-    assert lock.requires == ("odds_tue_open",)
+    assert lock.requires == ("odds_tue_open", "splash_board_tue")
     assert (halves.day, halves.at) == ("tue", "12:05")
     assert lineups_start >= lock_start + timedelta(minutes=lock.grace_minutes)
     assert "odds_tue_noon" not in schedule
@@ -870,8 +870,9 @@ def test_tuesday_opener_is_captured_after_the_pool_locks_at_noon() -> None:
 
 
 def test_retry_is_opt_in_and_every_pre_existing_job_defaults_off() -> None:
+    opted_in = {"player_arrests_tue", "splash_board_tue"}
     for job in capture_scheduler.SCHEDULE:
-        if job.name == "player_arrests_tue":
+        if job.name in opted_in:
             continue
         assert job.retry_backoff_minutes == 0
         assert job.max_retries == 0
