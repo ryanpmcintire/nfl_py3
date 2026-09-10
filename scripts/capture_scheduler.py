@@ -735,7 +735,7 @@ SCHEDULE: tuple[Job, ...] = (
             dedupe_minutes=120,
             added_on="2026-09-09",
         )
-        for day, at in (("wed", "20:45"), ("sat", "13:30"))
+        for day, at in (("wed", "20:45"), ("thu", "17:00"), ("sat", "13:30"))
     ),
     Job(
         "inactives_sun_early",
@@ -1066,7 +1066,7 @@ SCHEDULE: tuple[Job, ...] = (
             added_on="2026-09-09",
             catch_up=True,
         )
-        for day in ("thu", "sun", "mon")
+        for day in ("wed", "thu", "sun", "mon")
     ),
     Job(
         "verify_full_weekly",

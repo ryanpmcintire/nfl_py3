@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T01:02:14.415863+00:00`
+Refreshed at: `2026-09-10T01:07:21.838891+00:00`
 
 ## Start here
 
@@ -20,29 +20,15 @@ Refreshed at: `2026-09-10T01:02:14.415863+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a11f1ef69eca` — Registry rows from the news-gate lane; handoff refreshed
-- Pending change set: 27 paths
+- Baseline commit: `acd27253ac7f` — Settlement: one command grades all fifteen ledgers at their own lines with daemon jobs after each game day; results no longer wait for Tuesday. Rookie-crew rule served on the refresh path below the market rules (+0.07 as wired, P+ 0.71; Week 1: one new crew, no change). Follow threshold on the played card: 1.0 beats the served 0.5 by +2.0 (P+ 0.92), the half-point band loses. Provenance: sharp-book scripts stamp their JSON.
+- Pending change set: 7 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `A  docs/follow_threshold_live_card.md`
-  - `M  docs/late_week_refresh.md`
-  - `M  docs/nflcom_refresh_wiring.md`
-  - `M  docs/prospective_evidence.md`
-  - `M  docs/rookie_crew_reconciliation.md`
-  - `A  registry/experiments/margin-backtest/20260910T005406Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260910T005452Z.json`
-  - `A  registry/experiments/opener-evaluation/20260910T005854Z.json`
-  - `M  registry/weak_signals.json`
-  - `D  registry/weak_signals.json.lock`
+  - ` M docs/findings.html`
+  - ` M docs/history.html`
+  - ` M docs/index.html`
+  - ` M docs/model.html`
   - `M  scripts/capture_scheduler.py`
-  - `M  scripts/sharp_weighted_follow.py`
-  - `M  scripts/sharp_weighted_follow_record.py`
-  - `M  src/nfl_ats/artifact_contracts.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/cli_commands/prospective.py`
-  - ...and 7 more
+  - ` M tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
