@@ -308,6 +308,29 @@ is the decision-relevant number, never "contains zero."
 | POP_THRESHOLD | **ATTRIBUTED (any cause)** | 168 | **+10.71** | [-4.82, +26.12] | **0.9035** |
 | POP_THRESHOLD | **UNATTRIBUTED** | 122 | +8.20 | [-10.57, +25.40] | 0.7970 |
 
+> **Follow-up measurement, 2026-09-09 — `docs/injury_news_vs_level.md`.** The
+> `pop_threshold_injury` cell reproduces exactly (n=123, +17.073,
+> [+0.79, +31.67]; `probability_positive` reads 0.9785 rather than 0.9760 only
+> because of the 2026-09-08 zero-atom fix to that statistic). Two things were
+> then measured about the construction above. First, the **own-week
+> Tuesday-noon baseline is identically zero on all 290 POP_THRESHOLD games**:
+> the league files essentially nothing before Wednesday (6,527 of 8,461
+> skill-position REG rows 2020-2024 land on a Friday; 34 on a Tuesday, 21 on a
+> Monday), and the five own-week pre-Tuesday rows that do exist on this
+> population carry a null `report_status`. So `net_injury_score` here is
+> arithmetically the final severity difference, not the delta this section
+> describes. Second, splitting that difference against a baseline that DOES
+> exist — the same player's latest designation filed before this week's Tuesday
+> noon, i.e. the previous week's report — puts the flip-value entirely in the
+> post-Tuesday change: NEWS **+10.909** (P+ 0.8708, n=110), NEWS-only
+> **+13.684** (P+ 0.9063, n=95), against LEVEL **-0.971** (P+ 0.4634, n=103)
+> and LEVEL-only **exactly 0.000** (P+ 0.4999, n=88), on an official-path
+> anchor of +5.263. **This section's interpretation is confirmed and its
+> arithmetic is not**: the cell is an injury-NEWS effect, computed by a
+> construction that only reaches it by accident. Front-running items 1-3 below
+> should use the cross-week prior as the Tuesday baseline, not the own-week
+> one.
+
 `POP_THRESHOLD_INJURY`'s week-blocked interval sits entirely above zero.
 Per this project's binding taxonomy, a fully-positive interval is **not**
 an admissible closing ground either (only `refuted_mechanism` -- a

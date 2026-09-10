@@ -301,11 +301,13 @@ challenger, named, not a threshold to bolt on or off.**
 
 The same construction — same Tuesday-noon baseline, same official archive —
 is what produced `docs/movement_attribution.md`'s **+17.07-point**
-`pop_threshold_injury` cell. **Inferred, not re-measured here:** I think that
-cell's INJURY class is therefore also a level flag rather than the post-Tuesday
-news flag it is described as, and its headline number should be re-read that
-way. Re-running that document's own population is the way to settle it; this
-lane did not do it.
+`pop_threshold_injury` cell. **Re-measured the same evening
+(`docs/injury_news_vs_level.md`, refuting the inference this paragraph first
+carried):** on that cell's own population the flip value sits in the NEWS half
+(+10.9 pts, P+ 0.87; +16.4 with the 2025 headline flags) and the LEVEL half is
+flat (-1.0, P+ 0.46). The +17.07 is a news effect conditional on the market
+having already moved; unconditionally, as a standalone tilt, it is worth about
+nothing. The lead that leaves is gating the follow rule on news confirmation.
 
 ### Flip and collision table
 

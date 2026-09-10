@@ -11527,6 +11527,762 @@
       "source": "artifacts/inactives_channel_historical_proxy/20260902T155950Z/results.json",
       "standard_error": null
     },
+    "injury_news_vs_level_anchor_official_path_threshold_2020_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the underlying trait has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on every adverse Tuesday-to-close move, official-report subpopulation 2020-2024 -- the yardstick the NEWS/LEVEL split is compared against",
+      "effect": 5.263158,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -7.936508,
+        18.333333
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of observed_movement_oracle_full_slate / observed_movement_threshold_1_0 and of movement_attribution_*: same archive, same population, restricted to the 2020-2024 official-injury-report seasons so the NEWS and LEVEL cells have a like-for-like yardstick. Never pool additively with those.",
+      "plain_summary": "When the betting line moves away from the team we picked, this is how often taking the market's new side beats keeping our own, across every such game.",
+      "probability_positive": 0.787825,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.78425,
+      "sample_blocks": 82,
+      "sample_games": 247,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_anchor_official_path_unfiltered_2020_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the underlying trait has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on every adverse Tuesday-to-close move, official-report subpopulation 2020-2024 -- the yardstick the NEWS/LEVEL split is compared against",
+      "effect": 2.427184,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -6.801437,
+        11.7951
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of observed_movement_oracle_full_slate / observed_movement_threshold_1_0 and of movement_attribution_*: same archive, same population, restricted to the 2020-2024 official-injury-report seasons so the NEWS and LEVEL cells have a like-for-like yardstick. Never pool additively with those.",
+      "plain_summary": "When the betting line moves away from the team we picked, this is how often taking the market's new side beats keeping our own, across every such game.",
+      "probability_positive": 0.6954,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.78425,
+      "sample_blocks": 89,
+      "sample_games": 412,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_both_threshold_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, both halves of the injury flag, population THRESHOLD, official-report path 2020-2024",
+      "effect": -6.666667,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -60.0,
+        46.666667
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: both halves, population threshold.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.3928,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.78425,
+      "sample_blocks": 15,
+      "sample_games": 15,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_both_unfiltered_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, both halves of the injury flag, population UNFILTERED, official-report path 2020-2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -41.666667,
+        41.666667
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: both halves, population unfiltered.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.4907,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.78425,
+      "sample_blocks": 23,
+      "sample_games": 24,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_corrected_baseline_tilt_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury tilt with a cross-week Tuesday baseline (previous week's report) on the served refresh card, 2023 -- POST-HOC, not predeclared",
+      "effect": -6.015038,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -14.869888,
+        3.333643
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. POST-HOC arm, added after the NEWS/LEVEL split reported where the flip-value sits; NOT part of the frozen predeclaration.",
+      "plain_summary": "Flip the published pick when the team we picked picked up worse injury news since last week's official report than their opponent did.",
+      "probability_positive": 0.09895,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.184128,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_corrected_baseline_tilt_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury tilt with a cross-week Tuesday baseline (previous week's report) on the served refresh card, 2023_2024 -- POST-HOC, not predeclared",
+      "effect": -2.819549,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -8.272059,
+        2.809121
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. POST-HOC arm, added after the NEWS/LEVEL split reported where the flip-value sits; NOT part of the frozen predeclaration.",
+      "plain_summary": "Flip the published pick when the team we picked picked up worse injury news since last week's official report than their opponent did.",
+      "probability_positive": 0.160725,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.184128,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_corrected_baseline_tilt_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury tilt with a cross-week Tuesday baseline (previous week's report) on the served refresh card, 2023_2025 -- POST-HOC, not predeclared",
+      "effect": -1.877347,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -5.617978,
+        1.767677
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. POST-HOC arm, added after the NEWS/LEVEL split reported where the flip-value sits; NOT part of the frozen predeclaration.",
+      "plain_summary": "Flip the published pick when the team we picked picked up worse injury news since last week's official report than their opponent did.",
+      "probability_positive": 0.157675,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.184128,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_corrected_baseline_tilt_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury tilt with a cross-week Tuesday baseline (previous week's report) on the served refresh card, 2024 -- POST-HOC, not predeclared",
+      "effect": 0.37594,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -5.681818,
+        6.320292
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. POST-HOC arm, added after the NEWS/LEVEL split reported where the flip-value sits; NOT part of the frozen predeclaration.",
+      "plain_summary": "Flip the published pick when the team we picked picked up worse injury news since last week's official report than their opponent did.",
+      "probability_positive": 0.54335,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.184128,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_level_only_threshold_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, LEVEL only of the injury flag, population THRESHOLD, official-report path 2020-2024",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -20.930233,
+        21.83908
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: LEVEL only, population threshold.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.4999,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.966741,
+      "sample_blocks": 57,
+      "sample_games": 88,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_level_only_unfiltered_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, LEVEL only of the injury flag, population UNFILTERED, official-report path 2020-2024",
+      "effect": -4.225352,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -21.678322,
+        13.475177
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: LEVEL only, population unfiltered.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.31465,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.966741,
+      "sample_blocks": 72,
+      "sample_games": 142,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_level_threshold_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, LEVEL half of the injury flag, population THRESHOLD, official-report path 2020-2024",
+      "effect": -0.970874,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -20.0,
+        19.30492
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: LEVEL half, population threshold.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.4634,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.966741,
+      "sample_blocks": 63,
+      "sample_games": 103,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_level_unfiltered_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, LEVEL half of the injury flag, population UNFILTERED, official-report path 2020-2024",
+      "effect": -3.614458,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -19.565217,
+        13.043478
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: LEVEL half, population unfiltered.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.335875,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.966741,
+      "sample_blocks": 77,
+      "sample_games": 166,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_news_all_seasons_threshold_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse moves, NEWS half incl. the 2025 headline path, news_all_seasons_threshold_2020_2025",
+      "effect": 16.41791,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        0.0,
+        32.786885
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Secondary variant: season 2025 folded in via the PFT headline path.",
+      "plain_summary": "Same as the news half above, with 2025 added through the news-headline archive because no official injury report is available for that season.",
+      "probability_positive": 0.9729,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.80385,
+      "sample_blocks": 76,
+      "sample_games": 134,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_news_all_seasons_unfiltered_2020_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse moves, NEWS half incl. the 2025 headline path, news_all_seasons_unfiltered_2020_2025",
+      "effect": 12.796209,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        0.0,
+        25.358852
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Secondary variant: season 2025 folded in via the PFT headline path.",
+      "plain_summary": "Same as the news half above, with 2025 added through the news-headline archive because no official injury report is available for that season.",
+      "probability_positive": 0.9759,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.80385,
+      "sample_blocks": 89,
+      "sample_games": 211,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_news_only_threshold_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, NEWS only of the injury flag, population THRESHOLD, official-report path 2020-2024",
+      "effect": 13.684211,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -6.818182,
+        33.333333
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: NEWS only, population threshold.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.9063,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.80385,
+      "sample_blocks": 58,
+      "sample_games": 95,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_news_only_unfiltered_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, NEWS only of the injury flag, population UNFILTERED, official-report path 2020-2024",
+      "effect": 9.803922,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -5.454545,
+        25.16129
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: NEWS only, population unfiltered.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.8947,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.80385,
+      "sample_blocks": 72,
+      "sample_games": 153,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_news_threshold_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, NEWS half of the injury flag, population THRESHOLD, official-report path 2020-2024",
+      "effect": 10.909091,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -8.411215,
+        29.292929
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: NEWS half, population threshold.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.87075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.80385,
+      "sample_blocks": 62,
+      "sample_games": 110,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_news_unfiltered_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, NEWS half of the injury flag, population UNFILTERED, official-report path 2020-2024",
+      "effect": 8.474576,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -5.556261,
+        22.772591
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: NEWS half, population unfiltered.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.879425,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.80385,
+      "sample_blocks": 75,
+      "sample_games": 177,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_parent_injury_threshold_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, parent flag of the injury flag, population THRESHOLD, official-report path 2020-2024",
+      "effect": 11.111111,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -7.368421,
+        28.301887
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: parent flag, population threshold.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.8838,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.78425,
+      "sample_blocks": 58,
+      "sample_games": 99,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_parent_injury_unfiltered_2020_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Follow the market on adverse Tuesday-to-close moves, parent flag of the injury flag, population UNFILTERED, official-report path 2020-2024",
+      "effect": 4.635762,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -11.802264,
+        20.779221
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of movement_attribution_pop_threshold_injury / movement_attribution_pop_unfiltered_injury and, through them, the observed_movement_* family: same archive, same population, an exact additive component split of the same flag score, NOT an independent sample. Never pool additively with those parents or with each other; NEWS_net and LEVEL_net are correlated -0.78 by construction. Mined battery, no multiplicity correction claimed. Cut: parent flag, population unfiltered.",
+      "plain_summary": "When the betting line moves away from the team we picked, this checks whether that team's injury situation actually got worse during the week, or was already the worse one before the week started, and scores following the market in each case.",
+      "probability_positive": 0.709675,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.78425,
+      "sample_blocks": 78,
+      "sample_games": 151,
+      "seasons": [
+        2020,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_pftonly_tilt_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury-news headline tilt as the tilt's only path on top of the served refresh card, 2023",
+      "effect": -0.37594,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -8.118081,
+        7.01107
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. Candidate: served card + PFT-only injury tilt. Baseline: served card.",
+      "plain_summary": "Flip the published pick when injury headlines about the team we picked outnumber headlines about their opponent between Tuesday lunchtime and the pick deadline.",
+      "probability_positive": 0.46815,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.070932,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_pftonly_tilt_2023_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury-news headline tilt as the tilt's only path on top of the served refresh card, 2023_2024",
+      "effect": -3.007519,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -8.522727,
+        2.462121
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. Candidate: served card + PFT-only injury tilt. Baseline: served card.",
+      "plain_summary": "Flip the published pick when injury headlines about the team we picked outnumber headlines about their opponent between Tuesday lunchtime and the pick deadline.",
+      "probability_positive": 0.143125,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.070932,
+      "sample_blocks": 36,
+      "sample_games": 532,
+      "seasons": [
+        2023,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_pftonly_tilt_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury-news headline tilt as the tilt's only path on top of the served refresh card, 2023_2025",
+      "effect": -1.501877,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -5.653266,
+        2.59901
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. Candidate: served card + PFT-only injury tilt. Baseline: served card.",
+      "plain_summary": "Flip the published pick when injury headlines about the team we picked outnumber headlines about their opponent between Tuesday lunchtime and the pick deadline.",
+      "probability_positive": 0.234675,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.070932,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_pftonly_tilt_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury-news headline tilt as the tilt's only path on top of the served refresh card, 2024",
+      "effect": -5.639098,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -13.688213,
+        2.554745
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. Candidate: served card + PFT-only injury tilt. Baseline: served card.",
+      "plain_summary": "Flip the published pick when injury headlines about the team we picked outnumber headlines about their opponent between Tuesday lunchtime and the pick deadline.",
+      "probability_positive": 0.086025,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.070932,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_pftonly_tilt_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury-news headline tilt as the tilt's only path on top of the served refresh card, 2025",
+      "effect": 1.498127,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -3.690037,
+        6.69145
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. Candidate: served card + PFT-only injury tilt. Baseline: served card.",
+      "plain_summary": "Flip the published pick when injury headlines about the team we picked outnumber headlines about their opponent between Tuesday lunchtime and the pick deadline.",
+      "probability_positive": 0.716075,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.070932,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_pftonly_tilt_where_follow_silent_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "Injury-news headline tilt as the tilt's only path on top of the served refresh card, where_follow_silent_2023_2025",
+      "effect": -2.742616,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -8.227848,
+        2.680516
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. Candidate: served card + PFT-only injury tilt. Baseline: served card.",
+      "plain_summary": "Flip the published pick when injury headlines about the team we picked outnumber headlines about their opponent between Tuesday lunchtime and the pick deadline.",
+      "probability_positive": 0.160125,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.070932,
+      "sample_blocks": 54,
+      "sample_games": 474,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
+    "injury_news_vs_level_postfix_module_tilt_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero and no positive control bounds it; the flag has non-zero split-half reliability, so neither admissible closing ground applies.",
+      "closing_ground": null,
+      "description": "The challenger module's own tilt arm after the path-selection fix (official 2023-2024, headline path 2025) on top of the served refresh card",
+      "effect": -1.126408,
+      "effect_units": "accuracy_points",
+      "family": "injury_news_vs_level",
+      "interval": [
+        -4.645546,
+        2.261378
+      ],
+      "league": "nfl",
+      "notes": "CORRELATED DECOMPOSITION of the injury_signal_on_refresh_card_* family: same 816-game 2023-2025 intraday archive (artifacts/experiments/sharp_book_movement), same served refresh-card baseline, same opener evaluation. Never pool additively with those entries or with each other. Mined battery, no multiplicity correction claimed. Candidate: post-fix module arm. Baseline: served card.",
+      "plain_summary": "What the injury-tilt challenger now records once it stops treating a season of timestampless injury rows as a real reading.",
+      "probability_positive": 0.257925,
+      "recorded_at": "2026-09-09",
+      "reliability": 0.183183,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/injury_news_vs_level.md",
+      "standard_error": null
+    },
     "injury_signal_on_refresh_card_composition_on_raw_2023_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",

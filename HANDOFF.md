@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-09T23:53:02.291704+00:00`
+Refreshed at: `2026-09-10T00:05:17.212555+00:00`
 
 ## Start here
 
@@ -20,15 +20,17 @@ Refreshed at: `2026-09-09T23:53:02.291704+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6297bdc8a994` — Four more arms record: composition recorders accept every known composition policy id (the id bump orphaned three of them), mod07's standalone recorder is named in lockday_verify. Docs and scripts from the injury-tilt, handle-follow and sharp-book lanes.
-- Pending change set: 8 paths
+- Baseline commit: `f38d130883d9` — The served nine-member card is the harness baseline (replay 56.886% exact); rookie crew +0.13 P+ 0.79 holds on it; T2 at exactly 7 resolves negative on the played card; no unserved tilt clears 0.5 on the true card. Best Pick: small-spread-only nomination +1.96 P+ 0.69.
+- Pending change set: 10 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `A  docs/best_pick_bucket_confidence.md`
-  - `A  docs/served_card_harness.md`
-  - `A  scripts/best_pick_bucket_confidence_eval.py`
-  - `M  scripts/spread_hole_arms.py`
-  - `M  scripts/unserved_tilt_marginals.py`
-  - `M  src/nfl_ats/unserved_tilt_marginals.py`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/injury_news_vs_level.md`
+  - `M  docs/injury_signal_on_refresh_card.md`
+  - `M  docs/movement_attribution.md`
+  - `M  registry/weak_signals.json`
+  - `M  src/nfl_ats/injury_signal_refresh_tilt.py`
   - ` M tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.

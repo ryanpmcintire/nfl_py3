@@ -80,11 +80,18 @@ The construction below is a LIVE port of ``docs/movement_attribution.md``'s
   over that team's skill-position players, ``net_injury_score =
   team_injury_delta(picked_team) - team_injury_delta(opponent_team)``.
   ``net_injury_score >= 2`` fires (the identical predeclared bar).
-* **Official-report path** whenever the target season has ANY official
-  injury-report coverage in the locally ingested snapshot (checked
-  dynamically, not hardcoded to a season boundary, since the whole point of
-  a live challenger is to pick up 2026's own official reports once they are
-  ingested); **PFT-headline fallback** otherwise (``net_pft_score >= 1``,
+* **Official-report path** whenever the target season's official rows carry
+  an observation timestamp ``_severity_asof`` can actually read -- a non-null
+  ``date_modified`` that is not a week proxy (checked dynamically, not
+  hardcoded to a season boundary, since the whole point of a live challenger
+  is to pick up 2026's own official reports once they are ingested). Presence
+  of rows is NOT enough: a season whose rows are all ``observed_at_basis =
+  week_proxy`` (measured 2026-09-09: every 2025 and 2026 row of snapshot
+  ``20260909T223500Z``) admits nothing through the ``date_modified <= cutoff``
+  filter, so the official path would return a guaranteed ``net_score = 0.0``
+  while reporting ``source = "official"`` -- a silent no-op presented as a
+  reading (``docs/injury_news_vs_level.md``, part 4).
+  **PFT-headline fallback** otherwise (``net_pft_score >= 1``,
   the identical predeclared bar), reading whatever local
   ``data/raw/injury_news/<snapshot>/index.parquet`` bulk-scrape happens to
   exist -- a manually re-run, private research archive
@@ -270,6 +277,18 @@ def _latest_pft_index_fail_open(data_root: Path) -> pd.DataFrame | None:
     return pft
 
 
+def _season_has_readable_official_rows(injuries: pd.DataFrame, season: int) -> bool:
+    """Whether that season's official rows carry a timestamp ``_severity_asof`` can read."""
+
+    scoped = injuries.loc[injuries["season"].eq(season)]
+    if scoped.empty:
+        return False
+    readable = pd.to_datetime(scoped["date_modified"], utc=True, errors="coerce").notna()
+    if "observed_at_is_proxy" in scoped.columns:
+        readable &= ~scoped["observed_at_is_proxy"].fillna(True).astype(bool)
+    return bool(readable.any())
+
+
 def _severity_asof(rows: pd.DataFrame, cutoff: pd.Timestamp) -> pd.DataFrame:
     eligible = rows.loc[rows["date_modified"] <= cutoff]
     if eligible.empty:
@@ -356,7 +375,7 @@ def injury_signal_for_game(
     opponent = _canonical_team(opponent_team)
     tuesday_noon = own_week_tuesday_noon_utc(pd.Series([kickoff])).iloc[0]
 
-    if injuries is not None and injuries["season"].eq(season).any():
+    if injuries is not None and _season_has_readable_official_rows(injuries, season):
         delta_picked = _official_team_delta(
             injuries,
             season=season,
