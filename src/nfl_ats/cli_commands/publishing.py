@@ -175,6 +175,49 @@ REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
 }
 
 
+REPLACE_WEEK_FROZEN_ARMS: dict[str, str] = {
+    "low_total_div_home_dog_challenger": (
+        "recorded 2026-09-05 from its own card 2026-week-01-20260905T141453Z; --replace-week "
+        "leaves it on that card"
+    ),
+    "rain_on_grass_dog_challenger": (
+        "recorded 2026-09-05 from its own card 2026-week-01-20260905T141453Z on that day's "
+        "live weather read; --replace-week leaves it on that card"
+    ),
+    "weak_stack_qb_revenge_deadline_drag": (
+        "recorded 2026-09-05 from its own card 2026-week-01-20260905T141453Z; --replace-week "
+        "leaves it on that card"
+    ),
+}
+
+
+def replace_week_for(request: PublishPredictionsRequest, challenger_id: str) -> bool:
+    """Whether ``--replace-week`` reaches one arm, or leaves its frozen card alone."""
+
+    return request.replace_week and challenger_id not in REPLACE_WEEK_FROZEN_ARMS
+
+
+def collect_replacement_report(result: dict[str, Any]) -> dict[str, Any]:
+    """Per-ledger ``replaced`` / ``left_post_kickoff`` counts for a replace pass."""
+
+    keys = set(PUBLISH_CHALLENGER_RESULT_KEYS.values())
+    keys.update({"clv_ledger", "best_pick_tuesday_ledger"})
+    ledgers: dict[str, dict[str, int]] = {}
+    for result_key in sorted(keys):
+        entry = result.get(result_key)
+        if not isinstance(entry, dict):
+            continue
+        replaced = int(entry.get("replaced_rows", 0) or 0)
+        left = int(entry.get("left_post_kickoff", 0) or 0)
+        if replaced or left:
+            ledgers[result_key] = {"replaced": replaced, "left_post_kickoff": left}
+    return {
+        "ledgers": ledgers,
+        "total_replaced": sum(row["replaced"] for row in ledgers.values()),
+        "frozen_arms_left_alone": sorted(REPLACE_WEEK_FROZEN_ARMS),
+    }
+
+
 def collect_failed_recorders(
     result: dict[str, Any], result_keys: dict[str, str]
 ) -> list[dict[str, str]]:
@@ -404,7 +447,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             }
         try:
             result["backup_qb_fade_challenger_ledger"] = record_backup_qb_fade_challenger_decisions(
-                _artifacts_root(), _data_root()
+                _artifacts_root(),
+                _data_root(),
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
             )
         except Exception as error:
             result["backup_qb_fade_challenger_ledger"] = {"recorded": 0, "error": str(error)}
@@ -435,19 +481,32 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             }
         try:
             result["expected_lineup_loss_challenger_ledger"] = (
-                record_expected_lineup_loss_challenger_decisions(_artifacts_root(), _data_root())
+                record_expected_lineup_loss_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
         except Exception as error:
             result["expected_lineup_loss_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["deadline_drag_challenger_ledger"] = record_deadline_drag_challenger_decisions(
-                _artifacts_root(), _data_root()
+                _artifacts_root(),
+                _data_root(),
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
             )
         except Exception as error:
             result["deadline_drag_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["low_total_div_home_dog_challenger_ledger"] = (
-                record_low_total_div_home_dog_challenger_decisions(_artifacts_root(), _data_root())
+                record_low_total_div_home_dog_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=replace_week_for(request, "low_total_div_home_dog_challenger"),
+                )
             )
         except Exception as error:
             result["low_total_div_home_dog_challenger_ledger"] = {
@@ -456,13 +515,21 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             }
         try:
             result["bye_edge_fade_challenger_ledger"] = record_bye_edge_fade_challenger_decisions(
-                _artifacts_root(), _data_root()
+                _artifacts_root(),
+                _data_root(),
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
             )
         except Exception as error:
             result["bye_edge_fade_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["tank_zone_fade_tilt_challenger_ledger"] = (
-                record_tank_zone_fade_tilt_challenger_decisions(_artifacts_root(), _data_root())
+                record_tank_zone_fade_tilt_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
         except Exception as error:
             result["tank_zone_fade_tilt_challenger_ledger"] = {
@@ -472,7 +539,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["third_down_reversion_fade_challenger_ledger"] = (
                 record_third_down_reversion_fade_challenger_decisions(
-                    _artifacts_root(), _data_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -483,7 +553,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["turnover_luck_rebound_tilt_challenger_ledger"] = (
                 record_turnover_luck_rebound_tilt_challenger_decisions(
-                    _artifacts_root(), _data_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -494,7 +567,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["special_teams_return_tilt_challenger_ledger"] = (
                 record_special_teams_return_tilt_challenger_decisions(
-                    _artifacts_root(), _data_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -504,7 +580,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             }
         try:
             result["pace_mismatch_dog_tilt_challenger_ledger"] = (
-                record_pace_mismatch_dog_tilt_challenger_decisions(_artifacts_root(), _data_root())
+                record_pace_mismatch_dog_tilt_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
         except Exception as error:
             result["pace_mismatch_dog_tilt_challenger_ledger"] = {
@@ -514,7 +595,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["pbp08_protection_mismatch_tilt_challenger_ledger"] = (
                 record_pbp08_protection_mismatch_tilt_challenger_decisions(
-                    _artifacts_root(), _data_root(), now=publish_instant
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -525,7 +610,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["four_overlay_incumbent_challenger_ledger"] = (
                 record_former_production_incumbent_decisions(
-                    _artifacts_root(), _data_root(), now=publish_instant
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -536,7 +625,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["retired_four_member_union_challenger_ledger"] = (
                 record_retired_four_member_union_decisions(
-                    _artifacts_root(), _data_root(), now=publish_instant
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -547,7 +640,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["retired_three_member_union_challenger_ledger"] = (
                 record_retired_three_member_union_decisions(
-                    _artifacts_root(), _data_root(), now=publish_instant
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -557,7 +654,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             }
         try:
             result["ecdf_mapping_incumbent_challenger_ledger"] = (
-                record_ecdf_mapping_incumbent_challenger_decisions(_artifacts_root(), _data_root())
+                record_ecdf_mapping_incumbent_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
             )
         except Exception as error:
             result["ecdf_mapping_incumbent_challenger_ledger"] = {
@@ -567,7 +669,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["gaussian_mean_mapping_incumbent_challenger_ledger"] = (
                 record_gaussian_mean_mapping_incumbent_challenger_decisions(
-                    _artifacts_root(), _data_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -578,7 +683,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["home_side_offset_off_incumbent_challenger_ledger"] = (
                 record_home_side_offset_incumbent_challenger_decisions(
-                    _artifacts_root(), _data_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -589,7 +697,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["key_line_pick_read_off_incumbent_challenger_ledger"] = (
                 record_key_line_pick_read_incumbent_challenger_decisions(
-                    _artifacts_root(), _data_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -600,7 +711,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["era_weighted_half_life_8_challenger_ledger"] = (
                 record_era_weighted_half_life_8_challenger_decisions(
-                    _artifacts_root(), _data_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -611,7 +725,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["forecast_cold_visitor_tilt_challenger_ledger"] = (
                 record_forecast_cold_visitor_tilt_challenger_decisions(
-                    _artifacts_root(), _data_root(), _registry_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    _registry_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -622,7 +740,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["interim_hc_first_game_tilt_challenger_ledger"] = (
                 record_interim_hc_first_game_tilt_challenger_decisions(
-                    _artifacts_root(), _data_root()
+                    _artifacts_root(),
+                    _data_root(),
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -631,7 +752,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "error": str(error),
             }
         shared_kn_forecasts = fetch_shared_kickoff_nearest_forecasts_fail_open(
-            _artifacts_root(), _data_root(), _registry_root()
+            _artifacts_root(),
+            _data_root(),
+            _registry_root(),
+            forecast_artifact=request.record_from_forecast,
         )
         try:
             result["forecast_weather_kn_warm_team_cold_late_tilt_challenger_ledger"] = (
@@ -640,6 +764,8 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _data_root(),
                     _registry_root(),
                     forecasts=shared_kn_forecasts,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -654,6 +780,8 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _data_root(),
                     _registry_root(),
                     forecasts=shared_kn_forecasts,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -668,6 +796,8 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                     _data_root(),
                     _registry_root(),
                     forecasts=shared_kn_forecasts,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=replace_week_for(request, "rain_on_grass_dog_challenger"),
                 )
             )
         except Exception as error:
@@ -678,7 +808,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["movement_rule_composed_challenger_ledger"] = (
                 record_movement_rule_composed_challenger_decisions(
-                    _artifacts_root(), _data_root(), now=publish_instant
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -689,7 +823,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["nflcom_refresh_out2_starters_challenger_ledger"] = (
                 record_nflcom_refresh_out2_starters_challenger_decisions(
-                    _artifacts_root(), _data_root(), now=publish_instant
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -700,7 +838,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["qb_revenge_deadline_drag_stack_challenger_ledger"] = (
                 record_qb_revenge_deadline_drag_stack_challenger_decisions(
-                    _artifacts_root(), _data_root(), now=publish_instant
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=replace_week_for(request, "weak_stack_qb_revenge_deadline_drag"),
                 )
             )
         except Exception as error:
@@ -711,7 +853,10 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         try:
             result["totals_served_method_challenger_ledger"] = (
                 record_totals_served_method_decisions(
-                    _artifacts_root(), _data_root(), now=publish_instant
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    replace_week=request.replace_week,
                 )
             )
         except Exception as error:
@@ -722,6 +867,8 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         result["failed_recorders"] = collect_failed_recorders(
             result, PUBLISH_CHALLENGER_RESULT_KEYS
         )
+        if request.replace_week:
+            result["replaced_week"] = collect_replacement_report(result)
     else:
         result["best_pick_tuesday_ledger"] = {
             "recorded": 0,
@@ -1136,8 +1283,10 @@ def register(
             "re-recorded everywhere rather than only in the paper ledger. Only rows for "
             "games that are still before kickoff are replaced; a row for a game already "
             "under way is left exactly as it is, because the append step would not "
-            "re-create it. Pre-kickoff and recording-window guards still apply. Only "
-            "meaningful with --record-decisions."
+            "re-create it. Pre-kickoff and recording-window guards still apply. The arms "
+            "in REPLACE_WEEK_FROZEN_ARMS are left on the card they were frozen from, and "
+            "the result's replaced_week block reports what every ledger replaced and "
+            "left. Only meaningful with --record-decisions."
         ),
     )
     publish.set_defaults(handler=_cmd_publish_predictions)

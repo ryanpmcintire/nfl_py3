@@ -766,7 +766,7 @@
               "type": null,
               "choices": null,
               "required": false,
-              "help": "operator override (owner, 2026-09-09): drop the recorded week's existing rows first in every ledger this run writes -- paper decisions, each overlay and Best Pick challenger arm, the Best Pick Tuesday ledger and the tiebreaker shade ledger (each prior ledger is kept as a timestamped .bak beside it) -- so a missed lock, or one recorded on the wrong lines, can be re-recorded everywhere rather than only in the paper ledger. Only rows for games that are still before kickoff are replaced; a row for a game already under way is left exactly as it is, because the append step would not re-create it. Pre-kickoff and recording-window guards still apply. Only meaningful with --record-decisions.",
+              "help": "operator override (owner, 2026-09-09): drop the recorded week's existing rows first in every ledger this run writes -- paper decisions, each overlay and Best Pick challenger arm, the Best Pick Tuesday ledger and the tiebreaker shade ledger (each prior ledger is kept as a timestamped .bak beside it) -- so a missed lock, or one recorded on the wrong lines, can be re-recorded everywhere rather than only in the paper ledger. Only rows for games that are still before kickoff are replaced; a row for a game already under way is left exactly as it is, because the append step would not re-create it. Pre-kickoff and recording-window guards still apply. The arms in REPLACE_WEEK_FROZEN_ARMS are left on the card they were frozen from, and the result's replaced_week block reports what every ledger replaced and left. Only meaningful with --record-decisions.",
               "metavar": null
             }
           ],
@@ -4169,6 +4169,21 @@
               "choices": null,
               "required": false,
               "help": "margin-predict artifact directory to record from; by default the newest card for the season/week whose configuration fingerprint matches the registration",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreTrueAction",
+              "option_strings": [
+                "--replace-week"
+              ],
+              "dest": "replace_week",
+              "nargs": 0,
+              "const": true,
+              "default": false,
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "operator override (owner, 2026-09-09): drop this challenger's existing rows for the season/week first, keeping the prior ledger as a timestamped .bak beside it, so a week recorded from a superseded card can be re-recorded. Only rows for games still before kickoff are replaced; a row for a game already under way is left exactly as it is",
               "metavar": null
             }
           ],

@@ -15,7 +15,6 @@ paired read to record) and a fingerprint drift, exactly like its siblings.
 
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -23,7 +22,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.home_side_location import HOME_SIDE_OFFSET_FILENAME, load_forecast_home_side_offsets
@@ -38,6 +37,7 @@ from nfl_ats.prospective_scoring import (
     load_challenger_decisions,
 )
 from nfl_ats.provenance import sha256_file
+from nfl_ats.recorder_override import replace_week_rows, resolve_recording_forecast
 
 CHALLENGER_ID = "home_side_offset_off_incumbent"
 
@@ -82,6 +82,8 @@ def record_home_side_offset_incumbent_challenger_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append the uncorrected read's forced picks to the prospective challenger ledger.
 
@@ -102,18 +104,10 @@ def record_home_side_offset_incumbent_challenger_decisions(
     active = load_active_ats_model(artifacts_root)
     if active is None:
         raise ValueError("No synchronized active ATS model is available to record decisions from")
-    forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
-    if forecast is None:
-        raise ValueError("Active ATS model has no linked weekly forecast")
-    metadata_path = forecast / "metadata.json"
+    forecast, metadata = resolve_recording_forecast(
+        artifacts_root, active, forecast_artifact=forecast_artifact
+    )
     card_path = forecast / "recommendations.csv"
-    if not metadata_path.is_file() or not card_path.is_file():
-        raise ValueError(f"Linked weekly forecast is incomplete: {forecast}")
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    if metadata.get("active_model_id") != active.get("model_id"):
-        raise ValueError("Weekly forecast model ID does not match the active model")
-    if metadata.get("synchronization_status") != "SYNCHRONIZED":
-        raise ValueError("Weekly forecast is not synchronized with an evaluation")
 
     observed_config = artifact_model_config(metadata)
     declared_fingerprint = config_fingerprint(entry.get("model", {}))
@@ -165,6 +159,18 @@ def record_home_side_offset_incumbent_challenger_decisions(
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_challenger_decisions(artifacts_root)
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and bool(pre_kickoff.any()):
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            challenger_ledger_path(artifacts_root),
+            season=int(card["season"].iloc[0]),
+            week=int(card["week"].iloc[0]),
+            recorded_at=recorded_at,
+            columns=CHALLENGER_DECISION_COLUMNS,
+            challenger_id=CHALLENGER_ID,
+        )
     mine = existing.loc[existing["challenger_id"].astype(str).eq(CHALLENGER_ID)]
     already = card["game_id"].astype(str).isin(set(mine["game_id"].astype(str)))
     keep = pre_kickoff & ~already
@@ -218,6 +224,8 @@ def record_home_side_offset_incumbent_challenger_decisions(
         "recorded": len(decisions),
         "already_recorded": int(already.sum()),
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "ledger_rows": int(ledger_rows),
         "flip_count": len(flipped),
         "flipped_game_ids": flipped,

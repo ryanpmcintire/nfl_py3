@@ -185,6 +185,7 @@ def record_tiebreaker_shade_decisions(
             ]
         )
         replaced_rows = 0
+        left_post_kickoff = 0
         if replace_week and bool(recorded_week.any()):
             settled, replaced_rows, left_post_kickoff = replace_week_rows(
                 settled,
@@ -198,6 +199,11 @@ def record_tiebreaker_shade_decisions(
                 return skip("the recorded tiebreaker game has already kicked off")
         combined = pd.concat([settled, row], ignore_index=True) if not settled.empty else row
         atomic_parquet(combined, ledger_path(artifacts_root))
-        return {"recorded": 1, "ledger_rows": len(combined), "replaced_rows": replaced_rows}
+        return {
+            "recorded": 1,
+            "ledger_rows": len(combined),
+            "replaced_rows": replaced_rows,
+            "left_post_kickoff": left_post_kickoff,
+        }
     except (OSError, ValueError, KeyError, TypeError) as error:
         return skip(f"{CHALLENGER_ID}: {error}")

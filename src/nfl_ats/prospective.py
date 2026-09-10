@@ -14,7 +14,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.constants import TEAM_ABBREVIATION_ALIASES
 from nfl_ats.data import DataContractError
@@ -37,6 +37,7 @@ from nfl_ats.prospective_scoring import (
     load_challenger_decisions,
 )
 from nfl_ats.provenance import sha256_file
+from nfl_ats.recorder_override import replace_week_rows, resolve_recording_forecast
 
 FROZEN_PREDICTION_COLUMNS = (
     "game_id",
@@ -223,7 +224,11 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def _active_forecast_context(
-    artifacts_root: Path, entry: Mapping[str, Any], challenger_id: str
+    artifacts_root: Path,
+    entry: Mapping[str, Any],
+    challenger_id: str,
+    *,
+    forecast_artifact: str | None = None,
 ) -> tuple[dict[str, Any], str, str, str]:
     """The active model's linked weekly forecast, fingerprint-gated.
 
@@ -236,18 +241,10 @@ def _active_forecast_context(
     active = load_active_ats_model(artifacts_root)
     if active is None:
         raise ValueError("No synchronized active ATS model is available to record decisions from")
-    forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
-    if forecast is None:
-        raise ValueError("Active ATS model has no linked weekly forecast")
-    metadata_path = forecast / "metadata.json"
+    forecast, metadata = resolve_recording_forecast(
+        artifacts_root, active, forecast_artifact=forecast_artifact
+    )
     card_path = forecast / "recommendations.csv"
-    if not metadata_path.is_file() or not card_path.is_file():
-        raise ValueError(f"Linked weekly forecast is incomplete: {forecast}")
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    if metadata.get("active_model_id") != active.get("model_id"):
-        raise ValueError("Weekly forecast model ID does not match the active model")
-    if metadata.get("synchronization_status") != "SYNCHRONIZED":
-        raise ValueError("Weekly forecast is not synchronized with an evaluation")
     declared_fingerprint = config_fingerprint(entry.get("model", {}))
     observed_fingerprint = config_fingerprint(artifact_model_config(metadata))
     if declared_fingerprint != observed_fingerprint:
@@ -298,8 +295,11 @@ def _chain_card(artifacts_root: Path, metadata: Mapping[str, Any]) -> pd.DataFra
     return ledger.reset_index(drop=True)
 
 
-def _append_challenger_decisions(artifacts_root: Path, rows: pd.DataFrame) -> int:
-    existing = load_challenger_decisions(artifacts_root)
+def _append_challenger_decisions(
+    artifacts_root: Path, rows: pd.DataFrame, existing: pd.DataFrame | None = None
+) -> int:
+    if existing is None:
+        existing = load_challenger_decisions(artifacts_root)
     combined = rows if existing.empty else pd.concat([existing, rows], ignore_index=True)
     atomic_parquet(
         combined[list(CHALLENGER_DECISION_COLUMNS)], challenger_ledger_path(artifacts_root)
@@ -330,6 +330,8 @@ def record_movement_rule_composed_challenger_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append the movement-rule-on-chain arm to the prospective challenger ledger.
 
@@ -351,7 +353,10 @@ def record_movement_rule_composed_challenger_decisions(
     entry = find_challenger(artifacts_root, MOVEMENT_RULE_COMPOSED_CHALLENGER_ID)
     _require_active_status(entry, MOVEMENT_RULE_COMPOSED_CHALLENGER_ID)
     metadata, fingerprint, source_artifact, source_sha = _active_forecast_context(
-        artifacts_root, entry, MOVEMENT_RULE_COMPOSED_CHALLENGER_ID
+        artifacts_root,
+        entry,
+        MOVEMENT_RULE_COMPOSED_CHALLENGER_ID,
+        forecast_artifact=forecast_artifact,
     )
     ledger = _chain_card(artifacts_root, metadata)
 
@@ -375,11 +380,23 @@ def record_movement_rule_composed_challenger_decisions(
         }
 
     existing = load_challenger_decisions(artifacts_root)
+    pre_kickoff = kickoffs.gt(recorded_at)
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and bool(pre_kickoff.any()):
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            challenger_ledger_path(artifacts_root),
+            season=int(metadata["season"]),
+            week=int(metadata["week"]),
+            recorded_at=recorded_at,
+            columns=CHALLENGER_DECISION_COLUMNS,
+            challenger_id=MOVEMENT_RULE_COMPOSED_CHALLENGER_ID,
+        )
     mine = existing.loc[
         existing["challenger_id"].astype(str).eq(MOVEMENT_RULE_COMPOSED_CHALLENGER_ID)
     ]
     already = set(mine["game_id"].astype(str))
-    pre_kickoff = kickoffs.gt(recorded_at)
 
     picks: list[str] = []
     without_line = 0
@@ -442,7 +459,7 @@ def record_movement_rule_composed_challenger_decisions(
     )
 
     ledger_rows = (
-        _append_challenger_decisions(artifacts_root, decision_rows)
+        _append_challenger_decisions(artifacts_root, decision_rows, existing)
         if not decision_rows.empty
         else len(existing)
     )
@@ -455,6 +472,8 @@ def record_movement_rule_composed_challenger_decisions(
         "recorded": len(decision_rows),
         "already_recorded": len(already & set(ledger["game_id"].astype(str))),
         "post_kickoff_skipped": int((~pre_kickoff).sum()),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "ledger_rows": int(ledger_rows),
         "movement_flips": flips,
         "games_without_captured_line": without_line,
@@ -647,6 +666,8 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append the NFL.com Friday out>=2-starters fade arm to the challenger ledger.
 
@@ -673,7 +694,10 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     entry = find_challenger(artifacts_root, NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID)
     _require_active_status(entry, NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID)
     metadata, fingerprint, source_artifact, source_sha = _active_forecast_context(
-        artifacts_root, entry, NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID
+        artifacts_root,
+        entry,
+        NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID,
+        forecast_artifact=forecast_artifact,
     )
     ledger = _chain_card(artifacts_root, metadata)
     season = int(metadata["season"])
@@ -740,11 +764,23 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     starter_out = nflcom_team_starter_out_counts(snapshot_dir, snaps_candidates[-1])
 
     existing = load_challenger_decisions(artifacts_root)
+    pre_kickoff = kickoffs.gt(recorded_at)
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and bool(pre_kickoff.any()):
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            challenger_ledger_path(artifacts_root),
+            season=season,
+            week=week,
+            recorded_at=recorded_at,
+            columns=CHALLENGER_DECISION_COLUMNS,
+            challenger_id=NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID,
+        )
     mine = existing.loc[
         existing["challenger_id"].astype(str).eq(NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID)
     ]
     already = set(mine["game_id"].astype(str))
-    pre_kickoff = kickoffs.gt(recorded_at)
 
     picks = []
     flips = 0
@@ -817,7 +853,7 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     )
 
     ledger_rows = (
-        _append_challenger_decisions(artifacts_root, decision_rows)
+        _append_challenger_decisions(artifacts_root, decision_rows, existing)
         if not decision_rows.empty
         else len(existing)
     )
@@ -831,6 +867,8 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
         "recorded": len(decision_rows),
         "already_recorded": len(already & set(ledger["game_id"].astype(str))),
         "post_kickoff_skipped": int((~pre_kickoff).sum()),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "page_after_deadline_skipped": skipped_page_after_deadline,
         "ledger_rows": int(ledger_rows),
         "overlay_flips": flips,

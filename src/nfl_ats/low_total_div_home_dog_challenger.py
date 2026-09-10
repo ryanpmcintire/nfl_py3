@@ -80,7 +80,6 @@ Two things live here, mirroring the sibling overlays' structure:
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -89,7 +88,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
@@ -103,6 +102,7 @@ from nfl_ats.prospective_scoring import (
     load_challenger_decisions,
 )
 from nfl_ats.provenance import sha256_file
+from nfl_ats.recorder_override import replace_week_rows, resolve_recording_forecast
 
 CHALLENGER_ID = "low_total_div_home_dog_challenger"
 
@@ -240,8 +240,13 @@ def _record_instant(now: datetime | None) -> pd.Timestamp:
 
 
 def record_paired_overlay_arms(
-    artifacts_root: Path, challenger_id: str, decisions: pd.DataFrame, card: pd.DataFrame
-) -> None:
+    artifacts_root: Path,
+    challenger_id: str,
+    decisions: pd.DataFrame,
+    card: pd.DataFrame,
+    *,
+    replace_week: bool = False,
+) -> tuple[int, int]:
     """Freeze both arms together, without changing the shared challenger schema.
 
     The candidate also enters the standard scoring ledger; this companion
@@ -249,17 +254,30 @@ def record_paired_overlay_arms(
     First-write-wins makes a retry safe after either ledger write fails.
     """
     if decisions.empty:
-        return
+        return 0, 0
     paired = decisions.copy()
     baseline = card.set_index("game_id")["home_cover_probability"]
     paired["baseline_pick_side"] = np.where(paired["game_id"].map(baseline).ge(0.5), "HOME", "AWAY")
     path = artifacts_root / "prospective" / f"{challenger_id}_paired_decisions.parquet"
+    replaced_rows = 0
+    left_post_kickoff = 0
     if path.is_file():
         existing = pd.read_parquet(path)
+        if replace_week and not existing.empty:
+            existing, replaced_rows, left_post_kickoff = replace_week_rows(
+                existing,
+                path,
+                season=int(paired["season"].iloc[0]),
+                week=int(paired["week"].iloc[0]),
+                recorded_at=pd.Timestamp(paired["recorded_at_utc"].iloc[0]),
+                columns=tuple(existing.columns),
+                challenger_id=challenger_id,
+            )
         paired = pd.concat([existing, paired], ignore_index=True).drop_duplicates(
             subset=["challenger_id", "game_id"], keep="first"
         )
     atomic_parquet(paired, path)
+    return replaced_rows, left_post_kickoff
 
 
 def record_low_total_div_home_dog_challenger_decisions(
@@ -267,6 +285,8 @@ def record_low_total_div_home_dog_challenger_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append the overlay's picks to the prospective challenger ledger.
 
@@ -307,18 +327,10 @@ def record_low_total_div_home_dog_challenger_decisions(
         raise ValueError(
             "No synchronized active ATS model is available to record overlay decisions from"
         )
-    forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
-    if forecast is None:
-        raise ValueError("Active ATS model has no linked weekly forecast")
-    metadata_path = forecast / "metadata.json"
+    forecast, metadata = resolve_recording_forecast(
+        artifacts_root, active, forecast_artifact=forecast_artifact
+    )
     card_path = forecast / "recommendations.csv"
-    if not metadata_path.is_file() or not card_path.is_file():
-        raise ValueError(f"Linked weekly forecast is incomplete: {forecast}")
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
-    if metadata.get("active_model_id") != active.get("model_id"):
-        raise ValueError("Weekly forecast model ID does not match the active model")
-    if metadata.get("synchronization_status") != "SYNCHRONIZED":
-        raise ValueError("Weekly forecast is not synchronized with an evaluation")
 
     observed_config = artifact_model_config(metadata)
     declared_fingerprint = config_fingerprint(entry.get("model", {}))
@@ -371,6 +383,18 @@ def record_low_total_div_home_dog_challenger_decisions(
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_challenger_decisions(artifacts_root)
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and bool(pre_kickoff.any()):
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            challenger_ledger_path(artifacts_root),
+            season=int(card["season"].iloc[0]),
+            week=int(card["week"].iloc[0]),
+            recorded_at=recorded_at,
+            columns=CHALLENGER_DECISION_COLUMNS,
+            challenger_id=CHALLENGER_ID,
+        )
     mine = existing.loc[existing["challenger_id"].astype(str).eq(CHALLENGER_ID)]
     already = card["game_id"].astype(str).isin(set(mine["game_id"].astype(str)))
     keep = pre_kickoff & ~already
@@ -404,8 +428,12 @@ def record_low_total_div_home_dog_challenger_decisions(
             "edge": np.nan,
         }
     )
+    paired_replaced = 0
+    paired_left_post_kickoff = 0
     if not decisions.empty:
-        record_paired_overlay_arms(artifacts_root, CHALLENGER_ID, decisions, card)
+        paired_replaced, paired_left_post_kickoff = record_paired_overlay_arms(
+            artifacts_root, CHALLENGER_ID, decisions, card, replace_week=replace_week
+        )
         combined = (
             decisions if existing.empty else pd.concat([existing, decisions], ignore_index=True)
         )
@@ -425,6 +453,10 @@ def record_low_total_div_home_dog_challenger_decisions(
         "recorded": len(decisions),
         "already_recorded": int(already.sum()),
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
+        "paired_replaced_rows": paired_replaced,
+        "paired_left_post_kickoff": paired_left_post_kickoff,
         "ledger_rows": int(ledger_rows),
         "flip_count": tilt.flip_count,
         "flipped_game_ids": [flip.game_id for flip in tilt.flips],

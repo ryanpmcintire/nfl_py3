@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T03:31:45.707924+00:00`
+Refreshed at: `2026-09-10T03:40:01.937626+00:00`
 
 ## Start here
 
@@ -20,25 +20,29 @@ Refreshed at: `2026-09-10T03:31:45.707924+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ccd6e1c2d544` — Lock fails in seconds without the pool board (splash_board_tue check, weekly_lock requires it, BLOCKED lines in the log); injury-news scrape scheduled Wed-Sun 16:00 and Sun 11:30 on the site's new URL scheme; line-size shrinkage lost through the card (best arm P+ 0.32) though its k curve confirms the mechanism
-- Pending change set: 17 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `5cff7d8d7a97` — Board: strength bands are terciles of the calibrated score's own distribution (1 slight / 14 lean / 1 strong, was 0/6/10); headline reads the nine-member card that is actually served (56.9%), fail-closed on model or policy mismatch; a time-dependent KeyError in the protection flags no longer kills the site build (three long-failing tests pass)
+- Pending change set: 38 paths
   - `M  HANDOFF.md`
-  - `M  docs/displayed_confidence.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/card_explanation.py`
-  - `M  src/nfl_ats/displayed_confidence.py`
-  - `M  src/nfl_ats/four_overlay_composition.py`
-  - `M  src/nfl_ats/pool_workbench.py`
-  - `M  src/nfl_ats/public_board.py`
-  - `M  tests/test_board_content.py`
-  - `M  tests/test_card_explanation.py`
-  - `M  tests/test_public_board.py`
-  - `M  tiebreaker.json`
+  - `M  README.md`
+  - `M  registry/weak_signals.json`
+  - `M  src/nfl_ats/backup_qb_fade_overlay.py`
+  - `M  src/nfl_ats/best_pick_refresh_prospective.py`
+  - `M  src/nfl_ats/bye_edge_fade_overlay.py`
+  - `M  src/nfl_ats/cli_commands/prospective.py`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/deadline_drag_challenger.py`
+  - `M  src/nfl_ats/ecdf_mapping_incumbent_overlay.py`
+  - `M  src/nfl_ats/era_weighted_half_life_8_overlay.py`
+  - `M  src/nfl_ats/expected_lineup_loss_challenger.py`
+  - `M  src/nfl_ats/forecast_cold_visitor_tilt_overlay.py`
+  - `M  src/nfl_ats/forecast_weather_kn_precip_high_total_tilt_overlay.py`
+  - `M  src/nfl_ats/forecast_weather_kn_warm_team_cold_late_tilt_overlay.py`
+  - `M  src/nfl_ats/four_overlay_incumbent.py`
+  - `M  src/nfl_ats/gaussian_mean_mapping_incumbent_overlay.py`
+  - `M  src/nfl_ats/home_side_offset_incumbent_overlay.py`
+  - `M  src/nfl_ats/interim_hc_first_game_tilt_overlay.py`
+  - `M  src/nfl_ats/key_line_pick_read_incumbent_overlay.py`
+  - ...and 18 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

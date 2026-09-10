@@ -76,6 +76,7 @@ from nfl_ats.clv import (
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.provenance import sha256_file
+from nfl_ats.recorder_override import replace_week_rows
 
 SETTLEMENT_REQUIRED_COLUMNS: tuple[str, ...] = (
     "game_id",
@@ -531,6 +532,7 @@ def record_challenger_decisions(
     artifact_directory: Path,
     *,
     now: datetime | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Append a registered challenger's pre-kickoff picks to the challenger ledger.
 
@@ -596,6 +598,18 @@ def record_challenger_decisions(
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="challenger")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_challenger_decisions(artifacts_root)
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and bool(pre_kickoff.any()):
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            challenger_ledger_path(artifacts_root),
+            season=int(card["season"].iloc[0]),
+            week=int(card["week"].iloc[0]),
+            recorded_at=recorded_at,
+            columns=CHALLENGER_DECISION_COLUMNS,
+            challenger_id=challenger_id,
+        )
     mine = existing.loc[existing["challenger_id"].astype(str).eq(challenger_id)]
     already = card["game_id"].astype(str).isin(set(mine["game_id"].astype(str)))
     fresh = card.loc[pre_kickoff & ~already]
@@ -647,5 +661,7 @@ def record_challenger_decisions(
         "recorded": len(decisions),
         "already_recorded": int(already.sum()),
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "ledger_rows": int(ledger_rows),
     }

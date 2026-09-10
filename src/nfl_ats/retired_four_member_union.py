@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -10,7 +9,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from nfl_ats.active_model import active_artifact_path, load_active_ats_model
+from nfl_ats.active_model import load_active_ats_model
 from nfl_ats.clv import (
     COMPOSITION_POLICY_IDS,
     load_paper_decisions,
@@ -28,6 +27,7 @@ from nfl_ats.prospective_scoring import (
     load_challenger_decisions,
 )
 from nfl_ats.provenance import sha256_file
+from nfl_ats.recorder_override import replace_week_rows, resolve_recording_forecast
 from nfl_ats.spread_gap_zone_fade_overlay import SPREAD_GAP_LOWER_BOUND, SPREAD_GAP_UPPER_BOUND
 
 INCUMBENT_CHALLENGER_ID = "overlay_four_member_union_retired_20260907"
@@ -55,6 +55,8 @@ def record_retired_four_member_union_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Reconstruct the retired union from the primary ledger's frozen inputs.
 
@@ -74,14 +76,10 @@ def record_retired_four_member_union_decisions(
     active = load_active_ats_model(artifacts_root)
     if active is None:
         raise ValueError("No synchronized active ATS model is available")
-    forecast = active_artifact_path(artifacts_root, active, "weekly_forecast")
-    if forecast is None:
-        raise ValueError("Active ATS model has no linked weekly forecast")
-    metadata_path = forecast / "metadata.json"
+    forecast, metadata = resolve_recording_forecast(
+        artifacts_root, active, forecast_artifact=forecast_artifact
+    )
     card_path = forecast / "recommendations.csv"
-    if not metadata_path.is_file() or not card_path.is_file():
-        raise ValueError(f"Linked weekly forecast is incomplete: {forecast}")
-    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     observed_config = artifact_model_config(metadata)
     declared = config_fingerprint(entry.get("model", {}))
     observed = config_fingerprint(observed_config)
@@ -115,9 +113,21 @@ def record_retired_four_member_union_decisions(
     primary = card[["game_id"]].merge(primary, on="game_id", how="left", validate="one_to_one")
 
     existing = load_challenger_decisions(artifacts_root)
+    pre_kickoff = pd.to_datetime(primary["kickoff"], utc=True).gt(recorded_at)
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and bool(pre_kickoff.any()):
+        existing, replaced_rows, left_post_kickoff = replace_week_rows(
+            existing,
+            challenger_ledger_path(artifacts_root),
+            season=season,
+            week=week,
+            recorded_at=recorded_at,
+            columns=CHALLENGER_DECISION_COLUMNS,
+            challenger_id=INCUMBENT_CHALLENGER_ID,
+        )
     mine = existing.loc[existing["challenger_id"].astype(str).eq(INCUMBENT_CHALLENGER_ID)]
     already = primary["game_id"].astype(str).isin(set(mine["game_id"].astype(str)))
-    pre_kickoff = pd.to_datetime(primary["kickoff"], utc=True).gt(recorded_at)
     fresh = primary.loc[~already & pre_kickoff].copy()
     provenance = metadata.get("provenance") if isinstance(metadata.get("provenance"), dict) else {}
     feature = provenance.get("feature_table") if isinstance(provenance, dict) else {}
@@ -165,6 +175,8 @@ def record_retired_four_member_union_decisions(
         "recorded": len(decisions),
         "already_recorded": int(already.sum()),
         "post_kickoff_skipped": int((~pre_kickoff & ~already).sum()),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "ledger_rows": int(ledger_rows),
     }
 

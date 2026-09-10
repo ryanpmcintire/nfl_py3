@@ -26,6 +26,8 @@ def _write_fixture(root: Path, *, complete_primary: bool = True) -> tuple[Path, 
     metadata = {
         "season": 2026,
         "week": 1,
+        "active_model_id": "model-test",
+        "synchronization_status": "SYNCHRONIZED",
         "created_at_utc": "2026-09-08T16:00:00+00:00",
         "ats_method": "market_residual",
         "regressor": "ridge",

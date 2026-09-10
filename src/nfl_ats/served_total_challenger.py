@@ -39,6 +39,7 @@ from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.prospective_scoring import ACTIVE_CHALLENGER_STATUS, find_challenger
+from nfl_ats.recorder_override import replace_week_rows
 from nfl_ats.tiebreaker import newest_schedules_path, tiebreaker_report
 
 CHALLENGER_ID = "totals_served_method"
@@ -136,6 +137,7 @@ def record_totals_served_method_decisions(
     data_root: Path,
     *,
     now: datetime | None = None,
+    replace_week: bool = False,
 ) -> dict[str, Any]:
     """Record this week's tiebreaker game under both served-total methods.
 
@@ -179,6 +181,22 @@ def record_totals_served_method_decisions(
     settled = settle_realised_totals(existing, schedules)
     settled_changed = not settled.equals(existing)
 
+    replaced_rows = 0
+    left_post_kickoff = 0
+    if replace_week and pd.notna(kickoff) and kickoff > recorded_at:
+        refuse_if_outside_recording_lock_window(
+            pd.Series([kickoff]), recorded_at, ledger="challenger"
+        )
+        settled, replaced_rows, left_post_kickoff = replace_week_rows(
+            settled,
+            ledger_path(artifacts_root),
+            season=season,
+            week=week,
+            recorded_at=recorded_at,
+            columns=LEDGER_COLUMNS,
+        )
+        settled_changed = settled_changed or bool(replaced_rows)
+
     already = report.game_id in set(settled["game_id"].astype(str))
     if already:
         if settled_changed:
@@ -190,6 +208,8 @@ def record_totals_served_method_decisions(
             "post_kickoff_skipped": 0,
             "game_id": report.game_id,
             "ledger_rows": len(settled),
+            "replaced_rows": replaced_rows,
+            "left_post_kickoff": left_post_kickoff,
             "settled_rows_updated": bool(settled_changed),
         }
 
@@ -205,6 +225,8 @@ def record_totals_served_method_decisions(
             "post_kickoff_skipped": 1,
             "game_id": report.game_id,
             "ledger_rows": len(settled),
+            "replaced_rows": replaced_rows,
+            "left_post_kickoff": left_post_kickoff,
             "settled_rows_updated": bool(settled_changed),
         }
 
@@ -246,6 +268,8 @@ def record_totals_served_method_decisions(
         "market_total": float(report.consensus.total_line),
         "served_total_blend_k01": float(report.comparison_total_blend_k01),
         "served_total_joint_residual": (float(joint_value) if pd.notna(joint_value) else None),
+        "replaced_rows": replaced_rows,
+        "left_post_kickoff": left_post_kickoff,
         "ledger_rows": len(combined),
     }
 

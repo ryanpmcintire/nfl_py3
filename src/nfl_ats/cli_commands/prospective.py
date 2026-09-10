@@ -55,7 +55,13 @@ def _cmd_prospective_record(args: argparse.Namespace) -> None:
                 "registered weekly_generation_command, then re-run."
             )
     _print_json(
-        record_challenger_decisions(artifacts, args.challenger, artifact, now=datetime.now(UTC))
+        record_challenger_decisions(
+            artifacts,
+            args.challenger,
+            artifact,
+            now=datetime.now(UTC),
+            replace_week=bool(getattr(args, "replace_week", False)),
+        )
     )
 
 
@@ -250,6 +256,17 @@ def register(
         type=Path,
         help="margin-predict artifact directory to record from; by default the newest card "
         "for the season/week whose configuration fingerprint matches the registration",
+    )
+    prospective_record.add_argument(
+        "--replace-week",
+        action="store_true",
+        help=(
+            "operator override (owner, 2026-09-09): drop this challenger's existing rows "
+            "for the season/week first, keeping the prior ledger as a timestamped .bak "
+            "beside it, so a week recorded from a superseded card can be re-recorded. "
+            "Only rows for games still before kickoff are replaced; a row for a game "
+            "already under way is left exactly as it is"
+        ),
     )
     prospective_record.set_defaults(handler=_cmd_prospective_record)
 

@@ -520,16 +520,18 @@ def test_publish_predictions_does_not_record_by_default(
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_ecdf_mapping_incumbent_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_ecdf_mapping_incumbent_record(
+        artifacts_root: Path, data_root: Path, **kwargs: object
+    ) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
-    def fake_era_weighted_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_era_weighted_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
 
     def fake_forecast_cold_visitor_record(
-        artifacts_root: Path, data_root: Path, registry_root: Path
+        artifacts_root: Path, data_root: Path, registry_root: Path, **kwargs: object
     ) -> dict:
         calls.append(artifacts_root)
         return {"recorded": 1}
@@ -994,7 +996,7 @@ def test_publish_predictions_records_with_the_explicit_flag(
 
     backup_qb_calls: list[Path] = []
 
-    def fake_backup_qb_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_backup_qb_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         backup_qb_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
@@ -1020,20 +1022,22 @@ def test_publish_predictions_records_with_the_explicit_flag(
 
     ecdf_mapping_incumbent_calls: list[Path] = []
 
-    def fake_ecdf_mapping_incumbent_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_ecdf_mapping_incumbent_record(
+        artifacts_root: Path, data_root: Path, **kwargs: object
+    ) -> dict:
         ecdf_mapping_incumbent_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
     era_weighted_calls: list[Path] = []
 
-    def fake_era_weighted_record(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_era_weighted_record(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         era_weighted_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
 
     forecast_cold_visitor_calls: list[Path] = []
 
     def fake_forecast_cold_visitor_record(
-        artifacts_root: Path, data_root: Path, registry_root: Path
+        artifacts_root: Path, data_root: Path, registry_root: Path, **kwargs: object
     ) -> dict:
         forecast_cold_visitor_calls.append(artifacts_root)
         return {"recorded": 1, "flip_count": 1}
@@ -1217,7 +1221,7 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     def fake_ok(*args: object, **kwargs: object) -> dict:
         return {"recorded": 1}
 
-    def fake_deactivated_backup_qb(artifacts_root: Path, data_root: Path) -> dict:
+    def fake_deactivated_backup_qb(artifacts_root: Path, data_root: Path, **kwargs: object) -> dict:
         raise ValueError(
             "Challenger 'backup_qb_fade_overlay' is registered as "
             "'DEACTIVATED_STRUCTURAL_NO_OP'; only ACTIVE_PROSPECTIVE challengers "

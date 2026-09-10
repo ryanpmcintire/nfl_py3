@@ -144,6 +144,7 @@ def record_best_pick_tuesday(
         )
         rows = pd.DataFrame([row])
         replaced_rows = 0
+        left_post_kickoff = 0
         if replace_week and bool(recorded_week.any()):
             existing, replaced_rows, left_post_kickoff = replace_week_rows(
                 existing,
@@ -160,7 +161,12 @@ def record_best_pick_tuesday(
             pd.concat([existing, rows], ignore_index=True) if not existing.empty else rows,
             ledger_path(artifacts_root),
         )
-        return {"recorded": 1, "paired": False, "replaced_rows": replaced_rows}
+        return {
+            "recorded": 1,
+            "paired": False,
+            "replaced_rows": replaced_rows,
+            "left_post_kickoff": left_post_kickoff,
+        }
     except (OSError, ValueError, KeyError, TypeError) as error:
         return skip(f"{CHALLENGER_ID}: {error}")
 
