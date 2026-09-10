@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T16:41:44.439577+00:00`
+Refreshed at: `2026-09-10T17:10:01.497608+00:00`
 
 ## Start here
 
@@ -20,29 +20,8 @@ Refreshed at: `2026-09-10T16:41:44.439577+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1edcfe5f3761` — Freeze every published number at the pick deadline: the card and the history page now show what the site said when the pick locked, never a later refit
-- Pending change set: 1041 paths
-  - `M  .githooks/pre-commit`
-  - `M  .gitignore`
-  - `M  AGENTS.md`
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `M  docs/audit_20260908.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/mod17_joint_residual_model.md`
-  - `M  docs/model.html`
-  - `M  docs/play_probability_model.md`
-  - `M  docs/site_content_pipeline.md`
-  - `M  docs/tiebreaker.md`
-  - `M  pyproject.toml`
-  - `A  registry/experiments/margin-backtest/20260910T154130Z.json`
-  - `A  registry/experiments/margin-backtest/20260910T155650Z.json`
-  - `A  registry/experiments/margin-backtest/20260910T161359Z.json`
-  - ...and 1021 more
+- Baseline commit: `d8063eff3ab5` — Republish after the exercised lineups_sat_pm job: same picks, publish stamp and model id moved
+- Pending change set: none
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,18 +30,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `fc235cf96cf86086`
+- Model ID: `96f294ae47c853a2`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260910T163000Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260910T165551Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-10T16:14:48.443646+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-10T16:51:38.210957+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `fc235cf96cf86086`, published `2026-09-10T16:19:14.089314+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `96f294ae47c853a2`, published `2026-09-10T17:04:16.063157+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
