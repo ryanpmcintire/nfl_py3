@@ -423,7 +423,20 @@ changed. That arm was composed AFTER the signs were seen, it is recorded under a
 separate family so it can never be mistaken for a predeclared member, and a
 follow-up lane should predeclare it rather than inherit it.
 
-### What serving T3 would take (NOT wired here)
+### Wired 2026-09-10
+
+T3 is now the served rule. The gate is
+`sharp_book_movement_features.leader_follow_threshold(decision_home_spread)`
+(1.0 below a 10.5-point line, 0.5 at or above it), used by the served arm only;
+the equal-book and half-point OFF arms keep their own constants. The policy id
+is `late_week_leader_median_follow_1_0_big_spread_0_5`, every revision row
+carries `late_week_threshold_applied`, and the flat full-point arm records on
+every pass as the paired OFF challenger
+`late_week_leader_median_follow_flat_1_0_off_incumbent`. See
+`docs/late_week_refresh.md`'s promotion section. The list below is the
+pre-wiring inventory, kept as the record of what the change touched.
+
+### What serving T3 would take (the pre-wiring inventory)
 
 Measured against the current source, not remembered:
 

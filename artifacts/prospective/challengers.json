@@ -3177,6 +3177,49 @@
       "status_reason": "Recorded unresolved_below_power with a null closing ground: the step's week-blocked interval is [-3.409, +0.250], whose upper end is above zero, so the sign is not resolved and wrong_sign_resolved is inadmissible. The rule was removed from the played card as a 96/4 expected-value call on a forced-pick pool, not as a refutation, and it keeps accruing here so the two arms stay comparable game for game.",
       "weekly_generation_command": "N/A -- reuses the refresh pass's own plan and the local captured odds store; no network fetch.",
       "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
+    },
+    {
+      "challenger_id": "late_week_leader_median_follow_flat_1_0_off_incumbent",
+      "config_fingerprint": "bc77638d47e2748c",
+      "correlation_and_reuse_warning": "Paired with the served follow on the same games and lines; correlated with the half-point OFF arm, the equal-book OFF arm and the heavy-handle rule; never pool these rows as independent.",
+      "evidence": {
+        "candidate_accuracy_on_population": 0.57822,
+        "classification": "unresolved_below_power",
+        "flip_share_of_population": 0.007509386733416771,
+        "flips": 6,
+        "population_games": 799,
+        "rule_fires": 241,
+        "season_block_probability_positive": 0.9817,
+        "served_card_accuracy_on_population": 0.57572,
+        "source": "artifacts/follow_threshold_by_line/20260910T032331Z; docs/follow_threshold_by_line.md",
+        "week_block_interval_points": [
+          -0.373,
+          0.872
+        ],
+        "week_block_probability_positive": 0.7905,
+        "week_blocked_effect_accuracy_points": 0.25
+      },
+      "known_gap": "The 10.5-and-up band carries 58 scored games and 6 changed picks in the 2023-2025 measurement window, so the band the two arms differ on is thin; the arms are identical on every game below a 10.5-point line. Correlated game for game with the served arm; never pool as independent.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "prospective_protocol": "Served since 2026-09-10: the leaders' median move must reach a full point before the pick follows it, except on spreads of 10.5 or more where half a point is enough. On every refresh pass the shared late_week_follow_frame also computes the flat full-point arm (leader_median_flat_would_be_pick_side / _movement_flip) beside the served one, at the same frozen Tuesday line, so both arms accrue game for game in the late-week follow ledger; no rotation window spent.",
+      "reader_summary": "The card if we waited for a full point even on the biggest spreads, instead of following half a point there.",
+      "registered_at_utc": "2026-09-10T00:00:00+00:00",
+      "registered_by": "Serving the leader-median follow at half a point on spreads of 10.5 or more (docs/follow_threshold_by_line.md, T3): +0.25 accuracy points over the served flat 1.0 through the played card, week-blocked [-0.37, +0.87], probability_positive 0.79, season-blocked probability_positive 0.98, positive or level in all three seasons, 6 picks changed in 799. Mechanism: on 10.5+ spreads the market's own move is the strongest signal on the board (63% when followed, docs/big_spread_signal.md), so half a point there is information (+3.4 at 10.5+), while at 0-3 the same half point is noise (-3.5, resolved). Registered as the paired arm the way late_week_leader_median_follow_0_5_off_incumbent was.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "Recorded unresolved_below_power. This ledger is the OFF arm of the served big-spread gate: what the pick would have been at a flat full point on every line. Mechanism named in the docs: a half-point drift in the leaders' median is noise on a pick'em (-3.470 accuracy points at 0-3, whole interval below zero) and information on a blowout line (+3.448 at 10.5+).",
+      "weekly_generation_command": "N/A -- reuses the refresh pass's own plan and the local public-betting captures; no network fetch.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

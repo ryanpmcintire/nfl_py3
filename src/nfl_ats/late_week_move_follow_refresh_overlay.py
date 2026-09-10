@@ -6,10 +6,12 @@ Only live captures are prospective inputs, never historical backfills.
 Since 2026-09-09 the SERVED arm is the leading books' median move
 (``late_week_leader_median_follow_v1``) and this ledger's own challenger id
 records the equal-book arm it replaced; both are on every row. Since
-2026-09-10 the served gate is a FULL point, so two more OFF arms record
-beside it on every row: the retired half-point gate
-(``late_week_leader_median_follow_0_5_off_incumbent``) and following every
-move without the injury-news veto
+2026-09-10 the served gate is a FULL point below a 10.5-point line and half a
+point at or above it, so three more OFF arms record beside it on every row:
+the flat full-point gate
+(``late_week_leader_median_follow_flat_1_0_off_incumbent``), the retired
+half-point gate (``late_week_leader_median_follow_0_5_off_incumbent``) and
+following every move without the injury-news veto
 (``late_week_follow_no_news_veto_off_incumbent``).
 """
 
@@ -28,11 +30,15 @@ from nfl_ats.clv import (
 from nfl_ats.data import DataContractError
 from nfl_ats.io import atomic_parquet
 from nfl_ats.pick_refresh import RefreshResult, original_card, sunday_pick_lock
-from nfl_ats.sharp_book_movement_features import late_week_follow_frame
+from nfl_ats.sharp_book_movement_features import (
+    LEADER_FOLLOW_THRESHOLD,
+    late_week_follow_frame,
+)
 
 CHALLENGER_ID = "late_week_move_follow_refresh_v1"
 SERVED_CHALLENGER_ID = "late_week_leader_median_follow_v1"
 OFF_THRESHOLD_CHALLENGER_ID = "late_week_leader_median_follow_0_5_off_incumbent"
+FLAT_THRESHOLD_CHALLENGER_ID = "late_week_leader_median_follow_flat_1_0_off_incumbent"
 NEWS_VETO_OFF_CHALLENGER_ID = "late_week_follow_no_news_veto_off_incumbent"
 LEDGER_NAME = "late_week_move_follow_refresh_decisions.parquet"
 
@@ -70,6 +76,7 @@ def build_late_week_move_follow_refresh_rows(
                 "commence_time_utc": game.kickoff,
                 "week_first_commence_utc": lock,
                 "cutoff_utc": now,
+                "decision_home_spread": originals.decision_home_spread.get(game.game_id),
             }
         )
     if not games:
@@ -87,7 +94,6 @@ def build_late_week_move_follow_refresh_rows(
             "reason": "No pre-deadline late-week book changes are available.",
             "refused_quote_rows": refused,
         }
-    exposure["decision_home_spread"] = exposure.game_id.map(originals.decision_home_spread)
     exposure["tuesday_recorded_at_utc"] = exposure.game_id.map(originals.recorded_at_utc)
     exposure["kickoff"] = exposure["commence_time_utc"]
     exposure["deadline"] = exposure.kickoff.map(lambda kickoff: min(kickoff, lock))
@@ -135,6 +141,7 @@ def build_late_week_move_follow_refresh_rows(
     exposure["challenger_id"] = CHALLENGER_ID
     exposure["served_challenger_id"] = SERVED_CHALLENGER_ID
     exposure["off_threshold_challenger_id"] = OFF_THRESHOLD_CHALLENGER_ID
+    exposure["flat_threshold_challenger_id"] = FLAT_THRESHOLD_CHALLENGER_ID
     exposure["news_veto_off_challenger_id"] = NEWS_VETO_OFF_CHALLENGER_ID
     exposure["season"] = plan.season
     exposure["week"] = plan.week
@@ -145,6 +152,10 @@ def build_late_week_move_follow_refresh_rows(
         "games_considered": len(exposure),
         "flips": int(exposure.movement_flip.sum()),
         "off_threshold_flips": int(exposure.leader_median_half_movement_flip.sum()),
+        "flat_threshold_flips": int(exposure.leader_median_flat_movement_flip.sum()),
+        "big_spread_gate_games": int(
+            exposure.late_week_threshold_applied.lt(LEADER_FOLLOW_THRESHOLD).sum()
+        ),
         "equal_book_flips": int(exposure.equal_movement_flip.sum()),
         "news_vetoes": int(exposure.follow_news_veto.sum()),
         "news_veto_flips": int(exposure.news_veto_movement_flip.sum()),
@@ -160,6 +171,7 @@ def record_late_week_move_follow_refresh_overlay(
         "challenger_id": CHALLENGER_ID,
         "served_challenger_id": SERVED_CHALLENGER_ID,
         "off_threshold_challenger_id": OFF_THRESHOLD_CHALLENGER_ID,
+        "flat_threshold_challenger_id": FLAT_THRESHOLD_CHALLENGER_ID,
         "news_veto_off_challenger_id": NEWS_VETO_OFF_CHALLENGER_ID,
         "recorded": 0,
     }

@@ -197,6 +197,7 @@ def _revision_row(
         "late_week_net_move": float("nan"),
         "late_week_pick_side": "",
         "late_week_eligible_books": 0,
+        "late_week_threshold_applied": 1.0,
         "consensus_delta": float("nan"),
         "consensus_pick_side": "",
         "handle_pick_side": "",

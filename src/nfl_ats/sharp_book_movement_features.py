@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import numpy as np
 import pandas as pd
 
@@ -24,6 +26,21 @@ LEADERSHIP_WEIGHTS = {
 LEADER_BOOKS = ("bovada", "williamhill_us", "mybookieag")
 THRESHOLD = 0.5
 LEADER_FOLLOW_THRESHOLD = 1.0
+LEADER_FOLLOW_BIG_SPREAD_LINE = 10.5
+LEADER_FOLLOW_BIG_SPREAD_THRESHOLD = 0.5
+
+
+def leader_follow_threshold(decision_home_spread: float | None) -> float:
+    """Half a point once the frozen line reaches 10.5, a full point below it."""
+    try:
+        line = abs(float(cast(float, decision_home_spread)))
+    except (TypeError, ValueError):
+        return LEADER_FOLLOW_THRESHOLD
+    if not np.isfinite(line):
+        return LEADER_FOLLOW_THRESHOLD
+    if line >= LEADER_FOLLOW_BIG_SPREAD_LINE:
+        return LEADER_FOLLOW_BIG_SPREAD_THRESHOLD
+    return LEADER_FOLLOW_THRESHOLD
 
 
 def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
@@ -128,7 +145,10 @@ def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> p
 
 
 def refresh_pick(
-    production_home: pd.Series, net_move: pd.Series, *, threshold: float = THRESHOLD
+    production_home: pd.Series,
+    net_move: pd.Series,
+    *,
+    threshold: float | pd.Series = THRESHOLD,
 ) -> pd.Series:
     """Follow qualifying movement; absent/subthreshold movement keeps production."""
     return production_home.astype(bool).mask(net_move.abs().ge(threshold), net_move.gt(0))
@@ -139,6 +159,7 @@ LATE_WEEK_GAMES_COLUMNS = (
     "commence_time_utc",
     "week_first_commence_utc",
     "cutoff_utc",
+    "decision_home_spread",
 )
 
 
@@ -164,14 +185,17 @@ def late_week_follow_frame(
     ``eligible_books`` for the paired equal-book arm -- plus
     ``tuesday_pick_side``, ``movement_would_be_pick_side`` (the served
     :func:`refresh_pick` decision: market side when
-    ``|leader_median_net_move|`` is at least
-    :data:`LEADER_FOLLOW_THRESHOLD`, else the Tuesday side),
-    ``movement_flip``, the retired half-point gate's own
+    ``|leader_median_net_move|`` is at least that game's own
+    :func:`leader_follow_threshold`, else the Tuesday side),
+    ``movement_flip``, ``late_week_threshold_applied`` (the gate that game
+    was judged at), the retired flat full-point gate's own
+    ``leader_median_flat_would_be_pick_side`` /
+    ``leader_median_flat_movement_flip`` and the retired half-point gate's
     ``leader_median_half_would_be_pick_side`` /
-    ``leader_median_half_movement_flip`` (the paired OFF arm, still read at
-    :data:`THRESHOLD`), and the equal-book arm's own
-    ``equal_would_be_pick_side`` / ``equal_movement_flip``, one row per input
-    game.
+    ``leader_median_half_movement_flip`` (the paired OFF arms, read at
+    :data:`LEADER_FOLLOW_THRESHOLD` and :data:`THRESHOLD`), and the
+    equal-book arm's own ``equal_would_be_pick_side`` /
+    ``equal_movement_flip``, one row per input game.
     """
 
     now_ts = pd.Timestamp(now)
@@ -202,11 +226,16 @@ def late_week_follow_frame(
     refused = int((~safe).sum())
     q = q.loc[safe].copy()
     exposure = sharp_book_movement_features(q, games.copy())
+    exposure["late_week_threshold_applied"] = [
+        leader_follow_threshold(value) for value in exposure.decision_home_spread
+    ]
     if not exposure.eligible_books.gt(0).any():
         return exposure.assign(
             tuesday_pick_side=pd.Series(dtype=str),
             movement_would_be_pick_side=pd.Series(dtype=str),
             movement_flip=pd.Series(dtype=bool),
+            leader_median_flat_would_be_pick_side=pd.Series(dtype=str),
+            leader_median_flat_movement_flip=pd.Series(dtype=bool),
             leader_median_half_would_be_pick_side=pd.Series(dtype=str),
             leader_median_half_movement_flip=pd.Series(dtype=bool),
             equal_would_be_pick_side=pd.Series(dtype=str),
@@ -221,10 +250,19 @@ def late_week_follow_frame(
     exposure["tuesday_pick_side"] = exposure.game_id.astype(str).map(sides)
     tuesday_home = exposure.tuesday_pick_side.eq("HOME")
     served = refresh_pick(
-        tuesday_home, exposure.leader_median_net_move, threshold=LEADER_FOLLOW_THRESHOLD
+        tuesday_home,
+        exposure.leader_median_net_move,
+        threshold=exposure.late_week_threshold_applied,
     )
     exposure["movement_would_be_pick_side"] = served.map({True: "HOME", False: "AWAY"})
     exposure["movement_flip"] = exposure.movement_would_be_pick_side.ne(exposure.tuesday_pick_side)
+    flat = refresh_pick(
+        tuesday_home, exposure.leader_median_net_move, threshold=LEADER_FOLLOW_THRESHOLD
+    )
+    exposure["leader_median_flat_would_be_pick_side"] = flat.map({True: "HOME", False: "AWAY"})
+    exposure["leader_median_flat_movement_flip"] = (
+        exposure.leader_median_flat_would_be_pick_side.ne(exposure.tuesday_pick_side)
+    )
     half = refresh_pick(tuesday_home, exposure.leader_median_net_move, threshold=THRESHOLD)
     exposure["leader_median_half_would_be_pick_side"] = half.map({True: "HOME", False: "AWAY"})
     exposure["leader_median_half_movement_flip"] = (

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T04:14:15.745881+00:00`
+Refreshed at: `2026-09-10T04:24:35.668227+00:00`
 
 ## Start here
 
@@ -20,20 +20,26 @@ Refreshed at: `2026-09-10T04:14:15.745881+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `481bb4b78ee5` — Closing-line value of the Tuesday card: the market drifts our way +0.15 pts but almost all of it is its own home drift; a full-point move toward the pick is worth +12.6 accuracy points over one against it (except at exactly 7, -4.6); two thirds of confirmations arrive by Thursday evening
-- Pending change set: 12 paths
+- Baseline commit: `503908fea848` — Board: 'What changed this week' panel (baseline = the oldest card on the pool's own lines; Week 1 lists the three pass-protection changes and the star move); member labels in pool-player words. First 2026 result graded and on the board (NE +3.5 won, 1-0). Expected-lineup-loss refit is a refresh-path feature (0 of 6,814 team-weeks visible by Tuesday noon) and loses through the card (-0.73, P+ 0.06); kept as a challenger.
+- Pending change set: 18 paths
   - `M  HANDOFF.md`
   - `M  README.md`
+  - `M  artifacts/prospective/challengers.json`
   - `M  docs/findings.html`
+  - `M  docs/follow_threshold_by_line.md`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `A  docs/lineup_loss_on_card.md`
+  - `M  docs/late_week_refresh.md`
   - `M  docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/lineup_loss_on_card.py`
+  - `M  src/nfl_ats/artifact_contracts.py`
+  - `M  src/nfl_ats/board_assistant.py`
   - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/late_week_move_follow_refresh_overlay.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  src/nfl_ats/public_board.py`
+  - `M  src/nfl_ats/sharp_book_movement_features.py`
+  - `M  tests/test_snapshot_diff.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

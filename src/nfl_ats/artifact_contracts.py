@@ -128,6 +128,7 @@ _PICK_REVISION_LEDGER_COLUMNS: tuple[str, ...] = (
     "late_week_net_move",
     "late_week_pick_side",
     "late_week_eligible_books",
+    "late_week_threshold_applied",
     "consensus_delta",
     "consensus_pick_side",
     "handle_pick_side",

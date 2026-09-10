@@ -398,7 +398,7 @@ change writes zero rows (see "No-op refresh").
 | `coach_fade_flip`, `division_revenge_flip`, `player_arrests_flip`, `spread_gap_zone_flip` | Frozen Tuesday member flags; each member was evaluated against the raw card |
 | `composed_overlay_flip` | OR of the four member flags; the refitted raw side is complemented once when true |
 | `player_arrests_snapshot_id`, `player_arrests_safe_index_sha256` | Provenance copied from Tuesday's paper row; refresh never opens that snapshot or a newer one |
-| `movement_policy` | `late_week_leader_median_follow_1_0` (the promoted late-week follow governed this pick -- see "Promoted late-week follow" below), `late_week_leader_median_follow_1_0_news_veto` (that follow fired and post-Tuesday injury news contradicted it, so the Tuesday pick stands -- see "Injury-news veto" below), `handle_follow_0_70`, `rookie_crew_underdog_v1`, or `model_only` (below the threshold, or no market evidence). `movement_ge_1.0` appears only on rows written before 2026-09-10, when the observed-movement policy still governed served picks -- see "Observed-movement pick policy" above |
+| `movement_policy` | `late_week_leader_median_follow_1_0_big_spread_0_5` (the promoted late-week follow governed this pick -- see "Promoted late-week follow" below), `late_week_leader_median_follow_1_0_big_spread_0_5_news_veto` (that follow fired and post-Tuesday injury news contradicted it, so the Tuesday pick stands -- see "Injury-news veto" below), `handle_follow_0_70`, `rookie_crew_underdog_v1`, or `model_only` (below the threshold, or no market evidence). `movement_ge_1.0` appears only on rows written before 2026-09-10, when the observed-movement policy still governed served picks -- see "Observed-movement pick policy" above |
 | `movement_delta` | The governing arm's signed move in home-oriented points: the late-week leader-median net move when the late-week arm governs, else the consensus delta when a fresh captured line exists, else the late-week net when only that arm has evidence; blank/null when neither arm does |
 | `movement_pick_side` | The side the governing (or counterfactual) market arm points at, whenever `movement_delta` is not null -- the candidate side even on rows where `movement_policy` did not select it |
 | `model_only_pick_side` | The recomputed production-policy pick (post frozen four-member union, pre movement-policy override) -- always present; the counterfactual the `model_only_refresh_incumbent` challenger tracks |
@@ -467,9 +467,11 @@ later pass, replaces just its own) a clearly-labeled section:
 data but scored at the frozen Tuesday grading line. Only games whose
 deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier)
 had not yet passed were eligible. "Policy" is
-`late_week_leader_median_follow_1_0` when the three leading books moved the
-line at least a full point since Tuesday and the pick followed them,
-`late_week_leader_median_follow_1_0_news_veto` when they moved that far but
+`late_week_leader_median_follow_1_0_big_spread_0_5` when the three leading
+books moved the line at least a full point since Tuesday -- or half a point on
+the biggest spreads, 10.5 or more -- and the pick followed them,
+`late_week_leader_median_follow_1_0_big_spread_0_5_news_veto` when they moved
+that far but
 the injury report points the other way, so Tuesday's pick stands,
 `handle_follow_0_70` when that rule did not fire and at least 70% of the money
 bet on the game sat on the other side, `rookie_crew_underdog_v1` when it did
@@ -536,17 +538,56 @@ located at a spread number. Higher is not automatically better either: the 1.5
 arm is worse than 1.0 on both surfaces (+1.126 vs +2.003 against the 0.5 arm),
 which is what one losing band -- rather than a monotone trend -- looks like.
 
-**The constant is separate on purpose.** The served gate is
-`sharp_book_movement_features.LEADER_FOLLOW_THRESHOLD` (1.0); the equal-book
+**The constant is separate on purpose.** The equal-book
 paired challenger stays on `THRESHOLD` (0.5), the constant it was measured at,
 so the two arms remain comparable game for game. The retired half-point
 leader-median arm keeps recording as its own paired OFF challenger
 (`late_week_leader_median_follow_0_5_off_incumbent`,
-`leader_median_half_would_be_pick_side` on the follow ledger), and the policy
-id on every revision row became `late_week_leader_median_follow_1_0`, so the
-ledger keeps the two eras distinguishable without a migration. The rule had
+`leader_median_half_would_be_pick_side` on the follow ledger). The rule had
 never fired on a played card before the Thursday 2026-09-10 refresh, so
 nothing is reversed retroactively.
+
+**What changed on 2026-09-10: half a point on the biggest spreads.** The
+served gate stopped being a scalar and became
+`sharp_book_movement_features.leader_follow_threshold(decision_home_spread)`:
+**a full point below a 10.5-point line, half a point at or above it**. Every
+served pick's own gate is recorded on its revision row as
+`late_week_threshold_applied`, and the policy id on every revision row became
+`late_week_leader_median_follow_1_0_big_spread_0_5` (with
+`..._news_veto` for a vetoed fire), so the ledger keeps the eras
+distinguishable without a migration.
+
+`docs/follow_threshold_by_line.md` measured it as the T3 arm on the same
+played nine-member card, 2023-2025, 799 opener-graded games: **+0.25 accuracy
+points over the served flat 1.0**, week-blocked 95% [-0.373, +0.872],
+`probability_positive` **0.7905**, season-blocked `probability_positive`
+**0.9817**, positive or level in all three seasons (+0.376 / +0.376 / +0.000)
+and negative in none, on **6 changed picks in 799**. The cell is
+`unresolved_below_power`; an interval containing zero is not a rejection
+ground (AGENTS.md), and the pool is forced picks, so the arm with the higher
+expected accuracy at the deadline is served.
+
+**The mechanism, named, because a threshold that differs by line size must
+name one (AGENTS.md).** On spreads of 10.5 or more the market's own move is
+the strongest single signal on the board -- **62.96%** right when followed
+against the served model's 47.69% on the same games
+(`docs/big_spread_signal.md:431`) -- so half a point of leader movement is
+already information there: dropping the gate to 0.5 in that band alone is
+**+3.448** accuracy points (`probability_positive` 0.794). The same half point
+at 0-to-3-point spreads is noise: dropping the gate there costs **-3.470**
+accuracy points, week-blocked [-6.854, -0.312] and season-blocked
+[-8.421, -0.952], both entirely below zero -- a RESOLVED wrong sign, and the
+one cell in that lane that closes anything. This is a statement about how much
+information a market move carries at a given line SIZE, not an accuracy dip
+located at a spread number.
+
+**The paired OFF arm.** The flat full-point gate now records on every pass as
+`late_week_leader_median_follow_flat_1_0_off_incumbent`
+(`leader_median_flat_would_be_pick_side` /
+`leader_median_flat_movement_flip` on the follow ledger), the exact pattern the
+half-point arm already runs, so the incumbent accrues game for game instead of
+being reconstructed later. The two arms are identical on every game below a
+10.5-point line.
 
 ## Injury-news veto on the follow (F3p, 2026-09-10)
 
@@ -675,9 +716,10 @@ pick and the paired ledger can never drift apart. The
 `late_week_move_follow_refresh_v1` challenger id, recording the EQUAL-BOOK
 arm (`equal_would_be_pick_side`, `equal_movement_flip`) as one paired OFF
 challenger, beside the served arm's own side, a
-`served_challenger_id` of `late_week_leader_median_follow_v1`, and two more OFF
-arms: `late_week_leader_median_follow_0_5_off_incumbent` (the half-point gate)
-and `late_week_follow_no_news_veto_off_incumbent`
+`served_challenger_id` of `late_week_leader_median_follow_v1`, and three more
+OFF arms: `late_week_leader_median_follow_flat_1_0_off_incumbent` (the flat
+full-point gate), `late_week_leader_median_follow_0_5_off_incumbent` (the
+half-point gate) and `late_week_follow_no_news_veto_off_incumbent`
 (`news_veto_would_be_pick_side` is the served side, `movement_would_be_pick_side`
 the un-vetoed one). Every
 pick-revision row additionally carries the served arm's and the retired
@@ -756,8 +798,8 @@ lock (`docs/referee_assignments_capture.md`), so the reconciled rookie-crew
 rule of `docs/rookie_crew_reconciliation.md` can only ever reach the card
 through this path. It is the LAST step consulted before the model's own side:
 
-1. `late_week_leader_median_follow_1_0` -- the promoted follow rule above,
-   with its injury-news veto;
+1. `late_week_leader_median_follow_1_0_big_spread_0_5` -- the promoted follow
+   rule above, with its injury-news veto;
 2. `rookie_crew_underdog_v1` -- this step;
 3. `model_only`, after which `handle_follow_0_70` may still act.
 

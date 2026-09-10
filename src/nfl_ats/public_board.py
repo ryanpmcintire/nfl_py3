@@ -1043,7 +1043,9 @@ def _movement_policy_note(challengers: Sequence[Mapping[str, Any]]) -> str:
         '<div class="prose"><p><b>If lines move late in the week, we follow them.</b> '
         "At each pass we look at the three books that usually move first: if their "
         "middle move is a full point or more off Tuesday's frozen number, the pick "
-        "follows them -- unless an injury filed since Tuesday points the other way, "
+        "follows them -- and half a point is enough on the biggest spreads, where a "
+        "move by those books is the strongest read on the board -- unless an injury "
+        "filed since Tuesday points the other way, "
         "which keeps Tuesday's pick. Below that move (or with no fresh lines "
         "captured), the model's own re-run pick plays as always.</p></div>"
     )

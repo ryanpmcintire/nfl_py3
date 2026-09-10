@@ -242,6 +242,9 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "late_week_move_follow_refresh_v1": "Follow late-week line moves",
     "late_week_leader_median_follow_v1": "Follow the books that move first",
     "late_week_leader_median_follow_0_5_off_incumbent": "Follow even a half-point move",
+    "late_week_leader_median_follow_flat_1_0_off_incumbent": (
+        "Wait for a full point even on the biggest spreads"
+    ),
     "late_week_follow_no_news_veto_off_incumbent": "Follow the move, injury report or not",
     "handle_follow_refresh_off_incumbent": "Ignore where the money is",
     "consensus_movement_1_0_off_incumbent": "Follow the whole market's drift too",
