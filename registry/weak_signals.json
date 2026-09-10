@@ -21881,6 +21881,34 @@
       "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
       "standard_error": 0.631072
     },
+    "home_push_on_served_card_h1_push_off_standalone_10p5_plus_2020_2021": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2020-2021. Negative favours the served push.",
+      "effect": -1.851852,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -8.064516,
+        4.081633
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -1.8519 [-2.9412, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -1.85 points (44.44% against the served 46.30%) over 54 games, changing 3 picks.",
+      "probability_positive": 0.29185,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 29,
+      "sample_games": 54,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 3.166336
+    },
     "home_push_on_served_card_h1_push_off_standalone_10p5_plus_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -21908,6 +21936,34 @@
       ],
       "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
       "standard_error": 3.403096
+    },
+    "home_push_on_served_card_h1_push_off_standalone_10p5_plus_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 10.5+, 2022-2023. Negative favours the served push.",
+      "effect": -5.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -20.0,
+        11.111111
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -5.0000 [-10.5263, +0.0000] P+ 0.1255; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 10.5+, switching off the extra points the model gives the home team on big spreads moved its record by -5.00 points (32.50% against the served 37.50%) over 40 games, changing 14 picks.",
+      "probability_positive": 0.263775,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 26,
+      "sample_games": 40,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 7.87643
     },
     "home_push_on_served_card_h1_push_off_standalone_7_2020_2025": {
       "category": "modeling",
@@ -22048,6 +22104,62 @@
       ],
       "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
       "standard_error": 1.879241
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7p5_10_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2022-2023. Negative favours the served push.",
+      "effect": -5.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -10.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -5.0000 [-6.0606, -3.7037] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by -5.00 points (40.00% against the served 45.00%) over 60 games, changing 3 picks.",
+      "probability_positive": 0.0209,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 30,
+      "sample_games": 60,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.43465
+    },
+    "home_push_on_served_card_h1_push_off_standalone_7p5_10_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push turned off everywhere, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2024-2025. Negative favours the served push.",
+      "effect": -3.125,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -13.114754,
+        6.060606
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -3.1250 [-6.4516, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, switching off the extra points the model gives the home team on big spreads moved its record by -3.12 points (59.38% against the served 62.50%) over 64 games, changing 8 picks.",
+      "probability_positive": 0.267575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 32,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.890285
     },
     "home_push_on_served_card_h1_push_off_standalone_overall_2020_2021": {
       "category": "modeling",
@@ -23028,6 +23140,62 @@
       ],
       "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
       "standard_error": 1.879241
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7p5_10_2022_2023": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2022-2023. Negative favours the served push.",
+      "effect": -5.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -10.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -5.0000 [-6.0606, -3.7037] P+ 0.0000; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by -5.00 points (40.00% against the served 45.00%) over 60 games, changing 3 picks.",
+      "probability_positive": 0.0209,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 30,
+      "sample_games": 60,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 2.43465
+    },
+    "home_push_on_served_card_h3_big_only_standalone_7p5_10_2024_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither interval resolves a sign, the mechanism is not refuted and no positive control bounds an effect this size in this cell, so it stays unresolved and reports probability_positive.",
+      "closing_ground": null,
+      "description": "Opener forced-pick accuracy of the home-side push restricted to spreads of 10.5 or more, on the model's own pick, minus the served policy home_side_offset_big_spreads_v2, on spreads 7.5-10, 2024-2025. Negative favours the served push.",
+      "effect": -3.125,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        -13.114754,
+        6.060606
+      ],
+      "league": "nfl",
+      "notes": "season-blocked -3.1250 [-6.4516, +0.0000] P+ 0.1242; baseline is the SERVED push (buckets 7 / 7.5-10 / 10.5+); replay reproduces artifacts/opener_evaluation/20260910T005854Z with residual gap 0.0; 20000 samples, seed 20260821; heavily overlapping family (one 1,503-game window decomposed by surface, bucket and era) - the per-entry rows are the safer read; docs/home_push_on_served_card.md",
+      "plain_summary": "On spreads 7.5-10, changing the extra points the model gives the home team on big spreads moved its record by -3.12 points (59.38% against the served 62.50%) over 64 games, changing 8 picks.",
+      "probability_positive": 0.267575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 32,
+      "sample_games": 64,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 4.890285
     },
     "home_push_on_served_card_h3_big_only_standalone_overall_2020_2021": {
       "category": "modeling",
@@ -26047,6 +26215,34 @@
       "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
       "standard_error": 2.110759
     },
+    "leader_books_walk_forward_w1_vs_card_2024_2025_posthoc": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +5.6 to +43.9 accuracy points on this exact population while every book-set difference sits between -0.7 and +0.8, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Leader-book walk-forward, 2024-2025-posthoc: leaders re-derived each season from strictly prior seasons only against the nine-member Tuesday card, full-point leader-median follow with the injury-news veto off on both arms, graded at the frozen Tuesday opener on 533 non-push games. Baseline 54.409%, candidate 55.535%, 52 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read 0.752 to 1.498, P+ 1.0000. Window added AFTER the predeclaration was frozen: the season walk-forward arm is inert on 2023 by construction, so this is its two live seasons only.",
+      "effect": 1.125704,
+      "effect_units": "accuracy_points",
+      "family": "leader_books_walk_forward",
+      "interval": [
+        -1.679104,
+        3.939962
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive, the nine-member Tuesday card and the leader-median follow with sharp_weighted_follow_*, follow_threshold_live_card_*, follow_news_gate_* and served_refresh_card_*. Never pool additively with those or with each other. The injury-news veto is OFF on every arm here, including W0, so W0 is the follow rule's book set in isolation and is NOT the served pick chain. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill. The archive holds no season before 2023, so the season walk-forward arm is inert on 2023 by construction. The twelve single-book arms are a mined attribution battery; no multiplicity correction is claimed.",
+      "plain_summary": "Same idea as following the three fastest books, except the three are chosen using only earlier seasons, so nothing about this season's results helped pick them.",
+      "probability_positive": 0.780125,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
+      "standard_error": 1.435615
+    },
     "leader_books_walk_forward_w1_vs_card_2025": {
       "category": "market",
       "classification": "unresolved_below_power",
@@ -27166,6 +27362,146 @@
       ],
       "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
       "standard_error": 1.19884
+    },
+    "leader_books_walk_forward_w4_mybookieag_vs_w0_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +5.6 to +43.9 accuracy points on this exact population while every book-set difference sits between -0.7 and +0.8, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Leader-book walk-forward, 2023-2025: mybookieag alone, one book against the served fixed-leader arm W0, full-point leader-median follow with the injury-news veto off on both arms, graded at the frozen Tuesday opener on 799 non-push games. Baseline 57.322%, candidate 57.196%, 15 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -0.376 to 0.376, P+ 0.2566.",
+      "effect": -0.125156,
+      "effect_units": "accuracy_points",
+      "family": "leader_books_walk_forward",
+      "interval": [
+        -0.99013,
+        0.630517
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive, the nine-member Tuesday card and the leader-median follow with sharp_weighted_follow_*, follow_threshold_live_card_*, follow_news_gate_* and served_refresh_card_*. Never pool additively with those or with each other. The injury-news veto is OFF on every arm here, including W0, so W0 is the follow rule's book set in isolation and is NOT the served pick chain. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill. The archive holds no season before 2023, so the season walk-forward arm is inert on 2023 by construction. The twelve single-book arms are a mined attribution battery; no multiplicity correction is claimed.",
+      "plain_summary": "Attribution only: mybookieag on its own against the three-book rule, to show where the three-book result comes from.",
+      "probability_positive": 0.38625,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
+      "standard_error": 0.411564
+    },
+    "leader_books_walk_forward_w4_pointsbetus_vs_card_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +5.6 to +43.9 accuracy points on this exact population while every book-set difference sits between -0.7 and +0.8, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Leader-book walk-forward, 2023-2025: pointsbetus alone, one book against the nine-member Tuesday card, full-point leader-median follow with the injury-news veto off on both arms, graded at the frozen Tuesday opener on 799 non-push games. Baseline 56.070%, candidate 55.319%, 40 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.256 to 0.000, P+ 0.1504.",
+      "effect": -0.750939,
+      "effect_units": "accuracy_points",
+      "family": "leader_books_walk_forward",
+      "interval": [
+        -2.395965,
+        0.886076
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive, the nine-member Tuesday card and the leader-median follow with sharp_weighted_follow_*, follow_threshold_live_card_*, follow_news_gate_* and served_refresh_card_*. Never pool additively with those or with each other. The injury-news veto is OFF on every arm here, including W0, so W0 is the follow rule's book set in isolation and is NOT the served pick chain. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill. The archive holds no season before 2023, so the season walk-forward arm is inert on 2023 by construction. The twelve single-book arms are a mined attribution battery; no multiplicity correction is claimed.",
+      "plain_summary": "Attribution only: what following pointsbetus's own line move, on its own, would have been worth against the Tuesday picks.",
+      "probability_positive": 0.18725,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
+      "standard_error": 0.85289
+    },
+    "leader_books_walk_forward_w4_pointsbetus_vs_w0_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +5.6 to +43.9 accuracy points on this exact population while every book-set difference sits between -0.7 and +0.8, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Leader-book walk-forward, 2023-2025: pointsbetus alone, one book against the served fixed-leader arm W0, full-point leader-median follow with the injury-news veto off on both arms, graded at the frozen Tuesday opener on 799 non-push games. Baseline 57.322%, candidate 55.319%, 78 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.622 to -1.504, P+ 0.0000.",
+      "effect": -2.002503,
+      "effect_units": "accuracy_points",
+      "family": "leader_books_walk_forward",
+      "interval": [
+        -4.260652,
+        0.247525
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive, the nine-member Tuesday card and the leader-median follow with sharp_weighted_follow_*, follow_threshold_live_card_*, follow_news_gate_* and served_refresh_card_*. Never pool additively with those or with each other. The injury-news veto is OFF on every arm here, including W0, so W0 is the follow rule's book set in isolation and is NOT the served pick chain. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill. The archive holds no season before 2023, so the season walk-forward arm is inert on 2023 by construction. The twelve single-book arms are a mined attribution battery; no multiplicity correction is claimed.",
+      "plain_summary": "Attribution only: pointsbetus on its own against the three-book rule, to show where the three-book result comes from.",
+      "probability_positive": 0.0377,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
+      "standard_error": 1.138315
+    },
+    "leader_books_walk_forward_w4_williamhill_us_vs_card_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +5.6 to +43.9 accuracy points on this exact population while every book-set difference sits between -0.7 and +0.8, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Leader-book walk-forward, 2023-2025: williamhill_us alone, one book against the nine-member Tuesday card, full-point leader-median follow with the injury-news veto off on both arms, graded at the frozen Tuesday opener on 799 non-push games. Baseline 56.070%, candidate 56.446%, 105 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -2.256 to 2.247, P+ 0.6872.",
+      "effect": 0.375469,
+      "effect_units": "accuracy_points",
+      "family": "leader_books_walk_forward",
+      "interval": [
+        -2.038412,
+        2.857143
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive, the nine-member Tuesday card and the leader-median follow with sharp_weighted_follow_*, follow_threshold_live_card_*, follow_news_gate_* and served_refresh_card_*. Never pool additively with those or with each other. The injury-news veto is OFF on every arm here, including W0, so W0 is the follow rule's book set in isolation and is NOT the served pick chain. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill. The archive holds no season before 2023, so the season walk-forward arm is inert on 2023 by construction. The twelve single-book arms are a mined attribution battery; no multiplicity correction is claimed.",
+      "plain_summary": "Attribution only: what following williamhill_us's own line move, on its own, would have been worth against the Tuesday picks.",
+      "probability_positive": 0.618325,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
+      "standard_error": 1.249731
+    },
+    "leader_books_walk_forward_w4_williamhill_us_vs_w0_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval crosses zero, which AGENTS.md forbids as a closing ground. No trait here has zero split-half reliability, and the positive controls in this same battery resolve at +5.6 to +43.9 accuracy points on this exact population while every book-set difference sits between -0.7 and +0.8, so neither wrong_sign_resolved nor no_split_half_reliability nor positive_control_bound applies.",
+      "closing_ground": null,
+      "description": "Leader-book walk-forward, 2023-2025: williamhill_us alone, one book against the served fixed-leader arm W0, full-point leader-median follow with the injury-news veto off on both arms, graded at the frozen Tuesday opener on 799 non-push games. Baseline 57.322%, candidate 56.446%, 11 picks changed. Week-blocked bootstrap, 20,000 draws, seed 20260821; season-blocked read -1.504 to -0.375, P+ 0.0000.",
+      "effect": -0.876095,
+      "effect_units": "accuracy_points",
+      "family": "leader_books_walk_forward",
+      "interval": [
+        -1.616915,
+        -0.247219
+      ],
+      "league": "nfl",
+      "notes": "Correlated decomposition: shares the 816-game 2023-2025 intraday odds archive, the nine-member Tuesday card and the leader-median follow with sharp_weighted_follow_*, follow_threshold_live_card_*, follow_news_gate_* and served_refresh_card_*. Never pool additively with those or with each other. The injury-news veto is OFF on every arm here, including W0, so W0 is the follow rule's book set in isolation and is NOT the served pick chain. The served path loads live captures and the market store holds none before 2026-08-17, so 2023-2025 is replayed on the historical intraday backfill. The archive holds no season before 2023, so the season walk-forward arm is inert on 2023 by construction. The twelve single-book arms are a mined attribution battery; no multiplicity correction is claimed.",
+      "plain_summary": "Attribution only: williamhill_us on its own against the three-book rule, to show where the three-book result comes from.",
+      "probability_positive": 0.004625,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
+      "standard_error": 0.356781
     },
     "learned_availability_ats_2018_2025": {
       "category": "modeling",
