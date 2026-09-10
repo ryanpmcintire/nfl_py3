@@ -1912,6 +1912,8 @@ def show_status(now: datetime, state: dict[str, Any]) -> None:
         record = state["runs"].get(key)
         if record:
             last = f"{record['status']} ({start.date()})"
+            if record.get("status") == "MISSED" and record.get("acknowledged"):
+                last = f"MISSED, acknowledged ({start.date()})"
             retries = record.get("retries")
             if retries:
                 last += f" after {retries} {'retry' if retries == 1 else 'retries'}"

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T17:10:01.497608+00:00`
+Refreshed at: `2026-09-10T18:12:06.257676+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-09-10T17:10:01.497608+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d8063eff3ab5` — Republish after the exercised lineups_sat_pm job: same picks, publish stamp and model id moved
+- Baseline commit: `125236d83205` — Scheduler status: an acknowledged MISSED window says so in the job table instead of reading like an open alarm
 - Pending change set: none
 
 The baseline commit and pending paths were observed before the automatic refresh.
