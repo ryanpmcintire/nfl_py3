@@ -2897,6 +2897,49 @@
       "status_reason": "Retired three-member union retained as a paired prospective challenger against the nine-member played card.",
       "weekly_generation_command": "N/A -- reuses the synchronized active forecast and the primary ledger's frozen member flip columns.",
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_retired_three_member_union_decisions)"
+    },
+    {
+      "challenger_id": "handle_follow_refresh_off_incumbent",
+      "config_fingerprint": "bc77638d47e2748c",
+      "correlation_and_reuse_warning": "Paired game-for-game with the served refresh pick on the same frozen Tuesday line, and correlated with both market-movement refresh challengers, because heavy handle is largely the cause of the line moves they read; never pool these rows as independent.",
+      "evidence": {
+        "candidate_accuracy_on_population": 0.5769230769230769,
+        "classification": "unresolved_below_power",
+        "flip_share_of_population": 0.1423076923076923,
+        "flips": 37,
+        "population_games": 260,
+        "rule_fires": 73,
+        "season_block_probability_positive": 0.6031,
+        "served_card_accuracy_on_population": 0.573076923076923,
+        "source": "artifacts/handle_follow_on_card/20260909T232503Z/result.json; docs/handle_follow_on_card.md",
+        "week_block_interval_points": [
+          -2.9962546816479403,
+          4.280155642023346
+        ],
+        "week_block_probability_positive": 0.569475,
+        "week_blocked_effect_accuracy_points": 0.38461538461538464
+      },
+      "known_gap": "Both weekend captures land after Thursday and Wednesday kickoffs, so those games never carry a reading and never enter this ledger. The historical measurement covers 133 handle-carrying games in 2023-2025 only; 2020-2022 contribute exact zeros because the site's schema carried no money percentage before late 2022.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "prospective_protocol": "H1, served since 2026-09-09: from Saturday 12:00 ET, when neither promoted market rule fired and the latest pre-pass public-betting capture puts at least 70% of a game's spread money on the side the pick is not on, the served pick switches to the money's side. This ledger is the OFF arm: on every pass that carries a reading it records the pick the pass would have served without the rule beside the one it did serve, at the same frozen Tuesday line, so both arms accrue game for game. Ledger prospective/handle_follow_refresh_decisions.parquet; one row per game per refresh run; no rotation window spent.",
+      "reader_summary": "The card without the money-follow step: what the pick would have been if we ignored which side the money is on.",
+      "registered_at_utc": "2026-09-09T00:00:00+00:00",
+      "registered_by": "Serving H1 (docs/handle_follow_on_card.md): +0.38 accuracy points on top of the served nine-member card, week-blocked probability_positive 0.5695, on the forced-pick expected-value rule.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "Recorded unresolved_below_power; the interval crossing zero is not a closing ground. The OFF arm is retained as the paired prospective record for the served rule.",
+      "weekly_generation_command": "N/A -- reuses the refresh pass's own plan and the local public-betting captures; no network fetch.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

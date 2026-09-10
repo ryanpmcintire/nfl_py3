@@ -116,6 +116,24 @@ every ledger row keeps both arms' evidence (``late_week_*`` and
 ``consensus_*``) beside the governing ``movement_policy`` and the
 ``model_only_pick_side`` counterfactual. See ``docs/late_week_refresh.md``'s
 promotion section.
+
+Heavy-handle follow (H1, owner order 2026-09-09)
+------------------------------------------------
+A third served step sits STRICTLY BELOW both market rules above: from
+Saturday 12:00 ET of that week, when neither market arm fired and the latest
+pre-pass public-betting capture puts at least
+``HANDLE_FOLLOW_MONEY_THRESHOLD`` percent of a game's spread money on the
+side the pick is NOT on, the pick switches to the money's side. Heavy handle
+is largely the cause of the line move the two market rules already read, so
+applying it on top of them would count the same money twice; it may only
+apply where neither fired. The reading comes from
+:func:`nfl_ats.public_betting_live.load_latest_public_handle` (read-only,
+fail-open: no store, no capture before this pass, or no row for this game
+keeps the pick), and Thursday and Wednesday games never see one, because
+both weekend captures land after their kickoffs. Every revision row keeps the
+pre-rule pick and the money/ticket numbers the decision was made on
+(``handle_*``). See ``docs/handle_follow_on_card.md`` for the measurement and
+``docs/late_week_refresh.md``'s handle section for the served rule.
 """
 
 from __future__ import annotations
@@ -124,7 +142,7 @@ import json
 from collections import Counter
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from datetime import UTC, date, datetime, time
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from typing import Any, cast
 from zoneinfo import ZoneInfo
@@ -165,6 +183,7 @@ from nfl_ats.nfl_week import week_cycle_sunday
 from nfl_ats.outcomes import MARGIN_DISTRIBUTION_METHODS, fit_margin_models_for_week
 from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.provenance import sha256_file
+from nfl_ats.public_betting_live import HandleReading, load_latest_public_handle
 from nfl_ats.sharp_book_movement_features import (
     THRESHOLD as LATE_WEEK_FOLLOW_THRESHOLD,
 )
@@ -219,6 +238,25 @@ MOVEMENT_POLICY_MODEL_ONLY = "model_only"
 LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY = "late_week_leader_median_follow_0_5"
 
 MOVEMENT_GOVERNED_POLICIES = (MOVEMENT_POLICY_MOVEMENT, LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY)
+
+HANDLE_FOLLOW_POLICY = "handle_follow_0_70"
+HANDLE_FOLLOW_MONEY_THRESHOLD = 70.0
+HANDLE_FOLLOW_REASON = "Followed the heavy-money side"
+HANDLE_READING_LOCAL_TIME = time(12, 0)
+
+
+def handle_reading_opens(sunday_lock: pd.Timestamp) -> pd.Timestamp:
+    """Saturday 12:00 ET of the week whose Sunday 4:00 PM ET lock is given.
+
+    The two capture jobs run Saturday and Sunday at noon ET, so no pass
+    before this instant can hold a reading for its own week; gating on the
+    clock as well as on the data keeps a Thursday or Saturday-morning pass
+    from silently reusing the previous week's capture.
+    """
+
+    saturday = sunday_lock.tz_convert(PICK_LOCK_TIMEZONE).date() - timedelta(days=1)
+    local = datetime.combine(saturday, HANDLE_READING_LOCAL_TIME, tzinfo=PICK_LOCK_TIMEZONE)
+    return pd.Timestamp(local).tz_convert("UTC")
 
 
 def _movement_side(delta: float) -> str:
@@ -359,6 +397,10 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "late_week_eligible_books",
     "consensus_delta",
     "consensus_pick_side",
+    "handle_pick_side",
+    "handle_money_pct",
+    "handle_ticket_pct",
+    "handle_pre_rule_pick_side",
     "model_id",
     "feature_table_sha256",
     "reason",
@@ -401,6 +443,10 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
         "late_week_eligible_books": 0,
         "consensus_delta": None,
         "consensus_pick_side": "",
+        "handle_pick_side": "",
+        "handle_money_pct": None,
+        "handle_ticket_pct": None,
+        "handle_pre_rule_pick_side": "",
     }
     for column, default in legacy_defaults.items():
         if column not in ledger.columns:
@@ -598,6 +644,10 @@ class RefreshedGame:
     late_week_eligible_books: int = 0
     consensus_delta: float | None = None
     consensus_pick_side: str = ""
+    handle_pick_side: str = ""
+    handle_money_pct: float | None = None
+    handle_ticket_pct: float | None = None
+    handle_pre_rule_pick_side: str = ""
 
 
 @dataclass(frozen=True)
@@ -616,6 +666,7 @@ class RefreshResult:
     missing_from_features_game_ids: tuple[str, ...]
     current_line_metadata: dict[str, Any] = field(default_factory=dict)
     late_week_metadata: dict[str, Any] = field(default_factory=dict)
+    handle_metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def changed_games(self) -> tuple[RefreshedGame, ...]:
@@ -777,6 +828,48 @@ def _late_week_follow_lookup(
     }
 
 
+def _handle_follow_lookup(
+    data_root: Path,
+    *,
+    season: int,
+    week: int,
+    sunday_lock: pd.Timestamp,
+    now: pd.Timestamp,
+) -> tuple[dict[str, HandleReading], dict[str, Any]]:
+    """This week's money split per game, gated to weekend passes, fail-open.
+
+    Returns an empty lookup before Saturday 12:00 ET of that week -- the
+    first instant a capture for this slate can exist -- and whenever the
+    store cannot answer, so the pass proceeds exactly as it did before this
+    rule existed.
+    """
+
+    opens = handle_reading_opens(sunday_lock)
+    if now < opens:
+        return {}, {
+            "available": False,
+            "reason": "before_saturday_noon_et",
+            "snapshot": "",
+            "captured_at_utc": None,
+            "reading_opens_utc": opens.isoformat(),
+            "games_with_reading": 0,
+        }
+    try:
+        readings, metadata = load_latest_public_handle(
+            data_root, season=season, week=week, before=now
+        )
+    except (OSError, ValueError, KeyError, DataContractError) as error:
+        return {}, {
+            "available": False,
+            "reason": f"public betting store is unusable: {error}",
+            "snapshot": "",
+            "captured_at_utc": None,
+            "reading_opens_utc": opens.isoformat(),
+            "games_with_reading": 0,
+        }
+    return readings, {**metadata, "reading_opens_utc": opens.isoformat()}
+
+
 def plan_refresh(
     artifacts_root: Path,
     data_root: Path,
@@ -862,6 +955,7 @@ def plan_refresh(
 
     games: tuple[RefreshedGame, ...] = ()
     line_metadata: dict[str, Any] = {}
+    handle_metadata: dict[str, Any] = {}
     if not refreshable.empty:
         lines = original[["game_id", "decision_home_spread"]].rename(
             columns={"decision_home_spread": "home_spread"}
@@ -931,6 +1025,13 @@ def plan_refresh(
             original_indexed,
             overlaid,
             data_root,
+            sunday_lock=sunday_lock,
+            now=computed_at,
+        )
+        handle_lookup, handle_metadata = _handle_follow_lookup(
+            data_root,
+            season=season,
+            week=week,
             sunday_lock=sunday_lock,
             now=computed_at,
         )
@@ -1025,6 +1126,19 @@ def plan_refresh(
                 else:
                     movement_delta = None
                     movement_pick_side = ""
+            handle = handle_lookup.get(game_id)
+            handle_side = "" if handle is None else handle.heavy_side
+            handle_money = None if handle is None else handle.heavy_money_pct
+            handle_ticket = None if handle is None else handle.heavy_ticket_pct
+            handle_pre_rule_side = new_side
+            if (
+                policy == MOVEMENT_POLICY_MODEL_ONLY
+                and handle_money is not None
+                and handle_money >= HANDLE_FOLLOW_MONEY_THRESHOLD
+                and handle_side != new_side
+            ):
+                policy = HANDLE_FOLLOW_POLICY
+                new_side = handle_side
             changed = eligible and new_side != prev_side
 
             rows.append(
@@ -1060,6 +1174,10 @@ def plan_refresh(
                     late_week_eligible_books=late_week_books,
                     consensus_delta=consensus_delta,
                     consensus_pick_side=consensus_side,
+                    handle_pick_side=handle_side,
+                    handle_money_pct=handle_money,
+                    handle_ticket_pct=handle_ticket,
+                    handle_pre_rule_pick_side=handle_pre_rule_side,
                     eligible=eligible,
                     ineligible_reason=reason,
                     changed=changed,
@@ -1080,6 +1198,7 @@ def plan_refresh(
         missing_from_features_game_ids=missing_from_features,
         current_line_metadata=line_metadata,
         late_week_metadata=late_week_metadata,
+        handle_metadata=handle_metadata,
     )
 
 
@@ -1147,6 +1266,20 @@ def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str,
                     if game.movement_policy == LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
                 ],
             },
+            "handle_follow": {
+                "threshold_money_pct": HANDLE_FOLLOW_MONEY_THRESHOLD,
+                "available": bool(plan.handle_metadata.get("available", False)),
+                "reason": plan.handle_metadata.get("reason", ""),
+                "snapshot": plan.handle_metadata.get("snapshot", ""),
+                "captured_at_utc": plan.handle_metadata.get("captured_at_utc"),
+                "reading_opens_utc": plan.handle_metadata.get("reading_opens_utc"),
+                "games_with_reading": plan.handle_metadata.get("games_with_reading", 0),
+                "games_handle_follow_applied": [
+                    game.game_id
+                    for game in plan.games
+                    if game.movement_policy == HANDLE_FOLLOW_POLICY
+                ],
+            },
         },
     }
 
@@ -1197,6 +1330,7 @@ def record_plan(
         return {"recorded": 0, "ledger_rows": len(existing)}
 
     reason_text = f"pick_refresh recompute ({note})" if note else "pick_refresh recompute"
+    handle_reason = f"{HANDLE_FOLLOW_REASON} ({note})" if note else HANDLE_FOLLOW_REASON
     observed_at = _utc(
         trigger_observed_at_utc if trigger_observed_at_utc is not None else plan.computed_at_utc
     )
@@ -1238,9 +1372,16 @@ def record_plan(
             "late_week_eligible_books": [game.late_week_eligible_books for game in changed],
             "consensus_delta": [game.consensus_delta for game in changed],
             "consensus_pick_side": [game.consensus_pick_side for game in changed],
+            "handle_pick_side": [game.handle_pick_side for game in changed],
+            "handle_money_pct": [game.handle_money_pct for game in changed],
+            "handle_ticket_pct": [game.handle_ticket_pct for game in changed],
+            "handle_pre_rule_pick_side": [game.handle_pre_rule_pick_side for game in changed],
             "model_id": plan.model_id,
             "feature_table_sha256": plan.feature_table_sha256,
-            "reason": reason_text,
+            "reason": [
+                handle_reason if game.movement_policy == HANDLE_FOLLOW_POLICY else reason_text
+                for game in changed
+            ],
             "trigger_type": trigger_type,
             "trigger_source": trigger_source,
             "trigger_observed_at_utc": observed_at,
@@ -1391,9 +1532,10 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
         "three leading books moved the line at least half a point since Tuesday and the pick "
         "followed them, "
         "`movement_ge_1.0` when the pool's own captured line instead moved >=1.0 point and "
-        "the pick followed it, or `model_only` when neither market arm fired (or no market "
-        "evidence was available) -- see docs/late_week_refresh.md's movement-policy "
-        "sections.\n\n"
+        "the pick followed it, `handle_follow_0_70` when neither market arm fired and at "
+        "least 70% of the money bet on the game sat on the other side, or `model_only` "
+        "when nothing above fired (or no market evidence was available) -- see "
+        "docs/late_week_refresh.md's movement-policy sections.\n\n"
     )
     return heading + intro + table + "\n"
 

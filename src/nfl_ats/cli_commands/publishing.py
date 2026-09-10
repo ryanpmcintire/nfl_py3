@@ -56,6 +56,7 @@ from nfl_ats.four_overlay_incumbent import record_former_production_incumbent_de
 from nfl_ats.gaussian_mean_mapping_incumbent_overlay import (
     record_gaussian_mean_mapping_incumbent_challenger_decisions,
 )
+from nfl_ats.handle_follow_refresh_overlay import record_handle_follow_refresh_overlay
 from nfl_ats.home_side_offset_incumbent_overlay import (
     record_home_side_offset_incumbent_challenger_decisions,
 )
@@ -164,6 +165,7 @@ REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "crew_tilt_refresh_v1": "crew_tilt_refresh_overlay",
     "specialist_absence_fade_refresh_v1": "specialist_absence_fade_refresh_overlay",
     "late_week_move_follow_refresh_v1": "late_week_move_follow_refresh_overlay",
+    "handle_follow_refresh_off_incumbent": "handle_follow_refresh_overlay",
 }
 
 
@@ -1033,6 +1035,12 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         )
     except Exception as error:
         result["late_week_move_follow_refresh_overlay"] = {"recorded": 0, "error": str(error)}
+    try:
+        result["handle_follow_refresh_overlay"] = record_handle_follow_refresh_overlay(
+            _artifacts_root(), plan, record_decisions=args.record_decisions
+        )
+    except Exception as error:
+        result["handle_follow_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     result["failed_recorders"] = collect_failed_recorders(result, REFRESH_CHALLENGER_RESULT_KEYS)
     if args.publish_card:
         if not plan.changed_games:

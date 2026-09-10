@@ -523,6 +523,55 @@ arms against each other without re-deriving any of them.
 equal-book rule it replaces never fired on a played card, so no served pick
 changes retroactively and no continuity is broken.
 
+## Served heavy-handle follow (H1, owner order 2026-09-09)
+
+Measured 2026-09-09 (`docs/handle_follow_on_card.md`,
+`artifacts/handle_follow_on_card/20260909T232503Z/result.json`): on top of the
+served nine-member card, over the 260 opener-graded games the public-betting
+backfill reaches, flipping the pick to the side holding at least 70% of the
+spread money adds **+0.38 accuracy points, week-blocked 95% [-3.00, +4.28],
+`probability_positive` 0.5695** (season-blocked 0.6031), firing on 73 games and
+changing 37 of them (18-19 becomes 19-18). Recorded `unresolved_below_power`;
+the interval crossing zero is not a rejection ground (AGENTS.md), and on the
+forced-pick decision rule a candidate above a coin flip on top of what is
+played is played. The two narrowings measured beside it do NOT carry the
+effect -- H2 (the same rule restricted to tickets <= 60%, the sharp-money
+shape) is an exact dead heat at 7-7, and H3 (restricted to lines within 3
+points of pick'em) is -0.77 points -- which is a diagnosis for a session
+extending this lane, not a verdict on H1.
+
+**The rule, exactly as served (`nfl_ats.pick_refresh.plan_refresh`,
+`nfl_ats.public_betting_live.load_latest_public_handle`).** At each refresh
+pass at or after **Saturday 12:00 ET** of that week, for each still-open game
+where **neither** market rule above fired: read the latest public-betting
+capture strictly at or before the pass instant that carries rows for this
+season and week (`data/raw/public_betting_live/`, written by the
+`public_betting_sat` and `public_betting_sun` scheduler jobs), take the side
+with the larger share of the spread money, and if that share is **>= 70%** and
+the pick is on the other side, the served pick becomes the money's side.
+Otherwise everything stands exactly as before.
+
+**Precedence is strictly below both market rules, on purpose.** Heavy handle
+is largely the cause of the line move `LATE_WEEK_MOVE_FOLLOW_POLICY` and the
+1.0-point consensus rule already read, so applying it on top of them would
+count the same money twice. It may only apply where neither fired.
+
+**Thursday and Wednesday games never see a reading.** Both captures land after
+those kickoffs, and the clock gate refuses a pass before Saturday noon ET
+outright rather than letting it reuse the previous week's capture. Everything
+about the arm is fail-open: no store, no capture before this pass, no row for
+this week, or an unreadable store all keep the pick and report a named reason
+under `movement_policy.handle_follow` in the pass summary.
+
+**One computation, two records.** Every pick-revision row keeps the pre-rule
+pick and the numbers the decision was made on (`handle_pre_rule_pick_side`,
+`handle_pick_side`, `handle_money_pct`, `handle_ticket_pct`), and the flipped
+rows carry the reason `Followed the heavy-money side`. The paired
+`handle_follow_refresh_off_incumbent` challenger
+(`prospective/handle_follow_refresh_decisions.parquet`) records both arms --
+served and off -- for every eligible game that carried a reading on the pass,
+so the OFF arm accrues game for game instead of being reconstructed later.
+
 ## Exact commands
 
 ```powershell
