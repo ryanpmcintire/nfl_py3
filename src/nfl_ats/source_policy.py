@@ -1,5 +1,3 @@
-"""Machine-readable acquisition, retention, quota, and publication policy."""
-
 from __future__ import annotations
 
 import json
@@ -14,7 +12,7 @@ VALID_RAW_RETENTION = frozenset({"private_local_only", "private_local_existing_o
 
 
 class SourcePolicyError(RuntimeError):
-    """An external-source operation violates the reviewed policy registry."""
+    pass
 
 
 @dataclass(frozen=True)
@@ -83,7 +81,6 @@ def require_acquisition(source_id: str, path: Path = DEFAULT_REGISTRY) -> Source
 def validate_review_currency(
     *, path: Path = DEFAULT_REGISTRY, as_of: date | None = None, max_age_days: int = 366
 ) -> None:
-    """Fail when reviewed terms have exceeded the declared annual audit cadence."""
 
     today = as_of or date.today()
     stale = sorted(

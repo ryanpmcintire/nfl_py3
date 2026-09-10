@@ -1,5 +1,3 @@
-"""Leakage and additive-profile contracts for PER-09."""
-
 import numpy as np
 import pandas as pd
 import pytest

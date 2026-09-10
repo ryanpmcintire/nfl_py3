@@ -1,5 +1,3 @@
-"""Contracts for the lock-day ledger coverage report."""
-
 from __future__ import annotations
 
 import sys

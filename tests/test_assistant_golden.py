@@ -1,21 +1,3 @@
-"""ENG-05: golden-question evaluation for the board assistant.
-
-Runs the fixed corpus in ``tests/fixtures/assistant_golden/questions.json``
-(60-110 rows spanning routing, unsupported-question fallback, numeric
-provenance, stale-data behaviour, the ENG-04 lineup intents, and
-accessibility-text safety -- widened from 100 by ENG-36's six added
-multi-word-glossary routing rows) through
-:func:`nfl_ats.assistant_eval.evaluate_golden`,
-plus a direct check of the rendered chat panel's keyboard/no-JS
-accessibility contract on the real ``board_terminal.render`` output.
-
-Reuses the SAME ``BoardContent`` fixture (``_board_content_fixtures.
-build_fixture_content``) and the same synthetic-lineups-artifact technique
-``tests/test_board_assistant_lineups.py`` already exercises (a tmp_path
-``lineups.json`` loaded through the real ``nfl_ats.lineup_view`` parser) --
-no new content-building machinery, only a new question corpus and grader.
-"""
-
 from __future__ import annotations
 
 import json
@@ -99,14 +81,6 @@ GOLDEN_QUESTIONS = load_questions(_QUESTIONS_PATH)
 
 
 def _write_lineups_artifact(tmp_path: Path) -> None:
-    """A small, deliberately mixed ``lineups.json``: MIA (clean) / LV
-    (fail-closed forecast/lineup mismatch) share the fixture's Best Pick
-    game; NE/SEA is a second, entirely clean game. Every other fixture game
-    (including DEN/KC) is left unpublished on purpose, exercising the "no
-    artifact for this team" fallback for free -- mirrors the payload shape
-    ``tests/test_board_assistant_lineups.py`` already proved against the
-    real ``nfl_ats.lineup_view`` parser, sized down to just the two games
-    this golden corpus needs."""
 
     payload = {
         "season": 2026,
@@ -227,12 +201,6 @@ def _write_lineups_artifact(tmp_path: Path) -> None:
 
 @pytest.fixture(scope="module")
 def golden_environment(tmp_path_factory: pytest.TempPathFactory) -> SimpleNamespace:
-    """Built once per module: the shared 16-game fixture plus a refresh
-    line and a mixed lineups block, its built knowledge corpus, a forced
-    all-stale variant of that SAME corpus (:func:`make_stale_lineup_knowledge`
-    -- the "second knowledge object whose lineups/source timestamps are
-    older than the documented budget" the ENG-05 spec calls for), and the
-    loaded golden-question rows."""
 
     tmp_path = tmp_path_factory.mktemp("assistant_golden")
     _write_lineups_artifact(tmp_path)
@@ -269,15 +237,6 @@ def test_golden_fixture_has_60_to_120_rows_covering_every_category() -> None:
 
 
 def test_golden_fixture_covers_every_router_intent() -> None:
-    """Enumerated from the code (not memory): every deflect body, every
-    glossary term (single- and multi-word), and every other topic
-    :func:`answer` can return. ENG-36 fixed ``board_assistant._parse`` to
-    do longest-match-first phrase matching over normalised n-grams, so
-    multi-word terms ("cover probability", "closing line", "Best Pick")
-    are now reachable the same way single-word terms always were -- this
-    test previously excluded them on purpose to document the gap (see the
-    ENG-05 session report); now that the router is fixed, excluding them
-    would paper back over a regression instead of catching one."""
 
     deflect_ids = {entry.entry_id for entry in board_assistant._deflect_entries(2026, 1)}
     reachable_glossary_ids = {f"glossary:{item.term}" for item in board_assistant.GLOSSARY}
@@ -365,9 +324,6 @@ def test_stale_knowledge_never_names_a_starter(golden_environment: SimpleNamespa
 def test_stale_data_rows_are_graded_against_a_genuinely_different_knowledge(
     golden_environment: SimpleNamespace,
 ) -> None:
-    """Proves the fresh/stale comparison is not an accidental no-op: same
-    question, same topic (staleness changes the answer body, never the
-    intent it routes to), but a different rendered answer."""
 
     cases = [c for c in GOLDEN_QUESTIONS if c.category == "stale_data"]
     assert cases
@@ -420,10 +376,6 @@ def test_noscript_fallback_explains_javascript_is_needed(
 def test_picks_table_renders_unconditionally_outside_any_noscript_gate(
     golden_environment: SimpleNamespace,
 ) -> None:
-    """The picks table itself must never depend on JavaScript: strip every
-    ``<noscript>...</noscript>`` block from the page and confirm the table
-    markup survives -- proves a no-JS reader still sees the real picks, not
-    just the assistant's own topic links."""
 
     html = board_terminal.render(golden_environment.content)
     without_noscript = re.sub(r"<noscript>.*?</noscript>", "", html, flags=re.S)

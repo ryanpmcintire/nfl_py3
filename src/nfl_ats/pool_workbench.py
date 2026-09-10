@@ -1,21 +1,3 @@
-"""Pool workbench: pool rules, a browser-local entry, and ownership scenarios.
-
-ROADMAP item UI-09. The workbench reuses the existing forced-pick card from
-:mod:`nfl_ats.pool` and the active model's ``recommendations.csv`` forecast
-format; it invents nothing about future games. Entry edits persist only in the
-operator's browser, scoped to one season/week, and never mutate the published
-forecast. Ownership views are explicitly hypothetical favorite-side assumptions
-because no entry-popularity feed is integrated.
-
-The pool's format is the one confirmed in ``docs/pool_edge_plan.md``
-(owner-corrected 2026-08-20): forced ATS sides for all 272 regular-season
-games plus all 13 playoff games (285 cards, exactly the forced-pick metric
-this project evaluates), one "Best Pick" per regular-season week, no passes,
-and a line that locks Tuesday (revised once Wednesday, then frozen for the
-week) while our picks stay editable up to each game's own per-game deadline
-(SNF/MNF lock early at Sunday 16:00 ET).
-"""
-
 from __future__ import annotations
 
 import math
@@ -46,13 +28,6 @@ _REQUIRED_COLUMNS = frozenset(
 
 @dataclass(frozen=True)
 class PoolRules:
-    """The pool's format and scoring rules -- the workbench's rules INPUT.
-
-    Defaults encode the confirmed Splash-style format. :meth:`from_dict`
-    accepts a partial override map so a future operator can tune the rules
-    without code edits; any field absent from the map keeps its safe default.
-    """
-
     regular_season_games: int = REGULAR_SEASON_GAMES
     playoff_games: int = PLAYOFF_GAMES
     pick_type: str = "ats"
@@ -160,29 +135,16 @@ class PoolRules:
 
     @property
     def total_games(self) -> int:
-        """Forced picks across the whole season: 272 + 13 = 285 (measured)."""
 
         return self.regular_season_games + self.playoff_games
 
     @property
     def cards_per_season(self) -> int:
-        """Alias for :attr:`total_games` in the owner's own vocabulary:
-        "The pool is FORCED PICKS: 285 cards must be submitted either way."
-        (AGENTS.md, "A promotion bar is not a decision bar"; also
-        docs/pool_edge_plan.md:76-77, 272 regular-season + 13 playoff games).
-        Derived from :attr:`total_games` rather than a second hardcoded 285,
-        so the two can never drift out of sync (this project's "derive
-        constants, do not duplicate them" discipline)."""
 
         return self.total_games
 
     @property
     def submissions_per_season(self) -> int | None:
-        """Total pick submissions when the format selects every listed game.
-
-        Survivor pools select one team per week, so their total cannot be
-        derived from the game counts stored here and is deliberately ``None``.
-        """
 
         if self.pool_type == "survivor":
             return None
@@ -191,31 +153,11 @@ class PoolRules:
     def deadline_for(
         self, kickoff: pd.Timestamp, week_kickoffs: Sequence[pd.Timestamp] | pd.Series
     ) -> pd.Timestamp:
-        """This game's real pick deadline: ``min(its own kickoff, that
-        week's Sunday 16:00 ET lock)``.
-
-        Delegates to :attr:`deadline_rule`
-        (``nfl_ats.pick_refresh.pick_deadline``) and
-        ``nfl_ats.pick_refresh.sunday_pick_lock`` verbatim -- the rule is
-        never reimplemented here. ``week_kickoffs`` should be every kickoff
-        in that game's week; it anchors the Sunday lock on the mode
-        Tue..Mon-cycle Sunday among them (owner rule, 2026-08-20,
-        re-confirmed 2026-09-01; ``docs/late_week_refresh.md``: "The Sunday
-        anchor is computed from the week's own games, not a calendar
-        guess"), so one isolated Tuesday/Wednesday reschedule cannot shift
-        the whole week's lock instant. A Thursday game's own kickoff is
-        always earlier than that Sunday lock, so this reduces to "picks due
-        at kickoff" for TNF; SNF and MNF are the only games this ever
-        returns earlier than their own kickoff for.
-        """
 
         sunday_lock = sunday_pick_lock(pd.Series(list(week_kickoffs)))
         return pick_deadline(pd.Timestamp(kickoff), sunday_lock)
 
     def describe(self) -> list[str]:
-        """Plain-English rendering of these rules for the board/report --
-        one sentence per rule, no HTML, safe to drop into a doc or console
-        (the "Label how you know it" plain-English discipline)."""
 
         if self.pool_type == "survivor":
             format_description = (
@@ -271,13 +213,11 @@ class PoolRules:
 
     @classmethod
     def from_defaults(cls) -> PoolRules:
-        """The confirmed Splash-style format from docs/pool_edge_plan.md."""
 
         return cls()
 
     @classmethod
     def straight_up(cls, **overrides: Any) -> PoolRules:
-        """A standard straight-up pool, retaining the real deadline rule."""
 
         base: dict[str, Any] = {
             "pick_type": "straight_up",
@@ -290,7 +230,6 @@ class PoolRules:
 
     @classmethod
     def confidence(cls, *, pick_type: str = "ats", **overrides: Any) -> PoolRules:
-        """A forced-pick confidence pool with unique weekly point values."""
 
         base: dict[str, Any] = {
             "pick_type": pick_type,
@@ -306,7 +245,6 @@ class PoolRules:
 
     @classmethod
     def survivor(cls, **overrides: Any) -> PoolRules:
-        """A straight-up survivor pool with one use per team."""
 
         base: dict[str, Any] = {
             "pick_type": "straight_up",
@@ -322,7 +260,6 @@ class PoolRules:
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> PoolRules:
-        """Load pool rules from a partial override map (the rules INPUT)."""
 
         known = {field.name for field in fields(cls)}
         overrides = {key: value for key, value in dict(data).items() if key in known}
@@ -345,7 +282,6 @@ class PoolRules:
 
 
 def _safe_pool_card(predictions: pd.DataFrame) -> pd.DataFrame:
-    """``build_ats_pool_card`` or an empty frame when not buildable."""
 
     if predictions is None or predictions.empty:
         return pd.DataFrame()
@@ -355,27 +291,11 @@ def _safe_pool_card(predictions: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_entry_list(predictions: pd.DataFrame) -> pd.DataFrame:
-    """The pool entry list: one forced ATS side per game, ranked by confidence.
-
-    Reuses :func:`nfl_ats.pool.build_ats_pool_card` -- the existing
-    pick/probability output -- and degrades to an empty frame when the
-    forecast is missing the columns it needs (e.g. no active forecast yet).
-    """
 
     return _safe_pool_card(predictions)
 
 
 def derive_confidence_ranks(predictions: pd.DataFrame) -> pd.DataFrame:
-    """Confidence ranks derived from the active model forecast format.
-
-    Rank 1 is the model's highest-confidence pick; confidence is
-    ``|pick_probability - 0.5|`` computed from ``home_cover_probability``
-    (the forecast's calibrated cover probability). Same source and same
-    ordering as :func:`build_entry_list` -- kept as a standalone view for
-    callers that want the ranking without the entry list's pick/star
-    rendering. The pool workbench page itself renders one merged table
-    (the entry list) rather than this plus a duplicate.
-    """
 
     card = _safe_pool_card(predictions)
     if card.empty:
@@ -397,13 +317,6 @@ def derive_confidence_ranks(predictions: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class OwnershipScenario:
-    """One disclosed, hypothetical favorite-side ownership assumption.
-
-    ``favorite_share`` is not an estimate of this pool. It is the assumed
-    fraction of a hypothetical field taking the favorite in each game. The
-    defaults match the sensitivity points already used by the POL-05 simulator.
-    """
-
     key: str
     label: str
     favorite_share: float
@@ -442,12 +355,6 @@ def build_ownership_scenarios(
     entry_list: pd.DataFrame,
     scenarios: Sequence[OwnershipScenario] = DEFAULT_OWNERSHIP_SCENARIOS,
 ) -> pd.DataFrame:
-    """Summarise entry overlap under disclosed favorite-side assumptions.
-
-    A negative ATS line marks the entry pick as the favorite and a positive
-    line marks it as the underdog. Pick'em rows have no favorite and therefore
-    contribute 50% overlap in every scenario. No row is observed ownership.
-    """
 
     columns = [
         "key",
@@ -492,7 +399,6 @@ def _section(kicker: str, title: str, inner: str) -> str:
 
 
 def _format_line(value: float) -> str:
-    """Compact signed ATS line for an entry choice."""
 
     if value > 0:
         return f"+{value:g}"
@@ -577,17 +483,6 @@ def _entry_list_section(
     storage_key: str | None = None,
     strength_bands: StrengthBands | None = None,
 ) -> str:
-    """The pool's one entry-list table.
-
-    This used to be two sections -- "Entry list" and "Confidence ranks" --
-    rendering the same 16 rows of the same forced-pick card twice with
-    different formatting (owner, 2026-08-26: "displaying identical/duplicated
-    data"). Merged into one table: editable pick rendering and the best-pick
-    star come from the former entry list; the cover-probability column renders with
-    :func:`viz.probability_meter`, taken from the former confidence-ranks
-    table, since a bar anchored on the coin flip reads better for a
-    probability than a bare signed delta.
-    """
 
     if entry_list.empty:
         inner = viz.empty_state(
@@ -711,7 +606,6 @@ def _ownership_section(summaries: pd.DataFrame) -> str:
 
 
 def _entry_persistence_script() -> str:
-    """Browser-local entry persistence and live ownership recomputation."""
 
     return f"""<script>
 (function () {{
@@ -828,7 +722,6 @@ def build_pool_workbench_body(
     week: int | None = None,
     strength_bands: StrengthBands | None = None,
 ) -> str:
-    """Compose the pool-workbench body (rules, entry list, ownership)."""
 
     rules = pool_rules or PoolRules.from_defaults()
     entry_list = build_entry_list(predictions)

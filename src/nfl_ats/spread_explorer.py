@@ -1,51 +1,3 @@
-"""Spread explorer: "what would the model say if the line were different?"
-
-Owner request, 2026-08-20: pick a spread for a game and see the model's read
-of the odds of covering, as of the last site build. This module is the
-library half of that feature -- the picks-page widget
-(:mod:`nfl_ats.public_board`) and the CLI query tool (``scripts/cover_odds.py``)
-both call it rather than duplicating the math.
-
-Scope, matching ``docs/smooth_cdf_mapping.md``'s own declared scope exactly:
-only the two-way ``home_cover_probability`` is a Gaussian read (the MOD-08
-mapping, promoted 2026-08-19 to the sole production probability method,
-``nfl_ats.outcomes.score_outcome_week``'s default). Push probability is a
-DIFFERENT computation -- the production three-way split
-(``margin._three_way_probabilities``) reads a discrete rounding of the raw
-out-of-time residual SAMPLE, a fundamentally different (and, per that
-function's own docstring, deliberately un-smoothed) computation from the
-continuous Gaussian fit. Under a continuous distribution the probability of
-landing exactly on any single line is mathematically zero, so synthesizing a
-"push probability" from the Gaussian mean/sd ALONE would not be a real
-number -- it would be an invented one. Two call shapes follow from this:
-:func:`compute_spread_explorer_params` (mean/sd only, for the picks-page
-widget's compact JSON embedding) never reports push -- callers surface a
-plain-English note instead. :func:`compute_spread_explorer_distribution`
-(the full residual sample, for the CLI query tool, which does not have a
-page-weight budget) DOES report an honest push probability, via the SAME
-discrete-rounding ``margin._three_way_probabilities`` production itself
-uses -- never a number invented from the Gaussian fit. This mirrors the
-exact scope line ``docs/smooth_cdf_mapping.md`` already drew: "Only
-home_cover_probability... is mapped" -- the two-way number is Gaussian, the
-three-way split stays exactly as production already computes it.
-
-The mean/sd/centre this module returns are never independently re-derived
-from summary statistics or approximated -- they come from refitting the
-EXACT production recipe (feature profile, regressor, ridge alpha,
-``min_train_games``) via ``nfl_ats.outcomes.fit_margin_models_for_week``, the
-same public entry point ``nfl_ats.smooth_cdf_mapping_overlay`` already uses
-for an identical purpose (obtaining the fitted ``MarginModel`` for one week
-rather than a pre-summarized card). Ridge and the Gaussian fit are both
-deterministic (``random_state=42`` throughout ``margin.py``), so the refit
-reproduces the exact predicted centre and out-of-time residual sample the
-active card's own Gaussian read used -- proven, not assumed, by re-deriving
-that Gaussian probability from the refit and requiring it to match the
-card's own ``home_cover_probability`` to floating-point precision before
-anything is trusted for the widget. A mismatch (e.g. the feature table was
-rebuilt after the card was produced) raises ``DataContractError`` rather than
-silently shipping a widget that could disagree with the published pick.
-"""
-
 from __future__ import annotations
 
 import math
@@ -84,22 +36,6 @@ _REQUIRED_PREDICTION_COLUMNS = frozenset(
 
 @dataclass(frozen=True)
 class SpreadExplorerGameParams:
-    """One game's Gaussian read: the predicted centre plus the out-of-time
-    residual sample's mean/sd, all read from the SAME refit that reproduces
-    the published card's own ``home_cover_probability``.
-
-    ``home_cover_probability(line) = 1 - Phi(((line - center) - residual_mean) / residual_std)``
-    -- exactly ``nfl_ats.calibration.smoothed_home_cover_probability(...,
-    method="gaussian")``'s formula, generalized from the card's one quoted
-    line to an arbitrary hypothetical one.
-
-    ``key_line_pinned`` (docs/key_line_pick_read.md): the card's own number
-    at its quoted line is the served key-line lattice read, not the
-    Gaussian formula -- the line sits exactly on 3 or 7. The Gaussian
-    params still describe every OTHER line; at the quoted line the widget
-    shows ``card_home_cover_probability`` verbatim.
-    """
-
     game_id: str
     home_team: str
     away_team: str
@@ -112,17 +48,6 @@ class SpreadExplorerGameParams:
 
 
 def load_feature_table_for_forecast(metadata: Mapping[str, Any], data_root: Path) -> pd.DataFrame:
-    """Load the exact feature table a forecast's own provenance points to.
-
-    Mirrors ``nfl_ats.smooth_cdf_mapping_overlay.record_smooth_cdf_mapping_challenger_decisions``'s
-    resolution exactly: try the absolute path recorded in
-    ``metadata["provenance"]["feature_table"]["path"]`` first (works on the
-    machine that built the forecast), then fall back to
-    ``data_root/processed/<same file name>`` (works on any machine with the
-    same local pipeline outputs, since that absolute path is rarely portable
-    across checkouts). Raises ``DataContractError`` rather than returning an
-    empty frame -- a caller with no feature table cannot refit anything.
-    """
 
     provenance = metadata.get("provenance")
     feature_table = provenance.get("feature_table") if isinstance(provenance, dict) else None
@@ -151,22 +76,6 @@ def compute_spread_explorer_params(
     center_offsets: Mapping[str, float] | None = None,
     pick_overrides: Mapping[str, float] | None = None,
 ) -> dict[str, SpreadExplorerGameParams]:
-    """Refit each (season, week) group and return every game's widget params.
-
-    ``predictions`` is the active model's own ``recommendations.csv``
-    (already filtered to the ``market_residual`` method -- the only method
-    the Gaussian mapping applies to). Every group is refit independently with
-    a training cutoff strictly before that week's earliest kickoff, exactly
-    as the real card was produced, via ``fit_margin_models_for_week``. See
-    the module docstring for the proof-before-trust discipline this follows.
-
-    ``pick_overrides`` (docs/key_line_pick_read.md, game_id -> served
-    probability) names the games whose card number is the key-line lattice
-    read rather than the Gaussian formula; the reproduction check expects
-    the served number there and the game's params are marked
-    ``key_line_pinned``. ``None`` (a pre-promotion card) checks the Gaussian
-    read on every game exactly as before.
-    """
 
     if probability_method not in ("gaussian", "gaussian_median"):
         raise DataContractError("Spread-explorer widget requires a Gaussian location estimator")
@@ -265,8 +174,6 @@ def compute_spread_explorer_params(
 
 
 def _erf_abramowitz_stegun(x: float) -> float:
-    """Abramowitz & Stegun 7.1.26, max absolute error ~1.5e-7 -- the same
-    approximation embedded in the browser widget's JS."""
 
     sign = -1.0 if x < 0 else 1.0
     x = abs(x)
@@ -284,11 +191,6 @@ def _erf_abramowitz_stegun(x: float) -> float:
 
 
 def widget_home_cover_probability(line: float, center: float, mean: float, std: float) -> float:
-    """The home-cover probability at a hypothetical ``line``, computed with
-    the SAME erf approximation the browser widget uses -- not scipy. Callers
-    that want the production-precision number should use
-    ``nfl_ats.calibration.smoothed_home_cover_probability`` instead; this
-    function exists to let Python and JS be checked against each other."""
 
     threshold = line - center
     z = (threshold - mean) / (std * math.sqrt(2.0))
@@ -299,15 +201,6 @@ def widget_home_cover_probability(line: float, center: float, mean: float, std: 
 def spread_explorer_payload(
     params: Mapping[str, SpreadExplorerGameParams],
 ) -> dict[str, dict[str, Any]]:
-    """The JSON-serializable per-game blob the picks page embeds inline.
-
-    Rounded to 6 decimal places -- comfortably more precision than the
-    page's own displayed 0.1%, and small enough that the round-trip through
-    JSON never meaningfully perturbs the widget's own consistency check
-    (``public_board._assert_spread_explorer_matches_card`` checks these
-    EXACT rounded values, not the unrounded Python floats, since the rounded
-    values are what actually ships to the browser).
-    """
 
     payload: dict[str, dict[str, Any]] = {}
     for game_id, p in params.items():
@@ -327,11 +220,6 @@ def spread_explorer_payload(
 
 @dataclass(frozen=True)
 class SpreadExplorerGameDistribution:
-    """One game's fitted predictive distribution: the predicted centre plus
-    the FULL out-of-time residual sample, proven (not assumed) to reproduce
-    the published card's own ``home_cover_probability`` at ``probability_method``
-    before being returned."""
-
     game_id: str
     season: int
     week: int
@@ -358,15 +246,6 @@ def compute_spread_explorer_distribution(
     center_offsets: Mapping[str, float] | None = None,
     pick_overrides: Mapping[str, float] | None = None,
 ) -> SpreadExplorerGameDistribution:
-    """Refit ONE game's week (the exact production recipe) and return its
-    centre plus full residual sample, verified against the published card's
-    own ``home_cover_probability`` first -- the same refit-and-verify
-    discipline as :func:`compute_spread_explorer_params`, generalized to
-    whichever ``probability_method`` the active card was actually built
-    with (the widget supports Gaussian mean and median locations;
-    this function is reused by the CLI tool, which checks the active
-    model's own recorded method rather than assuming).
-    """
 
     missing = sorted(_REQUIRED_PREDICTION_COLUMNS.difference(predictions.columns))
     if missing:
@@ -451,19 +330,6 @@ def spread_explorer_three_way(
     line: float,
     discrete_read: DiscretePushReader | None = None,
 ) -> tuple[float, float, float]:
-    """``(home_covers, push, home_does_not_cover)`` at a hypothetical
-    ``line``. The three values always sum to 1.0. ``home_does_not_cover``
-    is exactly "the away side covers" once push is accounted for separately
-    (a two-outcome ATS market has no third option once a push is excluded).
-
-    With ``discrete_read`` (docs/discrete_push_read.md, the served source of
-    every push / alternative-line answer) the split is read off the
-    mass-preserving lattice at ``line``, tilted to this game's served point
-    (the refit centre plus the residual location of the card's own
-    probability method). Without it, the split is the rounded residual
-    sample ``margin._three_way_probabilities`` reads -- the smooth read,
-    which is the paired challenger, never the served answer.
-    """
 
     if discrete_read is not None:
         point = distribution.center + residual_location(

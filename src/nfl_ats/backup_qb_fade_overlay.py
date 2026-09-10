@@ -1,74 +1,3 @@
-"""Backup-QB fade overlay: a parameter-free pick-level nudge.
-
-Research chain: ``scripts/nfl_bias_battery_screen.py``'s ``backup_qb_start``
-cell -- "Starting QB differs from the team's modal QB this season (>=3 prior
-starts)" -- is one of 17 predeclared situational cells in the NFL bias
-battery, close-graded (2009-2025, 7,002 QB-baseline-eligible team-game rows)
-at -0.2731 accuracy points, ``probability_positive`` 0.1684
-(``registry/weak_signals.json:bias_battery_backup_qb_start``,
-``unresolved_below_power``). The same construct, ported into
-``nfl_ats.experiment_runner`` and re-screened at the opener grade (2020-2025,
-2,436 team-games), reads -2.3578 accuracy points, ``probability_positive``
-0.0982 (``registry/weak_signals.json:bias_battery_backup_qb_start_opener``,
-also ``unresolved_below_power``). **Both grades lean the same way**: a
-negative effect at BOTH grades means the flagged (backup-starter) side covers
-LESS than its complement -- the backup-QB side under-covers, both close- and
-opener-graded (``probability_positive`` well under 0.5 at both: 0.1684 and
-0.0982). Per AGENTS.md an interval crossing zero at this evaluator's
-~2-point resolution is the EXPECTED shape for a real small signal, never
-grounds to close the line, and this task's own evidence-check gate ("if both
-grades lean the same way ... build") is satisfied by this same-direction
-agreement.
-
-This module is the no-window-cost path, built on the exact pattern of
-``division_revenge_tilt_overlay.py``, ``injury_value_tilt_overlay.py``, and
-``coach_fade_overlay.py`` (the original precedent): a **pick-level,
-post-prediction transform** of the active model's own forced pick,
-dual-tracked against that same active model in the prospective challenger
-ledger (``nfl_ats.prospective_scoring``), at no rotation-registry window cost
-and with zero training-time feature changes. **Nothing in this module is
-wired into ``publishing.py`` or the production pick path** -- like the
-division-revenge and injury tilts, and unlike the coach-fade overlay, no
-owner decision to play this on the real card has been made; it is dual-
-tracked only.
-
-**Important caveat, stated here because it must not be buried:** the active
-``weak_stack`` model already carries QB-continuity and injury/availability
-features (``docs/injury_value_lost.md``, the QB-continuity family in
-``nfl_ats.experiment_runner``). This overlay may therefore be double-counting
-information the model already prices into ``home_cover_probability`` --
-fading a backup-QB team the model has ALREADY discounted for that same reason
-would double-discount it. That is exactly the open question prospective
-dual-tracking is built to measure: if the model already fully prices the
-backup-QB effect, this overlay's flips should show no edge over the model's
-own raw picks; if the model under-prices it (plausible, since the model's
-features describe QB *continuity*/*value lost*, not the specific "modal
-starter this season" construct the bias battery measured), the overlay's
-flips should show a positive edge. The 2026 prospective ledger settles this
-empirically instead of by assumption.
-
-**The rule is parameter-free** -- no threshold, no tuning, nothing derived
-from 2018-2025 outcomes, aside from the **battery's own frozen eligibility
-rule**: a team's starting QB is only ever compared to a modal starter once at
-least 3 prior starts this season have been observed (kept exactly as
-measured -- see :func:`backup_qb_flag_by_game`).
-
-Two things live here, mirroring ``division_revenge_tilt_overlay.py`` exactly:
-
-1. :func:`backup_qb_flag_by_game` -- the pregame-safe, DATA-DERIVED signal,
-   ported verbatim from ``nfl_ats.experiment_runner._bias_battery_qb_backup_flag``
-   / ``scripts/nfl_bias_battery_screen.py``'s modal-QB tracker (same running
-   counts, same ``>= 3 prior starts`` eligibility floor), read straight from
-   the schedule snapshot's ``home_qb_name``/``away_qb_name`` columns, never
-   hand-typed.
-2. :func:`apply_backup_qb_fade_overlay` -- the pick-level transform, plus
-   :func:`overlay_disclosure_note` for the plain-English provenance sentence.
-
-:func:`record_backup_qb_fade_challenger_decisions` writes the overlay's own
-arm to the prospective challenger ledger so 2026 scores it cleanly,
-independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 from collections import Counter
@@ -108,22 +37,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def _modal_backup_flag_for_group(qb_names: pd.Series) -> pd.Series:
-    """Per (team, season) group, sorted by gameday.
-
-    Ported verbatim from ``nfl_ats.experiment_runner._bias_battery_qb_backup_flag``
-    / ``nfl_bias_battery_screen._qb_backup_flag``: a running counter of every
-    QB who has STRICTLY PRIOR starts this team-season; once at least
-    :data:`MIN_PRIOR_STARTS` prior starts have accumulated, the row is
-    flagged when its OWN starter differs from the modal (most frequent)
-    starter among those prior starts. Before the eligibility floor is
-    reached, the row is simply not flagged (folded into ``False``, mirroring
-    how ``coach_fade_overlay.year_one_by_game`` folds "no observed prior
-    season" into ``False`` rather than a separate missing-data sentinel) --
-    "insufficient data" and "confidently not a backup start" are
-    indistinguishable to a fade rule that only ever asks "is this side
-    flagged", so collapsing them is a design choice, not data loss: the
-    eligibility floor is still the one the battery measured.
-    """
 
     counts: Counter[str] = Counter()
     flags: list[bool] = []
@@ -140,16 +53,6 @@ def _modal_backup_flag_for_group(qb_names: pd.Series) -> pd.Series:
 
 
 def backup_qb_flag_by_game(schedules: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``backup_home``/``backup_away``.
-
-    Pregame-safe by construction: at the time of any given game, the modal
-    starter used to evaluate it is computed only from that same team's
-    STRICTLY EARLIER starts this season (sorted by ``gameday``, matching the
-    battery's own running-counter design). A later game in the season can
-    never change an earlier game's flag -- the two leakage regression tests
-    in ``tests/test_backup_qb_fade_overlay.py`` prove this empirically,
-    mirroring ``coach_fade_overlay``'s pair.
-    """
 
     required = {
         "game_id",
@@ -218,8 +121,6 @@ def backup_qb_flag_by_game(schedules: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     backup_team: str
@@ -228,13 +129,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``coach_fade_overlay.OverlayResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     both_backup_games: tuple[str, ...]
@@ -251,25 +145,6 @@ def apply_backup_qb_fade_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick away from a clean-case backup-QB start.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (the construct's
-      close- and opener-graded measurements were both scored on regular-
-      season games only);
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home)
-      lands on a side flagged as a backup start (:func:`backup_qb_flag_by_game`);
-      and
-    * the OPPONENT is not ALSO flagged as a backup start (the "clean case",
-      mirroring ``coach_fade_overlay.apply_coach_fade_overlay``'s year-1
-      clean-case gate exactly). A both-backup game has no measured direction
-      to fade and is reported in ``both_backup_games`` instead of flipped.
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    the sibling overlays do, so every existing reader of the column needs no
-    overlay-aware branch.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -320,12 +195,6 @@ def apply_backup_qb_fade_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring
-    ``division_revenge_tilt_overlay.overlay_disclosure_note``.
-
-    Empty when the overlay is off or changed nothing this week. Not currently
-    surfaced on the published card -- this overlay is dual-tracked only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -355,20 +224,6 @@ def record_backup_qb_fade_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the fade overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``division_revenge_tilt_overlay.record_division_revenge_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the fade's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-fade side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

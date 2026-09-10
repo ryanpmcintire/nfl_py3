@@ -1,26 +1,3 @@
-"""Forecast cold-visitor tilt overlay (docs/forecast_weather_screen.md, ENV-01).
-
-Mirrors ``tests/test_surface_switch_tilt_overlay.py``/
-``tests/test_backup_qb_fade_overlay.py``'s structure. Five things are
-load-bearing here:
-
-1. :func:`team_climate_temp_by_away_game` -- pregame-safe climatology (a
-   team's own climate baseline is derived only from its STRICTLY EARLIER
-   outdoor home games, across any season, never a future or same-day game).
-2. :func:`forecast_cold_visitor_flag_by_game` -- the frozen flag definition
-   (outdoor AND climate minus forecast >= 25F), missing-data-safe.
-3. :func:`apply_forecast_cold_visitor_tilt_overlay` -- flips ONLY the clean
-   case (away pick, flag fires), REG-only, parameter-free, asymmetric.
-4. The live-fetch layer is FAIL-OPEN: no real network call is made in any
-   test here (every ``fetch_bulletin`` is a local stub), and a total fetch
-   failure (missing station map) is proven to fold into zero flags with a
-   logged warning, never an exception -- the no-network unit test this
-   overlay's build task explicitly requires.
-5. :func:`record_forecast_cold_visitor_tilt_challenger_decisions` writes the
-   overlay's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -140,11 +117,6 @@ def test_climate_temp_is_nan_before_any_qualifying_prior_game() -> None:
 
 
 def test_climate_temp_is_leak_safe_against_a_later_home_game_mutation() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    Week 3's climate_temp depends only on WARM's two 2024 home games; mutating
-    a LATER (week 8, 2025) home game's temp must not move it.
-    """
 
     baseline = team_climate_temp_by_away_game(_schedule()).set_index("game_id")
 
@@ -158,8 +130,6 @@ def test_climate_temp_is_leak_safe_against_a_later_home_game_mutation() -> None:
 
 
 def test_climate_temp_is_leak_safe_across_a_future_season() -> None:
-    """A future season's home-game temp for the same team must never change
-    an earlier game's already-computed climate_temp."""
 
     schedule = _schedule()
     baseline = team_climate_temp_by_away_game(schedule)
@@ -190,7 +160,6 @@ def test_climate_temp_is_leak_safe_across_a_future_season() -> None:
 
 
 def test_climate_temp_ignores_non_outdoor_home_games() -> None:
-    """A dome home game contributes no temp to its own team's climatology."""
 
     schedule = _schedule()
     dome_home = pd.DataFrame(
@@ -276,7 +245,6 @@ def test_overlay_leaves_postseason_games_untouched() -> None:
 
 
 def test_overlay_never_flips_a_home_pick() -> None:
-    """Deliberately asymmetric: a HOME pick on a flagged game is untouched."""
 
     predictions = _predictions()
     predictions.loc[predictions["game_id"].eq("2025_03_FROST_WARM"), "home_cover_probability"] = (
@@ -411,11 +379,6 @@ def test_fetch_one_game_temp_folds_a_transport_error_into_a_status() -> None:
 
 
 def test_fetch_fail_open_returns_zero_flags_on_a_missing_station_map(tmp_path: Path) -> None:
-    """THE no-network unit test: a total fetch failure (here, a station map
-    that does not exist -- the same failure mode as a network being down
-    long enough that the batch orchestration itself errors) must fold into
-    zero flags with a logged warning, never an exception, and the resulting
-    forecasts frame must make the overlay a complete no-op."""
 
     games = pd.DataFrame(
         {
@@ -633,9 +596,6 @@ def test_record_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -> Non
 
 
 def test_record_challenger_decisions_is_fail_open_on_a_missing_station_map(tmp_path: Path) -> None:
-    """The publish-relevant fail-open guarantee, exercised through the full
-    record path: a missing station map must not raise out of the recorder,
-    it must simply record the active model's own un-tilted picks."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)

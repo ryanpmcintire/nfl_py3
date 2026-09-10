@@ -1,55 +1,3 @@
-"""Three pregame flags from the Pro Football Rumors (PFR) transaction wire,
-each stacked on PRODUCTION (``docs/schedule_flag_battery.md`` "Wave 6"):
-LEAD-12 holdout slow-start fade, LEAD-23 trade-deadline integration drag,
-LEAD-14 suspension-return rust.
-
-**Data sources, all already-captured local snapshots, no network fetch**:
-the newest ``data/raw/pfr_transactions/<snapshot>/index.parquet`` (URL/slug
-inventory, ``nfl_ats.transaction_wire_features``'s own team-nickname
-matching and 8-category classifier are reused, never duplicated), the
-newest ``data/players/raw/<snapshot>/snap_counts.parquet`` (per-game
-``player``/``team``/``offense_pct``/``defense_pct``), and the newest
-``data/raw/*/schedules.parquet``.
-
-**Population construction is text-based and inherently approximate** --
-unlike ``nfl_ats.schedule_flag_features`` (pure calendar facts) or
-``nfl_ats.qb_identity_features`` (structured roster/combine joins), every
-population here starts from free-text PFR headline slugs. Three shared
-disciplines apply across all three leads, each measured against the real
-2026-09-05 snapshot (``data/raw/pfr_transactions/20260904T215655Z``):
-
-1. **Retrospective posts are excluded wholesale.** PFR runs a recurring "on
-   this date in transactions history" column. Measured: the slug
-   ``this-date-in-transactions-history-chargers-melvin-gordon-ends-holdout``
-   is published 2021-09 but describes Gordon's real 2019 preseason holdout
-   ending -- using this post's own publish date as the event date would
-   place a 2019 fact two years late and under the wrong season entirely.
-   :func:`default_transactions_index` drops every slug containing
-   :data:`RETROSPECTIVE_SLUG_MARKERS` before any population is built.
-2. **Player identity is resolved by token-anchored substring match**
-   against the FULL universe of distinct player names appearing in
-   ``snap_counts.parquet`` (:func:`distinct_player_slugs` /
-   :func:`find_player_in_segment`), never by a free-text name parser. A
-   name is anchored on both sides by a hyphen (``f"-{name}-" in
-   f"-{segment}-"``) so a short name can never match a mere substring
-   across a token boundary (e.g. ``ryan`` cannot match inside ``bryant``).
-   Matches are also cross-checked against ``snap_counts`` for that
-   player/team pair before being trusted (never guessed).
-3. **A resolution that fails at any step drops the row, never guesses.**
-   Zero teams, more than one team, no player match, or no snap-count
-   history to confirm usage/duration all exclude the row from the
-   population -- consistent with every other on-production candidate in
-   this repo (``nfl_ats.qb_identity_features``'s "never guessed" rule for
-   an unjoined starter).
-
-Every population here is measured to be TINY (single digits to low
-dozens) -- this is a property of how rarely PFR headlines use unambiguous,
-non-speculative, confirmatory language for these specific mechanisms, not
-an engineering shortfall. ``docs/schedule_flag_battery.md`` "Wave 6"
-predeclares this and the fleet task's own instruction is to run the harness
-and report the count honestly even when it is zero.
-"""
-
 from __future__ import annotations
 
 import re
@@ -99,13 +47,6 @@ RETROSPECTIVE_SLUG_MARKERS: tuple[str, ...] = (
 
 
 def default_schedule(repo_root: Path | None = None) -> pd.DataFrame:
-    """Load the newest ``data/raw/*/schedules.parquet`` snapshot.
-
-    Duplicated (not imported) from ``nfl_ats.schedule_flag_features``/
-    ``nfl_ats.qb_identity_features``'s own identical helper, per this
-    repo's convention of not cross-importing between concurrently-edited
-    on-production feature modules.
-    """
 
     root = repo_root or REPO_ROOT
     candidates = sorted((root / "data" / "raw").glob("*/schedules.parquet"))
@@ -115,7 +56,6 @@ def default_schedule(repo_root: Path | None = None) -> pd.DataFrame:
 
 
 def latest_pfr_transactions_snapshot(repo_root: Path | None = None) -> Path:
-    """Newest ``data/raw/pfr_transactions/<snapshot>/index.parquet``."""
 
     root = repo_root or REPO_ROOT
     candidates = sorted((root / "data" / "raw" / "pfr_transactions").glob("*/index.parquet"))
@@ -129,10 +69,6 @@ def latest_pfr_transactions_snapshot(repo_root: Path | None = None) -> Path:
 def default_transactions_index(
     repo_root: Path | None = None, *, snapshot: Path | None = None
 ) -> pd.DataFrame:
-    """Newest PFR transaction-wire index, ``transaction_relevant`` rows
-    only, retrospective posts excluded (see module docstring), with
-    ``category`` attached via
-    ``nfl_ats.transaction_wire_features.classify_transaction_slug``."""
 
     path = snapshot if snapshot is not None else latest_pfr_transactions_snapshot(repo_root)
     frame = pd.read_parquet(path)
@@ -152,14 +88,6 @@ def default_transactions_index(
 
 
 def default_snap_counts(repo_root: Path | None = None) -> pd.DataFrame:
-    """Load and lightly canonicalize the newest
-    ``data/players/raw/<snapshot>/snap_counts.parquet``: team codes through
-    :func:`nfl_ats.transaction_wire_features.canonical_team` (so an old
-    OAK/SD/STL row joins correctly against nickname-derived, already
-    canonical team codes), plus a ``snap_share`` column
-    (``max(offense_pct, defense_pct)``, matching how this module reasons
-    about "started"/"high-snap" for both offensive and defensive players).
-    """
 
     root = repo_root or REPO_ROOT
     snapshot = latest_player_snapshot(root / "data" / "players" / "raw")
@@ -189,11 +117,6 @@ def _normalize_name_to_slug(name: str) -> str:
 
 
 def distinct_player_slugs(snap_counts: pd.DataFrame) -> pd.DataFrame:
-    """One row per distinct ``player`` name in ``snap_counts``
-    (``player``, ``name_slug``), longest ``name_slug`` first -- so
-    :func:`find_player_in_segment`'s linear scan prefers the more
-    specific/longer name when more than one known name could otherwise
-    match."""
 
     names = snap_counts["player"].dropna().astype(str).unique()
     frame = pd.DataFrame({"player": names})
@@ -205,15 +128,6 @@ def distinct_player_slugs(snap_counts: pd.DataFrame) -> pd.DataFrame:
 
 
 def find_player_in_segment(segment: str, player_slugs: pd.DataFrame) -> str | None:
-    """The longest known player full name whose hyphen-token sequence
-    appears, token-anchored, inside ``segment`` -- or ``None``.
-
-    Anchored with a leading/trailing hyphen on both sides so a name can
-    never match a mere substring across an unrelated token boundary.
-    ``player_slugs`` must already be sorted longest-``name_slug``-first
-    (:func:`distinct_player_slugs`'s own contract) so the first match found
-    is the most specific one.
-    """
 
     padded = f"-{segment}-"
     for name_slug, player in zip(player_slugs["name_slug"], player_slugs["player"], strict=True):
@@ -223,27 +137,16 @@ def find_player_in_segment(segment: str, player_slugs: pd.DataFrame) -> str | No
 
 
 def _confirm_player_team(player: str, team: str, snap_counts: pd.DataFrame) -> bool:
-    """A resolved (player, team) pair is trusted only if ``snap_counts``
-    shows that player actually appearing for that team at least once, in
-    any season -- a cheap sanity check against a coincidental name/nickname
-    collision. Never used to build the flag's population beyond this
-    binary gate."""
 
     return bool(((snap_counts["player"] == player) & (snap_counts["team"] == team)).any())
 
 
 def _month_end_timestamp(year: int, month: int) -> pd.Timestamp:
-    """The latest calendar instant consistent with a month-only-precision
-    date -- the conservative (latest-possible) anchor used for every
-    leakage check in this module, since PFR's own free-text dating here is
-    never more precise than year/month."""
 
     return pd.Timestamp(year=year, month=month, day=1) + pd.offsets.MonthEnd(0)
 
 
 def _implied_season(year: int, month: int) -> int:
-    """NFL season label for a calendar (year, month): a January/February
-    date belongs to the season that STARTED the previous September."""
 
     return year - 1 if month <= 2 else year
 
@@ -253,12 +156,6 @@ def _attach_qualifying_sides(
     qualifying: pd.DataFrame,
     column: str,
 ) -> pd.DataFrame:
-    """Build ``(game_id, column)`` for every game in ``schedule``, from a
-    ``qualifying`` table of ``(season, week, team)`` rows that each qualify
-    the named team for the fade. ``+1`` when the AWAY team qualifies and
-    the HOME team does not; ``-1`` when the reverse; ``0`` otherwise
-    (including both, neither, or a game with no schedule row for that
-    season/week/team at all)."""
 
     reg = schedule.loc[
         :, ["game_id", "season", "week", "game_type", "home_team", "away_team"]
@@ -319,19 +216,12 @@ HOLDOUT_END_RE = re.compile(
 
 
 def holdout_ending_transactions(transactions_index: pd.DataFrame) -> pd.DataFrame:
-    """Every transaction-wire row using confirmatory holdout-ending
-    language (:data:`HOLDOUT_END_RE`); retrospective posts are already
-    excluded upstream by :func:`default_transactions_index`."""
 
     mask = transactions_index["slug"].astype(str).str.contains(HOLDOUT_END_RE)
     return transactions_index.loc[mask].copy()
 
 
 def _holdout_events(transactions_index: pd.DataFrame, snap_counts: pd.DataFrame) -> pd.DataFrame:
-    """One row per resolvable holdout-ending event: player, team, the
-    calendar (year, month) it was reported, and the season it precedes
-    (== ``url_year``: camp holdouts always end within the same calendar
-    year as the season they precede, before that season's Week 1)."""
 
     rows = holdout_ending_transactions(transactions_index)
     player_slugs = distinct_player_slugs(snap_counts)
@@ -365,10 +255,6 @@ def _holdout_events(transactions_index: pd.DataFrame, snap_counts: pd.DataFrame)
 def describe_holdout_population(
     transactions_index: pd.DataFrame, snap_counts: pd.DataFrame
 ) -> dict[str, object]:
-    """Diagnostic counts for the holdout-ending population (never used to
-    build the flag itself): how many confirmatory slugs exist, how many
-    resolve to exactly one team, and how many further resolve to a
-    confirmed player."""
 
     rows = holdout_ending_transactions(transactions_index)
     resolved_team = rows["slug"].astype(str).map(lambda s: len(match_transaction_teams(s)))
@@ -384,10 +270,6 @@ def describe_holdout_population(
 def _player_started_prior_week(
     player: str, team: str, season: int, week: int, snap_counts: pd.DataFrame
 ) -> bool | None:
-    """``True``/``False`` if resolvable, ``None`` if unresolved (never
-    guessed). Week 1 falls back to the player's own last recorded game with
-    ``team`` in the PRIOR season (the frozen "roster starter status" proxy
-    the task allows when no in-season prior week exists yet)."""
 
     if week <= 1:
         prior = snap_counts.loc[
@@ -415,19 +297,6 @@ def _player_started_prior_week(
 def derive_holdout_slow_start_features(
     schedule: pd.DataFrame, transactions_index: pd.DataFrame, snap_counts: pd.DataFrame
 ) -> pd.DataFrame:
-    """Return ``(game_id, holdout_slow_start_flag)`` for every game in
-    ``schedule``.
-
-    ``+1`` when the AWAY team fields a confirmed post-holdout regular
-    (snap-share-confirmed "started") in one of that team's REG weeks 1-4 of
-    the season the holdout precedes; ``-1`` when the HOME team does; ``0``
-    otherwise -- including a game outside weeks 1-4, a holdout report whose
-    latest-possible date (month-end, since only month precision exists)
-    is NOT strictly before that week's own kickoff (leakage guard; should
-    never trigger by construction since camp always precedes Week 1, but
-    checked rather than assumed), or a "started" determination that could
-    not be resolved (never guessed).
-    """
 
     _require_schedule_columns(schedule)
     reg = schedule.loc[schedule["game_type"].eq("REG")].copy()
@@ -466,8 +335,6 @@ def attach_holdout_slow_start_features(
     transactions_index: pd.DataFrame | None = None,
     snap_counts: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``holdout_slow_start_flag`` onto ``features`` by
-    ``game_id``."""
 
     resolved_schedule = schedule if schedule is not None else default_schedule()
     resolved_transactions = (
@@ -493,9 +360,6 @@ DEADLINE_INTEGRATION_GAMES = 3
 
 
 def confirmed_acquisition_transactions(transactions_index: pd.DataFrame) -> pd.DataFrame:
-    """Every ``trade``-category row using confirmed (not speculative or
-    failed), non-draft-pick acquisition language, in the in-season trading
-    window (:data:`DEADLINE_WINDOW_MONTHS`)."""
 
     trades = transactions_index.loc[transactions_index["category"] == "trade"].copy()
     slug = trades["slug"].astype(str)
@@ -507,9 +371,6 @@ def confirmed_acquisition_transactions(transactions_index: pd.DataFrame) -> pd.D
 
 
 def _parse_acquisition(slug: str) -> tuple[str, str] | None:
-    """``(acquiring_team, player_text_segment)`` or ``None`` if the
-    acquiring team cannot be resolved to exactly one code from the text
-    preceding the acquire verb."""
 
     match = _ACQUIRE_SPLIT_RE.search(slug)
     if match is None:
@@ -527,16 +388,6 @@ def _acquisition_events(
     snap_counts: pd.DataFrame,
     schedule: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """One row per resolvable, high-snap, in-season acquisition: player,
-    acquiring team, the giving (previous) team inferred from
-    ``snap_counts`` itself (the last team, within the same season, other
-    than the acquiring team, that the player's own snap-count history shows
-    him playing for), the trailing snap share with that giving team, and
-    the last week he is recorded with it (the anchor for "first three games
-    after the trade"). Only appearances strictly before the acquiring team's
-    first decision week after the report's month-end are eligible; later
-    appearances cannot change either the giving team or its usage estimate.
-    """
 
     rows = confirmed_acquisition_transactions(transactions_index)
     player_slugs = distinct_player_slugs(snap_counts)
@@ -613,8 +464,6 @@ def _acquisition_events(
 def describe_deadline_acquisition_population(
     transactions_index: pd.DataFrame, snap_counts: pd.DataFrame
 ) -> dict[str, object]:
-    """Diagnostic counts for the deadline-acquisition population (never
-    used to build the flag itself)."""
 
     rows = confirmed_acquisition_transactions(transactions_index)
     parsed = rows["slug"].astype(str).map(_parse_acquisition)
@@ -631,22 +480,6 @@ def describe_deadline_acquisition_population(
 def derive_deadline_integration_drag_features(
     schedule: pd.DataFrame, transactions_index: pd.DataFrame, snap_counts: pd.DataFrame
 ) -> pd.DataFrame:
-    """Return ``(game_id, deadline_integration_drag_flag)`` for every game
-    in ``schedule``.
-
-    ``+1`` when the AWAY team acquired a confirmed high-snap player at the
-    in-season deadline and this game is one of that team's first
-    :data:`DEADLINE_INTEGRATION_GAMES` (3) REG games strictly after the
-    player's last recorded week with his PREVIOUS team; ``-1`` when the
-    HOME team did; ``0`` otherwise. The acquiring team's next games are
-    read directly from its own schedule -- no month-precision date math is
-    needed for game selection, since the anchor (``last_prior_week``) comes
-    from the player's own week-indexed snap-count history, which is more
-    precise than the wire's month-only report date. A month-end leakage
-    guard is still applied against the wire's own report date as a
-    belt-and-suspenders check (should never bind, since a player cannot
-    appear on his new team's snap counts before the trade is public).
-    """
 
     _require_schedule_columns(schedule)
     reg = schedule.loc[schedule["game_type"].eq("REG")].copy()
@@ -680,8 +513,6 @@ def attach_deadline_integration_drag_features(
     transactions_index: pd.DataFrame | None = None,
     snap_counts: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``deadline_integration_drag_flag`` onto ``features``
-    by ``game_id``."""
 
     resolved_schedule = schedule if schedule is not None else default_schedule()
     resolved_transactions = (
@@ -705,9 +536,6 @@ def suspension_category_transactions(transactions_index: pd.DataFrame) -> pd.Dat
 def _team_for_player_before(
     player: str, snap_counts: pd.DataFrame, season: int, before_week: int
 ) -> str | None:
-    """The team most recently recorded strictly before the decision week,
-    falling back to earlier seasons when no current-season history exists.
-    ``None`` if unresolved (never guessed)."""
 
     same_season = snap_counts.loc[
         (snap_counts["player"] == player)
@@ -729,10 +557,6 @@ def _team_for_player_before(
 def _team_games_between(
     schedule_reg: pd.DataFrame, team: str, start_month_idx: int, end_month_idx: int
 ) -> int:
-    """Count of ``team``'s REG games whose own calendar (year*12+month)
-    index falls in the half-open interval ``[start_month_idx,
-    end_month_idx)`` -- spans a season boundary correctly since this
-    compares raw calendar months, never a ``season`` label."""
 
     team_games = schedule_reg.loc[
         (schedule_reg["home_team"] == team) | (schedule_reg["away_team"] == team)
@@ -744,19 +568,6 @@ def _team_games_between(
 def _suspension_events(
     transactions_index: pd.DataFrame, snap_counts: pd.DataFrame, schedule: pd.DataFrame
 ) -> pd.DataFrame:
-    """One row per confirmed 6+-game suspension return: player, team, and
-    the calendar (year, month) of the reinstatement report.
-
-    Duration is MEASURED, not read from a headline's own (sometimes
-    word-form, e.g. "suspended-nine-games") number: the number of the
-    player's own team's REG games falling between the earliest "imposed"
-    report and the "reinstated" report is counted directly from the
-    schedule. This generalizes to reinstatement slugs that never state an
-    explicit game count at all (measured against the real corpus: PFR's
-    own headlines rarely name a team in the reinstatement slug itself, so
-    the team is independently resolved from the player's own snap-count
-    history around the imposed date, never guessed from slug text).
-    """
 
     _require_schedule_columns(schedule)
     reg = schedule.loc[schedule["game_type"].eq("REG")].copy()
@@ -828,8 +639,6 @@ def _suspension_events(
 def describe_suspension_return_population(
     transactions_index: pd.DataFrame, snap_counts: pd.DataFrame, schedule: pd.DataFrame
 ) -> dict[str, object]:
-    """Diagnostic counts for the suspension-return population (never used
-    to build the flag itself)."""
 
     susp = suspension_category_transactions(transactions_index)
     is_reinstated = susp["slug"].astype(str).str.contains(REINSTATED_RE)
@@ -846,16 +655,6 @@ def describe_suspension_return_population(
 def derive_suspension_return_rust_features(
     schedule: pd.DataFrame, transactions_index: pd.DataFrame, snap_counts: pd.DataFrame
 ) -> pd.DataFrame:
-    """Return ``(game_id, suspension_return_rust_flag)`` for every game in
-    ``schedule``.
-
-    ``+1`` when the AWAY team is playing one of its first
-    :data:`SUSPENSION_RETURN_GAMES` (2) REG games -- the return game plus
-    one -- on or after a confirmed 6+-game suspension return; ``-1`` when
-    the HOME team is; ``0`` otherwise. Population is measured to be
-    extremely small by construction (small-n, per the task's own framing);
-    recorded regardless of width.
-    """
 
     _require_schedule_columns(schedule)
     reg = schedule.loc[schedule["game_type"].eq("REG")].copy()
@@ -888,8 +687,6 @@ def attach_suspension_return_rust_features(
     transactions_index: pd.DataFrame | None = None,
     snap_counts: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``suspension_return_rust_flag`` onto ``features`` by
-    ``game_id``."""
 
     resolved_schedule = schedule if schedule is not None else default_schedule()
     resolved_transactions = (

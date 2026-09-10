@@ -1,5 +1,3 @@
-"""Immutable nflverse snapshot storage and provenance manifests."""
-
 from __future__ import annotations
 
 import hashlib
@@ -14,8 +12,6 @@ import pandas as pd
 
 @dataclass(frozen=True)
 class Snapshot:
-    """Paths and provenance for one atomic source refresh."""
-
     snapshot_id: str
     root: Path
     schedules_path: Path
@@ -60,7 +56,6 @@ def write_snapshot(
     snapshot_id: str | None = None,
     team_stat_seasons: list[int] | None = None,
 ) -> Snapshot:
-    """Write data files first and the manifest last as the commit marker."""
 
     identifier = snapshot_id or utc_snapshot_id()
     root = raw_root / identifier
@@ -133,7 +128,6 @@ def load_snapshot(snapshot: Snapshot) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def load_verified_snapshot(snapshot: Snapshot) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Load a snapshot only when its manifest still matches both payloads."""
 
     if not snapshot.manifest_path.is_file():
         raise FileNotFoundError(f"Incomplete snapshot: {snapshot.root}")

@@ -1,9 +1,3 @@
-"""Candidate-specific probability uncertainty for paper sizing.
-
-This module transforms a caller's uncertainty statement into a conservative
-probability for the side already selected. It never chooses or flips a side.
-"""
-
 from __future__ import annotations
 
 import math
@@ -29,15 +23,6 @@ def conservative_probability_audit(
     probability_uncertainty: pd.DataFrame | None = None,
     posterior_z: float = 1.645,
 ) -> pd.DataFrame:
-    """Return one sizing-probability audit row per candidate.
-
-    ``probability_uncertainty`` is indexed by active ``game_id`` and carries a
-    matching ``bet_side``. Each row supplies exactly one of
-    ``probability_lower_bound`` (already expressed for that selected side) or
-    ``posterior_sd`` (converted as point probability minus ``posterior_z``
-    standard deviations). Values are floored at 0.5 for sizing, which produces
-    zero Kelly exposure when uncertainty removes the estimated edge.
-    """
 
     required = {"bet_side", "home_cover_probability"}
     missing = sorted(required.difference(candidates.columns))

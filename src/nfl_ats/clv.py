@@ -1,52 +1,16 @@
-"""Closing-line value (CLV) evaluation harness and the predeclared MKT-06 pilot.
-
-This module turns the append-only point-in-time market archive under
-``data/market/raw/`` (see ``nfl_ats.odds_backfill`` and ``nfl_ats.market_data``)
-into:
-
-1. a long snapshot **pairing table**: one row per (game, decision label) with a
-   cross-book consensus home spread (plus book count and dispersion), totals,
-   and moneyline where present, joined to the schedule's closing spread;
-2. a generic **CLV metric harness** that scores any pick stream against the
-   store's own closing snapshot (falling back to the nflverse schedule close
-   with a visible source column) and reports week-blocked bootstrap intervals;
-3. the **predeclared MKT-06 close-prediction pilot**: a frozen ridge model that
-   predicts ``close_home_spread - tue_open_home_spread`` from a frozen,
-   five-feature list, trained/validated/tested on a frozen season split;
-4. the **sign test** (report Pilot B): does the active market-residual model's
-   fair-margin correction from the opener predict the direction the close
-   actually moves?
-
-Store contract
----------------
-Every snapshot directory under ``data/market/raw/<id>/`` is committed
-atomically with ``manifest.json`` written last, so only directories that
-contain a manifest are read (an in-progress backfill's newest directory is
-silently skipped, not treated as corrupt). Each manifest's ``capture_kind`` is
-either ``"historical_backfill"`` (from ``nfl_ats.odds_backfill``) or absent,
-which this module normalizes to ``"live"`` for parity with
-``nfl_ats.market_data``'s live capture path. Every quote row returned by this
-module's loaders carries an explicit ``capture_kind`` column -- live and
-historical-backfill rows are therefore never silently mixed without a column
-that distinguishes them, even though both live under the same store root.
-
-Decision labels come from ``nfl_ats.odds_backfill.DECISION_LABELS`` and are
-already chronologically ordered within an NFL week
-(``tue_open < thu_pre_tnf < sat_midday < sun_early_close < sun_late_close <
-mon_pre_mnf``); :func:`assert_monotone_decision_timeline` checks that every
-game's retained pregame snapshots respect that order.
-"""
-
 from __future__ import annotations
 
+import hashlib
 import json
-from collections.abc import Callable, Iterable
+import os
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any, Literal, cast
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 from scipy.stats import binomtest
 from sklearn.pipeline import Pipeline
@@ -81,6 +45,94 @@ from nfl_ats.snapshots import latest_snapshot
 LIVE_CAPTURE_KIND = "live"
 BootstrapBlock = Literal["week", "season"]
 
+CACHE_DISABLED_ENV = "NFL_ATS_DISABLE_EVAL_CACHE"
+_PAIRING_CACHE_VERSION = "1"
+_OPENER_EVAL_CACHE_VERSION = "1"
+
+
+def evaluation_cache_root() -> Path | None:
+    if os.environ.get(CACHE_DISABLED_ENV, "").strip():
+        return None
+    return Path(os.environ.get("NFL_ATS_ARTIFACTS_DIR", "artifacts")) / "cache"
+
+
+def _digest_text(*parts: str) -> str:
+    digest = hashlib.sha256()
+    for part in parts:
+        digest.update(part.encode("utf-8"))
+        digest.update(b"\x00")
+    return digest.hexdigest()
+
+
+_ESTIMATOR_SOURCE_MODULES = (
+    "clv.py",
+    "margin.py",
+    "modeling.py",
+    "home_side_location.py",
+    "calibration.py",
+)
+
+
+def _estimator_source_digest() -> str:
+    here = Path(__file__).resolve().parent
+    digest = hashlib.sha256()
+    for name in _ESTIMATOR_SOURCE_MODULES:
+        path = here / name
+        digest.update(name.encode("utf-8"))
+        digest.update(path.read_bytes() if path.is_file() else b"missing")
+    return digest.hexdigest()
+
+
+def market_archive_inventory_digest(root: Path) -> str:
+    if not root.is_dir():
+        return _digest_text("absent", str(root))
+    rows: list[str] = []
+    with os.scandir(root) as entries:
+        snapshots = sorted((entry for entry in entries if entry.is_dir()), key=lambda e: e.name)
+    for snapshot in snapshots:
+        parts = [snapshot.name]
+        try:
+            with os.scandir(snapshot.path) as files:
+                stats = {
+                    item.name: item.stat()
+                    for item in files
+                    if item.name in ("manifest.json", "quotes.parquet")
+                }
+        except OSError:
+            continue
+        if "manifest.json" not in stats:
+            continue
+        for name in ("manifest.json", "quotes.parquet"):
+            info = stats.get(name)
+            parts.append("-" if info is None else f"{name}:{info.st_size}:{info.st_mtime_ns}")
+        rows.append("|".join(parts))
+    return _digest_text(str(root), *rows)
+
+
+def _frame_content_digest(frame: pd.DataFrame) -> str:
+    hashed = pd.util.hash_pandas_object(frame, index=False).to_numpy()
+    digest = hashlib.sha256(hashed.tobytes())
+    digest.update(",".join(map(str, frame.columns)).encode("utf-8"))
+    digest.update(",".join(str(dtype) for dtype in frame.dtypes).encode("utf-8"))
+    return digest.hexdigest()
+
+
+def _read_cached_frame(path: Path) -> pd.DataFrame | None:
+    if not path.is_file():
+        return None
+    try:
+        return pd.read_parquet(path)
+    except (OSError, ValueError):
+        return None
+
+
+def _write_cached_frame(frame: pd.DataFrame, path: Path) -> None:
+    try:
+        atomic_parquet(frame, path)
+    except (OSError, ValueError):
+        return
+
+
 DECISION_LABEL_ORDER: dict[str, int] = {label: index for index, label in enumerate(DECISION_LABELS)}
 
 CLOSE_LABEL_PRIORITY: tuple[str, ...] = ("sun_late_close", "sun_early_close")
@@ -105,12 +157,7 @@ FROZEN_PILOT_RIDGE_ALPHA = 10.0
 
 
 class PilotProtocolBlocked(ValueError):
-    """Raised when the frozen train/validate/test season split has no data.
-
-    Per the task's constraints, an impossible piece of the frozen protocol is
-    reported as a blocker, not silently satisfied with a substitute season
-    split.
-    """
+    pass
 
 
 @dataclass(frozen=True)
@@ -127,13 +174,6 @@ FROZEN_PILOT_PROTOCOL = PilotSplit(
 
 
 def load_snapshot_manifest_index(root: Path) -> pd.DataFrame:
-    """Enumerate committed snapshot directories under a market ``raw/`` root.
-
-    Only directories containing ``manifest.json`` are read -- the store is
-    append-only and each snapshot is committed atomically with the manifest
-    written last, so a backfill executor's in-progress newest directory is
-    tolerated (silently skipped) rather than treated as a broken read.
-    """
 
     columns = [
         "dir",
@@ -191,14 +231,6 @@ def load_decision_quotes(
     labels: Iterable[str] | None = None,
     seasons: Iterable[int] | None = None,
 ) -> pd.DataFrame:
-    """Load and tag quotes for one capture kind's committed snapshots.
-
-    Every returned row carries an explicit ``capture_kind`` column (backfilled
-    from the manifest for live rows, whose ``quotes.parquet`` predates that
-    column) plus ``season``/``week``/``decision_label``/
-    ``snapshot_timestamp_utc`` from the owning manifest, since those are
-    request metadata rather than per-row quote fields.
-    """
 
     tag_columns = [
         "capture_kind",
@@ -257,15 +289,6 @@ _CONSENSUS_REQUIRED_COLUMNS = (
 
 
 def decision_market_consensus(quotes: pd.DataFrame) -> pd.DataFrame:
-    """Per-(game, decision label, market, side) cross-book consensus.
-
-    Restricted to matched games (a resolved ``nflverse_game_id``) and to
-    quotes observed strictly before that specific game's kickoff -- a
-    decision-label snapshot captured for an upcoming week can still contain a
-    later game's board, and a Thursday game's post-kickoff Saturday/Sunday
-    snapshots must never count as one of its pregame quotes even though they
-    are pregame for the rest of that week's slate.
-    """
 
     missing = sorted(set(_CONSENSUS_REQUIRED_COLUMNS).difference(quotes.columns))
     if missing:
@@ -333,14 +356,6 @@ def decision_market_consensus(quotes: pd.DataFrame) -> pd.DataFrame:
 
 
 def assert_monotone_decision_timeline(consensus: pd.DataFrame) -> None:
-    """Verify each game's retained pregame snapshots are chronologically ordered.
-
-    Decision labels are fixed offsets before an NFL week's anchor Sunday, so
-    once quotes are filtered to strictly pregame (see
-    :func:`decision_market_consensus`), the snapshot timestamps a game
-    actually has must be non-decreasing in label order. A violation would
-    indicate a corrupted manifest or a reordered append to the store.
-    """
 
     if consensus.empty:
         return
@@ -369,24 +384,6 @@ def build_pairing_table(
     seasons: Iterable[int] | None = None,
     schedule: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Long per-(game, decision label) pairing table (BUILD item 1).
-
-    One row per game and decision label with the consensus home spread (plus
-    book count and dispersion), the total line, and moneyline prices where
-    present. Every row carries ``capture_kind`` explicitly.
-
-    Sportsbooks routinely post a game's board more than a week ahead of
-    kickoff, so a backfill request planned for an EARLIER week can also
-    capture a LATER week's still-pregame game (an "early sighting"): the same
-    game and decision label can then be tagged under two different (season,
-    week) requests, or -- when the game's own true-week checkpoint for that
-    label falls after its kickoff and is correctly excluded (see
-    :func:`decision_market_consensus`) -- under only the wrong, earlier week.
-    When ``schedule`` (needs ``game_id``/``season``/``week``) is supplied,
-    quotes are restricted to each game's own scheduled (season, week) before
-    aggregation, which removes these mislabeled sightings; without it, this
-    correction is skipped (useful for small fixtures that never span weeks).
-    """
 
     quotes = load_decision_quotes(root, capture_kind=capture_kind, labels=labels, seasons=seasons)
     if schedule is not None and not quotes.empty:
@@ -482,14 +479,50 @@ def build_pairing_table(
     )
 
 
-def close_reference_table(pairing: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
-    """Per-game closing spread: store close (preferred) or schedule close (fallback).
+def cached_pairing_table(
+    root: Path,
+    *,
+    capture_kind: str = HISTORICAL_CAPTURE_KIND,
+    labels: Iterable[str] | None = None,
+    seasons: Iterable[int] | None = None,
+    schedule: pd.DataFrame | None = None,
+    inventory_digest: str | None = None,
+) -> pd.DataFrame:
+    label_key = "*" if labels is None else ",".join(sorted(labels))
+    season_key = "*" if seasons is None else ",".join(str(int(x)) for x in sorted(seasons))
+    if schedule is None:
+        schedule_key = "none"
+    else:
+        schedule_key = _frame_content_digest(
+            schedule[["game_id", "season", "week"]]
+            .drop_duplicates("game_id")
+            .sort_values("game_id")
+            .reset_index(drop=True)
+        )
+    cache_root = evaluation_cache_root()
+    key = None
+    if cache_root is not None:
+        key = _digest_text(
+            _PAIRING_CACHE_VERSION,
+            _estimator_source_digest(),
+            inventory_digest or market_archive_inventory_digest(root),
+            capture_kind,
+            label_key,
+            season_key,
+            schedule_key,
+        )
+        cached = _read_cached_frame(cache_root / "pairing_table" / f"{key}.parquet")
+        if cached is not None:
+            return cached
+    pairing = build_pairing_table(
+        root, capture_kind=capture_kind, labels=labels, seasons=seasons, schedule=schedule
+    )
+    if cache_root is not None and key is not None:
+        _write_cached_frame(pairing, cache_root / "pairing_table" / f"{key}.parquet")
+    return pairing
 
-    Prefers ``sun_late_close`` over ``sun_early_close`` from the store; when
-    neither is present for a game, falls back to the nflverse schedule's
-    ``spread_line`` with an explicit ``close_source`` column so a caller can
-    always tell which close a CLV figure was measured against.
-    """
+
+def close_reference_table(pairing: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
 
     required = {"game_id", "spread_line"}
     missing = sorted(required.difference(schedule.columns))
@@ -546,30 +579,6 @@ def spread_price_consensus_table(
     seasons: Iterable[int] | None = None,
     schedule: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Per-(game, decision label) consensus spread PRICE, home and away sides.
-
-    Additive sibling to :func:`build_pairing_table`, built for MKT-03
-    (no-vig diagnostics, ``docs/novig_diagnostics.md``).
-    :func:`decision_market_consensus` already computes a per-(game, label,
-    market, side) ``consensus_price`` for the ``spreads`` market -- exactly
-    what a no-vig ATS probability needs -- but :func:`build_pairing_table`
-    only carries the spread's LINE through (``home_spread``/
-    ``spread_min``/``spread_max``/``spread_std``), never the PRICE, so this
-    value is computed inside ``decision_market_consensus`` and then silently
-    dropped every time a pairing table is built.
-
-    This function surfaces it without touching :func:`build_pairing_table`'s
-    code or output. The loading, true-week correction, and monotone-timeline
-    steps below deliberately duplicate that function's own steps rather than
-    factor them into a shared helper, so ``build_pairing_table`` has zero
-    code-path overlap with this addition -- its frozen output needs no
-    re-verification beyond a plain diff of this file (which shows no lines
-    of :func:`build_pairing_table` changed).
-
-    Same join keys as :func:`build_pairing_table`
-    (``["game_id", "season", "week", "decision_label", "capture_kind"]``), so
-    the two can be merged directly to attach price alongside line.
-    """
 
     quotes = load_decision_quotes(root, capture_kind=capture_kind, labels=labels, seasons=seasons)
     if schedule is not None and not quotes.empty:
@@ -626,15 +635,6 @@ def score_clv(
     pairing: pd.DataFrame,
     close_reference: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Signed CLV in points for a pick stream (BUILD item 2).
-
-    ``picks`` needs ``game_id``, ``side`` (``HOME``/``AWAY``), and
-    ``decision_label`` (the moment the decision line is read from). CLV is the
-    line move from that moment's consensus toward (positive) or away from
-    (negative) the picked side, measured against the close from
-    :func:`close_reference_table`, whose ``close_source`` column is carried
-    through unchanged.
-    """
 
     missing = sorted(set(_PICK_REQUIRED_COLUMNS).difference(picks.columns))
     if missing:
@@ -659,7 +659,6 @@ def score_clv(
 
 
 def clv_summary(scored: pd.DataFrame) -> dict[str, float]:
-    """Sufficient-statistic-free summary of a scored CLV frame (metric_fn shape)."""
 
     values = pd.to_numeric(scored["clv_points"], errors="coerce").dropna()
     n = float(len(values))
@@ -679,21 +678,11 @@ def week_blocked_bootstrap(
     samples: int = 2_000,
     confidence: float = 0.95,
     seed: int = 20260816,
+    metric_columns: Sequence[str] | None = None,
+    metric_draw_factory: (
+        Callable[[pd.DataFrame], Callable[[Any], dict[str, float]] | None] | None
+    ) = None,
 ) -> pd.DataFrame:
-    """Resample whole NFL weeks or seasons and recompute an arbitrary metric.
-
-    Neither ``nfl_ats.evaluation`` nor ``nfl_ats.reporting``/``nfl_ats.outcomes``
-    exposes a block-bootstrap utility for an arbitrary metric function:
-    ``nfl_ats.evaluation`` has no bootstrap code at all, and
-    ``reporting.block_bootstrap_intervals`` /
-    ``outcomes.outcome_bootstrap_intervals`` are both hard-wired to the ATS
-    classification prediction schema (``home_cover`` /
-    ``home_cover_probability`` / ``method`` columns), which CLV and pilot
-    metrics do not have. This generalizes the same whole-block resampling
-    algorithm those functions use (group indices, draw block indices with a
-    seeded RNG, recompute the metric on the concatenated rows) rather than
-    inventing a different resampling design.
-    """
 
     if samples < 10:
         raise ValueError("samples must be at least 10")
@@ -713,13 +702,25 @@ def week_blocked_bootstrap(
         raise ValueError("Bootstrap frame contains no blocks")
 
     estimate = metric_fn(valid)
+    resampled_from = valid
+    if metric_columns is not None:
+        wanted = set(metric_columns)
+        resampled_from = valid.loc[:, [column for column in valid.columns if column in wanted]]
+        resampled_from.attrs = {}
     metric_names = list(estimate)
+    draw_metric = None if metric_draw_factory is None else metric_draw_factory(valid)
+    if draw_metric is not None and set(draw_metric(np.arange(len(valid)))) != set(metric_names):
+        draw_metric = None
     draws = np.empty((samples, len(metric_names)), dtype=float)
     generator = np.random.default_rng(seed)
     for sample_index in range(samples):
         selected = generator.integers(0, len(grouped_indices), size=len(grouped_indices))
         positions = np.concatenate([grouped_indices[index] for index in selected])
-        sampled = metric_fn(valid.iloc[positions])
+        sampled = (
+            draw_metric(positions)
+            if draw_metric is not None
+            else metric_fn(resampled_from.take(positions))
+        )
         draws[sample_index] = [sampled[name] for name in metric_names]
 
     tail = (1.0 - confidence) / 2.0
@@ -742,15 +743,6 @@ def week_blocked_bootstrap(
 def key_number_distance(
     spread: pd.Series, key_numbers: tuple[float, ...] = KEY_NUMBERS
 ) -> pd.Series:
-    """Distance from a home spread to the nearest key number, folded by magnitude.
-
-    Defined as ``min(|abs(spread) - k| for k in key_numbers)``: a 3-point key
-    number matters the same way whichever side is favored, so distance is
-    measured from the spread's magnitude rather than its signed value. This
-    exact definition is not dictated by the frozen feature name
-    ("distance of tue_open to nearest key number (3, 7)"); it is recorded here
-    and in the pilot report as part of freezing the spec.
-    """
 
     magnitude = spread.abs()
     distances = pd.concat([(magnitude - k).abs() for k in key_numbers], axis=1)
@@ -758,13 +750,6 @@ def key_number_distance(
 
 
 def resolve_active_model_config(artifacts_root: Path) -> dict[str, Any]:
-    """Load the active market-residual model's configuration, or a documented fallback.
-
-    Prefers ``artifacts/active_ats_model.json`` when present (it is a
-    generated, gitignored artifact and may legitimately be absent -- see
-    AGENTS.md); falls back to the configuration recorded from the main
-    checkout on 2026-08-16 (feature_profile="player", ridge, alpha 10).
-    """
 
     manifest = load_active_ats_model(artifacts_root)
     if manifest is None or manifest.get("method") != "market_residual":
@@ -791,11 +776,6 @@ def resolve_active_model_config(artifacts_root: Path) -> dict[str, Any]:
 def resolve_active_probability_method(
     artifacts_root: Path | None = None,
 ) -> ResidualSmoothingMethod:
-    """Read the served mapping through the active config loader; never guess it.
-
-    Default to this checkout's manifest, independent of the working directory
-    or the market archive being evaluated. Isolated callers can supply a root.
-    """
     if artifacts_root is None:
         artifacts_root = Path(__file__).resolve().parents[2] / "artifacts"
     message = (
@@ -823,29 +803,6 @@ def active_model_residual_at_opener(
     ridge_alpha: float = 10.0,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> pd.DataFrame:
-    """Weekly-refit active-model-equivalent residual, evaluated at the opener.
-
-    For each (season, week) present in ``targets``, fits a fresh
-    ``target="market_residual"`` model (``nfl_ats.margin.fit_margin_model``,
-    the same estimator-fitting machinery ``nfl_ats.outcomes.walk_forward_outcomes``
-    uses to produce the active model's historical evaluation) on completed
-    games strictly before that week's first kickoff, then scores that week's
-    target games with ``spread_line`` overridden to the paired opener value.
-
-    Known, documented limitation (task-specified, not fixed here): every
-    other input to this model -- including market-derived features built from
-    closing prices/odds -- was fit, and is evaluated for every *other* row,
-    relative to the CLOSE. Only the ``spread_line`` input driving this
-    model's base/ridge term is substituted with the opener; the model was
-    never refit against opener-time market state. The resulting residual is
-    therefore an approximation of "what would the active model say if the
-    market had stopped moving at the opener", not a faithful reconstruction of
-    an opener-time model.
-
-    Games in weeks with fewer than ``min_train_games`` completed training
-    rows are silently dropped (insufficient chronological history); the
-    caller can detect this by comparing row counts against ``targets``.
-    """
 
     feature_columns = margin_feature_columns("market_residual", feature_profile)
     required = {"game_id", "gameday", "result", "ats_margin", "spread_line", *feature_columns}
@@ -912,15 +869,6 @@ def build_pilot_frame(
     active_model_config: dict[str, Any] | None = None,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> pd.DataFrame:
-    """Assemble the frozen target and five frozen features for every paired game.
-
-    A game is included only when it has both a ``tue_open`` consensus spread
-    and a resolvable close (store or schedule fallback) and enough prior
-    training history for :func:`active_model_residual_at_opener`. Missing
-    weeks in the archive simply shrink this frame; callers should compare its
-    season/week coverage against the frozen protocol's requirements and
-    report gaps rather than filling them in.
-    """
 
     required = {"game_id", "season", "week", "rest_diff", "spread_line", "gameday"}
     missing = sorted(required.difference(features.columns))
@@ -965,7 +913,6 @@ def build_pilot_frame(
 
 
 def fit_pilot_model(train_frame: pd.DataFrame) -> Pipeline:
-    """Fit the frozen ridge(alpha=10, no tuning) close-prediction pilot model."""
 
     missing = sorted(
         set(FROZEN_PILOT_FEATURES)
@@ -983,13 +930,6 @@ def fit_pilot_model(train_frame: pd.DataFrame) -> Pipeline:
 
 
 def evaluate_pilot(estimator: Pipeline, frame: pd.DataFrame) -> dict[str, Any]:
-    """Direction accuracy, MAE, and their baselines for one season slice.
-
-    "No movement" baseline: always predicts zero close-vs-open movement. Its
-    MAE is therefore the mean absolute actual movement; its "direction
-    accuracy" is the base rate of games whose close exactly equalled the
-    opener (the only games a constant-zero prediction gets right).
-    """
 
     if frame.empty:
         raise ValueError("Cannot evaluate the pilot model on an empty frame")
@@ -1026,15 +966,6 @@ def threshold_policy_clv(
     *,
     threshold: float = 0.5,
 ) -> pd.DataFrame:
-    """Per-game realized CLV of "bet the opener side the model favors, |pred| >= threshold".
-
-    Realized CLV equals ``target_close_minus_open`` (HOME side) or its
-    negation (AWAY side), because the decision spread is the opener and the
-    close is the same close used to build the target -- this is exactly what
-    :func:`score_clv` would produce for these picks, computed directly here to
-    avoid re-deriving the pairing/close-reference join for a quantity already
-    on hand.
-    """
 
     if len(predicted) != len(frame):
         raise ValueError("predicted must have one value per row of frame")
@@ -1062,12 +993,6 @@ def run_predeclared_pilot(
     bootstrap_seed: int = 20260816,
     threshold: float = 0.5,
 ) -> dict[str, Any]:
-    """Run the frozen train/validate/test protocol; raise a labeled blocker if any split is empty.
-
-    Never substitutes a different season split when the frozen one is
-    unavailable -- callers must catch :class:`PilotProtocolBlocked` and report
-    it, per this task's constraints.
-    """
 
     pilot_frame = build_pilot_frame(
         root,
@@ -1142,14 +1067,6 @@ def sign_test_pilot_b(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     confidence: float = 0.95,
 ) -> dict[str, Any]:
-    """Does sign(active-model fair margin - opener) predict sign(close - opener)?
-
-    ``fair_spread - opener == predicted_market_residual`` when the residual
-    model is evaluated with the opener supplied as ``spread_line`` (see
-    ``nfl_ats.margin.MarginModel.predict``), so this reuses exactly the same
-    ``active_model_residual_at_opener`` feature the pilot model consumes.
-    Uses every available season (no fixed split); reported once, not iterated.
-    """
 
     pilot_frame = build_pilot_frame(
         root,
@@ -1200,17 +1117,10 @@ def sign_test_pilot_b(
 
 
 class ClosePredictionUnavailable(ValueError):
-    """Raised when the target week has no usable Tuesday-opener consensus yet.
-
-    This is the expected weekly resting state until the live Tuesday capture
-    lands (and, before the season, for every week): callers report it and
-    write no artifact, so the Week Board keeps showing its em-dash column
-    rather than a stale or fabricated predicted close.
-    """
+    pass
 
 
 def upcoming_week(features: pd.DataFrame) -> tuple[int, int]:
-    """The earliest (season, week) that still has an unplayed game."""
 
     required = {"season", "week", "result"}
     missing = sorted(required.difference(features.columns))
@@ -1225,24 +1135,6 @@ def upcoming_week(features: pd.DataFrame) -> tuple[int, int]:
 
 
 def live_tuesday_openers(root: Path) -> pd.DataFrame:
-    """Per-game Tuesday-opener consensus from the store's live captures.
-
-    Live capture manifests carry no ``decision_label`` (labels are a
-    historical-backfill request concept), so the ``tue_open`` equivalent is
-    derived from observation times instead: pregame quotes observed on each
-    game's own-week Tuesday (:func:`nfl_ats.market_data.own_week_tuesday_quotes`:
-    the most recent Tuesday on or before the kickoff's calendar day in the
-    pool's zone, ``America/New_York`` -- NFL games fall on Thu-Mon, so that
-    is always the Tuesday the game's week opened, Monday night's 00:15Z
-    Tuesday kickoff included), reduced by
-    :func:`nfl_ats.market_data.tuesday_opener_quotes` to the cross-book
-    median of each book's earliest such quote at or after the pool's spread
-    lock (``nfl_ats.market_data.POOL_SPREAD_LOCK_ET``), falling back to the
-    earliest pre-lock quote only when no post-lock quote exists; the
-    ``opener_basis`` column (``post_lock`` / ``pre_lock_fallback``) says
-    which. The historical ``tue_open`` decision label
-    (:func:`build_pairing_table`) is a different path and is untouched.
-    """
 
     columns = [
         "game_id",
@@ -1277,7 +1169,6 @@ def live_tuesday_openers(root: Path) -> pd.DataFrame:
 
 
 def _validate_close_predictions(predictions: pd.DataFrame) -> None:
-    """Fail-closed output contract for the Week Board's predicted-close artifact."""
 
     if predictions["game_id"].duplicated().any():
         raise DataContractError("Close predictions contain duplicate game_id rows")
@@ -1301,16 +1192,6 @@ def predict_close_for_week(
     active_model_config: dict[str, Any] | None = None,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> dict[str, Any]:
-    """Train the frozen pilot on its frozen window and predict one week's closes.
-
-    The estimator is exactly the predeclared MKT-06 pilot: the frozen
-    five-feature list, ridge alpha 10, trained on the protocol's train
-    seasons only (never extended into the validate/test seasons, so the
-    production model stays the audited one). The target week's opener comes
-    from live Tuesday captures via :func:`live_tuesday_openers`; a week
-    without one raises :class:`ClosePredictionUnavailable`, the expected
-    resting state rather than an error to retry.
-    """
 
     required = {"game_id", "season", "week", "rest_diff"}
     missing = sorted(required.difference(features.columns))
@@ -1494,7 +1375,6 @@ def paper_decision_ledger_path(artifacts_root: Path) -> Path:
 
 
 def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
-    """The append-only paper-decision ledger (empty frame when none exists)."""
 
     path = paper_decision_ledger_path(artifacts_root)
     if not path.is_file():
@@ -1566,14 +1446,6 @@ RECORDING_LOCK_WINDOW = timedelta(days=7)
 def refuse_if_outside_recording_lock_window(
     kickoffs: pd.Series, recorded_at: pd.Timestamp, *, ledger: str
 ) -> None:
-    """Fail closed when a recording call is far earlier than any real lock.
-
-    ``kickoffs`` is the full card's kickoff timestamps; the check uses the
-    earliest one, matching the existing "whole-week pre-kickoff" framing the
-    Best Pick rule already uses. A negative gap (kickoff already at or before
-    ``recorded_at``) is not a rehearsal -- it is a normal, or even a late,
-    recording -- so only a gap LARGER than the window is refused.
-    """
 
     earliest_kickoff = kickoffs.min()
     if pd.isna(earliest_kickoff):
@@ -1602,52 +1474,6 @@ def record_paper_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the active published card's pre-kickoff picks to the decision ledger.
-
-    **Operator override (owner, 2026-09-09).** ``forecast_artifact`` records
-    from a named ``margin_predictions/...`` directory instead of the active
-    manifest's linked forecast, and ``replace_week`` first drops the week's
-    existing rows for games that are STILL BEFORE KICKOFF (the previous ledger
-    is copied to a timestamped ``.bak`` beside it) so a lock that was missed,
-    or recorded on the wrong lines, can be re-recorded from the card that was
-    actually played. A row for a game already under way is left exactly as it
-    is and counted as ``left_post_kickoff``: the append step only writes
-    pre-kickoff games, so dropping such a row would delete evidence that
-    cannot be re-created. Every other guard (synchronized forecast,
-    pre-kickoff only, recording window) still applies. The Tuesday 2026 Week 1
-    rows were the motivating case: recorded at 12:33 ET on nflverse
-    whole-number lines, fifty minutes before the card moved to the pool's own
-    board.
-
-    Reads the same synchronized weekly forecast that ``publish-predictions``
-    publishes (the active manifest's linked artifact), takes its forced ATS
-    pick and paper ``bet_side`` for every game whose kickoff is still in the
-    future, and appends any game not already in the ledger. Games already
-    recorded keep their original decision line -- republishing a card with a
-    moved line never rewrites the CLV anchor. Games at or past kickoff are
-    counted and skipped, mirroring the frozen-forecast pre-kickoff rule.
-
-    The week's Best Pick (POL-10) is written at the same moment, under three
-    rules that together make a backdated Best Pick impossible:
-
-    1. **Whole-week pre-kickoff.** The flag is written only while EVERY game on
-       the card is still in the future. The pool locks all picks on Tuesday
-       before any game; nominating a Best Pick once Thursday night has been
-       played would be choosing with results in hand, so once any game has
-       started the week simply gets no Best Pick.
-    2. **First write wins.** A week that already carries a flagged row is never
-       re-flagged, so republishing cannot move the nomination onto a game that
-       has since looked better.
-    3. **Exactly one per week.** Enforced on read as well
-       (:func:`load_paper_decisions`), so a hand-edited ledger fails loudly.
-
-    Rule 1 is why the flag may land on a row appended by an EARLIER run: the
-    decision rows are append-only, but the Best Pick is a separate, one-time,
-    still-pre-kickoff write about that week. A ``replace_week`` pass carries
-    the week's existing nomination across the rewrite rather than re-choosing
-    it, so correcting a line after the first kickoff cannot silently erase a
-    Best Pick that was nominated while the whole week was still ahead.
-    """
 
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -1913,15 +1739,6 @@ def _record_instant(now: datetime | None) -> pd.Timestamp:
 
 
 def live_close_reference(root: Path, schedule: pd.DataFrame, *, as_of: datetime) -> pd.DataFrame:
-    """Per-game closing spread for ledger scoring, from live captures first.
-
-    A live capture's last pre-kickoff cross-book median only becomes a
-    *closing* line once the game has kicked off, so live closes are reported
-    only for games whose kickoff is at or before ``as_of``. Completed games
-    with no live capture fall back to the nflverse schedule close (source
-    ``schedule_close``), matching :func:`close_reference_table`'s fallback.
-    Games with neither are simply absent -- their ledger rows stay pending.
-    """
 
     required = {"game_id", "spread_line", "result"}
     missing = sorted(required.difference(schedule.columns))
@@ -1978,13 +1795,6 @@ def live_close_reference(root: Path, schedule: pd.DataFrame, *, as_of: datetime)
 
 
 def score_paper_ledger(decisions: pd.DataFrame, close_reference: pd.DataFrame) -> pd.DataFrame:
-    """Score every ledger decision that has a close; the rest stay pending.
-
-    ``clv_points`` scores the forced pick side for every game;
-    ``bet_clv_points`` scores only rows the paper policy actually bet
-    (``bet_side`` is ``HOME``/``AWAY``). Both use the ledger's own frozen
-    ``decision_home_spread`` as the anchor, never a re-read current line.
-    """
 
     required = {"game_id", "season", "week", "pick_side", "bet_side", "decision_home_spread"}
     missing = sorted(required.difference(decisions.columns))
@@ -2015,18 +1825,6 @@ def score_paper_ledger(decisions: pd.DataFrame, close_reference: pd.DataFrame) -
 
 
 def pick_correct(pick_home: pd.Series, settle_margin: pd.Series) -> pd.Series:
-    """1.0 correct / 0.0 wrong / NaN push, for a HOME-pick flag vs a settle margin.
-
-    The repo's ATS convention (FND-04, ``docs/modeling.md``): the settle margin
-    is ``result - line``, home covers when it is strictly positive, and a zero
-    margin is a push that is excluded from accuracy rather than scored as a
-    loss. Public because prospective settlement must use exactly this function
-    -- a second implementation is a second chance to get pushes wrong.
-
-    A NaN settle margin (no result, no line) is NOT a push; it is unsettled,
-    and this function returns 0.0/1.0 for it because ``NaN > 0`` is False.
-    Callers with possibly-unsettled rows must mask them themselves.
-    """
 
     covered_home = settle_margin.gt(0.0)
     correct = np.where(pick_home.astype(bool), covered_home, ~covered_home).astype(float)
@@ -2043,44 +1841,6 @@ def opener_pick_evaluation(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     home_side_offset: bool | None = None,
 ) -> pd.DataFrame:
-    """Per-game opener/close picks and settlements for the frozen active model.
-
-    For each archived game with both a ``tue_open`` consensus and a
-    resolvable close, ONE weekly-refit market-residual model (trained on
-    completed games strictly before the week's first kickoff, exactly the
-    active model's recipe) is evaluated twice -- once with ``spread_line``
-    overridden to the opener, once to the close -- and each resulting forced
-    pick is settled against the line it was formed at. A ``movement oracle``
-    diagnostic (pick the side the close eventually moved toward, settle at
-    the opener) bounds how much accuracy pure line-movement capture is worth.
-
-    An omitted ``probability_method`` is read from the active manifest via
-    :func:`resolve_active_probability_method` (``artifacts_root`` overrides
-    this checkout's artifacts directory). Explicit mappings are honored even
-    without a manifest. The returned ``probability_method`` column records the
-    resolved mapping for every game.
-
-    The inherited approximation from :func:`active_model_residual_at_opener`
-    applies: only ``spread_line`` is swapped to the opener; every other
-    feature (including ``total_line``) is close-era. Declared, not fixed.
-
-    ``home_side_offset`` (MOD-18 lane S, served 2026-09-07; aligned here
-    2026-09-08, docs/home_side_offset_promotion.md) applies the SAME
-    walk-forward home-side offset the card serves: for each week the
-    per-spread-bucket offsets are fitted with :func:`fit_home_side_offsets`
-    on the RAW out-of-time points of the weeks already scored
-    (:func:`prior_rows_before`, five trailing seasons, whole target week
-    excluded) and added to the point through ``MarginModel.predict``'s
-    ``center_offset`` before the cover probability is formed. ``None`` follows
-    the served policy flag. The ``residual_at_open`` / ``residual_at_close``
-    columns stay the RAW model residual -- they are the archive stream the
-    served offsets are fitted from on lock day, so correcting them in place
-    would compound the correction -- while ``home_cover_probability_at_*``
-    and the ``*_probability_rule`` pick columns (what production plays, and
-    what the board headline composes) carry the served read, with ``_raw``
-    twins alongside. ``home_side_offset_at_open`` is the per-game shift
-    (all zero when the policy is off, in which case served equals raw).
-    """
 
     apply_offset = HOME_SIDE_OFFSET_SERVED if home_side_offset is None else bool(home_side_offset)
     config = active_model_config or dict(_ACTIVE_MODEL_FALLBACK_CONFIG)
@@ -2107,12 +1867,42 @@ def opener_pick_evaluation(
     if missing:
         raise DataContractError(f"Opener evaluation is missing columns: {', '.join(missing)}")
     features = regular_season_rows(features)
+    features = features.loc[:, [c for c in features.columns if c in required]]
+    features.attrs = {}
 
-    pairing = build_pairing_table(
+    cache_root = evaluation_cache_root()
+    result_cache: Path | None = None
+    inventory_digest: str | None = None
+    if cache_root is not None:
+        inventory_digest = market_archive_inventory_digest(root)
+        result_cache = (
+            cache_root
+            / "opener_pick_evaluation"
+            / (
+                _digest_text(
+                    _OPENER_EVAL_CACHE_VERSION,
+                    _estimator_source_digest(),
+                    inventory_digest,
+                    capture_kind,
+                    json.dumps(config, sort_keys=True, default=str),
+                    str(probability_method),
+                    str(min_train_games),
+                    str(apply_offset),
+                    _frame_content_digest(features.reset_index(drop=True)),
+                )
+                + ".parquet"
+            )
+        )
+        cached_result = _read_cached_frame(result_cache)
+        if cached_result is not None:
+            return cached_result
+
+    pairing = cached_pairing_table(
         root,
         capture_kind=capture_kind,
         labels=("tue_open", *CLOSE_LABEL_PRIORITY),
         schedule=features,
+        inventory_digest=inventory_digest,
     )
     if pairing.empty:
         raise ValueError(f"No {capture_kind!r} snapshots with decision quotes under {root}")
@@ -2261,24 +2051,24 @@ def opener_pick_evaluation(
     )
     oracle_correct = pick_correct(result["open_move"].gt(0.0), result["margin_vs_open"])
     result["oracle_correct_at_open"] = oracle_correct.where(result["open_move"].ne(0.0))
-    return result.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
+    scored_result = result.sort_values(["season", "week", "game_id"]).reset_index(drop=True)
+    if result_cache is not None:
+        _write_cached_frame(scored_result, result_cache)
+    return scored_result
+
+
+OPENER_EVALUATION_METRIC_COLUMNS: tuple[str, ...] = (
+    "correct_at_open",
+    "correct_at_close",
+    "oracle_correct_at_open",
+    "correct_at_open_probability_rule",
+    "correct_at_close_probability_rule",
+    "correct_at_open_probability_rule_raw",
+    "correct_at_close_probability_rule_raw",
+)
 
 
 def opener_evaluation_metrics(scored: pd.DataFrame) -> dict[str, float]:
-    """Accuracy at each line plus the paired opener-minus-close delta (metric_fn shape).
-
-    Sign-rule fields (``opener_accuracy``, ``close_accuracy``,
-    ``opener_minus_close``, ``opener_vs_coin_flip``) are the predeclared
-    historical record (``residual > 0``, docs/opener_evaluation.md) and are
-    computed unconditionally, unchanged from before this docstring's
-    addition. The ``*_probability_rule`` fields alongside them are an
-    additive read of what production (``pool.py``/``backtest.py``) actually
-    plays -- ``home_cover_probability >= 0.5`` -- computed only when
-    ``scored`` carries the probability-rule columns (i.e. it came from the
-    current :func:`opener_pick_evaluation`); older or hand-rolled scored
-    frames without them (e.g. ``scripts/ridge_alpha_promotion_eval.py``'s
-    line-for-line copy) simply do not get these keys, rather than raising.
-    """
 
     at_open = pd.to_numeric(scored["correct_at_open"], errors="coerce").dropna()
     at_close = pd.to_numeric(scored["correct_at_close"], errors="coerce").dropna()
@@ -2352,16 +2142,101 @@ def opener_evaluation_metrics(scored: pd.DataFrame) -> dict[str, float]:
     return metrics
 
 
+def _compacted_mean(values: npt.NDArray[np.float64]) -> float:
+    if values.size == 0:
+        return float("nan")
+    return float(values.sum() / values.size)
+
+
+def opener_evaluation_metric_draws(
+    scored: pd.DataFrame,
+) -> Callable[[Any], dict[str, float]] | None:
+    names = ("correct_at_open", "correct_at_close", "oracle_correct_at_open")
+    probability_names = ("correct_at_open_probability_rule", "correct_at_close_probability_rule")
+    raw_names = ("correct_at_open_probability_rule_raw", "correct_at_close_probability_rule_raw")
+    available = set(scored.columns)
+    if not set(names).issubset(available):
+        return None
+    wanted = [*names]
+    with_probability = set(probability_names).issubset(available)
+    with_raw = set(raw_names).issubset(available)
+    if with_probability:
+        wanted.extend(probability_names)
+    if with_raw:
+        wanted.extend(raw_names)
+    columns: dict[str, npt.NDArray[np.float64]] = {}
+    for name in wanted:
+        series = scored[name]
+        if not pd.api.types.is_float_dtype(series.dtype):
+            return None
+        columns[name] = series.to_numpy(dtype=float, copy=True)
+
+    def draw(positions: Any) -> dict[str, float]:
+        at_open = columns["correct_at_open"][positions]
+        at_close = columns["correct_at_close"][positions]
+        oracle = columns["oracle_correct_at_open"][positions]
+        open_valid = ~np.isnan(at_open)
+        close_valid = ~np.isnan(at_close)
+        both = open_valid & close_valid
+        both_count = int(both.sum())
+        open_mean = _compacted_mean(at_open[open_valid])
+        metrics = {
+            "opener_accuracy": open_mean,
+            "close_accuracy": _compacted_mean(at_close[close_valid]),
+            "opener_minus_close": (
+                float(at_open[both].sum() / both_count - at_close[both].sum() / both_count)
+                if both_count
+                else float("nan")
+            ),
+            "opener_vs_coin_flip": open_mean - 0.5 if open_valid.any() else float("nan"),
+            "movement_oracle_accuracy": _compacted_mean(oracle[~np.isnan(oracle)]),
+        }
+        if with_probability:
+            open_pr = columns["correct_at_open_probability_rule"][positions]
+            close_pr = columns["correct_at_close_probability_rule"][positions]
+            open_pr_valid = ~np.isnan(open_pr)
+            close_pr_valid = ~np.isnan(close_pr)
+            both_pr = open_pr_valid & close_pr_valid
+            both_pr_count = int(both_pr.sum())
+            open_pr_mean = _compacted_mean(open_pr[open_pr_valid])
+            metrics.update(
+                {
+                    "opener_accuracy_probability_rule": open_pr_mean,
+                    "close_accuracy_probability_rule": _compacted_mean(close_pr[close_pr_valid]),
+                    "opener_minus_close_probability_rule": (
+                        float(
+                            open_pr[both_pr].sum() / both_pr_count
+                            - close_pr[both_pr].sum() / both_pr_count
+                        )
+                        if both_pr_count
+                        else float("nan")
+                    ),
+                    "opener_vs_coin_flip_probability_rule": (
+                        open_pr_mean - 0.5 if open_pr_valid.any() else float("nan")
+                    ),
+                }
+            )
+        if with_raw:
+            open_raw = columns["correct_at_open_probability_rule_raw"][positions]
+            close_raw = columns["correct_at_close_probability_rule_raw"][positions]
+            metrics.update(
+                {
+                    "opener_accuracy_probability_rule_raw": _compacted_mean(
+                        open_raw[~np.isnan(open_raw)]
+                    ),
+                    "close_accuracy_probability_rule_raw": _compacted_mean(
+                        close_raw[~np.isnan(close_raw)]
+                    ),
+                }
+            )
+        return metrics
+
+    return draw
+
+
 def opener_evaluation_home_side_offset_summary(
     scored: pd.DataFrame, *, served: bool
 ) -> dict[str, Any]:
-    """Provenance block for an opener evaluation's ``metadata.json``.
-
-    Records which policy the served columns follow, how many scored games
-    carried a non-zero shift, and how many opener picks the shift changed
-    against the raw read, so a reader of the artifact can tell the served and
-    the raw headline apart without recomputing either.
-    """
 
     offsets = pd.to_numeric(
         scored.get("home_side_offset_at_open", pd.Series(dtype=float)), errors="coerce"

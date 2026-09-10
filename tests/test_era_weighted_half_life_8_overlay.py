@@ -1,24 +1,3 @@
-"""Era-weighted (half-life 8) challenger (docs/era_weighting_screen.md, MOD-14).
-
-Mirrors ``tests/test_ecdf_mapping_incumbent_overlay.py``'s structure closely:
-this challenger's "control" is a UNIFORM-weight refit (rather than a
-different probability-smoothing method), so the fixture card here is built
-the ordinary (unweighted) way via ``fit_margin_models_for_week`` +
-``model.predict(..., probability_method="gaussian")`` -- exactly what the
-promoted production default (``score_outcome_week``) produces.
-
-1. :func:`apply_era_weighted_half_life_8_overlay` reproduces the (uniform-
-   weight) Gaussian probability from a refit before trusting anything --
-   proving it reads the SAME leak-safe training rows the active card was
-   built from -- then replaces every game's ``home_cover_probability`` with
-   the half-life-8-weighted refit's Gaussian read, touching no other column.
-2. Flip detection is self-consistent.
-3. :func:`record_era_weighted_half_life_8_challenger_decisions` writes the
-   refit's own picks to the prospective challenger ledger, dual-tracked and
-   at no rotation-registry window cost, with the same anti-backdating and
-   fingerprint-pin guarantees every other overlay challenger has.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -58,9 +37,6 @@ def _week_card(
     week: int = _WEEK,
     ridge_alpha: float = _RIDGE_ALPHA,
 ) -> pd.DataFrame:
-    """Build a real card the ordinary (unweighted) way, matching the
-    promoted production default: via ``fit_margin_models_for_week`` +
-    ``model.predict(..., probability_method="gaussian")``, never hand-typed."""
 
     target, margin_models = fit_margin_models_for_week(
         model_frame,
@@ -91,8 +67,6 @@ def test_half_life_weights_decays_by_half_every_half_life() -> None:
 
 
 def test_half_life_weights_never_looks_forward() -> None:
-    """A training row can share the predicted season but never postdate it --
-    elapsed is clamped at zero, not negative."""
 
     weights = half_life_weights(np.array([2025.0]), predict_season=2020, half_life=8.0)
     assert weights[0] == pytest.approx(1.0)
@@ -106,9 +80,6 @@ def test_half_life_weights_rejects_a_nonpositive_half_life() -> None:
 def test_overlay_reproduces_the_uniform_control_before_reweighting(
     model_frame: pd.DataFrame,
 ) -> None:
-    """The load-bearing proof: the refit uniform-weight Gaussian check passes
-    silently -- this really is fitting the SAME leak-safe training rows the
-    active card was built from."""
 
     card = _week_card(model_frame)
     result = apply_era_weighted_half_life_8_overlay(
@@ -146,8 +117,6 @@ def test_overlay_changes_every_probability_and_only_that_column(model_frame: pd.
 
 
 def test_overlay_flip_consistency(model_frame: pd.DataFrame) -> None:
-    """Every reported flip is a genuine side-crossing and every non-flip
-    stayed on the same side."""
 
     card = _week_card(model_frame)
     result = apply_era_weighted_half_life_8_overlay(
@@ -188,10 +157,6 @@ def test_overlay_requires_its_prediction_columns(model_frame: pd.DataFrame) -> N
 
 
 def test_overlay_refuses_a_card_that_is_not_the_uniform_control(model_frame: pd.DataFrame) -> None:
-    """If the supplied card's probability is NOT the uniform-weight Gaussian
-    read (e.g. built with a drifted configuration or a different smoothing
-    method), the refit reproduction check fails and the overlay refuses
-    rather than silently comparing against a moved target."""
 
     target, margin_models = fit_margin_models_for_week(
         model_frame,
@@ -251,8 +216,6 @@ def test_overlay_refuses_when_training_pool_is_below_min_train_games(
 
 
 def test_half_life_constant_matches_mod14_selected_arm() -> None:
-    """Pins the frozen selection (docs/era_weighting_screen.md) against a
-    silent constant drift."""
 
     assert HALF_LIFE_SEASONS == 8.0
 
@@ -264,8 +227,6 @@ def test_disclosure_note_is_empty_when_disabled(model_frame: pd.DataFrame) -> No
 
 
 def test_disclosure_note_formats_a_flip() -> None:
-    """A pure formatting check on a hand-built result, independent of whether
-    the real fixture happens to produce a flip this run."""
 
     result = EraWeightedResult(
         overlaid_predictions=pd.DataFrame({"game_id": ["G1"]}),

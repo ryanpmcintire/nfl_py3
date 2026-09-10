@@ -1,43 +1,3 @@
-"""The findings page's evidence spine: load the machine-readable registries,
-fingerprint what they say, and hand back the auto-generated "leads" content.
-
-Why this module exists: the owner's complaint was that ``findings.html`` goes
-stale because its ~24 hand-written entries quote numbers that keep moving in
-``registry/weak_signals.json`` (recorded by ``nfl-ats weak-signals record``)
-and ``registry/rotation_registry.json`` (recorded by ``nfl-ats rotation
-record-look``), and nothing ever re-checks the prose against the record it
-claims to summarize. This module is the fix, in two pieces:
-
-1. **Curation validation.** Every curated
-   :class:`nfl_ats.dashboard.findings_content.Finding` that is not marked
-   ``evergreen`` must name the registry entries it summarizes
-   (``registry_keys``) and carry a content fingerprint of each one, taken the
-   day the prose was last verified (``curated_as_of``). :func:`validate_curation`
-   recomputes each fingerprint from the LIVE registries at render time and
-   raises :class:`CurationError` the moment either a named key no longer
-   exists or its recorded content has moved out from under the prose. A
-   session that records new evidence therefore either does nothing (most
-   curated claims are untouched) or gets a loud, specific build failure that
-   names the stale finding and the key that moved -- never a silent drift.
-2. **Auto-rendered leads.** :func:`top_open_leads` needs no curation at all:
-   it reads ``registry/weak_signals.json`` directly and ranks the open,
-   ``unresolved_below_power`` leads by how far their ``probability_positive``
-   sits from a coin flip. New evidence recorded this way (the overwhelming
-   majority of what gets recorded) appears on the findings page the next time
-   it is generated, with no prose to write and no key to wire.
-
-Render-semantics contract, restated here because this module is the one place
-that decides which registry rows even reach the page (see AGENTS.md, "An
-interval crossing zero is NOT grounds for rejection"): ``unresolved_below_power``
-is not a negative and this module never filters, ranks, or labels it as one --
-it is the ONLY classification :func:`top_open_leads` draws from. Only
-``refuted_mechanism`` and ``bounded_by_control`` are real negatives, and this
-module does not render verdicts for those at all (the curated findings do,
-by hand, because a closed line of work is exactly the kind of claim a human
-should phrase). Nothing here writes to any registry -- every function is a
-reader.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -58,21 +18,10 @@ STORES = (STORE_WEAK_SIGNAL, STORE_ROTATION, STORE_CHALLENGER)
 
 
 class CurationError(ValueError):
-    """A curated finding names a registry key that does not exist, or whose
-    recorded content has moved since the prose was last verified against it.
-
-    Raised at RENDER time (``nfl-ats publish-board``), never at import time,
-    so a normal test run that never builds the findings page is unaffected --
-    only the thing that actually ships a stale claim fails.
-    """
+    pass
 
 
 def fingerprint(payload: Mapping[str, Any]) -> str:
-    """A short, stable content hash. Deliberately over-inclusive: it hashes
-    every field the registry stores for the entry, not just the ones today's
-    prose happens to quote, so a correction to ``notes`` or
-    ``classification_evidence`` is caught even when the headline number did
-    not move."""
 
     canonical = json.dumps(payload, sort_keys=True, default=str)
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()[:16]
@@ -80,9 +29,6 @@ def fingerprint(payload: Mapping[str, Any]) -> str:
 
 @dataclass(frozen=True)
 class RegistryEntry:
-    """One fact, normalized from whichever of the three evidence stores it
-    came from, plus the fingerprint curation is checked against."""
-
     key: str
     store: str
     name: str
@@ -230,35 +176,6 @@ def _challenger_entry(entry: Mapping[str, Any]) -> RegistryEntry:
 
 
 def load_weak_signal_registry(registry_root: Path | None = None) -> weak_signals.Registry:
-    """The weak-signal registry, from ``registry_root`` or the tracked default.
-
-    A thin, shared path-resolution wrapper so callers outside this module
-    (``public_board.py``'s "What we're watching" section, which needs the
-    raw :class:`~nfl_ats.weak_signals.Registry` for :func:`top_open_leads`,
-    not the flattened :class:`RegistryEntry` map) never have to duplicate the
-    ``registry_root``-vs-default-path logic :func:`load_all_entries` also
-    uses internally.
-
-    This is the SINGLE choke point every public-site reader of the
-    weak-signal registry goes through (``board_site_content.py``'s findings
-    and signal-ledger-summary loaders, ``public_board.py``'s findings and
-    signal-ledger pages), so it reads with ``on_unknown_field="warn"``
-    instead of ``weak_signals.load_registry``'s strict default. Measured
-    2026-09-08: a session added a ``corrections`` field to registry entries
-    and to ``weak_signals._SIGNAL_FIELDS`` in the same commit, but a
-    scheduled ``publish-board`` ran between the two writes, read the data
-    file a field ahead of the code, and aborted the entire ``weekly-run`` at
-    the ``publish-board`` step -- an unrecognised field is additive schema
-    drift, not corrupt data, and must never be able to take the public site
-    down. Every OTHER malformed-entry error (a missing required field, an
-    unrecognised classification, an incoherent effect/interval, an
-    inadmissible closing ground) still raises unchanged: those are real data
-    problems the build is right to refuse to publish on top of. The
-    ``weak-signals`` CLI (``status``/``pool``/``record``, via
-    ``cli_commands/registry.py``) calls ``weak_signals.load_registry``
-    directly and keeps the strict default, so an operator actively editing
-    the ledger still hears about a typo'd field immediately.
-    """
 
     path = (
         registry_root / weak_signals.WEAK_SIGNAL_REGISTRY_FILENAME
@@ -269,33 +186,6 @@ def load_weak_signal_registry(registry_root: Path | None = None) -> weak_signals
 
 
 def load_rotation_registry(registry_root: Path | None = None) -> rotation.Registry:
-    """The rotation registry, from ``registry_root`` or the tracked default.
-
-    Feature-detected like every other optional reader in this codebase: a
-    missing file (a fresh checkout with no rotation history yet) is an empty
-    registry, not an error -- ``rotation.load_registry`` itself raises on a
-    missing file, unlike ``weak_signals.load_registry``, so that is handled
-    here.
-
-    This is the choke point every public-site reader of the rotation
-    registry goes through (``board_site_content._load_findings_content``'s
-    "Research this week" section, reached from the live ``publish-board``
-    handler via ``board_site.build_site`` -> ``load_site_content``), so it
-    reads with ``on_unknown_field="warn"`` instead of
-    ``rotation.load_registry``'s strict default -- the same fix applied to
-    ``load_weak_signal_registry`` above, for the same measured failure shape
-    (an additive field on a registry entry must not be able to abort the
-    scheduled site build; see ``weak_signals.UnknownRegistryFieldWarning``
-    and ``rotation._handle_unknown_fields`` for the full incident). Every
-    OTHER malformed-entry error -- including the closing-ground taxonomy
-    (``rotation._validate_closing_ground`` and the inline closing_ground
-    checks in ``rotation._window_from_payload``) -- still raises unchanged in
-    both modes; that enforcement is release-blocking and is never weakened.
-    The ``rotation`` CLI (via ``cli_commands/registry.py``) calls
-    ``rotation.load_registry`` directly and keeps the strict default, so an
-    operator actively editing the ledger still hears about a typo'd field
-    immediately.
-    """
 
     path = (
         registry_root / rotation.ROTATION_REGISTRY_FILENAME
@@ -314,22 +204,6 @@ def load_all_entries(
     rotation_registry: rotation.Registry | None = None,
     challengers: Sequence[Mapping[str, Any]] = (),
 ) -> dict[str, RegistryEntry]:
-    """Every entry from all three evidence stores, keyed ``"<store>:<name>"``.
-
-    ``registry_root`` overrides where ``weak_signals.json`` and
-    ``rotation_registry.json`` are read from (both live in the same
-    directory in every deployment of this repo); omit it to use each
-    module's own ``NFL_ATS_REGISTRY_DIR``-aware default, exactly like every
-    other reader in this codebase. ``weak_signal_registry``/
-    ``rotation_registry`` accept an already-loaded :class:`~nfl_ats.weak_signals.Registry`/
-    :class:`~nfl_ats.rotation.Registry` directly -- tests inject one, and a
-    caller that has already loaded a registry for another reason (e.g.
-    ``public_board.render_findings_page``'s own ``top_open_leads`` call)
-    should never risk it disagreeing with a second, independently re-read
-    copy used for curation. ``challengers`` is passed in already loaded (see
-    :func:`nfl_ats.public_board.load_prospective_challengers`) rather than
-    read here, so this module never needs to know the artifacts layout.
-    """
 
     if weak_signal_registry is None:
         weak_signal_registry = load_weak_signal_registry(registry_root)
@@ -350,25 +224,6 @@ def load_all_entries(
 
 
 def validate_curation(findings: Sequence[Any], entries: Mapping[str, RegistryEntry]) -> None:
-    """Raise :class:`CurationError` the instant a curated finding drifts.
-
-    ``findings`` is ``nfl_ats.dashboard.findings_content.FINDINGS`` (typed
-    loosely here, as a ``Sequence[Any]``, so this module never has to import
-    ``findings_content`` -- that module imports registry helpers from here in
-    a later step, and a two-way import would be circular). Each element must
-    carry ``question``, ``evergreen``, ``registry_keys`` and
-    ``registry_fingerprints``.
-
-    Three failure modes, in the order they matter to a human fixing them:
-
-    1. Not evergreen and cites nothing -- a curated claim with no traceable
-       source, which is exactly the drift this module exists to prevent.
-    2. Cites a key that does not exist in any live registry -- a typo, or a
-       key that only ever existed in someone's scratch notes.
-    3. Cites a key whose CONTENT has moved since ``curated_as_of`` -- the
-       entry was re-recorded, corrected, or reclassified, and the prose was
-       written against the old version.
-    """
 
     for finding in findings:
         question = finding.question
@@ -415,18 +270,6 @@ def validate_curation(findings: Sequence[Any], entries: Mapping[str, RegistryEnt
 
 @dataclass(frozen=True)
 class WatchingLead:
-    """One open, below-power lead, ready to render with no hand-typed prose.
-
-    ``description`` is the registry's own free-form research note (source,
-    method, caveats) -- kept for callers that need the full technical record
-    (e.g. a CLI dump), never for reader-facing prose. ``plain_summary`` is
-    the ONLY field a renderer aimed at a football fan may show; it is
-    ``None`` when no one has written one yet (2026-09-05, dashboard
-    humanising follow-up: a renderer that falls back to ``description`` when
-    this is ``None`` is exactly the bug this field exists to prevent -- see
-    ``board_site_content._watching_lead_view``, which must show a
-    "plain-English summary pending" placeholder instead)."""
-
     key: str
     name: str
     description: str
@@ -465,27 +308,6 @@ def top_open_leads(
     limit: int = 12,
     leagues: tuple[str, ...] = ("nfl", "cfb"),
 ) -> list[WatchingLead]:
-    """The most striking open leads, entirely from the live registry.
-
-    "Striking" is |probability_positive - 0.5|, the same statistic the rest
-    of this project already uses to rank a lean without pretending an
-    interval that crosses zero is a verdict. Only ``unresolved_below_power``
-    signals are eligible -- this function never surfaces a
-    ``refuted_mechanism`` or ``bounded_by_control`` entry, because those are
-    real negatives, not open leads, and dressing them up as "what we're
-    watching" would misstate a closed line of work as an active one.
-
-    Split-half reliability rows (``effect_units == "correlation"``) and
-    ``control``-category cells are instrument checks, not leads, and are
-    excluded for the same reason as oracles below.
-
-    Entries whose description names an "oracle" construct (a measurement
-    that uses information only available after the decision it is meant to
-    inform -- this registry's ceiling/benchmark checks, not candidate
-    pregame signals) are excluded on the same principle: they answer "how
-    good could a perfect oracle be", already reported elsewhere on this site
-    as a ceiling, not "is there an edge here."
-    """
 
     candidates = [
         signal
@@ -537,29 +359,6 @@ def top_open_leads(
 
 @dataclass(frozen=True)
 class RecentActivityEntry:
-    """One line of "Research this week": a registry entry recorded (weak
-    signal) or screened (rotation window) inside the activity window.
-    ``category`` falls back to the entry's own store name when the entry
-    declares none -- weak signals carry a ``category``; rotation windows do
-    not, so every rotation entry's category is simply ``"rotation"``.
-    ``direction_sentence`` is ``None`` only when ``probability_positive`` is
-    itself unrecorded (a freshly assigned rotation window with no result
-    yet).
-
-    ``plain_summary`` is ``None`` whenever no one has written a genuine
-    plain-English summary for this entry yet -- a weak signal with no
-    recorded ``plain_summary``, or a rotation family with no recorded
-    ``plain_summary`` (``rotation.Family`` gained this field 2026-09-05, lane
-    AT; before that a rotation entry could NEVER carry one). This
-    deliberately does NOT fall back to the raw ``description``/methodology
-    note the way an earlier version of this dataclass did (2026-09-05 fix,
-    dashboard humanising follow-up to lane AH's audit: that silent fallback
-    is exactly how research jargon -- ``P+``, bare snake_case field names,
-    "week-blocked" -- reached the findings page). A renderer must show a
-    "plain-English summary pending" placeholder instead of ever reading a
-    raw description here; see
-    ``board_site_content._recent_activity_entry_view``."""
-
     key: str
     store: str
     category: str
@@ -575,11 +374,6 @@ class RecentActivityEntry:
 
 @dataclass(frozen=True)
 class RecentRegistryActivity:
-    """:func:`recent_registry_activity`'s return value: the header counts
-    the "Research this week" section states, plus every qualifying entry
-    grouped by category (sorted by category name; within a category, by how
-    far its P+ sits from a coin flip, most striking first)."""
-
     window_days: int
     screened_count: int
     resolved_count: int
@@ -603,16 +397,6 @@ def _parse_registry_date(value: Any) -> date | None:
 
 
 def _activity_direction_sentence(probability_positive: float) -> str:
-    """Byte-identical duplicate of the private
-    ``public_board._lead_direction_sentence``. Duplicated rather than
-    imported: ``public_board.py`` imports FROM this module
-    (``load_all_entries``/``top_open_leads``), so importing it back here
-    would be circular -- the same "duplicate a tiny private formula rather
-    than couple modules" discipline this codebase already applies elsewhere
-    (e.g. ``nfl_ats.board_content``'s own ``_CONFIDENCE_FILL``). AGENTS.md:
-    "a P+ of 0.05 is a lead for the OTHER side" -- states the direction in
-    words; the raw ``probability_positive`` is still reported unchanged
-    alongside it, never replaced."""
 
     if probability_positive >= 0.5:
         return (
@@ -628,15 +412,6 @@ def _activity_direction_sentence(probability_positive: float) -> str:
 
 
 def _is_activity_candidate(signal: weak_signals.WeakSignal) -> bool:
-    """Same three exclusions :func:`top_open_leads` applies, and for the
-    same reason: a split-half reliability check (``correlation`` units) or a
-    ``control`` cell is an instrument check, not a screened research result,
-    and running its reliability number through
-    :func:`_activity_direction_sentence` as if it were a P+ is exactly the
-    mislabeling incident AGENTS.md's 2026-08-18 correction describes (0.933/
-    0.860 reliabilities quoted as ``probability_positive``). An "oracle"
-    description names a post-decision ceiling check, already reported
-    elsewhere as a ceiling, not research activity."""
 
     return (
         signal.status != "invalidated"
@@ -653,21 +428,6 @@ def recent_registry_activity(
     *,
     days: int = 7,
 ) -> RecentRegistryActivity:
-    """Everything recorded (weak signal) or screened (rotation window) in
-    the last ``days`` days, read straight from the two live registries.
-
-    A weak signal counts by its own ``recorded_at``; a rotation window
-    counts by ``spent_at`` when it has been screened, else ``assigned_at`` --
-    a family entering a window with no result yet is still activity a
-    reader would want to see this week. Anything with no parseable date is
-    excluded, never guessed into the window.
-
-    ``resolved_count`` is entries whose classification/verdict is a real,
-    admissible closure (see :data:`CLOSED_ACTIVITY_BADGE_TEXT`'s docstring)
-    -- never entries whose interval merely crosses zero, which is the
-    EXPECTED shape for an ``unresolved_below_power`` signal at this
-    evaluator's resolution (AGENTS.md, binding), not a resolution.
-    """
 
     as_of_date = as_of.date() if isinstance(as_of, datetime) else as_of
     window_start = as_of_date - timedelta(days=days)

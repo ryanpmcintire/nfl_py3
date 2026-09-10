@@ -1,22 +1,3 @@
-"""Content-coverage guarantee for the This Week page: every fact
-:mod:`nfl_ats.board_content` produces on :class:`~nfl_ats.board_content
-.BoardContent` actually reaches the rendered page.
-
-Replaces the old cross-skin parity suite (``tests/test_board_skins.py``),
-retired when the Cover Desk skin was dropped (2026-08-31 owner redirect --
-"Let's drop the Desk theme altogether and just focus on the Terminal
-theme."). The guarantee this suite protects is unchanged: a future number
-change (a new experiment, a refreshed interval, updated findings) that
-reaches ``board_content.py`` must be visible on the page ``board_terminal.py``
-renders from it -- a change that lands in the content model but never
-reaches the page is exactly the bug this suite exists to catch.
-
-The companion dedup guarantee added by the 2026-08-31 redirect (each fact
-lives on exactly ONE page, except the This Week headline strip, which is
-deliberately also shown on The Model page) is covered in
-``tests/test_board_terminal.py`` alongside the pages it concerns.
-"""
-
 from __future__ import annotations
 
 from dataclasses import replace
@@ -90,11 +71,6 @@ def test_selection_caveat_sentence_appears_on_the_page() -> None:
 
 
 def test_disclaimer_is_never_rendered_on_the_page() -> None:
-    """2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
-    fucking legal bullshit words"): the compliance disclaimer block is
-    REMOVED from every page. ``BoardContent.disclaimer`` stays a structural
-    field (unused by the renderer now) rather than being rendered."""
-
     html, content = _render()
     assert escape(content.disclaimer.short) not in html
     assert escape(content.disclaimer.full) not in html
@@ -121,8 +97,6 @@ def test_policy_composition_or_narrative_appears_on_the_page() -> None:
 
 
 def test_a_content_only_number_change_reaches_the_page() -> None:
-    """The guarantee this whole suite exists for: change ONE field on the
-    content model and the rendered page changes with it."""
 
     content = build_fixture_content()
     changed_headline = replace(content.headline, raw_model_value_text="61.9%")
@@ -141,9 +115,6 @@ def test_every_dive_matchup_label_appears_on_the_page() -> None:
 
 
 def test_flip_pill_text_appears_for_every_flipped_game() -> None:
-    """Owner-approved improvement batch, item 1: a flip pill's exact
-    content-layer text (glyph + member name(s)) must reach the page for
-    EVERY flipped game, not just the one the fixture happens to exercise."""
 
     html, content = _render()
     for game in content.games:
@@ -179,10 +150,6 @@ def test_link_preview_title_and_description_appear_on_the_page() -> None:
 
 
 def test_a_content_only_flip_member_label_change_reaches_the_page() -> None:
-    """The same content-coverage guarantee as
-    ``test_a_content_only_number_change_reaches_the_page``, exercised for
-    the flip pill: change ONE game's flip labels and the rendered page
-    changes with it."""
 
     content = build_fixture_content()
     flipped_index = next(

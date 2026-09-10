@@ -1,32 +1,3 @@
-"""Build the optional, ignored lineup artifact consumed by This Week.
-
-This is deliberately a separate refresh step: GitHub Pages can only serve
-static JSON, and the renderer must never reach out to a live roster or injury
-provider.
-
-UI-20 lineup probabilities (2026-09-05): every listed player with a
-``gsis_id`` originally carried a ``play_probability`` sourced from a
-no-designation BASE RATE keyed only on (position_group, recent_role) --
-which is exactly the owner complaint that motivated the next change (a
-rookie QB2 with no injury designation read 47%; a veteran healthy QB3 read
-95%, backwards from what "makes sense").
-
-UI-20-AB (2026-09-05): every listed player with a ``gsis_id`` now instead
-carries a real per-player, per-game forecast from
-``nfl_ats.play_probability`` -- a walk-forward, isotonic-calibrated
-gradient-boosting model of P(plays) and P(starts) using depth-chart rank,
-this week's own injury report, recent playing-time history, roster status,
-and (for QBs) the team's own QB1's injury status. ``probability_source`` is
-``"play_probability_model"`` for every scored player;
-``model_qb_start_probability`` separately preserves the forecast's own
-``{side}_qb_start_probability`` input for the one QB the active margin
-model actually consumed (previously ``play_probability`` itself for that
-player, under ``probability_source: "base_model_qb"``) -- kept, not
-deleted, as its own field. ``"unavailable"`` is still reserved for a
-depth-chart row this cannot score (no ``gsis_id``). See
-``docs/play_probability_model.md``.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -82,13 +53,6 @@ def _number(value: Any) -> float | None:
 def _learned_availability_lookup(
     path: Path = WEAK_STACK_AVAILABILITY_RATES_PATH,
 ) -> tuple[dict[tuple[int, str, str, str], float] | None, str]:
-    """The active model's own learned availability rates, read-only.
-
-    Falls back to ``None`` (the per-player resolver then uses the fixed,
-    hand-authored prior -- the same fallback ``resolve_unavailability``
-    already provides in production) when the table is absent; never
-    rebuilds or writes it.
-    """
 
     if not path.is_file():
         return None, f"no learned availability rate table at {path}; using the fixed prior"
@@ -101,12 +65,6 @@ def _learned_availability_lookup(
 def _no_designation_lookup(
     season: int, root: Path = PLAYER_SNAPSHOT_ROOT
 ) -> tuple[dict[tuple[int, str, str], float] | None, dict[str, str], str]:
-    """The position's no-designation base rate plus each current player's
-    ``recent_role``, derived from the newest local player snapshot -- no
-    network fetch. See ``nfl_ats.lineup_availability`` for the derivation
-    and why a bare position average would understate a starter's true
-    probability.
-    """
 
     try:
         snapshot = latest_player_snapshot(root)
@@ -130,17 +88,6 @@ def _play_probability_context(
     panel_path: Path = PLAY_PROBABILITY_PANEL_PATH,
     snapshot_root: Path = PLAYER_SNAPSHOT_ROOT,
 ) -> tuple[PlayProbabilityPredictor | None, dict[str, dict[str, float]], str]:
-    """Fit UI-20-AB's walk-forward play-probability model and build the
-    per-``gsis_id`` history (``weeks_since_last_snap``/``trailing4_snap_share``)
-    every serving-time feature frame needs.
-
-    Reads the cached training panel (``scripts/build_play_probability_panel.py``)
-    and the newest local player snapshot; makes no network call of its own.
-    Fails closed -- ``(None, {}, reason)`` -- rather than raising, so a
-    missing panel degrades this feature (every player falls back to
-    ``"unavailable"`` in ``_team_payload``) instead of blocking the rest of
-    the artifact.
-    """
 
     if not panel_path.is_file():
         return (
@@ -168,27 +115,6 @@ def _play_probability_context(
 def _fetch_current_week_injuries(
     season: int, week: int, schedule: pd.DataFrame, generated_at: datetime
 ) -> tuple[pd.DataFrame, str]:
-    """This week's live nflverse injury report, filtered to rows observed
-    strictly before ``generated_at`` -- the same leakage-safe ``week_proxy``
-    fallback ENG-39 built for the historical feature table
-    (``nfl_ats.players.canonicalize_injuries``), since a current in-season
-    release may omit ``date_modified`` entirely (docs/injury_timestamp_fallback.md).
-
-    Returns an empty frame with a note, never an exception, when nflverse has
-    genuinely published nothing for this season yet, or has no rows for this
-    week.
-
-    The season is fetched through :func:`nfl_ats.nflverse_current_season
-    .load_season_frame`, NOT ``nflreadpy.load_injuries`` directly. That
-    loader's own season guard rolls over on the Thursday after Labor Day,
-    which for 2026 is 2026-09-10 -- a day AFTER Week 1 opens on Wednesday
-    2026-09-09. This function used to catch that guard's ``ValueError`` and
-    report it as "nflverse has not published season 2026 injuries yet", which
-    was false: measured 2026-09-08, the 2026 release already held eleven rows
-    for exactly that opener (three New England, seven Seattle). Nothing
-    crashed, and the card told readers no injury report existed. A genuinely
-    absent release still degrades the same way, now with a true reason.
-    """
 
     try:
         raw = load_season_frame("injuries", season)
@@ -211,8 +137,6 @@ def _fetch_current_week_injuries(
 
 
 def _visible_injuries_by_team(visible: pd.DataFrame) -> dict[str, pd.DataFrame]:
-    """Latest visible revision per (team, gsis_id), keyed by team then
-    indexed by ``gsis_id`` for O(1) per-player lookup."""
 
     if visible.empty:
         return {}
@@ -513,14 +437,6 @@ def _check_artifact_size(path: Path, *, limit: int = MAX_LINEUP_BYTES) -> None:
 
 
 def _remove_legacy_stamped_runs(lineups_root: Path, *, keep: Path) -> None:
-    """Delete pre-replacement-policy stamped `*/lineups.json` runs.
-
-    Each stamped run is a ~37 MB display copy superseded by the stable path;
-    provenance (model, forecast, depth snapshot) lives inside the payload, and
-    the underlying depth snapshots remain in `data/quarterbacks/depth/raw`.
-    Only directories directly under the lineups root holding a `lineups.json`
-    are touched; anything else is left alone.
-    """
     if not lineups_root.is_dir():
         return
     for child in sorted(lineups_root.iterdir()):

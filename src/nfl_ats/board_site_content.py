@@ -1,36 +1,3 @@
-"""Shared view models for the ATS Terminal site's pages: The Model
-(``model.html``), History (``history.html``), and What We've Learned
-(``findings.html``). ``index.html``
-(This Week) is :mod:`nfl_ats.board_content`'s own ``BoardContent``.
-
-2026-09-02: the site has four pages, dedup'd so every
-fact appears on exactly one page (the This Week headline strip is the one
-declared exception -- see :class:`ModelPageContent`'s docstring). This
-replaced an earlier six-extra-page draft (Models, Team Trends, Findings,
-Track Record, Pool Workbench, Signal Ledger) that the owner found
-"partially duplicating things": Models and Track Record both carried
-overlapping headline/accuracy stats and the SAME tracked-challenger cards
-the model ledger already carries with richer detail; Findings and the
-Signal Ledger both existed to describe the weak-signal registry. Team
-Trends and Pool Workbench were cut entirely -- their content is inventoried
-in the session handoff for the owner to recall, not silently deleted from
-the codebase: the underlying library modules (``nfl_ats.team_explorer``,
-``nfl_ats.pool_workbench``) and their own tests are untouched, only this
-site's use of them is gone.
-
-Exactly like ``board_content.py``, this module is the ONLY place that
-touches an artifact, a loader, or a piece of prose for these two pages; the
-Terminal renderer (:mod:`nfl_ats.board_terminal`) must read fields off the
-dataclasses below and never format a number or invent a sentence itself.
-
-Every mandatory data-integrity guard the corresponding page in
-``public_board.py`` ran is reproduced here too: ``model_ledger
-.validate_ledger`` (The Model's ledger section) and ``findings_registry
-.validate_curation`` (Findings, against BOTH ``FINDINGS`` and
-``LEAD_BLURBS``) -- a stale or drifted claim must fail this loader the same
-way it fails ``build_public_site``, never render quietly.
-"""
-
 from __future__ import annotations
 
 import html
@@ -102,9 +69,6 @@ from nfl_ats.weak_signals import default_registry_path
 
 
 def _default_data_root() -> Path:
-    """Duplicate of ``board_content._default_data_root`` -- see that
-    function's docstring for why this small env-var default is duplicated
-    rather than imported (the name is private)."""
 
     import os
 
@@ -130,11 +94,6 @@ _EMBEDDED_STAMP_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T\d{6}(?:\d{6})?Z")
 
 
 def _artifact_directory_date_text(directory_name: str) -> str:
-    """A UTC-stamped artifact directory's own name reduced to a bare
-    reader-facing date (``"2026-09-05"``) -- never the full stamp, which
-    reads as machine notation, not a date (owner mandate, 2026-09-05).
-    Falls back to the raw name when it doesn't parse -- never hides real
-    data behind a formatting bug."""
 
     match = _EMBEDDED_STAMP_RE.search(directory_name)
     if match is not None:
@@ -146,17 +105,6 @@ def _artifact_directory_date_text(directory_name: str) -> str:
 def _number_provenance_rows(
     artifacts_root: Path, active: Mapping[str, Any]
 ) -> tuple[tuple[NumberProvenanceRow, ...], str | None]:
-    """The model page's "where these numbers come from" fine print --
-    :func:`nfl_ats.board_content.verify_number_provenance`, translated to
-    reader-facing rows (a date, not a directory stamp; the model's own
-    method label, not its id -- owner mandate, 2026-09-05: "please do not
-    let those percentages get out of date anymore"). Fails OPEN here (a
-    caught :class:`NumberProvenanceError` becomes a plain note, never a
-    raised exception) because building this page's content must never be
-    the enforcement point -- ``publish-board``/``publish-predictions``
-    already fail CLOSED on this exact check before a page is written; a
-    content-model rebuild for a test fixture or an off-cycle rehearsal must
-    still render a page, just one that says verification did not run."""
 
     model_text = (
         f"{humanize_identifier(str(active.get('feature_profile') or 'unknown'))} "
@@ -234,24 +182,6 @@ class SeasonRowView:
 
 @dataclass(frozen=True)
 class ModelPageContent:
-    """The Model page's content, told as one story: what we play, how it's
-    done, what's challenging it.
-
-    ``headline`` is the SAME :class:`~nfl_ats.board_content.HeadlineStats`
-    object the This Week page's headline strip renders -- this is the one
-    deliberate cross-page dedup exception (see
-    ``tests/test_board_content_coverage.py``): a reader needs the played-
-    policy numbers in both places, and reading the SAME object rather than
-    recomputing it is what keeps them from ever disagreeing. Everything
-    else below is unique to this page: the season-blocked long-run
-    interval, the protocol-vs-production grading-rule comparison, the
-    season-by-season table, and the model ledger (dropped entirely from
-    the old six-page draft: ``played_chain_text``/``expectation_text``/
-    the opener-close-games-seasons KPI row and the standalone tracked-
-    challenger cards all restated a headline or ledger fact under a
-    different name).
-    """
-
     generated_at_text: str
 
     headline: HeadlineStats
@@ -286,11 +216,6 @@ class ModelPageContent:
 
 @dataclass(frozen=True)
 class NumberProvenanceRow:
-    """One reader-facing row of the model page's provenance fine print --
-    :class:`nfl_ats.board_content.NumberProvenance`, translated for display:
-    a human date instead of a directory timestamp, the model's own method
-    label instead of its id. See :func:`_number_provenance_rows`."""
-
     label: str
     artifact_kind: str
     date_text: str
@@ -299,14 +224,6 @@ class NumberProvenanceRow:
 
 @dataclass(frozen=True)
 class HistoryPickRow:
-    """One immutable pick from the primary paper-decision ledger.
-
-    Confidence is optional because the ledger records the chosen side and
-    frozen line, while the probability lives in the linked forecast artifact.
-    A missing linked forecast is therefore displayed as ``--`` rather than a
-    confidence value guessed from edge or market price.
-    """
-
     game_id: str
     season: int | None
     week: int | None
@@ -339,15 +256,6 @@ class HistoryPickRow:
 
 @dataclass(frozen=True)
 class ChallengerAssessment:
-    """Settled prospective comparison for one challenger.
-
-    ``paired_games`` is the number of games with non-push decision-line
-    outcomes available for both arms. ``delta_accuracy_points`` is measured
-    on that same paired set and remains ``None`` until both arms have settled
-    games. Registry evidence is shown separately as P+ or its recorded
-    interval; neither is used to decide which card is played.
-    """
-
     challenger_id: str
     display_name: str
     paired_games: int
@@ -392,20 +300,6 @@ NO_OPENER_LINE_ARCHIVED_SEASON_NOTE = (
 
 @dataclass(frozen=True)
 class SeasonGradeRow:
-    """One season's opener-vs-close grading, side by side (UI-20(h)).
-
-    Reuses the SAME per-season pair the Model page's :class:`SeasonRowView`
-    renders (:func:`_season_rows`, sourced from
-    ``artifacts/opener_evaluation/<newest>/season_summary.csv``) -- never a
-    second computation, so the two pages can never disagree. ``note`` is
-    non-empty only for the one synthetic row (see
-    :func:`_season_grade_rows`) covering seasons this evaluation's archived
-    population does not reach at all; every real season it returns already
-    carries both grades by construction (its population requires a paired
-    opener/close line), so ``opener_accuracy``/``close_accuracy`` are only
-    ever both-present or both-``None`` here.
-    """
-
     season_label: str
     games: int | None
     opener_accuracy: float | None
@@ -434,18 +328,6 @@ class SeasonGradeRow:
 
 @dataclass(frozen=True)
 class HistoryWeekGrade:
-    """One recorded week's opener-vs-close grading, side by side (UI-20(h)).
-
-    Settled through the SAME :func:`nfl_ats.prospective_scoring
-    .settle_prospective_picks` the per-game :class:`HistoryPickRow` rows use
-    -- never a second settlement implementation -- now also supplied a
-    close-line reference (:func:`nfl_ats.clv.live_close_reference`) so the
-    close grade is real whenever a resolvable close exists, not merely
-    absent by construction. ``note`` is non-empty exactly when one grade,
-    or (a week not yet played) neither, could not be computed; the page
-    renders that sentence instead of a blank cell.
-    """
-
     season: int
     week: int
     picks: int
@@ -500,15 +382,12 @@ class HistoryPageContent:
 
 @dataclass(frozen=True)
 class SeasonRecordHeadline(HeadlineStats):
-    """Shared headline with the current History record, assembled without new I/O."""
-
     season_record_text: str = ""
 
 
 def headline_with_season_record(
     headline: HeadlineStats, history: HistoryPageContent
 ) -> SeasonRecordHeadline:
-    """Summarize History's decision-line rows; pushes never enter the win rate."""
 
     season = history.ticker_chrome.season
     rows = tuple(row for row in history.picks if row.season == season)
@@ -623,10 +502,6 @@ def _season_rows(seasons: pd.DataFrame) -> tuple[SeasonRowView, ...]:
 
 
 def _evidence_strength(probability_positive: float | None) -> float:
-    """How far a P+ sits from a coin flip, either direction -- mirrors
-    ``public_board._challenger_evidence_strength`` exactly (a P+ of 0.05 is
-    exactly as strong a signal as 0.95, just pointed the other way).
-    Unmeasured rows sort last, matching that function's own tie-break."""
 
     return -1.0 if probability_positive is None else abs(probability_positive - 0.5)
 
@@ -634,12 +509,6 @@ def _evidence_strength(probability_positive: float | None) -> float:
 def _grouped_ledger_rows(
     rows: tuple[ModelLedgerRowView, ...],
 ) -> tuple[tuple[ModelLedgerRowView, ...], tuple[ModelLedgerRowView, ...]]:
-    """Split ``rows`` into (graded, waiting) -- owner-approved improvement
-    batch, item 9. "Graded" means the arm has a prospective/graded record
-    (``track_record.games is not None``, i.e. its own row shows a real
-    games/accuracy figure rather than "--"); everything else is "Waiting on
-    the season". Each group is sorted by :func:`_evidence_strength`,
-    descending, with the promoted row pinned first within "graded"."""
 
     graded = tuple(
         sorted(
@@ -660,7 +529,6 @@ def _grouped_ledger_rows(
 
 
 def load_model_weak_spots(artifacts_root: Path, active: Mapping[str, Any]) -> WeakSpots:
-    """Never fall back to another model's opener record."""
     match = find_matching_opener_evaluation(artifacts_root, active)
     if match is None:
         return WeakSpots()
@@ -675,9 +543,6 @@ def load_model_weak_spots(artifacts_root: Path, active: Mapping[str, Any]) -> We
 def _load_home_correction(
     artifacts_root: Path, active: Mapping[str, Any], per_game: pd.DataFrame
 ) -> HomeCorrection | None:
-    """This week's served push (from the linked forecast's sidecar, when the
-    card was built with it) beside the push's record on the matching opener
-    evaluation. ``None`` when that evaluation predates the alignment."""
 
     from nfl_ats.active_model import active_artifact_path
     from nfl_ats.home_side_location import (
@@ -718,12 +583,6 @@ def _load_model_page_content(
     active: Mapping[str, Any],
     generated_at: datetime,
 ) -> ModelPageContent:
-    """Mirrors the old ``load_model_ledger_html`` / track-record loaders'
-    fail-open contracts exactly (see each field's origin below); a registry
-    that exists but fails :func:`nfl_ats.model_ledger.validate_ledger` is
-    drift the reader should see (``ledger_error`` set, no rows rendered),
-    never a raised exception and never rows rendered without validation.
-    """
 
     challengers_path = artifacts_root / "prospective" / "challengers.json"
     active_manifest_path = artifacts_root / "active_ats_model.json"
@@ -869,14 +728,6 @@ class SignalNotableRow:
 
 @dataclass(frozen=True)
 class SignalLedgerSummary:
-    """A dense, secondary summary of the weak-signal registry -- NOT the
-    full per-signal table the old standalone Signal Ledger page showed
-    (610+ rows was its own page's worth of content, and this project's
-    binding rule is that an unresolved-below-power signal is never treated
-    as settled just because it is not individually surfaced here; the full
-    registry stays queryable via ``nfl-ats weak-signals ...``, this is a
-    pointer, not a replacement)."""
-
     total_signals: int
     counts_by_status: Mapping[str, int]
     counts_by_category: Mapping[str, int]
@@ -888,10 +739,6 @@ _NOTABLE_SIGNAL_LIMIT = 8
 
 @dataclass(frozen=True)
 class RecentActivityEntryView:
-    """One line of "Research this week" (dashboard queue, ROADMAP.md
-    UI-20(b)): a formatted, ready-to-render row over
-    :class:`nfl_ats.findings_registry.RecentActivityEntry`."""
-
     plain_summary: str
     effect_text: str
     direction_sentence: str
@@ -906,12 +753,6 @@ class RecentActivityCategoryView:
 
 @dataclass(frozen=True)
 class RecentActivityView:
-    """:class:`FindingsPageContent`'s "Research this week" section --
-    everything recorded or screened in the activity window, grouped by
-    category. Renders correctly when ``categories`` is empty: the header
-    counts are still ``0``/``0`` and the page shows "no new screens
-    recorded this week" rather than an empty section."""
-
     window_days: int
     screened_count: int
     resolved_count: int
@@ -923,6 +764,31 @@ class RecentActivityView:
 
 
 PLAIN_SUMMARY_PENDING = "Plain-English summary pending."
+
+BOOK_READER_NAMES: dict[str, str] = {
+    "betmgm": "BetMGM",
+    "betonlineag": "BetOnline",
+    "betrivers": "BetRivers",
+    "betus": "BetUS",
+    "bovada": "Bovada",
+    "draftkings": "DraftKings",
+    "fanatics": "Fanatics",
+    "fanduel": "FanDuel",
+    "lowvig": "LowVig",
+    "mybookieag": "MyBookie",
+    "pointsbetus": "PointsBet",
+    "williamhill_us": "William Hill",
+}
+
+_BOOK_KEY_RE = re.compile(
+    r"\b(" + "|".join(sorted(map(re.escape, BOOK_READER_NAMES), key=len, reverse=True)) + r")\b"
+)
+
+
+def name_books_for_readers(text: str) -> str:
+
+    return _BOOK_KEY_RE.sub(lambda match: BOOK_READER_NAMES[match.group(0)], text)
+
 
 _RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
     "accuracy_points": "accuracy points",
@@ -947,7 +813,7 @@ def _recent_activity_entry_view(entry: RecentActivityEntry) -> RecentActivityEnt
         else "not yet measured"
     )
     return RecentActivityEntryView(
-        plain_summary=entry.plain_summary or PLAIN_SUMMARY_PENDING,
+        plain_summary=name_books_for_readers(entry.plain_summary or PLAIN_SUMMARY_PENDING),
         effect_text=effect_text,
         direction_sentence=entry.direction_sentence or "No confidence figure recorded yet.",
         closed_label=entry.closed_label,
@@ -983,13 +849,6 @@ class FindingsPageContent:
 
 
 def _history_forecast_probability(artifacts_root: Path, row: Mapping[Any, Any]) -> float | None:
-    """Read chosen-side probability from the row's linked forecast, if any.
-
-    ``decisions.parquet`` intentionally has no probability column.  Following
-    ``forecast_artifact`` keeps History honest for old and new ledger schemas;
-    edge, odds, and the active model's historical accuracy are not substitutes
-    for a game-specific probability.
-    """
 
     direct = _number(row.get("pick_probability"))
     if direct is not None and 0.0 <= direct <= 1.0:
@@ -1126,20 +985,6 @@ _CLOSE_SCHEDULE_COLUMNS: tuple[str, ...] = ("game_id", "spread_line", "result")
 
 
 def _load_close_schedule(data_root: Path) -> pd.DataFrame:
-    """UI-20(h): read-only source for the History page's close-line
-    reference, from the SAME feature table :func:`nfl_ats.board_content
-    ._load_game_outcomes` already reads (``data/processed/
-    game_features.parquet``), whose ``spread_line`` this repo already
-    treats as the closing number (:func:`nfl_ats.clv.live_close_reference`'s
-    own fallback names it ``schedule_close``; see also
-    ``nfl_ats.tiebreaker``'s module docstring on the same convention).
-
-    Kept as its own small reader rather than widening
-    ``_load_game_outcomes``'s shared column list, so this page's addition
-    cannot change any other page's behaviour. Fail-open to an empty frame
-    with the right columns -- matching every other optional artifact on
-    this page -- never raises.
-    """
 
     path = data_root / "processed" / "game_features.parquet"
     try:
@@ -1154,26 +999,6 @@ def _load_close_schedule(data_root: Path) -> pd.DataFrame:
 def _season_grade_rows(
     seasons: tuple[SeasonRowView, ...], active: Mapping[str, Any]
 ) -> tuple[SeasonGradeRow, ...]:
-    """UI-20(h): the Model page's own per-season opener/close pair
-    (:func:`_season_rows`), reused verbatim, plus one explicit, dynamically
-    computed row for the seasons the archive itself does not reach.
-
-    ``opener_evaluation``'s population requires a paired opener+close line
-    (``docs/opener_evaluation.md``: "2020-2025 historical snapshot
-    archive"), so every season it returns already carries both grades; a
-    season with no archived opener line is not represented by a row with a
-    blank cell -- it is simply ABSENT from ``seasons``. Measured 2026-09-05:
-    the archive's population sums to 1,537 games while
-    ``active["historical_evaluation"]["games"]`` (the model's own long-run
-    close-graded evaluation, ``docs/opener_evaluation.md``'s wider
-    chronological population) covers 2,075 -- a 538-game gap with no
-    opener-vs-close row of its own. Rather than lose that gap silently, one
-    synthetic row is computed here (games = the live difference between the
-    two counts, never a hardcoded figure, since both totals grow over
-    seasons) and shown first, with an explicit not-archived note instead of
-    a blank. Omitted entirely when the two counts already agree (a future
-    session that closes the gap) or no historical total is available.
-    """
 
     rows = [
         SeasonGradeRow(
@@ -1205,17 +1030,6 @@ def _season_grade_rows(
 def _history_week_grades(
     decisions: pd.DataFrame, outcomes: pd.DataFrame, close_reference: pd.DataFrame
 ) -> tuple[HistoryWeekGrade, ...]:
-    """UI-20(h): per-week opener-vs-close grading for the primary
-    paper-decision ledger.
-
-    Settled through the SAME :func:`nfl_ats.prospective_scoring
-    .settle_prospective_picks` :func:`_history_pick_rows` already uses --
-    never a second settlement implementation -- with a close-line
-    reference now also supplied, so a week's close record is real whenever
-    a resolvable close exists for its games rather than absent by
-    construction. Empty until the first Tuesday lock records a pick, same
-    as :func:`_history_pick_rows`.
-    """
 
     if decisions.empty:
         return ()
@@ -1230,15 +1044,6 @@ def _history_week_grades(
 def _week_grades_from_graded_games(
     graded: pd.DataFrame, *, opener_column: str, close_column: str
 ) -> tuple[HistoryWeekGrade, ...]:
-    """One :class:`HistoryWeekGrade` per ``(season, week)`` of ``graded``.
-
-    The single place a week's opener/close record is counted, shared by the
-    recorded paper ledger (:func:`_history_week_grades`) and the archived
-    replay (:func:`_archive_week_grades`) so the two can never count a week
-    differently.  Both callers hand it a frame of already-graded games whose
-    two correctness columns are 1 (right), 0 (wrong) or missing (a push, or
-    a line that does not exist for that game).
-    """
 
     if graded.empty or not {"season", "week"}.issubset(graded.columns):
         return ()
@@ -1282,24 +1087,6 @@ def _week_grades_from_graded_games(
 def _archive_week_grades(
     artifacts_root: Path, active: Mapping[str, Any]
 ) -> tuple[HistoryWeekGrade, ...]:
-    """Every finished week of the opener archive, graded at both lines.
-
-    Why this exists (UI-20(h), second pass): the recorded paper ledger only
-    starts at the first Tuesday lock, so the per-week table showed exactly
-    one unsettled row while the season table above it carried six seasons
-    of real opener-vs-close pairs.  A reader could see the difference the
-    pool's own line makes over a season but never week to week -- which is
-    the whole point of the section.
-
-    The rows come from the SAME evaluation run the season table is built
-    from -- :func:`find_matching_opener_evaluation` keyed to the ACTIVE
-    model, exactly as :func:`load_model_weak_spots` does -- reading its
-    per-game grades and counting them by week.  Summing a season's weeks
-    reproduces that season's row above it exactly, by construction.  The
-    served columns are used (the ones behind every accuracy the site
-    already shows), never the unadjusted twins.  No matching run means no
-    rows at all: a week is never graded with another model's picks.
-    """
 
     match = find_matching_opener_evaluation(artifacts_root, active)
     if match is None:
@@ -1318,12 +1105,6 @@ def _archive_week_grades(
 def _combined_week_grades(
     recorded: tuple[HistoryWeekGrade, ...], archived: tuple[HistoryWeekGrade, ...]
 ) -> tuple[HistoryWeekGrade, ...]:
-    """Recorded weeks and archived weeks in one newest-first table.
-
-    A week recorded in the paper ledger always wins its ``(season, week)``
-    slot: those picks were locked in before kickoff, so they are the honest
-    record, while the archive's row for the same week is a replay of it.
-    """
 
     merged = {(row.season, row.week): row for row in archived}
     merged.update({(row.season, row.week): row for row in recorded})
@@ -1351,7 +1132,6 @@ def _evidence_values(entry: Mapping[str, Any]) -> tuple[float | None, float | No
 
 
 def _latest_prospective_reports(artifacts_root: Path) -> dict[str, Mapping[str, Any]]:
-    """Return entrant reports from the newest prospective-score artifact."""
 
     directories = artifact_directories(artifacts_root / "prospective_scoring", "metadata.json")
     for directory in directories:
@@ -1373,14 +1153,6 @@ def _latest_prospective_reports(artifacts_root: Path) -> dict[str, Mapping[str, 
 def _prospective_report_grade(
     report: Mapping[str, Any], *, paired_games: int
 ) -> tuple[float | None, float | None, float | None] | None:
-    """Read uncertainty only from a report matching the settled paired grade.
-
-    Prospective-score metadata can contain pending-only rows and uncertainty
-    for several metrics.  Registration evidence is historical context, not a
-    running score, so a report is eligible only when its decision-line game
-    count matches the settled paired comparison and its uncertainty is for
-    that decision-line accuracy metric.
-    """
 
     forced = report.get("forced_picks")
     decision = forced.get(DECISION_GRADE) if isinstance(forced, Mapping) else None
@@ -1600,13 +1372,6 @@ def _load_history_page_content(
 def _finding_trace(
     finding: fc.Finding, entries: Mapping[str, RegistryEntry]
 ) -> tuple[str | None, float | None]:
-    """The first of ``finding.registry_keys`` that resolves to a registry
-    entry carrying a measured ``probability_positive`` -- see
-    :class:`FindingItemView`'s docstring. Curation already guarantees every
-    non-evergreen finding's ``registry_keys`` resolve
-    (:func:`nfl_ats.findings_registry.validate_curation`, run before this is
-    called), so a missing key here just means "no trace chip", never a
-    build failure."""
 
     for key in finding.registry_keys:
         entry = entries.get(key)
@@ -1645,7 +1410,7 @@ def _watching_lead_view(
     unit_words = _RECENT_ACTIVITY_EFFECT_UNIT_WORDS.get(lead.effect_units, lead.effect_units)
     return WatchingLeadView(
         name=lead.name,
-        description=description,
+        description=name_books_for_readers(description),
         effect_text=f"{lead.effect:+.2f} {unit_words}",
         probability_positive=lead.probability_positive,
         seasons_text=f"{lead.seasons[0]}-{lead.seasons[1]}",
@@ -1686,7 +1451,7 @@ def _load_signal_ledger_summary(registry_root: Path | None) -> SignalLedgerSumma
                 probability_positive,
                 SignalNotableRow(
                     name=html.unescape(str(row.get("name", ""))),
-                    idea=idea,
+                    idea=name_books_for_readers(idea),
                     effect_text=effect_text,
                     probability_positive=probability_positive,
                     status=status,
@@ -1710,19 +1475,6 @@ def _load_findings_content(
     generated_at: datetime,
     board: BoardContent,
 ) -> FindingsPageContent:
-    """Mirrors ``render_findings_page`` item-for-item: the SAME curated
-    ``FINDINGS``/``LEAD_BLURBS`` validated against the SAME live registries
-    (:func:`nfl_ats.findings_registry.validate_curation`, a REQUIRED guard --
-    a stale or drifted claim must raise here exactly as it would in the
-    original page, never render quietly), then the SAME auto-rendered
-    "what we're watching" leads (:func:`nfl_ats.findings_registry.top_open_leads`).
-
-    ``challengers`` is still needed here even though this page no longer
-    renders its own tracked-challenger cards (the model ledger on The Model
-    page already shows them, with richer per-arm evidence): it is an input
-    to :func:`nfl_ats.findings_registry.load_all_entries`, which
-    ``validate_curation`` checks the curated prose against.
-    """
 
     registry = load_weak_signal_registry(registry_root)
     entries = load_all_entries(
@@ -1764,11 +1516,6 @@ def _load_findings_content(
 
 @dataclass(frozen=True)
 class SiteContent:
-    """Every page's content, loaded once. ``board`` is the SAME
-    :class:`~nfl_ats.board_content.BoardContent` :mod:`nfl_ats.board_content`
-    already builds for the This Week page; ``model``/``findings`` are built
-    here, including the ledger-backed History page."""
-
     board: BoardContent
     model: ModelPageContent
     history: HistoryPageContent
@@ -1783,15 +1530,6 @@ def load_site_content(
     generated_at: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
 ) -> SiteContent:
-    """Load every page's content for the four-page site.
-
-    ``require_fresh_arrest_overlay`` defaults to ``True`` here (unlike
-    ``board_content.load_board_content``'s rehearsal-friendly ``False``)
-    because this is the function the REAL publish path
-    (``cli._write_public_site`` -> ``board_site.build_site``) calls --
-    matching ``public_board.build_public_site``'s own default. A scratch or
-    rehearsal build should pass ``False`` explicitly.
-    """
 
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
     resolved_data_root = data_root if data_root is not None else _default_data_root()

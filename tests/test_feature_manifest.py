@@ -1,17 +1,3 @@
-"""ENG-22: source-snapshot inheritance across derived feature-table manifests.
-
-``docs/feature_lineage.md`` measured (2026-09-04) that every enrichment
-manifest under ``data/processed/`` records ``source_features`` -- a path to
-the parquet it enriched -- but not the snapshot id that path's own manifest
-recorded, so 9 of 15 decision-bearing fields on the live Week 1 card fall
-back to a ``feature_table:sha256`` digest instead of naming a real snapshot.
-:func:`nfl_ats.feature_manifest.inherit_source_snapshots` is the fix; these
-tests prove the merge, the two-level transitive chain, and the
-never-raises-on-a-missing-parent contract in isolation, on synthetic
-manifests under ``tmp_path`` -- no production table under ``data/processed/``
-is read or written.
-"""
-
 from __future__ import annotations
 
 import json
@@ -57,9 +43,6 @@ def test_merges_a_single_parents_direct_snapshot_key(tmp_path: Path) -> None:
 
 
 def test_transitive_inheritance_across_two_levels(tmp_path: Path) -> None:
-    """A level-2 table (e.g. game_features_qb) inherits the base
-    source_snapshot through game_features_pbp's own inherited block, without
-    ever reading the base manifest directly."""
 
     base_manifest = _write_manifest(
         tmp_path / "game_features.manifest.json",
@@ -104,7 +87,6 @@ def test_unreadable_json_also_degrades_rather_than_raising(tmp_path: Path) -> No
 
 
 def test_a_missing_parent_never_blocks_a_readable_one(tmp_path: Path) -> None:
-    """Never a KeyError, and never lets one absent parent hide another."""
 
     present = _write_manifest(
         tmp_path / "game_features.manifest.json",
@@ -154,9 +136,6 @@ _DECISION_LINES = {
 
 
 def test_decision_lines_block_travels_the_two_level_chain(tmp_path: Path) -> None:
-    """The card is built from a table two enrichment steps below the build
-    that applied the pool's board, so the block has to arrive there on its
-    own -- exactly like the base nflverse source_snapshot does."""
 
     base = _write_manifest(
         tmp_path / "game_features.manifest.json",
@@ -177,8 +156,6 @@ def test_decision_lines_block_travels_the_two_level_chain(tmp_path: Path) -> Non
 
 
 def test_decision_lines_are_read_back_from_either_place_they_can_sit() -> None:
-    """Directly on the base manifest that applied them, and inside the
-    inherited block on every derived one."""
 
     direct = {DECISION_LINES_KEY: _DECISION_LINES}
     inherited = {SOURCE_SNAPSHOTS_KEY: {DECISION_LINES_KEY: _DECISION_LINES}}
@@ -193,8 +170,6 @@ def test_decision_lines_are_read_back_from_either_place_they_can_sit() -> None:
 
 
 def test_a_week_with_no_capture_claims_nothing() -> None:
-    """The uncaptured weeks are the whole archive; none of them may claim the
-    pool's board as their source."""
 
     manifest = {DECISION_LINES_KEY: _DECISION_LINES}
     assert decision_line_week(manifest, 2026, 2) is None

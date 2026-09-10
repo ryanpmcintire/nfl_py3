@@ -1,12 +1,3 @@
-"""Tests for the UI-08 model-explanation view (``nfl_ats.model_explanation``).
-
-The section reads the latest ``market-decomposition`` artifact's
-``classification.csv`` and renders family weights with stability labels,
-per-bucket caveat captions, honesty notes, and provenance/trust lines --
-fail-open in both directions (quiet empty state when nothing was ever run;
-visible warning box when a run exists but cannot be parsed).
-"""
-
 from __future__ import annotations
 
 import json
@@ -114,7 +105,6 @@ _DEFAULT_FAMILIES = [
 
 
 def test_missing_run_yields_honest_empty_state(tmp_path: Path) -> None:
-    """No run ever saved: the section explains itself instead of vanishing."""
 
     html = load_model_explanation_html(tmp_path)
     assert "No model-explanation run saved yet" in html

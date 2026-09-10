@@ -1,58 +1,3 @@
-"""Smooth CDF mapping overlay (MOD-08): a parameter-free probability-read swap.
-
-Research chain: ``docs/smooth_cdf_mapping.md`` (predeclaration, taxonomy, and
-the frozen decision rule) and ``docs/ecdf_smoothing.md`` (the earlier method
-screen that chose ``gaussian`` over ``gaussian_kde``/``skew_normal``, on CFB
-plus an informational NFL walk-forward). ``margin.MarginModel`` builds its
-predictive distribution from a fixed out-of-time residual SAMPLE (the
-trailing ~500-900-draw chronological holdout ``fit_margin_model`` computes)
-and reads ``home_cover_probability`` off a discretized empirical CDF
-(``margin._smoothed_probability``, a Laplace/Krichevsky-Trofimov
-continuity-corrected count) -- MOD-08's finding is that this raw ECDF
-quantises every probability, injects Monte-Carlo noise per game, and carries
-an accidental location tilt in the median it estimates. ``nfl_ats.calibration``
-(``fit_residual_smoother``/``smoothed_home_cover_probability``) already reads
-the SAME residual draws through a Gaussian CDF instead, entirely outside
-``margin.py`` -- this module is the prospective wiring for that reader, not a
-new estimator.
-
-Unlike ``coach_fade_overlay``/``injury_value_tilt_overlay`` (which flip a pick
-based on an EXTERNAL comparator column), this overlay does not compare the
-model's pick against anything outside the model. It refits the active card's
-EXACT recipe -- same feature profile, regressor, ridge alpha, and
-``min_train_games``, target ``market_residual`` -- through
-``nfl_ats.outcomes.fit_margin_models_for_week`` (a public entry point built
-exactly for this: obtaining the fitted ``MarginModel`` for one week rather
-than a pre-summarized prediction card) using the *same* leak-safe training
-cutoff ``score_outcome_week`` used to produce the active card. Ridge and the
-Gaussian fit are both deterministic given identical inputs
-(``random_state=42`` throughout ``margin.py``), so this reproduces the exact
-same predicted centre and out-of-time residual sample the active card's own
-ECDF read -- proven, not assumed, by re-deriving the ECDF probability from
-that refit and requiring it to match the card's own ``home_cover_probability``
-to floating-point precision before any Gaussian probability is trusted. A
-mismatch (e.g. because the feature table was rebuilt between card generation
-and this overlay running) raises rather than silently scoring a drifted
-comparison.
-
-The transform: ``home_cover_probability`` is replaced everywhere by the
-Gaussian read (``nfl_ats.calibration.smoothed_home_cover_probability``,
-``method="gaussian"``) off that same residual sample. There is no threshold,
-no external signal, and nothing tuned from outcomes -- every game is
-re-mapped by construction, and a "flip" is simply whichever games land on the
-other side of the 0.5 forced-pick boundary once the location/shape are read
-off a smooth density instead of a few-hundred-draw count.
-
-Nothing here touches ``margin.py``, ``pool.py``, ``backtest.py``, or the
-published card. ``apply_smooth_cdf_mapping_overlay`` is a pure function of
-(predictions, features); :func:`record_smooth_cdf_mapping_challenger_decisions`
-writes the mapped picks to the SEPARATE prospective challenger ledger, dual-
-tracked against the active model, at no rotation-registry window cost -- it
-mirrors ``injury_value_tilt_overlay.record_injury_value_tilt_challenger_decisions``
-exactly for the write-path guarantees (fingerprint pin, anti-backdating,
-append-only, first-write-wins).
-"""
-
 from __future__ import annotations
 
 import json
@@ -93,8 +38,6 @@ _REQUIRED_PREDICTION_COLUMNS = frozenset(
 
 @dataclass(frozen=True)
 class SmoothCdfMappingFlip:
-    """One game whose forced pick moved sides under the Gaussian read."""
-
     game_id: str
     matchup: str
     from_side: str
@@ -105,14 +48,6 @@ class SmoothCdfMappingFlip:
 
 @dataclass(frozen=True)
 class SmoothCdfMappingResult:
-    """The overlay's effect on one or more weeks' cards.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on every row (the Gaussian read replaces the
-    ECDF read for every game, not only flipped ones) -- every other column
-    stays byte-identical, mirroring ``coach_fade_overlay.OverlayResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[SmoothCdfMappingFlip, ...]
     enabled: bool
@@ -134,19 +69,6 @@ def apply_smooth_cdf_mapping_overlay(
     center_offsets: Mapping[str, float] | None = None,
     pick_overrides: Mapping[str, float] | None = None,
 ) -> SmoothCdfMappingResult:
-    """Replace ``home_cover_probability`` with a Gaussian read of the same
-    out-of-time residual sample the active recipe's ECDF reads.
-
-    ``predictions`` may span more than one (season, week) group; each group is
-    refit independently with a training cutoff strictly before that week's
-    earliest kickoff, exactly as ``score_outcome_week`` does for the real
-    card. Every group's refit ECDF probability is required to reproduce the
-    supplied ``home_cover_probability`` to floating-point precision -- this is
-    the module's proof that it is reading the SAME residual draws the card
-    was built from, not a drifted reimplementation, and it raises
-    ``DataContractError`` rather than silently comparing against a moved
-    target if the feature table or configuration has changed underneath it.
-    """
 
     missing = sorted(_REQUIRED_PREDICTION_COLUMNS.difference(predictions.columns))
     if missing:
@@ -251,13 +173,6 @@ def apply_smooth_cdf_mapping_overlay(
 
 
 def overlay_disclosure_note(result: SmoothCdfMappingResult) -> str:
-    """Plain-language provenance sentence, mirroring
-    ``coach_fade_overlay.overlay_disclosure_note``.
-
-    Empty when the overlay is off or changed no picks this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -284,22 +199,6 @@ def record_smooth_cdf_mapping_challenger_decisions(
     *,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Append the mapping overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``injury_value_tilt_overlay.record_injury_value_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model's own recipe, refit and read
-    differently -- so it reads the active model's own synchronized weekly
-    forecast rather than searching ``artifacts/margin_predictions/`` by
-    fingerprint, and it refuses to record if the active model's live
-    fingerprint no longer matches the snapshot this challenger was registered
-    against (a promotion under the mapping's feet must not silently convert
-    into "prospective evidence" for a different base model).
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the mapping's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-mapping side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

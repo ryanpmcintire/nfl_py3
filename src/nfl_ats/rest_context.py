@@ -1,11 +1,3 @@
-"""Deterministic, pregame schedule context for NFL games.
-
-ENV-04's reusable family is derived only from the ordered schedule within a
-team-season.  Results, lines, observed conditions, and future rows are never
-read.  Season openers keep rest-dependent values missing instead of silently
-pretending that an unknown turnaround is a normal week.
-"""
-
 from __future__ import annotations
 
 import math
@@ -96,14 +88,6 @@ def _flag(value: float, predicate: bool) -> float:
 
 
 def build_rest_context_features(schedules: pd.DataFrame) -> pd.DataFrame:
-    """Return one deterministic ENV-04 feature row per scheduled game.
-
-    ``rest_away_consecutive_road_games`` counts the current true road game, so
-    values 1, 2, and 3 mean the first, second, and third straight road game.
-    A neutral-site or true-home appearance breaks the streak.  ``mini_bye`` is
-    a 9--11 day turnaround, separated from both ordinary rest and the >=13-day
-    off-bye contract frozen in ``docs/travel_rest_battery.md``.
-    """
 
     frame = _validate_schedules(schedules)
     previous_date: dict[tuple[str, int], pd.Timestamp] = {}
@@ -169,7 +153,6 @@ def build_rest_context_features(schedules: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_rest_context_features(games: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """Attach ENV-04 columns to unique caller-selected games in caller order."""
 
     require_columns(games, ("game_id",), "rest context games")
     if games["game_id"].isna().any() or games["game_id"].astype(str).duplicated().any():

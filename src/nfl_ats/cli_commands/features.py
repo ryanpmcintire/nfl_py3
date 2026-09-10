@@ -1,5 +1,3 @@
-"""Feature-table build commands."""
-
 from __future__ import annotations
 
 import argparse
@@ -80,22 +78,6 @@ from nfl_ats.snapshots import load_snapshot
 
 
 def _add_injury_timestamp_fallback_arg(parser: argparse.ArgumentParser) -> None:
-    """Register ``--injury-timestamp-fallback`` (ENG-39, default ``"drop"``).
-
-    Forwarded to whichever enricher(s) the owning subcommand calls
-    (``enrich_with_player_features`` and/or ``enrich_with_qb_features``, and
-    -- for ``build-learned-availability-features`` -- the
-    ``canonicalize_injuries`` call feeding ``build_availability_outcomes``
-    too). ``"drop"`` is byte-identical to the pre-ENG-39 default. See
-    ``nfl_ats.players.canonicalize_injuries`` for the exact ``"week_proxy"``
-    visibility rule; the idempotency fix in that same function means a
-    player snapshot already written with ``player-ingest
-    --timestamp-fallback week_proxy`` reaches these enrichers correctly even
-    when this flag is left at its own default, since the snapshot's own
-    ``effective_observed_at``/``observed_at_basis`` columns are then kept
-    regardless of what this flag says. Passing ``week_proxy`` here matters
-    only for a snapshot that was itself ingested in ``"drop"`` mode.
-    """
 
     parser.add_argument(
         "--injury-timestamp-fallback",
@@ -569,7 +551,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the ``build-*-features`` commands."""
 
     feature_parser = subparsers.add_parser(
         "build-features", help="build the canonical pregame feature table"

@@ -1,63 +1,3 @@
-"""weak_stack_v3 gap-family features (docs/weak_stack_v3.md).
-
-Every NFL registry signal with ``probability_positive >= 0.60`` in
-``accuracy_points`` units that is (a) NOT already inside
-``FEATURE_SETS["football_weak_stack"]`` and (b) buildable this session from
-data already local to the repo. Three sub-families, all computed from the
-newest ``data/raw/*/schedules.parquet`` snapshot (and, for penalty rate, the
-newest PBP snapshot) alone -- never from ``result``/``spread_line`` at
-prediction time, and never from a future game within the same season/team
-lookup:
-
-- ``gap_v3_bias`` (:data:`nfl_ats.constants.GAP_V3_BIAS_FEATURE_COLUMNS`):
-  division revenge, sandwich spot, and the two post-blowout letdown/bounce
-  flags, each as ``_home``/``_away``/``_diff``. Ported from already-reviewed
-  constructs, not re-derived, so the registry's own measured
-  ``probability_positive``/effect numbers describe exactly these columns:
-  ``gap_division_revenge`` mirrors
-  ``nfl_ats.experiment_runner.FLAG_BUILDERS["division_revenge_game"]``
-  (registry ``bias_battery_division_revenge_game``, P+ 0.8825, and its
-  opener re-screen ``bias_battery_division_revenge_game_opener``, P+
-  0.8642); ``gap_sandwich_spot`` mirrors
-  ``FLAG_BUILDERS["sandwich_spot"]`` (registry ``bias_battery_sandwich_spot``,
-  P+ 0.603); the two post-blowout flags mirror
-  ``scripts/nfl_bias_battery_screen.py``'s identically-named hypotheses
-  (registry ``bias_battery_post_blowout_win_letdown``, P+ 0.7844,
-  ``bias_battery_post_blowout_loss_bounce``, P+ 0.6344).
-- ``gap_v3_penalty`` (:data:`nfl_ats.constants.GAP_V3_PENALTY_FEATURE_COLUMNS`):
-  ``diff_penalty_rate_prior``, a season-lagged team penalty rate, ported
-  verbatim from ``scripts/weak_stack_v2_eval.py``'s
-  ``team_season_penalty_rate``/``add_penalty_discipline_feature`` (itself
-  already verified there to reproduce the registered ``penalty_discipline``
-  signal's mean/sd/reliability, P+ 0.6828, and scored once already as an
-  opener-graded addition to ``weak_stack`` -- registry
-  ``weak_stack_v2_penalty_only``, P+ 0.6939).
-- ``gap_v3_travel`` (:data:`nfl_ats.constants.GAP_V3_TRAVEL_FEATURE_COLUMNS`):
-  ``gap_thursday_pure_flag`` and ``gap_return_trip_hangover_flag``, ported
-  from ``scripts/nfl_travel_rest_battery_screen.py``'s cells 8 and 4
-  (registry ``travel_rest_thursday_pure``, P+ 0.7592,
-  ``travel_rest_return_trip_hangover``, P+ 0.7528), using the same
-  ``registry/stadium_coordinates.json`` reference table and haversine
-  formula.
-
-``surface_switch_flag`` (registry ``surface_switch_feature_arm``, P+ 0.6181)
-is a fourth registry gap candidate, but it is NOT recomputed here: it is
-already a real, tested production column
-(``nfl_ats.features.add_surface_switch_features``), and
-``data/processed/game_features_weak_stack_surface.parquet`` already carries
-it. ``attach_weak_stack_v3_gap_features`` is meant to be called on THAT
-table (not the plain ``weak_stack`` one), so weak_stack_v3 gets
-surface_switch_flag for free by construction -- see
-``FEATURE_SETS["football_weak_stack_v3"]`` in ``nfl_ats.constants``.
-
-Every builder here reads only schedule-level, PBP-level, or static reference
-facts -- never a column derived from this game's own outcome -- and every
-season/team history lookup is strictly backward-looking (``shift(1)``/
-``cumcount``/explicit ``prev_season = season + 1`` join keys), matching this
-project's leak-safety convention. ``tests/test_weak_stack_v3_features.py``
-carries a leakage regression test per family, per AGENTS.md.
-"""
-
 from __future__ import annotations
 
 import json
@@ -89,13 +29,6 @@ def _canonical(team: pd.Series) -> pd.Series:
 
 
 def _column_or_default(frame: pd.DataFrame, column: str, default: object) -> pd.Series:
-    """``frame[column]`` if present, else a same-length constant column.
-
-    Mirrors ``nfl_ats.features._numeric``'s graceful-default convention for
-    schedule-shaped enrichments (never a hard data contract), and sidesteps
-    ``DataFrame.get``'s ``Series | None`` return type, which mypy cannot
-    thread through ``pd.to_numeric``/``pd.to_datetime``.
-    """
 
     if column not in frame.columns:
         return pd.Series(default, index=frame.index)
@@ -103,9 +36,6 @@ def _column_or_default(frame: pd.DataFrame, column: str, default: object) -> pd.
 
 
 def latest_schedules_snapshot(repo_root: Path) -> Path:
-    """Newest ``data/raw/<snapshot>/schedules.parquet``, same convention
-    ``nfl_ats.experiment_runner``/``scripts/nfl_bias_battery_screen.py``/
-    ``scripts/nfl_travel_rest_battery_screen.py`` each already use."""
 
     candidates = sorted((repo_root / "data" / "raw").glob("*/schedules.parquet"))
     if not candidates:
@@ -114,12 +44,6 @@ def latest_schedules_snapshot(repo_root: Path) -> Path:
 
 
 def _team_long_table(schedules: pd.DataFrame) -> pd.DataFrame:
-    """One row per (REG game, side): team, opponent, div_game, weekday, and
-    this team's own raw score margin (signed from the team's perspective).
-
-    REG-only, matching every registry construct these flags are named after
-    (the NFL bias battery's own population). Never reads ``spread_line``.
-    """
 
     df = schedules.copy()
     df = df.loc[df["game_type"].astype(str) == "REG"].copy()
@@ -187,12 +111,6 @@ def _add_gap_bias_flags(long_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_gap_bias_features(schedules: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG game_id with ``_home``/``_away``/``_diff`` columns for
-    all four :data:`nfl_ats.constants.GAP_V3_BIAS_METRICS`. POST-season
-    games are simply absent (callers must ``fillna(0.0)`` after merging onto
-    a table that also carries postseason rows -- these mechanisms are
-    undefined there, matching the project's missing-family-default
-    convention)."""
 
     long_df = _add_gap_bias_flags(_team_long_table(schedules))
     wide_frames = []
@@ -209,11 +127,6 @@ def build_gap_bias_features(schedules: pd.DataFrame) -> pd.DataFrame:
 
 
 def team_season_penalty_rate(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Identical construction to ``scripts/penalty_discipline_interval.py``/
-    ``scripts/weak_stack_v2_eval.py.team_season_penalty_rate``: mean(penalty)
-    over every raw regular-season play where ``posteam == team``. Reused
-    verbatim (not re-derived) because it is the one definition already
-    verified to reproduce the registry's recorded mean/sd/reliability."""
 
     plays = pbp.loc[pbp["posteam"].notna()].copy()
     plays["penalty"] = pd.to_numeric(plays["penalty"], errors="coerce").fillna(0.0)
@@ -226,15 +139,6 @@ def team_season_penalty_rate(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_gap_penalty_feature(pbp: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """``diff_penalty_rate_prior`` = home_prior_rate - away_prior_rate, a
-    team-season's rate lagged to ``season + 1`` ONLY (no team-season can
-    match its own season's plays or any later season's -- see
-    ``tests/test_weak_stack_v3_features.py`` for the leak-safety assertion),
-    ported verbatim from ``scripts/weak_stack_v2_eval.py.
-    add_penalty_discipline_feature``. Teams with no locally-observed prior
-    season get ``NaN`` (deliberately left for the ridge pipeline's
-    ``SimpleImputer``, matching every other frozen feature's convention --
-    not filled to 0.0 like the boolean gap_v3_bias/gap_v3_travel flags)."""
 
     rate = team_season_penalty_rate(pbp)
     lag = rate.copy()
@@ -268,8 +172,6 @@ def load_stadium_coordinates(path: Path) -> dict[str, dict[str, Any]]:
 
 
 def haversine_mi(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
-    """Great-circle distance in miles. Ported verbatim from
-    ``scripts/nfl_travel_rest_battery_screen.py.haversine_mi``."""
 
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
@@ -281,15 +183,6 @@ def haversine_mi(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
 def build_gap_travel_rest_features(
     schedules: pd.DataFrame, coords: dict[str, dict[str, Any]]
 ) -> pd.DataFrame:
-    """``gap_thursday_pure_flag`` and ``gap_return_trip_hangover_flag``, one
-    row per REG game_id. Ported from
-    ``scripts/nfl_travel_rest_battery_screen.py``'s cells 8
-    (``travel_rest_thursday_pure``) and 4
-    (``travel_rest_return_trip_hangover``): both are pregame-known schedule/
-    geometry facts (``home_rest``/``weekday``/``stadium`` are schedule
-    columns, not game-time actuals; stadium lat/lon is a static reference
-    fact about a known, scheduled venue) -- no leakage caveat applies, per
-    that script's own documented argument."""
 
     df = schedules.copy()
     df = df.loc[df["game_type"].astype(str) == "REG"].copy()
@@ -358,16 +251,6 @@ def build_gap_travel_rest_features(
 
 
 def attach_weak_stack_v3_gap_features(base: pd.DataFrame, *, repo_root: Path) -> pd.DataFrame:
-    """Merge all three gap_v3 sub-families onto ``base`` by ``game_id``.
-
-    ``base`` should already carry ``surface_switch_flag`` (i.e. be, or be
-    derived from, ``data/processed/game_features_weak_stack_surface.parquet``
-    -- see the module docstring); this function does not compute that column.
-    Boolean flag families (``gap_v3_bias``, ``gap_v3_travel``) fill missing
-    matches with ``0.0`` (postseason rows, or any game_id absent from the
-    schedules snapshot); ``diff_penalty_rate_prior`` is deliberately left
-    ``NaN`` where unresolved, for the pipeline's imputer.
-    """
 
     schedules_path = latest_schedules_snapshot(repo_root)
     schedules = pd.read_parquet(schedules_path)

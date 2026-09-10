@@ -1,11 +1,3 @@
-"""Tests for the pool tiebreaker guess (owner request, 2026-09-01).
-
-The sign-convention conversions are the part most worth pinning: schedules
-``spread_line`` is positive-home-favored, an odds snapshot's HOME outcome
-line is negative-home-favored, and one wrong sign silently swaps the two
-teams' scores.
-"""
-
 from __future__ import annotations
 
 import json
@@ -217,16 +209,6 @@ def _den_kc_game_and_consensus() -> tuple[pd.Series, MarketConsensus, pd.DataFra
 
 
 def _dense_lattice_finals() -> pd.DataFrame:
-    """A synthetic finals table dense enough, around BOTH a home-favorite
-    and an away-dog recentred query, that the lattice has real mass to
-    select from either side -- ``tests/test_score_lattice.py`` already pins
-    the SELECTION logic itself on a hand-built lattice; this fixture only
-    has to be dense enough for the full ``build_report`` wiring to exercise
-    it without hitting :func:`nfl_ats.score_lattice.build_lattice`'s own
-    "no mass on the feasible support" guard, which is a real, honest
-    outcome for a too-sparse history and is exercised directly by
-    :func:`test_build_report_raises_when_the_lattice_has_no_consistent_final`.
-    """
 
     home = [23, 24, 20, 27, 17, 30, 24, 20, 27, 13, 21, 22, 21, 24, 23, 25, 26]
     away = [20, 17, 23, 20, 24, 13, 24, 17, 24, 20, 22, 21, 20, 20, 19, 18, 17]
@@ -250,10 +232,6 @@ def _den_kc_game_with_dense_finals() -> tuple[pd.Series, MarketConsensus, pd.Dat
 
 
 def test_build_report_never_produces_a_push_against_a_home_favorite_pick() -> None:
-    """The owner's real Week 1 shape: predicted_margin (3.19) barely clears
-    the forecast line (3.0), which the OLD median-based rounding turned
-    into an exact push (KC 23 - DEN 20, margin 3) against the card's own KC
-    -3 pick. The lattice-consistent guess must never repeat that."""
 
     game, consensus, finals = _den_kc_game_with_dense_finals()
     view = ModelView(predicted_margin=3.19, forecast_line=3.0, residual=0.19, source="test")
@@ -271,8 +249,6 @@ def test_build_report_never_produces_a_push_against_a_home_favorite_pick() -> No
 
 
 def test_build_report_dog_pick_selects_the_away_side_consistently() -> None:
-    """Dog-pick case: the model disagrees hard enough with the market that
-    it picks the AWAY side against a home-favorite line."""
 
     game, consensus, finals = _den_kc_game_with_dense_finals()
     view = ModelView(predicted_margin=-1.0, forecast_line=3.0, residual=-4.0, source="test")
@@ -284,9 +260,6 @@ def test_build_report_dog_pick_selects_the_away_side_consistently() -> None:
 
 
 def test_build_report_a_pickem_residual_never_triggers_lattice_consistency() -> None:
-    """residual == 0.0 means the model exactly agrees with the forecast
-    line -- there is no side for the card to have picked, so the legacy
-    median-based guess (which has always handled this case) still runs."""
 
     game, consensus, finals = _den_kc_game_and_consensus()
     view = ModelView(predicted_margin=3.0, forecast_line=3.0, residual=0.0, source="test")
@@ -308,10 +281,6 @@ def test_build_report_raises_when_the_lattice_has_no_consistent_final(
 def test_build_report_raises_when_the_lattice_score_drifts_from_the_served_total(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A fabricated (100, 50) final totals 150, wildly more than the
-    returned (mocked) tolerance from the served ~43-point total -- the
-    fail-closed guard must catch this even though a (mocked) admissible
-    final was returned within its own claimed tolerance."""
 
     monkeypatch.setattr(
         score_lattice_module, "pick_consistent_top_score", lambda *a, **k: (100, 50, 0.5, 2.0)
@@ -323,14 +292,6 @@ def test_build_report_raises_when_the_lattice_score_drifts_from_the_served_total
 
 
 def test_build_report_raises_a_consistency_error_when_the_lattice_itself_cannot_be_built() -> None:
-    """A too-sparse history whose recentred mass lands entirely off its own
-    feasible support raises ``ValueError`` inside
-    ``nfl_ats.score_lattice.build_lattice`` -- measured directly: the tiny
-    3-final ``_den_kc_game_and_consensus`` fixture (feasible scores
-    {13, 20, 23, 24, 30}) has no cell anywhere near the away-dog query
-    centre (21, 22). ``build_report`` must convert that into the SAME
-    fail-closed ``TiebreakerConsistencyError``, never let a raw
-    ``ValueError`` escape uncaught."""
 
     game, consensus, finals = _den_kc_game_and_consensus()
     view = ModelView(predicted_margin=-1.0, forecast_line=3.0, residual=-4.0, source="test")
@@ -339,10 +300,6 @@ def test_build_report_raises_a_consistency_error_when_the_lattice_itself_cannot_
 
 
 def test_tiebreaker_report_has_no_totals_view_without_a_feature_table(tmp_path: Path) -> None:
-    """The totals regime is additive: a data root with no
-    ``processed/game_features.parquet`` (a fresh clone) still produces the
-    market-only guess it produced before the regime existed, rather than
-    failing or inventing a residual."""
 
     raw = tmp_path / "raw" / "20260901T000000Z"
     raw.mkdir(parents=True)
@@ -357,12 +314,6 @@ def test_tiebreaker_report_has_no_totals_view_without_a_feature_table(tmp_path: 
 def test_tiebreaker_report_uses_the_wave2_totals_view_when_the_pbp_table_exists(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """WP27: the wave-2 (drive-pace) totals view is preferred whenever its
-    feature table (``processed/game_features_pbp.parquet``) is present.
-    ``model_total_view_wave2`` is stubbed so this test does not need a full
-    65-column population -- the wiring under test is which function gets
-    called and how its result reaches the report, not the model fit itself
-    (that is covered by ``tests/test_totals_wave2.py``)."""
 
     from nfl_ats.totals import TotalsView
 
@@ -404,10 +355,6 @@ def test_tiebreaker_report_uses_the_wave2_totals_view_when_the_pbp_table_exists(
 def test_tiebreaker_report_falls_back_to_the_wave1_totals_view_when_the_pbp_table_is_absent(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """WP27: with NO ``game_features_pbp.parquet`` at all (a fresh clone),
-    the totals view falls back to wave 1's model against
-    ``game_features.parquet``, and the report line is tagged so the fallback
-    is visible rather than silently looking like a wave-2 number."""
 
     from nfl_ats.totals import TotalsView
 
@@ -448,8 +395,6 @@ def test_tiebreaker_report_falls_back_to_the_wave1_totals_view_when_the_pbp_tabl
 def test_tiebreaker_report_fails_closed_when_wave2_input_is_misaligned(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A present PBP table that cannot satisfy the frozen wave-2 contract
-    produces a market-only total; it must never silently substitute wave 1."""
 
     from nfl_ats.totals import TotalsDataError
 
@@ -483,8 +428,6 @@ def test_tiebreaker_report_unknown_game_id_raises(tmp_path: Path) -> None:
 
 
 def _bucket_history(buckets: list[tuple[float, int, int]]) -> pd.DataFrame:
-    """A synthetic history: ``(total_line, actual_total, count)`` buckets, all
-    at ``spread_line`` 2.5, away score fixed at 10."""
 
     rows = []
     index = 0
@@ -530,9 +473,6 @@ def _upcoming_game(total_line: float) -> pd.Series:
 
 
 def _hard_window_rows(finals: pd.DataFrame, margin: float, total: float) -> pd.DataFrame:
-    """The pre-2026-09-01 hard-window selection, reimplemented locally so this
-    file can show the defect it is regressing against without depending on
-    code that no longer exists."""
 
     for window in _NEIGHBORHOOD_WINDOWS:
         if window is None:
@@ -553,7 +493,6 @@ def _hard_window_median(finals: pd.DataFrame, margin: float, total: float) -> fl
 
 
 def test_base_bandwidths_are_inherited_from_the_first_schedule_entry() -> None:
-    """No new constant: h_m/h_t are the old first window's half-widths."""
 
     assert _NEIGHBORHOOD_WINDOWS[0] == (_BASE_MARGIN_BANDWIDTH, _BASE_TOTAL_BANDWIDTH)
     assert _NEIGHBORHOOD_WINDOWS[-1] is None
@@ -561,9 +500,6 @@ def test_base_bandwidths_are_inherited_from_the_first_schedule_entry() -> None:
 
 
 def test_kernel_weights_are_one_at_the_centre_zero_beyond_the_bandwidth() -> None:
-    """(d) w = max(0, 1 - d): exactly 1 at the centre, in [0, 1] everywhere,
-    exactly 0 at and beyond the bandwidth ellipse -- which is precisely why a
-    game sitting on the old window edge can no longer cast a full vote."""
 
     finals = pd.DataFrame(
         {
@@ -583,8 +519,6 @@ def test_kernel_weights_are_one_at_the_centre_zero_beyond_the_bandwidth() -> Non
 
 
 def test_effective_sample_size_equals_the_count_for_equal_weights() -> None:
-    """Why ``_MIN_NEIGHBORHOOD`` can be inherited unchanged: Kish ESS is the
-    plain count when every weight is equal."""
 
     assert effective_sample_size(np.ones(37)) == pytest.approx(37.0)
     assert effective_sample_size(np.full(37, 0.25)) == pytest.approx(37.0)
@@ -594,8 +528,6 @@ def test_effective_sample_size_equals_the_count_for_equal_weights() -> None:
 
 
 def test_weighted_median_reproduces_pandas_for_uniform_weights() -> None:
-    """Uniform weights must give exactly the old answer, even-count averaging
-    included -- otherwise the ``all history`` fallback would silently change."""
 
     for values in ([41.0, 43.0], [41.0, 43.0, 47.0], [3.0, 1.0, 4.0, 1.0, 5.0, 9.0]):
         array = np.array(values, dtype=float)
@@ -608,8 +540,6 @@ def test_weighted_median_reproduces_pandas_for_uniform_weights() -> None:
 
 
 def test_weighted_score_counts_are_weighted_and_sum_to_the_total_weight() -> None:
-    """(e) Exact-final modes are weight sums, not head counts, and the whole
-    table conserves the neighborhood's mass."""
 
     finals = lined_finals(_bucket_history([(43.0, 43, 200), (44.0, 47, 200)]))
     hood = _neighborhood(finals, 2.5, 43.0)
@@ -635,7 +565,6 @@ def test_weighted_score_counts_are_weighted_and_sum_to_the_total_weight() -> Non
 
 
 def test_neighborhood_does_not_widen_when_the_base_bandwidth_already_clears() -> None:
-    """(c, first half) The schedule is walked only when it has to be."""
 
     finals = lined_finals(_bucket_history([(43.0, 43, 400)]))
     hood = _neighborhood(finals, 2.5, 43.0)
@@ -644,9 +573,6 @@ def test_neighborhood_does_not_widen_when_the_base_bandwidth_already_clears() ->
 
 
 def test_neighborhood_widens_to_the_effective_size_floor_and_stops_there() -> None:
-    """(c) Widening targets the Kish ESS, walks the existing schedule, and
-    stops at the SMALLEST bandwidth that clears the floor -- so the bandwidth
-    is continuous in the centre instead of jumping a whole schedule entry."""
 
     finals = lined_finals(_bucket_history([(43.0, 43, 100), (45.0, 49, 400)]))
     base = kernel_weights(finals, 2.5, 43.0, _BASE_MARGIN_BANDWIDTH, _BASE_TOTAL_BANDWIDTH)
@@ -662,9 +588,6 @@ def test_neighborhood_widens_to_the_effective_size_floor_and_stops_there() -> No
 
 
 def test_neighborhood_falls_back_to_all_history_when_the_schedule_cannot_reach_the_floor() -> None:
-    """The schedule's final ``None`` entry survives: a history too small for
-    any bandwidth to reach 150 effective games is used whole and unweighted,
-    exactly as before."""
 
     finals = lined_finals(_schedules())
     hood = _neighborhood(finals, 2.5, 43.0)
@@ -675,15 +598,6 @@ def test_neighborhood_falls_back_to_all_history_when_the_schedule_cannot_reach_t
 
 
 def test_kernel_neighborhood_does_not_flip_the_guess_on_a_sub_quantum_nudge() -> None:
-    """(a) The Week-1 regression, in the shape it actually happened.
-
-    Buckets at 41.5 / 43.0 / 44.0 against a centre of 43.0. Under the old
-    hard +/-1.5 window the 41.5 bucket is INSIDE at 43.000 and outside at
-    43.042, so a 0.042-point blend nudge -- a twelfth of the half-point
-    quantum the lines are even quoted on -- moved the median two points. The
-    kernel gives that boundary bucket weight 0 on both sides of the nudge, so
-    the median, the guess and the mode ranking are unchanged.
-    """
 
     finals = lined_finals(_bucket_history([(41.5, 41, 160), (43.0, 43, 160), (44.0, 47, 160)]))
     game = _upcoming_game(43.0)
@@ -714,18 +628,12 @@ def test_kernel_neighborhood_does_not_flip_the_guess_on_a_sub_quantum_nudge() ->
 
 
 def _dense_history() -> pd.DataFrame:
-    """Half-point-quantized lines 30.0-56.0 with 50 games each, actual total a
-    non-decreasing step of the line -- the quantization the real board has,
-    dense enough that the base bandwidth always clears the ESS floor."""
 
     lines = [30.0 + 0.5 * step for step in range(53)]
     return _bucket_history([(line, math.floor(line), 50) for line in lines])
 
 
 def test_weighted_median_total_is_monotone_and_gentle_in_the_centre() -> None:
-    """(b) Continuity, asserted as the two things the owner actually sees: a
-    0.05-point move in the centre never moves the guess by more than a point,
-    and never moves it the WRONG way."""
 
     finals = lined_finals(_dense_history())
     game = _upcoming_game(43.0)

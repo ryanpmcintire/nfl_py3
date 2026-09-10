@@ -1,5 +1,3 @@
-"""Synthetic opener diagnostics, identity guard, renderer and assistant contracts."""
-
 import json
 from dataclasses import replace
 from datetime import UTC, datetime
@@ -171,8 +169,6 @@ def test_missing_matching_file_does_not_fall_back(tmp_path: Path, monkeypatch) -
 
 
 def _aligned_frame() -> pd.DataFrame:
-    """A per-game table the aligned opener evaluation writes (2026-09-08):
-    served columns beside their ``_raw`` twins and the per-game push."""
     source = frame()
     source["home_side_offset_at_open"] = [0.0, 0.8, 1.9, -0.2, 0.4, 0.0, 1.9, 0.0]
     source["pick_home_at_open_probability_rule_raw"] = [

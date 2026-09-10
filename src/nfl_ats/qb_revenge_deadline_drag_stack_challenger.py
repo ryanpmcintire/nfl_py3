@@ -1,64 +1,3 @@
-"""``weak_stack_qb_revenge_deadline_drag`` prospective challenger (lane T).
-
-``docs/promotion_eval_20260905.md`` measured this stacked profile (production
-``weak_stack`` plus BOTH ``qb_revenge_flag`` and ``deadline_integration_drag_flag``)
-on the full reused 2020-2025 opener archive: +0.0665 accuracy points,
-week-blocked P+ 0.5336, season-blocked P+ 0.588 -- barely favourable, while
-its own two components individually read AGAINST the candidate on that same
-population (qb_revenge P+ 0.342, deadline_drag P+ 0.251), and the 2026
-Week-1 card impact was exactly zero. The coordinator's decision is
-**do-not-promote on SELECTION grounds**: the stacked arm is the best of
-three correlated arms drawn from one reused window, both of its own
-components read against it on the identical population, and no live pick
-changes this week either way -- NOT because ``probability_positive`` sits
-below some threshold (a promotion bar is not a decision bar, AGENTS.md).
-Since the archive read is confounded by multiplicity, the clean way to keep
-testing this candidate is prospective 2026 evidence, which costs no
-rotation-registry window at all (the same path
-``docs/player_arrests_policy_eval.md`` and ``mod07_weak_signal_stack``
-already recommend/use for exactly this situation).
-
-This module is the no-window-cost path, registered in
-``artifacts/prospective/challengers.json`` under
-:data:`CHALLENGER_ID`, pinned to the active model's own configuration
-fingerprint (``config_fingerprint``, computed from a SNAPSHOT of the active
-model's own recipe -- identical in role to every sibling challenger's
-``model`` block, e.g. ``mod07_weak_signal_stack``, ``division_revenge_tilt_overlay``,
-``best_pick_nomination_v3``: it exists only to detect "did the active model
-I ride on top of change under me", never to describe THIS challenger's own
-distinct recipe).
-
-**Not a pick-level post-prediction tilt** (unlike ``division_revenge_tilt_overlay``
-/ the other ``*_tilt_overlay`` modules): this challenger genuinely REFITS its
-own ``weak_stack_qb_revenge_deadline_drag`` margin model each week, walk-forward,
-via ``nfl_ats.outcomes.fit_margin_models_for_week`` -- the same public entry
-point ``nfl_ats.best_pick_nomination.fit_candidate_probabilities`` uses for
-its own alpha=2000 candidate, and the same leak-safe training cutoff
-``nfl_ats.outcomes.score_outcome_week`` (production's own weekly-forecast
-entry point) uses. It differs from ``mod07_weak_signal_stack`` (the OTHER
-genuinely-retrained challenger) in one respect: it never needs a separate
-``margin-predict`` artifact of its own, because the two extra columns
-(``qb_revenge_flag``, ``deadline_integration_drag_flag``) are cheap to attach
-onto the active model's OWN base feature table at record time
-(:func:`nfl_ats.qb_identity_features.attach_qb_revenge_features` /
-:func:`nfl_ats.transaction_flag_features.attach_deadline_integration_drag_features`,
-both already leakage-tested, both reading only newest local snapshots --
-never a network fetch), exactly as ``scripts/promotion_eval_20260905.py``
-built the same two-column table for the archive look. **Declared deviation
-from the tilt-overlay/nomination ledger convention**: every sibling
-challenger's ``feature_profile`` ledger column is a literal copy of the
-ACTIVE model's own metadata field (because their own internal fit, if any,
-reuses the SAME feature_profile as the active model). This challenger
-genuinely fits a DIFFERENT profile, so its ledger rows record
-:data:`CANDIDATE_FEATURE_PROFILE` instead -- copying the active's "weak_stack"
-value here would misdescribe what actually produced the row.
-
-**Nothing here is wired into ``publishing.py`` or the production pick
-path.** No owner decision to play this on the real card has been made; it
-is dual-tracked only, exactly like every ``*_tilt_overlay``/``*_nomination``
-sibling.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -101,13 +40,6 @@ def _record_instant(now: datetime | None) -> pd.Timestamp:
 
 
 def build_stacked_features(base_features: pd.DataFrame) -> pd.DataFrame:
-    """Attach BOTH candidate columns onto the active model's own base table.
-
-    Mirrors ``scripts/promotion_eval_20260905.py``'s ``build_combined_features``
-    exactly: both attach functions default to the newest local schedule/
-    roster/combine/transaction-wire/snap-count snapshots, so no precomputed
-    candidate-specific parquet is read or written.
-    """
 
     with_revenge = attach_qb_revenge_features(base_features)
     return attach_deadline_integration_drag_features(with_revenge)
@@ -121,26 +53,6 @@ def record_qb_revenge_deadline_drag_stack_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append this week's stacked-candidate picks to the prospective ledger.
-
-    Refuses (raising ``ValueError``/``DataContractError``, caught by the
-    ``publish-predictions --record-decisions`` try/except chain exactly like
-    every sibling challenger) unless: the challenger is registered
-    ``ACTIVE_PROSPECTIVE``; a synchronized active model with a linked weekly
-    forecast exists; that forecast's own configuration fingerprint still
-    matches what this challenger was registered against (an active-model
-    promotion under this challenger's feet must not silently convert into
-    "prospective evidence" for the stack); and the forecast card carries
-    every column this recorder needs.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN, mirroring
-    every sibling challenger's identical rationale: this tracks the
-    candidate's forced-pick accuracy only, never a fabricated paper-bet
-    edge. ``decision_home_spread`` is the SAME market line the active
-    model's own card was graded at (``spread_line``), so both arms are
-    compared at one shared decision line, never re-picked at a different
-    price.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

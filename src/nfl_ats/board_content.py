@@ -1,63 +1,3 @@
-"""The one view model behind the ATS Terminal site's This Week page.
-
-An owner-approved mockup renders this week's forced-pick board as an "ATS
-Terminal" dark dashboard (:mod:`nfl_ats.board_terminal`). This module is the
-ONLY place that touches an artifact, a loader, or a piece of prose: every
-number, caption, id, and finding the page renders is a field on
-:class:`BoardContent`, built ONCE here.
-
-``board_terminal.py`` is a pure renderer -- ``render(content: BoardContent) ->
-str`` -- and must never contain a content literal (a number, a sentence, a
-policy id). That split exists so a future number change (a new experiment, a
-refreshed interval, updated findings) touches this module exactly once and
-the page picks it up automatically; a content-coverage test
-(``tests/test_board_content_coverage.py``) asserts every fact this module
-produces actually appears on the rendered page.
-
-Every field traces to an artifact this repo already writes, using the SAME
-loaders and overlay-resolution path
-:func:`nfl_ats.public_board.build_public_site` uses for the real site, so
-this page's numbers can never disagree with the actually-published card.
-Fail-open discipline matches ``public_board.py`` throughout: an optional
-artifact that is absent degrades the corresponding field to a designed
-"unavailable" state rather than raising or inventing a figure.
-
-Season-mode and prospective data sources (owner-approved improvement batch,
-2026-08-31, items 3-4)
---------------------------------------------------------------------------
-Two features here read data that does not exist until games are actually
-played, and both are designed to be DORMANT (fail open to "nothing to show
-yet") rather than raise, exactly like every other optional artifact on this
-site:
-
-* **In-season finals** (:func:`_load_game_outcomes`, :func:`_game_final_state`)
-  -- read from ``data/processed/game_features.parquet``'s own
-  ``home_score``/``away_score``/``result`` columns, with
-  ``artifacts/settlement/game_results.parquet`` layered on top. Measured
-  2026-08-31: the feature table already carries all 272 rows of the 2026
-  regular season with every score/result column ``NaN`` for a game that has
-  not been played, and is the SAME home-minus-away margin convention
-  (FND-04, ``docs/modeling.md``) every settlement in this repo already
-  scores against. But only ``weekly-run`` rebuilds it, on a Tuesday, so on
-  its own it would leave Thursday's and Sunday's finals off the board until
-  the following week; the settlement artifact (``nfl-ats settle``, run after
-  the last game of each day) carries the fresher scores and wins wherever it
-  has one. A missing or unreadable file on either side degrades every game
-  to "not final yet", never an exception.
-* **The prospective scoreboard** (:func:`_build_prospective_scoreboard`) --
-  pairs the played three-member policy's own paper-decision ledger
-  (``nfl_ats.clv.load_paper_decisions``, filtered to
-  ``four_overlay_composition.POLICY_ID``) against its immediate incumbent's
-  challenger-ledger rows (``nfl_ats.prospective_scoring
-  .load_challenger_decisions``, filtered to
-  ``retired_four_member_union.INCUMBENT_CHALLENGER_ID``), settling both
-  against the SAME in-season outcomes table above via
-  ``nfl_ats.clv.pick_correct`` -- never a second push/win/loss
-  implementation. Both ledgers are empty by design until the first Tuesday
-  lock (``docs/prospective_evidence.md``); the scoreboard renders a
-  designed dormant state ("prospective tracking begins Week 1") until then.
-"""
-
 from __future__ import annotations
 
 import os
@@ -173,9 +113,6 @@ _WEEK_LABELS = {
 
 
 def _default_data_root() -> Path:
-    """Same env var and default as ``cli._data_root`` / ``public_board``'s
-    own duplicate -- see that function's docstring for why this is
-    duplicated rather than imported."""
 
     return Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
 
@@ -189,7 +126,6 @@ def _number(value: Any) -> float | None:
 
 
 def _utc_timestamp(value: Any) -> Any:
-    """One instant read as UTC, or ``NaT`` when it cannot be read."""
 
     return pd.to_datetime(value, utc=True, errors="coerce")
 
@@ -200,15 +136,6 @@ def _sentence_case(label: str) -> str:
 
 
 def pick_lock_label(kickoff: Any, sunday_lock: pd.Timestamp | None) -> tuple[str | None, bool]:
-    """Reader-facing pick deadline for one game: ``("Thu 8:35 PM ET", False)``.
-
-    Applies ``pick_refresh.pick_deadline`` -- the earlier of the game's own
-    kickoff and the week's Sunday 4:00 PM ET lock -- and formats it in the
-    pool's own zone. Returns ``(None, False)`` when the kickoff is missing or
-    unparseable or no Sunday lock could be anchored, so the page shows
-    nothing rather than a made-up time. The flag is ``True`` when the
-    deadline is strictly earlier than kickoff.
-    """
 
     if sunday_lock is None:
         return None, False
@@ -223,8 +150,6 @@ def pick_lock_label(kickoff: Any, sunday_lock: pd.Timestamp | None) -> tuple[str
 
 
 def _week_sunday_lock(frame: pd.DataFrame) -> pd.Timestamp | None:
-    """The week's Sunday 4:00 PM ET lock anchored on the board's own kickoffs,
-    or ``None`` when the frame carries none (older fixtures)."""
 
     if "kickoff" not in frame.columns:
         return None
@@ -244,10 +169,6 @@ def _parse_gameday(value: Any, fallback: date) -> date:
 
 
 def _parse_iso_utc(value: str) -> datetime | None:
-    """``datetime.fromisoformat`` with a UTC default, never raising -- used by
-    :class:`SourcePolicyRow`/:class:`SourcePolicyView` display properties
-    (ENG-34), the same tolerant parse every other timestamp field on this
-    page already applies inline."""
 
     try:
         parsed = datetime.fromisoformat(value)
@@ -258,15 +179,6 @@ def _parse_iso_utc(value: str) -> datetime | None:
 
 @dataclass(frozen=True)
 class GameRow:
-    """One board row: exactly the fields the public card already publishes
-    (see the licensing note in ``public_board.py`` -- no raw market field
-    beyond the one consensus ``spread_line`` ever reaches either page).
-
-    Every text field a skin needs to print is precomputed here as a
-    property, so neither skin module formats a number itself -- it only
-    reads one.
-    """
-
     game_id: str
     gameday: date
     weekday_name: str
@@ -291,19 +203,6 @@ class GameRow:
 
     @property
     def flip_line_text(self) -> str:
-        """``'NYJ +2.5 → TEN'`` -- the CURRENT pick's own handicap at the
-        first half-point line that changes the mind, then the team it
-        switches to. Stated in the pick's orientation on purpose (owner
-        feedback, 2026-09-01: a first draft printed the flipped-to team's
-        handicap, which sat in the opposite orientation from the Pick column
-        one cell over and read as ambiguous): the number here is directly
-        comparable to the Pick column's, so ``NYJ +3`` flipping at
-        ``NYJ +2.5 → TEN`` visibly means "if NYJ's points drop to +2.5,
-        take TEN", and ``SEA -3.5`` flipping at ``SEA -4.5 → NE`` visibly
-        means "if SEA has to lay 4.5, take NE". When nothing inside the scanned
-        span switches the pick, the text names that span in the same
-        orientation -- ``IND holds from +7.5 to -0.5`` -- never a bare
-        ``±4``. Empty when no flip line is known (degraded artifacts)."""
 
         sign = -1.0 if self.pick_team == self.home else 1.0
 
@@ -330,8 +229,6 @@ class GameRow:
 
     @property
     def flip_pill_text(self) -> str:
-        """``"⇄ coach fade"`` -- the swap glyph (never the word "FLIPPED",
-        per the owner's explicit instruction) plus the member name(s)."""
 
         return "⇄ " + " + ".join(self.flip_member_labels)
 
@@ -343,13 +240,11 @@ class GameRow:
 
     @property
     def spread_text(self) -> str:
-        """``'SEA -3.5'`` style, home-oriented."""
 
         return spread_words(self.home, self.away, self.market_spread)
 
     @property
     def pick_spread_text(self) -> str:
-        """The market line restated as the PICK's own handicap."""
 
         sign = -1.0 if self.pick_team == self.home else 1.0
         value = self.market_spread * sign
@@ -369,20 +264,16 @@ class GameRow:
 
     @property
     def confidence_label(self) -> str:
-        """Title-cased real confidence word (``Slight``/``Lean``/``Strong``)
-        -- the site's own three-band vocabulary, not a skin-invented one."""
 
         return self.confidence_word.capitalize()
 
     @property
     def kickoff_group_label(self) -> str:
-        """``'Wed Sep 09'`` -- the day-group header both skins render."""
 
         return f"{self.weekday_name[:3]} {self.gameday.strftime('%b %d')}"
 
     @property
     def kickoff_short_label(self) -> str:
-        """``'WED 09/09'`` -- the compact per-row kickoff label."""
 
         return f"{self.weekday_name[:3].upper()} {self.gameday.strftime('%m/%d')}"
 
@@ -392,9 +283,6 @@ class GameRow:
 
     @property
     def lock_text(self) -> str | None:
-        """``'Locks Thu 8:35 PM ET'`` / ``'Locks Sun 4:00 PM ET, before
-        kickoff'`` -- the sentence fragment both the board row and the
-        inspector header print; ``None`` when no kickoff instant was known."""
 
         if self.lock_label is None:
             return None
@@ -403,7 +291,6 @@ class GameRow:
 
 
 def pick_lock_window_text(games: tuple[GameRow, ...]) -> str | None:
-    """Summarise existing lock labels in calendar order, without recalculating locks."""
     labelled = [game for game in games if game.lock_label]
     if not labelled:
         return None
@@ -440,12 +327,6 @@ class AttributionRow:
 
 @dataclass(frozen=True)
 class AttributionPanel:
-    """One game's "why this pick" breakdown. ``available`` is the content
-    decision the renderer styles but never makes: ``False`` means the
-    waterfall feed had no usable rows for this game, and the page renders
-    its own designed degraded state (an em-dash plus ``unavailable_note``),
-    never a guess."""
-
     available: bool
     game_id: str | None = None
     matchup_label: str | None = None
@@ -458,35 +339,12 @@ class AttributionPanel:
 
 @dataclass(frozen=True)
 class CoverCurvePoint:
-    """One real swept point for a game's cover-probability curve: ``offset``
-    is line offset from the card's own quoted line, ``probability`` is the
-    PICK side's probability at that hypothetical line -- both straight from
-    ``line_sweep.parquet``, never a fitted approximation."""
-
     offset: float
     probability: float
 
 
 @dataclass(frozen=True)
 class SpreadAdjusterParams:
-    """The published-fields-only Gaussian read behind a game's interactive
-    line-offset adjuster (the restored "spread explorer" widget, folded into
-    each game's deep dive rather than living on its own page -- 2026-08-31
-    owner redirect).
-
-    ``center``/``residual_mean``/``residual_std``/``card_line`` are the SAME
-    rounded values :func:`nfl_ats.spread_explorer.spread_explorer_payload`
-    embeds, already proven (by :func:`nfl_ats.public_board
-    .assert_spread_explorer_matches_card`, a REQUIRED build-time guard run
-    for every game before this object is ever built -- see
-    :func:`_load_spread_explorer_params`) to reproduce this game's own
-    published ``home_cover_probability`` at its own quoted line. Only
-    present when the active model's probability method has a closed-form
-    read (``gaussian`` -- see that module's docstring); absent otherwise,
-    so a game's dive degrades to its static real-sweep chart with no
-    adjuster rather than ever inventing a formula.
-    """
-
     center: float
     residual_mean: float
     residual_std: float
@@ -497,13 +355,6 @@ class SpreadAdjusterParams:
 
 @dataclass(frozen=True)
 class GameDive:
-    """One game's full deep-dive: attribution, cover curve, and the
-    line-offset adjuster -- everything the This Week page's game selector
-    can show for that game. Built for EVERY game on the board (not only the
-    Best Pick), so a reader can pick any of the week's games from the
-    selector; ``BoardContent.best_pick_game_id`` names which one the
-    selector defaults to."""
-
     game_id: str
     matchup_label: str
     pick_team: str
@@ -524,11 +375,6 @@ class GameDive:
 
 @dataclass(frozen=True)
 class PolicyNote:
-    """The week's overlay-policy disclosure. ``rich_narrative`` is the full
-    three-member story (only true when the production overlay composition is
-    actually fresh this run); ``composition_text`` is always safe and never
-    claims a member fired that did not."""
-
     composition_text: str
     rich_narrative: str | None
     policy_id: str | None
@@ -538,15 +384,6 @@ class PolicyNote:
 
 @dataclass(frozen=True)
 class HeadlineStats:
-    """The four accuracy statistics the headline block shows, each traced to
-    a real artifact -- see the module docstring. A caption is ``None`` only
-    when its source figure is itself unavailable.
-
-    Rendered on BOTH the This Week page and The Model page (a deliberate,
-    single dedup exception -- see ``tests/test_board_content_coverage.py``):
-    it is the one set of facts a reader needs at a glance in both places,
-    always read off this SAME object rather than recomputed twice."""
-
     model_id: str | None
     model_method_label: str
     synced_at_text: str | None
@@ -583,14 +420,6 @@ class HeadlineStats:
 
 @dataclass(frozen=True)
 class ProspectiveScoreboard:
-    """The paired prospective record: the played three-member policy vs. its
-    immediate incumbent (the former four-member union), settled against
-    real results. ``dormant`` is ``True`` -- and ``detail_text`` is
-    ``None`` -- until either ledger holds a row, which does not happen
-    until the first Tuesday lock (``docs/prospective_evidence.md``); see
-    the module docstring for exactly which ledgers and outcomes table this
-    reads."""
-
     dormant: bool
     headline_text: str
     detail_text: str | None
@@ -598,12 +427,6 @@ class ProspectiveScoreboard:
 
 @dataclass(frozen=True)
 class SeasonRecordStrip:
-    """The hero's running record: this week, season to date, and the Best
-    Pick tracked separately (the pool scores it separately) -- see
-    :func:`_build_season_record`. Absent from :class:`BoardContent`
-    (``None``) until at least one game has a real result, matching today's
-    all-upcoming rendering exactly until then."""
-
     week_record_text: str
     season_record_text: str
     best_pick_record_text: str | None
@@ -611,13 +434,6 @@ class SeasonRecordStrip:
 
 @dataclass(frozen=True)
 class TickerChrome:
-    """Shared ticker + command-row content, rendered identically on all
-    three pages (2026-08-31 owner: "the terminal header/feed thing needs to
-    appear on every page"). Built ONCE from the This Week board's own games
-    and reused (via ``dataclasses.replace`` for the one differing field) on
-    every other page, so no page's ticker can ever show a different pick
-    than This Week itself renders."""
-
     games: tuple[GameRow, ...]
     best_pick_game_id: str | None
     season: int | None
@@ -628,9 +444,6 @@ class TickerChrome:
 
 @dataclass(frozen=True)
 class LinkPreview:
-    """Per-page ``og:title``/``og:description`` text -- see
-    :func:`_page_link_preview`."""
-
     title: str
     description: str
 
@@ -660,7 +473,6 @@ SOURCE_POLICY_COMPUTED_LIVE_NOTE = (
 
 
 def human_update_time(raw: str | None) -> str:
-    """Build-time weekday/part-of-day label, matching the Terminal's source labels."""
     parsed = _parse_iso_utc((raw or "").replace(" UTC", "+00:00"))
     if parsed is None:
         return "at an unrecorded time"
@@ -691,7 +503,6 @@ _INJURY_STATES: tuple[tuple[str, str, str], ...] = (
 
 
 def injury_report_state(note: str) -> tuple[str, str]:
-    """``(reader label, state class)`` for one :func:`injury_pick_note` sentence."""
 
     for prefix, label, state in _INJURY_STATES:
         if note.startswith(prefix):
@@ -700,7 +511,6 @@ def injury_report_state(note: str) -> tuple[str, str]:
 
 
 def injury_pick_note(metadata: Mapping[str, Any], sources: SourcePolicyView) -> str:
-    """Describe the saved pick inputs, never treating a live feed as proof of use."""
     audit = metadata.get("prediction_safety")
     if not isinstance(audit, Mapping) or "injury_feature_presence" not in audit.get(
         "checks_passed", ()
@@ -725,9 +535,6 @@ def injury_pick_note(metadata: Mapping[str, Any], sources: SourcePolicyView) -> 
 
 @dataclass(frozen=True)
 class SourcePolicyRow:
-    """One source's adjudicated state (ENG-14 ``SourceState``), as read from
-    the synchronized forecast's ``metadata.json`` ``source_policy`` block."""
-
     source_id: str
     state: str
     observed_at: str | None
@@ -769,9 +576,6 @@ class SourcePolicyRow:
 
     @property
     def detail_text(self) -> str:
-        """Budget + reason, for a title/tooltip -- the compact row only shows
-        source/state/as-of; this is the ``SourceState.reason`` sentence
-        ``source_freshness_policy`` already generates, never reworded here."""
 
         budget_text = (
             f"budget {self.budget_minutes} min"
@@ -783,13 +587,6 @@ class SourcePolicyRow:
 
 @dataclass(frozen=True)
 class SourcePolicyView:
-    """The ENG-14 ``source_policy`` block for the currently-loaded forecast, or
-    an explicit :data:`SOURCE_POLICY_NOT_RECORDED` view when its metadata
-    carries none -- see :func:`_load_source_policy_view`. ``recorded`` is
-    ``False`` only in that absent/malformed case; ``card_state`` is the
-    worst-wins roll-up either way (real or ``not_recorded``), so a renderer
-    never needs to branch on ``recorded`` just to print a header line."""
-
     card_state: str
     evaluated_at: str | None
     rows: tuple[SourcePolicyRow, ...]
@@ -809,7 +606,6 @@ class SourcePolicyView:
 
 
 def _default_source_policy_view() -> SourcePolicyView:
-    """``BoardContent.source_policy``'s default -- see that field's docstring."""
 
     return SourcePolicyView(
         card_state=SOURCE_POLICY_NOT_RECORDED, evaluated_at=None, rows=(), recorded=False
@@ -842,15 +638,6 @@ TIEBREAKER_NUDGE_NOTE = (
 
 @dataclass(frozen=True)
 class TiebreakerView:
-    """The pool's tiebreaker guess for the week's last game (POL-12,
-    :mod:`nfl_ats.tiebreaker`) -- read from a persisted artifact, NEVER
-    recomputed here (see :data:`TIEBREAKER_NOT_PUBLISHED_TEXT`'s docstring
-    for why recomputing would risk disagreeing with the guess
-    ``lineage.json`` already points at). ``recorded`` is ``False`` for
-    every forecast today; the whole feature activates automatically, with
-    no further wiring, the moment a publish step writes either location
-    :func:`_load_tiebreaker_view` checks."""
-
     recorded: bool
     home_team: str
     away_team: str
@@ -888,7 +675,6 @@ class TiebreakerView:
 
 
 def _default_tiebreaker_view() -> TiebreakerView:
-    """``BoardContent.tiebreaker``'s default -- see that field's docstring."""
 
     return TiebreakerView(
         recorded=False,
@@ -955,7 +741,6 @@ def _timeline_time(instant: pd.Timestamp) -> str:
 
 
 def _card_publication_time(forecast_dir: Path | None) -> Any:
-    """Only the saved publication report; never the live freshness report."""
     if forecast_dir is None:
         return None
     try:
@@ -971,7 +756,6 @@ def build_week_timeline(
     generated_at: datetime,
     publication_at: Any = None,
 ) -> WeekTimeline:
-    """Anchor the Tue..Mon cycle on kickoffs, never on the build date."""
     now = pd.Timestamp(generated_at).tz_convert(PICK_LOCK_TIMEZONE)
     published = pd.to_datetime(publication_at, utc=True, errors="coerce")
     publication = (
@@ -1098,8 +882,6 @@ RIVAL_RULES_METHOD_NOTE = (
 
 @dataclass(frozen=True)
 class RivalRuleRow:
-    """One alternative rule's disagreement with the played card this week."""
-
     name: str
     differs: int
     paired: int
@@ -1112,9 +894,6 @@ class RivalRuleRow:
 
 @dataclass(frozen=True)
 class RivalRulesPanel:
-    """The rival-rules section's content. ``recorded`` is ``False`` before the
-    week's lock has written any row, in which case only ``summary`` renders."""
-
     recorded: bool
     summary: str
     count_text: str = ""
@@ -1124,13 +903,11 @@ class RivalRulesPanel:
 
 
 def _default_rival_rules() -> RivalRulesPanel:
-    """``BoardContent.rivals``' default -- see that field's docstring."""
 
     return RivalRulesPanel(recorded=False, summary=RIVAL_RULES_NONE_RECORDED)
 
 
 def _week_ledger_rows(ledger: pd.DataFrame, *, season: Any, week: Any) -> pd.DataFrame:
-    """``ledger`` narrowed to one ``(season, week)``, or an empty frame."""
 
     if ledger.empty or season is None or week is None:
         return ledger.iloc[0:0]
@@ -1142,7 +919,6 @@ def _week_ledger_rows(ledger: pd.DataFrame, *, season: Any, week: Any) -> pd.Dat
 
 
 def _matchup_label(away: Any, home: Any) -> str:
-    """``"BAL at IND"`` -- the board's own matchup vocabulary."""
 
     return f"{away} at {home}"
 
@@ -1154,18 +930,6 @@ def _build_rival_rules(
     season: Any,
     week: Any,
 ) -> RivalRulesPanel:
-    """Pair every alternative rule recorded for this week against the played
-    card's OWN recorded picks.
-
-    Both sides come from the ledgers written at the same lock, never from the
-    live forecast on the page above: a late-week refresh can move a played
-    pick after Tuesday (measured 2026-09-08: two of sixteen had moved by the
-    time this ran), and comparing a frozen rival against a moved card would
-    invent disagreements that nobody actually recorded. This is the same
-    ledger-to-ledger pairing :func:`_build_prospective_scoreboard` already
-    settles its record with, and the panel says out loud that both were
-    written down at the lock.
-    """
 
     played = _week_ledger_rows(paper_decisions, season=season, week=week)
     if "decision_policy_id" in played.columns:
@@ -1281,8 +1045,6 @@ _LATE_WEEK_CHANGE_REASONS: dict[str, str] = {
 
 @dataclass(frozen=True)
 class WeekChangeRow:
-    """One game whose side or Best Pick star is no longer Tuesday's."""
-
     game_id: str
     matchup: str
     when_text: str
@@ -1299,10 +1061,6 @@ class WeekChangeRow:
 
 @dataclass(frozen=True)
 class WeekChangesPanel:
-    """The "what changed this week" section's content. ``comparable`` is
-    ``False`` until a Tuesday card exists to compare against, in which case
-    only ``summary`` renders."""
-
     comparable: bool = False
     summary: str = WEEK_CHANGES_NO_LOCK
     count_text: str = ""
@@ -1311,7 +1069,6 @@ class WeekChangesPanel:
 
 
 def _default_week_changes() -> WeekChangesPanel:
-    """``BoardContent.week_changes``' default -- see that field's docstring."""
 
     return WeekChangesPanel()
 
@@ -1323,13 +1080,6 @@ def _recorded_card_states(
     season: Any,
     week: Any,
 ) -> list[tuple[Any, dict[str, dict[str, Any]]]]:
-    """Every card recorded for this week, oldest first.
-
-    The live ledger holds only the newest recording; a same-week re-record
-    copies the one it replaced to a timestamped file beside it, so the
-    Tuesday lock survives there and is read back here. Unreadable copies are
-    skipped rather than raised on -- this is a display lift, never a gate.
-    """
 
     frames = [_week_ledger_rows(paper_decisions, season=season, week=week)]
     for path in sorted((artifacts_root / "clv_ledger").glob("decisions.*.bak.parquet")):
@@ -1354,7 +1104,6 @@ def _recorded_card_states(
 
 
 def _late_week_change_reason(revision: Mapping[str, Any]) -> str:
-    """The pool-player reason for one late-week pass moving a pick."""
 
     policy = str(revision.get("movement_policy") or "")
     sentence = _LATE_WEEK_CHANGE_REASONS.get(policy, "A late-week check moved this pick.")
@@ -1376,7 +1125,6 @@ def _recorded_change_reason(
     side_moved: bool,
     best_pick_note: str,
 ) -> str:
-    """The reason a re-published card, rather than a late-week pass, moved."""
 
     if not side_moved:
         return best_pick_note or "The star moved with the card."
@@ -1408,7 +1156,6 @@ def _star_move_note(
     starred_tuesday: str | None,
     starred_now: str | None,
 ) -> str:
-    """Why one game gained or lost the star, said as a move between games."""
 
     if game.is_best:
         came_from = matchups.get(starred_tuesday or "")
@@ -1419,7 +1166,6 @@ def _star_move_note(
 
 
 def _pool_line_lock_index(states: list[tuple[Any, dict[str, dict[str, Any]]]]) -> int:
-    """The oldest recorded card whose every line is the pool's half-point line."""
 
     for index, (_, rows) in enumerate(states):
         spreads = [_number(row.get("decision_home_spread")) for row in rows.values()]
@@ -1434,7 +1180,6 @@ def _pool_line_lock_index(states: list[tuple[Any, dict[str, dict[str, Any]]]]) -
 
 
 def _week_change_summary(rows: tuple[WeekChangeRow, ...], n_games: int) -> tuple[str, str]:
-    """The panel's headline sentence and its count chip."""
 
     if not rows:
         return WEEK_CHANGES_NONE, "Nothing moved"
@@ -1461,18 +1206,6 @@ def _build_week_changes(
     best_pick_note: str,
     published_at: Any,
 ) -> WeekChangesPanel:
-    """Which picks are no longer the ones locked on Tuesday, when they moved,
-    and why -- the question a pool player asks on Thursday and the board
-    could not answer.
-
-    Tuesday's card is the OLDEST recording for the week (see
-    :func:`_recorded_card_states`); today's side is the one on the board
-    above, so a republished card cannot show a change here that a reader
-    cannot see in the table. Attribution walks the same three places the
-    change itself could have come from, newest evidence first: a late-week
-    pass in the pick-revision ledger, then the recorded card that first
-    carried the new side, then the card's own situational adjustments.
-    """
 
     if not games:
         return _default_week_changes()
@@ -1555,7 +1288,6 @@ def _week_change_attribution(
     revisions: pd.DataFrame,
     best_pick_note: str,
 ) -> tuple[Any, str]:
-    """When one game's pick moved, and the reason in the card's own words."""
 
     if side_moved and not revisions.empty:
         mine = revisions.loc[
@@ -1591,10 +1323,6 @@ def _week_change_attribution(
 
 @dataclass(frozen=True)
 class BoardContent:
-    """Everything the This Week page renders. Built once by
-    :func:`load_board_content`; ``board_terminal.py`` only reads fields off
-    this object."""
-
     season: int | None
     week: int | None
     game_type: str
@@ -1630,14 +1358,11 @@ class BoardContent:
 
     @property
     def injury_state_label(self) -> str:
-        """UI-20(f): ``"NONE PUBLISHED YET"`` -- the scannable state behind
-        ``injury_note``, derived from that sentence so the two cannot drift."""
 
         return injury_report_state(self.injury_note)[0]
 
     @property
     def injury_state_class(self) -> str:
-        """The SOURCES panel state class whose ink the injury chip borrows."""
 
         return injury_report_state(self.injury_note)[1]
 
@@ -1654,13 +1379,6 @@ def _load_overlay_subset_composition_summary(artifacts_root: Path) -> dict[str, 
 
 @dataclass(frozen=True)
 class NumberProvenance:
-    """One published headline number's source, for
-    :func:`verify_number_provenance` and the model page's fine-print
-    "where these numbers come from" block. ``source`` is a relative
-    artifact path (e.g. ``"opener_evaluation/20260905T133429Z"``); never a
-    hash -- the fine-print block renders this alongside a plain date, no
-    fingerprints (owner mandate, 2026-09-05)."""
-
     label: str
     source: str
     model_id: str | None
@@ -1669,47 +1387,10 @@ class NumberProvenance:
 
 
 class NumberProvenanceError(RuntimeError):
-    """Raised by :func:`verify_number_provenance` when a published headline
-    number's source artifact was computed against a different model than
-    the one currently active, or no matching source exists at all -- never
-    published silently (owner, 2026-09-05, verbatim: "please do not let
-    those percentages get out of date anymore"). The message always names
-    which artifact needs recomputing and the command to rerun."""
+    pass
 
 
 def verify_number_provenance(artifacts_root: Path) -> tuple[NumberProvenance, ...]:
-    """Verify every headline number this board publishes traces to an
-    artifact that names the ACTIVE model, and raise --closed, not degraded
-    -- the moment one does not. Wired into ``publish-board`` and
-    ``publish-predictions`` (2026-09-05) so a stale composition run or a
-    forecast built off a since-replaced model can never reach a published
-    page or card.
-
-    Checks, in order:
-
-    1. **Opener baseline and interval** -- loaded together from an evaluation
-       matching the active feature table and model recipe. The separate
-       close-graded classification is read from the active manifest itself.
-    2. **Played-policy archive score** -- the newest
-       ``overlay_subset_composition`` run whose own baseline per-game
-       artifact IS that matching opener evaluation
-       (:func:`nfl_ats.public_board.find_matching_overlay_composition`).
-    3. **Per-pick probabilities** -- the active model's linked weekly
-       forecast, whose ``active_model_id`` must equal the active model's
-       own id (:func:`nfl_ats.public_board.load_public_board_artifacts`,
-       which already raises this exact guard -- reused here rather than
-       re-implemented so the two never drift apart).
-
-    **Challenger records are deliberately NOT checked here.** A challenger
-    arm's whole purpose is to be evaluated under a DIFFERENT configuration
-    than the active model, so requiring its evaluation to match the active
-    model's id would be incoherent -- only the PROMOTED arm's own numbers
-    are checked, above, since it reads the exact same artifacts the
-    headline does.
-
-    Constants are never an admissible source: every entry returned here
-    carries a real artifact path, never a Python literal.
-    """
 
     active = load_active_ats_model(artifacts_root)
     if not active:
@@ -1981,9 +1662,6 @@ def _read_outcome_table(path: Path) -> pd.DataFrame:
 
 
 def _load_game_outcomes(data_root: Path, artifacts_root: Path | None = None) -> pd.DataFrame:
-    """The in-season finals table -- see the module docstring. Fail-open: a
-    missing/unreadable file or a table missing an expected column degrades
-    to "nothing is final yet", never an exception."""
 
     weekly = _read_outcome_table(data_root / "processed" / "game_features.parquet")
     if artifacts_root is None:
@@ -2007,12 +1685,6 @@ def _game_final_state(
     home_score: Any,
     away_score: Any,
 ) -> tuple[bool, str | None, str | None]:
-    """Whether this game is final, the PLAYED pick's own cover result
-    (``"win"``/``"loss"``/``"push"``), and a final-score sentence fragment
-    -- or ``(False, None, None)`` for an upcoming game (no result yet).
-    Uses the repo's one margin convention (FND-04, ``docs/modeling.md``):
-    ``result`` is home minus away; the pick covers when the signed margin
-    agrees with the pick's own side."""
 
     result_value = _number(result)
     if result_value is None:
@@ -2038,11 +1710,6 @@ def _record_text(wins: int, losses: int, pushes: int) -> str:
 
 
 def _grade_decisions(decisions: pd.DataFrame, outcomes: pd.DataFrame) -> tuple[int, int, int, int]:
-    """``(wins, losses, pushes, pending)`` for one set of recorded picks
-    against ``outcomes`` -- the SAME home-minus-away margin convention and
-    the SAME ``nfl_ats.clv.pick_correct`` push/win/loss rule every other
-    settlement in this repo already uses (FND-04), never a second,
-    independently-drifting implementation."""
 
     if decisions.empty or outcomes.empty:
         return 0, 0, 0, len(decisions)
@@ -2069,11 +1736,6 @@ def _build_prospective_scoreboard(
     challenger_decisions: pd.DataFrame,
     outcomes: pd.DataFrame,
 ) -> ProspectiveScoreboard:
-    """The paired prospective record beside the "tracked prospectively"
-    caveat -- see the module docstring for exactly which ledgers and
-    outcomes table this reads. Dormant until either ledger holds a row,
-    which does not happen until the first Tuesday lock
-    (``docs/prospective_evidence.md``)."""
 
     played = paper_decisions
     prior = (
@@ -2115,9 +1777,6 @@ def _build_season_record(
     season: int | None,
     week: int | None,
 ) -> SeasonRecordStrip | None:
-    """The hero's running record strip -- ``None`` (dormant) until at least
-    one game recorded this season has a real result, so the hero renders
-    exactly as it does today for an all-upcoming season."""
 
     if paper_decisions.empty or season is None or "season" not in paper_decisions.columns:
         return None
@@ -2167,35 +1826,12 @@ _PROBABILITY_RULE_LABEL = "Residual-sample calibration shift"
 
 
 def _plain_family_label(family: str) -> str:
-    """A reader-facing label for a model feature family, via the SAME
-    ``FAMILY_PHRASES`` mapping the site's own market-decomposition prose
-    uses -- never the raw registry id ("player_qb", "weekly_context")."""
 
     phrase = FAMILY_PHRASES.get(family)
     return _sentence_case(phrase) if phrase else _sentence_case(family.replace("_", " "))
 
 
 def _build_attribution(entry: Mapping[str, Any] | None, game: GameRow | None) -> AttributionPanel:
-    """Real waterfall rows for ``game``, curated and pick-oriented, or the
-    designed unavailable state -- fail-open, exactly like every other
-    optional artifact this site reads (see
-    ``public_board.load_waterfall_feed``'s own docstring). Called once per
-    game (see :func:`_build_dive`), not only for the Best Pick.
-
-    The feed's ``delta_points``/``cumulative_points`` are HOME-oriented (the
-    same sign convention ``predicted_residual`` uses); this function
-    re-orients every value to the PICK side using the feed's own
-    ``picked_side`` field (mirrors the sign the feed's own ``direction``
-    field already encodes per step -- see
-    ``nfl_ats.attribution_waterfall.build_game_waterfall``), so a positive
-    number always means "supports the pick", never a mix of two
-    conventions on one panel. Only feature-FAMILY steps and the probability
-    rule are shown (never the market/final marker steps): the top
-    :data:`_MAX_ATTRIBUTION_CHANNELS` by |oriented contribution|, individually
-    labeled via ``FAMILY_PHRASES``, plus one aggregated "everything else" row
-    that captures the exact remainder (so the displayed rows always sum to
-    the true net -- nothing is dropped, only grouped).
-    """
 
     if game is None or not isinstance(entry, Mapping):
         return AttributionPanel(available=False)
@@ -2275,13 +1911,6 @@ def _build_cover_curve(
     game: GameRow | None,
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams] | None = None,
 ) -> tuple[CoverCurvePoint, ...]:
-    """Use the card-verified probability mapping for both chart and slider.
-
-    Older saved sweeps may use empirical probabilities even when their
-    forecast uses Gaussian probabilities. Prefer the already verified
-    spread-explorer parameters whenever available; use saved sweep points
-    only for models without that closed-form mapping.
-    """
 
     if game is None:
         return ()
@@ -2332,12 +1961,6 @@ def _flip_line(
     sweep: pd.DataFrame,
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
 ) -> tuple[float | None, bool, str | None]:
-    """Find the model crossing, retaining fired pick-conditioned adjustments.
-
-    The retired spread-gap rule never changes a hypothetical played pick.
-    Fired coach, revenge and arrest members remain conditioned on the model
-    side they faded at the quoted line. Scan only the displayed line range.
-    """
 
     pick_is_home = pick_team == home
     pin_fired = any(member != SPREAD_GAP_ZONE_FADE for member in flip_member_ids)
@@ -2388,12 +2011,6 @@ _COVER_CURVE_DISAGREEMENT_THRESHOLD_POINTS = 0.5
 def _cover_curve_offset_zero_note(
     cover_curve: tuple[CoverCurvePoint, ...], game: GameRow | None
 ) -> str | None:
-    """Distinguish a situational decision score from the model probability.
-
-    Never attribute a mismatch to an older refresh without provenance.
-    Gaussian curves use the card-verified mapping; an adjusted pick can
-    still have a mirrored decision score rather than a calibrated chance.
-    """
 
     if game is None:
         return None
@@ -2420,13 +2037,6 @@ def _cover_curve_offset_zero_note(
 def _build_adjuster(
     game: GameRow, spread_explorer_params: Mapping[str, SpreadExplorerGameParams]
 ) -> SpreadAdjusterParams | None:
-    """This game's line-offset adjuster params, or ``None`` when this
-    build's active model has no closed-form (Gaussian) probability read --
-    see :func:`_load_spread_explorer_params`, which has ALREADY run the
-    REQUIRED ``assert_spread_explorer_matches_card`` guard for every game in
-    ``spread_explorer_params`` before this function ever sees it, so every
-    :class:`SpreadAdjusterParams` this returns is guard-proven against the
-    published card, never a formula invented here."""
 
     params = spread_explorer_params.get(game.game_id)
     if params is None:
@@ -2444,17 +2054,6 @@ def _build_adjuster(
 
 
 def _flip_member_labels(view: Any, game_id: str) -> tuple[str, ...]:
-    """Which policy member(s) flipped ``game_id`` this week, as plain-
-    English labels (owner-approved improvement batch, item 1) -- traced from
-    the real three-member production result when it is available (the live
-    production path, :func:`nfl_ats.four_overlay_composition
-    .apply_four_overlay_composition`'s own per-game provenance), falling
-    back to the legacy coach-fade/player-arrests overlays' own flip lists
-    for a rehearsal read with no ``production_overlay`` (``view.overlay``/
-    ``view.arrest_overlay``, the pre-four-overlay code path). A tuple
-    because the joint-OR policy allows more than one member to flip the
-    SAME game (an overlap), which must show every member that fired, not
-    just one."""
 
     if view is None:
         return ()
@@ -2478,11 +2077,6 @@ def _flip_member_labels(view: Any, game_id: str) -> tuple[str, ...]:
 
 
 def _flip_note(game: GameRow, raw_home_cover_probability: float | None) -> str | None:
-    """One sentence naming the raw model's own side vs. the side actually
-    played, for a game's deep-dive header (owner-approved improvement
-    batch, item 1) -- ``None`` when the game was not flipped, or when the
-    raw (pre-overlay) probability this week's card started from is
-    unavailable for some reason."""
 
     if not game.flip_member_labels or raw_home_cover_probability is None:
         return None
@@ -2505,9 +2099,6 @@ def _build_dive(
     raw_home_cover_probability: float | None,
     lineups: Mapping[str, tuple[TeamLineup, TeamLineup]],
 ) -> GameDive:
-    """One game's full deep dive -- attribution, cover curve, and adjuster --
-    built the same way regardless of whether ``game`` is the Best Pick: the
-    This Week page's game selector must be able to show any of them."""
 
     attribution = _build_attribution(waterfall_feed.get(game.game_id), game)
     cover_curve = _build_cover_curve(sweep, game, spread_explorer_params)
@@ -2566,10 +2157,6 @@ def _build_dive(
 
 
 def _best_pick_note(nomination: Any) -> str:
-    """Verbatim reuse of ``render_picks_page``'s own Best Pick disclosure
-    sentence (2026-08-23 tie-break audit wording) so neither design page can
-    ever disagree with the production picks page about why a game is the
-    Best Pick."""
 
     if nomination is None or nomination.active_game_id is None:
         return ""
@@ -2584,7 +2171,6 @@ def _best_pick_note(nomination: Any) -> str:
 
 
 def _build_policy_note(view: Any, strong_count: int, n_games: int) -> tuple[PolicyNote, int]:
-    """Returns the note plus the flip count it describes."""
 
     if view is None:
         return (
@@ -2652,8 +2238,6 @@ def _build_policy_note(view: Any, strong_count: int, n_games: int) -> tuple[Poli
 
 
 def _build_findings(games: tuple[GameRow, ...], flip_count: int) -> tuple[Finding, ...]:
-    """Two findings, both computed from THIS week's real board -- never the
-    mockups' illustrative, hand-typed prose."""
 
     if not games:
         return ()
@@ -2683,21 +2267,6 @@ def _build_findings(games: tuple[GameRow, ...], flip_count: int) -> tuple[Findin
 def _load_spread_explorer_params(
     metadata: Mapping[str, Any], predictions: pd.DataFrame, data_root: Path
 ) -> dict[str, SpreadExplorerGameParams]:
-    """The active forecast's spread-explorer Gaussian read, verified against
-    the published card -- the SAME recipe ``public_board.build_public_site``
-    runs, item-for-item: only the ``gaussian`` probability method has a
-    closed-form mean/sd the widget's erf formula can read (an
-    older/rolled-back ``ecdf`` active model does not), so this quietly
-    returns ``{}`` for any other configuration -- the SAME graceful
-    degradation contract every optional artifact on this site follows.
-    ``public_board.assert_spread_explorer_matches_card`` is a REQUIRED guard,
-    not a courtesy: it re-proves, at build time, that the exact formula
-    shipped to the browser reproduces the published card's own quoted-line
-    probability, and raises rather than let a chart silently disagree with
-    the number already on the page. See :func:`_build_cover_curve`'s
-    docstring for how these verified parameters take precedence over
-    saved sweeps that may use a different probability method.
-    """
 
     if (
         str(metadata.get("probability_method")) not in ("gaussian", "gaussian_median")
@@ -2727,14 +2296,6 @@ def _build_refresh_lines(
     season: Any,
     week: Any,
 ) -> tuple[str, ...]:
-    """Late-week refresh diff lines (UI-17), read fail-open.
-
-    A missing file is the normal pre-lock state and yields no lines
-    (the assistant then answers clock questions from its timing entry
-    instead of inventing a refresh). A malformed ledger is likewise read
-    as absent -- this is a display lift, never a gate. Sentence
-    composition lives in :func:`nfl_ats.pick_refresh.describe_week_revisions`.
-    """
 
     try:
         revisions = load_pick_revisions(artifacts_root)
@@ -2748,15 +2309,6 @@ _KNOWN_SOURCE_POLICY_CARD_STATES = {COMPLETE, DEGRADED, BLOCKED}
 
 
 def _load_pick_explanations(forecast_dir: Path | None) -> dict[str, str]:
-    """ENG-12 wiring (UI-20(a)): per-pick explanation text, keyed by
-    ``game_id``, read from ``explanations.json`` beside the synchronized
-    forecast (always written unconditionally by ``publish_active_predictions``
-    -- see ``nfl_ats.card_explanation``'s module docstring).
-
-    Absent/unreadable/malformed degrades to an empty mapping, never raises:
-    every game's own fallback (:data:`EXPLANATION_NOT_RECORDED_TEXT`) covers
-    it either way, matching every other optional artifact on this page.
-    """
 
     if forecast_dir is None:
         return {}
@@ -2786,30 +2338,6 @@ def _load_tiebreaker_view(
     *,
     active: Mapping[str, Any] | None = None,
 ) -> TiebreakerView:
-    """UI-20(g): the pool's tiebreaker guess for the week's last game, read
-    from a persisted artifact -- see :data:`TIEBREAKER_NOT_PUBLISHED_TEXT`'s
-    docstring for why this never recomputes :func:`nfl_ats.tiebreaker
-    .tiebreaker_report` itself.
-
-    Two locations are tried, in the same order and for the same reason
-    :func:`_load_source_policy_view`'s first two steps are: a persisted
-    ``tiebreaker.json`` sidecar beside the forecast, then a
-    ``metadata["tiebreaker"]`` block, in case a future writer puts it there
-    instead. Neither exists for any forecast in this repo today (measured
-    2026-09-05 -- see the constant's docstring), so this degrades to the
-    explicit not-published view; it activates automatically the moment
-    either location is written, with the schema below and no further code
-    change:
-
-    ``{"home": str, "away": str, "market_total": number,
-    "blended_total": number, "implied_margin": number,
-    "guess_home": int (optional), "guess_away": int (optional)}`` --
-    field names mirror :class:`nfl_ats.tiebreaker.TiebreakerReport`'s own
-    ``home``/``away``, ``consensus.total_line``, ``guess_total_line``,
-    ``guess_margin``, ``guess_home``, ``guess_away``. A malformed or
-    incomplete block degrades the same way an absent one does, never
-    raises.
-    """
 
     block: dict[str, Any] | None = None
     if forecast_dir is not None:
@@ -2875,11 +2403,6 @@ def _live_source_policy_view(
     arrest_snapshot_at: Any,
     arrest_snapshot_id: str | None,
 ) -> SourcePolicyView | None:
-    """UI-20(c): the live equivalent of a persisted ``source_policy.json``,
-    computed read-only over the local source tree with the SAME function
-    ``publishing.py`` calls at publish time (``report_for_publication``).
-    Returns ``None`` on any failure -- this is a fallback for a fallback, so
-    it must never raise or replace a real problem with a worse one."""
 
     try:
         live_report = report_for_publication(
@@ -2936,33 +2459,6 @@ def _load_source_policy_view(
     arrest_snapshot_at: Any = None,
     arrest_snapshot_id: str | None = None,
 ) -> SourcePolicyView:
-    """Build the ENG-34 :class:`SourcePolicyView` for the synchronized
-    forecast, shaped exactly as
-    ``nfl_ats.source_freshness_policy.SourcePolicyReport.to_metadata()``
-    writes it (``state``, ``evaluated_at_utc``, ``sources`` keyed by
-    ``source_id``, ``unobserved``).
-
-    Four sources, tried in order, never a crash:
-
-    1. ``forecast_dir/source_policy.json`` -- persisted additively by
-       ``publishing.py`` beside ``explanations.json`` (ENG-34 follow-up).
-       This is the real on-disk report for the card this page renders.
-    2. ``metadata["source_policy"]`` -- a key on the forecast's own
-       ``metadata.json`` itself, in case a future writer puts it there
-       instead (this module never writes to that file: its digest is
-       recorded by the lock-day package and replay).
-    3. UI-20(c): a LIVE report computed at build time
-       (:func:`_live_source_policy_view`), when ``data_root`` and/or
-       ``artifacts_root`` are supplied -- real per-source states, just not
-       the ones locked at Tuesday's publish (see
-       :data:`SOURCE_POLICY_COMPUTED_LIVE_NOTE`). Every existing caller that
-       omits these keyword-only arguments (both default ``None``) skips this
-       step entirely and keeps its prior behaviour unchanged.
-    4. The explicit :data:`SOURCE_POLICY_NOT_RECORDED` view, for any
-       forecast published before persistence existed, whose block is
-       missing or malformed, AND for which no live computation was possible
-       either -- never an invented real state.
-    """
 
     block: dict[str, Any] | None = None
     if forecast_dir is not None:
@@ -3049,17 +2545,6 @@ def load_board_content(
     generated_at: datetime | None = None,
     require_fresh_arrest_overlay: bool = False,
 ) -> BoardContent:
-    """Assemble the one view model the This Week page renders.
-
-    Uses the SAME artifact loaders and overlay-resolution path
-    (:func:`nfl_ats.card_view.resolve_card_view`) the real site's
-    ``build_public_site`` uses, so this page can never show a different
-    pick, probability, or Best Pick than the currently-published card.
-    ``require_fresh_arrest_overlay`` defaults to ``False`` (a rehearsal read,
-    matching how the test suite exercises this same path); the real publish
-    path (``cli._write_public_site`` -> ``board_site.build_site`` ->
-    :func:`nfl_ats.board_site_content.load_site_content`) passes ``True``.
-    """
 
     generated = (generated_at or datetime.now(UTC)).astimezone(UTC)
     resolved_data_root = data_root if data_root is not None else _default_data_root()

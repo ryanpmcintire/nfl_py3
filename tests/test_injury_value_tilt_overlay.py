@@ -1,21 +1,3 @@
-"""Injury value-lost tilt overlay (docs/injury_value_lost_tilt_overlay.md).
-
-Three things are load-bearing here, mirroring
-``tests/test_coach_fade_overlay.py``'s structure and AGENTS.md's "add a
-leakage regression test for every new feature family" spirit:
-
-1. :func:`raw_value_lost_diff` reads exactly the two columns
-   ``docs/injury_value_lost.md`` section 4 isolated, and only those.
-2. :func:`apply_injury_value_tilt_overlay` flips ONLY the clean-disagreement
-   case (the model's own pick sits on the side that lost STRICTLY MORE
-   injury value), touches no other column, respects the REG-only gate, and
-   is parameter-free -- there is no threshold to pin.
-3. :func:`record_injury_value_tilt_challenger_decisions` writes the tilt's
-   own picks (which can diverge from the active model's raw picks on a
-   flipped game) to the prospective challenger ledger, dual-tracked and at
-   no rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -76,8 +58,6 @@ def test_raw_value_lost_diff_sums_the_two_diff_columns() -> None:
 
 
 def test_raw_value_lost_diff_uses_the_shared_surgical_gating_columns() -> None:
-    """Reads exactly ``surgical_gating.VALUE_LOST_DIFF_COLUMNS`` -- never a
-    re-typed, potentially-drifted column list."""
 
     features = _features()[["game_id", *VALUE_LOST_DIFF_COLUMNS]]
     diff = raw_value_lost_diff(features)
@@ -130,8 +110,6 @@ def test_overlay_does_not_flip_when_the_pick_already_agrees_with_the_signal() ->
 
 
 def test_overlay_leaves_postseason_games_untouched() -> None:
-    """Same shape as G1 (would flip if REG), but the REG-only gate blocks it
-    -- the measured mechanism is a regular-season-only result."""
 
     result = apply_injury_value_tilt_overlay(_predictions(), _features())
     assert all(flip.game_id != "G5" for flip in result.flips)
@@ -159,8 +137,6 @@ def test_overlay_disabled_is_a_no_op() -> None:
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows() -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical -- the pick-level design's whole point."""
 
     predictions = _predictions()
     result = apply_injury_value_tilt_overlay(predictions, _features())
@@ -340,7 +316,6 @@ def test_record_tilt_challenger_refuses_a_missing_feature_table(tmp_path: Path) 
 
 
 def test_tilt_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

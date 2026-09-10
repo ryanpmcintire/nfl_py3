@@ -1,18 +1,3 @@
-"""Tests for scripts/officials_wayback_sweep.py (LEAD-59).
-
-No network anywhere in this file: every fetch is a fake ``FetchFn`` (a plain
-callable stub) and every backoff sleep is a fake ``sleep_fn`` that records
-its argument instead of blocking. Covers: the officials-block parser against
-two constructed fixture pages (table strategy, inline-line fallback
-strategy), the backoff/retry schedule, the resume-skip logic, the hard-stop
-consecutive-failure counter, the "no capture found" non-failure path, the
-manifest shape, season/game-type filtering of the schedule snapshot, and the
-leakage-safety invariant (``effective_time`` == the game's own date, never a
-later timestamp). 2026-09-07 (lane N) additions at the bottom: newest-capture
-selection, the per-game fallback walk, ``--retry-unparsed``, one immutable
-HTML file per fetch, and manifest-row upserts on re-attempts.
-"""
-
 from __future__ import annotations
 
 import json
@@ -85,8 +70,6 @@ def test_table_strategy_skips_a_literal_header_row() -> None:
 
 
 class _ScriptedFetch:
-    """Returns one canned FetchResult per call, in order."""
-
     def __init__(self, results: list[sweep.FetchResult]) -> None:
         self._results = list(results)
         self.calls: list[str] = []
@@ -439,10 +422,6 @@ def test_select_capture_timestamp_picks_the_first_data_row_and_handles_empty() -
 
 
 def test_pre_game_captures_are_never_selected() -> None:
-    """2026-09-07, measured on the first live fetch: the earliest capture of
-    2014_01_GB_SEA (played 2014-09-04) was dated 2014-05-30 -- a placeholder
-    page with no officials block. The CDX query now starts the day after the
-    game and the selector re-applies the bound client-side."""
     assert sweep.capture_not_before("2014-09-04") == "20140905"
     assert sweep.capture_not_before(pd.Timestamp("2014-09-04 20:30")) == "20140905"
     rows = [["urlkey", "timestamp"], ["k", "20140530011957"], ["k", "20140905101010"]]
@@ -454,10 +433,6 @@ def test_pre_game_captures_are_never_selected() -> None:
 
 
 def test_parses_the_2014_era_ref_info_table_from_a_real_capture() -> None:
-    """2026-09-07: the first five live post-game captures (2014 season) all
-    parsed zero officials because that era's boxscore names the table
-    id="ref_info" (not "officials") and bolds each label. Fixture extracted
-    verbatim from the 2014_01_GB_SEA capture."""
     html = (FIXTURES / "pfr_boxscore_officials_ref_info_2014.html").read_text(encoding="utf-8")
     rows, warnings = sweep.parse_officials_block(html)
     assert warnings == []
@@ -531,10 +506,6 @@ def test_rank_capture_timestamps_is_newest_first_deduplicated_and_bounded() -> N
 
 
 def test_cdx_query_keeps_the_post_game_bound_and_asks_for_every_capture() -> None:
-    """2026-09-07 (lane N, measured): ``limit=-3`` on the CDX server drew an
-    HTTP 504 (a negative limit forces a full index scan), while unbounded
-    queries for the same URLs returned 200 with 61-74 rows. The query
-    therefore carries no ``limit`` and the selector ranks client-side."""
 
     url = sweep.CDX_URL_TEMPLATE.format(original="https://x/y.htm", not_before="20090911")
     assert "from=20090911" in url
@@ -677,7 +648,6 @@ def test_a_fallback_replay_failure_keeps_the_page_already_fetched_and_counts_a_f
 
 
 def _seed_old_policy_run(config: sweep.SweepConfig, html: str, *, capture_ts: str) -> Path:
-    """Write a manifest + page the way the pre-2026-09-07 sweep did (html/<pfr>.html)."""
 
     snapshot_dir = config.raw_root / config.run_id
     (snapshot_dir / "html").mkdir(parents=True)
@@ -781,10 +751,6 @@ def test_retry_unparsed_refetches_newer_captures_excluding_the_one_already_on_di
 def test_retry_unparsed_skips_a_page_that_now_parses_under_the_current_parser(
     tmp_path: Path,
 ) -> None:
-    """The 2014 run's first five rows say officials_parsed=0 because the
-    ref_info parser fix landed after they were fetched and the resume path
-    never wrote back; a retry must re-parse from disk, update the row, and
-    spend zero requests."""
 
     schedule_path = tmp_path / "schedules.parquet"
     _one_game_schedule(schedule_path, n=1)

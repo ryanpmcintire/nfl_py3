@@ -1,11 +1,3 @@
-"""Release-blocking invariants for weekly prediction artifacts.
-
-Models are allowed to be uncertain.  Prediction artifacts are not allowed to
-be internally inconsistent.  These checks independently recompute decisions,
-market math, cutoffs, and method relationships before a card is published or
-frozen.
-"""
-
 from __future__ import annotations
 
 import math
@@ -30,7 +22,7 @@ VALID_GAME_TYPES = frozenset(("REG", "WC", "DIV", "CON", "SB"))
 
 
 class PredictionSafetyError(ValueError):
-    """A prediction card failed an invariant and must not be published."""
+    pass
 
 
 @dataclass(frozen=True)
@@ -59,17 +51,6 @@ def _lineage_checks(
     *,
     prediction_timestamp: datetime | None,
 ) -> list[str]:
-    """ENG-16: a card whose decisions cannot name their source is not publishable.
-
-    Additive to every check above -- passing no ``lineage`` leaves the
-    pre-existing contract exactly as it was, so historical artifacts and
-    callers that predate lineage keep validating unchanged.  When lineage IS
-    supplied it is release-blocking on the same footing as the market and
-    decision math: :func:`nfl_ats.lineage.validate_card_lineage` names every
-    offending field, including any record whose ``effective_timestamp`` sits
-    after the prediction timestamp (the pregame-information invariant restated
-    where an artifact can be audited without rerunning the builder).
-    """
 
     if lineage is None:
         return []
@@ -85,7 +66,6 @@ def validate_prediction_lineage(
     *,
     prediction_timestamp: datetime | None = None,
 ) -> PredictionSafetyAudit:
-    """Validate a card's lineage on its own, without the prediction frame."""
 
     checks = _lineage_checks(lineage, prediction_timestamp=prediction_timestamp)
     return PredictionSafetyAudit(
@@ -100,16 +80,6 @@ def validate_prediction_lineage(
 
 
 def _contract_checks(compatibility: CompatibilityReport | None) -> tuple[list[str], list[str]]:
-    """ENG-09: a card built on an artifact-version mismatch is not publishable.
-
-    Additive on the same footing as :func:`_lineage_checks`: passing no
-    ``compatibility`` leaves the pre-existing contract exactly as it was.
-    When a report IS supplied, its ``legacy_unversioned`` issues (either
-    artifact predates ``nfl_ats.artifact_contracts``) are reported as
-    warnings -- never a reason to fail -- while a genuine ``version_mismatch``
-    or ``unknown_forecast_schema`` hard failure blocks the card, matching
-    :func:`nfl_ats.artifact_contracts.CompatibilityReport.refuse_if_incompatible`.
-    """
 
     if compatibility is None:
         return [], []
@@ -123,7 +93,6 @@ def _contract_checks(compatibility: CompatibilityReport | None) -> tuple[list[st
 
 
 def validate_prediction_compatibility(compatibility: CompatibilityReport) -> PredictionSafetyAudit:
-    """Validate an artifact-contract compatibility report on its own."""
 
     checks, warnings = _contract_checks(compatibility)
     return PredictionSafetyAudit(
@@ -260,15 +229,6 @@ def validate_three_way_split(
     line_column: str = "spread_line",
     tolerance: float = 1e-6,
 ) -> tuple[str, ...]:
-    """Validate a cover/push/loss decomposition of a margin predictive distribution.
-
-    Independent of the full outcome-card schema so it can also guard
-    single-method cards scored at externally supplied lines (see
-    ``nfl_ats.lines``). Fails closed: every probability must be finite and in
-    [0, 1], the three must sum to one within ``tolerance``, and push
-    probability must be exactly zero wherever the line is not an integer --
-    a real football margin can never push a half-point line.
-    """
 
     required = (
         "home_cover_probability_excluding_push",
@@ -322,31 +282,6 @@ def validate_pool_lines(
     line_column: str = "spread_line",
     enforced: bool | None = None,
 ) -> tuple[str, ...]:
-    """Fail closed when a SERVED decision line is not the pool's own line.
-
-    Every line the owner's pool posts is a half point (see
-    :data:`POOL_QUOTES_HALF_POINT_LINES`), so on the card that is actually
-    submitted a whole-number decision line is a provenance defect: it means
-    the line came from the schedule feed's ``spread_line`` rather than from
-    the pool, and every downstream answer -- the side, the push chance, the
-    key-number pick read -- was then computed against a line nobody can
-    play. That used to pass silently and move real picks (2026-09-08: six
-    Week 1 games were read as sitting on a key number at the feed's whole
-    numbers, three of them changing sides, while the pool quoted all six at
-    a half point), which is why it is a hard failure here rather than a
-    warning.
-
-    Scoped to the served card ON PURPOSE. The historical opener archive,
-    ``clv.opener_pick_evaluation``, every backtest and every registry cell
-    are graded on archived whole-number-capable lines where the push is real
-    and this check must never run; call it only where the line being served
-    to the pool is known.
-
-    ``enforced`` defaults to :data:`POOL_QUOTES_HALF_POINT_LINES`, read at
-    call time so a test that deliberately builds a whole-number week -- the
-    fixtures that exercise the key-number machinery on the lines it is FOR --
-    can say so explicitly rather than the check quietly not applying.
-    """
 
     _require_columns(frame, (line_column, "game_id"), "pool line")
     if enforced is None:
@@ -502,29 +437,6 @@ def _injury_feature_checks(
     allow_empty_injury_block: bool = False,
     empty_injury_block_reason: str | None = None,
 ) -> tuple[list[str], list[str]]:
-    """ENG-39: catch a silently all-zero injury feature block before publish.
-
-    nflverse's 2025 injuries release drops ``date_modified`` entirely, and
-    the historical (default) canonicalization response is to drop every row
-    without one -- so a whole card's ``home_/away_/diff_injury_*`` block can
-    come out exactly 0.0/null for every row while every other prediction
-    safety check still passes (measured: ``docs/injury_timestamp_fallback.md``,
-    M3). This scans the injury sub-block directly off the card -- restricted
-    to ``feature_columns`` when the caller supplies one (as
-    ``validate_prediction_card`` does), else discovered from the card's own
-    columns (as ``validate_outcome_prediction_card`` does, since it has no
-    ``feature_columns`` parameter) -- and fails loudly on that exact failure
-    mode instead of silently shipping a zeroed injury component.
-    ``allow_empty_injury_block`` is the blind escape; no production caller
-    sets it. ``empty_injury_block_reason`` (2026-09-07) is the EVIDENCED one:
-    the caller has verified that the week's injury reports do not exist yet
-    in the player snapshot (``nfl_ats.players.injury_reports_absent_reason``),
-    so an all-zero block is absence of reports, not a pipeline defect -- the
-    check passes and the reason is recorded verbatim as a warning the card
-    surfaces. Measured 2026-09-07: the 2026 Week 1 lock on Monday precedes
-    the league's first Wednesday report, so without this every Week 1
-    scoring would fail here by construction.
-    """
 
     if frame.empty:
         return [], []
@@ -578,13 +490,6 @@ def validate_prediction_card(
     allow_empty_injury_block: bool = False,
     empty_injury_block_reason: str | None = None,
 ) -> PredictionSafetyAudit:
-    """Validate a direct ATS card and independently recompute its decisions.
-
-    ``allow_empty_injury_block`` (ENG-39, default ``False``): a prospective
-    card whose injury feature sub-block is entirely null/zero fails the new
-    ``injury_feature_presence`` check (see ``_injury_feature_checks``) unless
-    this is explicitly set. No production caller sets it.
-    """
 
     required = (
         "game_id",
@@ -672,19 +577,6 @@ def validate_outcome_prediction_card(
     allow_empty_injury_block: bool = False,
     empty_injury_block_reason: str | None = None,
 ) -> PredictionSafetyAudit:
-    """Validate the five-method straight-up, margin, and ATS weekly card.
-
-    ``feature_columns``, ``prospective``, and ``allow_empty_injury_block``
-    (ENG-39, all additive, defaulting to the pre-ENG-39 behaviour) mirror
-    ``validate_prediction_card``: when ``prospective=True`` and the card is
-    non-empty, the new ``injury_feature_presence`` check (see
-    ``_injury_feature_checks``) fails a card whose injury feature sub-block
-    is entirely null/zero -- restricted to ``feature_columns`` when given,
-    else discovered from the card's own columns -- unless
-    ``allow_empty_injury_block`` is explicitly set. The live margin-predict path
-    passes its actual input feature rows
-    through ``feature_rows`` with ``prospective=True``.
-    """
 
     required = (
         "game_id",

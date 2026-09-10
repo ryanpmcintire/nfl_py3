@@ -1,5 +1,3 @@
-"""Fail-closed orchestration for the scheduled Tuesday paper forecast."""
-
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -31,13 +29,6 @@ def resolve_lock_target(
     season: int | None = None,
     week: int | None = None,
 ) -> LockTarget:
-    """Resolve the one game week whose declared line-lock Tuesday is today.
-
-    ``season``/``week`` (owner override, 2026-09-09) name the week directly
-    for a lock that was missed or must be re-recorded on another day; the
-    only remaining refusal is a week whose games have ALL already begun,
-    because nothing pre-kickoff would be left to record.
-    """
 
     required = {"game_id", "season", "week", "game_type", "gameday"}
     missing = sorted(required.difference(schedules.columns))
@@ -92,13 +83,6 @@ def execute_scheduled_lock(
     week: int | None = None,
     replace: bool = False,
 ) -> dict[str, Any]:
-    """Record one paper forecast, or prove that the complete week already exists.
-
-    ``season``/``week`` lock a named week on any day; ``replace`` re-records a
-    week that already has rows (the runner is called with ``replace=True`` so
-    the recorder drops them first). Both are operator overrides, owner
-    2026-09-09: a missed or wrongly recorded lock is corrected, not preserved.
-    """
 
     target = resolve_lock_target(schedules, now=now, season=season, week=week)
     ledger = load_paper_decisions(artifacts_root)

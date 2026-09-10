@@ -1,9 +1,3 @@
-"""Production median promotion, with explicit mean/ECDF compatibility.
-
-Pin weekly and CLI defaults, unchanged historical ECDF defaults, and artifact
-identity separation for each probability mapping. See docs/gaussian_median_promotion.md.
-"""
-
 from __future__ import annotations
 
 import json
@@ -62,7 +56,6 @@ def test_predict_gaussian_changes_only_home_cover_probability(model_frame: pd.Da
 
 
 def test_score_outcome_week_defaults_to_gaussian_median(model_frame: pd.DataFrame) -> None:
-    """The sole production weekly-forecast entry point's promoted default."""
 
     default_run = score_outcome_week(
         model_frame,
@@ -105,7 +98,6 @@ def test_score_outcome_week_defaults_to_gaussian_median(model_frame: pd.DataFram
 
 
 def test_walk_forward_outcomes_default_is_still_ecdf(model_frame: pd.DataFrame) -> None:
-    """Every historical/research backtest must stay bit-for-bit unaffected."""
 
     default_run = walk_forward_outcomes(
         model_frame,
@@ -176,11 +168,6 @@ def _evaluation(root: Path, name: str, probability_method: str | None) -> Path:
 def test_gaussian_forecast_does_not_match_a_legacy_ecdf_evaluation(
     tmp_path: Path, method: str
 ) -> None:
-    """The guard against the exact 'silently revert' failure mode: a forecast
-    built with probability_method="ecdf" (the pre-promotion default,
-    explicit or via an old artifact lacking the field) must never
-    synchronize against an evaluation recorded under "gaussian", and vice
-    versa -- each probability method needs its OWN matching evaluation."""
 
     _evaluation(tmp_path, "legacy_ecdf", probability_method=None)
     forecast = tmp_path / "margin_predictions" / "forecast"
@@ -205,8 +192,6 @@ def test_gaussian_forecast_matches_a_gaussian_evaluation(tmp_path: Path, method:
 
 
 def test_legacy_ecdf_forecast_still_matches_the_legacy_evaluation(tmp_path: Path) -> None:
-    """Backward compatibility: metadata written before this field existed
-    (both sides) keeps matching exactly as it did before this promotion."""
 
     _evaluation(tmp_path, "legacy_ecdf", probability_method=None)
     forecast = tmp_path / "margin_predictions" / "forecast"

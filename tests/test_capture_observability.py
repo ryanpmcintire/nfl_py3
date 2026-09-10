@@ -1,21 +1,3 @@
-"""Tests for ENG-03 capture/scheduler observability.
-
-Covers three new surfaces, all additive to the existing scheduler:
-
-* ``data/scheduler_heartbeat.json`` -- written by the daemon loop on every
-  poll, read back by ``capture_scheduler.build_health_report``.
-* ``state["job_health"]`` -- a NEW sibling key next to the pre-existing
-  ``state["runs"]``, recording per-job last_success_at / last_failure_at /
-  last_error / consecutive_failures / missed_window_count.
-* ``nfl_ats.capture_freshness`` -- per-source on-disk freshness derived from
-  the SCHEDULE's own day/at/grace fields, plus ``capture_scheduler.py``'s
-  ``--health`` fail-visible summary built on top of it.
-
-``tests/test_capture_scheduler.py`` (the pre-existing scheduler test suite)
-must keep passing unchanged; nothing here modifies existing state["runs"]
-semantics, only adds alongside them.
-"""
-
 from __future__ import annotations
 
 import json
@@ -51,7 +33,6 @@ def make_job(**overrides: Any) -> Job:
 
 
 def stamp_dir(root: Path, when: datetime) -> Path:
-    """Create an empty UTC-stamped snapshot directory, project convention."""
 
     name = when.astimezone(UTC).strftime("%Y%m%dT%H%M%SZ")
     path = root / name
@@ -89,7 +70,6 @@ def test_a_fully_disabled_job_group_has_no_budget() -> None:
 
 
 def test_disabled_jobs_are_excluded_from_the_gap_computation() -> None:
-    """A disabled sibling must not change the budget of the enabled ones."""
 
     enabled_job = make_job(name="a", day="tue", at="09:00", grace_minutes=180)
     disabled_job = make_job(name="b", day="wed", at="09:00", grace_minutes=10, enabled=False)
@@ -122,9 +102,6 @@ def test_newest_snapshot_instant_reads_the_newest_directory_name(tmp_path: Path)
 
 
 def test_newest_snapshot_instant_ignores_filesystem_mtime(tmp_path: Path) -> None:
-    """The directory NAME is authoritative even when a stale-named directory
-    has the newest mtime on disk -- matches the same rule
-    ``scripts/capture_scheduler.newest_snapshot_age_minutes`` documents."""
 
     newer_named = stamp_dir(tmp_path, NOW - timedelta(days=1))
     older_named = stamp_dir(tmp_path, NOW - timedelta(days=5))
@@ -321,11 +298,6 @@ def _heartbeat_payload(
     code_sha256: str | None = None,
     schedule_digest: str | None = None,
 ) -> str:
-    """ENG-26: ``code_sha256``/``schedule_digest`` default to omitted (a
-    pre-ENG-26-style heartbeat, deliberately reported STALE by
-    ``build_health_report`` -- see that function's docstring), not to a
-    freshly-computed value, so a test asserting a DEAD/FAIL outcome for an
-    unrelated reason does not need to know or care about code identity."""
 
     payload: dict[str, Any] = {
         "pid": 4242,
@@ -572,8 +544,6 @@ def test_sweep_missed_increments_missed_window_count_once_per_occurrence(
 def test_job_health_key_does_not_disturb_state_runs(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """show_status and every pre-existing scheduler test read only
-    state["runs"]; the new sibling key must leave it exactly as before."""
 
     job = make_job(catch_up=True, command=["cmd.exe", "/c", "echo", "caught-up-ok"])
     monkeypatch.setattr(capture_scheduler, "SCHEDULE", (job,))
@@ -614,9 +584,6 @@ def test_write_heartbeat_records_code_and_schedule_identity(
 def test_write_heartbeat_defaults_code_and_schedule_when_omitted(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """Back-compat: a caller that does not pass the new kwargs (the
-    pre-ENG-26 call shape) still gets a valid pair matching disk right now,
-    rather than a missing field or KeyError."""
     heartbeat_path = tmp_path / "heartbeat.json"
     monkeypatch.setattr(capture_scheduler, "HEARTBEAT_PATH", heartbeat_path)
     started = datetime(2026, 9, 10, 8, 0, tzinfo=ET)
@@ -632,9 +599,6 @@ def test_write_heartbeat_defaults_code_and_schedule_when_omitted(
 def test_daemon_loop_freezes_code_identity_at_startup_not_per_poll(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Pins that main()'s daemon branch computes code_sha256/schedule_digest
-    ONCE before the loop and passes the SAME values into every write_heartbeat
-    call -- the source of truth for "what the daemon started with"."""
     calls: list[dict[str, Any]] = []
 
     def fake_write_heartbeat(**kwargs: Any) -> None:
@@ -714,10 +678,6 @@ def test_health_report_flags_stale_schedule(
 def test_health_report_treats_a_legacy_heartbeat_without_hashes_as_stale(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """The exact 2026-09-04 situation this item was written for: a daemon
-    that started before ENG-26 existed writes a heartbeat with neither
-    field, and --health must fail closed instead of silently skipping the
-    check because it cannot prove currency."""
     heartbeat_path = tmp_path / "heartbeat.json"
     now = datetime(2026, 9, 10, 8, 5, tzinfo=ET)
     heartbeat_path.write_text(_heartbeat_payload(now, age=timedelta(seconds=1)), encoding="utf-8")

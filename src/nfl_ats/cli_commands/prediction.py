@@ -1,5 +1,3 @@
-"""Scoring commands: margin prediction, decomposition and the weekly card."""
-
 from __future__ import annotations
 
 import argparse
@@ -123,17 +121,11 @@ from nfl_ats.spread_regime import spread_bucket
 
 @dataclass(frozen=True)
 class PredictionArtifacts:
-    """What a scoring command wrote: the metadata document and its directory.
-
-    ``metadata`` is the same dict the handler used to print inline, and
-    ``output`` the artifact directory it was written to."""
-
     metadata: dict[str, Any]
     output: Path
 
 
 def _feature_table_manifest_for(path: Path) -> dict[str, Any] | None:
-    """ENG-09: the ``*.manifest.json`` sibling of a feature-table parquet, if any."""
 
     manifest_path = path.with_name(f"{path.stem}.manifest.json")
     if not manifest_path.is_file():
@@ -143,14 +135,6 @@ def _feature_table_manifest_for(path: Path) -> dict[str, Any] | None:
 
 
 def _active_model_for_compatibility() -> dict[str, Any] | None:
-    """ENG-09: the active model manifest, or ``None`` when absent/unreadable.
-
-    A malformed ``active_ats_model.json`` is a pre-existing, separately
-    surfaced problem (``nfl_ats.publishing._publication_context`` already
-    raises loudly on it at publish time); this pre-fit compatibility check is
-    an additional safety net, not the primary guard, so it degrades to "no
-    active model to compare against" rather than blocking every command.
-    """
 
     try:
         return load_active_ats_model(_artifacts_root())
@@ -160,8 +144,6 @@ def _active_model_for_compatibility() -> dict[str, Any] | None:
 
 @dataclass(frozen=True)
 class MarginPredictRequest:
-    """Everything ``nfl-ats margin-predict`` needs from the command line."""
-
     features: Path
     season: int
     week: int
@@ -175,10 +157,6 @@ class MarginPredictRequest:
 
 
 def parse_margin_predict_request(args: argparse.Namespace) -> MarginPredictRequest:
-    """Validate the parsed namespace into a MarginPredictRequest.
-
-    Pure: reads only ``args`` and raises exactly what reading a missing or
-    ill-typed attribute raises today."""
 
     return MarginPredictRequest(
         features=Path(args.features),
@@ -195,9 +173,6 @@ def parse_margin_predict_request(args: argparse.Namespace) -> MarginPredictReque
 
 
 def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtifacts:
-    """Fit, score, validate and write the outcome card for one season/week.
-
-    Returns the metadata document and artifact directory the handler prints."""
 
     features = _load_features(request.features)
     fit_compatibility = check_compatible(
@@ -425,11 +400,6 @@ def _cmd_margin_predict(args: argparse.Namespace) -> None:
 
 
 def _latest_margin_prediction_dir(artifacts_root: Path) -> Path | None:
-    """Most recent ``margin-predict`` artifact directory, or ``None``.
-
-    Directory names are ``{season}-week-{week:02d}-{run_id}``, so a
-    lexicographic sort is also a chronological one.
-    """
 
     predictions_root = artifacts_root / "margin_predictions"
     if not predictions_root.is_dir():
@@ -732,8 +702,6 @@ def _recommendation_markdown(predictions: pd.DataFrame, metadata: dict[str, Any]
 
 @dataclass(frozen=True)
 class PredictRequest:
-    """Everything ``nfl-ats predict`` needs from the command line."""
-
     features: Path
     season: int
     week: int
@@ -745,10 +713,6 @@ class PredictRequest:
 
 
 def parse_predict_request(args: argparse.Namespace) -> PredictRequest:
-    """Validate the parsed namespace into a PredictRequest.
-
-    Pure: reads only ``args`` and raises exactly what reading a missing or
-    ill-typed attribute raises today."""
 
     return PredictRequest(
         features=Path(args.features),
@@ -763,9 +727,6 @@ def parse_predict_request(args: argparse.Namespace) -> PredictRequest:
 
 
 def orchestrate_predict(request: PredictRequest) -> PredictionArtifacts:
-    """Fit, score, validate and write the direct ATS card for one season/week.
-
-    Returns the metadata document and artifact directory the handler prints."""
 
     features = _load_features(request.features)
     fit_compatibility = check_compatible(
@@ -875,7 +836,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the prediction and decomposition commands."""
 
     margin_predict = subparsers.add_parser(
         "margin-predict", help="score one week with fair-margin and outcome models"
@@ -993,9 +953,6 @@ def register(
 def _served_home_side_offsets(
     features: pd.DataFrame, request: MarginPredictRequest
 ) -> dict[str, Any] | None:
-    """Fit the promoted home-side offsets for this week, or ``None`` when the
-    served policy is off. Never raises: a failure here degrades to zero
-    offsets with the error recorded, because this layer must not block the lock."""
 
     if not HOME_SIDE_OFFSET_SERVED:
         return None
@@ -1037,7 +994,6 @@ def _served_rows(predictions: pd.DataFrame) -> pd.DataFrame:
 def _home_side_offset_sidecar(
     home_side: dict[str, Any], predictions: pd.DataFrame, uncorrected: pd.DataFrame
 ) -> dict[str, Any]:
-    """Both reads per game, so the paired challenger never has to refit."""
 
     served = _served_rows(predictions)
     base = _served_rows(uncorrected).reindex(served.index)
@@ -1097,10 +1053,6 @@ def _with_discrete_fallback(
     discrete: ProductionDiscretePushRead | None,
     log: dict[str, ServedPushRead] | None,
 ) -> tuple[pd.DataFrame, ProductionDiscretePushRead | None]:
-    """Score with the discrete reader; on ANY failure score again with the
-    smooth read and record why, so a per-game read failure (an exceptional
-    line, an empty band) can never abort the lock (lane X review, 2026-09-08).
-    Fitting was already protected; this protects scoring and the sweep."""
 
     reader = discrete.reader if discrete is not None else None
     try:
@@ -1121,10 +1073,6 @@ def _with_discrete_fallback(
 def _served_discrete_push_read(
     features: pd.DataFrame, request: MarginPredictRequest
 ) -> ProductionDiscretePushRead | None:
-    """The served discrete push reader for this week, or ``None`` when the
-    policy is off. Never raises: a failure degrades to the smooth read with
-    the error recorded in the sidecar, because this layer must not block
-    the lock (docs/discrete_push_read.md)."""
 
     if not DISCRETE_PUSH_READ_SERVED:
         return None
@@ -1154,8 +1102,6 @@ def _discrete_push_read_sidecar(
     log: dict[str, ServedPushRead],
     predictions: pd.DataFrame,
 ) -> dict[str, Any]:
-    """Both reads per served game: the discrete split the card carries and
-    the smooth split it replaced, so the paired record never refits."""
 
     served = _served_rows(predictions)
     games = [log[game_id].to_dict() for game_id in served.index if game_id in log]
@@ -1171,8 +1117,6 @@ def _discrete_push_read_sidecar(
 
 
 def _key_line_policy(reader: DiscretePushReader | None) -> KeyLinePickRead | None:
-    """The served key-line pick policy over ``reader``, or ``None`` with the
-    flag off or no lattice (docs/key_line_pick_read.md)."""
 
     if not KEY_LINE_PICK_READ_SERVED or reader is None:
         return None
@@ -1182,15 +1126,6 @@ def _key_line_policy(reader: DiscretePushReader | None) -> KeyLinePickRead | Non
 def _served_key_line_pick_read(
     discrete: ProductionDiscretePushRead | None,
 ) -> tuple[KeyLinePickRead | None, str | None]:
-    """The served key-line pick policy for this week, or ``(None, reason)``.
-
-    The policy reads the SAME walk-forward lattice the discrete push read
-    fitted (docs/key_line_pick_read.md), so it is served only when that
-    reader is: with the flag off, or with no reader (push read off, or its
-    fit or scoring failed and degraded to the smooth split), the smooth
-    two-way read serves every game and the sidecar says why. Never raises;
-    never blocks the lock.
-    """
 
     if not KEY_LINE_PICK_READ_SERVED:
         return None, None

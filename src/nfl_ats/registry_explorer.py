@@ -1,54 +1,3 @@
-"""Read-only registry and overlap explorer (ROADMAP.md Phase 13, ENG-07).
-
-Both registries already have write paths, validation, and one-off report
-commands (``nfl-ats weak-signals status/pool``, ``nfl-ats rotation status``).
-What is missing is a single place that answers "what should be looked at
-next" without opening ``docs/pool_edge_plan.md`` and re-deriving it by hand
-every session -- which is exactly what the 2026-08-31 "registry state and
-next shots" addendum in that doc is: a manual survey pass that goes stale the
-moment the registry grows. This module is the mechanical replacement for
-that survey. It is a pure reporting layer: every function here takes an
-already-loaded :class:`nfl_ats.weak_signals.Registry` and/or
-:class:`nfl_ats.rotation.Registry` and returns plain dicts/lists. Nothing in
-this module calls either registry's ``save_registry``/``record_*`` writer,
-and nothing here should ever be extended to do so -- see
-``tests/test_registry_explorer.py``'s byte-identical-file assertion, which
-exists specifically to catch a future edit that adds one.
-
-**Binding taxonomy this module's callers must respect (verbatim, since a
-module has no access to AGENTS.md/CLAUDE.md's session context injection):**
-
-    An interval or CI that contains zero is NEVER grounds to reject, fail,
-    or close an experiment. At this evaluator's ~2-point resolution,
-    "contains zero" is the EXPECTED outcome for a real small signal. Only
-    two grounds ever close a line of work: (1) refuted mechanism -- a
-    RESOLVED wrong sign (whole interval on the wrong side of zero) or zero
-    split-half reliability; (2) bounded by a positive control proven able
-    to detect an effect that size. Everything else is
-    `unresolved_below_power`: record it with `nfl-ats weak-signals record`,
-    report `probability_positive`, never the binary "contains zero". If a
-    record command errors, the verdict is wrong, not the validator.
-
-This module never closes or reclassifies anything itself; every view below
-either reports what is already recorded or computes a bounded, clearly
-labelled aggregate over it (see :func:`shared_population_groups`'s
-"effective sample size" bounds). It also never computes "games needed" --
-that quantity is banned project-wide (within-week correlation is fixed at
-zero by owner mandate, so there is no sound way to derive one) -- and never
-prints or reads API keys.
-
-Five views, matching the ENG-07 definition of done:
-
-- :func:`unresolved_signals` -- (a) unresolved weak-signal entries, filtered.
-- :func:`repeated_windows` -- (b) rotation-registry season blocks touched by
-  more than one family, and the mined-2018-2025 discount rule.
-- :func:`shared_population_groups` -- (c) weak-signal groups whose game
-  windows overlap, with a bounded effective-sample-size read.
-- :func:`source_availability` -- (d) per-family capture-job/source mapping.
-- :func:`next_shots` -- (e) the ranked prioritisation output built from (a),
-  (c), and the rotation registry's remaining capacity.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -72,16 +21,6 @@ def unresolved_signals(
     effect_units: str | None = None,
     family: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Every ``unresolved_below_power`` entry, filtered and self-contained.
-
-    A refuted mechanism or control-bounded null is excluded on purpose --
-    those are closed, not open research questions, matching
-    ``weak_signals.poolable_signals``'s own eligibility rule. Sorted by
-    ``probability_positive`` descending (entries with no recorded value sort
-    last, never treated as zero) so the most promising open leads read
-    first even before ranking against rotation-window availability in
-    :func:`next_shots`.
-    """
 
     rows: list[dict[str, Any]] = []
     for signal in registry.signals.values():
@@ -123,34 +62,6 @@ def unresolved_signals(
 
 
 def repeated_windows(reg: rotation.Registry) -> dict[str, Any]:
-    """Season blocks the rotation registry has drawn more than once.
-
-    A single family cannot re-look at its own window -- ``record_look``
-    marks a window spent forever, and ``rotation._validate`` refuses a
-    family that overlaps its own or its inheritance chain's prior windows
-    (``src/nfl_ats/rotation.py``, the block starting at the
-    "A family must not re-look at seasons" comment). So "repeated" here
-    means the other thing rule 4 explicitly allows and the ledger tracks
-    for visibility: **two or more independent families drawing the same
-    season(s)** (``docs/rotation_registry.md`` rule 4: "Windows retire
-    per-family, not globally... two different families MAY draw
-    overlapping seasons -- their hypotheses are independent -- but the
-    ledger records global usage per season so accumulating cross-family
-    multiplicity stays visible instead of silent"). ``rotation.season_usage``
-    already computes the count; this reports the season-by-season detail
-    plus the specific windows involved.
-
-    Separately, rule 6 (same doc) singles out one particular kind of reuse
-    as carrying a mandatory disclosure: any window intersecting the mined
-    2018-2025 seasons requires ``acknowledges_mined_2018_2025`` and "a
-    result there carries a discount that the write-up must state" -- not a
-    ban (the project's "opener windows are not scarce" correction is
-    explicit that reuse does not "dilute" a window and blocks may be
-    redrawn), a disclosed penalty on how much weight a decision should put
-    on the result. Both facts are reported together here because the
-    reuse-discount rule a caller needs to cite differs by which kind of
-    repetition it is looking at.
-    """
 
     season_touches: dict[int, list[dict[str, Any]]] = {}
     mined_windows: list[dict[str, Any]] = []
@@ -221,31 +132,6 @@ def shared_population_groups(
     league: str | None = None,
     effect_units: str | None = None,
 ) -> dict[str, Any]:
-    """Groups of unresolved signals whose measurement windows overlap.
-
-    Grouping key and the overlap test both mirror
-    ``weak_signals.family_overlap_warnings`` exactly (same
-    ``signal_family`` grouping, same "do these two entries' ``[seasons[0],
-    seasons[1]]`` ranges intersect" pairwise test) -- reimplemented rather
-    than called directly because that function reports only group-level
-    counts, and this view additionally needs each overlapping member's
-    identity to compute a bounded effective-sample-size read per group.
-    ``pool_summary`` below is the direct, unmodified output of
-    ``family_overlap_warnings`` on the same input, included so every number
-    here is traceable back to the exact function ``nfl-ats weak-signals
-    pool`` already uses.
-
-    **Effective sample size is reported as a bound, not a point estimate.**
-    Members of one group are correlated decompositions of the same window
-    (AGENTS.md), so summing their ``sample_games``/``sample_blocks`` treats
-    them as independent information, which the overlap makes false --
-    that sum is reported as ``naive_sum_upper_bound``. The amount of
-    information a single best-covered member alone already carries is
-    reported as ``max_single_member_lower_bound``. The true effective N for
-    the group lies somewhere between the two; this module does not invent a
-    single number for it (and never computes a "games needed" figure --
-    that quantity is banned project-wide).
-    """
 
     signals = weak_signals.poolable_signals(registry, league=league, effect_units=effect_units)
     pool_summary = weak_signals.family_overlap_warnings(signals)
@@ -318,19 +204,6 @@ def shared_population_groups(
 
 @dataclass(frozen=True)
 class SourceRule:
-    """One family-prefix rule, with the citation for how it was established.
-
-    ``status`` is one of ``captured_scheduled`` (an enabled job in
-    ``scripts/capture_scheduler.py``'s ``SCHEDULE`` feeds this family),
-    ``paused_scheduled`` (a job exists but is disabled, or its dependency is
-    environment-conditional), ``derived_no_separate_capture`` (built purely
-    from data already ingested through the main feature pipeline -- schedule
-    fields, static reference tables -- with no distinct capture job),
-    ``bulk_ingest_unscheduled`` (a manual/periodic ingest script exists under
-    ``scripts/`` but is not in the scheduler's ``SCHEDULE``), or ``mixed``
-    (part of the family is captured, part is not; see ``detail``).
-    """
-
     prefix: str
     status: str
     detail: str
@@ -671,7 +544,6 @@ _CATEGORY_FALLBACK: dict[str, tuple[str, str]] = {
 
 
 def _source_for_family(family: str, category: str | None) -> tuple[str, str, str | None]:
-    """Return (status, detail, citation) for one family. Never guesses."""
 
     matches = [
         rule
@@ -697,13 +569,6 @@ def source_availability(
     *,
     league: str | None = None,
 ) -> list[dict[str, Any]]:
-    """Per-family source/capture-job classification for every recorded family.
-
-    One row per distinct ``(league, family)`` pair present in the registry
-    (not per signal -- every member of a family shares its source). See
-    :data:`FAMILY_SOURCE_RULES` for the citation behind every non-``unknown``
-    row; nothing here is a guess.
-    """
 
     seen: dict[tuple[str, str], str | None] = {}
     for signal in registry.signals.values():
@@ -738,42 +603,6 @@ def coverage_plan(
     weak_registry: weak_signals.Registry,
     rotation_registry: rotation.Registry,
 ) -> list[dict[str, Any]]:
-    """Read-only ENG-27 coverage plan: what ``rotation declare-coverage`` WOULD do.
-
-    ROADMAP.md Phase 13, ENG-27: measured 2026-09-04, the rotation registry
-    declared ~29 families against 350+ weak-signal families, so
-    :func:`next_shots` reported ``unspent_rotation_window: None`` for nearly
-    every top row. This computes, for every distinct ``(league, family)``
-    already present in ``weak_registry`` (the same grouping
-    :func:`source_availability` uses) that :func:`matching_rotation_families`
-    finds no rotation-family match for AND that ``rotation_registry.
-    no_rotation_needed`` does not already excuse, one of two actions:
-
-    - ``declare_stub``: no admissible :data:`rotation.NO_ROTATION_FIXED_REASONS`
-      applies (:func:`rotation.classify_no_rotation_reason` returned
-      ``None``), so the plan reserves a rotation-family stub named after the
-      weak-signal family (falling back to a ``<family>__<league>`` suffix on
-      a name collision, which cannot happen with the registry measured this
-      session but is handled defensively for a future one).
-    - ``no_rotation_needed``: the classifier found an admissible reason
-      (CFB out-of-scope, reliability measurement, positive control, oracle,
-      or retired profile), so the plan records that reason instead of a stub.
-      ``league`` is passed to the classifier (ENG-37, ROADMAP.md Phase 13,
-      2026-09-05): the rotation registry governs NFL confirmation looks only
-      (rule 8, docs/rotation_registry.md), so every non-NFL family classifies
-      to ``"cfb_out_of_scope"`` before any name/category rule is even
-      consulted, and never gets a stub -- 54 CFB families had already been
-      given one before this fix (measured 2026-09-04).
-
-    Never guessed: a family only gets ``no_rotation_needed`` when the
-    classifier names one of the fixed reasons; every other unmatched family
-    gets a stub. This function reads both registries and writes to neither --
-    the write path is ``rotation.declare_coverage_stub`` /
-    ``rotation.record_no_rotation_needed``, driven by the CLI. Naturally
-    idempotent: a family with either an existing rotation-family match or an
-    existing ``no_rotation_needed`` record is skipped, so re-running this
-    against an already-covered registry returns an empty plan.
-    """
 
     seen_category: dict[tuple[str, str], str | None] = {}
     effect_units_by_family: dict[tuple[str, str], set[str]] = {}
@@ -829,18 +658,6 @@ def coverage_plan(
 def matching_rotation_families(
     weak_signal_family: str, rotation_registry: rotation.Registry
 ) -> list[str]:
-    """Fuzzy-match one weak-signal family name against declared rotation families.
-
-    Extracted from :func:`next_shots` (ENG-27, ROADMAP.md Phase 13) so the
-    coverage tooling in ``nfl-ats rotation declare-coverage`` reuses this
-    exact matcher instead of a second, drift-prone copy of the same rule.
-
-    ``weak_signals.signal_family`` and the rotation registry's declared
-    family names are independent naming conventions with no guaranteed
-    correspondence -- a name is treated as a match if it equals or is a
-    prefix/suffix superstring of the other. Best-effort, and every caller
-    should say so rather than treating a match (or its absence) as certain.
-    """
 
     return sorted(
         name
@@ -852,7 +669,6 @@ def matching_rotation_families(
 
 
 def _rotation_has_capacity(reg: rotation.Registry, name: str) -> bool:
-    """Whether ``name`` currently holds an unspent window or could draw one."""
 
     family = reg.families[name]
     if family.assigned_window is not None:
@@ -871,25 +687,6 @@ def next_shots(
     effect_units: str | None = None,
     top: int | None = None,
 ) -> list[dict[str, Any]]:
-    """The ranked prioritisation view: what to look at next, and why.
-
-    Sort order: ``probability_positive`` descending (missing values sort
-    last, never coerced to zero), then whether a matching rotation family
-    still has an unspent window (an assigned-but-unspent window, or at
-    least one eligible block left to draw), then name for determinism.
-
-    **Family matching between the two registries is best-effort, and says
-    so.** ``weak_signals.signal_family`` and the rotation registry's
-    declared family names are independent naming conventions with no
-    guaranteed correspondence (e.g. the weak-signal family
-    ``graph_ratings_v2_team_stat`` has no rotation-registry counterpart at
-    all, while ``fluview_home_market_elevated`` corresponds to
-    ``fluview_home_elevated_opener``). A name is treated as a match if it
-    equals or is a prefix/suffix superstring of the other; every row reports
-    the exact ``matching_rotation_families`` list it matched against, and
-    ``unspent_rotation_window`` is ``None`` (never a guessed ``False``) when
-    no rotation family matched at all.
-    """
 
     rows = unresolved_signals(weak_registry, league=league, effect_units=effect_units)
     shared = shared_population_groups(weak_registry, league=league, effect_units=effect_units)

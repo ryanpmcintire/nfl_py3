@@ -1,37 +1,3 @@
-"""MOD-16 conditional margin variance — the CFB benchmark screen.
-
-The active margin models center ONE pooled out-of-time residual sample on
-every game's predicted margin, so every game gets the same distribution
-*shape*. MOD-16 asks whether pregame context (mismatch size, expected
-scoring, pace, early-season sample thinness) predicts per-game residual
-*scale*, and whether conditioning on it produces better-calibrated
-cover/push/loss probabilities than the pooled distribution.
-
-Per the roadmap this is screened on the CFB benchmark first (12,500 games
-resolve calibration differences the NFL sample cannot), with a frozen
-predeclaration in ``docs/margin_variance.md``. The mean model — and
-therefore every forced pick — is byte-identical to the frozen XLG-03
-``market_residual`` arm; ONLY the residual distribution's per-game scale
-changes. Acceptance is about probability calibration, not accuracy.
-
-Recipe (frozen)
----------------
-1. Fit the frozen pooled arm exactly as XLG-03 does. Reconstruct its own
-   chronological trailing-20% holdout, and on those held-out rows fit a
-   Ridge (alpha 10, same standardize+impute pipeline) predicting
-   ``log(|residual| + 1)`` from the frozen variance feature list.
-2. At prediction time, the per-game scale ratio is
-   ``r = (exp(f(x)) - 1) / s_bar`` — where ``s_bar`` is the holdout's
-   baseline expected absolute residual on the same log scale — clipped to
-   the frozen band [2/3, 3/2]. The predictive sample is
-   ``center + pooled_residuals * r``; ``r = 1`` recovers the pooled arm.
-3. Walk-forward three arms on identical weeks (market, pooled
-   market_residual, heteroskedastic market_residual_variance) and report
-   paired per-game Brier/log-loss improvements of the variance arm over
-   the pooled arm with week- and season-blocked intervals on the clean
-   core (``paired_feature_comparisons``).
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -81,7 +47,6 @@ VARIANCE_BENCHMARK_CANDIDATE_ARM = "cfb_benchmark_v1_variance"
 
 
 def add_variance_features(frame: pd.DataFrame) -> pd.DataFrame:
-    """Derive the variance-model inputs that are not already canonical columns."""
 
     require_columns(frame, ("spread_line",), "variance features")
     result = frame.copy()
@@ -91,14 +56,11 @@ def add_variance_features(frame: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class VarianceModel:
-    """A fitted per-game residual-scale model plus its pooled baseline scale."""
-
     estimator: Pipeline
     s_bar: float
     holdout_rows: int
 
     def scale_ratio(self, frame: pd.DataFrame) -> npt.NDArray[np.float64]:
-        """Clipped per-game scale ratios (1.0 = the pooled distribution)."""
 
         missing = sorted(set(CFB_VARIANCE_FEATURE_COLUMNS).difference(frame.columns))
         if missing:
@@ -119,16 +81,6 @@ def fit_cfb_variance_model(
     distribution_fraction: float = 0.20,
     random_state: int = 42,
 ) -> VarianceModel:
-    """Fit the residual-scale model on the frozen recipe's own holdout.
-
-    Mirrors ``fit_cfb_residual_model``'s chronological split exactly (same
-    sort keys, same trailing fraction, same estimator recipe and seed): the
-    first 80% fits a temporary mean model, the trailing 20% supplies
-    out-of-time residuals, and the variance Ridge is fit on those held-out
-    rows with target ``log(|residual| + 1)``. ``s_bar`` is the baseline
-    expected absolute residual on the same log scale, so a game whose
-    features look exactly average gets ratio ~= 1.
-    """
 
     required = {"game_id", "gameday", "ats_margin", *CFB_MODEL_FEATURE_COLUMNS}
     missing = sorted(required.difference(training.columns))
@@ -171,8 +123,6 @@ def fit_cfb_variance_model(
 
 @dataclass(frozen=True)
 class HeteroskedasticMarginModel:
-    """The pooled model's center with a per-game scaled residual sample."""
-
     pooled: MarginModel
     variance: VarianceModel
 
@@ -193,13 +143,6 @@ class HeteroskedasticMarginModel:
         return self.pooled.training_max_gameday
 
     def predict(self, frame: pd.DataFrame) -> pd.DataFrame:
-        """The pooled prediction schema with per-game scaled distributions.
-
-        ``predicted_margin``/``fair_spread``/``predicted_market_residual``
-        are copied from the pooled model unchanged (same center, same
-        forced pick); every distribution-derived quantity is recomputed
-        from ``center + pooled_residuals * ratio``.
-        """
 
         scored = add_variance_features(frame)
         pooled_frame = self.pooled.predict(frame)
@@ -262,7 +205,6 @@ def cfb_variance_benchmark(
     bootstrap_samples: int = 2_000,
     bootstrap_seed: int = 20260817,
 ) -> CfbVarianceBenchmarkResult:
-    """Walk-forward the pooled and heteroskedastic arms on identical weeks."""
 
     required = {
         *_PREDICTION_PASSTHROUGH,

@@ -1,49 +1,3 @@
-"""Regression coverage for the 2026-09-08 ``publish-board`` outage.
-
-A session added a ``corrections`` field to entries in
-``registry/weak_signals.json`` and the matching entry to
-``weak_signals._SIGNAL_FIELDS`` in the SAME commit, but the scheduled
-``lineups_tue`` job ran between the two writes and read the data file one
-field ahead of the code that had to parse it. ``signal_from_payload`` raised
-``WeakSignalError: Signal '...' has unknown fields: corrections``, uncaught,
-all the way up through ``weekly-run``'s ``publish-board`` step -- aborting
-the entire scheduled run and leaving the public site unbuilt.
-
-Both writes are committed now (that specific field is recognised), but the
-CLASS of bug is not fixed by that alone: the next additive field lands the
-same way (data ahead of code, or a mid-session gap a scheduled job races).
-This file pins the fix -- ``weak_signals.load_registry``/``registry_from_payload``/
-``signal_from_payload`` accept ``on_unknown_field="warn"`` to tolerate a
-schema addition instead of raising, and
-``findings_registry.load_weak_signal_registry`` (the traced, single choke
-point every public-site reader of this registry goes through --
-``board_site_content.py``'s findings and signal-ledger-summary loaders,
-``public_board.py``'s findings and signal-ledger pages) now reads with that
-flag -- and pins the boundary: every OTHER validation error (missing
-required field, bad classification, incoherent effect/interval, inadmissible
-closing ground) must still raise, in EITHER mode, because those are real
-data corruption, not additive drift.
-
-The SAME failure shape was traced (2026-09-08, same session) into
-``rotation.py``: ``board_site_content._load_findings_content``'s "Research
-this week" section -- reached from the live ``publish-board`` handler via
-``board_site.build_site`` -> ``load_site_content`` -- calls
-``findings_registry.load_rotation_registry``, which called
-``rotation.load_registry`` unguarded, with the identical
-``"has unknown fields"`` raises (``_no_rotation_record_from_payload``,
-``_family_from_payload``, and, threaded the same way as
-``weak_signals._validate_corrections``, the nested ``_window_from_payload``
-and ``_leg_result_from_payload``). The second half of this file mirrors
-every case above for the rotation registry, with one addition the
-coordinator called for explicitly: a pin that the rotation registry's
-closing-ground taxonomy (``rotation._validate_closing_ground`` and the
-inline closing_ground checks in ``_window_from_payload`` -- release-blocking
-per AGENTS.md's binding "an interval crossing zero is not grounds for
-rejection" rule) is NOT weakened by any of this -- an inadmissible
-``closing_ground`` still raises through the tolerant site-build reader
-exactly as it did before.
-"""
-
 from __future__ import annotations
 
 import json
@@ -103,11 +57,6 @@ def _write_registry(path: Path, payload: dict[str, Any]) -> Path:
 
 
 def test_strict_default_still_raises_on_an_unrecognised_signal_field(tmp_path: Path) -> None:
-    """Unchanged behaviour: the CLI's read path (``weak-signals status`` /
-    ``pool`` / ``record``, via ``cli_commands/registry.py``, and every
-    existing caller of ``load_registry``) must keep hearing about a typo'd
-    field immediately -- this is what caught the real ``corrections`` gap in
-    the first place, before it was reclassified as a recognised field."""
 
     destination = _write_registry(
         tmp_path, _payload(holdout_slow_start_on_production=_signal(reviewer_notes="pending"))
@@ -170,19 +119,6 @@ def test_correction_entry_unknown_field_is_tolerated_only_in_warn_mode() -> None
 
 
 def test_publish_board_registry_reader_survives_a_schema_addition(tmp_path: Path) -> None:
-    """Pins the fix at the traced choke point (``findings_registry.
-    load_weak_signal_registry``), not merely at the low-level parser.
-
-    Every reader on the live ``publish-board`` path --
-    ``board_site_content._load_findings_content``,
-    ``board_site_content._load_signal_ledger_summary``,
-    ``public_board.render_findings_page``,
-    ``public_board.render_signal_ledger_page`` -- calls this function rather
-    than ``weak_signals.load_registry`` directly, so fixing it here is what
-    actually stops a schema addition from aborting the scheduled
-    ``weekly-run`` at its ``publish-board`` step, which is exactly how the
-    2026-09-08 outage happened.
-    """
 
     _write_registry(
         tmp_path,
@@ -200,10 +136,6 @@ def test_publish_board_registry_reader_survives_a_schema_addition(tmp_path: Path
 
 
 def test_publish_board_registry_reader_still_raises_on_real_corruption(tmp_path: Path) -> None:
-    """The tolerant read path must not swallow an actual data problem: a
-    build that would publish a signal with an inadmissible classification (or
-    any other genuine corruption) should still refuse, exactly as before --
-    only ADDITIVE schema drift gets tolerated."""
 
     _write_registry(
         tmp_path,
@@ -217,9 +149,6 @@ def test_publish_board_registry_reader_still_raises_on_real_corruption(tmp_path:
 def test_missing_registry_file_still_loads_as_empty_through_the_site_reader(
     tmp_path: Path,
 ) -> None:
-    """Unrelated to unknown fields, but pins that the tolerant path did not
-    disturb the existing "no file yet" contract (a fresh checkout with no
-    registry history)."""
 
     registry = load_weak_signal_registry(registry_root=tmp_path)
     assert registry.signals == {}
@@ -270,9 +199,6 @@ def _write_rotation_registry(path: Path, payload: dict[str, Any]) -> Path:
 
 
 def test_rotation_strict_default_still_raises_on_an_unrecognised_family_field() -> None:
-    """Unchanged behaviour: the ``rotation`` CLI (``cli_commands/registry.py``)
-    calls ``rotation.load_registry``/``registry_from_payload`` directly and
-    must keep hearing about a typo'd field immediately."""
 
     payload = _rotation_payload(alpha=_rotation_family(reviewer_notes="pending"))
 
@@ -291,10 +217,6 @@ def test_rotation_warn_mode_tolerates_the_unrecognised_field_and_still_loads_the
 
 
 def test_rotation_warn_mode_tolerates_an_unrecognised_field_on_a_nested_window() -> None:
-    """The same tolerance must reach NESTED unknown fields, not just the
-    top-level ``Family`` object -- mirrors the weak-signal registry's
-    ``corrections``-entry case: an unrecognised field on a ``Window`` is the
-    same additive-drift shape one level down."""
 
     window = _rotation_window(campaign_id="future-metadata")
     payload = _rotation_payload(alpha=_rotation_family(windows=[window]))
@@ -310,11 +232,6 @@ def test_rotation_warn_mode_tolerates_an_unrecognised_field_on_a_nested_window()
 def test_rotation_publish_board_registry_reader_survives_a_schema_addition(
     tmp_path: Path,
 ) -> None:
-    """Pins the fix at the traced choke point
-    (``findings_registry.load_rotation_registry``), reached from the live
-    ``publish-board`` handler via ``board_site.build_site`` ->
-    ``load_site_content`` -> ``board_site_content._load_findings_content``'s
-    "Research this week" section -- not merely at the low-level parser."""
 
     _write_rotation_registry(
         tmp_path,
@@ -330,14 +247,6 @@ def test_rotation_publish_board_registry_reader_survives_a_schema_addition(
 def test_rotation_publish_board_registry_reader_still_raises_on_inadmissible_closing_ground(
     tmp_path: Path,
 ) -> None:
-    """The tolerant read path must not weaken the closing-ground taxonomy.
-
-    Repo memory, verbatim: "Directives now enforced in code -- never weaken
-    the validators." A ``closed_negative`` verdict naming an inadmissible
-    ``closing_ground`` (here: not one of AGENTS.md's admissible grounds) is
-    genuine corruption -- release-blocking -- and must still abort the site
-    build through the SAME reader that now tolerates an unrecognised field.
-    """
 
     bad_window = _rotation_window(
         state="spent",
@@ -359,9 +268,6 @@ def test_rotation_publish_board_registry_reader_still_raises_on_inadmissible_clo
 def test_rotation_missing_registry_file_still_loads_as_empty_through_the_site_reader(
     tmp_path: Path,
 ) -> None:
-    """Unrelated to unknown fields, but pins that the tolerant path did not
-    disturb the existing "no file yet" contract, matching the weak-signal
-    registry's own such pin above."""
 
     registry = load_rotation_registry(registry_root=tmp_path)
     assert registry.families == {}
@@ -409,10 +315,6 @@ def _write_weak_signals_registry_dir(tmp_path: Path, payload: dict[str, Any]) ->
 def test_record_replace_repairs_an_entry_that_currently_fails_validation(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The coordinator's exact incident, reproduced and fixed: a
-    ``standard_error: 0.0`` entry sits in the registry alongside a healthy
-    one; ``record --replace`` on the broken name repairs it in place through
-    the CLI -- the sanctioned tool, no hand-editing."""
 
     registry_dir = _write_weak_signals_registry_dir(
         tmp_path,
@@ -440,11 +342,6 @@ def test_record_replace_repairs_an_entry_that_currently_fails_validation(
 def test_record_replace_still_rejects_a_non_positive_standard_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The write side stays strict: a --replace that would store a
-    non-positive standard_error still fails loudly, exactly as it does for a
-    brand-new record. Nothing here weakens that validator -- the repair path
-    only lets a WRITE reach the registry despite an existing invalid row; it
-    never accepts an invalid VALUE."""
 
     registry_dir = _write_weak_signals_registry_dir(
         tmp_path, _payload(broken=_signal(standard_error=0.0))
@@ -481,10 +378,6 @@ def test_record_replace_still_rejects_an_inverted_interval(
 def test_record_replace_still_rejects_an_inadmissible_closing_ground(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Repo memory, verbatim: "Directives now enforced in code -- never
-    weaken the validators." A terminal classification with no admissible
-    closing_ground is refused through the repair path exactly as it is on a
-    fresh record."""
 
     registry_dir = _write_weak_signals_registry_dir(
         tmp_path, _payload(broken=_signal(standard_error=0.0))
@@ -503,7 +396,6 @@ def test_record_replace_still_rejects_an_inadmissible_closing_ground(
 
 
 def test_load_registry_permissive_quarantines_only_the_invalid_entry() -> None:
-    """Library-level pin of the mechanism underneath the CLI test above."""
 
     payload = _payload(broken=_signal(standard_error=0.0), healthy=_signal(effect=0.1))
 
@@ -538,8 +430,6 @@ def test_load_registry_permissive_reads_from_disk_and_save_preserves_untouched_r
 def test_save_registry_preserving_quarantine_drops_the_now_repaired_entry(
     tmp_path: Path,
 ) -> None:
-    """The one entry a caller actually repairs must end up validated and
-    live in ``signals``, not duplicated into the quarantine leftovers."""
 
     destination = _write_registry(tmp_path, _payload(broken=_signal(standard_error=0.0)))
     registry, quarantined = load_registry_permissive(destination)
@@ -555,13 +445,6 @@ def test_save_registry_preserving_quarantine_drops_the_now_repaired_entry(
 
 
 def test_record_signal_warns_and_widens_a_standard_error_narrower_than_the_pool_supports() -> None:
-    """docs/weak_signal_pooling.md defect 4's floor -- a band narrower than
-    its own sample size can support is a block-bootstrap artifact, not
-    power, and is floored rather than trusted at POOL time -- applied at
-    RECORD time too, so a future lane cannot store a zero-width (or simply
-    implausibly narrow) band in the first place. Widening only, always with
-    a warning: this is the exact shape of the incident that motivated the
-    whole repair-path fix above, caught before it can be written at all."""
 
     registry = Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
     for name, games, se in (
@@ -589,9 +472,6 @@ def test_record_signal_warns_and_widens_a_standard_error_narrower_than_the_pool_
 
 
 def test_record_signal_does_not_floor_when_the_pool_is_too_thin_to_say() -> None:
-    """Fewer than three usable same-unit entries elsewhere in the registry:
-    nothing to floor against, so the offered value is stored unchanged --
-    matching :func:`_plausibility_curve`'s own minimum at POOL time."""
 
     registry = Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
     only_other = signal_from_payload(

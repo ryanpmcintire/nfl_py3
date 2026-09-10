@@ -1,12 +1,3 @@
-"""Measure whether the ATS evaluator recovers deliberately injected signal.
-
-This is a positive-control experiment, not a candidate football feature. Each
-synthetic feature is generated independently of real outcomes, then given a
-known counterfactual effect on ATS margin. The same chronological weekly Ridge
-path used by the active market-residual model must learn that effect using only
-earlier games.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -138,7 +129,6 @@ def _smoothed_probabilities(
 def _validate_active_reproduction(
     reproduction: pd.DataFrame, *, prediction_rows: int
 ) -> tuple[float, float, int]:
-    """Fail unless the audit exactly reconstructs the active evaluation."""
 
     prediction_error = float(
         np.abs(reproduction["baseline_yhat"] - reproduction["predicted_market_residual"]).max()

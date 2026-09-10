@@ -1,18 +1,3 @@
-"""Uncorrected point read, paired against the promoted home-side offset.
-
-MOD-18 lane S promotion (2026-09-07, docs/home_side_offset_promotion.md): the
-served ``market_residual`` point now carries a walk-forward home-side offset
-by spread bucket. This challenger tracks the read WITHOUT that offset -- the
-model exactly as it was served before the promotion -- so the 2026 season
-scores both arms on the same games at no rotation-window cost.
-
-Unlike the mapping incumbents it never refits: ``margin-predict`` writes both
-reads per game into ``home_side_offset.json`` beside the card, and this
-recorder reads the uncorrected probability from that sidecar verbatim. It
-refuses a forecast without the sidecar (a pre-promotion card carries no
-paired read to record) and a fingerprint drift, exactly like its siblings.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -43,12 +28,6 @@ CHALLENGER_ID = "home_side_offset_off_incumbent"
 
 
 def uncorrected_card(card: pd.DataFrame, sidecar: dict[str, Any]) -> pd.DataFrame:
-    """``card`` with ``home_cover_probability`` replaced by the uncorrected read.
-
-    Every game on the card must appear in the sidecar; a missing game is a
-    contract failure, never a silent zero, because the whole point of the
-    pair is that both arms scored the same games.
-    """
 
     games = sidecar.get("games")
     if not isinstance(games, list):
@@ -85,12 +64,6 @@ def record_home_side_offset_incumbent_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the uncorrected read's forced picks to the prospective challenger ledger.
-
-    ``data_root`` is accepted for signature parity with the other recorders
-    (the lock-day rehearsal calls every recorder the same way); this one
-    needs only the active forecast directory.
-    """
 
     del data_root
     entry = find_challenger(artifacts_root, CHALLENGER_ID)

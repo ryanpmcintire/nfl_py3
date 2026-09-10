@@ -1,20 +1,3 @@
-"""Per-team pregame state trends for the public team-explorer page.
-
-The page consumes ONLY the canonical team-state feature schema produced by
-:func:`nfl_ats.features.build_team_states` -- one row per team per completed
-game carrying ``state_<metric>`` columns for every metric in
-:data:`nfl_ats.constants.STATE_METRICS`. Each row's ``state_<metric>`` is the
-team's exponentially-weighted pregame state (the strictly-earlier value the
-model itself reads): offense/defense EPA per play, completion % over expected,
-turnover and sack rates, point differential, and the ATS residual. No outcome,
-market, or model-probability field is ever read here.
-
-Local parquet data is optional. Every public-facing function degrades to a
-clean empty state when the table is absent, and the unit tests drive the same
-functions with a deterministic :func:`make_schema_fixture` so the contract
-holds without any on-disk data.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
@@ -76,12 +59,6 @@ METRIC_GOOD_DIRECTION: dict[str, int] = {
 
 
 def metric_good_direction(metric: str) -> int:
-    """+1 when higher is better for ``metric``, -1 when lower is better.
-
-    Unknown metrics return 0, which callers must render as NEUTRAL rather than
-    guessing a polarity. A wrong colour is worse than no colour: it contradicts
-    the help text instead of merely omitting a cue.
-    """
 
     return METRIC_GOOD_DIRECTION.get(metric, 0)
 
@@ -134,17 +111,11 @@ def metric_help(metric: str) -> str:
 
 
 def metric_label(metric: str) -> str:
-    """Human-readable header for a canonical metric (fallback: the raw name)."""
 
     return METRIC_LABELS.get(metric, metric)
 
 
 def coerce_state_table(state_table: pd.DataFrame | None) -> pd.DataFrame:
-    """Validate a team-state table and return only the canonical columns.
-
-    Raises :class:`ValueError` on a malformed frame so a bad artifact fails
-    loud rather than silently rendering a misleading page.
-    """
 
     if state_table is None or len(state_table) == 0:
         return pd.DataFrame(columns=[*IDENTIFIER_COLUMNS, *STATE_COLUMNS])
@@ -169,14 +140,6 @@ def coerce_state_table(state_table: pd.DataFrame | None) -> pd.DataFrame:
 
 @dataclass
 class TeamTrends:
-    """Aggregated per-team pregame-state trends for one data load.
-
-    ``latest`` is the long-form snapshot of the most recent season with data
-    (columns: ``team, metric, value, league_mean, z``). ``trend`` is the
-    per-(team, metric, season) mean pregame state. ``long`` is the full
-    pregame long form, useful for downstream tests and the rendered charts.
-    """
-
     latest_season: int | None
     latest: pd.DataFrame
     trend: pd.DataFrame
@@ -199,13 +162,6 @@ def aggregate_team_trends(
     *,
     metrics: Sequence[str] | None = None,
 ) -> TeamTrends:
-    """Aggregate a canonical team-state table into per-team, per-season trends.
-
-    Each team's pregame state for a season is the mean of its per-game
-    ``state_<metric>`` values that season (the exponentially-weighted team
-    state the model reads at kickoff). ``z`` is the team's value relative to
-    the league mean for that season and metric.
-    """
 
     frame = coerce_state_table(state_table)
     if frame.empty:
@@ -253,16 +209,6 @@ def aggregate_team_trends(
 
 
 def feature_table_to_team_states(feature_table: pd.DataFrame | None) -> pd.DataFrame | None:
-    """Convert a forecast's canonical per-game feature table into the team-state
-    long form this module consumes.
-
-    The feature table (output of :func:`nfl_ats.features.attach_team_states`)
-    carries ``home_<metric>`` / ``away_<metric>`` pregame state columns for
-    every canonical metric, plus ``home_team`` / ``away_team`` identifiers. We
-    melt each game into two team rows. Returns ``None`` when the table does not
-    carry the canonical state columns, so callers can fall back to an empty
-    state without guessing.
-    """
 
     if feature_table is None or len(feature_table) == 0:
         return None
@@ -293,14 +239,6 @@ def make_schema_fixture(
     metrics: Sequence[str] | None = None,
     seed: int = 7,
 ) -> pd.DataFrame:
-    """A deterministic, synthetic canonical team-state table.
-
-    Values are fabricated (clearly not real team quality) and exist ONLY to
-    exercise the schema and rendering -- they never assert a football fact.
-    The output honours the exact column contract
-    (:data:`IDENTIFIER_COLUMNS` + :data:`STATE_COLUMNS`) and is stable for a
-    given ``seed`` so tests can assert on it.
-    """
 
     wanted = list(metrics) if metrics is not None else list(STATE_METRICS)
     state_columns = [f"state_{m}" for m in wanted]
@@ -323,9 +261,6 @@ def make_schema_fixture(
 
 
 def team_state_payload(trends: TeamTrends) -> Mapping[str, Mapping[str, float]]:
-    """Compact ``{team: {metric: latest_z}}`` map for the matchup comparer's
-    embedded JSON. ``z`` (team minus league mean) is what the comparer shows,
-    so the payload carries only that, never raw outcome or market data."""
 
     payload: dict[str, dict[str, float]] = {}
     if trends.latest.empty:

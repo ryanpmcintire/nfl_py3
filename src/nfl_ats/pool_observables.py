@@ -1,21 +1,3 @@
-"""Week-1 pool observables capture (LEAD-52, POL-05 input).
-
-The pool's field size and prize structure decide every contest-utility
-question, and both are observable only once the pool is entered; each
-game's pick distribution unlocks at its own kickoff. There is no API
-(the pool needs a login), so this module is a MANUAL-entry capture path:
-values read off the pool pages are written into immutable UTC-stamped
-snapshot directories with SHA-256 manifests, exactly like every other
-ingest in this repo. It never touches a ledger, a forecast, or a model.
-
-Two record types, one directory each:
-
-- field/prive facts: ``entries``, ``paid_places``, free-text prize
-  notes (recorded once per week, at entry time);
-- unlocked distributions: per-game home/away pick shares with the
-  unlock instant (recorded any time after each game's kickoff).
-"""
-
 from __future__ import annotations
 
 import re
@@ -35,7 +17,7 @@ OBSERVABLES_DIRNAME = "pool_observables"
 
 
 class PoolObservableError(ValueError):
-    """A refused manual observation (fail closed, never a partial row)."""
+    pass
 
 
 @dataclass(frozen=True)
@@ -146,7 +128,6 @@ def _write_snapshot(
 def record_field_observation(
     data_root: Path, observation: FieldObservation, *, now: datetime | None = None
 ) -> dict[str, Any]:
-    """Validate and freeze one week's field/prize facts."""
 
     _validate_field(observation)
     return _write_snapshot(
@@ -161,7 +142,6 @@ def record_field_observation(
 def record_distribution(
     data_root: Path, observation: DistributionObservation, *, now: datetime | None = None
 ) -> dict[str, Any]:
-    """Validate and freeze one game's unlocked pick distribution."""
 
     _validate_distribution(observation)
     return _write_snapshot(
@@ -174,7 +154,6 @@ def record_distribution(
 
 
 def latest_snapshots(data_root: Path) -> list[dict[str, Any]]:
-    """Read-only inventory of captured snapshots (no evaluation)."""
 
     root = data_root / OBSERVABLES_DIRNAME
     if not root.is_dir():

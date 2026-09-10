@@ -1,28 +1,3 @@
-"""The enforceable "everything is tied to a variable" law (owner directive).
-
-Every accuracy figure rendered on the site must come from ONE named constant;
-no hand-typed number literals in prose; and each canonical stat renders as a
-figure ONLY on its home page. This module enforces the source half of that
-law: the canonical figures -- headline grades, chain/overlay evidence, and
-the per-card study numbers -- may appear as SOURCE LITERALS only inside
-``nfl_ats.dashboard.findings_content``'s pinned-number region (the constants
-and ``HEADLINE`` definition block ending at its "End of the pinned-number
-region" marker). Anywhere else in the dashboard modules they must be
-composed from those constants, so hand-typing a figure into prose fails CI.
-
-Mechanics: each file is tokenized with :mod:`tokenize` and COMMENT tokens are
-blanked out before scanning, so provenance comments never trip the scan
-while string literals (which DO reach rendered pages) always do. The
-rendered-page half of the law lives in ``tests/test_public_board.py``
-(canonical figures render only on their home page's default view).
-
-Canonical stats and their homes: opener baseline 53.4 / close 52.1 / arrest
-evaluation 53.76 vs 53.36 / season range -> model record; ≈55%
-expectation + 54.2% chain history + collapsed ladder -> index.html; per-card
-effect sizes/intervals -> findings.html; per-row track records ->
-models.html.
-"""
-
 from __future__ import annotations
 
 import io
@@ -67,14 +42,6 @@ def _module_source(module: object) -> str:
 
 
 def _blank_comment_tokens(source: str) -> str:
-    """The source with every ``#...`` comment replaced by spaces.
-
-    Comments are documentation, not rendered copy, so they cannot smuggle a
-    number onto the site -- but string tokens survive intact, which is what
-    matters: a band typed into a prose string is exactly the failure mode
-    this guard exists to catch (and it also keeps CSS hex colors inside
-    strings from being mangled by a naive ``#`` split).
-    """
 
     spans: list[tuple[tuple[int, int], tuple[int, int]]] = []
     for token in tokenize.generate_tokens(io.StringIO(source).readline):
@@ -89,7 +56,6 @@ def _blank_comment_tokens(source: str) -> str:
 
 
 def _prose_code() -> dict[str, str]:
-    """Comment-stripped code for everything OUTSIDE the allowed region."""
 
     raw = _module_source(findings_content)
     assert _REGION_END_MARKER in raw, (
@@ -107,12 +73,6 @@ def _prose_code() -> dict[str, str]:
 
 
 def test_canonical_figures_appear_only_inside_the_pinned_number_region() -> None:
-    """THE LAW: no canonical figure as a source literal outside the region.
-
-    A hit anywhere in ``public_board``/``model_ledger``/``viz``, or below
-    findings_content's region marker, means a number was hand-typed into
-    prose instead of composed from the named constants.
-    """
 
     for token in CANONICAL_FIGURE_TOKENS:
         for name, code in _prose_code().items():
@@ -125,13 +85,6 @@ def test_canonical_figures_appear_only_inside_the_pinned_number_region() -> None
 
 
 def test_the_pinned_region_actually_pins_the_constants() -> None:
-    """Positive control for the scanner: the region really does contain the
-    constants this law protects, so the ban above can never pass vacuously.
-
-    The learned-availability pair (52.14% -> 52.24%), the full-player layer
-    grade (52.1), and the bettors-vs-close band ("55-56") must exist as code
-    literals inside the region.
-    """
 
     raw = _module_source(findings_content)
     head, _, _tail = raw.partition(_REGION_END_MARKER)
@@ -151,8 +104,6 @@ def test_the_pinned_region_actually_pins_the_constants() -> None:
 
 
 def test_ceiling_band_constants_are_frozen() -> None:
-    """All measured (from doc): docs/pool_edge_plan.md ceiling section and
-    docs/leak_ceiling_control.md's total-leak positive control."""
 
     assert findings_content.PRACTICAL_CEILING_LOW_PCT == 54.0
     assert findings_content.PRACTICAL_CEILING_HIGH_PCT == 55.0
@@ -164,8 +115,6 @@ def test_ceiling_band_constants_are_frozen() -> None:
 
 
 def test_headline_ceiling_is_derived_from_the_practical_band() -> None:
-    """HEADLINE's ceiling interval IS the practical band -- one variable, so
-    the findings hero tile and every verbal repeat can never drift apart."""
 
     assert (
         str(int(findings_content.PRACTICAL_CEILING_LOW_PCT)) in findings_content.HERO_TILES[1].value
@@ -177,8 +126,6 @@ def test_headline_ceiling_is_derived_from_the_practical_band() -> None:
 
 
 def test_player_study_constants_are_frozen() -> None:
-    """All measured (from doc): docs/modeling.md, ROADMAP.md PER-05 ablation,
-    docs/data_feasibility.md participation-rating screen."""
 
     assert findings_content.MARKET_TEAM_FORM_MODEL_PCT == 51.1
     assert findings_content.FULL_PLAYER_LAYER_PCT == 52.1
@@ -189,8 +136,6 @@ def test_player_study_constants_are_frozen() -> None:
 
 
 def test_ladder_and_cards_compose_the_bands_not_retype_them() -> None:
-    """The composed sentences still carry the doc-measured bands end to end:
-    if a constant moves, these renderings move with it or fail here."""
 
     rungs = findings_content.ladder_rungs(None)
     ceiling_rung = rungs[-2]

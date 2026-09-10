@@ -1,52 +1,3 @@
-"""Trailing, pregame-safe team "style"/personality feature builder (PBP-08).
-
-Builds team-season and team-game play-calling TENDENCY vectors -- short-pass
-share, deep-pass share, average air yards, a screen-play proxy, pass-rate-
-over-expected (PROE, using nflverse's own down/distance/score/time-adjusted
-``pass_oe`` -- adjusted and cheap, since it ships with the play-by-play),
-shotgun rate, no-huddle rate, run-direction concentration (Herfindahl index
-over left/middle/right), and seconds-per-play pace (drive time-of-possession
-divided by drive play count). These are deliberately QUALITY-ORTHOGONAL:
-none of them measure how good a team is, only how it chooses to play, so
-they sit outside the measured team-quality ceiling (ROADMAP.md PBP-05) that
-already bounds "measure team quality better" features near zero.
-
-Every dimension is centered against ITS OWN SEASON'S league mean (the exact
-PER-07 convention: "expressed relative to each season's league norm ... strips
-the well-documented league-wide drift"), so a raw era-wide drift (e.g. the
-leaguewide shift to more shotgun/no-huddle over 2009-2025) does not read as a
-team identity.
-
-**Full nflverse PBP, not the trimmed in-repo snapshot.** ``nfl_ats.pbp``
-intentionally narrows the stored play-by-play snapshot to
-``PBP_SNAPSHOT_COLUMNS`` (no ``air_yards``, ``shotgun``, ``no_huddle``,
-``run_location`` -- confirmed by reading ``src/nfl_ats/pbp.py``), and no
-untrimmed snapshot exists in this local clone (``data/raw/*/manifest.json``
-has no ``season=*`` PBP partitions locally -- read, this session). This
-script therefore fetches nflreadpy's full-column PBP directly (network
-call, one-time per season, cached locally in ``data/pbp/team_style/`` which
-is already gitignored) rather than routing through the narrowed contract.
-It reuses ``nfl_ats.pbp.analysis_plays``/``build_drive_table`` (the same
-play-eligibility filter and drive aggregation already used by the production
-PBP-05 pipeline) and ``nfl_ats.constants.TEAM_ABBREVIATION_ALIASES`` for
-franchise continuity (OAK->LV, SD->LAC, STL->LA) -- applied by hand here
-because ``build_pbp_team_game_metrics`` applies the alias to its own
-``plays`` frame but calls ``build_drive_table`` on the UNALIASED raw pbp,
-so drive-level columns silently fail to match aliased team codes for
-OAK/SD/STL-era games (read in ``src/nfl_ats/pbp.py``, not used directly
-here for that reason -- this script re-derives drive pace itself with the
-alias applied consistently on both sides).
-
-Output (both gitignored, ``data/pbp/**``):
-  - ``data/pbp/team_style/team_game_style.parquet``: one row per
-    (season REG, week, game_id, team) with the 9 raw dimensions plus
-    league-season-centered versions.
-  - ``data/pbp/team_style/team_season_style.parquet``: one row per
-    (season, team), pooled directly from plays/drives (not an average of
-    game rates, to avoid Simpson's-paradox bias from uneven per-game play
-    counts), raw + centered, plus n_pass_plays/n_off_plays/n_rush_plays.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -157,16 +108,6 @@ def _herfindahl(counts: pd.Series) -> float:
 
 
 def _drive_pace_table(raw: pd.DataFrame) -> pd.DataFrame:
-    """Season/game/team seconds-per-play pace from drive time-of-possession.
-
-    Reuses ``nfl_ats.pbp.build_drive_table`` verbatim (same eligibility
-    filter as the production PBP-05 pipeline: real scrimmage plays, kneels/
-    spikes/aborted plays already excluded before drives are aggregated).
-    Applies ``TEAM_ABBREVIATION_ALIASES`` to the drive table's own team
-    column -- ``build_pbp_team_game_metrics`` does NOT do this consistently
-    (see module docstring), so this recomputes it directly rather than
-    importing that function.
-    """
 
     drives = build_drive_table(raw)
     if drives.empty:
@@ -182,7 +123,6 @@ def _drive_pace_table(raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_team_game_style(raw: pd.DataFrame) -> pd.DataFrame:
-    """One row per (season, week, game_id, team): the 9 raw style dimensions."""
 
     plays = analysis_plays(raw)
     plays = plays.loc[plays["competitive_play"]].copy()
@@ -280,7 +220,6 @@ def build_team_game_style(raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_team_season_style(raw: pd.DataFrame) -> pd.DataFrame:
-    """One row per (season, team), pooled directly from plays/drives."""
 
     plays = analysis_plays(raw)
     plays = plays.loc[plays["competitive_play"]].copy()
@@ -374,18 +313,6 @@ def build_team_season_style(raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_defense_faced_style(raw: pd.DataFrame) -> pd.DataFrame:
-    """Per (season, defteam): the offensive-formation response this defense
-    DRAWS from opposing offenses -- a pressure-NEUTRAL proxy for defensive
-    "aggression" identity, since sack/pressure rate is quality-laden (a
-    genuinely better pass rush produces both more sacks AND more shotgun
-    response, confounding style with quality). ``shotgun_rate_faced`` is the
-    exact proxy the task predeclaration names as acceptable ("opponent
-    shotgun-forced rate"): the rate at which opposing offenses line up in
-    shotgun against this defense, centered vs league mean. Same eligibility
-    filter (``analysis_plays`` + ``competitive_play``) and same
-    ``TEAM_ABBREVIATION_ALIASES`` handling as the offensive-side tables,
-    just grouped by ``defteam`` instead of ``posteam``.
-    """
 
     plays = analysis_plays(raw)
     plays = plays.loc[plays["competitive_play"]].copy()
@@ -408,7 +335,6 @@ def build_defense_faced_style(raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_league_centered(table: pd.DataFrame, *, season_col: str = "season") -> pd.DataFrame:
-    """Center every style dimension against ITS OWN SEASON's unweighted team mean."""
 
     result = table.copy()
     for dim in STYLE_DIMENSIONS:

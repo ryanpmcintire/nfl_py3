@@ -1,12 +1,3 @@
-"""Postseason rows are servable, but never train or grade anything.
-
-The canonical feature table can carry WC/DIV/CON/SB rows so playoff weeks can
-be predicted, while every training and evaluation path stays regular-season
-only. These tests pin both halves of that contract: the regular-season table is
-bit-identical whether or not postseason rows are requested, and no fitting,
-backtest, or evaluation path can see a postseason row.
-"""
-
 from __future__ import annotations
 
 import json
@@ -115,13 +106,6 @@ def _team_stat_rows(schedules: pd.DataFrame) -> list[dict[str, object]]:
 
 
 def _schedule_and_stats(wild_card_margin: float = 49.0) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Two full regular seasons plus one postseason bracket between them.
-
-    The bracket is played in January/February of ``FIRST_SEASON + 1``, so the
-    second regular season is chronologically after it: any playoff result that
-    leaked into the regular-season build would be visible in the next season's
-    rows.
-    """
 
     rows: list[dict[str, object]] = []
     for season in (FIRST_SEASON, SECOND_SEASON):
@@ -162,12 +146,6 @@ def _schedule_and_stats(wild_card_margin: float = 49.0) -> tuple[pd.DataFrame, p
 
 
 def _elo_gap(features: pd.DataFrame, game_id: str, team: str) -> float:
-    """The team's pregame Elo minus its opponent's, for one game.
-
-    The published table exposes ``elo_diff`` (home Elo plus home-field minus
-    away Elo) rather than the two raw ratings, so the team-oriented gap is
-    recovered by removing the home-field term and orienting the sign.
-    """
 
     row = features.loc[features["game_id"].eq(game_id)].iloc[0]
     home_field = 0.0 if int(row["neutral_site"]) else HOME_FIELD_ELO
@@ -180,7 +158,6 @@ def _schedule_rating_diff(features: pd.DataFrame, game_id: str) -> float:
 
 
 def _team_season_elo(features: pd.DataFrame, team: str, season: int) -> pd.DataFrame:
-    """One pregame Elo view per regular-season game the team played."""
 
     involved = features["home_team"].eq(team) | features["away_team"].eq(team)
     rows = features.loc[
@@ -191,7 +168,6 @@ def _team_season_elo(features: pd.DataFrame, team: str, season: int) -> pd.DataF
 
 @pytest.fixture(scope="module")
 def postseason_build() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """(schedules, regular-only features, features including the bracket)."""
 
     schedules, stats = _schedule_and_stats()
     regular = build_game_features(schedules, stats, **BUILD_KWARGS)  # type: ignore[arg-type]
@@ -297,14 +273,6 @@ FILL_COLUMNS = (*MODEL_FEATURE_COLUMNS, *GRAPH_FEATURE_COLUMNS)
 
 
 def _model_frame_with_postseason() -> pd.DataFrame:
-    """160 regular-season rows over two seasons plus nine postseason rows.
-
-    The first season's bracket sits chronologically between the two regular
-    seasons and carries wildly out-of-scale features and outcomes, so any
-    training path that admitted it would move visibly. The second season's
-    bracket is the latest block in the table, so a leak would also change every
-    reported training cutoff.
-    """
 
     specs: list[dict[str, object]] = []
     cursor = date(2019, 9, 1)
@@ -465,13 +433,13 @@ def test_margin_predict_cli_preserves_postseason_round_in_artifact_metadata(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """January serving keeps the safety-validated round visible at artifact level."""
 
     features = tmp_path / "postseason_features.parquet"
     postseason_model_frame.to_parquet(features, index=False)
     artifacts = tmp_path / "artifacts"
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(artifacts))
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
+    monkeypatch.setenv("NFL_ATS_DATA_DIR", str(tmp_path / "data"))
 
     assert (
         cli.main(

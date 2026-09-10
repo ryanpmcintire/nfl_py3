@@ -1,13 +1,3 @@
-"""ENG-04 / UI-18: lineup-aware assistant intents.
-
-Exercises the new intents end to end (a synthetic ``lineups.json`` written
-to ``tmp_path``, loaded through the REAL ``nfl_ats.lineup_view`` parser,
-attached to the shared ``BoardContent`` fixture, then routed through
-``nfl_ats.board_assistant.answer`` -- the same path the site build uses)
-plus a few direct unit tests of ``nfl_ats.board_assistant_lineups`` for
-precision on the fail-closed consistency rule and staleness math.
-"""
-
 from __future__ import annotations
 
 import json
@@ -259,11 +249,6 @@ def test_player_availability_marks_a_non_scored_player_context_only(tmp_path: Pa
 def test_player_availability_shows_a_percentage_even_without_a_designation(
     tmp_path: Path,
 ) -> None:
-    """UI-20-AB (2026-09-05): every player's percentage is now a real
-    per-player, per-game forecast from the availability model (depth chart
-    + injury report + recent snaps), not a position-level base rate -- so a
-    player with NO injury designation this week still gets a real number,
-    never the retired "no designation" placeholder."""
 
     resolved = answer("Is Malik Washington playing?", _knowledge(tmp_path))
     assert resolved.topic == "lineup:availability"

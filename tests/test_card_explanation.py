@@ -173,10 +173,6 @@ def test_explain_pick_with_missing_market_and_probability_reports_no_data() -> N
 
 
 def test_explain_pick_with_lineage_reports_market_snapshot() -> None:
-    """The snapshot id/timestamp stay on the STRUCTURED component (for
-    lineage) but must never leak into the reader-facing text -- 2026-09-05
-    hard rule: no snapshot ids, timestamps, hashes, or the word "snapshot"
-    in reader text (see check_language)."""
 
     explanation = explain_pick(_row(), lineage=_lineage_with_market_snapshot())
 
@@ -212,9 +208,6 @@ def test_explain_pick_with_no_overlays_reports_none_fired() -> None:
 
 
 def test_explain_pick_with_a_fired_overlay_names_it_and_marks_changed() -> None:
-    """2026-09-05: reader text names the plain-English member label
-    ("coach fade"), never the internal member id ("coach_fade") -- that
-    raw id stays on the structured ``OverlayFiring.name`` field only."""
 
     firing = OverlayFiring(
         name=COACH_FADE,
@@ -255,9 +248,6 @@ def test_explain_pick_refresh_confirms_no_change() -> None:
 
 
 def test_explain_pick_refresh_flip_is_reported() -> None:
-    """2026-09-05: the detailed "pick moved from X to Y" sentence stays on
-    the STRUCTURED ``RefreshComponent.detail`` field; the reader text now
-    carries one short plain clause instead."""
 
     change = RefreshChangeInput(previous_pick_side="HOME", new_pick_side="AWAY", movement_delta=1.5)
     explanation = explain_pick(_row(), refresh_changes=change)
@@ -310,8 +300,6 @@ def test_check_language_fails_on_every_forbidden_phrase(phrase: str) -> None:
 
 
 def test_template_output_always_passes_the_language_contract() -> None:
-    """The rendered template itself must never trip its own contract, across
-    every combination of present/absent optional inputs."""
 
     firing = OverlayFiring(
         name=COACH_FADE, direction="complemented toward LA", input_value="year-1 coach"
@@ -466,14 +454,6 @@ def test_family_contributions_from_waterfall_entry_extracts_family_steps() -> No
 
 
 def test_one_printed_percentage_never_carries_two_confidence_words() -> None:
-    """A reader must never see one number described two ways.
-
-    Week 1 2026 shipped "ATL a 56% cover, a lean" beside "MIA a 56% cover,
-    a strong lean" -- 0.559 and 0.561, either side of ``confidence_word``'s
-    0.56 band edge, both rounded to "56%" for printing. The explanation now
-    prints one decimal and the band is applied to the rounded number, so
-    the word is a function of what the reader sees.
-    """
 
     from nfl_ats.displayed_confidence import StrengthBands
     from nfl_ats.public_board import confidence_word
@@ -491,7 +471,6 @@ def test_one_printed_percentage_never_carries_two_confidence_words() -> None:
 
 
 def test_confidence_word_bands_are_unchanged_away_from_the_edges() -> None:
-    """Rounding to the printed number must not move the bands themselves."""
 
     from nfl_ats.displayed_confidence import StrengthBands
     from nfl_ats.public_board import confidence_word

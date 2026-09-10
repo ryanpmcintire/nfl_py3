@@ -1,5 +1,3 @@
-"""Strict decision-time hierarchical APM units; frozen PER-09 recipe."""
-
 from __future__ import annotations
 
 from collections import Counter
@@ -34,7 +32,6 @@ UNIT_BY_POSITION = {
 def fit_unit_ratings(
     plays: pd.DataFrame, rosters: pd.DataFrame
 ) -> dict[tuple[str, str], tuple[float, int]]:
-    """Fit one already time-filtered season; return team-side EPA and play count."""
     if plays.empty:
         return {}
     roster = rosters.merge(
@@ -92,12 +89,6 @@ def fit_unit_ratings(
 def attach_apm_unit_features(
     games: pd.DataFrame, plays: pd.DataFrame, rosters: pd.DataFrame
 ) -> pd.DataFrame:
-    """Seed from prior season and update only after source games complete.
-
-    ``plays`` is the valid competitive participation table plus week and
-    completed_at. Missing completion timestamps never enter a fit. Roster
-    weeks are restricted to completed plays before deriving modal units.
-    """
     for frame, required in (
         (games, {"game_id", "season", "home_team", "away_team", "decision_timestamp"}),
         (

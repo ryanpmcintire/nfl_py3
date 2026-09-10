@@ -1,5 +1,3 @@
-"""The interactive site must follow the published card across refreshes."""
-
 from __future__ import annotations
 
 import json
@@ -62,9 +60,6 @@ def test_lineup_date_comes_from_same_rendered_lineup() -> None:
 
 
 def test_interactive_payload_carries_each_pick_lock_time() -> None:
-    """The game-room receipt shows when the pick stopped being changeable
-    (2026-09-07); a game with no known kickoff instant carries null, never a
-    guessed time."""
     board = build_fixture_content()
     payload = board_interactive.card_payload(board)
     by_id = {game["id"]: game for game in payload["games"]}

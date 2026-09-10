@@ -1,31 +1,3 @@
-"""ENG-08 timing-policy instrumentation: read-only refresh-trigger scan.
-
-Reconstructs every refresh trigger this project can currently observe for one
-(season, week) -- the fixed clock checkpoints (from the scheduler's own state
-file) plus the real non-clock events (an inactives snapshot posting, a new
-injury-report snapshot, a projected-lineup change, an opener-vs-current line
-move) -- and appends them to the append-only, idempotent JSONL evidence log
-under ``artifacts/refresh_triggers/<season>/week_<n>.jsonl`` (gitignored,
-matching every other generated artifact in this repo).
-
-The actual detection logic lives in the importable, testable package module
-``src/nfl_ats/refresh_triggers.py``; this script only resolves paths and
-season/week and prints a summary, mirroring
-``scripts/capture_referee_assignments.py``'s / ``scripts/capture_inactives.py``'s
-own thin-wrapper precedent.
-
-**This script never runs ``refresh-picks``, ``publish-predictions``, or any
-``weak-signals``/``rotation`` recorder, and never writes to ``registry/``.**
-It is read-only against every capture directory it scans and only ever
-appends to its own evidence log.
-
-Usage:
-    .\\.tools\\uv.exe run --no-sync python scripts/refresh_trigger_log.py \\
-        --scan --current
-    .\\.tools\\uv.exe run --no-sync python scripts/refresh_trigger_log.py \\
-        --scan --season 2026 --week 1
-"""
-
 from __future__ import annotations
 
 import argparse

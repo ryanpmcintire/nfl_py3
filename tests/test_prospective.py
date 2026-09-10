@@ -232,10 +232,6 @@ def test_nflcom_out2_starters_flip_matches_the_frozen_rule() -> None:
 def test_nflcom_team_starter_out_counts_aggregates_per_canonical_team_week(
     tmp_path: Path,
 ) -> None:
-    """Regression pin: the shared counter the publish-time recorder AND the
-    refresh-path overlay (nfl_ats.nflcom_refresh_overlay) both consume. The
-    pre-2026-08-24 inline version crashed on a pandas as_index=False quirk
-    before this extraction; teams with zero flagged Outs are simply absent."""
 
     snapshot = tmp_path / "snapshot"
     snapshot.mkdir()
@@ -525,7 +521,6 @@ def test_nflcom_recorder_skips_week_when_page_fails_the_freshness_gate(tmp_path)
 
 
 def _write_friday_page_and_snaps(data: Path) -> None:
-    """A valid FINAL page: fetched Friday 17:00 ET of the game week."""
 
     snapshot = data / "raw" / "nflcom_injuries" / "20260911T210000Z"
     snapshot.mkdir(parents=True)
@@ -569,12 +564,6 @@ def _write_friday_page_and_snaps(data: Path) -> None:
 
 
 def test_a_weekly_capture_does_not_hide_the_historical_archive(tmp_path: Path) -> None:
-    """In-season capture writes one small snapshot per run, newer than the
-    multi-season backfill. Selecting purely by newest directory would make the
-    archive invisible the moment the first weekly capture landed -- breaking
-    every historical read -- and would find the current week only by luck of
-    ordering. Selection is by "newest snapshot that actually holds this page".
-    """
 
     root = tmp_path / "raw" / "nflcom_injuries"
 
@@ -613,8 +602,6 @@ def test_a_weekly_capture_does_not_hide_the_historical_archive(tmp_path: Path) -
 
 
 def test_a_later_capture_of_the_same_week_wins(tmp_path: Path) -> None:
-    """Wed/Thu/Fri captures of one week each write their own snapshot; the
-    frozen rule wants that week's FINAL page, which is the newest holder."""
 
     root = tmp_path / "raw" / "nflcom_injuries"
     for stamp, fetched in [
@@ -635,14 +622,6 @@ def test_a_later_capture_of_the_same_week_wins(tmp_path: Path) -> None:
 
 
 def test_a_thursday_game_no_longer_silences_the_whole_week(tmp_path) -> None:
-    """Regression for the 2026-08-25 correction.
-
-    The gate used to demand the FINAL page predate the week's EARLIEST kickoff.
-    Every real NFL week opens with a Thursday night game, so a Friday-final page
-    never satisfied that and this arm recorded NOTHING -- measured unsatisfiable
-    on 7 of 7 real weeks. The correct boundary is each game's OWN pick deadline:
-    the Thursday game drops out, the rest of the slate is recorded.
-    """
 
     artifacts = tmp_path / "artifacts"
     data = tmp_path / "data"

@@ -1,5 +1,3 @@
-"""Publishing commands: the weekly card, the public site and pick refresh."""
-
 from __future__ import annotations
 
 import argparse
@@ -169,6 +167,11 @@ REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "specialist_absence_fade_refresh_v1": "specialist_absence_fade_refresh_overlay",
     "late_week_move_follow_refresh_v1": "late_week_move_follow_refresh_overlay",
     "late_week_leader_median_follow_v1": "late_week_move_follow_refresh_overlay",
+    "late_week_leader_median_follow_0_5_off_incumbent": "late_week_move_follow_refresh_overlay",
+    "late_week_leader_median_follow_flat_1_0_off_incumbent": (
+        "late_week_move_follow_refresh_overlay"
+    ),
+    "late_week_follow_no_news_veto_off_incumbent": "late_week_move_follow_refresh_overlay",
     "handle_follow_refresh_off_incumbent": "handle_follow_refresh_overlay",
     "rookie_crew_underdog_off_incumbent": "ledger",
     "consensus_movement_1_0_off_incumbent": "consensus_movement_refresh_overlay",
@@ -192,13 +195,11 @@ REPLACE_WEEK_FROZEN_ARMS: dict[str, str] = {
 
 
 def replace_week_for(request: PublishPredictionsRequest, challenger_id: str) -> bool:
-    """Whether ``--replace-week`` reaches one arm, or leaves its frozen card alone."""
 
     return request.replace_week and challenger_id not in REPLACE_WEEK_FROZEN_ARMS
 
 
 def collect_replacement_report(result: dict[str, Any]) -> dict[str, Any]:
-    """Per-ledger ``replaced`` / ``left_post_kickoff`` counts for a replace pass."""
 
     keys = set(PUBLISH_CHALLENGER_RESULT_KEYS.values())
     keys.update({"clv_ledger", "best_pick_tuesday_ledger"})
@@ -221,7 +222,6 @@ def collect_replacement_report(result: dict[str, Any]) -> dict[str, Any]:
 def collect_failed_recorders(
     result: dict[str, Any], result_keys: dict[str, str]
 ) -> list[dict[str, str]]:
-    """Name every recorder in ``result`` that errored, so zero rows are never silent."""
 
     failures: list[dict[str, str]] = []
     for challenger_id, result_key in result_keys.items():
@@ -238,35 +238,11 @@ def collect_failed_recorders(
 
 
 def _site_directory(destination: Path) -> Path:
-    """The directory a public-site flag points at.
-
-    ``--destination``/``--board-destination`` historically named the single
-    board FILE (``docs/index.html``); the site is now three pages, so a path
-    that looks like a file is reduced to its parent directory. That keeps every
-    existing invocation working while ``--site-destination docs`` says what is
-    actually meant.
-    """
 
     return destination.parent if destination.suffix else destination
 
 
 def _write_public_site(destination: Path) -> dict[str, Any]:
-    """Write the real ATS Terminal site (:func:`nfl_ats.board_site.build_site`)
-    to ``destination``'s directory.
-
-    2026-08-31 full-site conversion: this used to call
-    ``public_board.build_public_site`` (a single skin, one file per the old
-    seven-entry ``SITE_PAGES``, written flat into ``directory``). It briefly
-    called a two-skin ``build_two_skin_site`` (a ``terminal/``/``desk/``
-    directory split behind a top-level redirect) before the owner dropped
-    the Cover Desk skin entirely. It now calls
-    :func:`~nfl_ats.board_site.build_site`, which returns exactly THREE
-    pages -- ``"index.html"``, ``"model.html"``, ``"findings.html"`` -- each
-    a bare, site-root relative path, same flat layout as the original
-    single-skin site. Nothing else about this function's contract (loaders,
-    guards, fail-open behavior -- all owned by
-    ``build_site``/``board_site_content.load_site_content``) changed.
-    """
 
     directory = _site_directory(destination)
     verify_number_provenance(_artifacts_root())
@@ -289,8 +265,6 @@ def _write_public_site(destination: Path) -> dict[str, Any]:
 
 @dataclass(frozen=True)
 class PublishPredictionsRequest:
-    """Everything ``nfl-ats publish-predictions`` needs from the command line."""
-
     destination: Path
     readme: Path
     with_board: bool
@@ -302,10 +276,6 @@ class PublishPredictionsRequest:
 
 
 def parse_publish_predictions_request(args: argparse.Namespace) -> PublishPredictionsRequest:
-    """Validate the parsed namespace into a PublishPredictionsRequest.
-
-    Pure: reads only ``args`` and raises exactly what reading a missing or
-    ill-typed attribute raises today."""
 
     return PublishPredictionsRequest(
         destination=args.destination,
@@ -320,11 +290,6 @@ def parse_publish_predictions_request(args: argparse.Namespace) -> PublishPredic
 
 
 def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[str, Any]:
-    """Publish the active card, optionally the site, and the opt-in recorders.
-
-    Returns the result document the handler prints. Every recorder stays
-    fail-open here exactly as before: a recorder error lands in the result
-    and never un-publishes the card."""
 
     publish_instant = datetime.now(UTC)
     verify_number_provenance(_artifacts_root())
@@ -1220,7 +1185,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the publishing commands."""
 
     publish = subparsers.add_parser(
         "publish-predictions",

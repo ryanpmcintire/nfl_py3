@@ -1,124 +1,3 @@
-"""Tank-zone fade tilt overlay: a parameter-free pick-level flip, weeks 14-18.
-
-Research chain (measured 2026-08-21 by ``scripts/motivation_ladder_screen.py``,
-predeclared in ``docs/motivation_ladder_screen.md`` cell M4 BEFORE the screen
-scored anything, and read out of
-``artifacts/motivation_ladder_screen/20260821T182643Z/results.json`` and
-``registry/weak_signals.json`` before this module was built):
-
-``motivation_ladder_tank_zone_wk14_18`` flags a team whose record places it in
-the league's BOTTOM TWO league-wide (the "#1-overall-pick tank zone"), in weeks
-14-18 only. Population: NFL REG close-graded slate 2009-2025, team-perspective
-long table, weeks 13-18, n=2,768 team-games, n_flag=144 (5.20% of the slate).
-Week-blocked primary: full-slate effect **+0.3049 accuracy points**, 95%
-**[-0.0794, +0.6966]**, ``probability_positive`` **0.9334**, 90 week blocks.
-Season-blocked secondary: **+0.3049**, 95% **[+0.0371, +0.6118]**,
-``probability_positive`` **0.9856**, 17 season blocks.
-
-**The interval crosses zero at the primary blocking.** Per AGENTS.md, at this
-evaluator's ~2-point resolution that is the EXPECTED shape for a real-but-small
-signal and is NEVER grounds to decline building a no-window-cost prospective
-challenger. Neither admissible closing ground applies (no resolved wrong sign,
-no positive-control bound), so the cell stays ``unresolved_below_power`` in the
-registry; wiring it here is an EV-positive dual-tracked play (P+ 0.9334 > 0.5),
-not a claim of a proven edge.
-
-**Registry-description correction (carry this forward).** The registry entry's
-``description`` field reads "leans OPPOSITE tank-fade prediction (tank teams
-over-cover)", and ``docs/motivation_ladder_screen.md``'s M4 classification
-bullet repeats it. **Both are wrong about the direction, and the artifact says
-so.** Measured, from
-``artifacts/motivation_ladder_screen/20260821T182643Z/results.json`` cell
-``tank_zone_wk14_18``: ``sign_dir`` is ``-1`` (the predeclared direction is
-NEGATIVE on ``team_covered`` -- i.e. FADE the tank-zone team),
-``subset_mean`` is **0.4444** and ``complement_mean`` is **0.5030**. Tank-zone
-teams covered **44.4%** against a **50.3%** complement: they UNDER-covered, and
-the screen's own sign convention (``full_slate_effect_pts`` positive =
-prediction CONFIRMED, ``scripts/motivation_ladder_screen.py:355-361``) is why
-the recorded effect is **+0.3049** rather than negative. The predeclared FADE
-direction is the direction the data shows. The season-blocked secondary
-excludes zero on the CONFIRMING side, not the opposite side. This module uses
-the predeclared fade direction; the registry ``description`` string is
-misleading and is flagged for correction rather than edited here (registry JSON
-is written only through the CLI).
-
-**The rule is parameter-free and frozen** -- no threshold, no tuning, nothing
-fitted to outcomes. REG season, weeks 14-18 only. Build the tank-zone flag for
-both teams. If EXACTLY ONE of the two teams is flagged AND the active model's
-own forced pick IS that team, flip the pick to the other side. Both-flagged
-games are never touched (the same clean-case handling
-``coach_fade_overlay``/``interim_hc_first_game_tilt_overlay`` use: no measured
-direction when both sides carry the flag). Never flip in any other situation.
-The two constants -- weeks **14-18** and **bottom two** league-wide -- are the
-registry cell's own flag definition, not choices made here: see
-``scripts/motivation_ladder_screen.py:532-550`` (``population["week"].between(14, 18)``
-inside the M4 cell) and ``scripts/motivation_ladder_screen.py:164-165``
-(``league_ordered = sorted(DIVISIONS, key=lambda t: (tallies[t][0], -tallies[t][1], t))``
-then ``tank_zone = set(league_ordered[:2])``).
-
-**Standings-convention disclosure -- a deliberate, disclosed adaptation.** The
-screen's standings snapshots are taken per ``gameday``: for each distinct
-gameday in a season, the state is computed from every game on STRICTLY EARLIER
-gamedays (``scripts/motivation_ladder_screen.py:192-199``). That is
-point-in-time safe for a historical replay, but it is NOT available at this
-project's Tuesday recording lock, because a Sunday game's snapshot under that
-convention already includes that same week's Thursday-night result. This live
-overlay therefore computes the standings from every completed game in STRICTLY
-PRIOR WEEKS of the same season -- the repo's standard "prior games only"
-convention (``coach_fade_overlay``, ``backup_qb_fade_overlay``,
-``division_revenge_tilt_overlay``, ``forecast_cold_visitor_tilt_overlay``'s
-``climatology_deviation_disclosure``), and exactly what a Tuesday-lock snapshot
-can actually see, since the current week's games have no ``result`` yet.
-Measured cost of the adaptation on the registry cell's own population
-(``data/raw/20260817T235649Z/schedules.parquet``, the snapshot the screen ran
-against): the week-granular flag fires on **143** of the screen's **144**
-flagged team-games -- 99.96% agreement, one team-game differs, none added --
-and the flagged cover rate moves from 44.44% to 44.76% against a 50.29%
-complement. The registered **+0.3049 / P+ 0.9334** figures therefore do NOT
-transfer exactly to this live arm; the 2026 prospective ledger accrues fresh
-evidence for THIS construction.
-
-Two further verbatim-port notes, so the construct is auditable:
-
-* **Push-dropped tallies.** The screen builds its standings timeline from the
-  frame ``load_schedules`` already filtered to ``home_cover.notna()``
-  (``scripts/motivation_ladder_screen.py:92-98`` then ``:453``), so a prior game
-  that PUSHED against the spread contributes nothing to wins/losses. Kept
-  verbatim here, because it is part of the construct that produced the measured
-  numbers, and it is pregame-known for prior games. A game with no ``result``
-  yet is excluded by the same filter, which is exactly the behaviour a live
-  Tuesday run needs.
-* **League membership.** The screen ranks the hardcoded 32-team ``DIVISIONS``
-  map (``scripts/motivation_ladder_screen.py:53-66``). This module derives the
-  ranked set from the season's own schedule instead, which is measured to be
-  EXACTLY equivalent on every season 2009-2025 (each season's team set equals
-  ``set(DIVISIONS)``, 32 teams, verified this session) and additionally works on
-  a test fixture with synthetic team codes.
-
-This module is the no-window-cost path, built on the exact pattern of
-``surface_switch_tilt_overlay.py``, ``interim_hc_first_game_tilt_overlay.py``
-and ``coach_fade_overlay.py``: a **pick-level, post-prediction transform** of
-the active model's own forced pick, dual-tracked against that same active model
-in the prospective challenger ledger (``nfl_ats.prospective_scoring``), at no
-rotation-registry window cost and with zero training-time feature changes.
-**Nothing in this module is wired into ``publishing.py`` or the production pick
-path** -- no owner decision to play this on the real card has been made; it is
-dual-tracked only.
-
-Two things live here, mirroring the sibling overlays exactly:
-
-1. :func:`tank_zone_flag_by_game` -- the pregame-safe, DATA-DERIVED signal,
-   ported from ``scripts/motivation_ladder_screen.py``'s own tally loop and
-   league ordering, read straight from the newest local schedule snapshot
-   (``data/raw/<snapshot>/schedules.parquet``), never hand-typed.
-2. :func:`apply_tank_zone_fade_tilt_overlay` -- the pick-level transform, plus
-   :func:`overlay_disclosure_note` for the plain-English provenance sentence.
-
-:func:`record_tank_zone_fade_tilt_challenger_decisions` writes the overlay's own
-arm to the prospective challenger ledger so 2026 scores it cleanly, independent
-of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -168,16 +47,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def _season_tank_zone_by_week(season_games: pd.DataFrame) -> dict[int, frozenset[str]]:
-    """``{week: the two worst records entering that week}`` for ONE season.
-
-    Ported from ``scripts/motivation_ladder_screen.py``'s tally loop
-    (``build_state_timeline``, lines 190-241) and its league ordering
-    (``compute_day_states``, lines 164-166), with the snapshot granularity
-    moved from gameday to strictly-prior-week (see the module docstring's
-    standings-convention disclosure). A ``result`` of exactly 0 is a tie and
-    increments neither wins nor losses, matching the screen's separate ties
-    counter.
-    """
 
     teams = sorted(set(season_games["home_team"]) | set(season_games["away_team"]))
     wins: dict[str, int] = dict.fromkeys(teams, 0)
@@ -200,30 +69,6 @@ def _season_tank_zone_by_week(season_games: pd.DataFrame) -> dict[int, frozenset
 
 
 def tank_zone_flag_by_game(schedules: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG ``game_id``: ``tank_zone_home`` / ``tank_zone_away``.
-
-    A side is in the tank zone when its record places it in the league's
-    BOTTOM TWO, ordered by wins ascending, then losses DESCENDING, then team
-    abbreviation ascending for determinism -- the screen's own
-    ``sorted(DIVISIONS, key=lambda t: (tallies[t][0], -tallies[t][1], t))[:2]``
-    (``scripts/motivation_ladder_screen.py:164-165``), transcribed rather than
-    re-derived. Ties in the ordering are broken exactly the way the screen
-    breaks them: more losses ranks WORSE at equal wins, then alphabetical team
-    code. Actual tie GAMES (``result == 0``) increment neither counter.
-
-    **Pregame-safe by construction.** The standings entering week *W* of a
-    season are built only from that season's completed games in weeks strictly
-    less than *W*; this function never reads the flagged game's own ``result``
-    for its own flag, and a later week's results can never change an earlier
-    week's flags. Two leakage regression tests in
-    ``tests/test_tank_zone_fade_tilt_overlay.py`` prove both properties
-    empirically.
-
-    Only games whose ATS outcome is settled (``home_cover`` not NaN, i.e. the
-    screen's own ``load_schedules`` filter) contribute to the tallies -- so a
-    not-yet-played game contributes nothing, which is what makes a live
-    Tuesday-lock run behave identically to the historical replay.
-    """
 
     missing = sorted(_REQUIRED_SCHEDULE_COLUMNS.difference(schedules.columns))
     if missing:
@@ -274,8 +119,6 @@ def tank_zone_flag_by_game(schedules: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     tank_zone_team: str
@@ -284,17 +127,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``surface_switch_tilt_overlay.TiltResult``.
-    ``both_tank_zone_games`` lists eligible games where BOTH sides carry the
-    tank-zone flag; there is no measured direction for that case (mirroring
-    ``coach_fade_overlay``'s ``both_year_one_games``), so those games are
-    reported, never flipped.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     both_tank_zone_games: tuple[str, ...]
@@ -315,31 +147,6 @@ def apply_tank_zone_fade_tilt_overlay(
     week_max: int = OVERLAY_WEEK_MAX,
     enabled: bool = True,
 ) -> TiltResult:
-    """Fade the tank-zone team: flip the forced pick OFF it, weeks 14-18 only.
-
-    A game flips only when ALL hold:
-
-    * ``week_min <= week <= week_max`` (weeks 1-13 are ALWAYS left untouched --
-      the registered cell's flag carries no claim there, and this is why a
-      Week 1 card can never be moved by this overlay);
-    * ``game_type == "REG"`` when that column is present (the registered
-      measurement is a regular-season, close-graded read);
-    * EXACTLY ONE side of the game carries the tank-zone flag (a both-flagged
-      game has no measured direction and is reported in
-      ``both_tank_zone_games`` instead of flipped); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home) IS
-      that tank-zone side.
-
-    Deliberately one-directional: the overlay never flips a pick TOWARD a
-    tank-zone team, because the measured evidence is a fade -- flagged teams
-    covered 44.4% against a 50.3% complement (see the module docstring's
-    registry-description correction).
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as the
-    sibling overlays do, so every existing reader of the column needs no
-    overlay-aware branch. Games with no schedule row, or with no flag after the
-    merge, are the documented no-op -- zero flips, never a ``KeyError``.
-    """
 
     required = {"game_id", "season", "week", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -400,11 +207,6 @@ def apply_tank_zone_fade_tilt_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not currently
-    surfaced on the published card -- this overlay is dual-tracked only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -434,20 +236,6 @@ def record_tank_zone_fade_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``surface_switch_tilt_overlay.record_surface_switch_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction --
-    so it reads the active model's own synchronized weekly forecast rather than
-    searching ``artifacts/margin_predictions/`` by fingerprint, and it refuses to
-    record if the active model's live fingerprint no longer matches the snapshot
-    this challenger was registered against.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this challenger
-    tracks the tilt's forced-pick (``decision_line``) accuracy only, never a
-    fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

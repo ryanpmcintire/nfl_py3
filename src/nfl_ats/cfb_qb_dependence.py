@@ -1,114 +1,3 @@
-"""CFB QB-dependence interaction feature (SPEC-6 screen; predeclared in
-``docs/qb_dependence.md``, mirroring this module's shape after
-``cfb_role_features.py``).
-
-**Hypothesis** (direct quote, ``docs/pool_edge_plan.md:207-208``): *"team
-output conditioned on QB reliance"* -- a team's offensive output should react
-more to a swing in QB quality when the team's offense actually leans on the
-QB (a pass-heavy scheme) than when it does not. The project's model is a
-linear ridge regression over additive per-team-state features
-(``margin.fit_margin_model``), so this interaction can only be captured if a
-product term is added explicitly.
-
-This module is CFB-only (free per ``docs/rotation_registry.md`` rule 8) and
-builds three new, additive research columns from CFB play-by-play already
-ingested -- no new data source, no NFL table touched:
-
-- :data:`off_pass_rate` -- EWM share of a team's competitive offensive plays
-  that are passes.
-- :data:`qb_starter_epa_per_dropback` -- the CFB analogue of
-  ``quarterbacks.build_qb_game_metrics`` / ``build_qb_states``: a per-player
-  EWM of EPA/dropback, attached to a game via the same "most recent game's
-  leading passer" identity rule the NFL production path uses
-  (``players.py``'s ``latest_qb_appearance`` / ``_latest_qb_state``, **not**
-  the unwired depth-chart pipeline in ``quarterbacks.py``).
-- :data:`qb_dependence_interaction` -- the interaction itself, built **per
-  side** and then differenced (``home_qb * home_reliance - away_qb *
-  away_reliance``), the literal reading of "a team's own output conditioned
-  on its own reliance" rather than a matchup-level mismatch term.
-
-**NFL/CFB asymmetry (flagged prominently, per the task's binding
-instruction).** CFB has no pregame injury/availability signal of any kind
-(``docs/injury_value_lost.md`` sec 5; ``docs/cfb_data.md``), so
-``qb_starter_epa_per_dropback`` here is the **raw** trailing EPA/dropback
-state only -- there is no ``start_probability`` / replacement-EPA blend, and
-none is attempted. The eventual NFL feature (a separate, later, separately
-predeclared spec) would have both ``qb_starter_epa_per_dropback`` **and**
-``qb_expected_epa_per_dropback`` (``constants.PLAYER_QB_STATE_METRICS``)
-available to multiply by reliance; this CFB screen can only test the raw
-half. This is a structural gap, not a shortcut -- see
-``docs/injury_value_lost.md`` sec 5 for the precedent of flagging exactly
-this kind of CFB data gap the same way.
-
-**Underived constants this module DEFINES FOR ITSELF** (per the task's hard
-override: do not touch or inherit ``players.py``'s ``_REPLACEMENT_QB_EPA``,
-its mismatched ``qb_min_dropbacks``, or ``constants.DEFAULT_OFFSEASON_RETENTION``):
-
-- ``CFB_QB_MIN_DROPBACKS = 20`` -- copied from ``players.py``'s production
-  NFL default (``players.py:960``) as the closest-fidelity recommendation
-  (``quarterbacks.build_qb_states``'s own mismatched default of 50 is not
-  used either). A local constant, not an import. Judgment call, not a
-  measurement (**inferred**).
-- ``CFB_QB_STATE_SPAN = 12`` -- copied from ``players.py``'s ``qb_span=12``
-  as a reasonable default; no independent CFB derivation (**inferred**).
-- ``CFB_QB_MIN_GAME_DROPBACKS = 5`` -- the per-game-row inclusion floor
-  before a (game, player) row counts as an appearance at all, copied from
-  ``quarterbacks.build_qb_game_metrics``'s identical floor. A data-hygiene
-  constant, not one of the three flagged-as-wrong values.
-- **No offseason regression is applied to either new state** (no
-  ``DEFAULT_OFFSEASON_RETENTION``-style cross-season decay toward a league
-  mean). This mirrors ``cfb_role_features.py``'s own player-trail
-  convention, which also applies none -- a plain, unbroken chronological EWM
-  simply continues across the season boundary. Mathematically identical to
-  calling ``cfb_features.build_cfb_team_states`` with ``offseason_retention
-  = 1.0``, but implemented standalone here because that function iterates a
-  hardcoded module-level metric tuple (``CFB_STATE_METRICS``) and cannot be
-  parameterized onto a new metric without touching ``src/nfl_ats/cfb_features.py``.
-- ``_REPLACEMENT_QB_EPA`` is not used at all: no ``start_probability`` blend
-  exists on CFB (see the NFL/CFB asymmetry above), so there is nothing to
-  blend it into.
-- ``CFB_PASS_RATE_SPAN = 8`` / ``CFB_PASS_RATE_MIN_PERIODS = 3`` -- **not**
-  new. This is the span/maturity every other ``CFB_STATE_METRICS`` column
-  already uses (``cfb_features.py``, "NFL parameters taken verbatim").
-  Reusing it is precedent, not a fresh unexamined choice.
-
-**Design choice (inferred, flagged): both new states are built from the same
-competitive-play (5-95% win-probability) subset ``cfb_features.py`` already
-uses for ``CFB_STATE_METRICS``**, via ``cfb_features.cfb_competitive_plays``.
-NFL's ``quarterbacks.build_qb_game_metrics`` has no win-probability filter,
-so this is not a byte-for-byte port of that function -- only "the CFB
-analogue," exactly as the task's spec calls for. Restricting to competitive
-plays keeps the interaction's own inputs internally consistent with the
-surrounding CFB feature contract it rides alongside (avoids a garbage-time
-read on either half).
-
-**Missing values are left as NaN**, not hand-imputed to a neutral constant
-(unlike ``cfb_role_features.py``'s ``CONTINUITY_NEUTRAL = 1.0``): every new
-column here rides directly in the same numeric feature matrix
-``fit_cfb_residual_model`` already feeds through
-``margin.make_margin_estimator``'s ``SimpleImputer(strategy="median",
-add_indicator=True)`` step, exactly like every other ``CFB_MODEL_FEATURE_COLUMNS``
-entry. No custom neutral-value convention is needed.
-
-Module layout
--------------
-1. :func:`build_cfb_qb_game_metrics` / :func:`build_cfb_qb_states` -- the CFB
-   analogue of ``quarterbacks.build_qb_game_metrics`` / ``build_qb_states``.
-2. :func:`build_cfb_pass_rate_team_games` / :func:`build_cfb_pass_rate_states`
-   -- the new ``off_pass_rate`` team-state.
-3. :func:`attach_cfb_qb_dependence` -- joins both halves onto the canonical
-   CFB table via the "most recent game's leading passer" identity rule,
-   producing the nine new columns (:data:`CFB_QB_DEPENDENCE_COLUMNS`).
-4. :func:`build_and_attach_cfb_qb_dependence` -- one-call convenience wrapper
-   from raw play-by-play + canonical games to the joined table.
-5. :func:`cfb_qb_dependence_reliability` -- Step 0's split-half reliability
-   audit, run BEFORE any accuracy number, mirroring
-   ``docs/injury_value_lost.md`` sec 3.1's method exactly (odd/even-week
-   team-season split, Pearson r, Spearman-Brown correction, block bootstrap
-   CI and ``probability_positive``), on the interaction column and its two
-   constituents separately.
-"""
-
 from __future__ import annotations
 
 import math
@@ -150,15 +39,6 @@ RELIABILITY_CLEARED_EXAMPLES: dict[str, float] = {
 
 
 def _game_id_key(values: pd.Series) -> pd.Series:
-    """Canonical string game-id key, regardless of the source column's numeric dtype.
-
-    ``cfb_features.py`` joins ``pbp``/schedule ``game_id`` columns without an
-    explicit dtype normalization step (they already agree in production), but
-    a bare ``.astype(str)`` here would silently diverge ("20130101" vs
-    "20130101.0") if a caller's ``pbp`` slice ever carried a float dtype. Used
-    only for internal dict keys -- never assigned back onto a returned frame,
-    so it cannot affect REG bit-identity of any existing column.
-    """
 
     return pd.to_numeric(values, errors="raise").astype("int64").astype(str)
 
@@ -175,16 +55,6 @@ _QB_GAME_COLUMNS: tuple[str, ...] = (
 
 
 def build_cfb_qb_game_metrics(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Per (game, team, passer) dropback count and EPA/dropback, competitive plays only.
-
-    The CFB analogue of ``quarterbacks.build_qb_game_metrics``: credited to
-    ``passer_player_id`` on ``pass == True`` rows. Restricted to the same
-    competitive-play subset ``cfb_features.build_cfb_team_game_metrics`` uses
-    (see module docstring) -- NOT a byte-for-byte port of the NFL function,
-    which has no win-probability filter. A (game, team, passer) row is kept
-    only with at least :data:`CFB_QB_MIN_GAME_DROPBACKS` dropbacks that game
-    (copied from the NFL floor).
-    """
 
     require_columns(pbp, ("passer_player_id",), "cfb play_by_play (qb dependence)")
     plays = cfb_competitive_plays(pbp)
@@ -210,15 +80,6 @@ def build_cfb_qb_game_metrics(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_cfb_qb_states(qb_games: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
-    """Per-player EWM of ``qb_epa_per_dropback``, gated on career dropbacks.
-
-    The CFB analogue of ``quarterbacks.build_qb_states``, minus the offseason
-    regression step (see module docstring: not one of the three flagged
-    constants, but deliberately not inherited either -- a plain, unbroken
-    EWM continues across the season boundary). A player's state at a given
-    appearance is exposed (non-NaN) only once their cumulative
-    ``qb_dropbacks`` reaches :data:`CFB_QB_MIN_DROPBACKS`.
-    """
 
     require_columns(qb_games, _QB_GAME_COLUMNS, "cfb qb game metrics")
     require_columns(games, ("game_id", "gameday"), "cfb canonical games")
@@ -251,12 +112,6 @@ def build_cfb_qb_states(qb_games: pd.DataFrame, games: pd.DataFrame) -> pd.DataF
 
 
 def build_cfb_pass_rate_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Per (game, team) share of competitive offensive plays that are passes.
-
-    Reuses the exact ``pass``/``rush`` flags ``cfb_features.py`` already uses
-    for the explosive-play indicator (module docstring trap 4) -- no second
-    play-type classification is derived.
-    """
 
     plays = cfb_competitive_plays(pbp)
     plays = plays.loc[plays["competitive_play"]].copy()
@@ -272,12 +127,6 @@ def build_cfb_pass_rate_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_cfb_pass_rate_states(team_games: pd.DataFrame) -> pd.DataFrame:
-    """Strictly-lagged span-8 EWM of ``off_pass_rate`` per team, no offseason step.
-
-    Mathematically identical to calling ``cfb_features.build_cfb_team_states``
-    with ``offseason_retention=1.0`` -- see module docstring for why this is
-    implemented standalone rather than by reusing that function.
-    """
 
     require_columns(
         team_games, ("game_id", "team_id", "gameday", "off_pass_rate"), "pass rate team games"
@@ -310,27 +159,6 @@ def attach_cfb_qb_dependence(
     qb_states: pd.DataFrame,
     pass_rate_states: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Join the nine new columns onto the canonical CFB table.
-
-    Single leak-safe chronological pass over ``games``, mirroring
-    ``players.py``'s production mechanism exactly: after game *g* is
-    processed, ``latest_passer[team]`` becomes that game's leading passer (by
-    dropbacks, from the already-gated ``qb_games``); a future game's
-    ``qb_starter_epa_per_dropback`` reads THAT player's own strictly-earlier
-    EWM state (``build_cfb_qb_states``, not necessarily built from this
-    team's games), exactly as ``players.py``'s ``latest_qb_appearance`` /
-    ``_latest_qb_state`` do for NFL. ``off_pass_rate`` is looked up the same
-    strictly-earlier way per team via :func:`build_cfb_pass_rate_states`.
-
-    The interaction is built **per side** and then differenced (module
-    docstring's "Decisions needing review #1" recommendation):
-    ``{side}_qb_dependence_interaction = {side}_qb_starter_epa_per_dropback *
-    {side}_off_pass_rate``, ``diff = home - away``.
-
-    Every canonical game gets all nine :data:`CFB_QB_DEPENDENCE_COLUMNS`
-    columns; a side without a computable value is left ``NaN`` (see module
-    docstring -- the existing ridge pipeline's median imputer handles it).
-    """
 
     require_columns(games, ("game_id", "gameday", "home_id", "away_id"), "cfb canonical games")
 
@@ -416,7 +244,6 @@ def attach_cfb_qb_dependence(
 
 
 def build_and_attach_cfb_qb_dependence(games: pd.DataFrame, pbp: pd.DataFrame) -> pd.DataFrame:
-    """One-call convenience wrapper: raw pbp + canonical games -> the joined table."""
 
     qb_games = build_cfb_qb_game_metrics(pbp)
     qb_states = build_cfb_qb_states(qb_games, games)
@@ -434,7 +261,6 @@ def build_and_attach_cfb_qb_dependence(games: pd.DataFrame, pbp: pd.DataFrame) -
 
 
 def _reshape_team_game_long(features: pd.DataFrame, metric: str) -> pd.DataFrame:
-    """One row per (game, team): ``season``, ``week``, ``team_id``, ``metric``."""
 
     pieces: list[pd.DataFrame] = []
     for side in ("home", "away"):
@@ -453,17 +279,6 @@ def _reshape_team_game_long(features: pd.DataFrame, metric: str) -> pd.DataFrame
 def split_half_reliability(
     long: pd.DataFrame, metric: str, *, seed: int, n_boot: int = 4000
 ) -> dict[str, Any]:
-    """Odd/even-week team-season split-half reliability, per ``docs/injury_value_lost.md`` sec 3.1.
-
-    Each team-season's ``metric`` values are split by odd/even week; the two
-    halves' team-season MEANS are correlated (Pearson r, Spearman rho),
-    Spearman-Brown corrected to a full-length reliability, and a block
-    bootstrap over team-seasons gives a 95% CI and ``probability_positive``
-    that the correlation is positive. Requires >=2 observations in each half
-    for a team-season to be included (same floor the repo's own precedent
-    scripts use, ``cfb_value_weighted_continuity_screen.py`` /
-    ``cfb_role_continuity_remeasurement.py``).
-    """
 
     subset = long.loc[long[metric].notna()].copy()
     subset["half"] = np.where(subset["week"] % 2 == 0, "even", "odd")
@@ -515,8 +330,6 @@ def split_half_reliability(
 
 @dataclass(frozen=True)
 class ReliabilityAudit:
-    """Step 0's split-half reliability audit -- the decisive gate before Step 2."""
-
     interaction: dict[str, Any]
     qb_starter_epa_per_dropback: dict[str, Any]
     off_pass_rate: dict[str, Any]
@@ -527,16 +340,6 @@ class ReliabilityAudit:
 def cfb_qb_dependence_reliability(
     features: pd.DataFrame, *, seed_interaction: int = 1, seed_qb: int = 2, seed_pass_rate: int = 3
 ) -> ReliabilityAudit:
-    """Run the split-half reliability audit on the interaction and its two constituents.
-
-    ``features`` is the canonical CFB table already carrying
-    :data:`CFB_QB_DEPENDENCE_COLUMNS` (i.e. the output of
-    :func:`build_and_attach_cfb_qb_dependence`). Separate audits on the two
-    constituent columns let a low interaction reliability be diagnosed as
-    "one input is noisy" vs. "the product itself is unstable even though
-    both inputs are fine" (products of two noisy quantities can be noisier
-    than either factor).
-    """
 
     required = {
         f"{side}_{metric}" for metric in CFB_QB_DEPENDENCE_METRICS for side in ("home", "away")

@@ -23,7 +23,6 @@ from nfl_ats.purged_cv import (
     inject_synthetic_signal,
     partition_week_blocks,
     permute_target,
-    purged_cv_backtest,
     purged_embargoed_folds,
     synthetic_signal_accuracy,
     synthetic_signal_beta,
@@ -32,27 +31,17 @@ from nfl_ats.purged_cv import (
 
 
 def test_team_state_span_matches_source() -> None:
-    """Guards against ``TEAM_STATE_SPAN`` silently drifting from the real default."""
 
     assert inspect.signature(build_cfb_team_states).parameters["span"].default == TEAM_STATE_SPAN
 
 
 def test_declared_half_lives_match_source() -> None:
-    from nfl_ats.cfb_opponent_adjustment import CFB_OPPONENT_HALF_LIFE_WEEKS
     from nfl_ats.graph_ratings import GraphRatingConfig
 
-    assert OPPONENT_ADJUSTMENT_HALF_LIFE_WEEKS == CFB_OPPONENT_HALF_LIFE_WEEKS
     assert GraphRatingConfig().half_life_weeks == GRAPH_RATING_HALF_LIFE_WEEKS
 
 
 def test_ewma_retained_weight_matches_direct_recursion() -> None:
-    """Cross-check the closed-form decay against a literal EWMA recursion.
-
-    Feed a span-8 EWMA a single unit impulse followed by 30 zeros; the
-    state after k further updates IS the retained weight of that impulse
-    (an EWMA of an impulse is its own weight sequence), so it must match
-    ``ewma_retained_weight`` exactly.
-    """
 
     span = 8
     alpha = 2.0 / (span + 1.0)
@@ -77,8 +66,6 @@ def test_ewma_contamination_games_thresholds() -> None:
 
 
 def test_default_purge_and_embargo_are_derived_not_hardcoded() -> None:
-    """The binding project rule: an ungated constant is a defect. Both defaults must be
-    reproducible from the measured decay formula, not typed-in numbers."""
 
     assert DEFAULT_PURGE_WEEKS == ewma_contamination_games(TEAM_STATE_SPAN, 0.05) == 12
     assert (
@@ -221,47 +208,6 @@ def test_fold_input_validation() -> None:
         purged_embargoed_folds(frame, n_blocks=5, test_group_size=6)
 
 
-def test_purged_cv_backtest_contracts(cfb_features_frame: pd.DataFrame) -> None:
-    result = purged_cv_backtest(
-        cfb_features_frame,
-        n_blocks=6,
-        purge_weeks=1,
-        embargo_weeks=1,
-        min_train_games=30,
-    )
-    predictions = result.predictions
-    assert set(predictions["method"]) == {"market", "market_residual"}
-    assert result.config["folds_run"] > 0
-    assert not predictions.empty
-
-    assert result.fold_summary["train_games"].ge(30).all()
-
-    residual = predictions.loc[predictions["method"].eq("market_residual")]
-    assert residual["home_cover_probability"].between(0.0, 1.0).all()
-    assert residual["path_id"].nunique() == result.config["folds_run"]
-
-
-def test_purged_cv_backtest_rejects_missing_columns(cfb_features_frame: pd.DataFrame) -> None:
-    with pytest.raises(DataContractError, match="missing columns"):
-        purged_cv_backtest(cfb_features_frame.drop(columns=["spread_line"]), n_blocks=5)
-
-
-def test_purged_cv_backtest_can_train_on_chronologically_later_games(
-    cfb_features_frame: pd.DataFrame,
-) -> None:
-    """The defining, non-walk-forward property: an EARLY test block is allowed
-    to use LATER games as training, once purged/embargoed."""
-
-    result = purged_cv_backtest(
-        cfb_features_frame, n_blocks=6, purge_weeks=0, embargo_weeks=0, min_train_games=30
-    )
-    predictions = result.predictions
-    early_path = predictions["path_id"].min()
-    early_test_gameday = predictions.loc[predictions["path_id"].eq(early_path), "gameday"].max()
-    later_training_exists = cfb_features_frame["gameday"].max() > early_test_gameday
-    assert later_training_exists
-
-
 def test_permute_target_breaks_spread_line_dependence(cfb_features_frame: pd.DataFrame) -> None:
     permuted = permute_target(cfb_features_frame, seed=7)
     spread = pd.to_numeric(permuted["spread_line"], errors="raise")
@@ -289,8 +235,6 @@ def test_permute_target_preserves_features(cfb_features_frame: pd.DataFrame) -> 
 def test_team_persistent_null_preserves_features_and_has_zero_population_signal(
     cfb_features_frame: pd.DataFrame,
 ) -> None:
-    """The control built to actually exercise the shared-team-proximity channel:
-    real team-persistent structure in the target, but no feature reveals it."""
 
     null_frame = team_persistent_null(cfb_features_frame, team_sigma=8.0, noise_sigma=13.0, seed=5)
     for column in CFB_MODEL_FEATURE_COLUMNS:

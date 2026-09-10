@@ -1,60 +1,3 @@
-"""Live, prospective capture of actionnetwork.com/nfl/public-betting (era2 template).
-
-Item 1 of `docs/public_betting_sourcing.md` section 7's "What a follow-up
-session should fetch": the Wayback backfill (`scripts/ingest_public_
-betting.py`, `data/raw/public_betting/20260820T111148Z/`) is frozen history
-by construction -- it can never see the CURRENT week. This script hits the
-live page directly (never through Wayback) and appends one timestamped
-snapshot, meant to be invoked by `scripts/public_betting_capture.ps1` on a
-weekly Task Scheduler cadence (two runs/week: Saturday and Sunday noon ET,
-bracketing the slate) the same way `scripts/odds_capture.ps1` wraps
-`nfl-ats odds-ingest`.
-
-**Robots.txt**: NOT re-fetched this session -- verified instead from
-`docs/public_betting_sourcing.md` section 1 (read this session), which
-already measured `actionnetwork.com/robots.txt` has no `Crawl-delay` and no
-`Disallow` covering `/nfl/public-betting`, the exact path this script
-fetches. Re-fetching robots.txt for a fact already measured and documented
-would just be a second, redundant request against the origin site.
-
-**Volume**: one HTTP GET per invocation (the live page itself). No CDX
-query, no per-capture loop -- this is the live-site analogue of a single
-one of the backfill's ~150 archived fetches, not a bulk job.
-
-**Parsing**: reuses `extract_next_data` / `parse_actionnetwork_snapshot`
-from `scripts/ingest_public_betting.py` (same directory, imported directly
-rather than duplicated -- that module's brace-matching `__NEXT_DATA__`
-extractor and era1/era2 dispatch are exactly what this script also needs,
-and duplicating ~150 lines of parser logic would be a second chance to get
-it wrong). As of this session the live page has always been observed in
-era2 (`scoreboardResponse`) shape -- era1 predates Nov 2022 -- but the
-dispatcher tries both, unmodified, so a template regression is reported
-(`era` = `unrecognized_shape` / `no_next_data`) rather than silently
-mis-parsed.
-
-Writes one snapshot directory per invocation under
-`data/raw/public_betting_live/<UTC timestamp>/`:
-
-    raw_html/<timestamp>.html   the fetched page (audit/re-parse without refetch)
-    index.parquet                parsed per-game rows, this capture only
-    manifest.json                run metadata (era, counts, URL, http status)
-
-This is raw-ingestion output, the same `data/raw/<source>/<UTC
-timestamp>/manifest.json` convention `scripts/ingest_public_betting.py`/
-`scripts/ingest_injury_news.py` already use, gitignored under the
-repository's existing `data/raw/**` rule -- not a generated research
-artifact, so it stays out of the gitignored top-level output directory
-those use for run results.
-
-Prints one final line, a single-line JSON summary
-(`{"snapshot_id": ..., "era": ..., "rows": ..., "rows_with_public_data": ...}`),
-for `scripts/public_betting_capture.ps1` to parse into its own log line --
-the same convention `nfl-ats odds-ingest`'s stdout already uses for
-`scripts/odds_capture.ps1`.
-
-Run:  .\\.tools\\uv.exe run --no-sync python scripts/public_betting_live_capture.py
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -80,15 +23,6 @@ FETCH_RETRIES = 3
 def fetch_live_page(
     url: str = LIVE_URL, *, timeout: int = FETCH_TIMEOUT_SECONDS
 ) -> tuple[str, int]:
-    """Single GET against the live page. Returns (html_text, http_status).
-
-    No rate limiter -- unlike the Wayback backfill (which makes ~150
-    sequential requests against web.archive.org and so needs one), this is
-    exactly one request per invocation against the origin site, well within
-    the "~1 req" budget this task specified and the robots.txt policy
-    `docs/public_betting_sourcing.md` section 1 already measured as
-    permitting this path.
-    """
 
     last_error: Exception | None = None
     for attempt in range(FETCH_RETRIES):

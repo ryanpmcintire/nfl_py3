@@ -1,5 +1,3 @@
-"""Publish a synchronized weekly ATS card as tracked GitHub-friendly Markdown."""
-
 from __future__ import annotations
 
 import json
@@ -139,7 +137,6 @@ def _published_card(
 
 
 def _decision_score_note(displayed_confidence: ProductionDisplayedConfidence) -> str:
-    """The card's own footnote for the score column, in pool-player words."""
 
     if not displayed_confidence.served:
         return (
@@ -288,16 +285,6 @@ def _tiebreaker_json_payload(
     week: int,
     forecast_artifact: str | None,
 ) -> dict[str, Any]:
-    """The persisted tiebreaker artifact (UI-20(g) extension, 2026-09-05):
-    read by ``nfl_ats.board_content._load_tiebreaker_view`` and the board
-    assistant's tiebreaker intent -- never recomputed by either reader.
-
-    ``implied_margin`` is deliberately ``guess_home - guess_away`` (the
-    margin the PUBLISHED SCORE actually carries), not ``guess.guess_margin``
-    (the pre-lattice blended figure) -- the whole point of the one-lattice
-    fix is that the displayed score and the displayed margin can never
-    disagree.
-    """
 
     return {
         "schema_version": 1,
@@ -333,9 +320,6 @@ def _tiebreaker_json_payload(
 
 
 def _tiebreaker_card_line(guess: TiebreakerReport) -> str:
-    """The ONE tiebreaker line added under the picks table (UI-20(g)
-    extension). Never independently rounds or recomputes anything --
-    every number here is read straight off ``guess``."""
 
     total = guess.guess_home + guess.guess_away
     line = (
@@ -409,7 +393,6 @@ def published_tiebreaker_guess(
     metadata: dict[str, Any],
     predictions: pd.DataFrame,
 ) -> TiebreakerReport:
-    """Compute without publishing, using the resolved card and verified forecast identity."""
     game = last_game_of_week(
         pd.read_parquet(newest_schedules_path(data_root)),
         int(metadata["season"]),
@@ -442,33 +425,6 @@ def publish_active_predictions(
     registry_root: Path | None = None,
     include_pick_explanation_lines: bool = False,
 ) -> dict[str, Any]:
-    """Publish the active card and update the README from the same rendered table.
-
-    ``data_root`` locates the local nflverse schedule snapshot the year-1-coach
-    fade overlay (``docs/coach_fade_overlay.md``) is derived from, AND the
-    local market snapshot store the v2 Best Pick nomination rule
-    (``nfl_ats.best_pick_nomination``, POL-09) reads its cross-book opener
-    dispersion from. Coach and nomination inputs retain their documented
-    fallbacks, but publication always requires a current, complete,
-    hash-verified player-arrest snapshot. There is no public fail-open switch
-    for the production card.
-
-    ``registry_root`` locates ``weak_signals.json`` / ``rotation_registry.json``
-    for the README's generated research-state block (see
-    ``nfl_ats.readme_state``); this publisher also refreshes that block and the
-    generated active-model-state block in the same README write, alongside the
-    ``CURRENT_PREDICTIONS`` card table this function has always owned.
-    ``registry_root=None`` (the default for direct callers/tests) renders that
-    block as "not available" rather than reading an ambient path.
-
-    ENG-12: a per-pick ``explanations.json`` (market line, this game's own
-    model probability, fired overlays, source freshness, and any recorded
-    Tuesday-to-refresh change -- see ``nfl_ats.card_explanation``) is always
-    written beside the linked forecast artifact. ``include_pick_explanation_lines``
-    (default ``False``) additionally gates a short explanation line per pick
-    appended to the tracked Markdown card itself; it defaults off so the
-    existing card-writer tests need no changes.
-    """
 
     publish_instant = published_at or datetime.now(UTC)
     (

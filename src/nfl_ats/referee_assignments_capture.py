@@ -1,107 +1,3 @@
-"""Immutable-snapshot ingester for weekly NFL officiating-crew assignments.
-
-Built for WP22, predeclared by `docs/referee_assignments_capture.md` (read
-that file first: full source survey, publication-timing measurements, and
-the join argument against the historical crew traits). `docs/referee_battery.md`
-and `docs/penalty_crew_tendencies.md` found reliable crew-level penalty-rate
-traits from `nflreadpy.load_officials()` (`data/raw/officials/*/officials.parquet`,
-2015-2025) but nothing in this repo captures the UPCOMING week's officiating
-assignment -- so those cells cannot be played or tracked prospectively. This
-module is that capture.
-
-Source (measured this session, 2026-09-01): Football Zebras
-(`https://www.footballzebras.com/`) publishes one post per REG week titled
-"Week N referee assignments" at a URL slug of the shape
-`/{season}/{month}/week-{N}-referee-assignments-{season}/` -- MEASURED to be
-unreliable to construct directly (Week 5, 2025's real slug was
-`week-5-referee-assignments-5`, not `-2025`), so this module's PRIMARY
-strategy is to discover the exact post URL from the site's own reverse-
-chronological `https://www.footballzebras.com/category/assignments/` index
-page (`find_week_url`), falling back to a direct URL guess
-(`_guess_urls`, using the week's own schedule kickoff month) only when the
-index does not (yet) list the week at all. No independent second SOURCE was
-found: `operations.nfl.com` was checked and measured to carry no weekly
-assignments page at all (its own `/robots.txt` 404s -- it is a client-
-rendered Next.js app, not a page this fetch model can read), and web
-searches for a structured third-party mirror (ProFootballTalk, VSiN,
-SportsbookWire) returned only prose betting-preview mentions, never a
-per-game listing -- see `docs/referee_assignments_capture.md` Section 1 for
-the full, honestly-reported negative result. Robots.txt (measured) disallows
-only `/wp-admin/` (with `admin-ajax.php` explicitly re-allowed) -- nothing
-under `/category/` or `/{season}/...` is blocked.
-
-Structure (measured against real 2025-season fetches, both saved verbatim
-under `tests/fixtures/`): the post body contains a `assignment_list` block of
-repeated `b_post` divs, each with a `b_post-game` cell ("Team at Team" or,
-for a designated-home international game, "Team vs. Team" -- both forms list
-the away team first, matching the schedule's own `game_id` convention, but
-this module never trusts that ordering: `home_team`/`away_team`/`game_id`
-are always resolved from the local schedule snapshot by the unordered team
-PAIR, not by text position) and a `b_post-referee` cell (a plain "First
-Last" name). MEASURED: the site emits BOTH single- and double-quoted class
-attributes across different posts (`tests/fixtures/
-footballzebras_week10_2025_referee_assignments.html` is double-quoted,
-`footballzebras_week18_2025_referee_assignments_excerpt.html` is single-
-quoted) and decorates some team names with a `<sup>seed</sup>` annotation or
-a trailing `*` footnote marker in the season's final week -- both stripped
-before nickname lookup.
-
-Team-name -> team-code mapping (`NICKNAME_TO_CODE`), the HTML-stripping
-helper (`strip_html`), and the current-week resolver
-(`resolve_current_reg_week`) are IMPORTED VERBATIM from
-`scripts/ingest_nflcom_injuries.py`, the same reuse this project's other
-2026-09-01 capture (`src/nfl_ats/inactives_capture.py`) already makes for the
-identical reason: `scripts` is not part of the installed package, and that
-parser is the closest proven-real precedent for a "team nickname on a public
-NFL page" -> repo team code join.
-
-Referee-name join to the historical crew traits: `officials.parquet`'s own
-`official_name` field (what `docs/referee_battery.md`'s and
-`docs/penalty_crew_tendencies.md`'s flag builders key on,
-`src/nfl_ats/experiment_runner.py`'s `_build_referee_trait_data`) and Football
-Zebras' `b_post-referee` text use the same "First Last" convention.
-MEASURED this session: of the 17 referees on Football Zebras' own
-2026-season crew roster (`https://www.footballzebras.com/2026/08/
-officiating-crews-for-the-2026-season/`), 16 match one of the 29 distinct
-`official_name` values in `data/raw/officials/20260819T190537Z/
-officials.parquet` (2015-2025, position="Referee") EXACTLY -- the lone miss
-is "Ron Torbert" (Football Zebras) vs. "Ronald Torbert" (nflverse), a real
-mismatch also present in-context in the week-10 fixture's own
-"Bills at Dolphins" row. `REFEREE_NAME_ALIASES` maps that one known case
-explicitly (not fuzzy-matched, so the join stays exact and auditable),
-bringing the measured match rate to 17/17 (100%).
-
-Point-in-time contract: every run writes a FRESH UTC-stamped snapshot
-directory under `data/players/referee_assignments/<UTC ts>/` (raw HTML for
-both the category index and the resolved post page, `assignments.parquet`,
-`manifest.json`) -- never resumes or mutates an older one, matching
-`scripts/ingest_player_arrests.py` and `src/nfl_ats/inactives_capture.py`.
-Pregame-safety: officiating crew assignments are published by the league
-before kickoff (the premise `docs/referee_battery.md` already argues from
-for the historical PBP-joined construct); MEASURED across 10 sampled 2025
-weeks (`docs/referee_assignments_capture.md` Section 2), Football Zebras'
-own publish timestamp is NEVER before Tuesday afternoon and sometimes lands
-Wednesday around midday -- so a captured assignment is usable for a
-LATE-WEEK refresh (up to each game's own `min(kickoff, Sunday 16:00 ET)`
-deadline) but essentially never for the Tuesday-lock/opener card. No
-experiment is run by this module; it only captures.
-
-`empty_reason` values (zero-row snapshot, `ok` as noted):
-- `no_schedule_snapshot` / `no_upcoming_reg_kickoff` -- `--current` could not
-  resolve a live (season, week) at all. Both genuine "nothing to capture yet"
-  states, `ok=True`.
-- `not_yet_published` -- the category index loaded fine and simply does not
-  (yet) list this week's post, and no direct URL guess found it either. The
-  EXPECTED state for an early-in-the-week or early-in-the-season run --
-  MEASURED true right now (2026-09-01) for 2026 Week 1. `ok=True`.
-- `unrecognized_page_structure` -- the index DID list a URL for this week,
-  but fetching or parsing it yielded zero rows. This means the guessed
-  markup is wrong and needs fixing against the real page -- `ok=False` so
-  the scheduler's `FAIL(...)` status surfaces it.
-- `primary_and_category_fetch_failed` -- the category index itself could not
-  be fetched or robots.txt disallowed it. `ok=False`.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -236,15 +132,6 @@ def _week_link_pattern(week: int) -> re.Pattern[str]:
 
 
 def find_week_url(index_html: str, *, season: int, week: int) -> str | None:
-    """The post URL for (season, week) per the category index, if listed.
-
-    Prefers a URL whose own path year matches ``season`` (every REG-week post
-    observed this session embeds the season, not the calendar publish year,
-    in its path -- Week 18's Jan-kickoff games were posted in December under
-    `/2025/12/...`). Falls back to the first match regardless of year only if
-    no season-matching one exists, so a plausible link is still surfaced for
-    inspection rather than silently discarded.
-    """
 
     matches: list[tuple[str, str]] = _week_link_pattern(week).findall(index_html)
     for url, year in matches:
@@ -275,14 +162,6 @@ def parse_assignment_page(
     source_url: str,
     fetched_at_utc: str,
 ) -> tuple[list[dict[str, Any]], list[str]]:
-    """Parse one Football Zebras weekly-assignments post.
-
-    Returns ``(rows, warnings)``. A row is skipped (with a warning) if its
-    referee cell is empty, its matchup text does not contain either " at " or
-    " vs. ", or either side's nickname is not in ``NICKNAME_TO_CODE`` --
-    every skip is recoverable information loss (one bad row), never a reason
-    to fail the whole page.
-    """
 
     warnings: list[str] = []
     rows: list[dict[str, Any]] = []
@@ -340,12 +219,6 @@ def _week_kickoff_month(repo: Path, season: int, week: int) -> int | None:
 
 
 def _guess_urls(repo: Path, season: int, week: int) -> list[str]:
-    """Defensive direct-URL fallback, used only when the category index does
-    not (yet) list the week at all. MEASURED unreliable in general (a real
-    slug can carry a numeric disambiguator instead of the season, e.g. 2025
-    Week 5's actual slug was `week-5-referee-assignments-5`), so this is a
-    best-effort second chance, not the primary discovery mechanism.
-    """
 
     kickoff_month = _week_kickoff_month(repo, season, week)
     if kickoff_month is None:
@@ -364,12 +237,6 @@ def _guess_urls(repo: Path, season: int, week: int) -> list[str]:
 def _schedule_pair_lookup(
     repo: Path, season: int, week: int
 ) -> dict[frozenset[str], tuple[str, str, str]]:
-    """Unordered team-pair -> (game_id, home_team, away_team) for one REG week.
-
-    Keyed by an unordered pair (not by the source page's "at"/"vs." reading
-    order) because this module never trusts that ordering as authoritative --
-    see the module docstring's international-game note.
-    """
 
     hits = sorted((repo / "data" / "raw").glob("*/schedules.parquet"))
     if not hits:
@@ -397,14 +264,6 @@ def run_capture(
     fetch: FetchFn | None = None,
     now: datetime | None = None,
 ) -> tuple[Path, bool]:
-    """Fetch, parse and write one immutable referee-assignments snapshot.
-
-    Returns ``(snapshot_dir, ok)``. ``ok`` is False only for the two branches
-    a future session should treat as a bug to fix
-    (``unrecognized_page_structure``, ``primary_and_category_fetch_failed``);
-    every other outcome, including a genuinely empty "not published yet"
-    snapshot, is a documented, expected zero-row success.
-    """
 
     moment = now or datetime.now(UTC)
     stamp = moment.strftime("%Y%m%dT%H%M%SZ")

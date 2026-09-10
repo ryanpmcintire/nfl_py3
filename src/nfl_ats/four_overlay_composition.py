@@ -1,19 +1,3 @@
-"""Frozen three-member overlay composition for a prospective played policy.
-
-Every member is evaluated independently against the same raw incoming card.
-The composed policy then takes the union of their flip game IDs and complements
-the raw ``home_cover_probability`` exactly once on each union member.  An
-overlap therefore coalesces; it never toggles a pick twice.  This is the joint
-OR semantics used by the overlay-subset study, expressed here as a reusable,
-deterministic production primitive.
-
-The pure :func:`apply_four_overlay_composition` function accepts already-loaded
-frames and a validated arrest snapshot descriptor.  The publication boundary
-:func:`apply_four_overlay_composition_for_publication` obtains that descriptor
-through the existing freshness/hash verifier and deliberately has no fail-open
-path for missing, incomplete, corrupt, future-dated, or stale arrest data.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -138,18 +122,11 @@ MEMBER_REGISTRY_EVIDENCE: dict[str, tuple[str, ...]] = {
 
 
 def on_the_card_registry_names() -> frozenset[str]:
-    """Every weak-signal registry name backing a live policy member.
-
-    The single source :mod:`nfl_ats.signal_ledger` reads to derive its
-    "On the card" status -- see :data:`MEMBER_REGISTRY_EVIDENCE` above for
-    how each entry was established.
-    """
 
     return frozenset(name for names in MEMBER_REGISTRY_EVIDENCE.values() for name in names)
 
 
 def policy_definition() -> dict[str, Any]:
-    """Return the canonical, JSON-serializable policy definition."""
 
     return {
         "schema_version": 1,
@@ -263,8 +240,6 @@ POLICY_FINGERPRINT = _policy_fingerprint()
 
 @dataclass(frozen=True)
 class MemberProvenance:
-    """One member's independently evaluated transform against the raw card."""
-
     member_id: str
     order: int
     implementation: str
@@ -280,8 +255,6 @@ class MemberProvenance:
 
 @dataclass(frozen=True)
 class GameProvenance:
-    """Why one game was complemented by the joint-OR policy."""
-
     game_id: str
     member_ids: tuple[str, ...]
     raw_home_cover_probability: float
@@ -290,8 +263,6 @@ class GameProvenance:
 
 @dataclass(frozen=True)
 class FourOverlayCompositionResult:
-    """Composed card plus stable policy and source provenance."""
-
     overlaid_predictions: pd.DataFrame
     policy_id: str
     policy_fingerprint: str
@@ -318,7 +289,6 @@ def _member_provenance(
     status: str = "applied",
     detail: str | None = None,
 ) -> MemberProvenance:
-    """Validate a sibling overlay's complement-only contract."""
 
     transformed = result.overlaid_predictions.reset_index(drop=True)
     if list(transformed.columns) != list(raw.columns):
@@ -386,8 +356,6 @@ def _empty_protection_flags() -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class _DisabledMemberResult:
-    """A member that never ran, shaped like the overlay result it stands in for."""
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[Any, ...]
     enabled: bool
@@ -401,7 +369,6 @@ def _guarded_member(
     *,
     available: bool,
 ) -> MemberProvenance:
-    """Run one added member, disabling it rather than raising on a missing input."""
 
     disabled = _DisabledMemberResult(raw.reset_index(drop=True).copy(), (), False)
     if not available:
@@ -438,20 +405,6 @@ def apply_four_overlay_composition(
     protection_flags: pd.DataFrame | None = None,
     repo_root: Path | None = None,
 ) -> FourOverlayCompositionResult:
-    """Apply the frozen joint-OR policy using already-loaded, frozen inputs.
-
-    Every sibling overlay receives ``raw`` rather than a preceding member's
-    output.  Their flip IDs are unioned and the raw probability is complemented
-    once, so overlaps agree instead of cancelling.  The year-1 coach member
-    retains its established production fail-open behavior for
-    :class:`DataContractError`; all other member errors propagate.
-
-    The six members added 2026-09-09 each need an input this function cannot
-    load for itself.  A caller that has nothing to supply passes ``None`` and
-    that member is reported as ``disabled_input_unavailable`` with zero flips,
-    which is how a research caller with a miniature fixture schedule gets a
-    well-defined card instead of an exception.
-    """
 
     required = {
         "game_id",
@@ -616,7 +569,6 @@ def apply_four_overlay_composition(
 
 
 def protection_flags_for_card(predictions: pd.DataFrame, data_root: Path) -> pd.DataFrame:
-    """The PBP-08 lean table for every (season, week) on the card, fail-open."""
 
     if not {"season", "week"}.issubset(predictions.columns):
         return _empty_protection_flags()
@@ -640,12 +592,6 @@ def protection_flags_for_card(predictions: pd.DataFrame, data_root: Path) -> pd.
 def forecasts_for_card(
     predictions: pd.DataFrame, schedules: pd.DataFrame, registry_root: Path
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Tuesday-noon and kickoff-nearest forecasts for the card, both fail-open.
-
-    Every failure mode of the two fetches is already folded into an all-NaN
-    frame by their own wrappers, which reads downstream as "no game flagged".
-    Neither weather member can block a publish.
-    """
 
     if "kickoff" not in predictions.columns:
         return _empty_temp_forecasts(predictions), _empty_precip_forecasts(predictions)
@@ -669,17 +615,6 @@ def apply_four_overlay_composition_for_publication(
     forecasts_tuesday_noon: pd.DataFrame | None = None,
     forecasts_kickoff_nearest: pd.DataFrame | None = None,
 ) -> FourOverlayCompositionResult:
-    """Load the mandatory fresh arrest input and apply the frozen policy.
-
-    ``load_latest_complete_arrest_snapshot`` is intentionally outside a
-    ``try`` block: every availability, completeness, freshness and integrity
-    error fails closed before a publishable composition result can exist.
-    The six members added 2026-09-09 are the opposite posture by their own
-    module contracts -- each loads through a fail-open helper, so a missing
-    snapshot or a failed fetch reads as zero flips rather than a broken
-    publish. A caller that already fetched the weather may pass it in so the
-    network is not hit twice.
-    """
 
     snapshot = load_latest_complete_arrest_snapshot(data_root, now=now)
     incidents = pd.read_parquet(

@@ -1,95 +1,3 @@
-"""Spread-gap-zone fade overlay: a parameter-free pick-level nudge.
-
-Research chain (read from ``registry/weak_signals.json:pick_conditioned_spread_gap_zone_pre2018``
-before this module was built, 2026-08-19): the active model's own forced
-picks (``home_cover_probability >= 0.5``), restricted to games where
-``7.5 < abs(spread_line) <= 10.0``, were mined at 45.96% accuracy on the
-opener line (2020-2025, n=198) and 47.97% on the close line (2018-2025,
-n=271) -- BOTH below the model's own overall accuracy, in the SAME
-direction. A predeclared, never-mined replication on 2011-2017 walk-forward
-picks (before either mined window; the 7.5/10.0 bucket bounds were FROZEN
-before this replication ran, exactly as stated in the registry entry's
-description) reads 46.22% accuracy (n_bucket=238 of 1,743 scored games),
-week-blocked 95% [-2.156, +11.698] accuracy points (hypothesis-signed:
-positive means the replication agrees with the mined "lower" direction),
-``probability_positive`` 0.9135 for the mined direction. **Three windows
-(2011-2017 replication, 2018-2025 close, 2020-2025 opener), all the SAME
-direction** -- the model underperforms its own baseline specifically inside
-this spread-gap zone. The interval crosses zero; per AGENTS.md that is the
-EXPECTED shape for a real small signal at this evaluator's resolution, never
-grounds to decline building a no-window-cost prospective challenger.
-
-**Frozen thresholds, not tuned on the replication.** The registry entry's
-own description states the 7.5/10.0 bucket bounds were fixed BEFORE the
-2011-2017 pre-2018 replication ran; this module reuses those same two
-numbers verbatim (:data:`SPREAD_GAP_LOWER_BOUND`, :data:`SPREAD_GAP_UPPER_BOUND`)
-and adds no threshold of its own. The rule itself is otherwise
-parameter-free: inside the zone, EVERY forced pick flips, unconditionally on
-which side the model favored.
-
-**Critical caveat, stated here because it must not be buried: this is a
-PICK-CONDITIONED construct, not a market-conditioned one.** The measured
-46% figures are the accuracy of OUR OWN model's forced picks when restricted
-to this spread-gap zone -- not the accuracy of any fixed market side (e.g.
-"the underdog covers 54% of the time in this zone"). That means the flip's
-expected in-zone accuracy is only the complement of the measured number
-(roughly 54%) IF the lean is real and IF the active model's own pick-
-generation process inside this zone stays stable going forward -- a change
-to the active model's configuration could change which games and which
-sides land in the zone, and would not automatically inherit this
-measurement. The 2026 prospective ledger settles this empirically instead of
-assuming it.
-
-**Interaction with other overlays on the production card, stated explicitly
-per the established pattern**: this challenger is tracked INDEPENDENTLY
-against the active model's own UN-flipped card, exactly like every other
-overlay challenger in this repository (``backup_qb_fade_overlay``,
-``division_revenge_tilt_overlay``, ``injury_value_tilt_overlay``,
-``surface_switch_tilt_overlay``). ``_cmd_publish_predictions`` calls every
-overlay recorder in SEPARATE try/except blocks, each reading the SAME
-un-flipped active-model card and applying its own transform independently --
-this overlay never sees ``coach_fade_overlay``'s flips (or any other
-overlay's), and no other overlay ever sees this one's. If ``coach_fade_overlay``
-is ever played for real on the PUBLISHED card (it currently is, weeks 1-8,
-per ``docs/coach_fade_overlay.md``) and a game happens to sit in both that
-overlay's clean-case set AND this overlay's spread-gap zone, the two rules
-could disagree about the published pick -- but that interaction is a
-property of the PUBLISHED card, which this module never touches; this
-challenger's own prospective evidence is always scored against the
-un-flipped active model, never against whatever the published card actually
-shows.
-
-This module is the no-window-cost path, built on the exact pattern of
-``surface_switch_tilt_overlay.py``, ``backup_qb_fade_overlay.py``,
-``division_revenge_tilt_overlay.py``, ``injury_value_tilt_overlay.py``, and
-``coach_fade_overlay.py`` (the original precedent): a **pick-level,
-post-prediction transform** of the active model's own forced pick,
-dual-tracked against that same active model in the prospective challenger
-ledger (``nfl_ats.prospective_scoring``), at no rotation-registry window cost
-and with zero training-time feature changes. **Nothing in this module is
-wired into ``publishing.py`` or the production pick path** -- like the four
-tilt/fade siblings, and unlike the coach-fade overlay, no owner decision to
-play this on the real card has been made; it is dual-tracked only.
-
-Unlike the other overlays, this one reads no schedule snapshot and no
-separate feature table: the spread-gap zone is entirely a function of the
-CARD's own ``spread_line`` column -- exactly the same decision-line field
-the sibling overlays' recorders already read for ``decision_home_spread``
-(``injury_value_tilt_overlay.record_injury_value_tilt_challenger_decisions``
-and its siblings), so this module's flip logic uses the identical data
-plumbing, just at the point of computing the flip rather than only at the
-point of recording it.
-
-Two things live here, mirroring the sibling overlays' structure:
-
-1. :func:`apply_spread_gap_zone_fade_overlay` -- the pick-level transform,
-   reading ``spread_line`` directly off the predictions/card frame, plus
-   :func:`overlay_disclosure_note` for the plain-English provenance sentence.
-2. :func:`record_spread_gap_zone_fade_challenger_decisions` -- writes the
-   overlay's own arm to the prospective challenger ledger so 2026 scores it
-   cleanly, independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -124,8 +32,6 @@ SPREAD_GAP_UPPER_BOUND = 10.0
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     original_pick_team: str
@@ -135,13 +41,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``coach_fade_overlay.OverlayResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     enabled: bool
@@ -156,27 +55,6 @@ def apply_spread_gap_zone_fade_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip EVERY forced pick whose market line sits in the spread-gap zone.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (the pre-2018
-      replication and both mined reads were scored on regular-season games
-      only);
-    * ``spread_line`` is present and numeric; and
-    * ``SPREAD_GAP_LOWER_BOUND <= abs(spread_line) <= SPREAD_GAP_UPPER_BOUND``
-      (the frozen zone).
-
-    Unlike the sibling overlays, this rule does NOT condition on which side
-    the model already picked -- inside the zone, EVERY forced pick flips,
-    unconditionally, because the measured construct is a property of the
-    ZONE itself (the model's own picks underperform inside it), not of a
-    particular side.
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    the sibling overlays do, so every existing reader of the column needs no
-    overlay-aware branch.
-    """
 
     required = {"game_id", "home_team", "away_team", "home_cover_probability", "spread_line"}
     missing = sorted(required.difference(predictions.columns))
@@ -226,12 +104,6 @@ def apply_spread_gap_zone_fade_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -263,28 +135,6 @@ def record_spread_gap_zone_fade_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the fade overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``surface_switch_tilt_overlay.record_surface_switch_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``data_root`` is accepted for call-signature parity with every other
-    overlay recorder (``_cmd_publish_predictions`` calls all of them
-    uniformly as ``recorder(_artifacts_root(), _data_root())``) but is not
-    read: unlike the schedule- or feature-table-dependent siblings, the
-    spread-gap zone is entirely a function of the card's own ``spread_line``
-    column, matching ``best_pick_nomination.record_nomination_challenger_decisions``'s
-    identical, established precedent for an unused ``data_root`` parameter.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the fade's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-fade side.
-    """
 
     del data_root
 

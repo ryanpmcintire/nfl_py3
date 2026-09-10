@@ -1,13 +1,3 @@
-"""Immutable nflverse weekly action-count snapshot for role-delivery replication.
-
-This is a small, standalone sibling of ``nfl_ats.players``' snapshot machinery
-(``PlayerValueSnapshot`` / ``fetch_player_value_snapshot`` / ``_to_pandas``):
-same immutable-directory-per-fetch pattern, same "canonicalize before write"
-contract, but scoped to exactly the weekly action counts the XLG-04
-cross-league role-delivery replication (``nfl_ats.cfb_roles``) needs --
-dropback/carry/reception raw counts, not the full player-value feature set.
-"""
-
 from __future__ import annotations
 
 import json
@@ -55,8 +45,6 @@ _COUNT_COLUMNS = ("attempts", "carries", "receptions", "targets", "sacks_taken")
 
 @dataclass(frozen=True)
 class RoleActionsSnapshot:
-    """An immutable weekly player action-count snapshot."""
-
     snapshot_id: str
     root: Path
     seasons: tuple[int, ...]
@@ -88,18 +76,6 @@ def _valid_seasons(seasons: list[int]) -> None:
 def canonicalize_role_actions(
     frame: pd.DataFrame, *, include_postseason: bool = False
 ) -> pd.DataFrame:
-    """Normalize weekly player action counts to the XLG-04 replication contract.
-
-    Keeps the identity columns plus ``attempts``/``carries``/``receptions``/
-    ``targets`` and a renamed ``sacks_taken`` column: nflverse has named the
-    passer's times-sacked column either ``sacks_suffered`` (current) or
-    ``sacks`` (older versions); whichever is present is kept and renamed
-    (``sacks_suffered`` preferred when both exist), and a
-    :class:`DataContractError` is raised if neither exists. Restricted to
-    ``season_type == "REG"`` unless ``include_postseason`` also admits POST
-    rows; count columns are numeric-coerced and zero-filled; duplicate
-    ``(game_id, team, player_id)`` rows raise.
-    """
 
     sacks_column = (
         "sacks_suffered"
@@ -157,7 +133,6 @@ def write_role_actions_snapshot(
     *,
     include_postseason: bool = False,
 ) -> RoleActionsSnapshot:
-    """Canonicalize and persist one action-count source as an immutable snapshot."""
 
     _valid_seasons(seasons)
     identifier = snapshot_id or run_id()
@@ -186,7 +161,6 @@ def fetch_role_actions_snapshot(
     *,
     include_postseason: bool = False,
 ) -> RoleActionsSnapshot:
-    """Download nflverse weekly player action counts into an immutable snapshot."""
 
     season_list = sorted({int(season) for season in seasons})
     _valid_seasons(season_list)
@@ -222,12 +196,6 @@ def load_role_actions_snapshot(
     *,
     include_postseason: bool = False,
 ) -> pd.DataFrame:
-    """Read the action counts, regular season only unless asked otherwise.
-
-    The season filter runs at write time, so a postseason-inclusive snapshot
-    would otherwise hand POST rows to the XLG-04 role replication. Re-applying
-    the scope here keeps that consumer regular-season only by default.
-    """
 
     if not snapshot.actions_path.is_file():
         raise FileNotFoundError(f"Missing role-actions snapshot data: {snapshot.actions_path}")

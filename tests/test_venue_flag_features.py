@@ -1,29 +1,10 @@
-"""Construction, sign-convention and leakage contracts for the four Wave 2
-LEAD-39/41/42/35 venue/market-context flags.
-
-Predeclared in ``docs/schedule_flag_battery.md`` ("Wave 2" section). Every
-fixture is built in memory: these tests must pass in a fresh clone with no
-local data snapshots (no ``schedules.parquet`` snapshot and no
-``data/market/raw`` market store is ever read).
-"""
-
 from __future__ import annotations
-
-import sys
-from pathlib import Path
 
 import pandas as pd
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "scripts") not in sys.path:
-    sys.path.insert(0, str(ROOT / "scripts"))
-
-import schedule_flag_on_production as sfop  # noqa: E402
-
-from nfl_ats.data import DataContractError  # noqa: E402
-from nfl_ats.margin import margin_feature_columns  # noqa: E402
-from nfl_ats.schedule_flag_features import (  # noqa: E402
+from nfl_ats.data import DataContractError
+from nfl_ats.schedule_flag_features import (
     DOME_SHOOTOUT_COLUMN,
     LOW_TOTAL_DIV_DOG_COLUMN,
     NEW_STADIUM_COLUMN,
@@ -149,7 +130,6 @@ def test_dome_shootout_sign_convention_and_thresholds() -> None:
 
 
 def test_dome_shootout_missing_total_never_silently_satisfies_threshold() -> None:
-    """A missing opener total must NEVER be treated as satisfying >= 49."""
 
     schedule = _schedule([{"game_id": "d9", "roof": "dome"}])
     opener_lines = pd.DataFrame(
@@ -188,9 +168,6 @@ def test_dome_shootout_requires_opener_lines_join_key() -> None:
 
 
 def test_dome_shootout_attach_accepts_supplied_opener_lines_without_touching_the_store() -> None:
-    """Passing ``opener_lines`` directly must never call ``default_opener_lines``
-    (i.e. never touch ``data/market/raw``), which is the contract every test
-    in this module relies on to run without local data."""
 
     schedule = _dome_schedule()
     features = pd.DataFrame({"game_id": schedule["game_id"]})
@@ -315,9 +292,6 @@ def test_sept_heat_atl_requires_open_air_roof() -> None:
 
 
 def test_sept_heat_hou_local_time_conversion() -> None:
-    """HOU is Central (1h behind ET): a 14:00 ET kickoff IS 1 PM local and
-    qualifies; HOU's normal early-window 13:00 ET kickoff is NOON local and
-    does NOT -- the measured consequence stated in the predeclaration doc."""
 
     schedule = _schedule(
         [
@@ -386,27 +360,6 @@ def test_sept_heat_attach_is_purely_additive() -> None:
     widened = attach_sept_heat_home_features(features, schedule=schedule)
     assert sorted(set(widened.columns) - set(features.columns)) == [SEPT_HEAT_COLUMN]
     pd.testing.assert_frame_equal(features, widened[features.columns], check_exact=True)
-
-
-WAVE_2_CANDIDATE_KEYS = ("new_stadium", "dome_shootout", "low_total_div_dog", "sept_heat")
-
-
-@pytest.mark.parametrize("key", WAVE_2_CANDIDATE_KEYS)
-def test_wave_2_registered_profile_is_production_plus_the_declared_one_column(key: str) -> None:
-    candidate = sfop.CANDIDATES[key]
-    baseline = set(margin_feature_columns("market_residual", sfop.BASELINE_PROFILE))
-    treatment = set(margin_feature_columns("market_residual", candidate.profile))
-    assert treatment - baseline == {candidate.column}
-    assert baseline - treatment == set()
-
-
-@pytest.mark.parametrize("key", WAVE_2_CANDIDATE_KEYS)
-def test_wave_2_candidate_duck_types_with_the_template_profile_identity(key: str) -> None:
-    candidate = sfop.CANDIDATES[key]
-    columns = margin_feature_columns("market_residual", candidate.profile)
-    frame = pd.DataFrame({column: [0.0] for column in columns})
-    observed = sfop.confirmation.profile_identity(candidate, frame)
-    assert observed["only_added_column"] == candidate.column
 
 
 def test_recorded_roof_and_late_announcements_do_not_leak():

@@ -1,15 +1,3 @@
-"""Unit tests for :mod:`nfl_ats.board_site_content`'s new pure helpers
-(owner-approved improvement batch):
-
-* item 2 -- :func:`nfl_ats.board_site_content._finding_trace`;
-* item 9 -- :func:`nfl_ats.board_site_content._evidence_strength` and
-  :func:`nfl_ats.board_site_content._grouped_ledger_rows`.
-
-These sit alongside real-artifact integration coverage in
-``tests/test_board_improvements.py``; this file exercises the exact
-tie-break/ordering rules with small, synthetic inputs.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -237,10 +225,6 @@ def test_season_grade_rows_reuses_the_model_page_pairs_unchanged() -> None:
 
 
 def test_season_grade_rows_adds_a_dynamic_gap_row_when_the_archive_is_narrower() -> None:
-    """The archive's population (here: 100 games) is narrower than the
-    model's own long-run evaluation (here: 638 games) -- the 538-game gap
-    must appear as an explicit row, never silently dropped, and its size is
-    COMPUTED from the two live totals, never a hardcoded figure."""
 
     seasons = (_season_row("2025", 100, 0.53, 0.51),)
     active = {"historical_evaluation": {"games": 638}}
@@ -305,9 +289,6 @@ def test_history_week_grades_reports_both_records_and_their_delta() -> None:
 
 
 def test_history_week_grades_no_close_reference_renders_an_explicit_note() -> None:
-    """A week with a recorded opener pick but NO resolvable close line
-    (``close_reference`` has no row for its games) must say so explicitly,
-    never leave a blank cell."""
 
     decisions = pd.DataFrame(
         [_decision_row("G1", 2026, 2, pick_side="AWAY", decision_home_spread=2.5)]
@@ -324,9 +305,6 @@ def test_history_week_grades_no_close_reference_renders_an_explicit_note() -> No
 
 
 def test_history_week_grades_unplayed_week_says_not_yet_settled() -> None:
-    """No outcome recorded at all (the game has not been played) must read
-    as "not yet settled", never as "no opener line archived" -- the two
-    are different facts and must not be conflated."""
 
     decisions = pd.DataFrame(
         [_decision_row("G1", 2026, 3, pick_side="HOME", decision_home_spread=-1.0)]

@@ -1,5 +1,3 @@
-"""MOD-18 lane Q: home-underdog location features, leakage and additive-profile contracts."""
-
 import numpy as np
 import pandas as pd
 import pytest

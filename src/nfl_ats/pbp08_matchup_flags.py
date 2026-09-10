@@ -1,41 +1,3 @@
-"""PBP-08 protection-mismatch flags, including for games not yet played.
-
-The screen (``scripts/pbp08_matchup_screen.py``, predeclaration and results in
-``docs/pbp08_matchup_screen.md``) measured four scheme/matchup interaction
-cells on REG 2009-2025. One resolved positive-shaped on both blockings:
-
-    ``pbp08_protection_mismatch`` -- the offense's 4-game pressure-allowed
-    rate is top-quartile AND its opponent defense's pressure-generated rate
-    is top-quartile. Flagged offenses cover 45.19% (2009-2017) against a
-    50.45% complement; full-slate effect +0.336 accuracy points, week-blocked
-    95% [+0.014, +0.658], ``probability_positive`` 0.9785, season-blocked
-    0.9797, era-consistent (+0.445 / +0.225), and BOTH bottom-vs-bottom
-    mirror controls land where a null should (+0.019/+0.033, P+ ~0.56).
-
-This module exists because the screen cannot answer the production question.
-``scripts/pbp08_matchup_screen.py:load_population`` drops every game whose
-``home_cover`` is null, which is exactly the set an upcoming week consists of.
-The traits themselves are strictly-prior by construction, so a game with no
-outcome still has a perfectly well-defined window -- it is only the screen's
-scoring population that excludes it.
-
-Every frozen parameter below is copied from the screen, not re-chosen:
-``WINDOW_GAMES``, ``MIN_WINDOW_OBS``, ``MIN_QUANTILE_POOL``, the
-pressure definition (sack OR qb_hit), the v1 ``analysis_plays`` competitive
-filter, and the expanding strictly-prior quartile assignment. Re-deriving any
-of them would make this a different hypothesis wearing the screen's numbers.
-
-**Game-level rule, frozen here BEFORE any 2026 game is scored.** The screen
-measured team-games; a card needs one answer per GAME:
-
-* exactly one side flagged -> back that side's OPPONENT (the defense);
-* both sides flagged -> no lean (the mismatch is mutual and cancels);
-* neither flagged -> no lean.
-
-The both-flagged case is stated rather than silently folded into "back
-somebody", because a mutual mismatch is not the construct the screen measured.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -74,12 +36,6 @@ FLAG_TABLE_COLUMNS: tuple[str, ...] = (
 
 
 def build_game_pressure_traits(pbp_snapshot_path: Path) -> pd.DataFrame:
-    """Per team-game pressure-allowed and pressure-generated rates.
-
-    Identical construction to the screen's ``build_game_trait_tables`` for the
-    two protection legs; the two passing legs are not built because this
-    module serves the protection cell only.
-    """
 
     snapshot = snapshot_from_root(pbp_snapshot_path)
     plays = analysis_plays(load_pbp_snapshot(snapshot))
@@ -115,13 +71,6 @@ def build_game_pressure_traits(pbp_snapshot_path: Path) -> pd.DataFrame:
 
 
 def expanding_quartile_flags(values: pd.Series, blocks: pd.Series) -> np.ndarray:
-    """Quartile code per row from STRICTLY EARLIER week-blocks only.
-
-    Byte-for-byte the screen's own routine. Thresholds never see the block
-    they are applied to, so no future information reaches a flag, and a row
-    is left ``QUARTILE_UNASSIGNED`` until at least ``MIN_QUANTILE_POOL``
-    strictly-prior observations exist.
-    """
 
     raw = values.to_numpy(dtype=np.float64)
     block_values = blocks.to_numpy()
@@ -161,12 +110,6 @@ def expanding_quartile_flags(values: pd.Series, blocks: pd.Series) -> np.ndarray
 
 
 def _team_game_windows(schedule: pd.DataFrame, traits: pd.DataFrame) -> pd.DataFrame:
-    """One row per team-game with its strictly-prior 4-game trait window.
-
-    ``schedule`` must carry every REG game the windows may draw on, INCLUDING
-    games with no outcome yet -- an upcoming game contributes nothing to its
-    own window but must be present to receive one.
-    """
 
     sides = []
     for is_home in (True, False):
@@ -206,12 +149,6 @@ def _team_game_windows(schedule: pd.DataFrame, traits: pd.DataFrame) -> pd.DataF
 
 
 def build_flag_table(schedule: pd.DataFrame, pbp_snapshot_path: Path) -> pd.DataFrame:
-    """One row per game: which side (if any) the protection mismatch backs.
-
-    ``schedule`` is the REG schedule frame -- it must include the upcoming
-    week, and it must include enough completed history for a 4-game window
-    (in practice the prior season, since a Week 1 window reaches back into it).
-    """
 
     required = {"game_id", "season", "week", "gameday", "home_team", "away_team"}
     missing = sorted(required.difference(schedule.columns))
@@ -254,7 +191,6 @@ def build_flag_table(schedule: pd.DataFrame, pbp_snapshot_path: Path) -> pd.Data
 
 
 def flag_summary(table: pd.DataFrame) -> dict[str, Any]:
-    """Counts a caller can log without re-deriving them."""
 
     return {
         "games": len(table),

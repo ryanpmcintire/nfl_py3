@@ -1,79 +1,3 @@
-"""Best Pick nomination v2: calibrated-probability distance, filtered by
-cross-book opener dispersion (owner decision 2026-08-18, POL-09).
-
-The incumbent Best Pick chooser (``nfl_ats.best_pick.sweep_robustness``,
-still selected via ``select_best_pick``) is measured signal-free: 24 of 35
-confirmation weeks were ties, and the tie-agnostic edge is +0.92 points, not
-the recorded +8.68 (``docs/best_pick_ranker.md``). This module implements the
-MEASURED winner from a same-day screen (**read**,
-``scratchpad/bestpick_opener/predeclaration.md`` + ``results.md``, session
-scratchpad; script ``scripts/best_pick_opener_ranker_eval.py``): chooser 6,
-``dispersion_filtered_candidate`` -- an alpha=2000 calibrated probability's
-distance from 0.5, restricted to that week's below-median cross-book opener
-``spread_std`` games (fallback to the full week on missing/degenerate
-dispersion data), scored **+3.92 points vs its unfiltered parent**
-(``probability_positive`` 0.813, interval [-3.92, +11.76], 102 paired weeks
--- third reuse of the same 107-week opener population, multiplicity discount
-stated explicitly, interval contains zero, this is a lean not a resolution).
-
-**Owner-specified composition, not a single scored chooser.** The
-predeclared chooser 6 breaks ties by ascending ``game_id`` (like every other
-chooser in that screen); a SEPARATE chooser (8, ``dispersion_tiebreak``,
-unfiltered, P+ 0.0 on a 5-week degenerate sample -- see ``results.md``)
-tested breaking ties by lower dispersion instead. The owner's 2026-08-18
-production directive composes the two: chooser 6's filter, PLUS a
-dispersion tie-break applied *within* that filtered pool. That exact
-composition was never itself scored as one chooser -- each half is
-separately measured, the combination is not. Flagged here and in
-``docs/best_pick_ranker.md`` rather than silently presented as identical to
-chooser 6.
-
-**Served since 2026-09-09: :func:`nominate_v2_small_spread`**, the same rule
-restricted to candidates whose frozen decision spread is 6.5 points or less
-(``docs/best_pick_bucket_confidence.md``, arm B2). :func:`nominate_v2` itself
-keeps running unrestricted as the paired OFF arm under :data:`CHALLENGER_ID`.
-
-SIDES NEVER CHANGE. This module only decides WHICH game gets the week's
-Best Pick nomination; every game's own forced pick still comes from the
-active model, exactly as published. Best Pick selection (both v1 and v2)
-deliberately runs on UN-overlaid predictions in ``publishing.py``, so this
-lever and the year-1-coach-fade overlay (``nfl_ats.coach_fade_overlay``)
-stay independently measured rather than silently composed -- see that
-module's docstring for the same property stated the other direction.
-
-Three things live here:
-
-1. :func:`week_dispersion_pool` -- the below-median cross-book opener
-   ``spread_std`` eligibility pool for one week, read from the LOCAL market
-   snapshot store the weekly pipeline already populates via ``odds-ingest``
-   (``nfl_ats.market_data.load_quote_history`` / ``tuesday_opener_quotes``)
-   -- this module never calls the odds API. The historical evidence above
-   was built from a decision-labeled backfill archive
-   (``nfl_ats.clv.build_pairing_table``'s ``spread_std``); production has no
-   such labeled snapshot for the live Tuesday capture, so this reads the
-   same free-form store ``nfl_ats.cli``'s existing
-   ``pool-card-at-lines --use-tuesday-opener`` already reads, extended
-   (``market_data.tuesday_opener_quotes``'s new ``opener_std`` column) to
-   carry the same dispersion measure the historical evidence used.
-2. :func:`fit_candidate_probabilities` / :func:`nominate_v2` -- the
-   alpha=2000 ``market_residual`` probability, fit walk-forward (trained on
-   completed games strictly before the target week, mirroring
-   ``nfl_ats.outcomes.score_outcome_week``'s own cutoff -- the same recipe
-   ``scripts/ridge_alpha_promotion_eval.py`` used to name this alpha), and
-   the ranking/fallback/tie-break rule itself.
-3. :func:`record_nomination_challenger_decisions` -- writes v2's weekly
-   nominee to the prospective challenger ledger under
-   :data:`CHALLENGER_ID` (registered in
-   ``artifacts/prospective/challengers.json`` as ``best_pick_nomination_v2``,
-   pinned to the active model's configuration fingerprint), mirroring
-   ``nfl_ats.coach_fade_overlay.record_overlay_challenger_decisions``. v1's
-   nomination is already tracked, unchanged, via the active model's own
-   ``is_best_pick`` flag on the primary paper-decision ledger
-   (``nfl_ats.clv.record_paper_decisions`` -- NOT modified by this module);
-   together the two ledgers score v1 against v2 weekly without either
-   rule's tracking depending on the other.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
@@ -118,22 +42,6 @@ CHALLENGER_ID_V3 = "best_pick_nomination_v3"
 
 @dataclass(frozen=True)
 class DispersionPool:
-    """Below-median cross-book opener ``spread_std`` pool for one week.
-
-    ``frame`` is one row per requested ``game_id`` with ``spread_std`` (NaN
-    when the local Tuesday capture has no book coverage for that game) and
-    ``pool_pass`` (eligible for nomination this week).
-
-    Fallback rule (predeclared, measured over 107 historical opener weeks in
-    ``scratchpad/bestpick_opener/predeclaration.md``'s "Addendum 2026-08-18
-    (evening)", mirrored here for one live week): the WHOLE week falls back
-    to its full, unfiltered game set (every game passes) if EITHER (a) any
-    game that week is missing ``spread_std``, OR (b) a strict
-    ``spread_std < week_median`` filter would leave zero eligible games
-    (ties at the week's minimum -- common, since many books agree to the
-    half-point). Both triggers are counted separately.
-    """
-
     frame: pd.DataFrame
     fallback: bool
     fallback_reason: str | None
@@ -143,14 +51,6 @@ class DispersionPool:
 
 
 def week_dispersion_pool(market_root: Path, game_ids: Sequence[str]) -> DispersionPool:
-    """The below-median-``spread_std`` eligibility pool for one week's games.
-
-    Reads ONLY the local market snapshot store the weekly pipeline already
-    populates via ``odds-ingest`` (``nfl_ats.market_data.load_quote_history``)
-    -- never calls the odds API. A missing or empty store degrades to "every
-    game missing ``spread_std``", which the fallback rule below already
-    turns into a full-week pool rather than a failure.
-    """
 
     ids = [str(game_id) for game_id in game_ids]
     if not ids:
@@ -171,19 +71,6 @@ def week_dispersion_pool(market_root: Path, game_ids: Sequence[str]) -> Dispersi
 
 
 def dispersion_pool_from_frame(frame: pd.DataFrame) -> DispersionPool:
-    """The pool rule itself, isolated from the market-store read.
-
-    ``frame`` is one row per game with ``game_id`` and ``spread_std`` (NaN
-    for a game with no measurable cross-book dispersion). This is the exact
-    body :func:`week_dispersion_pool` applies to the live Tuesday capture,
-    factored out (2026-09-07, POL-09 composed-rule scoring,
-    ``docs/best_pick_composed_rule.md``) so the historical opener archive can
-    be fed to the SAME code path production runs instead of a re-implemented
-    copy. Behaviour is byte-for-byte the previous inline body; pinned by
-    ``tests/test_best_pick_nomination.py``'s pool tests through
-    :func:`week_dispersion_pool` and directly by
-    ``tests/test_best_pick_composed_rule_eval.py``.
-    """
 
     required = {"game_id", "spread_std"}
     missing = sorted(required.difference(frame.columns))
@@ -220,19 +107,6 @@ def fit_candidate_probabilities(
     min_train_games: int,
     ridge_alpha: float = NOMINATION_RIDGE_ALPHA,
 ) -> pd.DataFrame:
-    """Alpha=2000 ``market_residual`` cover probability for one week's games.
-
-    Walk-forward, via ``nfl_ats.outcomes.fit_margin_models_for_week`` --
-    the same public entry point ``nfl-ats pool-card-at-lines`` uses to refit
-    at a custom line, and the same training-cutoff logic (strictly before
-    the target week's earliest kickoff) ``score_outcome_week`` uses to build
-    the active card's own weekly forecast. Predicts at each game's OWN
-    ``spread_line`` from ``features`` -- the same line the active card's own
-    probability was computed at -- so "distance from 0.5" is apples-to-apples
-    with how the published forecast itself was built; no market re-fetch for
-    the LINE is needed (only for dispersion, a separate signal, see
-    :func:`week_dispersion_pool`).
-    """
 
     if feature_profile not in MARGIN_FEATURE_PROFILES:
         raise ValueError(f"Unknown feature profile: {feature_profile!r}")
@@ -257,16 +131,6 @@ def fit_candidate_probabilities(
 
 @dataclass(frozen=True)
 class NominationV2Result:
-    """One week's v2 nomination, plus everything needed to disclose it.
-
-    ``spread_threshold`` is ``None`` for the unrestricted rule and the
-    excluded-at-or-above magnitude for the served small-spread rule
-    (:func:`nominate_v2_small_spread`); ``spread_fallback`` says that screen
-    found no eligible game and the week fell back to the unrestricted pool;
-    ``base_game_id`` is the unrestricted rule's own nominee, kept so the paired
-    OFF arm can be disclosed without refitting.
-    """
-
     game_id: str
     n_tied_at_max: int
     tie_break: str
@@ -280,23 +144,6 @@ class NominationV2Result:
 def _select_nominee(
     candidates: pd.DataFrame, *, rule_name: str, dispersion_tiebreak: bool
 ) -> tuple[str, int, str]:
-    """Shared ranking/tie-break core behind :func:`select_nominee` (v2) and
-    :func:`select_nominee_v3` -- one implementation, two variants.
-
-    ``candidates`` is the ALREADY-ELIGIBLE pool for the week (every row has
-    ``pool_pass`` True, or the caller never restricted it) with ``game_id``,
-    ``candidate_dist``, and (for the v2 variant) ``spread_std`` columns.
-    Returns ``(nominee_game_id, n_tied_at_max, tie_break_used)``.
-
-    Rule (owner decision 2026-08-18, POL-09 -- composed from two separately
-    -measured pieces, see the module docstring): rank by ``candidate_dist``
-    descending; among ties at the max, the v2 variant prefers LOWER
-    ``spread_std`` (``na_position="last"`` -- a candidate with no measurable
-    dispersion loses the dispersion tie-break rather than being treated as
-    "lowest"), while the v3 variant skips that layer entirely; any remaining
-    tie breaks on ascending ``game_id``, matching
-    ``nfl_ats.best_pick.select_best_pick``'s convention exactly.
-    """
 
     if candidates.empty:
         raise ValueError(f"{rule_name} needs at least one candidate")
@@ -319,49 +166,11 @@ def _select_nominee(
 
 
 def select_nominee(candidates: pd.DataFrame) -> tuple[str, int, str]:
-    """The v2 ranking/tie-break rule, isolated from fitting and I/O.
-
-    ``candidates`` is the ALREADY-ELIGIBLE pool for the week (every row has
-    ``pool_pass`` True, or the caller never restricted it) with ``game_id``,
-    ``candidate_dist``, and ``spread_std`` columns. Returns
-    ``(nominee_game_id, n_tied_at_max, tie_break_used)``.
-
-    Ranks by ``candidate_dist`` descending; among ties at the max, prefers
-    LOWER ``spread_std``; any remaining tie breaks on ascending ``game_id``.
-    Delegates to :func:`_select_nominee` with the dispersion tie-break layer
-    enabled (the same core :func:`select_nominee_v3` runs without it).
-    """
 
     return _select_nominee(candidates, rule_name="select_nominee", dispersion_tiebreak=True)
 
 
 def select_nominee_v3(candidates: pd.DataFrame) -> tuple[str, int, str]:
-    """v3's pure ranking/tie-break rule (POL-09 audit, docs/best_pick_ranker.md
-    "v3 audit", 2026-08-19).
-
-    Identical primary ranking to :func:`select_nominee` (``candidate_dist``
-    descending) over the SAME eligible pool (:func:`nominate_v3` restricts to
-    the same below-median-dispersion pool :func:`nominate_v2` does) -- but
-    ties at the max break on ascending ``game_id`` alone, with no dispersion
-    tie-break layer. This is
-    ``scripts/best_pick_opener_ranker_eval.py``'s chooser 6 exactly: the
-    half of v2's composition that WAS separately measured
-    (``probability_positive`` 0.813 vs its unfiltered parent,
-    ``registry/weak_signals.json:best_pick_opener_ranker_dispersion_filtered_candidate_vs_unfiltered``).
-    The OTHER half of v2's composition (a dispersion tie-break layered
-    *inside* the filtered pool -- :func:`select_nominee` above) was audited
-    against this rule head-to-head on the same 107-week opener population
-    (``scripts/best_pick_nomination_v3_audit.py``) and measured no better:
-    +0.97 accuracy points, ``probability_positive`` 0.631, interval
-    [0.0, +2.91] -- but the ENTIRE difference traces to one diverging week of
-    103 paired weeks (the other nominal divergence produced identical
-    lift for both rules). An EV-positive lean on a forced pick per
-    ``AGENTS.md`` ("a promotion bar is not a decision bar"), not a resolved
-    improvement; report as ``unresolved_below_power``, never "confirmed".
-
-    Delegates to :func:`_select_nominee` with the dispersion tie-break layer
-    disabled -- ties break on ascending ``game_id`` alone.
-    """
 
     return _select_nominee(candidates, rule_name="select_nominee_v3", dispersion_tiebreak=False)
 
@@ -379,17 +188,6 @@ def _nominate(
     ridge_alpha: float,
     select_fn: Callable[[pd.DataFrame], tuple[str, int, str]],
 ) -> tuple[str, int, str, pd.DataFrame, DispersionPool] | None:
-    """Shared orchestration behind :func:`nominate_v2` and
-    :func:`nominate_v3` -- one implementation; only ``select_fn`` (the
-    ranking/tie-break rule) differs. Gating, fitting
-    (:func:`fit_candidate_probabilities`), the eligibility pool
-    (:func:`week_dispersion_pool`), the join/raise contract, and the sorted
-    disclosure table are byte-for-byte identical for both variants.
-
-    Returns ``None`` for an empty/non-REG card (the shared v1-mirroring
-    gate), else ``(game_id, n_tied_at_max, tie_break, probability_table,
-    dispersion)``.
-    """
 
     if predictions.empty or "game_id" not in predictions.columns:
         return None
@@ -446,20 +244,6 @@ def nominate_v2(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     ridge_alpha: float = NOMINATION_RIDGE_ALPHA,
 ) -> NominationV2Result | None:
-    """The v2 rule's Best Pick nominee for one week's card, or ``None``.
-
-    Regular season only (mirrors ``nfl_ats.best_pick``'s v1 gate exactly): a
-    ``predictions`` frame carrying any non-REG game, or no games at all,
-    returns ``None`` rather than nominate outside the population this rule
-    was measured on.
-
-    Raises (never silently mis-nominates) on genuine infrastructure
-    problems -- a candidate probability missing for a carded game, or the
-    dispersion join dropping/duplicating rows. Callers that want the
-    "never fail the publish" degrade contract (``publishing.py``) catch
-    those at the call site, matching how ``_apply_overlay`` degrades on
-    ``nfl_ats.coach_fade_overlay.apply_coach_fade_overlay``'s own raises.
-    """
 
     nominated = _nominate(
         predictions,
@@ -487,8 +271,6 @@ def nominate_v2(
 
 @dataclass(frozen=True)
 class SpreadEligibilityResult:
-    """A v2 nominee re-chosen after a spread screen, plus its audit table."""
-
     game_id: str
     n_tied_at_max: int
     tie_break: str
@@ -504,14 +286,6 @@ def apply_spread_eligibility(
     *,
     threshold: float,
 ) -> SpreadEligibilityResult:
-    """Re-choose inside v2's own pool after dropping absolute spreads of ``threshold`` or more.
-
-    ``spread_line`` is the card's frozen decision-line input. The transform uses
-    its absolute magnitude only; it does not read outcomes, closing lines,
-    post-kickoff data, or even the card's pick side/probability. When every
-    v2-eligible game is excluded the unmodified v2 pool is restored, so the
-    forced weekly nomination is never dropped.
-    """
 
     if not np.isfinite(threshold) or threshold <= 0:
         raise ValueError("Best-Pick spread eligibility threshold must be finite and positive")
@@ -568,7 +342,6 @@ def apply_spread_eligibility(
 
 
 def _screened_dispersion(base: DispersionPool, eligible_game_ids: set[str]) -> DispersionPool:
-    """v2's dispersion pool with ``pool_pass`` narrowed to the served eligibility."""
 
     frame = base.frame.copy()
     frame["pool_pass"] = frame["pool_pass"].astype(bool) & frame["game_id"].astype(str).isin(
@@ -597,23 +370,6 @@ def nominate_v2_small_spread(
     ridge_alpha: float = NOMINATION_RIDGE_ALPHA,
     threshold: float = SERVED_SPREAD_THRESHOLD,
 ) -> NominationV2Result | None:
-    """The SERVED Best Pick rule: v2 restricted to spreads of 6.5 or less.
-
-    Owner decision 2026-09-09 (``docs/best_pick_bucket_confidence.md``, arm B2,
-    artifact ``artifacts/best_pick_bucket_confidence/20260909T233823Z``): v2 sent
-    25.2% of its 107 archive nominations into spreads of 7 or more, where the
-    served stream hit 48.15% against 59.21% on its small-spread nominations.
-    Restricting the pool scored 60/102 against v2's 58/102 -- +1.96 Best-Pick
-    accuracy points, week-blocked ``probability_positive`` 0.688 -- and per
-    ``AGENTS.md`` a forced weekly nomination plays the favoured side of that bet.
-
-    Sides never change; only which game carries the star. The candidate
-    probabilities, the below-median-dispersion pool, the ranking score and the
-    tie-break are :func:`nominate_v2`'s byte-for-byte; the only difference is
-    that a candidate at ``threshold`` points or more is not eligible for the
-    star. The unrestricted rule keeps recording as the paired OFF arm under
-    :data:`CHALLENGER_ID`.
-    """
 
     base = nominate_v2(
         predictions,
@@ -655,9 +411,6 @@ def nominate_v2_small_spread(
 
 @dataclass(frozen=True)
 class NominationV3Result:
-    """One week's v3 nomination -- same fitting and eligibility pool as v2,
-    but v3's own dispersion-tiebreak-free ranking rule (:func:`select_nominee_v3`)."""
-
     game_id: str
     n_tied_at_max: int
     tie_break: str
@@ -677,17 +430,6 @@ def nominate_v3(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     ridge_alpha: float = NOMINATION_RIDGE_ALPHA,
 ) -> NominationV3Result | None:
-    """v3's Best Pick nominee for one week's card, or ``None``.
-
-    Shares :func:`_nominate`'s single orchestration body with
-    :func:`nominate_v2`, so the candidate probabilities and the eligibility
-    pool are IDENTICAL to v2's by construction (:func:`fit_candidate_probabilities`
-    and :func:`week_dispersion_pool` run once, in one place); only the
-    tie-break rule differs (:func:`select_nominee_v3`). The live production
-    path (``NOMINATION_V2_ENABLED``, ``publishing.py``) is untouched by this
-    module-internal refactor and its behavior is pinned by
-    ``tests/test_best_pick_nomination.py``.
-    """
 
     nominated = _nominate(
         predictions,
@@ -714,12 +456,6 @@ def nominate_v3(
 
 
 def nomination_v2_tie_note(result: NominationV2Result) -> str:
-    """Plain-language tie disclosure, mirroring
-    ``nfl_ats.best_pick.best_pick_tie_note`` -- but distinguishing a tie the
-    dispersion tie-break actually RESOLVED (a reproducible lean, not luck)
-    from one that still fell through to an alphabetical ``game_id``
-    tie-break (arbitrary, exactly like v1's disclosure).
-    """
 
     if result.n_tied_at_max <= 1:
         return ""
@@ -736,14 +472,6 @@ def nomination_v2_tie_note(result: NominationV2Result) -> str:
 
 
 def nomination_v3_tie_note(result: NominationV3Result) -> str:
-    """Plain-language tie disclosure for v3. Unlike
-    :func:`nomination_v2_tie_note`, v3 never attempts a dispersion
-    tie-break at all (see :func:`select_nominee_v3`), so every multi-way tie
-    is arbitrary by construction -- there is no "resolved by dispersion"
-    branch to report. Not surfaced on any published card (v3 is never wired
-    into ``publishing.py``); used only in the challenger ledger's own
-    recording result for debugging.
-    """
 
     if result.n_tied_at_max <= 1:
         return ""
@@ -765,14 +493,6 @@ NOMINATION_SMALL_SPREAD_FALLBACK_CLAUSE = (
 
 
 def nomination_v2_disclosure_note(result: NominationV2Result) -> str:
-    """The card-facing sentence disclosing the served nomination method.
-
-    Always leads with :data:`NOMINATION_V2_METHOD_SENTENCE` verbatim, then names
-    the served spread restriction (or says the week fell back past it), then
-    states the dispersion-pool fallback (if this week fell back to the full
-    game set) and the tie state (via :func:`nomination_v2_tie_note`) -- so
-    the disclosure never implies a filter that did not actually apply.
-    """
 
     sentence = NOMINATION_V2_METHOD_SENTENCE
     if result.spread_threshold is not None:
@@ -810,15 +530,6 @@ def _record_nomination_for_challenger(
     forecast_artifact: str | None,
     replace_week: bool,
 ) -> dict[str, Any]:
-    """Shared recording body behind :func:`record_nomination_challenger_decisions`
-    (v2) and :func:`record_nomination_v3_challenger_decisions` -- ONE
-    implementation of the registration check, active-model/forecast
-    validation, configuration-fingerprint pinning, card contract checks, the
-    walk-forward refit via ``nominate_fn``, the whole-week-pre-kickoff
-    anti-backdating guards, the single-row ledger append, and the result
-    summary. Only ``challenger_id``, the nominate rule, and the tie-note
-    formatter differ between the two callers.
-    """
 
     entry = find_challenger(artifacts_root, challenger_id)
     status = str(entry.get("status"))
@@ -984,36 +695,6 @@ def record_nomination_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the v2 rule's weekly nominee to the prospective challenger
-    ledger under :data:`CHALLENGER_ID`, so the season scores v1 against v2.
-
-    v1's nomination needs no new recording here: it is already tracked,
-    unchanged, via the active model's own ``is_best_pick`` flag on the
-    primary paper-decision ledger (``nfl_ats.clv.record_paper_decisions``,
-    NOT modified by this module). This function supplies the other half --
-    mirroring ``nfl_ats.coach_fade_overlay.record_overlay_challenger_decisions``:
-    this challenger's "model" IS the active model's own synchronized weekly
-    forecast (no separate ``margin-predict`` artifact exists for it), so this
-    reads that forecast directly rather than searching
-    ``artifacts/margin_predictions/`` by fingerprint.
-
-    Unlike the overlay challenger, which records every game's (possibly
-    flipped) pick, this records exactly ONE row per week: the v2 nominee, at
-    the active model's own UNCHANGED pick side and line for that one game
-    (sides never change -- only which game is nominated does). ``bet_side``
-    is ``PASS`` and ``edge`` is NaN: this tracks the nomination's forced-pick
-    (Best Pick) accuracy, not an invented paper-bet edge, mirroring the
-    overlay challenger's identical rationale.
-
-    Recording follows the same whole-week-pre-kickoff rule
-    ``nfl_ats.clv.record_paper_decisions`` uses for the v1 Best Pick flag: a
-    nominee is only recorded while EVERY game on the card is still in the
-    future, so a backdated nomination (choosing with results already in
-    hand) is impossible. Every anti-backdating guarantee of the ordinary
-    challenger path still applies otherwise: pre-kickoff only, never
-    rewrites an existing row, and the ``RECORDING_LOCK_WINDOW`` rehearsal
-    guard.
-    """
 
     return _record_nomination_for_challenger(
         artifacts_root,
@@ -1035,28 +716,6 @@ def record_nomination_v3_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append v3's weekly nominee to the prospective challenger ledger under
-    :data:`CHALLENGER_ID_V3`, mirroring
-    :func:`record_nomination_challenger_decisions` exactly except for which
-    rule is fit (:func:`nominate_v3` instead of :func:`nominate_v2`) and
-    which challenger id the row is written under.
-
-    v3 is a SIDE-LEDGER-ONLY challenger (POL-09 audit,
-    docs/best_pick_ranker.md "v3 audit", 2026-08-19): it is never read by
-    ``publishing.py``, never affects ``is_best_pick`` on the primary paper
-    -decision ledger, and does not touch ``NOMINATION_V2_ENABLED``. This
-    function's only job is to accrue independent 2026 prospective evidence
-    for v3 against both v1 (via the primary ledger's ``is_best_pick``) and
-    v2 (via :data:`CHALLENGER_ID`'s own rows), so the season can eventually
-    settle the tie-break question the historical audit could not: the entire
-    measured historical edge over v2 traced to a single week of 103.
-
-    Shares :func:`_record_nomination_for_challenger`'s single implementation
-    with :func:`record_nomination_challenger_decisions` -- identical guards,
-    fingerprint pinning, and append semantics; only the challenger id, the
-    nominate rule, and the tie-note formatter differ. Behavior is pinned by
-    ``tests/test_best_pick_nomination.py``.
-    """
 
     return _record_nomination_for_challenger(
         artifacts_root,

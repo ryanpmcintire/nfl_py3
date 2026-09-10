@@ -175,9 +175,6 @@ def test_tuesday_opener_quotes_selects_earliest_tuesday_capture() -> None:
 
 
 def test_tuesday_opener_quotes_prefers_the_first_capture_after_the_pool_lock() -> None:
-    """2026-09-08: a stray pre-lock capture must not become the opener once
-    the post-lock capture exists (the full rule is pinned in
-    ``tests/test_pool_spread_lock.py``)."""
 
     pre_lock = datetime(2026, 9, 8, 13, tzinfo=UTC)
     post_lock = datetime(2026, 9, 8, 16, 5, tzinfo=UTC)
@@ -213,12 +210,6 @@ def test_tuesday_opener_quotes_requires_columns() -> None:
 
 
 def test_tuesday_opener_quotes_includes_cross_book_dispersion() -> None:
-    """``opener_std`` (POL-09, nfl_ats.best_pick_nomination) is the SAME
-    cross-book dispersion measure over each book's own earliest Tuesday
-    line -- added for a live-production dispersion pool, since the
-    historical decision-labeled archive's ``spread_std``
-    (``nfl_ats.clv.build_pairing_table``) has no equivalent for the free-form
-    ``odds-ingest`` store this function reads."""
 
     tuesday = datetime(2026, 9, 8, 12, tzinfo=UTC)
     assert tuesday.weekday() == 1

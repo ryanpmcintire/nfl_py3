@@ -1,13 +1,3 @@
-"""Opener-only spread diagnostics; no pick changes or fitted parameters.
-
-Two tables come out of one saved opener evaluation: the per-bucket record
-(:class:`WeakSpotRow`) and, since 2026-09-07, the same buckets split by
-whether the HOME team opened as the favourite or the underdog
-(:class:`HomeSplitRow`) -- lane L's diagnosis localised the big-spread
-weakness to home underdogs, so the split is published as a diagnosis, never
-as a pick flip (AGENTS.md, "No unexplained threshold flips").
-"""
-
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -123,8 +113,6 @@ class WeakSpotRow:
 
 @dataclass(frozen=True)
 class HomeSplitRow:
-    """One spread bucket for games where the home team opened on one side of the line."""
-
     spread: str
     home_side: str
     games: int
@@ -158,8 +146,6 @@ class HomeSplitRow:
 
 @dataclass(frozen=True)
 class HomeCorrectionRow:
-    """One spread bucket of the served home-side push (MOD-18 lane S)."""
-
     spread: str
     this_week_points: float | None
     learned_from_games: int | None
@@ -197,8 +183,6 @@ class HomeCorrectionRow:
 
 @dataclass(frozen=True)
 class HomeCorrection:
-    """The served home-side push: this week's values plus its archive record."""
-
     rows: tuple[HomeCorrectionRow, ...] = ()
     archive_games: int = 0
     picks_changed: int = 0
@@ -223,8 +207,6 @@ class WeakSpots:
 
     @property
     def explanation(self) -> str:
-        """The lead sentence for the bucket table: says the push is in the
-        record only when the push was actually measured on it."""
 
         return EXPLANATION if self.home_correction is not None else EXPLANATION_UNALIGNED
 
@@ -280,7 +262,6 @@ class WeakSpots:
 
 
 def build_weak_spots(frame: pd.DataFrame) -> WeakSpots:
-    """Summarize the saved probability picks; pushes never enter a denominator."""
     spread = pd.to_numeric(frame["tue_open_home_spread"], errors="coerce")
     margin = pd.to_numeric(frame["margin_vs_open"], errors="coerce")
     correct = pd.to_numeric(frame["correct_at_open_probability_rule"], errors="coerce")
@@ -344,13 +325,6 @@ def build_home_correction(
     this_week_offsets: Mapping[str, float] | None = None,
     this_week_prior_games: Mapping[str, int] | None = None,
 ) -> HomeCorrection | None:
-    """The served home-side push by spread bucket, from a saved opener evaluation.
-
-    ``frame`` is the evaluation's ``per_game`` table; it must carry the raw
-    twins the aligned evaluation writes (``*_probability_rule_raw``) or the
-    push was not measured on this record and ``None`` is returned. This
-    week's values come from the served forecast's sidecar when given.
-    """
 
     needed = {
         "tue_open_home_spread",

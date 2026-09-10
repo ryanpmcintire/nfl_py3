@@ -1,5 +1,3 @@
-"""Leak-safe calibration of chronological out-of-sample ATS probabilities."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -37,7 +35,6 @@ _PROBABILITY_EPSILON = 1e-6
 
 
 def normalize_cover_calibration_method(method: str) -> CoverCalibrationMethod:
-    """Return a known calibration method or fail before model fitting."""
 
     if method not in COVER_CALIBRATION_METHODS:
         choices = ", ".join(COVER_CALIBRATION_METHODS)
@@ -119,13 +116,6 @@ def calibrate_cover_prediction_stream(
     min_calibration_games: int = DEFAULT_MIN_CALIBRATION_GAMES,
     min_edge: float = 0.02,
 ) -> pd.DataFrame:
-    """Calibrate weekly predictions using only earlier out-of-sample predictions.
-
-    The input must itself be a chronological walk-forward prediction stream.
-    Every target week is calibrated from completed prediction rows strictly
-    before the first kickoff in that week. No in-sample training predictions
-    or same-week outcomes enter the calibrator.
-    """
 
     calibration_method = normalize_cover_calibration_method(method)
     if min_calibration_games < 2:
@@ -245,7 +235,6 @@ _SURVIVAL_EPSILON = 1e-9
 
 
 def normalize_residual_smoothing_method(method: str) -> ResidualSmoothingMethod:
-    """Return a known residual-smoothing method or fail before any fit."""
 
     if method not in RESIDUAL_SMOOTHING_METHODS:
         choices = ", ".join(RESIDUAL_SMOOTHING_METHODS)
@@ -255,19 +244,6 @@ def normalize_residual_smoothing_method(method: str) -> ResidualSmoothingMethod:
 
 @dataclass(frozen=True)
 class ResidualSmoother:
-    """A fitted reader of one out-of-time residual sample.
-
-    ``method="ecdf"`` is the CONTROL arm: it reproduces
-    ``margin._smoothed_probability``'s continuity-corrected empirical CDF
-    from the same draws, to floating-point precision (pinned by a test), so
-    every comparison in this module is "smoothed vs the production math",
-    never "smoothed vs some other reimplementation of the production math".
-    The other methods fit a continuous density to the same draws instead
-    of resampling them directly. ``gaussian_median`` retains the Gaussian
-    sample standard deviation and uses the empirical median as location;
-    ``mean`` remains the arithmetic sample mean for both methods.
-    """
-
     method: ResidualSmoothingMethod
     n: int
     residuals: npt.NDArray[np.float64]
@@ -277,7 +253,6 @@ class ResidualSmoother:
     skew_params: tuple[float, float, float] | None
 
     def survival(self, thresholds: npt.NDArray[np.float64] | float) -> npt.NDArray[np.float64]:
-        """P(residual > threshold), vectorized over one or many thresholds."""
 
         values = np.atleast_1d(np.asarray(thresholds, dtype=np.float64))
         if self.method in {"ecdf", "discrete_residual"}:
@@ -308,12 +283,6 @@ class ResidualSmoother:
 def fit_residual_smoother(
     residuals: npt.NDArray[np.float64], method: str = "ecdf"
 ) -> ResidualSmoother:
-    """Fit one out-of-time residual sample under the requested method.
-
-    ``residuals`` is exactly the array ``MarginModel.residuals`` holds for one
-    fitted margin model (one week, in a walk-forward); every game scored by
-    that model shares this one fitted smoother.
-    """
 
     normalized = normalize_residual_smoothing_method(method)
     if normalized in (
@@ -359,18 +328,6 @@ def smoothed_home_cover_probability(
     method: str = "ecdf",
     conditional_history: pd.DataFrame | None = None,
 ) -> npt.NDArray[np.float64]:
-    """Home-cover probability under an opt-in (possibly smoothed) residual model.
-
-    Mirrors ``MarginModel.predict``'s ``home_cover_probability`` for the
-    ``margin``/``market_residual`` targets: ``centers`` is each game's
-    predicted margin, ``lines`` its quoted spread, and ``residuals`` the
-    SAME out-of-time draws the frozen model would add to that centre.
-    ``method="ecdf"`` reproduces the production probability; any other
-    method re-estimates the residual distribution's shape/location from the
-    same draws instead of resampling them, which can move which side of 0.5
-    a game near the decision boundary falls on (see the module docstring
-    above for why that is a distinct lever from rescaling).
-    """
 
     if method in DISCRETE_MARGIN_METHODS:
         if conditional_history is None:

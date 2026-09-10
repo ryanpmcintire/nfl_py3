@@ -1,19 +1,3 @@
-"""Football-pool outputs derived from calibrated weekly probabilities.
-
-Two things live here:
-
-1. **Card builders** -- force one side per game and rank confidence (POL-02/03).
-2. **A contest simulator** (POL-05) -- given per-game cover probabilities and a
-   field of N entrants, what is the probability of *finishing first*? That is a
-   different objective from maximising expected correct picks, and it is the one
-   the pool actually pays. See ``docs/pool_format_levers.md``.
-
-The simulator needs no reserved data and spends no rotation window: it turns the
-format question into arithmetic conditional on probabilities measured elsewhere.
-It answers "given this edge, how much is the format worth?" -- never "is the
-edge real?", which only the evaluator can answer.
-"""
-
 from __future__ import annotations
 
 import math
@@ -24,7 +8,6 @@ import pandas as pd
 
 
 def build_ats_pool_card(predictions: pd.DataFrame) -> pd.DataFrame:
-    """Force one ATS side per game and rank picks by model confidence."""
 
     required = {
         "game_id",
@@ -84,7 +67,6 @@ def pool_card_markdown(card: pd.DataFrame, season: int, week: int) -> str:
 def build_straight_up_pool_card(
     predictions: pd.DataFrame, method: str = "market_residual"
 ) -> pd.DataFrame:
-    """Force one winner per game from a named outcome-model probability."""
 
     required = {
         "game_id",
@@ -152,16 +134,6 @@ def straight_up_pool_markdown(card: pd.DataFrame, season: int, week: int) -> str
 
 @dataclass(frozen=True)
 class PoolFormat:
-    """Scoring rules of a forced-pick ATS pool.
-
-    ``weekly_games`` is the number of games in each scored week, in order; its
-    sum is the number of forced picks. ``best_pick_bonus`` is what a correct
-    Best Pick earns *on top of* the point every correct pick earns, and
-    ``best_pick_penalty`` is what an incorrect one costs. The Splash bonus size
-    is not documented anywhere in this repo, so it stays a parameter rather than
-    a default that quietly becomes a finding.
-    """
-
     weekly_games: tuple[int, ...]
     best_pick_bonus: float = 1.0
     best_pick_penalty: float = 0.0
@@ -185,13 +157,6 @@ class PoolFormat:
 
 @dataclass(frozen=True)
 class FieldModel:
-    """A field of N entrants who resemble each other and beat nobody.
-
-    ``public_lean`` is the probability an entrant takes the public side of any
-    one game. It is the only dial controlling how similar entrants are, and
-    therefore how much of the pool's outcome is decided by luck.
-    """
-
     entrants: int
     public_lean: float = 0.65
 
@@ -204,15 +169,6 @@ class FieldModel:
 
 @dataclass(frozen=True)
 class Entry:
-    """Our card: a cover probability and a public-side flag for every game.
-
-    ``cover_probability[i]`` is P(the side WE picked covers game i).
-    ``on_public_side[i]`` says whether that side is also the public's side --
-    the only thing the field model needs to know about our card.
-    ``best_pick_index[w]`` is the global game index nominated in week ``w``, or
-    ``-1`` for "no Best Pick this week".
-    """
-
     cover_probability: np.ndarray
     on_public_side: np.ndarray
     best_pick_index: np.ndarray
@@ -235,15 +191,6 @@ def build_entry(
     best_pick_game: np.ndarray | None = None,
     seed: int = 20260818,
 ) -> Entry:
-    """Construct an :class:`Entry` from scalar or per-game inputs.
-
-    ``public_agreement`` is the probability (or a per-game 0/1 flag) that our
-    pick lands on the public side. Passing a scalar draws the flags once from a
-    fixed seed so that a strategy comparison is not confounded by a different
-    public-side layout. ``best_pick_game`` gives the global game index nominated
-    in each week; the default nominates each week's first game, which is the
-    "arbitrary Best Pick" baseline.
-    """
 
     games = fmt.games
     probability = np.broadcast_to(np.asarray(cover_probability, dtype=float), (games,)).copy()
@@ -263,12 +210,6 @@ def build_entry(
 
 
 def deviate(entry: Entry, indices: np.ndarray) -> Entry:
-    """Flip our side on the given games: lower expected score, more separation.
-
-    Flipping replaces a pick's cover probability with its complement and moves it
-    to the other side of the public. This is the only lever a forced-pick format
-    leaves for controlling variance, so it has to be expressible.
-    """
 
     probability = entry.cover_probability.copy()
     public = entry.on_public_side.copy()
@@ -284,13 +225,6 @@ def _field_scores(
     field: FieldModel,
     generator: np.random.Generator,
 ) -> np.ndarray:
-    """One score per (sample, entrant), drawn exactly, given who the public had.
-
-    An entrant is correct on a game with probability ``public_lean`` when the
-    public side won and ``1 - public_lean`` when it lost, so the score is a sum of
-    two binomials. The Best Pick bonus is added per week at that week's average
-    correctness, which is what a uniformly chosen nomination earns.
-    """
 
     samples = public_won.shape[0]
     lean = field.public_lean
@@ -318,18 +252,6 @@ def simulate_pool_finish(
     chunk: int = 2_000,
     prize_places: int = 1,
 ) -> dict[str, float]:
-    """Probability that this entry finishes first against ``field``.
-
-    Reports ``probability_first`` (share of the top place when tied, which is how
-    a prize is actually paid), ``probability_outright`` (strictly ahead of every
-    entrant), ``probability_tied_first``, the expected score and its standard
-    deviation, and the expected finishing rank.
-
-    ``prize_places`` adds ``probability_in_the_money`` for pools that pay more
-    than the winner. It matters: a strategy tuned for first place buys the top
-    tail by giving up the middle, so the ranking of strategies can invert as the
-    prize widens. Splash contests commonly pay roughly the top 15-20%.
-    """
 
     if entry.cover_probability.size != fmt.games:
         raise ValueError("entry does not match the format's game count")
@@ -387,14 +309,6 @@ def simulate_pool_finish(
 
 
 def head_to_head_win_probability(disagreements: int, accuracy: float) -> float:
-    """Exact P(we out-score one opponent) given the games we disagree on.
-
-    Agreed games cancel, so the margin is settled entirely by the disagreements:
-    we take ``W ~ Binomial(d, accuracy)`` of them and the opponent takes the rest.
-    This closed form is what the simulator is checked against, and it is also the
-    clearest statement of why differentiation is a lever at all -- the mean of the
-    margin grows like ``d`` while its spread grows only like ``sqrt(d)``.
-    """
 
     if disagreements < 0:
         raise ValueError("disagreements must be non-negative")
@@ -425,11 +339,6 @@ def strategy_comparison(
     samples: int = 20_000,
     seed: int = 20260818,
 ) -> pd.DataFrame:
-    """Run every named strategy against the same field and rank by P(first).
-
-    Every strategy gets the same seed, so the outcome draws are common random
-    numbers and the gaps between rows are the strategies rather than the noise.
-    """
 
     rows = [
         {"strategy": name, **simulate_pool_finish(entry, field, fmt, samples=samples, seed=seed)}

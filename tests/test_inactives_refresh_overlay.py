@@ -1,10 +1,3 @@
-"""Tests for the inactives refresh-time overlay (WP41).
-
-The rule under test is frozen in ``docs/inactives_channel.md``'s
-"Prospective wiring predeclaration (2026-09-01, WP41)" section, written before
-``src/nfl_ats/inactives_refresh_overlay.py`` existed.
-"""
-
 from __future__ import annotations
 
 import json
@@ -95,15 +88,6 @@ INJURY_DIFF_DRIVER = "diff_injury_offense_unavailability"
 
 
 def _feature_table(target_injury_diff: dict[str, float]) -> pd.DataFrame:
-    """Training history plus this week's four unplayed games.
-
-    Training ``ats_margin`` is a strong, monotone, DETERMINISTIC function of
-    ``diff_injury_offense_unavailability`` (home hurt more -> home covers
-    less), so the fitted ridge has a large known coefficient on the one column
-    the overlay moves. That is what makes "the pick flips only when the
-    recomputed probability crosses 0.5" testable at all: with a flat model the
-    probability could never move.
-    """
 
     rows = 160
     index = np.arange(rows)
@@ -261,11 +245,6 @@ def _write_player_snapshot(
     injuries: list[dict[str, Any]] | None = None,
     players: list[dict[str, Any]] | None = None,
 ) -> None:
-    """A minimal but contract-complete injuries/rosters/snaps snapshot.
-
-    ``players`` rows carry ``gsis_id``, ``full_name``, ``team``, ``position``
-    and the three prior-week snap shares the overlay reads as role shares.
-    """
 
     players = players or []
     roster_rows = [
@@ -408,7 +387,6 @@ def _inactive_row(team: str, player_name: str, position: str) -> dict[str, Any]:
 
 @pytest.fixture
 def env(tmp_path: Path) -> tuple[Path, Path, Path]:
-    """artifacts_root, data_root, features_path with the whole week wired up."""
 
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
@@ -445,7 +423,6 @@ def _rows(
 
 
 def test_structural_exclusion_matches_the_measured_slot_table() -> None:
-    """docs/inactives_channel.md Section 2's measured playability, in code."""
 
     assert not structurally_excluded(SUN_EARLY_KICKOFF, SUN_EARLY_KICKOFF)
     assert SUNDAY_LOCK < SUN_LATE_KICKOFF
@@ -483,8 +460,6 @@ def test_only_the_snapshot_captured_before_the_deadline_is_selected(tmp_path: Pa
 
 
 def test_a_snapshot_captured_after_kickoff_never_applies(tmp_path: Path) -> None:
-    """Anti-backdating: the deadline is at most the kickoff, and selection is
-    STRICTLY before the deadline, so a post-kickoff capture is unreachable."""
 
     data_root = tmp_path / "data"
     _write_inactives_snapshot(
@@ -536,7 +511,6 @@ def test_a_snapshot_for_a_different_week_is_ignored(tmp_path: Path) -> None:
 def test_stale_and_future_dated_snapshots_are_not_available_at_decision_time(
     tmp_path: Path,
 ) -> None:
-    """A same-week manifest is insufficient: it must be today's, already-seen report."""
 
     data_root = tmp_path / "data"
     _write_inactives_snapshot(
@@ -567,11 +541,6 @@ def test_stale_and_future_dated_snapshots_are_not_available_at_decision_time(
 
 
 def test_out_is_already_credited_so_the_increment_is_zero(tmp_path: Path) -> None:
-    """A player the report already ruled Out adds NOTHING -- no double-count.
-
-    ``fixed_unavailability("Out", ...) == 1.0`` is production's own mapping, so
-    the P(plays)=0 override's increment for that player is exactly 0.0.
-    """
 
     assert fixed_unavailability("Out", "") == 1.0
     data_root = tmp_path / "data"
@@ -756,7 +725,6 @@ def test_snf_and_mnf_are_untouched_even_with_a_live_snapshot(
 def test_a_team_or_game_misaligned_snapshot_fails_closed(
     env: tuple[Path, Path, Path],
 ) -> None:
-    """A slate-wide capture may only affect the game it explicitly identifies."""
 
     artifacts_root, data_root, features_path = env
     bad = _inactive_row("AAA", "Wrong Game Starter", "WR")
@@ -780,12 +748,6 @@ def test_a_team_or_game_misaligned_snapshot_fails_closed(
 def test_an_inactive_starter_flips_the_pick_only_when_the_probability_crosses_half(
     env: tuple[Path, Path, Path],
 ) -> None:
-    """The flip is a consequence of the recomputed probability, not of the list.
-
-    Same player, same game, same snapshot -- only the player's prior-week snap
-    share differs. The tiny-share arm moves the probability and does NOT cross
-    0.5, so the pick holds; the full-time arm crosses and the pick flips.
-    """
 
     artifacts_root, data_root, features_path = env
     game_id = GAMES[0]["game_id"]
@@ -842,8 +804,6 @@ def test_an_inactive_starter_flips_the_pick_only_when_the_probability_crosses_ha
 def test_the_pick_always_follows_the_recomputed_probability(
     env: tuple[Path, Path, Path],
 ) -> None:
-    """No market quotes are written, so every game runs the model-only arm and
-    the >= 0.5 forced-pick rule must hold on every recorded row."""
 
     artifacts_root, data_root, features_path = env
     _write_player_snapshot(
@@ -936,12 +896,6 @@ def test_challenger_is_registered_active_prospective() -> None:
 
 
 def test_challenger_fingerprint_is_stable() -> None:
-    """The registered fingerprint must be the digest of its own model block.
-
-    The same guard every sibling overlay challenger carries: a registration
-    whose declared fingerprint does not match its declared configuration would
-    silently mis-pin the arm to a model it was never registered against.
-    """
 
     entry = find_challenger(_repo_artifacts_root(), CHALLENGER_ID)
     assert config_fingerprint(entry["model"]) == entry["config_fingerprint"]
@@ -952,9 +906,6 @@ def test_challenger_fingerprint_is_stable() -> None:
 
 
 def test_registration_does_not_claim_the_publish_recording_path() -> None:
-    """`cli.py` was off-limits, so this arm must NOT register under
-    `publish-predictions --record-decisions` -- that would break
-    tests/test_cli.py's PUBLISH_CHALLENGER_RESULT_KEYS coverage assertion."""
 
     entry = find_challenger(_repo_artifacts_root(), CHALLENGER_ID)
     command = str(entry["weekly_recording_command"])

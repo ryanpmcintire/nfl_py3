@@ -1,5 +1,3 @@
-"""Safety and composition contracts for the frozen four-overlay policy."""
-
 from __future__ import annotations
 
 import hashlib
@@ -148,11 +146,6 @@ def test_policy_identity_and_joint_or_members_are_frozen() -> None:
 
 
 def test_every_composition_member_has_registry_evidence() -> None:
-    """A future member added without a link must break the build, not
-    silently empty the Signal Ledger page's "On the card" filter (owner,
-    2026-08-26, after ``artifacts/prospective/challengers.json``'s
-    ``registry_source`` turned out to be null on every player-arrests-related
-    entry -- the mechanism this mapping replaces)."""
 
     assert set(composition.MEMBER_REGISTRY_EVIDENCE) == set(composition.COMPOSITION_ORDER)
     for member_id, names in composition.MEMBER_REGISTRY_EVIDENCE.items():
@@ -162,10 +155,6 @@ def test_every_composition_member_has_registry_evidence() -> None:
 
 
 def test_member_registry_evidence_names_exist_in_the_live_registry() -> None:
-    """Every name :data:`composition.MEMBER_REGISTRY_EVIDENCE` cites must be
-    a real, currently-recorded weak-signal -- so a rename or removal on the
-    registry side breaks this test instead of quietly leaving "On the card"
-    filtered to nothing again."""
 
     from nfl_ats.weak_signals import load_registry
 

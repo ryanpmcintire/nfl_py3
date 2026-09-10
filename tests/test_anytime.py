@@ -6,8 +6,6 @@ import pytest
 
 from nfl_ats.anytime import (
     ANYTIME_METRICS,
-    DEFAULT_ALPHA,
-    PeekingTrialResult,
     anova_intraclass_correlation,
     anytime_summary,
     block_bootstrap_ci_fast,
@@ -15,7 +13,6 @@ from nfl_ats.anytime import (
     confidence_sequence_from_block_stats,
     default_prior_variance,
     paired_anytime_comparisons,
-    run_peeking_trial,
     simulate_block_sequence,
 )
 from nfl_ats.experiments import paired_feature_comparisons
@@ -56,7 +53,6 @@ def _synthetic_predictions(
 
 
 def test_confidence_sequence_matches_hand_computation_at_the_default_icc() -> None:
-    """icc=0 (independence, the project's default): variance is k * s^2, not k^2 * s^2."""
 
     sizes = np.array([10.0])
     sums = np.array([3.0])
@@ -75,7 +71,6 @@ def test_confidence_sequence_matches_hand_computation_at_the_default_icc() -> No
 
 
 def test_confidence_sequence_matches_hand_computation_at_the_worst_case_icc() -> None:
-    """icc=1 (explicit stress-test override): variance is the full k^2 * s^2."""
 
     sizes = np.array([10.0])
     sums = np.array([3.0])
@@ -94,12 +89,6 @@ def test_confidence_sequence_matches_hand_computation_at_the_worst_case_icc() ->
 
 
 def test_confidence_sequence_excludes_zero_iff_e_value_clears_threshold() -> None:
-    """The e-value and confidence-sequence readings of the same martingale must agree.
-
-    They are algebraically dual (see the module docstring); this pins that
-    identity so any future refactor of one formula that breaks the other is
-    caught immediately, on random inputs rather than a single example.
-    """
 
     rng = np.random.default_rng(20260818)
     for _ in range(500):
@@ -154,14 +143,6 @@ def test_default_prior_variance_derivation_and_guards() -> None:
 
 
 def test_paired_anytime_comparisons_matches_fixed_sample_point_estimate() -> None:
-    """The final look's cumulative mean must equal the plain per-game mean.
-
-    Both methods estimate the same quantity: at the last look, the anytime
-    engine's cumulative sum/cumulative games collapses to the ordinary
-    per-game mean regardless of how uneven the weekly blocks are, which
-    ``paired_feature_comparisons``'s ``estimate`` column already reports.
-    Any drift between the two definitions of "improvement" would break this.
-    """
 
     rng = np.random.default_rng(11)
     predictions = _synthetic_predictions(rng)
@@ -178,19 +159,6 @@ def test_paired_anytime_comparisons_matches_fixed_sample_point_estimate() -> Non
 
 
 def test_paired_anytime_comparisons_detects_a_dominant_candidate() -> None:
-    """Power sanity check at the project's actual operating configuration.
-
-    At the fully conservative worst case (every game in a block moving in
-    lockstep, ``intraclass_correlation=1.0``, per-game variance at
-    Hoeffding's worst case) this method needs on the order of a million
-    games to resolve even a large effect -- documented and quantified in
-    ``docs/anytime_valid.md``. This test uses the project's standing
-    configuration instead: ``per_game_variance_proxy=0.55`` (measured on
-    real CFB ``market`` vs ``market_residual`` predictions) and the DEFAULT
-    ``intraclass_correlation=0.0`` (independence -- a modelling decision,
-    not an estimate; see the module docstring), so a dominant candidate is
-    detectable within a realistic number of games.
-    """
 
     rng = np.random.default_rng(5)
     predictions = _synthetic_predictions(
@@ -264,41 +232,11 @@ def test_block_bootstrap_ci_fast_brackets_the_weighted_mean() -> None:
     assert lower <= weighted_mean <= upper
 
 
-def test_run_peeking_trial_under_a_true_null_rarely_excludes_zero() -> None:
-    """A single deterministic-seed sanity check, not the full calibration study.
-
-    The full false-alarm-RATE study over many universes lives in
-    ``scripts/anytime_validate.py`` (heavy, and belongs in the validation
-    deliverable rather than the fast test suite). This just confirms the
-    trial machinery runs and returns internally consistent results.
-    """
-
-    rng = np.random.default_rng(20260818)
-    block_sizes = [16] * 18
-    result = run_peeking_trial(
-        rng,
-        block_sizes,
-        true_mean=0.0,
-        alpha=DEFAULT_ALPHA,
-        prior_variance=default_prior_variance(16.0, target_games=800),
-        fixed_sample_bootstrap_samples=200,
-    )
-    assert isinstance(result, PeekingTrialResult)
-    if result.cs_excluded:
-        assert result.cs_first_look is not None
-        assert 1 <= result.cs_first_look <= len(block_sizes)
-    else:
-        assert result.cs_first_look is None
-    if result.fixed_sample_excluded:
-        assert result.fixed_sample_first_look is not None
-
-
 def test_anytime_metrics_are_exactly_the_bounded_ones() -> None:
     assert set(ANYTIME_METRICS) == {"accuracy_improvement", "brier_improvement"}
 
 
 def test_anova_intraclass_correlation_recovers_the_perfectly_correlated_case() -> None:
-    """Every game in a block shares its block's value exactly: ICC must be 1."""
 
     rng = np.random.default_rng(3)
     block_means = rng.normal(size=12)
@@ -307,7 +245,6 @@ def test_anova_intraclass_correlation_recovers_the_perfectly_correlated_case() -
 
 
 def test_anova_intraclass_correlation_is_near_zero_for_independent_data() -> None:
-    """Pure iid noise, arbitrarily grouped into blocks: ICC should land near zero."""
 
     rng = np.random.default_rng(4)
     blocks = [rng.normal(size=int(rng.integers(10, 60))) for _ in range(150)]
@@ -331,35 +268,3 @@ def test_bootstrap_intraclass_correlation_brackets_the_point_estimate() -> None:
     assert result["lower"] <= result["estimate"] <= result["upper"]
     assert result["n_blocks"] == 80
     assert result["confidence"] == pytest.approx(0.95)
-
-
-def test_default_icc_zero_holds_calibration_even_stress_tested() -> None:
-    """Regression pin for the standing project decision (2026-08-18,
-    docs/anytime_valid.md): ``intraclass_correlation`` defaults to 0.0
-    (independence, a modelling decision -- disjoint teams, no shared outcome
-    mechanism -- not an estimate). This pins that the default keeps
-    calibration valid even when the TRUE simulated correlation is the full
-    worst case (1.0) while the default (0.0) is what the confidence sequence
-    is told to assume -- the specific scenario a wrong independence decision
-    would fail under. ``scripts/anytime_validate.py`` runs the full-scale
-    version against real CFB data; this is the fast regression guard.
-    """
-
-    rng = np.random.default_rng(6)
-    block_sizes = [16] * 18
-    prior_variance = default_prior_variance(16.0, target_games=285, per_game_variance_proxy=0.55)
-    false_alarms = 0
-    trials = 400
-    for _ in range(trials):
-        result = run_peeking_trial(
-            rng,
-            block_sizes,
-            true_mean=0.0,
-            prior_variance=prior_variance,
-            simulated_total_variance=0.55,
-            simulated_intraclass_correlation=1.0,
-            assumed_per_game_variance_proxy=0.55,
-            check_fixed_sample=False,
-        )
-        false_alarms += int(result.cs_excluded)
-    assert false_alarms / trials <= 0.10

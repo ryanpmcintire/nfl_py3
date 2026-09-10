@@ -1,5 +1,3 @@
-"""Operator overrides shared by every lock-day recorder (owner, 2026-09-09)."""
-
 from __future__ import annotations
 
 import json
@@ -18,7 +16,6 @@ def resolve_recording_forecast(
     *,
     forecast_artifact: str | None = None,
 ) -> tuple[Path, Any]:
-    """Forecast a recorder reads, honouring ``--record-from-forecast``."""
 
     if forecast_artifact is not None:
         forecast = (artifacts_root / forecast_artifact).resolve()
@@ -53,7 +50,6 @@ def replace_week_rows(
     challenger_id: str | None = None,
     kickoff_column: str = "kickoff",
 ) -> tuple[pd.DataFrame, int, int]:
-    """Drop one week's still-pre-kickoff rows after a timestamped backup."""
 
     if existing.empty:
         return existing, 0, 0

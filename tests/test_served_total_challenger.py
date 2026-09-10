@@ -1,15 +1,3 @@
-"""Tests for the MOD-17 side-ledger challenger (``nfl_ats.served_total_challenger``).
-
-Covers registration (the fast lock-day static wiring audit,
-``scripts/lockday_rehearsal.py``, already covers CLI dispatch -- these tests
-cover the registry entry's own shape) and the recorder's behaviour: one row
-per week, idempotent, pre-kickoff only, and realised-total backfill.
-``tiebreaker_report`` itself is monkeypatched so these tests need no
-production data root -- the recorder's OWN plumbing is what is under test,
-not the tiebreaker pipeline (covered by ``tests/test_tiebreaker.py`` and
-``tests/test_served_total.py``).
-"""
-
 from __future__ import annotations
 
 import json
@@ -176,10 +164,6 @@ def test_record_writes_one_row_pre_kickoff(tmp_path: Path, monkeypatch: pytest.M
 def test_record_carries_nan_joint_column_when_blend_k01_served(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """When the joint model could not price the game, the report itself
-    already degraded to blend_k01 (nfl_ats.served_total.served_total's
-    fallback) -- the ledger must not invent a joint number that was never
-    actually served."""
 
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"

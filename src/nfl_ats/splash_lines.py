@@ -1,37 +1,3 @@
-"""The spreads the pool actually grades: Splash Sports board capture and contract.
-
-The owner's pool is graded on
-the spreads printed on the Splash Sports contest board, which lock Tuesday at
-noon Eastern. Those numbers are not the same as either market source this
-repository already stores:
-
-- ``schedules.spread_line`` (nflverse) is a *closing* proxy, published after
-  the fact, and drifts away from the pool's frozen Tuesday number all week.
-- The Odds API consensus (``nfl_ats.market_data``) is a book consensus, useful
-  as research signal, but no book is the grader here.
-
-Measured 2026-09-08 on the Week 1 board: the published card sat on a different
-number than Splash for 4 of 16 games, and the card the noon lock regenerated
-was on a different number for 8 of 16. So this module exists to make the
-graded line a first-class, validated input rather than a proxy.
-
-**Every Splash line is a half point.** Observed directly on all 16 Week 1
-games. A half-point line cannot push, so this pool has no push branch at all --
-which is why a whole-number line is treated here as a contract violation
-rather than as data: it would silently re-enable push handling that has never
-applied to this pool. See :func:`is_half_point` and
-:func:`validate_splash_capture`.
-
-Sign convention, repository-wide (``docs/bye_overvaluation_screen.md``):
-``home_spread`` positive means the HOME team is favored. Splash displays the
-same fact as two sides ("NE +3.5" / "SEA -3.5"); ``home_spread`` is the home
-side's printed number negated.
-
-This module is the ingestion layer only. It reads, parses and validates
-captures; it does not decide anything and is not wired into the card, the
-forecast or the published board.
-"""
-
 from __future__ import annotations
 
 import json
@@ -112,18 +78,11 @@ _OPTION_PATTERN = re.compile(
 
 
 def is_half_point(value: float) -> bool:
-    """True when ``value`` is a genuine half point (``x.5``), not a whole number.
-
-    Two conditions, both required: the value doubles onto an integer, and it is
-    not itself within 0.4 of an integer. The second is what rejects a whole
-    number that arrived as ``3.0``.
-    """
 
     return abs(value * 2 - round(value * 2)) < 1e-9 and abs(value - round(value)) > 0.4
 
 
 def normalize_team(abbreviation: str, *, context: str) -> str:
-    """Fold a board abbreviation onto its nflverse identity, or refuse it."""
 
     token = abbreviation.strip().upper()
     resolved = SPLASH_TEAM_ALIASES.get(token, token)
@@ -137,15 +96,12 @@ def normalize_team(abbreviation: str, *, context: str) -> str:
 
 
 def build_game_id(season: int, week: int, away: str, home: str) -> str:
-    """nflverse game id: ``{season}_{week:02d}_{AWAY}_{HOME}``."""
 
     return f"{season}_{week:02d}_{away}_{home}"
 
 
 @dataclass(frozen=True)
 class SplashGame:
-    """One board matchup and the half-point line the pool grades it on."""
-
     game_id: str
     away: str
     home: str
@@ -190,8 +146,6 @@ class SplashGame:
 
 @dataclass(frozen=True)
 class SplashCapture:
-    """One point-in-time read of the pool's contest board."""
-
     season: int
     week: int
     captured_at_et: datetime
@@ -207,7 +161,6 @@ class SplashCapture:
     path: Path | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        """The on-disk schema, byte-compatible in content with the hand capture."""
 
         payload: dict[str, Any] = {
             "source": self.source,
@@ -290,11 +243,6 @@ def _require_number(value: Any, *, field: str, context: str) -> float:
 
 
 def _require_datetime(value: Any, *, field: str, context: str) -> datetime:
-    """Parse an ISO-8601 instant. A naive value takes the pool's Eastern clock.
-
-    The field names carry the zone (``*_et``), so attaching Eastern to a naive
-    string is reading the declared schema, not guessing at it.
-    """
 
     if isinstance(value, datetime):
         parsed = value
@@ -329,21 +277,6 @@ def validate_splash_capture(
     expected_week: int | None = None,
     context: str | None = None,
 ) -> None:
-    """Fail closed on anything that would put a wrong number on the card.
-
-    Raises :class:`~nfl_ats.data.DataContractError` on the first violation of:
-
-    1. the capture holds at least one game;
-    2. the capture's season/week match what the caller asked for;
-    3. every ``game_id`` is nflverse-shaped ``{season}_{week:02d}_{AWAY}_{HOME}``
-       and agrees with that game's own ``away``/``home`` fields;
-    4. ``game_id`` values are unique and no game has a team playing itself;
-    5. both teams are recognised NFL abbreviations;
-    6. every ``home_spread`` and ``away_line`` is a half point;
-    7. ``away_line`` and ``home_spread`` agree (they are the same fact: the
-       away side's printed number is exactly the home team's handicap);
-    8. no magnitude beyond :data:`MAX_ABS_SPREAD`, which is a mis-read.
-    """
 
     where = context or (str(capture.path) if capture.path is not None else "splash capture")
 
@@ -406,7 +339,6 @@ def validate_splash_capture(
 
 
 def splash_capture_paths(data_root: Path, season: int, week: int) -> list[Path]:
-    """Every capture file on disk for one season/week, oldest filename first."""
 
     directory = Path(data_root) / SPLASH_SUBDIRECTORY
     if not directory.is_dir():
@@ -420,7 +352,6 @@ def read_splash_capture(
     expected_season: int | None = None,
     expected_week: int | None = None,
 ) -> SplashCapture:
-    """Read and validate one capture file. Raises on anything malformed."""
 
     context = str(path)
     try:
@@ -440,17 +371,6 @@ def read_splash_capture(
 
 
 def load_splash_capture(data_root: Path, season: int, week: int) -> SplashCapture | None:
-    """Newest validated capture for ``season``/``week``, or ``None`` if there is none.
-
-    ``data_root`` is the repository ``data/`` directory; captures live in
-    ``data/splash/``. Absence is not an error -- most weeks in history have no
-    capture, because the pool board was never recorded before 2026-09-08.
-
-    A malformed capture IS an error, including a malformed older sibling: every
-    candidate for the week is read and validated, then the one with the latest
-    ``captured_at_et`` is returned (filename breaks a tie). A capture file that
-    cannot be trusted is a defect to fix, not a file to skip past.
-    """
 
     candidates = splash_capture_paths(data_root, season, week)
     if not candidates:
@@ -463,13 +383,11 @@ def load_splash_capture(data_root: Path, season: int, week: int) -> SplashCaptur
 
 
 def splash_decision_lines(capture: SplashCapture) -> dict[str, float]:
-    """``game_id`` -> ``home_spread``: the number the pool grades on."""
 
     return {game.game_id: game.home_spread for game in capture.games}
 
 
 def capture_age(capture: SplashCapture, as_of: datetime) -> timedelta:
-    """How long before ``as_of`` the board was read. Negative if ``as_of`` precedes it."""
 
     if as_of.tzinfo is None:
         raise ValueError("as_of must be timezone-aware; the pool's clock is Eastern")
@@ -482,19 +400,11 @@ def is_stale(
     *,
     max_age: timedelta = SPLASH_BOARD_CYCLE,
 ) -> bool:
-    """True when the capture is older than one board cycle and so belongs to a past week.
-
-    The pool replaces the board every Tuesday at noon ET, so a capture more
-    than :data:`SPLASH_BOARD_CYCLE` old is a previous week's numbers no matter
-    what week its filename claims. Callers that must not grade against a stale
-    board refuse on this.
-    """
 
     return capture_age(capture, as_of) > max_age
 
 
 def picks_locked(capture: SplashCapture, as_of: datetime) -> bool | None:
-    """Whether the pool's pick deadline has passed, or ``None`` if unrecorded."""
 
     if as_of.tzinfo is None:
         raise ValueError("as_of must be timezone-aware; the pool's clock is Eastern")
@@ -534,23 +444,6 @@ def _parse_when(text: str, *, season: int, context: str) -> datetime | None:
 
 
 def parse_splash_board(text: str, season: int, week: int) -> tuple[SplashGame, ...]:
-    """Turn a browser read of the contest board into validated games.
-
-    The board renders as repeated blocks::
-
-        CHI   Sun, Sep 13 1:00 PM   CAR
-        Winner (ATS)
-        Bears      CHI -2.5
-        Panthers   CAR +2.5
-
-    A matchup header (away abbreviation, kickoff, home abbreviation) opens a
-    block; the two ``TEAM -/+ N.5`` option rows inside it carry the line. Team
-    nicknames vary and are ignored -- the abbreviations and the signed numbers
-    drive everything. Any line that is neither a header nor an option is
-    ignored as page chrome, but a block that does not yield exactly two
-    consistent options raises: a silently mis-parsed line is worse than no
-    capture at all.
-    """
 
     context = f"splash board {season} week {week}"
     lines = [line.strip() for line in text.splitlines()]
@@ -641,13 +534,6 @@ def parse_splash_board(text: str, season: int, week: int) -> tuple[SplashGame, .
 
 
 def default_picks_lock_et(games: Iterable[SplashGame]) -> datetime | None:
-    """The pool's pick deadline for a slate: Sunday 16:00 ET of that game week.
-
-    Owner rule (2026-08-20, re-confirmed 2026-09-01): the per-game deadline is
-    ``min(own kickoff, Sunday 16:00 ET)``, so the slate-level deadline printed
-    on the board is that Sunday 4 PM. Derived from the earliest kickoff so a
-    capture never has to restate it by hand.
-    """
 
     kickoffs = sorted(game.kickoff_et for game in games)
     if not kickoffs:

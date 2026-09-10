@@ -1,83 +1,3 @@
-"""Low-total divisional home-dog challenger: a parameter-free pick-level
-nudge (LEAD-42).
-
-**Binding closing-grounds taxonomy (AGENTS.md), restated verbatim per this
-project's rule for any module that scores or adjudicates an experiment:** an
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. At this evaluator's ~2-point resolution, "contains zero" is
-the EXPECTED outcome for a real small signal. Only two grounds ever close a
-line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval
-on the wrong side of zero) or zero split-half reliability; (2) bounded by a
-positive control proven able to detect an effect that size. Everything else
-is ``unresolved_below_power``: record it with ``nfl-ats weak-signals
-record``, report ``probability_positive``, never the binary "contains zero."
-
-Research chain (read from ``docs/schedule_flag_battery.md`` "Wave 2" before
-this module was built): ``low_total_div_home_dog_on_production``
-(``src/nfl_ats/schedule_flag_features.py``, ``derive_low_total_div_home_dog_features``)
-stacked ONE new column onto the exact production ``weak_stack`` ridge chain
-and screened it against the Tuesday-opener consensus over the rotation-
-assigned [2020, 2021] window: **+0.4386 accuracy points, week-blocked 95%
-[-0.6608, +1.7544], probability_positive 0.68955**, 456 paired games / 35
-weeks (8/456 forced picks flip). The interval crosses zero; per AGENTS.md
-that is the EXPECTED shape for a real small signal at this evaluator's
-resolution, never grounds to decline building a no-window-cost prospective
-challenger. Neither admissible closing ground applies (no resolved wrong
-sign -- the interval is not entirely below zero; no positive-control bound
-was run for this pick-level challenger specifically), so this stays
-``unresolved_below_power`` in the registry. Wiring it here is an EV-positive
-dual-tracked play (``probability_positive`` 0.68955 above the 0.5 that makes
-playing it the favoured side of the bet), not a claim of a proven edge
-(AGENTS.md "a promotion bar is not a decision bar").
-
-**The rule is parameter-free and frozen, REG divisional games only**: a game
-qualifies when it is divisional (``div_game == 1``), the DECISION total is
-``<= 42``, and the home team is the underdog at the decision spread
-(``spread_line < 0``, this repository's uniform sign convention: positive =
-home favored). Predeclared direction: BACK the home dog. Unlike the
-on-production screen (which reads the Tuesday-opener consensus from a
-separate historical market-archive store, per
-``nfl_ats.schedule_flag_features.default_opener_lines``), this LIVE
-challenger reads ``total_line``/``spread_line``/``div_game`` DIRECTLY off the
-active weekly forecast card -- the SAME decision-line fields the sibling
-tilt/fade overlays already read for ``decision_home_spread``
-(``spread_gap_zone_fade_overlay.record_spread_gap_zone_fade_challenger_decisions``
-is this module's direct precedent). This is the card's own DECISION line
-(the "TUESDAY-lock" input the production model is fit against for the week),
-not a separately re-derived opener quote -- disclosed here as the one
-deliberate difference from the on-production screen's data source, not a
-silent substitution.
-
-**Asymmetric, matching the on-production construct's own shape**: this
-overlay only ever flips the pick ONTO the home dog when a qualifying game's
-model pick is currently on the away side -- never the reverse (an eligible
-game with the model already picking the home dog is left untouched, and a
-non-qualifying game is never touched at all). This mirrors
-``forecast_weather_kn_precip_high_total_tilt_overlay``'s identical
-"never flips a already-correct pick" convention.
-
-This module is the no-window-cost path, built on the exact pattern of
-``spread_gap_zone_fade_overlay.py`` (unlike the other overlays, it reads no
-schedule snapshot and no separate feature table -- everything it needs is
-already a column on the card): a **pick-level, post-prediction transform** of
-the active model's own forced pick, dual-tracked against that same active
-model in the prospective challenger ledger (``nfl_ats.prospective_scoring``),
-at no rotation-registry window cost and with zero training-time feature
-changes. **Nothing in this module is wired into ``publishing.py``'s
-prediction path or the production pick path** -- it is dual-tracked only; no
-owner decision to play this on the real card has been made.
-
-Two things live here, mirroring the sibling overlays' structure:
-
-1. :func:`apply_low_total_div_home_dog_overlay` -- the pick-level transform,
-   reading ``div_game``/``total_line``/``spread_line`` directly off the
-   predictions/card frame, plus :func:`overlay_disclosure_note` for the
-   plain-English provenance sentence.
-2. :func:`record_low_total_div_home_dog_challenger_decisions` -- writes the
-   overlay's own arm to the prospective challenger ledger so 2026 scores it
-   cleanly, independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -111,8 +31,6 @@ LOW_TOTAL_MAX = 42.0
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     total_line: float
@@ -121,13 +39,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring the sibling overlays' result classes.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     enabled: bool
@@ -142,23 +53,6 @@ def apply_low_total_div_home_dog_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick onto the home dog in a qualifying game.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (the on-production
-      screen's own construct is REG-scoped, via ``div_game``);
-    * ``div_game == 1``;
-    * ``total_line`` is present, numeric, and ``<= LOW_TOTAL_MAX``;
-    * ``spread_line`` is present, numeric, and ``< 0`` (home is the
-      underdog); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home) is
-      currently on the AWAY side.
-
-    Deliberately ASYMMETRIC: never flips a HOME pick to AWAY, and a missing
-    ``total_line``/``spread_line`` folds into "not eligible," never a
-    fabricated qualifying value.
-    """
 
     required = {
         "game_id",
@@ -211,12 +105,6 @@ def apply_low_total_div_home_dog_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -247,12 +135,6 @@ def record_paired_overlay_arms(
     *,
     replace_week: bool = False,
 ) -> tuple[int, int]:
-    """Freeze both arms together, without changing the shared challenger schema.
-
-    The candidate also enters the standard scoring ledger; this companion
-    preserves its exact contemporaneous baseline, even when called directly.
-    First-write-wins makes a retry safe after either ledger write fails.
-    """
     if decisions.empty:
         return 0, 0
     paired = decisions.copy()
@@ -288,29 +170,6 @@ def record_low_total_div_home_dog_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the overlay's picks to the prospective challenger ledger.
-
-    Mirrors
-    ``nfl_ats.spread_gap_zone_fade_overlay.record_spread_gap_zone_fade_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``data_root`` is accepted for call-signature parity with every other
-    overlay recorder (``orchestrate_publish_predictions`` calls all of them
-    uniformly as ``recorder(_artifacts_root(), _data_root())``) but is not
-    read: the low-total-div-dog construct is entirely a function of the
-    card's own ``div_game``/``total_line``/``spread_line`` columns, matching
-    ``spread_gap_zone_fade_overlay``'s identical, established precedent for
-    an unused ``data_root`` parameter.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the overlay's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-flip side.
-    """
 
     del data_root
 

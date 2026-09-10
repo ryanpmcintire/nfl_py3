@@ -4,6 +4,12 @@ set -eu
 repo_root=$(git rev-parse --show-toplevel)
 cd "$repo_root"
 
+staged_scratch=$(git diff --cached --name-only --diff-filter=ACM -- 'tests/scratch/*' || true)
+if [ -n "$staged_scratch" ]; then
+    echo "error: tests/scratch/ is throwaway (owner, 2026-09-10); durable tests live in tests/ proper, never commit scratch tests" >&2
+    exit 1
+fi
+
 staged_py=$(git diff --cached --name-only --diff-filter=ACM -- '*.py' || true)
 if [ -n "$staged_py" ]; then
     if [ -x "./.venv/Scripts/python.exe" ]; then

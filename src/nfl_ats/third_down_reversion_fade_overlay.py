@@ -1,167 +1,3 @@
-"""Third-down mean-reversion fade overlay: a parameter-free pick-level flip.
-
-Research chain (mined lineage; measured 2026-08-21 by
-``scripts/redzone_reversion_screen.py``, predeclared in
-``docs/redzone_reversion_screen.md`` cell C3, and read out of
-``artifacts/redzone_reversion_screen/20260821T181025Z/results.json`` and
-``registry/weak_signals.json`` before this module was built):
-
-``redzone_reversion_c3_third_down_over_fade`` flags a team whose PRIOR-season
-centered 3rd-down conversion rate sits in the GLOBAL top quartile (pooled
-across every 2009-2025 team-season, not recomputed per season -- see "The
-frozen threshold" below), and predicts that team FADES (under-covers) the
-following season. Population: NFL REG close-graded slate 2009-2025,
-team-perspective long table, n=8,634 team-games (read,
-``artifacts/redzone_reversion_screen/20260821T181025Z/results.json:196``).
-Week-blocked primary: full-slate effect **+0.36652412950519364 accuracy
-points**, 95% **[-0.2586740547946662, +0.9990199709809606]**,
-``probability_positive`` **0.87185**, 294 week blocks (read, results.json
-:191-197). Season-blocked secondary: **+0.36652412950519364**, 95%
-**[-0.25761982268609834, +0.9651280242694]**, ``probability_positive``
-**0.87135**, 17 season blocks (read, results.json:171-177). Registered in
-``registry/weak_signals.json`` under
-``redzone_reversion_c3_third_down_over_fade``: effect +0.36652412950519364,
-week-blocked 95% [-0.2587, +0.999], ``probability_positive`` 0.87185,
-**reliability 0.407** (trait year-over-year Pearson +0.407, 95%
-[+0.337, +0.473], read results.json:52-61, n=512 team-season pairs),
-n=8634 team-games, sample_blocks 294, seasons 2009-2025, category
-``onfield``, classification ``unresolved_below_power``.
-
-**The interval crosses zero.** Per AGENTS.md, at this evaluator's ~2-point
-resolution that is the EXPECTED shape for a real-but-small signal and is
-NEVER grounds to decline building a no-window-cost prospective challenger.
-Neither admissible closing ground applies (no resolved wrong sign, no
-positive-control bound), so the cell stays ``unresolved_below_power`` in the
-registry; wiring it here is an EV-positive dual-tracked play (P+ 0.87185 >
-0.5), not a claim of a proven edge.
-
-**Direction check, verified from the artifact, not assumed.** Measured,
-``artifacts/redzone_reversion_screen/20260821T181025Z/results.json`` cell
-``third_down_over_fade``: ``sign_dir`` is ``-1`` (FADE -- predicted NEGATIVE
-on ``team_covered``; see results.json:181), ``subset_mean``
-**0.4884947267497603** (read, results.json:199) and ``complement_mean``
-**0.503665241295052** (read, results.json:188). Flagged (prior-season elite
-third-down) teams covered **48.85%** against a **50.37%** field -- the
-predeclared FADE is exactly what the data shows. A sibling cell in this same
-mined battery failed this exact check and was dropped from the batch; this
-one passes.
-
-**Shared-trait mirror, stated up front, not buried.** The registered cell's
-own note flags this: ``third_down_under_rebound`` (results.json cell name
-``third_down_under_rebound``, ``sign_dir`` 1, predicting POSITIVE on
-``team_covered``) reads ``full_slate_effect_pts`` **-0.3564386470499031**,
-``probability_positive`` **0.09885** (week-blocked; read, results.json:237,
-243) -- the mirror's OWN prediction is CONTRADICTED (bottom-quartile teams
-did not rebound; if anything they under-covered too). Both cells key off the
-SAME underlying trait (prior-season centered 3rd-down conversion rate) split
-at the SAME two tails of the SAME panel, so they are ONE signal read from two
-ends, not two independent votes -- exactly the "mirror c4 shares trait, not
-independent" caveat already in the registry entry. This module builds ONLY
-the C3 (top-quartile fade) side; nothing here ever reads the bottom quartile,
-and this signal must never be pooled with a hypothetical bottom-quartile
-challenger as if the two were independent.
-
-## The trait, transcribed VERBATIM (not re-derived)
-
-Cited from ``scripts/redzone_reversion_screen.py``, the module this cell was
-measured by (not importable as a library -- it is a standalone CLI with its
-own ``sys.path`` hacks -- so the construction below is PORTED, exactly as
-``pbp08_matchup_flags.py`` ports ``pbp08_matchup_screen.py``'s construction
-rather than importing the screen):
-
-1. **Third-down conversion rate**, per (season, team): every play with
-   ``down == 3.0`` (``build_efficiency_panels``, line 126) is grouped by
-   ``(season, posteam)``; ``n_third_downs`` is the play count and
-   ``third_conversions`` is the sum of ``first_down`` (lines 127-132);
-   ``third_down_conv_rate = third_conversions / n_third_downs`` (lines
-   133-135). Plays are ``nfl_ats.pbp.analysis_plays``' documented v1
-   efficiency filter (real scrimmage plays with an offense, EPA and win
-   probability; no kneels/spikes/aborted/no-plays), REG season only (line
-   94), team codes canonicalized via ``TEAM_ABBREVIATION_ALIASES`` (line 97).
-2. **"Centered"** means: subtract that SEASON's own cross-team mean rate --
-   ``league_mean = offense.groupby("season")[trait].transform("mean")`` then
-   ``offense[f"{trait}_centered"] = offense[trait] - league_mean`` (lines
-   151-153). A team's centered value is its OWN rate minus the average of
-   every team THAT SAME SEASON -- never a rate compared across seasons or
-   to a fixed league-wide historical average.
-3. **The top-quartile cut is GLOBAL, not within-season.** ``thresholds =
-   {..., "third_down_q75": float(offense["third_down_conv_rate_centered"]
-   .quantile(0.75)), ...}`` (line 383) takes the 0.75 quantile of the ENTIRE
-   pooled ``offense`` panel -- every team-season 2009-2025 at once -- not a
-   quantile recomputed separately inside each season. One number, drawn from
-   the whole panel, applied to every season alike.
-4. **Prior-season lookup.** ``_prior`` (lines 191-196) shifts a team-season's
-   row forward one season (``season = season + 1``) before joining onto the
-   schedule by ``(team, season)`` -- so a game in season *S* reads the
-   centered rate the team posted in season *S-1*, never season *S* itself.
-
-## The frozen threshold (an underived constant would be a defect)
-
-The measured GLOBAL top-quartile threshold is **0.03392624406886406** (read,
-``artifacts/redzone_reversion_screen/20260821T181025Z/results.json:349``,
-``thresholds.third_down_q75``; the same value
-``scripts/redzone_reversion_screen.py:383`` computed). This module FREEZES
-that exact value as :data:`THIRD_DOWN_TOP_QUARTILE_CENTERED` rather than
-recomputing a quantile live, for two reasons, mirroring
-``spread_gap_zone_fade_overlay.SPREAD_GAP_LOWER_BOUND`` /
-``SPREAD_GAP_UPPER_BOUND``'s identical choice:
-
-* **Pregame safety by construction.** The screen's own quantile is GLOBAL
-  across the whole 2009-2025 panel (point 3 above) -- recomputing it live
-  from an expanding, season-by-season pool would silently change the cutoff
-  every season and would no longer be the measured cell AGENTS.md requires
-  ("every overlay parameter must be the registry cell's own measured value,
-  cited"). A frozen constant carries zero risk of ever reading a future
-  season's data, by construction.
-* **Parameter-free, not re-derived.** Nothing here is fit, tuned, or
-  selected on 2026 outcomes -- the threshold is the registry cell's own
-  number, transcribed with its citation, exactly as
-  ``spread_gap_zone_fade_overlay`` transcribes its 7.5/10.0 bucket bounds
-  "verbatim and adds no threshold of its own."
-
-**The rule is parameter-free and frozen** -- no threshold tuning, nothing
-fitted to outcomes. REG season only (every read above is a regular-season
-measurement). Build the top-quartile prior-season-centered-3rd-down flag for
-BOTH teams in a game. If EXACTLY ONE of the two teams is flagged AND the
-active model's own forced pick IS that team, flip the pick to the other
-side. Both-flagged games are never touched -- the same clean-case handling
-``coach_fade_overlay``/``tank_zone_fade_tilt_overlay`` use: no measured
-direction when both sides carry the flag. Never flip in any other
-situation.
-
-**Pregame-safe by construction, structurally, not just by convention.** The
-trait is a PRIOR-SEASON aggregate -- fully known before Week 1 of the season
-being flagged, since it depends only on plays from a season that has already
-finished. Two leakage regression tests in
-``tests/test_third_down_reversion_fade_overlay.py`` prove this empirically:
-mutating a game's own current-season PBP/outcome data never changes its
-flag, and a later season's PBP data never changes an earlier season's
-already-computed flags.
-
-This module is the no-window-cost path, built on the exact pattern of
-``coach_fade_overlay.py`` (clean-case both-flagged handling) and
-``tank_zone_fade_tilt_overlay.py`` / ``pbp08_protection_mismatch_tilt_overlay.py``
-(a PBP-derived team-trait flag): a **pick-level, post-prediction transform**
-of the active model's own forced pick, dual-tracked against that same active
-model in the prospective challenger ledger (``nfl_ats.prospective_scoring``),
-at no rotation-registry window cost and with zero training-time feature
-changes. **Nothing in this module is wired into ``publishing.py`` or the
-production pick path** -- no owner decision to play this on the real card
-has been made; it is dual-tracked only.
-
-Two things live here, mirroring the sibling overlays exactly:
-
-1. :func:`third_down_over_flag_by_game` -- the pregame-safe, DATA-DERIVED
-   signal, porting VERBATIM the trait/centering construction above.
-2. :func:`apply_third_down_reversion_fade_overlay` -- the pick-level
-   transform, plus :func:`overlay_disclosure_note` for the plain-English
-   provenance sentence.
-
-:func:`record_third_down_reversion_fade_challenger_decisions` writes the
-overlay's own arm to the prospective challenger ledger so 2026 scores it
-cleanly, independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -206,21 +42,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def _third_down_conv_rate_centered_by_team_season(pbp: pd.DataFrame) -> pd.DataFrame:
-    """One row per (season, team): the centered 3rd-down conversion rate.
-
-    Ported VERBATIM from ``scripts/redzone_reversion_screen.py``'s
-    ``build_efficiency_panels`` -- the 3rd-down leg only (that function's
-    red-zone and defense legs are irrelevant to this cell and are not
-    reproduced here):
-
-    * third-down plays: ``down == 3.0`` (line 126), REG season only (line
-      94), ``nfl_ats.pbp.analysis_plays``' documented v1 filter, team codes
-      canonicalized (line 97);
-    * ``n_third_downs`` / ``third_conversions`` / ``third_down_conv_rate``
-      (lines 127-135);
-    * "centered": each team-season's rate minus THAT SEASON's own cross-team
-      mean (lines 151-153) -- never a cross-season comparison.
-    """
 
     plays = analysis_plays(pbp)
     plays = plays.loc[plays["season_type"].astype(str).eq("REG")].copy()
@@ -246,27 +67,6 @@ def _third_down_conv_rate_centered_by_team_season(pbp: pd.DataFrame) -> pd.DataF
 
 
 def third_down_over_flag_by_game(schedules: pd.DataFrame, pbp: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG ``game_id``: ``third_down_over_home`` / ``third_down_over_away``.
-
-    A side is flagged when its PRIOR season's centered 3rd-down conversion
-    rate is at or above :data:`THIRD_DOWN_TOP_QUARTILE_CENTERED` -- the
-    registry cell's own GLOBAL pooled cutoff (see the module docstring's
-    "The frozen threshold"). "Prior season" is looked up by shifting the
-    team-season panel forward one season before joining (ported from
-    ``_prior``, ``scripts/redzone_reversion_screen.py:191-196``), so a game
-    in season *S* only ever reads season *S-1*'s data.
-
-    **Pregame-safe by construction.** This never reads the flagged game's
-    own outcome, spread, or any CURRENT-season play -- only the PRIOR
-    season's league-wide third-down plays, which are complete and public
-    well before the current season's Week 1. A team with no observed PRIOR
-    season in ``pbp`` (first year in the data, an expansion team, or any gap
-    year) or with a missing/NaN centered rate is left UNFLAGGED, never
-    raising. Two leakage regression tests in
-    ``tests/test_third_down_reversion_fade_overlay.py`` prove both
-    properties empirically (a game's own data never moves its flag; a later
-    season's data never moves an earlier season's already-computed flag).
-    """
 
     missing = sorted(_REQUIRED_SCHEDULE_COLUMNS.difference(schedules.columns))
     if missing:
@@ -307,8 +107,6 @@ def third_down_over_flag_by_game(schedules: pd.DataFrame, pbp: pd.DataFrame) -> 
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     flagged_team: str
@@ -317,17 +115,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``surface_switch_tilt_overlay.TiltResult``.
-    ``both_flagged_games`` lists eligible games where BOTH sides carry the
-    flag; there is no measured direction for that case (mirroring
-    ``coach_fade_overlay``'s ``both_year_one_games``), so those games are
-    reported, never flipped.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     both_flagged_games: tuple[str, ...]
@@ -345,29 +132,6 @@ def apply_third_down_reversion_fade_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Fade the top-quartile-third-down team, and only in the clean case.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (every read behind
-      this cell is a regular-season measurement);
-    * EXACTLY ONE side of the game carries the flag (a both-flagged game has
-      no measured direction and is reported in ``both_flagged_games``
-      instead of flipped, mirroring ``coach_fade_overlay``'s clean-case
-      handling); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home) IS
-      that flagged side.
-
-    Deliberately one-directional: the overlay never flips a pick TOWARD a
-    flagged team, because the measured evidence is a fade -- flagged teams
-    covered 48.85% against a 50.37% complement (see the module docstring's
-    direction check).
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    the sibling overlays do, so every existing reader of the column needs no
-    overlay-aware branch. A game with no schedule row, or with no flag after
-    the merge, is the documented no-op -- zero flips, never a ``KeyError``.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -425,12 +189,6 @@ def apply_third_down_reversion_fade_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -460,20 +218,6 @@ def record_third_down_reversion_fade_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the fade overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``tank_zone_fade_tilt_overlay.record_tank_zone_fade_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast
-    rather than searching ``artifacts/margin_predictions/`` by fingerprint,
-    and it refuses to record if the active model's live fingerprint no
-    longer matches the snapshot this challenger was registered against.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the fade's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

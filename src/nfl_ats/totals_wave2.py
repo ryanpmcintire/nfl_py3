@@ -1,25 +1,3 @@
-"""Over/under regime, wave 2: screens the drive-pace family on top of wave 1.
-
-Executes the frozen predeclaration in ``docs/totals_model_wave2.md`` (written
-2026-09-01, before any wave-2 outcome was computed). Every structural choice
-here -- the extended allowlist, the comparator, the positive control -- is
-that document's contract.
-
-This module deliberately REUSES ``nfl_ats.totals`` rather than reimplementing
-it: the pipeline (``make_totals_estimator``), the walk-forward guard
-(``walk_forward_predictions``), the blend math (``blend_total``,
-``blend_sweep``, ``choose_weight``, ``per_season_deltas``), and the bootstrap
-(``bootstrap_improvement``, itself a thin wrapper over
-``nfl_ats.clv.week_blocked_bootstrap``) are all called unmodified against the
-wider ``WAVE2_FEATURES`` column list. ``nfl_ats.totals.load_population`` is
-the one function that cannot be reused directly -- it hardcodes wave 1's
-``TOTALS_FEATURES`` allowlist when selecting columns out of the feature
-table -- so :func:`load_population_wave2` reimplements that one join,
-parameterized over the feature list, with the same population rule (verified
-2026-09-01: identical population, identical wave-1-column values, see the
-predeclaration's "Verified this session" note).
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -71,20 +49,6 @@ POSITIVE_CONTROL_COLUMN = "home_drive_points_per_drive"
 def _feature_table_matches_schedules(
     data_root: Path, features: pd.DataFrame, schedules_path: Path | None = None
 ) -> bool:
-    """Return whether the wave-2 table is still aligned to the schedule.
-
-    The feature build is an optional, generated input.  A table from an older
-    schedule snapshot can still contain the target game while carrying an old
-    line (or an old season/week assignment), which would make the residual
-    silently use a different market than the tiebreaker displays.  Treat that
-    condition, duplicate game IDs, and partial joins as unavailable rather
-    than serving a residual from mismatched data.
-
-    This is intentionally an identity check, not a freshness timeout: there
-    is no frozen wall-clock freshness threshold in the wave-2 contract.  The
-    schedule/feature keys and market line are the contract's stable signals of
-    staleness.
-    """
 
     required = {"game_id", "season", "week", "total_line"}
     if not required.issubset(features.columns):
@@ -122,16 +86,6 @@ def load_population_wave2(
     features: tuple[str, ...] = WAVE2_FEATURES,
     schedules_path: Path | None = None,
 ) -> pd.DataFrame:
-    """The wave-2 population: identical rows to
-    :func:`nfl_ats.totals.load_population`, joined to a wider column list.
-
-    Mirrors ``nfl_ats.totals.load_population`` exactly (same schedules
-    filter, same target computation) except the feature-column selection is
-    parameterized over ``features`` instead of hardcoding wave 1's
-    ``TOTALS_FEATURES`` -- the one piece of wave 1's population loader this
-    wave cannot reuse unmodified, because it always projects onto its own
-    module-level allowlist.
-    """
 
     path = schedules_path if schedules_path is not None else newest_schedules_path(data_root)
     schedules = pd.read_parquet(path)
@@ -175,33 +129,6 @@ def model_total_view_wave2(
     ridge_alpha: float = TOTALS_RIDGE_ALPHA,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> TotalsView | None:
-    """Wave 2's totals residual for ONE upcoming game.
-
-    Mirrors :func:`nfl_ats.totals.model_total_view` line for line -- same
-    signature shape, same return type, same walk-forward guard (train on
-    every population game strictly before the target's ``(season, week)``) --
-    built on the 65-column :data:`WAVE2_FEATURES` allowlist and
-    :func:`load_population_wave2` against ``features_path`` (normally
-    ``data/processed/game_features_pbp.parquet``, the drive-pace-enriched
-    table) instead of wave 1's 41-column ``game_features.parquet``.
-
-    Returns ``None`` -- cleanly, never a silent substitution -- when
-    ``features_path`` does not exist, when it carries no row for
-    ``game_id`` (a game the PBP pipeline has not enriched), when the market
-    total is missing, or when fewer than ``min_train_games`` prior games
-    exist. That is a DELIBERATE design choice, stated here because the work
-    package that added this function asked for it explicitly: a missing
-    single-game PBP row falls back to MARKET-ONLY (``None``), the same
-    contract wave 1's own ``model_total_view`` already has for a missing row
-    -- it does NOT reach across to wave 1's model internally. The
-    wave-1-VIEW fallback lives one level up, in
-    ``nfl_ats.tiebreaker.tiebreaker_report``, and is scoped narrower: it
-    fires only when the whole PBP table file is absent (a fresh clone),
-    never merely because one game's row is missing from an existing table.
-    Keeping this function's own contract as simple as wave 1's (one table
-    in, one view or ``None`` out) is what keeps that higher-level fallback
-    decision auditable instead of buried in two different places.
-    """
 
     if not features_path.is_file():
         return None
@@ -247,16 +174,6 @@ def wave_vs_wave_paired_frame(
     wave2_predictions: pd.DataFrame,
     wave2_weight: float,
 ) -> pd.DataFrame:
-    """Per-game paired |error| difference, wave-1 blend minus wave-2 blend.
-
-    POSITIVE = wave 2 is closer to the actual total on that game -- the same
-    sign convention already stored in the registry for
-    ``totals_market_residual_blend`` (baseline minus candidate,
-    positive-is-better). The two prediction frames must carry the same
-    ``game_id`` set (the wave-2 population is a strict feature superset of
-    wave 1's, verified in the predeclaration, so this is a hard equality
-    check rather than an inner join that could silently drop games).
-    """
 
     left = wave1_predictions.loc[:, ["game_id", "season", "week"]].copy()
     left["game_id"] = left["game_id"].astype(str)
@@ -302,13 +219,6 @@ def _mean_improvement(frame: pd.DataFrame) -> dict[str, float]:
 def bootstrap_wave_vs_wave(
     paired: pd.DataFrame, *, samples: int = 2_000, seed: int = 20260901
 ) -> dict[str, float]:
-    """Week-blocked bootstrap of wave 2's paired improvement over wave 1.
-
-    Reuses ``nfl_ats.clv.week_blocked_bootstrap`` unmodified -- the same
-    interval construction every arm of this project uses -- and surfaces
-    ``probability_positive`` for "wave 2 beats wave 1," never a binary read
-    of whether the interval crosses zero.
-    """
 
     result = week_blocked_bootstrap(
         paired, _mean_improvement, block="week", samples=samples, seed=seed
@@ -350,11 +260,6 @@ def run_screen(
     bootstrap_seed: int = 20260901,
     stamp: str | None = None,
 ) -> dict[str, Any]:
-    """The frozen wave-2 screen: reproduce wave 1 fresh, run wave 2, pair them.
-
-    Both arms use the identical guarded ``walk_forward_predictions`` from
-    ``nfl_ats.totals``; only the feature table and column list differ.
-    """
 
     wave1_population = load_population_wave1(data_root, wave1_features_path)
     wave1_predictions = walk_forward_predictions(
@@ -474,15 +379,6 @@ def run_positive_control(
     control_column: str = POSITIVE_CONTROL_COLUMN,
     stamp: str | None = None,
 ) -> dict[str, Any]:
-    """Instrument-sanity check: inject the target into one drive column.
-
-    Method frozen in ``docs/totals_model_wave2.md``: replace
-    ``control_column`` with the row's own ``total_residual`` (unit slope,
-    zero noise) for every row, run the SAME walk-forward + sweep + bootstrap
-    pipeline the real screen uses, and confirm the machinery registers a
-    large, unambiguous effect. This is a check on the pipeline, not a claim
-    about the real screen's own (separately computed) result.
-    """
 
     if control_column not in WAVE2_DRIVE_FEATURES:
         raise ValueError(f"control_column must be one of {WAVE2_DRIVE_FEATURES}")
@@ -551,7 +447,6 @@ def run_positive_control(
 
 
 def format_screen_results(results: dict[str, Any]) -> str:
-    """Human-readable summary of :func:`run_screen`."""
 
     bootstrap = results["primary_bootstrap_wave2_vs_wave1"]
     wave1 = results["wave1_regular_season"]
@@ -575,7 +470,6 @@ def format_screen_results(results: dict[str, Any]) -> str:
 
 
 def format_positive_control_results(results: dict[str, Any]) -> str:
-    """Human-readable summary of :func:`run_positive_control`."""
 
     bootstrap = results["bootstrap"]
     lines = [

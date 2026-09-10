@@ -1,65 +1,3 @@
-"""Division-revenge tilt overlay: a parameter-free pick-level nudge.
-
-Research chain: ``scripts/nfl_bias_battery_screen.py``'s ``division_revenge_game``
-cell -- "2nd meeting this season vs. same opponent; team lost the 1st meeting"
--- is one of 17 predeclared situational cells in the NFL bias battery,
-close-graded (2009-2025, 8,634 team-game rows) at +0.1907 accuracy points,
-``probability_positive`` 0.8825 (``registry/weak_signals.json:
-bias_battery_division_revenge_game``, ``unresolved_below_power``). The same
-construct, ported into ``nfl_ats.experiment_runner`` and re-screened at the
-opener grade (2020-2025, 3,006 team-games), reads +0.2911 accuracy points,
-``probability_positive`` 0.8642 (``registry/weak_signals.json:
-bias_battery_division_revenge_game_opener``, also ``unresolved_below_power``).
-Both grades sit on the SAME side (positive -- the revenge side outperforms)
-even though the two windows overlap and the leans are correlated, not
-independent confirmations; per AGENTS.md an interval crossing zero at this
-evaluator's ~2-point resolution is the EXPECTED shape for a real small
-signal, never grounds to close the line.
-
-This module is the no-window-cost path, built on the exact pattern of
-``injury_value_tilt_overlay.py`` and ``coach_fade_overlay.py`` (the original
-precedent): a **pick-level, post-prediction transform** of the active model's
-own forced pick, dual-tracked against that same active model in the
-prospective challenger ledger (``nfl_ats.prospective_scoring``), at no
-rotation-registry window cost and with zero training-time feature changes.
-**Nothing in this module is wired into ``publishing.py`` or the production
-pick path** -- like the injury tilt, and unlike the coach-fade overlay, no
-owner decision to play this on the real card has been made; it is dual-
-tracked only.
-
-**The rule is parameter-free** -- no threshold, no tuning, nothing derived
-from 2018-2025 outcomes. It reads straight from the newest local schedule
-snapshot (``data/raw/<snapshot>/schedules.parquet``): a game is a "division
-revenge game" for one specific side when it is the SECOND (or later) meeting
-between the same two teams in the same regular season and that side LOST the
-first meeting. Under the current NFL scheduling formula, two regular-season
-meetings between the same two teams are effectively always division games (a
-non-division rematch practically cannot happen), so this module -- exactly
-like the bias-battery construct it ports -- never adds an explicit
-``div_game`` filter; the meeting-count logic alone reproduces the "division
-opponents" framing.
-
-The loser of the first meeting is unique (score margins are zero-sum, modulo
-an exact tie), so it is IMPOSSIBLE for both teams in a game to qualify as the
-revenge side simultaneously -- a tied first meeting simply produces no
-revenge side for either team, and the game is left untouched.
-
-Two things live here, mirroring ``coach_fade_overlay.py`` exactly:
-
-1. :func:`division_revenge_side_by_game` -- the pregame-safe, DATA-DERIVED
-   signal, ported verbatim from ``nfl_ats.experiment_runner._flag_division_revenge_game``
-   / ``scripts/nfl_bias_battery_screen.py``'s ``revenge_flag`` construct
-   (same masks, same ``meeting_rank >= 1 and first_margin < 0`` logic), read
-   straight from the schedule snapshot, never hand-typed.
-2. :func:`apply_division_revenge_tilt_overlay` -- the pick-level transform,
-   plus :func:`overlay_disclosure_note` for the plain-English provenance
-   sentence.
-
-:func:`record_division_revenge_tilt_challenger_decisions` writes the
-overlay's own arm to the prospective challenger ledger so 2026 scores it
-cleanly, independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -96,32 +34,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def division_revenge_side_by_game(schedules: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``revenge_home``/``revenge_away``.
-
-    Ported verbatim from ``nfl_ats.experiment_runner._flag_division_revenge_game``
-    (in turn ported from ``scripts/nfl_bias_battery_screen.py``'s
-    ``revenge_flag`` construct): for every (team, opponent, season) triple,
-    sort that team's meetings against that specific opponent by ``gameday``;
-    ``meeting_rank`` is the 0-indexed occurrence count and ``first_margin`` is
-    the team's own score margin (``result`` for the home side, ``-result``
-    for the away side -- ``features.py``'s ``home_score - away_score``
-    convention) in the FIRST such meeting. ``revenge_flag = meeting_rank >= 1
-    and first_margin < 0`` -- the team lost its earlier meeting against this
-    same opponent this season.
-
-    Pregame-safe by construction: a game's own flag depends only on strictly
-    EARLIER meetings between the same two teams in the same season (the
-    first meeting, which by definition happened before any later one), never
-    on the current game's own result or any later meeting. The first meeting
-    itself always has ``meeting_rank == 0`` and is therefore never flagged.
-    A push (``first_margin == 0``, an exact tie) flags neither side.
-
-    Rows without a resolvable first-meeting result (a future or otherwise
-    incomplete earlier game -- data missing) get ``first_margin`` of NaN,
-    which compares False against ``< 0``, so those rows are simply not
-    flagged rather than raising -- "missing data means no flip", matching
-    the overlay's frozen rule.
-    """
 
     required = {"game_id", "season", "game_type", "gameday", "home_team", "away_team", "result"}
     missing = sorted(required.difference(schedules.columns))
@@ -183,8 +95,6 @@ def division_revenge_side_by_game(schedules: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     revenge_team: str
@@ -193,13 +103,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``coach_fade_overlay.OverlayResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     enabled: bool
@@ -215,23 +118,6 @@ def apply_division_revenge_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick to the revenge side wherever the pick is against it.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (the construct's
-      close- and opener-graded measurements were both scored on regular-
-      season games only);
-    * exactly one side is flagged as the revenge side (never both -- the
-      loser of the first meeting is unique by construction); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home)
-      lands on the OTHER side, i.e. against the revenge side.
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    ``coach_fade_overlay.apply_coach_fade_overlay`` and
-    ``injury_value_tilt_overlay.apply_injury_value_tilt_overlay`` do, so
-    every existing reader of the column needs no overlay-aware branch.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -279,12 +165,6 @@ def apply_division_revenge_tilt_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring
-    ``injury_value_tilt_overlay.overlay_disclosure_note``.
-
-    Empty when the overlay is off or changed nothing this week. Not currently
-    surfaced on the published card -- this overlay is dual-tracked only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -313,21 +193,6 @@ def record_division_revenge_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``injury_value_tilt_overlay.record_injury_value_tilt_challenger_decisions``
-    and ``coach_fade_overlay.record_overlay_challenger_decisions`` exactly:
-    this is not a retrained model with its own ``margin-predict`` artifact --
-    its "model" IS the active model, transformed post-prediction -- so it
-    reads the active model's own synchronized weekly forecast rather than
-    searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

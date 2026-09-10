@@ -1,17 +1,3 @@
-"""Pin the lane T promotion-evaluation stacked profile's exact column set.
-
-``weak_stack_qb_revenge_deadline_drag`` (docs/promotion_eval_20260905.md) is
-production ``weak_stack`` plus BOTH already-screened single-column
-candidates (``qb_revenge_flag``, ``deadline_integration_drag_flag``) at
-once, added to test composition rather than either column alone. This test
-pins that it is EXACTLY the union of the three declared column sets --
-nothing dropped, nothing extra, and no column claimed by more than one
-family (``margin.py``'s own ``_FEATURE_GROUPS`` construction already raises
-at import time if a column were double-claimed, so an importable module is
-itself partial evidence, but this test checks the declared contract
-directly rather than relying on that side effect).
-"""
-
 from __future__ import annotations
 
 from nfl_ats.constants import FEATURE_FAMILIES

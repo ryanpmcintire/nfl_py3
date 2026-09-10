@@ -22,9 +22,6 @@ def test_threshold_is_pinned_to_its_derived_value() -> None:
 
 
 def test_diff_columns_are_pregame_injury_value_lost_only() -> None:
-    """The gate reads exactly the two columns docs/injury_value_lost.md section 4
-    identifies as the value-lost-only, zero-semantics-confound isolation -- no
-    more, no less, and nothing added later without updating this pin."""
 
     assert VALUE_LOST_DIFF_COLUMNS == (
         "diff_injury_skill_epa_value_lost",

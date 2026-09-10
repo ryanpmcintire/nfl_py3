@@ -1,82 +1,3 @@
-"""Bulk ingestion of historical, timestamped NFL injury/personnel news headlines.
-
-Follow-up: "injury-news aggregator ingestion -- bulk path unverified"
-(docs/injury_news_sourcing.md has the full verdict and evidence).
-
-What this is NOT: it does not touch the official injury/practice report already
-ingested via nflverse (data/players/raw/*/injuries.parquet, consumed by
-players.py's date_modified as-of filtering). That source is measured
-(2026-08-19, 79,818 rows) to be structurally a Wed-Fri artifact -- 81.4% of
-rows are dated Friday, only 0.33% ever fall on Monday or Tuesday -- so it
-cannot answer "what injury information was public before the pool's Tuesday
-noon lock" (docs/pool_edge_plan.md line 80: "Picks lock Tuesday at 12").
-
-Source: NBC Sports' public sitemap index (https://www.nbcsports.com/sitemap.xml),
-a chronological archive of every published article, chunked into ~one file per
-calendar month (confirmed 2026-08-19: 275 monthly chunks, September 2003
-through June 2026, plus a rolling "latest" chunk). Each <url> entry carries an
-ISO-8601 <lastmod> timestamp. Spot-checked against individual article pages'
-JSON-LD `datePublished` field (see --verify-sample): for in-season months the
-per-URL <lastmod> values are minute-granular and spread naturally across the
-month (e.g. Sept 2022: 14 ProFootballTalk injury-tagged articles between
-2022-09-01T02:56 and 2022-09-01T14:56 alone) rather than clustered on one
-migration date -- i.e. <lastmod> is a real per-article publish/update
-timestamp for this content, not a platform-migration artifact. (Pre-2009
-chunks ARE a migration artifact -- see docs/injury_news_sourcing.md sec 2.)
-
-Filtered to ProFootballTalk NFL articles (path contains "/profootballtalk/")
-whose URL slug matches an injury/personnel-move keyword. All ProFootballTalk
-NFL urls (not just keyword matches) are retained per month with an
-`injury_relevant` flag, so a future session can redraw the keyword line
-without re-fetching.
-
-Respects robots.txt `Crawl-delay: 10` for www.nbcsports.com (fetched and read
-this session, 2026-08-19: "User-agent: *" / "Crawl-delay: 10"). This bounds
-the practical scope of this script to sitemap-level bulk fetches (275 monthly
-sitemap requests ~= 46 minutes at 10s/request) -- NOT per-article body-text
-fetching at bulk scale (thousands of articles x 10s would take days). Per-
-article body fetches are supported only for a small --verify-sample.
-
-Private-research use only, matching this project's existing CFBD/cfbfastR
-precedent (docs/data_feasibility.md, License item 6: "private caching/
-retention" permitted, "raw tables must never be republished"). NBC Sports'
-own terms of use were not independently reviewed this session (label:
-inferred policy stance, not a verified legal fact) -- treat this archive the
-same way: cache privately, never republish, never redistribute raw rows.
-
-Usage:
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_injury_news.py \\
-        --out data/raw/injury_news --start 200909 --end 202606
-
-    # Fetch a handful of real article pages to confirm datePublished + body
-    # text are extractable (task's "verify by actually fetching a sample"):
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_injury_news.py \\
-        --out data/raw/injury_news --verify-sample 202010 --sample-n 5
-
-Writes under --out/<snapshot>/ (default data/raw/injury_news/<UTC timestamp>,
-e.g. data/raw/injury_news/20260819T191639Z/ -- gitignored by the repository's
-existing `data/raw/**` rule, no .gitignore change needed). The timestamped
-snapshot subdirectory is deliberate and matches this repo's existing
-convention for external raw pulls (data/raw/<timestamp>/,
-data/players/raw/<timestamp>/): `nfl_ats.snapshots.latest_snapshot()` treats
-ANY directory directly under data/raw/ that contains a manifest.json as a
-candidate schedules snapshot, so a manifest.json must never sit directly at
-data/raw/injury_news/manifest.json -- it must be nested one level down, under
-a snapshot subdirectory, exactly like every other named raw source in this
-project. Without --snapshot, a run resumes the most recent existing snapshot
-subdirectory under --out if one exists (so re-running the same command
-continues, rather than restarting, a long crawl-delay-bound pull), or creates
-a fresh UTC-timestamped one if none exists.
-
-    <snapshot>/monthly/<YYYYMM>.parquet   one row per ProFootballTalk NFL url
-                                            in that month's sitemap chunk.
-    <snapshot>/index.parquet               concatenation of every monthly
-                                            file present in this snapshot.
-    <snapshot>/manifest.json               run metadata + coverage summary.
-    <snapshot>/sample_articles/<slug>.json full-text spot-check fetches
-                                            (--verify-sample).
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -109,15 +30,6 @@ HEADLINE_RE = re.compile(r'"headline"\s*:\s*"([^"]+)"')
 
 
 def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
-    """Return the timestamped snapshot subdirectory to write/resume into.
-
-    A manifest.json must never sit directly at `out_dir` (see module
-    docstring: `nfl_ats.snapshots.latest_snapshot()` treats any directory
-    directly under data/raw/ with a manifest.json as a candidate schedules
-    snapshot). If `snapshot` is given, use/create `out_dir/snapshot`.
-    Otherwise resume the most recent existing `<UTC timestamp>` subdirectory
-    under `out_dir`, or create a fresh one.
-    """
 
     if snapshot is not None:
         snapshot_dir = out_dir / snapshot
@@ -137,7 +49,6 @@ def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
 
 
 def _latest_existing_snapshot(out_dir: Path, *, exclude: Path) -> Path | None:
-    """Most recent existing snapshot dir under out_dir, other than exclude."""
 
     candidates = sorted(
         path
@@ -150,7 +61,6 @@ def _latest_existing_snapshot(out_dir: Path, *, exclude: Path) -> Path | None:
 def create_fresh_snapshot_dir(
     out_dir: Path, *, refetch_months: set[str], now: datetime | None = None
 ) -> tuple[Path, list[str]]:
-    """New timestamped snapshot dir; prior months copied forward except refetch_months."""
 
     now = now or datetime.now(UTC)
     new_id = now.strftime("%Y%m%dT%H%M%SZ")
@@ -225,8 +135,6 @@ INJURY_KEYWORDS = [
 
 @dataclass
 class RateLimiter:
-    """Enforces robots.txt Crawl-delay between requests to the same host."""
-
     delay_seconds: float
     _last_request: float | None = field(default=None, init=False)
 
@@ -256,7 +164,6 @@ def _fetch(url: str, limiter: RateLimiter, *, timeout: int = 30, retries: int = 
 
 
 def fetch_sitemap_index(limiter: RateLimiter) -> list[tuple[str, str]]:
-    """Return [(yyyymm, sitemap_url), ...] sorted chronologically."""
 
     raw = _fetch(SITEMAP_INDEX_URL, limiter)
     root = ElementTree.fromstring(raw)
@@ -311,7 +218,6 @@ def parse_monthly_sitemap(raw: bytes, month: str) -> pd.DataFrame:
 
 
 def fetch_hub_article_urls(limiter: RateLimiter, *, hub_url: str = HUB_URL) -> list[str]:
-    """Article urls linked from the live PFT hub page (the post-2026-06 URL scheme)."""
 
     raw = _fetch(hub_url, limiter).decode("utf-8", errors="ignore")
     return sorted(set(HUB_ARTICLE_RE.findall(raw)))
@@ -320,7 +226,6 @@ def fetch_hub_article_urls(limiter: RateLimiter, *, hub_url: str = HUB_URL) -> l
 def fetch_current_articles(
     urls: list[str], limiter: RateLimiter, *, existing_urls: frozenset[str] = frozenset()
 ) -> pd.DataFrame:
-    """Per-article JSON-LD datePublished for injury-keyword-matched hub urls not already indexed."""
 
     rows: list[dict[str, object]] = []
     for url in urls:
@@ -470,9 +375,6 @@ def ingest(
 def verify_sample(
     out_dir: Path, month: str, sample_n: int, limiter: RateLimiter | None = None
 ) -> None:
-    """Fetch a handful of real article pages to confirm per-article timestamps
-    and body text are extractable -- the task's "verify by actually fetching a
-    sample (one historical week)" requirement."""
 
     limiter = limiter or RateLimiter(CRAWL_DELAY_SECONDS)
     monthly_path = out_dir / "monthly" / f"{month}.parquet"

@@ -1,5 +1,3 @@
-"""Prior-only conditional empirical integer margins (MOD-18 lane K)."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -17,7 +15,6 @@ BANDWIDTH = 2.5
 
 
 def key_side(lines: npt.NDArray[np.float64]) -> npt.NDArray[np.int64]:
-    """Nearest absolute key and under/on/over; ties choose the smaller key."""
     keys = np.array([3, 7, 10, 14])
     values = np.abs(lines)
     nearest = np.argmin(np.abs(values[:, None] - keys), axis=1)
@@ -26,8 +23,6 @@ def key_side(lines: npt.NDArray[np.float64]) -> npt.NDArray[np.int64]:
 
 @dataclass(frozen=True)
 class ConditionalMarginLattice:
-    """Weighted atoms on integer margins, never a pooled residual cloud."""
-
     margins: npt.NDArray[np.float64]
     mass: npt.NDArray[np.float64]
     effective_rows: float
@@ -35,7 +30,6 @@ class ConditionalMarginLattice:
     shift: int = 0
 
     def probabilities(self, line: float) -> tuple[float, float, float]:
-        """Strict home cover, push and strict away cover, summing to one."""
         return (
             float(self.mass[self.margins > line].sum()),
             float(self.mass[self.margins == line].sum()),
@@ -54,7 +48,6 @@ def fit_conditional_margin(
     *,
     method: str = "conditional_margin_lattice",
 ) -> ConditionalMarginLattice:
-    """Fit an already cutoff-filtered OOS history; no outcomes from target rows."""
     from nfl_ats.tiebreaker import effective_sample_size
 
     if method not in CONDITIONAL_MARGIN_METHODS:
@@ -95,11 +88,6 @@ def predict_conditional_margin(
     *,
     method: str = "conditional_margin_lattice",
 ) -> pd.DataFrame:
-    """Filter to completed games strictly before each whole prediction week.
-
-    Inputs are OOS point predictions; a conservative one-day completion allowance
-    excludes same-day games when the source provides dates without end times.
-    """
     prior = history.copy()
     prior["gameday"] = pd.to_datetime(prior.gameday)
     if prior.game_id.duplicated().any():

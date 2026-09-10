@@ -1,5 +1,3 @@
-"""Odds conversion, wager selection, and settlement helpers."""
-
 from __future__ import annotations
 
 import math
@@ -16,7 +14,6 @@ def _resolved_odds(american_odds: float | int | None) -> float:
 
 
 def implied_probability(american_odds: float | int | None) -> float:
-    """Return the break-even probability for American odds."""
 
     odds = _resolved_odds(american_odds)
     if odds == 0:
@@ -27,7 +24,6 @@ def implied_probability(american_odds: float | int | None) -> float:
 
 
 def profit_per_unit(american_odds: float | int | None) -> float:
-    """Return net profit on one unit risked for a winning wager."""
 
     odds = _resolved_odds(american_odds)
     if odds == 0:
@@ -41,7 +37,6 @@ def no_vig_probabilities(
     home_odds: float | int | None,
     away_odds: float | int | None,
 ) -> tuple[float, float]:
-    """Normalize two implied probabilities to remove the bookmaker margin."""
 
     home_raw = implied_probability(home_odds)
     away_raw = implied_probability(away_odds)
@@ -50,15 +45,12 @@ def no_vig_probabilities(
 
 
 def market_hold(home_odds: float | int | None, away_odds: float | int | None) -> float:
-    """Return the two-way implied probability above 100%."""
 
     return implied_probability(home_odds) + implied_probability(away_odds) - 1.0
 
 
 @dataclass(frozen=True)
 class BetDecision:
-    """A vig-aware wager recommendation for one game."""
-
     side: str
     edge: float
     odds: float
@@ -71,7 +63,6 @@ def choose_bet(
     away_odds: float | int | None = None,
     min_edge: float = 0.02,
 ) -> BetDecision:
-    """Choose HOME, AWAY, or PASS based on probability above break-even."""
 
     if not 0.0 <= home_cover_probability <= 1.0:
         raise ValueError("home_cover_probability must be between 0 and 1")
@@ -93,7 +84,6 @@ def choose_bet(
 
 
 def settle_bet(side: str, home_cover: float | int, odds: float | int | None) -> float:
-    """Settle a one-unit wager; pushes should be excluded before calling."""
 
     if side == "PASS":
         return 0.0

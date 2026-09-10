@@ -1,93 +1,3 @@
-"""Pool tiebreaker: a defensible final-score guess for one game.
-
-The pool breaks ties on the final score of the week's LAST game (owner,
-2026-09-01; Week 1 that is DEN @ KC on Monday night). This module produces
-the guess and, just as importantly, states how accurate such a guess can be.
-
-Method, and why it is deliberately modest
------------------------------------------
-The market's own spread and total are the strong baseline this project holds
-every model to, so the guess starts from the market-implied score::
-
-    home = (total + home_expected_margin) / 2
-    away = (total - home_expected_margin) / 2
-
-and then calibrates it against every completed game with a recorded spread
-and total (4,630 games, 2009-2025): the *neighborhood* of historically
-similar market shapes supplies the median actual total, median actual home
-margin, and the most common exact final scores.
-
-The neighborhood is KERNEL-WEIGHTED, not a hard window, and that choice is
-load-bearing rather than cosmetic. Quoted spreads and totals are quantized
-to half points, so a hard +/-w window is a STEP FUNCTION of its centre: a
-whole half-point bucket enters or leaves the moment the centre crosses an
-edge. Measured 2026-09-01 on the live Week 1 board, that is not theoretical
--- wiring :data:`TOTALS_RESIDUAL_WEIGHT` moved the centre total by +0.042
-(43.000 -> 43.042), which pushed the entire ``total_line == 41.5`` bucket
-(38 games) outside the old +/-1.5 window, dropped the neighborhood 259 ->
-221, moved the median actual total 43 -> 41, and moved the published guess
-DOWN from KC 23 - DEN 20 to KC 22 - DEN 19 while the totals model was
-arguing the total should be HIGHER (+0.42). A displayed number that moves
-the wrong way because of a mechanical window edge is a defect, not a
-finding. So each historical game is weighted by a triangular kernel on its
-standardized distance from the centre::
-
-    d = sqrt((delta_margin / h_m)**2 + (delta_total / h_t)**2)
-    w = max(0, 1 - d)
-
-with base bandwidths ``h_m = 1.0`` and ``h_t = 1.5`` inherited from the
-first entry of :data:`_NEIGHBORHOOD_WINDOWS` (the old first window's
-half-widths -- no new constant). ``w`` is 1 at the centre, falls linearly,
-and reaches 0 exactly AT the bandwidth, so a game on the boundary carries
-zero weight instead of a full vote: a sub-half-point blend nudge can no
-longer flip the guess. The bandwidth widens along that same schedule --
-continuously, by linear interpolation between its entries, so the
-bandwidth itself is not a step function of the centre either -- until the
-Kish effective sample size ``(sum w)**2 / sum w**2`` reaches
-:data:`_MIN_NEIGHBORHOOD` (150, also inherited). Medians are weighted
-medians and the exact-final modes are weighted counts. When the active weekly
-forecast prices the game, the model's margin disagreement is blended in at
-weight :data:`MODEL_RESIDUAL_WEIGHT` (0.2) -- see that constant's docstring
-for the measurement showing why the model does NOT simply override the
-market here the way it picks sides against it. Median-based numbers are the
-right guess when the tiebreak metric is closest-total (median minimizes
-absolute error); the exact-score modes are the right guess when the metric
-is exact-score matching. Both are reported because the pool's metric is not
-recorded anywhere in this repository.
-
-Measured accuracy of the baseline itself (2009-2025, 4,630 games): the
-market total misses the actual total by ~10.5 points on average (median 9.0,
-bias +0.5 -- actuals run half a point OVER the line); each implied team
-score misses by ~7.4 points. A tiebreaker guess is a coin toss weighted a
-few points in your favour, not a prediction -- any write-up quoting this
-module must keep that framing.
-
-The dedicated over/under training regime that was queued here has now RUN
-(:mod:`nfl_ats.totals`, `docs/totals_model.md`, artifact
-``artifacts/totals_backtest/20260901T184010Z``). Its verdict is the same
-shape as the margin side's: the market total is the better point estimate on
-its own, and the model's residual is folded in at
-:data:`TOTALS_RESIDUAL_WEIGHT` (0.1) rather than allowed to override it --
-see that constant's docstring for the sweep. A second wave
-(:mod:`nfl_ats.totals_wave2`, ``docs/totals_model_wave2.md``) screened 24
-drive-pace columns on top of wave 1's 41 and came back the favourite,
-``probability_positive`` 0.8235 for beating wave 1 -- see
-:data:`TOTALS_RESIDUAL_WEIGHT`'s docstring for both sweeps. This module now
-serves wave 2's model when the drive-pace feature table exists, falling back
-to wave 1's when it does not (a fresh clone).
-
-Spread-sign conventions, stated once
-------------------------------------
-Two sources, two conventions, converted at the edge and nowhere else:
-
-- ``schedules.parquet`` ``spread_line``: POSITIVE = home favored by that
-  many (verified empirically: mean(actual home margin - spread_line) = +0.06
-  over 4,630 games). This module's ``home_expected_margin`` equals it.
-- Odds-snapshot ``quotes.parquet`` HOME outcome ``line``: NEGATIVE = home
-  favored (a home side at -2.5 gives 2.5). ``home_expected_margin`` is its
-  negation.
-"""
-
 from __future__ import annotations
 
 import json
@@ -139,9 +49,6 @@ TOTALS_RESIDUAL_WEIGHT = 0.1
 
 @dataclass(frozen=True)
 class MarketConsensus:
-    """One game's freshest market read: median across books in the newest
-    local odds snapshot that quotes it, or the schedules row as fallback."""
-
     game_id: str
     home_expected_margin: float
     total_line: float
@@ -150,12 +57,6 @@ class MarketConsensus:
 
 @dataclass(frozen=True)
 class ModelView:
-    """The active model's margin opinion for the game, read from the newest
-    weekly forecast that prices it -- the same numbers behind the played
-    pick, shown so the guess can acknowledge a disagreement (e.g. Week 1
-    DEN @ KC: market KC by 2.5, model KC by ~4.3) instead of silently
-    ignoring it."""
-
     predicted_margin: float
     forecast_line: float
     residual: float
@@ -195,12 +96,6 @@ class TiebreakerReport:
 
     @property
     def served_total(self) -> float:
-        """Alias for :attr:`guess_total_line`: the one total every published
-        number uses (tiebreaker centre, panel, board assistant --
-        ``docs/tiebreaker.md`` "one lattice, one margin, one total"). A
-        property, not a stored field, so it can never drift from
-        ``guess_total_line`` -- see :attr:`served_total_method` for which
-        named method produced this value."""
 
         return self.guess_total_line
 
@@ -213,7 +108,6 @@ def newest_schedules_path(data_root: Path) -> Path:
 
 
 def lined_finals(schedules: pd.DataFrame) -> pd.DataFrame:
-    """Completed games with a recorded spread and total."""
 
     mask = (
         schedules["home_score"].notna()
@@ -225,8 +119,6 @@ def lined_finals(schedules: pd.DataFrame) -> pd.DataFrame:
 
 
 def last_game_of_week(schedules: pd.DataFrame, season: int, week: int) -> pd.Series:
-    """The week's last kickoff -- the pool's tiebreaker game -- by
-    ``(gameday, gametime)``."""
 
     games = schedules.loc[
         (schedules["season"] == season)
@@ -243,8 +135,6 @@ def last_game_of_week(schedules: pd.DataFrame, season: int, week: int) -> pd.Ser
 
 
 def upcoming_week(schedules: pd.DataFrame, today: date) -> tuple[int, int]:
-    """The (season, week) of the next REG game on or after ``today`` --
-    the week whose card is currently in play."""
 
     regular = schedules.loc[schedules["game_type"].astype(str) == "REG"].copy()
     days = pd.to_datetime(regular["gameday"], errors="coerce")
@@ -262,9 +152,6 @@ def market_implied_scores(home_expected_margin: float, total_line: float) -> tup
 
 
 def snapshot_consensus(game_id: str, data_root: Path) -> MarketConsensus | None:
-    """Median spread/total across books in the NEWEST snapshot quoting the
-    game. Walks snapshots newest-first so one capture missing the game (an
-    early-week partial board) falls back to the one before it."""
 
     snapshots = sorted((data_root / "market" / "raw").glob("*/quotes.parquet"), reverse=True)
     for quotes_path in snapshots:
@@ -291,10 +178,6 @@ def snapshot_consensus(game_id: str, data_root: Path) -> MarketConsensus | None:
 
 
 def active_model_view(game_id: str, artifacts_root: Path) -> ModelView | None:
-    """The active method's ``predicted_market_residual`` for the game, from
-    the active manifest's linked weekly forecast. ``None`` when no forecast
-    covers the game (a historical query) or the artifact tree is absent (a
-    fresh clone) -- the guess then simply uses the market alone."""
 
     active_path = artifacts_root / "active_ats_model.json"
     if not active_path.is_file():
@@ -340,13 +223,6 @@ def active_model_view(game_id: str, artifacts_root: Path) -> ModelView | None:
 
 @dataclass(frozen=True)
 class Neighborhood:
-    """The kernel-weighted set of historically similar games behind a guess.
-
-    ``frame`` holds only the rows that carry positive weight, ``weights`` is
-    aligned to it positionally, and ``effective_size`` is the Kish effective
-    sample size ``(sum w)**2 / sum w**2`` -- the number the report shows and
-    the number the widening schedule targets."""
-
     frame: pd.DataFrame
     weights: npt.NDArray[np.float64]
     label: str
@@ -360,13 +236,6 @@ def kernel_weights(
     margin_bandwidth: float,
     total_bandwidth: float,
 ) -> npt.NDArray[np.float64]:
-    """Triangular kernel weight per historical game.
-
-    ``w = max(0, 1 - d)`` on the standardized distance
-    ``d = sqrt((delta_margin / h_m)**2 + (delta_total / h_t)**2)``: exactly 1
-    at the centre, linearly decreasing, exactly 0 at and beyond the bandwidth
-    ellipse. Continuous in the centre by construction -- that is the whole
-    point (see the module docstring)."""
 
     margins = finals["spread_line"].to_numpy(dtype=float)
     totals = finals["total_line"].to_numpy(dtype=float)
@@ -379,10 +248,6 @@ def kernel_weights(
 
 
 def effective_sample_size(weights: npt.NDArray[np.float64]) -> float:
-    """Kish effective sample size ``(sum w)**2 / sum w**2``.
-
-    Equals the plain count when every weight is equal, which is why it can
-    inherit ``_MIN_NEIGHBORHOOD`` unchanged from the hard-window era."""
 
     total = float(weights.sum())
     squared = float((weights**2).sum())
@@ -392,12 +257,6 @@ def effective_sample_size(weights: npt.NDArray[np.float64]) -> float:
 
 
 def _bandwidths_at(scale: float) -> tuple[float, float]:
-    """Bandwidths at a continuous position along ``_BANDWIDTH_SCHEDULE``.
-
-    ``scale`` 0.0 is the first entry, 1.0 the second, and fractional values
-    interpolate linearly between neighbours -- so the bandwidth, and hence
-    every weight, is a continuous function of how far the schedule has been
-    walked."""
 
     last = len(_BANDWIDTH_SCHEDULE) - 1
     lower_index = min(max(math.floor(scale), 0), last)
@@ -418,14 +277,6 @@ def _label(margin_bandwidth: float, total_bandwidth: float) -> str:
 def _neighborhood(
     finals: pd.DataFrame, home_expected_margin: float, total_line: float
 ) -> Neighborhood:
-    """Weight history around ``(home_expected_margin, total_line)``.
-
-    Walks ``_BANDWIDTH_SCHEDULE`` for the first entry whose effective sample
-    size clears ``_MIN_NEIGHBORHOOD``, then bisects back toward the previous
-    entry for the SMALLEST scale that still clears it. Bisecting is what
-    keeps the bandwidth continuous in the centre: taking whole schedule steps
-    would reintroduce exactly the step function the kernel removed, just at
-    the ESS threshold instead of at a bucket edge."""
 
     def weights_at(scale: float) -> npt.NDArray[np.float64]:
         return kernel_weights(finals, home_expected_margin, total_line, *_bandwidths_at(scale))
@@ -467,12 +318,6 @@ def _neighborhood(
 
 
 def weighted_median(values: npt.NDArray[np.float64], weights: npt.NDArray[np.float64]) -> float:
-    """The weighted median of ``values``.
-
-    The smallest value whose cumulative weight reaches half the total; when
-    the cumulative weight lands exactly on the half point the two straddling
-    values are averaged, so uniform weights reproduce ``pandas.Series.median``
-    (including its even-count averaging) exactly."""
 
     if len(values) == 0:
         return float("nan")
@@ -495,8 +340,6 @@ def weighted_median(values: npt.NDArray[np.float64], weights: npt.NDArray[np.flo
 def weighted_score_counts(
     frame: pd.DataFrame, weights: npt.NDArray[np.float64]
 ) -> dict[tuple[int, int], float]:
-    """Total kernel weight behind each exact ``(home_score, away_score)``
-    final in the neighborhood. Sums to ``weights.sum()`` by construction."""
 
     counts: dict[tuple[int, int], float] = {}
     for home_score, away_score, weight in zip(
@@ -508,13 +351,7 @@ def weighted_score_counts(
 
 
 class TiebreakerConsistencyError(ValueError):
-    """The one-lattice guess could not be made consistent with the card's
-    own pick, or its total drifted more than a point from the served
-    total. Raised INSTEAD OF a guess, never alongside a silently-wrong one
-    -- see :func:`build_report`'s "one lattice, one margin, one total" step
-    and ``docs/tiebreaker.md``. The publish path (``nfl_ats.publishing``)
-    catches this and refuses to write ``tiebreaker.json``/the card line for
-    the week, exactly like a ``prediction_safety`` gate."""
+    pass
 
 
 def build_report(
@@ -678,36 +515,6 @@ def tiebreaker_report(
     published_pick_side: str | None = None,
     frozen_spread: float | None = None,
 ) -> TiebreakerReport:
-    """The full pipeline: resolve the game, read the freshest market, blend
-    in the active model's view (weight :data:`MODEL_RESIDUAL_WEIGHT`) and the
-    totals model's view (weight :data:`TOTALS_RESIDUAL_WEIGHT`), build the
-    calibrated guess. ``game_id`` overrides ``season``/``week``; with neither,
-    the week of the next upcoming game is used.
-
-    MOD-17 served total (``nfl_ats.served_total``): a joint margin/total
-    residual model view is ALSO fit here (:func:`nfl_ats.served_total.
-    joint_residual_total_view`, ``joint_features_path`` defaulting to
-    ``<data_root>/processed/game_features_weak_stack.parquet``) whenever that
-    table can price this game -- the same "load it the way this function
-    already loads its other model views" contract the wave-1/wave-2 totals
-    views above follow. Which of the two totals views actually SERVES
-    (``report.served_total_method``) is decided by
-    :data:`nfl_ats.served_total.SERVED_TOTAL_METHOD`; the other one is always
-    still computed and reported as ``report.comparison_total_blend_k01``, so
-    a report never hides the arm it did not serve.
-
-    The totals view now prefers WAVE 2 (:func:`nfl_ats.totals_wave2.
-    model_total_view_wave2`, 65-column drive-pace allowlist), falling back to
-    WAVE 1 (:func:`nfl_ats.totals.model_total_view`, 41 columns) only when the
-    wave-2 feature table is absent -- a fresh clone, or a synthetic data root
-    in tests -- never merely because wave 2 declined to price this one game
-    (that case is market-only, same as wave 1's own contract; see
-    :func:`nfl_ats.totals_wave2.model_total_view_wave2`'s docstring for why).
-    ``wave2_features_path`` defaults to ``<data_root>/processed/
-    game_features_pbp.parquet`` and is tried first; ``features_path`` defaults
-    to ``<data_root>/processed/game_features.parquet`` and is now used only as
-    the wave-1 fallback source. With neither table present the guess uses the
-    market total alone, exactly as it did before the totals regime existed."""
 
     schedules = pd.read_parquet(newest_schedules_path(data_root))
     if game_id is not None:
@@ -883,12 +690,6 @@ _SNAPSHOT_ID_PATTERN = re.compile(r"\d{8}T\d{6}Z")
 
 
 def _embedded_snapshot_id(source: str) -> str | None:
-    """The capture stamp embedded in a ``source`` description, if any.
-
-    ``None`` for the schedules fallback (``"schedules (fallback -- possibly
-    stale)"``) or a totals-model description (``"totals ridge(...) trained on
-    N games before ..."``), neither of which names one.
-    """
 
     match = _SNAPSHOT_ID_PATTERN.search(source)
     return match.group(0) if match else None
@@ -897,23 +698,6 @@ def _embedded_snapshot_id(source: str) -> str | None:
 def tiebreaker_lineage_sources(
     report: TiebreakerReport, *, fallback_effective_timestamp: str
 ) -> tuple[TiebreakerSource, ...]:
-    """Adapt a built :class:`TiebreakerReport` into played-card lineage inputs.
-
-    Duck-typed on the same terms as
-    :func:`nfl_ats.lineage.overlay_sources_from_composition`: this never
-    re-derives the guess, only records what :func:`tiebreaker_report` (the
-    library function) already read. One :class:`TiebreakerSource` per input
-    the guess actually used -- the market consensus always, the active
-    model's margin view and the totals model's view only when
-    ``report.model_view``/``report.totals_view`` is not ``None`` (the same
-    "no forecast/table prices this game" convention :func:`build_report`
-    already uses for a market-only guess). ``fallback_effective_timestamp``
-    covers a source with no recoverable capture stamp -- the schedules
-    fallback, or a totals-model description, which names a training window
-    rather than a snapshot -- the same role
-    ``overlay_sources_from_composition``'s own ``fallback_effective_timestamp``
-    plays for a non-snapshot overlay member.
-    """
 
     sources: list[TiebreakerSource] = []
 

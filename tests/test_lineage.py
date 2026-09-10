@@ -1,5 +1,3 @@
-"""ENG-16: a card that cannot say where its decisions came from is not publishable."""
-
 from __future__ import annotations
 
 import json
@@ -190,10 +188,6 @@ def test_parse_snapshot_capture_refuses_to_guess() -> None:
 def test_market_and_base_families_prefer_an_inherited_snapshot_over_the_digest(
     tmp_path: Path,
 ) -> None:
-    """A derived manifest that carries an ENG-22 source_snapshots block (see
-    nfl_ats.feature_manifest.inherit_source_snapshots) resolves market_line
-    and every base-table model_input family to the real snapshot id instead
-    of falling back to feature_table:sha256."""
 
     metadata = _synthetic_metadata()
     metadata["provenance"]["feature_table"]["manifest"]["source_snapshots"] = {
@@ -232,8 +226,6 @@ def test_market_and_base_families_prefer_an_inherited_snapshot_over_the_digest(
 
 
 def test_a_null_inherited_entry_still_falls_back_to_the_digest() -> None:
-    """A transitively-forwarded 'upstream manifest absent' marker (see
-    inherit_source_snapshots) must not be mistaken for a resolved snapshot."""
 
     metadata = _synthetic_metadata()
     metadata["provenance"]["feature_table"]["manifest"]["source_snapshots"] = {
@@ -253,9 +245,6 @@ def test_a_null_inherited_entry_still_falls_back_to_the_digest() -> None:
 
 
 def test_legacy_manifests_without_a_source_snapshots_block_are_unaffected() -> None:
-    """No ENG-22 block at all -- e.g. every manifest on disk before this
-    change -- keeps validating exactly as it did before: the digest fallback
-    and its reason are unchanged."""
 
     market = _lineage().field(FIELD_MARKET_LINE)
     assert market is not None and market.lineage is not None
@@ -281,10 +270,6 @@ _POOL_CAPTURE_BLOCK = {
 
 
 def test_market_line_names_the_pool_board_capture_for_a_captured_week() -> None:
-    """The pool grades on the spread printed on its own contest board, so for
-    a week the board was captured that capture -- not the nflverse snapshot
-    the rest of the schedules table came from -- is what the pick was formed
-    and graded against. A reader of lineage.json has to be able to tell."""
 
     metadata = _synthetic_metadata()
     manifest = metadata["provenance"]["feature_table"]["manifest"]
@@ -312,8 +297,6 @@ def test_market_line_names_the_pool_board_capture_for_a_captured_week() -> None:
 
 
 def test_market_line_keeps_the_nflverse_snapshot_for_an_uncaptured_week() -> None:
-    """Every week the board was never captured -- the whole archive -- resolves
-    exactly as it did before the pool's line existed in this repository."""
 
     metadata = _synthetic_metadata(season=2026, week=2)
     manifest = metadata["provenance"]["feature_table"]["manifest"]

@@ -76,10 +76,6 @@ def test_known_project_secrets_are_always_reported_as_booleans(monkeypatch: Any)
 
 
 def test_secret_shaped_allowlisted_prefix_is_redacted_to_a_boolean(monkeypatch: Any) -> None:
-    """Defense in depth: an NFL_ATS_*-prefixed var named like a secret must
-    still never have its value included, even though the prefix is
-    allow-listed for the ordinary environment_variables dump.
-    """
 
     monkeypatch.setenv("NFL_ATS_API_KEY", "should-never-appear-anywhere")
 

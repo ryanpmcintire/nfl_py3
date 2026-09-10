@@ -1,18 +1,3 @@
-"""Tests for the official-inactives capture (WP17).
-
-Covers parse correctness and team-code mapping against the fixtures in
-``tests/fixtures/`` (one trimmed-but-verbatim real fetch of each source's
-current preseason placeholder state, one CONSTRUCTED populated page --  see
-that fixture's own header comment and ``src/nfl_ats/inactives_capture.py``'s
-module docstring for why the populated structure could not be measured this
-session), the primary/fallback source-selection logic, every ``empty_reason``
-branch (including which ones must still exit non-zero), manifest field
-presence, schedule-derived game_id/home_team/away_team resolution, and the
-scheduler-naming contract the dedupe mechanism (this project's substitute for
-in-script idempotence, matching how ``injuries_*`` and ``player_arrests_tue``
-already dedupe) depends on.
-"""
-
 from __future__ import annotations
 
 import sys
@@ -43,7 +28,6 @@ FIXED_NOW = datetime(2026, 9, 7, 18, 30, 0, tzinfo=UTC)
 def make_fetch(
     responses: dict[str, tuple[str | None, int | None, str | None, bool]],
 ) -> tuple[ic.FetchFn, list[str]]:
-    """A fake ``FetchFn`` keyed by url, recording call order for assertions."""
 
     calls: list[str] = []
 
@@ -435,11 +419,6 @@ def test_snapshot_directory_name_matches_scheduler_naming_convention(tmp_path: P
 def test_scheduler_dedupe_recognizes_a_fresh_inactives_snapshot(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    """A second run inside the dedupe window must find this snapshot recent
-    enough that the scheduler would skip re-fetching -- the actual mechanism
-    that makes this capture safe to double-schedule/re-run, matching how
-    injuries_*/player_arrests_tue dedupe (see docs/capture_scheduling.md).
-    """
 
     fetch, _ = make_fetch({ic.PRIMARY_URL: (POPULATED_HTML, 200, None, True)})
     ic.run_capture(

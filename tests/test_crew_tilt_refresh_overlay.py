@@ -1,32 +1,3 @@
-"""Refresh-path wiring of the late-week officiating-crew tilt challenger.
-
-Frozen rule text: ``docs/referee_assignments_capture.md``, section "Late-week
-crew-tilt challenger predeclaration (2026-09-01, WP47)", written before the
-module existed.
-
-**Binding closing-grounds taxonomy (AGENTS.md), restated verbatim:** an
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. Only two grounds ever close a line of work: (1) refuted
-mechanism -- a RESOLVED wrong sign (whole interval on the wrong side of zero)
-or zero split-half reliability; (2) bounded by a positive control proven able
-to detect an effect that size. Everything else is
-``unresolved_below_power``.
-
-Pins:
-- the tilt magnitudes ARE the two registry cells' own measured raw per-game
-  gaps -- checked against BOTH the experiments' artifacts and
-  ``registry/weak_signals.json``'s own ``classification_evidence`` text, so an
-  underived constant cannot survive here;
-- the forward crew-trait adapter reproduces the screen's own builders exactly
-  on the real snapshots (the measurement the module docstring claims);
-- a crew snapshot before a game's pick deadline applies, one at or after it
-  never does (anti-backdating, including a post-kickoff snapshot);
-- flags fire only in the two predeclared populations, and nothing else moves;
-- played-pick INVARIANCE: an unflagged game's would-be pick IS the incumbent's;
-- the registered challenger's ``config_fingerprint`` is stable and matches its
-  own recorded model block.
-"""
-
 from __future__ import annotations
 
 import json
@@ -90,11 +61,6 @@ TUESDAY_RECORD = pd.Timestamp("2026-09-15T16:00:00+00:00")
 
 
 def _lookup() -> CrewTraitLookup:
-    """A tiny two-trait lookup with controllable quartiles.
-
-    Eight referees over two seasons, means 1..8, so the lagged qcut(4) puts
-    referees 7 and 8 in the TOP quartile and 1 and 2 in the bottom.
-    """
 
     rows = []
     for index, name in enumerate(["r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8"], start=1):
@@ -217,7 +183,6 @@ def _write_crew_snapshot(
 
 @pytest.fixture
 def patched_traits(monkeypatch: pytest.MonkeyPatch) -> dict[str, int]:
-    """Wire the fixture lookup and a controllable pass-rate quartile map."""
 
     quartiles: dict[str, int] = {}
     monkeypatch.setattr(
@@ -253,12 +218,6 @@ def patched_traits(monkeypatch: pytest.MonkeyPatch) -> dict[str, int]:
 def test_tilt_magnitudes_are_the_registry_cells_own_measured_gaps(
     artifact: str, signal: str, expected_gap: float, sign: int, tilt: float
 ) -> None:
-    """An underived constant here would be a defect; both come from the cell.
-
-    Checked twice over: against the experiment's own artifact
-    (``result.raw_gap_pct``) and against the registry entry's own
-    ``classification_evidence`` text, which carries both the gap and the sign.
-    """
 
     metadata = json.loads((_REPO_ROOT / artifact).read_text(encoding="utf-8"))
     assert metadata["name"] == signal
@@ -283,13 +242,6 @@ def test_heavy_underdog_threshold_is_the_screens_own_default() -> None:
 
 @pytest.mark.parametrize("trait", ["holding", "flag_rate"])
 def test_forward_lookup_reproduces_the_screen_builder_quartiles(trait: str) -> None:
-    """MEASURED equality on the real snapshots, not assumed.
-
-    The builders discard both ``prev_total`` and the qcut bin edges, so the
-    forward hop for a not-yet-played game needs its own copy of the lag/qcut.
-    This pins that copy against the builders on every historical (referee,
-    season) pair -- a pinned second path, never a second definition.
-    """
 
     officials_root = _REPO_ROOT / "data" / "raw" / "officials"
     if not list(officials_root.glob("*/officials.parquet")):
@@ -322,7 +274,6 @@ def test_forward_lookup_reproduces_the_screen_builder_quartiles(trait: str) -> N
 
 
 def test_forward_lookup_buckets_a_season_the_builders_never_saw() -> None:
-    """The hop the builders structurally cannot make: next season, no games."""
 
     lookup = _lookup()
     assert lookup.holding_quartile("r8", 2026) == 4
@@ -455,7 +406,6 @@ def test_snapshot_before_the_deadline_applies_and_can_flip(
 def test_a_wednesday_capture_is_in_window_for_a_monday_night_game(
     tmp_path: Path, patched_traits: dict[str, int]
 ) -> None:
-    """SNF/MNF lock EARLY at Sunday 16:00 ET -- still after Wednesday."""
 
     data_root = tmp_path / "data"
     _write_crew_snapshot(
@@ -477,7 +427,6 @@ def test_a_wednesday_capture_is_in_window_for_a_monday_night_game(
 def test_a_snapshot_at_or_after_the_deadline_never_applies(
     tmp_path: Path, patched_traits: dict[str, int]
 ) -> None:
-    """Anti-backdating: a post-kickoff capture can never flip anything."""
 
     data_root = tmp_path / "data"
     _write_crew_snapshot(
@@ -554,12 +503,6 @@ def test_latest_crew_snapshot_prefers_the_newest_capture(tmp_path: Path) -> None
 def test_the_movement_policy_pick_is_never_disturbed_by_a_zero_tilt(
     tmp_path: Path, patched_traits: dict[str, int]
 ) -> None:
-    """A game the movement policy moved OFF the model's side stays moved.
-
-    The tilt flips the PLAYED side only when it crosses 0.5; with no flag it
-    cannot, so the challenger's pick is the incumbent's even where the played
-    pick and the model-only pick disagree.
-    """
 
     data_root = tmp_path / "data"
     _write_crew_snapshot(
@@ -602,7 +545,6 @@ def test_recording_is_opt_in(tmp_path: Path) -> None:
 def test_recording_outside_the_lock_window_writes_no_rows(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The refresh hook cannot backdate crew rows after the recording window."""
 
     artifacts_root = tmp_path / "artifacts"
     plan = replace(
@@ -645,7 +587,6 @@ def test_registered_challenger_fingerprint_is_stable() -> None:
 
 
 def test_registration_names_the_refresh_recording_path() -> None:
-    """The crew arm is late-refresh only, never a Tuesday publish recorder."""
 
     entry = _registered_entry()
     assert "publish-predictions --record-decisions" not in entry["weekly_recording_command"]

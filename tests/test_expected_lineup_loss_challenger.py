@@ -1,17 +1,3 @@
-"""``weak_stack_expected_lineup_loss`` prospective challenger recording.
-
-Mirrors ``tests/test_best_pick_nomination.py`` section 6's registry/active-
-model/card fixtures and its strategy of monkeypatching the expensive
-step (here ``fit_margin_models_for_week`` plus ``build_stacked_features``)
-rather than building a real fittable feature table: this pins the
-RECORDER's own plumbing (registration, fingerprint pinning, anti-
-backdating, ledger append, the declared ``feature_profile`` deviation) --
-the ridge fit itself is already covered by ``tests/test_margin.py``,
-``tests/test_promotion_eval_profiles.py``,
-``tests/test_qb_identity_features.py``, and
-``tests/test_transaction_flag_features.py``.
-"""
-
 from __future__ import annotations
 
 import json
@@ -121,10 +107,6 @@ def _write_active_model_and_card(
 
 
 class _FakeModel:
-    """Stands in for the real fitted ``MarginModel``: returns a caller-chosen
-    ``home_cover_probability`` per ``game_id`` and asserts it was asked for
-    the gaussian mapping, matching production's own weekly-forecast call."""
-
     def __init__(self, probabilities: dict[str, float]) -> None:
         self._probabilities = probabilities
 
@@ -143,8 +125,6 @@ class _FakeModel:
 def _patch_fit(
     monkeypatch: pytest.MonkeyPatch, card: pd.DataFrame, probabilities: dict[str, float]
 ) -> None:
-    """Bypass the real attach-features/ridge-refit machinery so this test
-    pins the RECORDER's own plumbing, not the fit (see module docstring)."""
 
     monkeypatch.setattr(
         challenger_module, "build_stacked_features", lambda base_features, *args: base_features
@@ -245,7 +225,6 @@ def test_record_challenger_refuses_an_inactive_registration(
 
 
 def test_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",
@@ -263,9 +242,6 @@ def test_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
 
 
 def test_real_registry_entry_fingerprint_is_internally_consistent() -> None:
-    """The TRACKED ``artifacts/prospective/challengers.json`` entry for this
-    challenger must declare a ``config_fingerprint`` matching its own
-    ``model`` block -- the same self-consistency every sibling entry keeps."""
 
     registry_path = (
         Path(__file__).resolve().parents[1] / "artifacts" / "prospective" / "challengers.json"

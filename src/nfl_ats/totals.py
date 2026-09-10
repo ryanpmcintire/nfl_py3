@@ -1,28 +1,3 @@
-"""Over/under regime: a ridge model on the market total's residual.
-
-Executes the frozen predeclaration in ``docs/totals_model.md`` (written
-2026-09-01, before any totals model had been fit on this data). Every
-structural choice below -- target, population, feature allowlist, pipeline,
-protocol, metrics -- is that document's contract, not a choice made after
-seeing a sign.
-
-The architecture mirrors the ATS side exactly: the market line is the prior,
-ridge models only the *residual*, evaluation is chronological walk-forward,
-and the model is folded in at a MEASURED blend weight rather than allowed to
-override the market. The target is::
-
-    total_residual = (home_score + away_score) - total_line
-
-and the served quantity is ``total_line + k * predicted_residual`` for the
-MAE-minimizing ``k`` from the sweep, which is free to be 0.0.
-
-Why the residual and not the total itself: the market total already carries
-essentially all of the predictable signal, so regressing the raw total mostly
-re-learns the line. Modelling the residual makes the model's whole job the
-part the market may have left on the table, and makes ``k = 0`` a meaningful
-null rather than a degenerate one.
-"""
-
 from __future__ import annotations
 
 import json
@@ -97,19 +72,11 @@ _TARGET = "total_residual"
 
 
 class TotalsDataError(RuntimeError):
-    """The population could not be assembled as the contract specifies."""
+    pass
 
 
 @dataclass(frozen=True)
 class TotalsView:
-    """One upcoming game's model opinion on the total.
-
-    Mirrors :class:`nfl_ats.tiebreaker.ModelView` on the margin side: the
-    market's line, the model's residual against it, and where the number came
-    from -- so the tiebreaker can acknowledge a disagreement instead of
-    silently ignoring it.
-    """
-
     predicted_total: float
     market_total: float
     residual: float
@@ -118,8 +85,6 @@ class TotalsView:
 
 
 def newest_schedules_path(data_root: Path) -> Path:
-    """The newest ``data/raw/*/schedules.parquet`` -- same resolution rule
-    :mod:`nfl_ats.tiebreaker` uses, so both read one market truth."""
 
     hits = sorted((data_root / "raw").glob("*/schedules.parquet"))
     if not hits:
@@ -128,13 +93,6 @@ def newest_schedules_path(data_root: Path) -> Path:
 
 
 def design_matrix(frame: pd.DataFrame, features: Sequence[str] = TOTALS_FEATURES) -> pd.DataFrame:
-    """The allowlist, and only the allowlist, in a fixed column order.
-
-    This is the single gate the predeclaration's "nothing outside this list
-    enters the fit" clause runs through: an extra or renamed column in the
-    source table is simply not selected, and a MISSING allowlist column is a
-    hard error rather than a silent substitution.
-    """
 
     missing = [column for column in features if column not in frame.columns]
     if missing:
@@ -143,10 +101,6 @@ def design_matrix(frame: pd.DataFrame, features: Sequence[str] = TOTALS_FEATURES
 
 
 def make_totals_estimator(*, ridge_alpha: float = TOTALS_RIDGE_ALPHA) -> BaseEstimator:
-    """Production's exact recipe (``margin.py`` lines 377-387, read
-    2026-09-01): median imputation with missingness indicators, standardize,
-    ridge. Reused verbatim rather than re-derived so the totals arm cannot
-    win or lose on a pipeline difference."""
 
     if not np.isfinite(ridge_alpha) or ridge_alpha <= 0.0:
         raise ValueError("ridge_alpha must be finite and positive")
@@ -165,18 +119,6 @@ def load_population(
     *,
     schedules_path: Path | None = None,
 ) -> pd.DataFrame:
-    """The frozen population: every newest-schedules game with a non-null
-    ``home_score``, ``away_score`` and ``total_line``, inner-joined to the
-    canonical feature table on ``game_id``.
-
-    The target and the market baseline come from SCHEDULES (the population's
-    defining source) and are carried as ``market_total``; the predictors come
-    from the feature table, whose own ``total_line``/``spread_line`` columns
-    are the allowlist entries. The two sources agree exactly (measured
-    2026-09-01: max absolute difference 0.0 over all 4,630 joined games), so
-    keeping both under distinct names costs nothing and keeps each number's
-    provenance unambiguous instead of relying on a silent merge suffix.
-    """
 
     path = schedules_path if schedules_path is not None else newest_schedules_path(data_root)
     schedules = pd.read_parquet(path)
@@ -213,16 +155,6 @@ def load_population(
 
 
 def chronological_blocks(frame: pd.DataFrame) -> list[tuple[int, int]]:
-    """Ordered ``(season, week)`` prediction blocks.
-
-    Plain ``(season, week)`` ordering is already chronologically honest in
-    this data: no ``(season, week)`` block mixes game types, and the wild-card
-    round sits at week 18 through 2020 and week 19 from 2021 -- always AFTER
-    that season's last regular week (measured 2026-09-01 from the newest
-    schedules: 0 blocks with more than one ``game_type``; WC week is 18 for
-    2009-2020 and 19 for 2021-2025). So no postseason game can ever enter a
-    regular-season week's training pool.
-    """
 
     pairs = frame.loc[:, ["season", "week"]].drop_duplicates()
     return sorted({(int(season), int(week)) for season, week in pairs.itertuples(index=False)})
@@ -235,15 +167,6 @@ def walk_forward_predictions(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     features: Sequence[str] = TOTALS_FEATURES,
 ) -> pd.DataFrame:
-    """Expanding-window walk-forward, one fit per ``(season, week)`` block.
-
-    The guard the contract names: a block's training pool is every game
-    STRICTLY BEFORE that block in ``(season, week)`` order. Not "before or
-    equal" -- a row from the target week itself, or any later week, is never
-    fitted on. Blocks whose pool holds fewer than ``min_train_games`` games
-    (500, ``constants.DEFAULT_MIN_TRAIN_GAMES``) are warm-up and produce no
-    predictions at all rather than predictions from a thin model.
-    """
 
     blocks = chronological_blocks(population)
     keys = list(zip(population["season"], population["week"], strict=True))
@@ -280,12 +203,6 @@ def walk_forward_predictions(
 
 
 def blend_total(market_total: pd.Series, predicted_residual: pd.Series, weight: float) -> pd.Series:
-    """``total_line + k * predicted_residual`` -- the served quantity.
-
-    ``k = 0`` is the market alone and ``k = 1`` is the raw model total, so the
-    two endpoint baselines are the same arithmetic as every interior point
-    and cannot drift apart from it.
-    """
 
     return market_total.astype(float) + float(weight) * predicted_residual.astype(float)
 
@@ -301,8 +218,6 @@ def _error_metrics(errors: pd.Series) -> dict[str, float]:
 def blend_sweep(
     predictions: pd.DataFrame, weights: Iterable[float] = BLEND_WEIGHTS
 ) -> pd.DataFrame:
-    """MAE and RMSE at every swept blend weight, plus the market and raw-model
-    deltas, on whatever subset of predictions is handed in."""
 
     market = _error_metrics(predictions["market_error"])
     rows: list[dict[str, float]] = []
@@ -325,24 +240,12 @@ def blend_sweep(
 
 
 def choose_weight(sweep: pd.DataFrame) -> float:
-    """The decision rule the contract fixes: the MAE-minimizing ``k``.
-
-    Ties break toward the SMALLER weight, so an exactly flat sweep serves the
-    market alone rather than an arbitrary interior point -- the conservative
-    direction for a tie, and the one that keeps ``k`` a derived number.
-    """
 
     ordered = sweep.sort_values(["mae", "k"], kind="mergesort")
     return float(ordered.iloc[0]["k"])
 
 
 def per_season_deltas(predictions: pd.DataFrame, weight: float) -> pd.DataFrame:
-    """Season-by-season MAE for the market and the chosen blend.
-
-    ``mae_improvement`` is POSITIVE when the blend is better (it is
-    market MAE minus blend MAE), matching the sign convention used for the
-    bootstrap and the registry entry.
-    """
 
     blended = blend_total(predictions["market_total"], predictions["predicted_residual"], weight)
     frame = predictions.assign(
@@ -359,12 +262,6 @@ def per_season_deltas(predictions: pd.DataFrame, weight: float) -> pd.DataFrame:
 
 
 def paired_error_frame(predictions: pd.DataFrame, weight: float) -> pd.DataFrame:
-    """Per-game paired |error| difference, market minus blend.
-
-    POSITIVE = the blend is closer to the actual total on that game. The
-    bootstrap runs on this column, so the sign of the reported effect is the
-    sign of "the model helped".
-    """
 
     blended = blend_total(predictions["market_total"], predictions["predicted_residual"], weight)
     blend_abs = (blended - predictions["actual_total"].astype(float)).abs()
@@ -388,14 +285,6 @@ def _mean_improvement(frame: pd.DataFrame) -> dict[str, float]:
 def bootstrap_improvement(
     paired: pd.DataFrame, *, samples: int = 2_000, seed: int = 20260901
 ) -> dict[str, float]:
-    """Week-blocked bootstrap of the mean paired |error| improvement.
-
-    Uses :func:`nfl_ats.clv.week_blocked_bootstrap` unchanged so the totals
-    arm reports the same interval construction every other arm of this
-    project reports, and surfaces ``probability_positive`` -- the fraction of
-    blocked resamples in which the blend beats the market -- rather than a
-    binary read of the endpoints.
-    """
 
     result = week_blocked_bootstrap(
         paired, _mean_improvement, block="week", samples=samples, seed=seed
@@ -441,13 +330,6 @@ def run_backtest(
     bootstrap_seed: int = 20260901,
     stamp: str | None = None,
 ) -> dict[str, Any]:
-    """The whole frozen regime, once: walk-forward, sweep, decide, bootstrap,
-    and write prediction-level output.
-
-    The primary read is ``game_type == "REG"`` and the decision ``k`` comes
-    from it alone; playoffs are scored with the same models and reported in
-    their own block (FND-15 lineage: never silently pooled).
-    """
 
     population = load_population(data_root, features_path)
     predictions = walk_forward_predictions(
@@ -530,16 +412,6 @@ def model_total_view(
     ridge_alpha: float = TOTALS_RIDGE_ALPHA,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> TotalsView | None:
-    """The totals model's residual for ONE upcoming game, fit under the same
-    walk-forward guard the backtest scores.
-
-    Training is every population game strictly before the target's
-    ``(season, week)``, so the number served for a live game is produced the
-    same way as the numbers the backtest graded. Returns ``None`` when the
-    feature table does not price the game, when the market total is missing,
-    or when fewer than ``min_train_games`` prior games exist -- the caller
-    then simply uses the market total alone.
-    """
 
     if not features_path.is_file():
         return None
@@ -578,7 +450,6 @@ def model_total_view(
 
 
 def format_results(results: dict[str, Any]) -> str:
-    """Human-readable summary of :func:`run_backtest` for the CLI."""
 
     regular = results["regular_season"]
     bootstrap = results["bootstrap"]
@@ -642,7 +513,6 @@ def format_results(results: dict[str, Any]) -> str:
 
 
 def load_results(path: Path) -> dict[str, Any]:
-    """Read a previously written ``results.json`` back."""
 
     payload: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
     return payload

@@ -1,20 +1,3 @@
-"""Spread-gap-zone fade overlay (docs/spread_gap_zone_fade_overlay.md).
-
-Three things are load-bearing here, mirroring
-``tests/test_division_revenge_tilt_overlay.py``'s structure (adapted: this
-overlay has no separate schedule-derived flag function, since the zone is a
-pure function of the card's own ``spread_line``):
-
-1. :func:`apply_spread_gap_zone_fade_overlay` flips EVERY forced pick whose
-   market line sits in the frozen ``[7.5, 10.0]`` zone, regardless of which
-   side was originally picked, respects the REG-only gate, and is
-   parameter-free beyond the two frozen bounds.
-2. :func:`overlay_disclosure_note` states the flip count and matchups.
-3. :func:`record_spread_gap_zone_fade_challenger_decisions` writes the
-   overlay's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 import math
@@ -111,8 +94,6 @@ def test_overlay_does_not_flip_just_above_the_upper_bound() -> None:
 
 
 def test_overlay_leaves_postseason_games_untouched() -> None:
-    """Same in-zone shape as G-lower, but POST season -- the REG-only gate
-    blocks it."""
 
     result = apply_spread_gap_zone_fade_overlay(_predictions())
     assert all(flip.game_id != "2026_20_POST_INZONE" for flip in result.flips)
@@ -140,8 +121,6 @@ def test_overlay_disabled_is_a_no_op() -> None:
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows() -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical -- the pick-level design's whole point."""
 
     predictions = _predictions()
     result = apply_spread_gap_zone_fade_overlay(predictions)
@@ -307,7 +286,6 @@ def test_record_fade_challenger_refuses_an_inactive_registration(tmp_path: Path)
 
 
 def test_fade_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

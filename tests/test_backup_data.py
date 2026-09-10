@@ -14,7 +14,6 @@ import scripts.backup_data as backup_data
 
 @pytest.fixture
 def fake_repo(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """A miniature repo with one mirrorable tree and one machine-local file."""
     repo = tmp_path / "repo"
     (repo / "data" / "raw" / "injury_news").mkdir(parents=True)
     (repo / "data" / "raw" / "injury_news" / "week1.json").write_text("snapshot", encoding="utf-8")

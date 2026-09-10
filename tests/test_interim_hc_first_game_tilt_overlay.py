@@ -1,25 +1,3 @@
-"""Interim head-coach first-game tilt overlay (docs/interim_coach_screen.md).
-
-Four things are load-bearing here, mirroring
-``tests/test_surface_switch_tilt_overlay.py``'s structure and AGENTS.md's
-"add a leakage regression test for every new feature family" spirit:
-
-1. :func:`interim_first_game_flag_by_game_fail_open` fires ONLY on the FIRST
-   REG-season game of a specific interim stint (never the second+), is
-   derived from data (reusing
-   ``nfl_ats.experiment_runner._build_interim_coach_trait_data`` verbatim),
-   and FAILS OPEN (returns zero flags, never raises) when the interim-coach
-   source snapshot is unavailable.
-2. :func:`apply_interim_hc_first_game_tilt_overlay` flips toward the
-   interim-coached team's first game whenever the model's own pick is not
-   already on that side, respects the REG-only gate, leaves a simultaneous
-   both-sides-first-game case untouched, and is parameter-free.
-3. :func:`overlay_disclosure_note` states the flip count and matchups.
-4. :func:`record_interim_hc_first_game_tilt_challenger_decisions` writes the
-   overlay's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -220,8 +198,6 @@ def test_flag_is_empty_for_a_team_never_under_an_interim(tmp_path: Path) -> None
 
 
 def test_flag_fails_open_with_no_interim_coach_snapshot(tmp_path: Path) -> None:
-    """No data/raw/interim_coaches/*/parsed_table.csv snapshot at all -- must
-    warn, not raise, and return an empty-but-well-formed frame."""
 
     repo_root = _write_repo_root(tmp_path, with_interim_data=False)
     with pytest.warns(RuntimeWarning, match="interim_hc_first_game_tilt"):
@@ -269,9 +245,6 @@ def test_overlay_does_not_flip_when_neither_side_is_under_an_interim(tmp_path: P
 
 
 def test_overlay_leaves_a_simultaneous_double_firing_untouched(tmp_path: Path) -> None:
-    """Both sides are in their own interim stint's first game -- no measured
-    direction for that case, so it is flagged (both_first_game_games) but
-    never flipped."""
 
     repo_root = _write_repo_root(tmp_path)
     result = apply_interim_hc_first_game_tilt_overlay(_predictions(), repo_root)
@@ -282,14 +255,6 @@ def test_overlay_leaves_a_simultaneous_double_firing_untouched(tmp_path: Path) -
 
 
 def test_overlay_leaves_a_flagged_game_untouched_when_marked_postseason(tmp_path: Path) -> None:
-    """The REG-only eligibility gate operates on the PREDICTIONS frame's own
-    ``game_type`` column (never the schedule's) -- exercised directly here
-    since ``_build_interim_coach_trait_data`` itself only ever considers
-    REG-season schedule rows when joining, so a POST-season game_id can
-    never appear in the flags in the first place; this proves the gate
-    still holds defensively, mirroring every sibling overlay's REG-only
-    test, even though the real-world path to it is structurally blocked one
-    layer up."""
 
     repo_root = _write_repo_root(tmp_path)
     predictions = pd.DataFrame(
@@ -333,9 +298,6 @@ def test_overlay_disabled_is_a_no_op(tmp_path: Path) -> None:
 
 
 def test_overlay_fails_open_with_no_interim_coach_snapshot(tmp_path: Path) -> None:
-    """The whole point of fail-open: no interim-coach source data at all
-    must fall back to the model's own picks for every game, never crash or
-    block the caller."""
 
     repo_root = _write_repo_root(tmp_path, with_interim_data=False)
     predictions = _predictions()
@@ -351,8 +313,6 @@ def test_overlay_fails_open_with_no_interim_coach_snapshot(tmp_path: Path) -> No
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows(tmp_path: Path) -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical -- the pick-level design's whole point."""
 
     repo_root = _write_repo_root(tmp_path)
     predictions = _predictions()
@@ -489,9 +449,6 @@ def test_record_interim_hc_first_game_challenger_decisions_records_the_tilt_arm(
 def test_record_interim_hc_first_game_challenger_decisions_fails_open_with_no_interim_data(
     tmp_path: Path,
 ) -> None:
-    """Recording must still succeed (both games recorded, un-flipped) when
-    the interim-coach source snapshot is unavailable -- the fail-open
-    contract must hold at the recording layer too, not just apply_*."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -560,7 +517,6 @@ def test_record_interim_hc_first_game_challenger_refuses_an_inactive_registratio
 
 
 def test_interim_hc_first_game_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

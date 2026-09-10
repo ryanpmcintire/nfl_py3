@@ -1,146 +1,3 @@
-"""Pace-mismatch dog tilt overlay: a parameter-free pick-level nudge.
-
-Research chain (measured 2026-08-19, read from ``registry/weak_signals.json``
-before this module was built):
-
-**Registry cell** ``team_style_pace_mismatch_dog_cover`` (PBP-08 team
-"personality" battery, one of 5 predeclared cells --
-``scripts/team_style_screen.py``, predeclaration ``docs/team_style.md``, mined
-lineage, uncorrected multiplicity across cells). Top-quartile absolute
-home-minus-away PRIOR-SEASON, league-centered ``seconds_per_play_pace`` vs the
-field, scored on ``dog_cover`` (the underdog's cover indicator; pick'ems
-excluded, not folded into the complement). REG 2009-2025, n=4,313 games
-(n_flag=1,018, n_missing_required_data=248): full-slate effect **+0.2292
-accuracy points**, week-blocked 95% **[-0.5587, +1.0401]**,
-``probability_positive`` **0.71125**, n_blocks=294. Season-blocked secondary
-95% **[-0.1830, +0.6153]**, ``probability_positive`` **0.8711**. Reliability
-(the highest in this PBP-08 battery): ``seconds_per_play_pace``'s YoY Pearson
-r **+0.489**, 95% CI [+0.405, +0.567], n=512 team-season pairs
-(``scripts/team_style_screen.py:374-376``).
-
-**Direction check, done and PASSED, not skipped.** Measured directly from
-``artifacts/team_style_screen/20260819T210011Z/results.json``: in flagged
-(top-quartile pace-mismatch) games, the underdog covers ``subset_mean``
-0.518664 (51.8664%) against a ``complement_mean`` 0.508953 (50.8953%) field --
-the underdog covers MORE in the flagged population than outside it, exactly
-the predeclared POSITIVE-on-``dog_cover`` direction
-(``scripts/team_style_screen.py:479-483``: "Predicted POSITIVE on dog_cover
-(variance mechanism: fewer possessions favour the dog; docs/team_style.md)").
-A sibling cell in this same batch failed exactly this check (measured
-opposite the predeclared direction) and was NOT built into an overlay; this
-one passed and is.
-
-**The interval crosses zero on the primary (week-blocked) read.** Per
-AGENTS.md/CLAUDE.md, at this evaluator's ~2-point resolution that is the
-EXPECTED shape for a real small signal, never grounds to decline building a
-no-window-cost prospective challenger. Neither admissible closing ground
-applies (no resolved wrong sign -- the point estimate and the season-blocked
-secondary both sit on the predicted side; no positive-control bound), so this
-remains ``unresolved_below_power`` in the registry.
-
-**Battery-multiplicity caveat, stated up front, not buried.** This is one of
-5 predeclared cells in the PBP-08 team-style battery (2 identity cells, 3
-matchup cells: this one, a short-game-vs-pressure-defense cell, and a
-deep-ball-outdoor-wind cell) -- see ``scripts/team_style_screen.py``'s module
-docstring and ``docs/team_style.md``. No multiple-comparison correction is
-applied across the battery; the ``probability_positive`` figures above are
-this ONE cell's own bootstrap read, not adjusted for having looked at 5.
-
-**Trait and quartile cut, transcribed verbatim from the screen, not
-re-derived:**
-
-* ``seconds_per_play_pace`` -- drive time-of-possession divided by drive play
-  count, pooled directly from plays/drives per (season, team) (NOT an average
-  of per-game rates, to avoid Simpson's-paradox bias from uneven per-game play
-  counts) -- ``scripts/team_style_features.py:358-366``
-  (``build_team_season_style``'s pace block) via
-  ``scripts/team_style_features.py:162-184`` (``_drive_pace_table``, which
-  reuses ``nfl_ats.pbp.build_drive_table`` verbatim, the same drive
-  aggregation the production PBP-05 pipeline uses).
-* "Centered" -- each dimension minus ITS OWN SEASON's unweighted across-team
-  mean, so leaguewide pace drift over 2009-2025 does not read as a team
-  identity -- ``scripts/team_style_features.py:413-422``
-  (``add_league_centered``).
-* Prior-season join -- ``scripts/team_style_screen.py:151-161`` (``_prior``):
-  shift the (season, team) table forward one season, so joining on
-  ``season`` pulls the PRIOR season's centered value onto this season's game.
-  Ported here as :func:`pace_mismatch_flag_by_game`'s own prior-season merge,
-  same shift-by-one-season construction.
-* ``pace_diff_abs`` -- ``abs(home_prior_pace_centered - away_prior_pace_centered)``
-  -- ``scripts/team_style_screen.py:203-216`` (``build_game_table``'s pace
-  block).
-* Quartile cut -- top quartile (0.75) of ``pace_diff_abs`` over the REG
-  population, ``QUARTILE = 0.75`` (``scripts/team_style_screen.py:76``),
-  ``pace_threshold = float(game["pace_diff_abs"].quantile(QUARTILE))``
-  (``scripts/team_style_screen.py:366``, computed over ALL REG games
-  including pick'ems, before the pick'em population restriction for the
-  ``dog_cover`` value column). The MEASURED numeric threshold, frozen here
-  exactly as measured and never recomputed (same discipline as
-  ``spread_gap_zone_fade_overlay.SPREAD_GAP_LOWER_BOUND``/``UPPER_BOUND``):
-  **2.1685022294778378**, read from
-  ``artifacts/team_style_screen/20260819T210011Z/results.json:pace_diff_abs_threshold``.
-* Flag comparator -- ``>=`` the threshold (``scripts/team_style_screen.py:468``:
-  ``flag_b2 = game_b2["pace_diff_abs"] >= pace_threshold``).
-
-**Spread convention, verified independently, not just trusted from a
-comment.** ``scripts/team_style_screen.py:121-123``: "spread_line > 0 -> HOME
-favored; spread_line < 0 -> AWAY favored", cross-checked there against
-``nfl_ats.features.add_ats_outcomes``'s ``ats_margin = result - spread_line``
-convention. Independently re-verified this session against real schedule data
-(``data/raw/20260824T115346Z/schedules.parquet``): the 2013 week-6 DEN
-(home)-vs-JAX (away) game carries ``spread_line=+27.0`` with Denver a known
-lopsided home favorite; the 2019 week-2 MIA (home)-vs-NE (away) game carries
-``spread_line=-18.0`` with New England a known lopsided ROAD favorite. Both
-confirm ``spread_line > 0`` means HOME favored and ``spread_line < 0`` means
-AWAY favored.
-
-**The rule is parameter-free and frozen (assigned before any code was
-written).** REG season only. Compute the absolute difference between the two
-teams' PRIOR-SEASON centered ``seconds_per_play_pace``. If that difference is
-in the top quartile (the screen's own frozen cut, above) AND the active
-model's own forced pick is the FAVOURITE (by ``spread_line``), flip the pick
-to the UNDERDOG. If the model already has the underdog, leave it. Pick'em
-games (``spread_line == 0``, no defined underdog -- exactly how
-``scripts/team_style_screen.py:124-128`` defines ``dog_cover`` as NaN for
-``spread_line == 0``) are never touched. Missing prior-season pace data (a
-new franchise's first tracked season, or an incomplete cache) means
-``pace_mismatch_flag = False``, never an error.
-
-This module is the no-window-cost path, built on the exact pattern of
-``surface_switch_tilt_overlay.py`` (schedule/trait-derived flag, ported
-verbatim from its source screen), ``spread_gap_zone_fade_overlay.py`` (flips
-keyed off the card's own ``spread_line`` rather than team identity), and
-``pbp08_protection_mismatch_tilt_overlay.py``/``pbp08_matchup_flags.py`` (the
-PBP-derived team-trait flag pattern, including its FAIL-OPEN posture for a
-data-dependent, gitignored, bespoke cache): a **pick-level, post-prediction
-transform** of the active model's own forced pick, dual-tracked against that
-same active model in the prospective challenger ledger
-(``nfl_ats.prospective_scoring``), at no rotation-registry window cost and
-with zero training-time feature changes. **Nothing in this module is wired
-into ``publishing.py`` or the production pick path** -- no owner decision to
-play this on the real card has been made; it is dual-tracked only.
-
-**Fail-open, like the PBP-derived sibling.** The team-season pace cache
-(``data/pbp/team_style/team_season_style.parquet``) is a bespoke,
-gitignored, network-fetched research artifact -- NOT part of the standard
-captured raw-schedule snapshot pipeline -- so a missing cache, a missing
-schedule snapshot, or a broken build folds into ZERO flags and a documented
-no-op, never an exception that could break a weekly record call.
-
-Four things live here, mirroring the sibling overlays' structure:
-
-1. :func:`pace_mismatch_flag_by_game` -- the pregame-safe, DATA-DERIVED
-   signal, ported from the screen's own construction (see citations above).
-2. :func:`pace_mismatch_flags_fail_open` -- loads the schedule snapshot and
-   the team-season pace cache and calls (1), never raising.
-3. :func:`apply_pace_mismatch_dog_tilt_overlay` -- the pick-level transform,
-   plus :func:`overlay_disclosure_note` for the plain-English provenance
-   sentence.
-4. :func:`record_pace_mismatch_dog_tilt_challenger_decisions` -- writes the
-   overlay's own arm to the prospective challenger ledger so 2026 scores it
-   cleanly, independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -180,16 +37,11 @@ TEAM_SEASON_STYLE_REQUIRED_COLUMNS = frozenset({"season", "team", "seconds_per_p
 
 
 def team_season_style_path(data_root: Path) -> Path:
-    """Matches ``scripts/team_style_features.py:71,75``'s
-    ``CACHE_DIR`` / ``TEAM_SEASON_PATH`` construction verbatim (relative to
-    ``data_root`` rather than the repo root, so tests can point this at a
-    ``tmp_path`` fixture)."""
 
     return data_root / "pbp" / "team_style" / "team_season_style.parquet"
 
 
 def _canonical_team(team: pd.Series) -> pd.Series:
-    """Ported verbatim from ``surface_switch_tilt_overlay._canonical_team``."""
 
     return team.astype(str).map(lambda code: TEAM_ABBREVIATION_ALIASES.get(code, code))
 
@@ -197,32 +49,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 def pace_mismatch_flag_by_game(
     schedules: pd.DataFrame, team_season_style: pd.DataFrame
 ) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``pace_diff_abs`` and
-    ``pace_mismatch_flag``.
-
-    ``pace_mismatch_flag`` fires when the absolute difference between the
-    home and away teams' PRIOR-SEASON, league-centered
-    ``seconds_per_play_pace`` is at or above :data:`PACE_DIFF_ABS_THRESHOLD`
-    -- the exact construction and frozen numeric cut transcribed in this
-    module's docstring from ``scripts/team_style_screen.py``.
-
-    **Why the prior-season shift is pregame-safe**: ``seconds_per_play_pace``
-    for season ``S`` is joined onto games in season ``S + 1`` only (the same
-    ``_prior``-style shift ``scripts/team_style_screen.py:151-161`` uses for
-    every trait in this battery) -- a team's PRIOR season's pace is public,
-    fully-realized information before that team's next Week 1 kicks off, and
-    this function never reads ``result``, ``spread_line``, or any outcome
-    column at all. Two leakage regression tests
-    (``tests/test_pace_mismatch_dog_tilt_overlay.py``) prove this empirically:
-    mutating a game's own outcome columns has no bearing, and mutating the
-    CURRENT season's (not prior season's) pace row for a team never changes
-    that game's already-computed flag.
-
-    Team codes are canonicalized (``TEAM_ABBREVIATION_ALIASES``) on both the
-    schedule and the style table before joining -- a merge-safety measure
-    (franchise continuity: OAK->LV, SD->LAC, STL->LA) that does not change
-    which prior-season pace value a team actually carries.
-    """
 
     required_schedule = {"game_id", "season", "game_type", "home_team", "away_team"}
     missing_schedule = sorted(required_schedule.difference(schedules.columns))
@@ -265,15 +91,6 @@ def pace_mismatch_flag_by_game(
 
 
 def pace_mismatch_flags_fail_open(data_root: Path) -> pd.DataFrame:
-    """The flag table for the full local history, or an EMPTY frame on any
-    missing input.
-
-    Never raises. Same posture as
-    ``pbp08_protection_mismatch_tilt_overlay.flags_for_week_fail_open``: an
-    absent team-season pace cache or schedule snapshot is a no-op week, not a
-    broken publish. The reason is surfaced as a warning so a silent zero is
-    at least noisy.
-    """
 
     try:
         style_path = team_season_style_path(data_root)
@@ -299,8 +116,6 @@ def pace_mismatch_flags_fail_open(data_root: Path) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     original_pick_team: str
@@ -311,13 +126,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring the sibling overlays' ``TiltResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     enabled: bool
@@ -333,34 +141,6 @@ def apply_pace_mismatch_dog_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick from the FAVOURITE to the UNDERDOG wherever the
-    flag fires.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (the registry cell
-      was scored on regular-season games only);
-    * ``spread_line`` is present, numeric, and non-zero (pick'em games have
-      no defined underdog and are never touched -- matching
-      ``scripts/team_style_screen.py:124-128``'s ``dog_cover`` construction,
-      which is NaN for ``spread_line == 0``);
-    * :func:`pace_mismatch_flag_by_game` fires for the game (top-quartile
-      absolute prior-season centered pace difference); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home) is
-      currently on the FAVOURITE side (``spread_line > 0`` and home picked,
-      or ``spread_line < 0`` and away picked).
-
-    A pick already on the underdog is left untouched -- there is nothing to
-    flip TO. Flipping sets ``home_cover_probability`` to its complement,
-    exactly as the sibling overlays do, so every existing reader of the
-    column needs no overlay-aware branch.
-
-    The flag is ALWAYS this call's own ``flags`` argument, merged under the
-    private :data:`OVERLAY_FLAG_COLUMN` name: a predictions frame that
-    already carries a same-named column collides silently instead of
-    crashing, and if no flag column survives the merge at all the result is
-    the documented no-op -- zero flips, never a KeyError.
-    """
 
     required = {
         "game_id",
@@ -438,12 +218,6 @@ def apply_pace_mismatch_dog_tilt_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -474,20 +248,6 @@ def record_pace_mismatch_dog_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``surface_switch_tilt_overlay.record_surface_switch_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

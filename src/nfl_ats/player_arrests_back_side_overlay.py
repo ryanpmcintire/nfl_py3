@@ -1,16 +1,3 @@
-"""Production broad player-arrest back-side overlay and paired incumbent.
-
-The played card applies this policy after the year-1-coach fade.  Its former
-coach-only production arm is recorded under a separate prospective challenger
-identity so every live week remains a paired decision comparison.
-
-Recording is fail-closed on source freshness. The newest snapshot directory
-must contain a complete manifest and its hash-verified safe index, and the
-manifest's fetch timestamp must be between zero and 36 hours old at the
-recording instant. A failed current ingest therefore cannot masquerade as a
-week with no affected teams.
-"""
-
 from __future__ import annotations
 
 import json
@@ -103,7 +90,6 @@ def load_latest_complete_arrest_snapshot(
     *,
     now: datetime | None = None,
 ) -> ArrestSnapshot:
-    """Load the newest snapshot only when its complete safe view is fresh."""
 
     recorded_at = _record_instant(now)
     root = data_root / "raw" / "player_arrests"
@@ -270,7 +256,6 @@ def apply_player_arrests_back_side_overlay(
     predictions: pd.DataFrame,
     incidents: pd.DataFrame,
 ) -> ArrestOverlayResult:
-    """Apply the frozen sole-affected-side back-side policy to a weekly card."""
 
     required = {"game_id", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -292,7 +277,6 @@ def apply_frozen_player_arrests_back_side_overlay(
     snapshot_fetched_at_utc: pd.Timestamp | None = None,
     safe_index_sha256: str | None = None,
 ) -> ArrestOverlayResult:
-    """Apply already-frozen Tuesday flags without reading a newer snapshot."""
 
     required = {"game_id", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -343,7 +327,6 @@ def apply_frozen_player_arrests_back_side_overlay(
 
 
 def arrest_overlay_disclosure_note(result: ArrestOverlayResult) -> str:
-    """Describe the active production policy and this week's realized changes."""
 
     if not result.enabled:
         return ""
@@ -378,7 +361,6 @@ def record_player_arrests_no_overlay_incumbent_decisions(
     *,
     now: datetime | None = None,
 ) -> dict[str, Any]:
-    """Append the former coach-only production arm as the paired incumbent."""
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

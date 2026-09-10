@@ -1,11 +1,3 @@
-"""Static invariants for the shared design system (theme + viz), no host app.
-
-Ported from the retired ``tests/test_dashboard.py`` when the internal
-dashboard runtime was deleted: these pin the token contract and the
-color-never-alone component guarantees that the public GitHub Pages site
-inherits through :mod:`nfl_ats.public_board`.
-"""
-
 from __future__ import annotations
 
 import json
@@ -60,18 +52,6 @@ def test_cover_curve_ships_a_table_view_twin() -> None:
 
 
 def test_cover_curve_shifts_the_whole_series_onto_the_anchor() -> None:
-    """Measured on a real build (2026-08-26): a card's own
-    ``home_cover_probability`` disagrees with its OWN ``line_sweep`` row at the
-    same offset by ~2 points. That is deliberate, not a defect -- ``margin.py``
-    documents it: the published number is a smoothed continuous estimate, the
-    sweep rows are raw empirical counts. Two estimators, one quantity.
-
-    Pinning ONLY the quoted-line vertex reconciled the marker but tore that one
-    point away from its neighbours, drawing a visible pinch mid-curve
-    (owner-reported, 2026-08-26). The fix is a RIGID TRANSLATION: shift every
-    point by the gap measured at the quoted line, so the marker lands on the
-    curve by construction while shape, spacing and monotonicity survive intact.
-    """
 
     points = [(-1.0, 0.55), (0.0, 0.499), (1.0, 0.62)]
     html = _cover_curve(points, anchor_probability=0.62)
@@ -86,8 +66,6 @@ def test_cover_curve_shifts_the_whole_series_onto_the_anchor() -> None:
 
 
 def test_cover_curve_leaves_an_already_agreeing_series_alone() -> None:
-    """No gap, no shift: the translation must be a no-op when the two
-    estimators already agree, so an agreeing card is never perturbed."""
 
     points = [(-1.0, 0.55), (0.0, 0.50), (1.0, 0.62)]
     html = _cover_curve(points, anchor_probability=0.50)
@@ -96,9 +74,6 @@ def test_cover_curve_leaves_an_already_agreeing_series_alone() -> None:
 
 
 def test_cover_curve_preserves_gaps_between_neighbouring_points() -> None:
-    """The shape is the product. A rigid translation changes every value by one
-    constant, so every gap between adjacent points is unchanged -- the property
-    the discarded single-point pin destroyed."""
 
     points = [(-1.0, 0.40), (0.0, 0.50), (1.0, 0.56), (2.0, 0.58)]
     html = _cover_curve(points, anchor_probability=0.58)
@@ -129,8 +104,6 @@ def test_cover_curve_without_points_falls_back_to_an_empty_state() -> None:
 
 
 def test_cover_curve_diverging_fill_uses_the_validated_theme_tokens() -> None:
-    """The area fill is split exactly at 50%, using theme.py's validated
-    diverging pair -- never a raw hex, never the good/critical status hues."""
 
     html = _cover_curve()
     assert "background:var(--div-pos);opacity:0.18;" in html
@@ -145,19 +118,12 @@ def test_cover_curve_diverging_fill_uses_the_validated_theme_tokens() -> None:
 def test_cover_curve_handle_tone_follows_the_anchor_probability(
     anchor_probability: float, tone: str
 ) -> None:
-    """Colour is a SECOND channel on the handle -- position (on the curve)
-    and the live percentage text already say the same thing, so the handle's
-    fill class only reinforces it, never carries it alone."""
 
     html = _cover_curve(anchor_probability=anchor_probability)
     assert f'class="cover-handle {tone}"' in html
 
 
 def test_cover_curve_market_marker_is_labeled_not_by_color_alone() -> None:
-    """The market's own line is unmistakable via SHAPE (a square, distinct
-    from the handle's circle) plus a text legend naming it -- not the
-    ``--series-market`` colour alone, which a screen reader or forced-colors
-    viewer never sees."""
 
     html = _cover_curve()
     assert 'class="cover-market" title="The market' in html
@@ -166,8 +132,6 @@ def test_cover_curve_market_marker_is_labeled_not_by_color_alone() -> None:
 
 
 def test_cover_curve_slider_spans_the_plotted_domain() -> None:
-    """The handle moves ALONG the chart via a native range input sized to the
-    plotted domain -- not a separate control with its own unrelated range."""
 
     html = _cover_curve()
     assert 'class="cover-slider"' in html
@@ -293,14 +257,12 @@ TOKEN_REFERENCE = re.compile(r"var\(--([a-z0-9-]+)\)")
 
 
 def _block_after(stylesheet: str, selector: str) -> str:
-    """The declarations of the first rule opened by ``selector``."""
 
     assert selector in stylesheet, f"missing selector: {selector}"
     return stylesheet.split(selector, 1)[1].split("}", 1)[0]
 
 
 def _viz_sample_html() -> str:
-    """One rendering of every component, for parsing the tokens they reference."""
 
     return "".join(
         (

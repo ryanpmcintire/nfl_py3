@@ -1,94 +1,3 @@
-"""Rain-on-grass underdog challenger: a parameter-free pick-level nudge
-sharing the SAME live kickoff-nearest GFS-MOS fetch
-``forecast_weather_kn_warm_team_cold_late_tilt_overlay`` already makes
-(LEAD-37).
-
-**Binding closing-grounds taxonomy (AGENTS.md), restated verbatim per this
-project's rule for any module that scores or adjudicates an experiment:** an
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. At this evaluator's ~2-point resolution, "contains zero" is
-the EXPECTED outcome for a real small signal. Only two grounds ever close a
-line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval
-on the wrong side of zero) or zero split-half reliability; (2) bounded by a
-positive control proven able to detect an effect that size. Everything else
-is ``unresolved_below_power``: record it with ``nfl-ats weak-signals
-record``, report ``probability_positive``, never the binary "contains zero."
-
-Research chain (read from ``docs/weather_venue_leads.md`` before this module
-was built): ``rain_on_grass_dog_on_production``
-(``src/nfl_ats/weather_venue_flag_features.py``,
-``derive_rain_on_grass_dog_features``) stacked ONE new column onto the exact
-production ``weak_stack`` ridge chain and screened it against the
-Tuesday-opener consensus over the rotation-assigned [2020, 2021] window:
-**+0.6579 accuracy points, week-blocked 95% [-1.7058, +2.8446],
-probability_positive 0.69175**, 456 paired games / 35 weeks (21/456 forced
-picks flip). The interval crosses zero; per AGENTS.md that is the EXPECTED
-shape for a real small signal at this evaluator's resolution, never grounds
-to decline building a no-window-cost prospective challenger. Neither
-admissible closing ground applies, so this stays ``unresolved_below_power``
-in the registry. Wiring it here is an EV-positive dual-tracked play
-(``probability_positive`` 0.69175 above the 0.5 that makes playing it the
-favoured side of the bet), not a claim of a proven edge (AGENTS.md "a
-promotion bar is not a decision bar").
-
-**Proxy disclosure, restated from the on-production screen.** No observed
-historical precipitation column exists locally
-(``docs/weather_venue_leads.md``'s source-gap section); the on-production
-screen used ``forecast_precip_prob_pct`` from the validated
-``pool_decision_2009_2025`` archive as a disclosed, genuinely pregame-safe
-proxy. That archive's own manifest declares ``end_season: 2025`` and is not
-on any scheduled live-capture path, so it cannot serve a current 2026 game.
-This LIVE challenger therefore uses a DIFFERENT, already-live source for the
-identical field: the SAME live kickoff-nearest (``pool_decision`` cutoff)
-GFS-MOS fetch ``forecast_weather_kn_warm_team_cold_late_tilt_overlay`` and
-``forecast_weather_kn_precip_high_total_tilt_overlay`` already make every
-week (docstring precedent: "the SAME live kickoff-nearest GFS-MOS fetch...
-not duplicated") -- this module is a THIRD consumer of that one fetch, not a
-new network dependency. ``forecast_precip_prob_pct`` is the identical field
-name in both the frozen archive and the live fetch's own output frame
-(``docs/forecast_weather_screen.md``), so the flag definition below is a
-faithful live restatement of the on-production construct, not a
-reinterpretation of it.
-
-**Encoding.** Signed eligibility, matching the on-production construct: a
-game qualifies when its surface normalizes to grass
-(``nfl_ats.surface_switch_tilt_overlay.GRASS_SURFACES``, read from the newest
-local schedule snapshot -- a structural, not weather, fact) AND the live
-kickoff-nearest ``forecast_precip_prob_pct`` is ``>= 60``. Predeclared
-direction: take the UNDERDOG (the card's own decision ``spread_line``,
-positive = home favored). The pick flips to whichever side is the
-qualifying game's underdog, whenever the model's own pick is not already on
-that side -- **symmetric flip direction** (unlike the ASYMMETRIC
-always-toward-HOME
-``forecast_weather_kn_precip_high_total_tilt_overlay``), because "take the
-underdog" names a side relative to the market, not a fixed team; mirrors
-``special_teams_return_tilt_overlay``'s "flip onto the qualifying side if
-not already there" shape, generalized from a boolean flagged-team to a
-signed target side. A game with no defined underdog (an exact
-``spread_line == 0`` pick'em) never qualifies -- there is no side to back.
-
-**FAIL-OPEN, unconditionally**, inherited from the shared fetch layer: any
-failure fetching or parsing live forecast data is caught inside
-:func:`nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay.fetch_kickoff_nearest_forecasts_fail_open`,
-logged as a ``RuntimeWarning``, and folded into "every game gets no
-forecast, the flag is False everywhere" rather than raised. This overlay
-must never be able to block a publish.
-
-This module is the no-window-cost path, built on the exact pattern of
-``forecast_weather_kn_precip_high_total_tilt_overlay.py``: a **pick-level,
-post-prediction transform** of the active model's own forced pick,
-dual-tracked against that same active model in the prospective challenger
-ledger (``nfl_ats.prospective_scoring``), at no rotation-registry window cost
-and with zero training-time feature changes. **Nothing in this module is
-wired into ``publishing.py``'s prediction path or the production pick path**
--- it is dual-tracked only; no owner decision to play this on the real card
-has been made.
-
-:func:`record_rain_on_grass_dog_challenger_decisions` writes the overlay's
-own arm to the prospective challenger ledger so 2026 scores it cleanly,
-independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -133,14 +42,6 @@ PRECIP_PROB_THRESHOLD_PCT = 60.0
 
 
 def rain_on_grass_flag_by_game(schedules: pd.DataFrame, forecasts: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``rain_on_grass_flag``,
-    ``forecast_precip_prob_pct``.
-
-    ``forecasts`` needs ``game_id``, ``forecast_precip_prob_pct`` (one row
-    per game; a missing/NaN value folds into "not flagged"). Mirrors the
-    on-production construct's own eligibility test: grass surface AND live
-    kickoff-nearest forecast precip prob >= 60%.
-    """
 
     required_forecast = {"game_id", "forecast_precip_prob_pct"}
     missing = sorted(required_forecast.difference(forecasts.columns))
@@ -176,8 +77,6 @@ def rain_on_grass_flag_by_game(schedules: pd.DataFrame, forecasts: pd.DataFrame)
 
 @dataclass(frozen=True)
 class RainOnGrassFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     underdog_team: str
@@ -187,13 +86,6 @@ class RainOnGrassFlip:
 
 @dataclass(frozen=True)
 class RainOnGrassResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring the sibling overlays' result classes.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[RainOnGrassFlip, ...]
     enabled: bool
@@ -210,20 +102,6 @@ def apply_rain_on_grass_dog_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> RainOnGrassResult:
-    """Flip the forced pick onto the underdog wherever the flag fires.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present;
-    * :func:`rain_on_grass_flag_by_game` fires for the game (grass surface,
-      live kickoff-nearest forecast precip prob >= 60%);
-    * ``spread_line`` defines a real underdog (nonzero, read directly from
-      ``predictions``); and
-    * the model's own pick is NOT already on the underdog side.
-
-    Missing forecast data (including a fetch failure upstream) folds into
-    "not flagged", never an error.
-    """
 
     required = {
         "game_id",
@@ -287,12 +165,6 @@ def apply_rain_on_grass_dog_tilt_overlay(
 
 
 def overlay_disclosure_note(result: RainOnGrassResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -327,27 +199,6 @@ def record_rain_on_grass_dog_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors
-    ``forecast_weather_kn_precip_high_total_tilt_overlay.record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``forecasts``, when supplied, is used AS-IS instead of fetching again --
-    the SAME "one fetch, several consumers" path
-    ``forecast_weather_kn_precip_high_total_tilt_overlay`` already uses.
-    ``None`` (the default) fetches for itself, using the exact same
-    fail-open live path.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

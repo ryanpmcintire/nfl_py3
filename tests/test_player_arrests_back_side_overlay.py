@@ -1,5 +1,3 @@
-"""Contracts for the prospective-only player-arrest back-side overlay."""
-
 from __future__ import annotations
 
 import hashlib

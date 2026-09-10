@@ -1,5 +1,3 @@
-"""Static security contract for the authenticated dashboard runtime."""
-
 from __future__ import annotations
 
 from pathlib import Path

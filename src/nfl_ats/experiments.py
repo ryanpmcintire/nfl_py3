@@ -1,5 +1,3 @@
-"""Comparable feature-set experiments over the walk-forward evaluator."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -138,29 +136,6 @@ def paired_feature_comparisons(
     on_degenerate: OnDegenerate = "warn",
     min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
-    """Block-bootstrap paired per-game improvements over a feature baseline.
-
-    Positive estimates mean the candidate is better. Pairing keeps the exact
-    same game outcomes in both arms and resamples whole weeks or seasons.
-
-    Every row carries ``blocks`` and ``degenerate_blocks``. Below the measured
-    floor (``estimation_variance.MIN_BLOCKS_FOR_INTERVAL``) the percentile
-    bootstrap's coverage is nowhere near nominal -- ~0.80 at 4 blocks, and at 1
-    block the interval collapses to a point -- so ``lower``/``upper`` on a
-    flagged row are not a 95% interval and must not be read as one. The
-    ``estimate`` and ``probability_positive`` on a flagged row are still the
-    quantities to report.
-
-    **This interval is conditional on one model fit.** Measured on real CFB
-    (``docs/estimation_variance.md`` Part II), the honest refit-aware width is
-    only 1.003x this one -- 95% upper bound 1.099x -- so for comparisons
-    between differently-fitted models the conditional interval is very nearly
-    right, and the previously published "17-58% too narrow" was a
-    double-counted interaction term, not a real understatement. Families that
-    vary the residual READER rather than the fit are a different mechanism and
-    a much larger correction; see that document before assuming this one
-    applies.
-    """
 
     if samples < 10:
         raise ValueError("samples must be at least 10")
@@ -262,11 +237,6 @@ def run_outcome_profile_experiment(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     ridge_alpha: float = 10.0,
 ) -> OutcomeProfileExperimentResult:
-    """Evaluate only the residual-margin method across matched player profiles.
-
-    This intentionally avoids fitting fair-margin, straight-up, and direct-ATS
-    estimators that cannot answer the player-family ablation question.
-    """
 
     if not profiles:
         raise ValueError("At least one player profile is required")
@@ -316,7 +286,6 @@ def _nested_outcome_candidate_selection(
     candidate_column: str,
     selected_column: str,
 ) -> OutcomeProfileSelectionResult:
-    """Select one candidate on prior seasons, then score the next season once."""
 
     if validation_seasons < 1:
         raise ValueError("validation_seasons must be positive")
@@ -438,7 +407,6 @@ def nested_outcome_profile_selection(
     first_test_season: int,
     validation_seasons: int = 2,
 ) -> OutcomeProfileSelectionResult:
-    """Select a player profile on prior seasons, then score the next season once."""
 
     return _nested_outcome_candidate_selection(
         predictions,
@@ -455,7 +423,6 @@ def nested_outcome_configuration_selection(
     first_test_season: int,
     validation_seasons: int = 2,
 ) -> OutcomeProfileSelectionResult:
-    """Select a full player-model configuration using only earlier seasons."""
 
     return _nested_outcome_candidate_selection(
         predictions,
@@ -471,7 +438,6 @@ def player_model_candidate_id(
     ridge_alpha: float,
     calibration_method: str,
 ) -> str:
-    """Return the stable identifier used throughout the frozen selection artifact."""
 
     return f"{profile}|ridge_alpha={ridge_alpha:g}|calibration={calibration_method}"
 
@@ -482,13 +448,6 @@ def run_frozen_player_model_selection(
     min_edge: float = 0.02,
     min_train_games: int = FROZEN_PLAYER_MIN_TRAIN_GAMES,
 ) -> PlayerModelSelectionExperimentResult:
-    """Run the predeclared player profile, Ridge, and calibration budget.
-
-    Twelve raw walk-forward streams are fit once. Their probabilities are then
-    transformed by four calibration policies, each of which learns only from
-    earlier out-of-sample predictions. The final configuration policy is
-    selected on the two seasons preceding every held-out outer test season.
-    """
 
     raw_batches: list[pd.DataFrame] = []
     for profile in FROZEN_PLAYER_MODEL_PROFILES:

@@ -1,5 +1,3 @@
-"""Leak-safe, one-row-per-game feature engineering."""
-
 from __future__ import annotations
 
 import math
@@ -44,7 +42,6 @@ def _sum_available(frame: pd.DataFrame, columns: Iterable[str]) -> pd.Series:
 
 
 def add_ats_outcomes(schedules: pd.DataFrame) -> pd.DataFrame:
-    """Add a single, documented ATS target using nflverse sign conventions."""
 
     result = schedules.copy()
     result["result"] = _numeric(result, "result")
@@ -63,24 +60,6 @@ DECISION_LINE_VERSION = "v2"
 
 @dataclass(frozen=True)
 class DecisionLineOverride:
-    """One ``(season, week)`` whose decision line comes from a captured board.
-
-    ``lines`` maps ``game_id`` to the home-signed spread the pool grades on
-    (positive = HOME favored, the repository-wide nflverse convention -- see
-    ``docs/bye_overvaluation_screen.md``), so the values drop straight into
-    ``spread_line`` with no sign work.  ``source``, ``capture_id`` and
-    ``captured_at_utc`` are provenance only: they never change a number, they
-    are what lets a reader of ``lineage.json`` tell which board the pick was
-    formed against.
-
-    ``captured_at`` is the one field here that IS load-bearing: the instant the
-    board was read, timezone-aware.  :func:`apply_decision_lines` compares it
-    against each covered game's kickoff to tell a legitimately pre-kickoff line
-    from a retroactive one, and refuses when it is absent or naive -- a missing
-    timestamp is never permission.  ``captured_at_utc`` remains the string the
-    manifest carries; this is the value the rules read.
-    """
-
     season: int
     week: int
     lines: Mapping[str, float]
@@ -92,8 +71,6 @@ class DecisionLineOverride:
 
 @dataclass(frozen=True)
 class AppliedDecisionLines:
-    """What one :class:`DecisionLineOverride` actually did to a schedules frame."""
-
     override: DecisionLineOverride
     game_ids: tuple[str, ...]
     changed_game_ids: tuple[str, ...]
@@ -107,7 +84,6 @@ def _override_label(override: DecisionLineOverride) -> str:
 
 
 def _first_few(identifiers: Sequence[str], limit: int = 5) -> str:
-    """``a, b, c`` -- the first few ids, with ``, ...`` when the list is longer."""
 
     return ", ".join(identifiers[:limit]) + (", ..." if len(identifiers) > limit else "")
 
@@ -116,58 +92,6 @@ def apply_decision_lines(
     schedules: pd.DataFrame,
     overrides: Sequence[DecisionLineOverride],
 ) -> tuple[pd.DataFrame, tuple[AppliedDecisionLines, ...]]:
-    """Replace ``spread_line`` with the pool's graded line, week by week.
-
-    Returns the (copied) schedules frame and one :class:`AppliedDecisionLines`
-    per override that touched at least one scheduled game, so the caller can
-    record in its manifest exactly which weeks moved and by how many games.
-
-    **Only weeks with a capture are touched.**  A ``(season, week)`` with no
-    override keeps nflverse's number byte-for-byte, which is what keeps the
-    1,537-game opener archive and every registry cell -- all graded on the
-    archived lines -- from moving underneath a rebuild.  An empty ``overrides``
-    returns the frame unchanged (a copy), so a caller with no captures on disk
-    is bit-identical to this function not existing.
-
-    Three refusals, all :class:`~nfl_ats.data.DataContractError`:
-
-    1. **A partial capture.**  A capture that covers only some of a week's
-       games would leave that week half on the pool's line and half on
-       nflverse's -- the worst of both, and invisible on the card.  Missing
-       games, or lines for games that are not on the week's schedule, raise.
-    2. **A RETROACTIVE line.**  ``ats_margin`` is derived (``result -
-       spread_line``), so a line written under a game *after* it started
-       silently rewrites the graded outcome that the archive and the
-       weak-signal registry were scored on.  What makes that dangerous is the
-       retroactivity, not the fact that the game finished: the pool's board is
-       frozen Tuesday at noon Eastern, before any game of that week kicks off,
-       and it is the number the pool actually settled the owner's picks on.
-       Archiving a played week on nflverse's close instead would grade the
-       project's own record against a line it never played.  So the rule keys
-       on the capture instant, per covered game with a recorded ``result``:
-
-       - capture **before** that game's kickoff -> legitimate, applied;
-       - capture **at or after** kickoff -> refused.
-
-       And it **fails closed** where the comparison cannot be made at all: an
-       override with no (or a naive) ``captured_at``, or a played covered game
-       whose kickoff is not on the schedules frame, raises rather than falling
-       through to "apply anyway".  A missing timestamp is not permission.
-       Games with no recorded ``result`` are untouched by this rule -- nothing
-       has been graded yet, so nothing can be rewritten.
-    3. **A non-finite line.**  A NaN or infinite override is a broken capture,
-       not a number.
-
-    Kickoffs come from the schedules frame's own ``gameday`` + ``gametime``
-    (Eastern), through :func:`_kickoff_utc` -- the same pair the ``kickoff``
-    feature column is built from, so the guard and the table agree by
-    construction.
-
-    A week the schedules frame does not contain at all is skipped and not
-    reported: the schedule is the authority on which games exist, so a capture
-    for a week nobody has scheduled yet (or a research build cut to earlier
-    seasons) has nothing to apply.
-    """
 
     result = schedules.copy()
     if not overrides:
@@ -300,7 +224,6 @@ def _canonical_schedules(
 
 
 def _kickoff_utc(games: pd.DataFrame) -> pd.Series:
-    """Combine nflverse game date and Eastern kickoff time into UTC."""
 
     if "gametime" not in games:
         return pd.Series(pd.NaT, index=games.index, dtype="datetime64[ns, UTC]")
@@ -317,7 +240,6 @@ def build_team_game_metrics(
     team_stats: pd.DataFrame,
     game_types: tuple[str, ...] = ("REG",),
 ) -> pd.DataFrame:
-    """Create offense and opponent-derived defense metrics for completed games."""
 
     validate_team_stats(team_stats)
     stats = team_stats.copy()
@@ -425,12 +347,6 @@ def build_team_states(
     min_periods: int = 3,
     offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
-    """Calculate state after each completed game.
-
-    These rows deliberately include the game on the row. `attach_team_states`
-    uses a strict earlier-than lookup, making that state available only to the
-    team's next game.
-    """
 
     if span < 2:
         raise ValueError("span must be at least 2")
@@ -493,7 +409,6 @@ def attach_team_states(
     states: pd.DataFrame,
     offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
-    """Attach the most recent state strictly before each game's date."""
 
     result = games.copy()
     state_columns = [f"state_{metric}" for metric in STATE_METRICS]
@@ -541,7 +456,6 @@ def add_elo_features(
     home_field_elo: float = 55.0,
     offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
-    """Add pregame Elo ratings using only previously completed games."""
 
     result = games.copy().sort_values(["gameday", "game_id"]).reset_index(drop=True)
     result["home_elo"] = np.nan
@@ -586,13 +500,6 @@ def add_elo_features(
 
 
 def _team_game_log(schedules: pd.DataFrame) -> pd.DataFrame:
-    """Return one row per team per scheduled game, ATS margin team-signed.
-
-    Postseason rows are always included: the bias family reads them for the
-    week-1 holdover flag, and a playoff row's own recency should see earlier
-    playoff rounds. Nothing here depends on the caller's game-type pass, so
-    regular-season values are identical in both passes of the two-pass build.
-    """
 
     history = add_ats_outcomes(
         _canonical_schedules(schedules, game_types=("REG", *POSTSEASON_GAME_TYPES))
@@ -620,22 +527,6 @@ def _team_game_log(schedules: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_bias_features(games: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """Add the opener-bias family (MOD-07), computed from schedules alone.
-
-    Three leak-safe signals from the published opener-bias literature:
-
-    - ``bias_playoff_holdover_*``: 1.0 when the game is a week-1 game and the
-      team played at least one postseason game in the previous season.
-    - ``bias_prior_week_ats_*``: the team's single previous completed game's
-      ATS margin this season, NaN when there is none. This is a strict
-      earlier-than lookup (the same pattern as ``attach_team_states``) on the
-      single most recent game — deliberately distinct from the exponentially
-      weighted ``state_ats_residual``.
-    - ``bias_week2_anchor_*``: the prior-week ATS margin masked to week 2,
-      0.0 elsewhere (the anchoring result is specific to week 2).
-
-    Each is emitted per side plus a home-minus-away difference.
-    """
 
     result = games.copy()
     log = _team_game_log(schedules)
@@ -716,40 +607,6 @@ def _normalize_switch_surface(raw: object) -> str | None:
 
 
 def add_surface_switch_features(games: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """Add ``surface_switch_flag`` (MOD-08 candidate family), computed from schedules alone.
-
-    Fires (``1.0``) when the AWAY team's modal home surface THIS SEASON
-    normalizes to grass AND this game's own surface normalizes to turf --
-    exactly ``surface_switch_tilt_overlay.surface_switch_flag_by_game``'s
-    construct, restricted to REG-season games (every registry read this
-    feature is named after -- the weather-battery cell, the venue-controlled
-    follow-up, the CFB replication -- was scored on regular-season games
-    only, matching the overlay's own REG-only gate). POST rows and rows with
-    no resolvable surface data get ``0.0``, never ``NaN``, so ridge sees a
-    clean binary feature with no imputation needed.
-
-    **Why a full-season aggregate is pregame-safe** (restated from
-    ``surface_switch_tilt_overlay.surface_switch_flag_by_game``, not
-    re-argued): a team's home-stadium surface is a STRUCTURAL, stadium-level
-    fact fixed for essentially the entire season and public before Week 1 --
-    unlike the coach/QB-continuity overlays' strictly-prior-only aggregates,
-    it is not an outcome, and this function never reads ``result`` or
-    ``spread_line`` at all. ``tests/test_features.py`` carries the same two
-    leakage regression tests
-    ``tests/test_surface_switch_tilt_overlay.py`` already established for
-    the identical construct: the flag is unaffected by any outcome-bearing
-    column, and a future season's surface data never changes an earlier
-    season's already-computed flags.
-
-    Reads the caller's full ``schedules`` frame (not this pass's filtered
-    ``games``), mirroring ``add_bias_features``, so the modal-surface
-    derivation is pass-independent. Missing the ``surface`` column entirely
-    (older synthetic fixtures, matching the ``temp``/``wind`` graceful-
-    default precedent below) yields ``0.0`` for every row rather than
-    raising -- this is a schedule-shaped enrichment, not a hard data
-    contract, matching how the neighbouring schedule-derived context columns
-    handle absent inputs.
-    """
 
     result = games.copy()
     if "surface" not in schedules.columns:
@@ -892,25 +749,6 @@ def build_game_features(
     graph_min_games: int = 16,
     include_postseason: bool = False,
 ) -> pd.DataFrame:
-    """Build the canonical model table, one row per game.
-
-    Regular-season rows always come from a REG-only pass, so their features
-    are bit-identical whether or not postseason rows are requested: playoff
-    results never feed the Elo, graph, or team-state histories that REG rows
-    see, preserving the frozen evaluation's meaning. When
-    ``include_postseason`` is set, a second pass replays the same build with
-    WC/DIV/CON/SB games included in every rolling state, and only that pass's
-    postseason rows are kept — so a Super Bowl row sees both teams'
-    conference-round form, while using strictly earlier games only.
-
-    ``schedules`` is expected to already carry the DECISION line in
-    ``spread_line``. For any week the pool's own board was captured, that is
-    the board's number rather than nflverse's close: ``build-features`` calls
-    :func:`apply_decision_lines` on the snapshot's schedules before reaching
-    this function, so both passes, the bias family's own game log and the
-    team-state builder all read one line per game. See
-    :func:`apply_decision_lines` and ``docs/splash_lines.md``.
-    """
 
     def build_pass(game_types: tuple[str, ...]) -> pd.DataFrame:
         return _build_features_pass(

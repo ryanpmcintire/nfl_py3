@@ -1,30 +1,3 @@
-"""Special-teams return top-quartile tilt overlay (docs/special_teams_battery.md,
-docs/special_teams_return_tilt_overlay.md).
-
-Four things are load-bearing here, mirroring
-``tests/test_interim_hc_first_game_tilt_overlay.py`` and
-``tests/test_coach_fade_overlay.py``'s structure and AGENTS.md's "add a
-leakage regression test for every new feature family" spirit:
-
-1. :func:`return_composite_z_with_threshold` reproduces
-   ``scripts/special_teams_screen.py``'s own composite/quartile-cut
-   construction (pooled-sd z-score of the two return legs, mean of the two,
-   ``QUARTILE_TOP=0.75`` quantile over the WHOLE panel).
-2. :func:`special_teams_return_flag_by_game` is derived from data (a
-   strictly PRIOR-season lookup, never the current season's or current
-   game's own data, never an outcome column), and
-   :func:`special_teams_return_flag_by_game_fail_open` FAILS OPEN (returns
-   zero flags, never raises) when the team-season source snapshot is
-   unavailable.
-3. :func:`apply_special_teams_return_tilt_overlay` flips ONTO the flagged
-   team only when exactly one side is flagged and the model's own pick is
-   not already on that side, leaves a both-flagged game untouched, has no
-   effect outside the flagged population, and is parameter-free.
-4. :func:`record_special_teams_return_tilt_challenger_decisions` writes the
-   overlay's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -136,12 +109,6 @@ def test_quartile_top_matches_the_screens_own_constant() -> None:
 
 
 def test_return_composite_threshold_reproduces_an_independent_quantile_call() -> None:
-    """The composite is a pooled-sd z-score average of the two return legs;
-    since both legs are set EQUAL here, the composite is a pure positive
-    linear rescaling of the raw centered value, so an INDEPENDENT quantile
-    computed directly on the raw centered values (divided by the same pooled
-    sd, computed independently here too) must equal the function's own
-    threshold -- this is not just re-calling the function under test."""
 
     team_season = _team_season()
     composite, threshold = return_composite_z_with_threshold(team_season)
@@ -156,10 +123,6 @@ def test_return_composite_threshold_reproduces_an_independent_quantile_call() ->
 
 
 def test_return_composite_reproduces_the_live_registry_threshold() -> None:
-    """Reproduction gate against the actual measured artifact
-    (artifacts/special_teams_battery/20260819T232856Z/results.json), when
-    the real snapshot is present locally (skipped in a fresh clone, where
-    data/raw/** is gitignored)."""
 
     snapshot = Path("data/raw/special_teams/20260819T232400Z/team_season.parquet")
     if not snapshot.is_file():
@@ -199,9 +162,6 @@ def test_flag_is_false_for_neither_team_top_quartile() -> None:
 
 
 def test_flag_is_false_with_no_prior_season_row_and_never_errors() -> None:
-    """NEWTEAM has no 2025 row at all -- missing prior data folds into
-    'not flagged', mirroring the screen's own n_missing_required_data
-    handling, never an exception."""
 
     flags = special_teams_return_flag_by_game(_schedule(), _team_season()).set_index("game_id")
     assert bool(flags.loc["2026_05_NEWTEAM_OPPW", "home_return_top_quartile"]) is False
@@ -222,14 +182,6 @@ def test_flag_excludes_non_reg_games() -> None:
 
 
 def test_flag_never_uses_the_current_seasons_own_row_as_its_own_prior() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    TEAME's actual PRIOR (2025) value is deeply negative -- not flagged.
-    Adding an EXTREME season-2026 row for TEAME to the very same panel must
-    NOT flip the 2026 game's flag: a team-season row is only ever consulted
-    as the PRIOR for the season immediately AFTER the one it describes, never
-    for its own season.
-    """
 
     baseline = special_teams_return_flag_by_game(_schedule(), _team_season()).set_index("game_id")
     assert bool(baseline.loc["2026_06_TEAME_OPPW", "home_return_top_quartile"]) is False
@@ -242,9 +194,6 @@ def test_flag_never_uses_the_current_seasons_own_row_as_its_own_prior() -> None:
 
 
 def test_flag_is_leak_safe_across_the_season_boundary() -> None:
-    """A future season's team-season row (even an extreme one for a team
-    that already appears in-panel) must never change an earlier season's
-    already-computed FLAG classification."""
 
     baseline = special_teams_return_flag_by_game(_schedule(), _team_season())
 
@@ -260,9 +209,6 @@ def test_flag_is_leak_safe_across_the_season_boundary() -> None:
 
 
 def test_flag_never_reads_outcome_columns() -> None:
-    """``special_teams_return_flag_by_game`` does not even require/read
-    ``result``/``spread_line`` -- adding them (with arbitrary values) and
-    mutating them must never change the already-computed flags."""
 
     schedule = _schedule()
     schedule["result"] = 0.0
@@ -397,8 +343,6 @@ def test_overlay_fails_open_with_no_special_teams_snapshot(tmp_path: Path) -> No
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows(tmp_path: Path) -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical."""
 
     data_root = _write_data_root(tmp_path)
     predictions = _predictions()
@@ -529,9 +473,6 @@ def test_record_challenger_decisions_records_the_tilt_arm(tmp_path: Path) -> Non
 def test_record_challenger_decisions_fails_open_with_no_special_teams_snapshot(
     tmp_path: Path,
 ) -> None:
-    """Recording must still succeed (both games recorded, un-flipped) when
-    the special-teams source snapshot is unavailable -- the fail-open
-    contract must hold at the recording layer too, not just apply_*."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -600,7 +541,6 @@ def test_record_challenger_decisions_refuses_an_inactive_registration(tmp_path: 
 
 
 def test_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

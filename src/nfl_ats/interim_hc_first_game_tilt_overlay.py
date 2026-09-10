@@ -1,106 +1,3 @@
-"""Interim head-coach first-game tilt overlay: a parameter-free pick-level nudge.
-
-Research chain (all measured 2026-08-20, read from ``registry/weak_signals.json``
-and ``docs/interim_coach_screen.md`` before this module was built): a team's
-FIRST REG-season game under a newly appointed interim head coach covers at
-58.97% (n=39, 2009-2025), vs. 49.96% for the rest of the league --
-``interim_hc_first_game`` in the registry, effect +0.0407 full-slate accuracy
-points, week-blocked 95% ``[-0.0338, +0.1105]``, ``probability_positive``
-0.8452 (season-blocked 0.8344). The interval crosses zero -- per AGENTS.md,
-at this evaluator's ~2-point resolution that is the EXPECTED shape for a real
-small signal, never grounds to decline building a no-window-cost prospective
-challenger. Neither admissible closing ground applies (no resolved wrong
-sign, no positive-control bound), so this stays ``unresolved_below_power`` in
-the registry; wiring it here is an EV-positive dual-tracked play (P+ 0.845 >
-0.5), not a claim of a proven edge (AGENTS.md "a promotion bar is not a
-decision bar").
-
-**The decomposition this cell rests on** (``docs/interim_coach_screen.md``
-section 6): the whole-stint cell ``interim_hc_active`` (any game under an
-interim, any point in the stint) is flat-to-slightly-negative (49.20% vs.
-50.02%, P+ 0.386) -- the folklore does NOT hold broadly. Splitting by game
-number within the stint tells a sharper story: game 1 only (n=39) covers
-58.97%; games 2+ (n=211) cover only 47.39% -- BELOW the league baseline. So
-this overlay fires ONLY on the first game of a stint, never on later games of
-the same interim tenure, which is exactly where the (below-power) evidence
-points and exactly where it stops pointing.
-
-This module is the no-window-cost path, built on the exact pattern of
-``surface_switch_tilt_overlay.py``, ``division_revenge_tilt_overlay.py``, and
-``coach_fade_overlay.py`` (the original precedent): a **pick-level,
-post-prediction transform** of the active model's own forced pick,
-dual-tracked against that same active model in the prospective challenger
-ledger (``nfl_ats.prospective_scoring``), at no rotation-registry window cost
-and with zero training-time feature changes. **Nothing in this module is
-wired into ``publishing.py`` or the production pick path** -- like the tilt
-siblings, and unlike ``hc_year_one_fade_overlay``, no owner decision to play
-this on the real card has been made; it is dual-tracked only.
-
-**The rule is parameter-free**: whenever a team is in the FIRST REG-season
-game of a newly appointed interim head-coach stint AND the model's own pick
-does NOT already side with that team, flip the pick toward it (direction
-implied by the measured 58.97% cover rate). No week restriction (unlike
-``hc_year_one_fade_overlay``'s weeks 1-8 window) -- a mid-season firing can
-land any week 1-18, and the registered cell carries no week-dependent claim.
-
-**FAIL-OPEN, per this module's build task**: interim-coach status is derived
-from :func:`nfl_ats.experiment_runner._build_interim_coach_trait_data`, a
-local snapshot join (Pro Football Rumors' interim-coach list joined onto
-``schedules.parquet``'s own per-game coach field -- see
-``docs/interim_coach_screen.md`` sections 1-2 for the fetch/join provenance
-and 6-of-6 spot-check cross-checks). If that join cannot run for any reason
-(no interim-coaches snapshot fetched yet, a malformed source file, a missing
-schedules snapshot), :func:`interim_first_game_flag_by_game_fail_open` catches
-the exception, emits a ``RuntimeWarning``, and returns zero flags -- the
-challenger simply falls back to the model's own pick for every game that
-week, exactly mirroring ``forecast_cold_visitor_tilt_overlay``'s fail-open
-live-fetch wrapper. This overlay must never be able to block a publish.
-
-**Overlap with ``hc_year_one_fade_overlay`` -- explicitly checked, per
-``docs/interim_coach_screen.md`` section 3.** ``hc_year_one_fade_overlay``
-flags a team whose CURRENT-season coach differs from LAST season's (a
-whole-season condition, active only weeks 1-8); THIS overlay flags a team
-whose coach changed WITHIN the current season (an in-season firing/interim
-appointment), any week. A genuinely early first-interim-game (weeks 1-8) will
-almost always ALSO satisfy the year-one construct (the interim coach, by
-definition, was not that team's coach last season either), so the two
-overlays' eligible games can and do overlap -- measured: of the 39
-``first_game`` team-games, 11 fall in weeks 1-8, of which 8 would also be
-eligible for the other overlay's clean case. **Both overlays are dual-tracked
-challengers only; neither is composed with the other.** Each transforms the
-SAME un-overlaid base card independently and records its own arm to the
-prospective challenger ledger -- this overlay never sees, and is never seen
-by, ``hc_year_one_fade_overlay``'s flips, exactly the same independence
-``spread_gap_zone_fade_overlay`` already documents for its own relationship
-to that overlay. No precedence rule is needed for two dual-tracked arms that
-never combine; a precedence rule would only become necessary if BOTH were
-ever played on the real card simultaneously, which is not the case today (only
-``hc_year_one_fade_overlay`` is).
-
-Two things live here, mirroring the sibling overlays exactly:
-
-1. :func:`interim_first_game_flag_by_game_fail_open` -- the pregame-safe,
-   DATA-DERIVED, FAIL-OPEN signal, reusing
-   ``nfl_ats.experiment_runner._build_interim_coach_trait_data`` verbatim
-   (the exact join ``docs/interim_coach_screen.md`` validated), never
-   hand-typed.
-2. :func:`apply_interim_hc_first_game_tilt_overlay` -- the pick-level
-   transform, plus :func:`overlay_disclosure_note` for the plain-English
-   provenance sentence.
-
-:func:`record_interim_hc_first_game_tilt_challenger_decisions` writes the
-overlay's own arm to the prospective challenger ledger so 2026 scores it
-cleanly, independent of whether it is ever played on the real card.
-
-**Live availability**: interim-coach appointments are public news, announced
-well before the team's next kickoff -- exactly as pregame-safe as the
-already-wired ``hc_year_one_fade_overlay``. Week 1 of the 2026 season
-trivially has zero interim coaches (every team starts the season with its
-already-known Week 1 coach), so the first live evaluation opportunity for
-this challenger arrives mid-season, whenever the first 2026 in-season firing
-happens -- not a defect, just the honest shape of a rare event.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -139,22 +36,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def interim_first_game_flag_by_game_fail_open(repo_root: Path) -> pd.DataFrame:
-    """One row per (``game_id``, ``team``): that team's FIRST REG-season game
-    of a specific interim-head-coach stint, per
-    ``nfl_ats.experiment_runner._build_interim_coach_trait_data``
-    (``first_game_under_interim`` restricted to ``True``).
-
-    **FAIL-OPEN**: any exception from the underlying join -- no
-    ``data/raw/interim_coaches/*/parsed_table.csv`` snapshot fetched yet, a
-    malformed source file, a missing schedules snapshot, an unresolved
-    join-count mismatch -- is caught, logged as a ``RuntimeWarning``, and
-    folded into "zero games flagged" (an empty-but-well-formed frame) so
-    downstream flag computation naturally applies no tilt for the week rather
-    than raising. Mirrors
-    ``forecast_cold_visitor_tilt_overlay.fetch_tuesday_noon_forecast_temps_fail_open``'s
-    fail-open contract exactly: this overlay must never be able to block a
-    publish.
-    """
 
     from nfl_ats.experiment_runner import _build_interim_coach_trait_data
 
@@ -180,8 +61,6 @@ def interim_first_game_flag_by_game_fail_open(repo_root: Path) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     interim_team: str
@@ -190,17 +69,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``surface_switch_tilt_overlay.TiltResult``.
-    ``both_first_game_games`` lists games where BOTH teams happen to be in
-    their own interim stint's first game simultaneously -- no measured
-    direction for that case (mirrors ``coach_fade_overlay``'s
-    ``both_year_one_games``), so those games are flagged, never flipped.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     both_first_game_games: tuple[str, ...]
@@ -217,23 +85,6 @@ def apply_interim_hc_first_game_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick toward the interim-coached team's first game.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (the registered
-      measurement -- 250 REG-season, non-push team-games -- is a
-      regular-season read);
-    * exactly ONE side of the game is in the first game of an interim
-      stint (a rare simultaneous case where BOTH sides qualify is left
-      untouched -- see ``both_first_game_games``); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home)
-      is NOT already on the interim-coached side.
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    the sibling overlays do, so every existing reader of the column needs no
-    overlay-aware branch.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -313,12 +164,6 @@ def apply_interim_hc_first_game_tilt_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -348,31 +193,6 @@ def record_interim_hc_first_game_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``surface_switch_tilt_overlay.record_surface_switch_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``repo_root`` for the interim-coach join is derived as ``data_root.parent``
-    -- every caller in this codebase already passes ``data_root`` as
-    ``<repo_root>/data`` (see ``_data_root()`` in ``cli.py`` and every sibling
-    ``record_*_challenger_decisions`` function's identical ``data_root``
-    convention), so this holds without introducing a new CLI parameter.
-
-    The interim-coach join is FAIL-OPEN (see
-    :func:`interim_first_game_flag_by_game_fail_open`): a missing source
-    snapshot or join failure never raises out of this function, it simply
-    yields zero flags for the week.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

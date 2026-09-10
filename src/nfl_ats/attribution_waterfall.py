@@ -1,25 +1,3 @@
-"""Per-pick explanation waterfall for the transparency dashboard.
-
-Reconstructs one deployed forced pick as an ordered chain of point deltas:
-
-    market-implied expectation -> per-family feature contributions ->
-    policy overlays -> probability-rule offset -> final pick
-
-Family grouping reuses :mod:`nfl_ats.market_decomposition`'s math and
-``nfl_ats.constants.FEATURE_FAMILIES`` names verbatim; family contributions
-themselves come from a fitted ridge pipeline injected by the caller (see
-:func:`family_contributions_from_ridge`). The probability-rule step is the
-out-of-time residual sample's near-median order statistic -- exactly
-``-implied_pick_threshold`` (:mod:`nfl_ats.calibration_distortion`), the
-value that makes ``sign(predicted_residual + offset)`` reproduce the
-deployed ``home_cover_probability >= 0.5`` forced pick.
-
-Every built waterfall carries a hard reconciliation assert: the steps' deltas
-sum to the final cumulative within :data:`WATERFALL_RECONCILIATION_ATOL`, and
-the reconstructed raw pick must match the deployed prediction row the caller
-injected. Inputs carrying outcome columns are rejected outright.
-"""
-
 from __future__ import annotations
 
 import json
@@ -73,7 +51,7 @@ ALLOWED_FAMILIES = frozenset(FEATURE_FAMILIES) | _SENTINEL_FAMILIES
 
 
 class WaterfallInputError(ValueError):
-    """Raised when injected inputs cannot reproduce a deployed pick."""
+    pass
 
 
 @dataclass(frozen=True)
@@ -110,7 +88,6 @@ class GameWaterfall:
 
 
 def reject_outcome_columns(columns: Iterable[str], *, context: str = "waterfall input") -> None:
-    """Reject any input frame whose columns include realized-outcome fields."""
 
     present = sorted(set(columns).intersection(OUTCOME_COLUMNS))
     if present:
@@ -128,13 +105,6 @@ def _finite(value: float, name: str) -> float:
 
 
 def probability_rule_offset(residuals: npt.ArrayLike) -> float:
-    """The residual-sample location shift the deployed probability rule applies.
-
-    Equals minus ``implied_pick_threshold``, so
-    ``sign(predicted_residual + offset)`` reproduces the production
-    ``home_cover_probability >= 0.5`` forced pick for every game scored by
-    that residual sample.
-    """
 
     values = np.asarray(residuals, dtype=np.float64)
     if values.size == 0 or not np.isfinite(values).all():
@@ -146,12 +116,6 @@ def key_number_distance(
     projected_home_margin: float,
     key_numbers: Sequence[int] = DEFAULT_KEY_NUMBERS,
 ) -> float:
-    """Distance from the projected |final margin| to the nearest key number.
-
-    Follows :mod:`nfl_ats.key_numbers` semantics: margins round to the
-    nearest integer (a real final margin is always integral), magnitudes are
-    compared against the same default key numbers, and distance is in points.
-    """
 
     if not key_numbers:
         raise ValueError("At least one key number is required")
@@ -168,16 +132,6 @@ def family_contributions_from_ridge(
     families: Mapping[str, Sequence[str]] | None = None,
     atol: float = ATTRIBUTION_ATOL,
 ) -> list[dict[str, float]]:
-    """Per-game coefficient-x-standardized-value totals aggregated to families.
-
-    Reuses :mod:`nfl_ats.market_decomposition`'s exact attribution math on a
-    caller-injected fitted margin-style pipeline (imputer -> scaler ->
-    regressor), refitting nothing and reading no targets, so no outcome can
-    leak through this path. Slate-shared design columns route to
-    ``weekly_context`` exactly as :func:`attribute_predictions` does. Each
-    returned mapping sums to the pipeline's own prediction within ``atol``
-    (asserted at build time).
-    """
 
     reject_outcome_columns(feature_frame.columns, context="feature frame")
     columns = tuple(feature_columns)
@@ -225,22 +179,6 @@ def build_game_waterfall(
     families: Mapping[str, Sequence[str]] | None = None,
     tolerance: float = WATERFALL_RECONCILIATION_ATOL,
 ) -> GameWaterfall:
-    """Build one game's ordered explanation steps ending at the deployed pick.
-
-    ``market_line`` is the home-oriented ``spread_line``; the market step's
-    delta is its negation (the market-implied expected home margin). Family
-    deltas are home-oriented points from :func:`family_contributions_from_ridge`
-    (registry names, plus the ``intercept``/``weekly_context`` sentinels).
-    The probability-rule delta is :func:`probability_rule_offset`'s value.
-    Overlays are ``{"overlay": name, "fires": bool}`` mappings; the composed
-    production policy complements a flagged game's pick exactly once, so the
-    alphabetically-first firing overlay carries the full reflection delta
-    and any further firing members record zero (deterministic ordering).
-    ``raw_home_cover_probability`` is the deployed pre-overlay probability;
-    it anchors both reconciliation asserts. ``families`` overrides the
-    default registry for synthetic fixtures (same convention as
-    :func:`nfl_ats.market_decomposition.build_family_map`).
-    """
 
     line = _finite(market_line, "market_line")
     residual = _finite(predicted_residual, "predicted_residual")
@@ -379,7 +317,6 @@ def write_waterfall_artifact(
     *,
     now: datetime | None = None,
 ) -> Path:
-    """Write waterfalls.json plus a sha256 manifest.json under a timestamped dir."""
 
     instant = now or datetime.now(UTC)
     directory = out_dir / ARTIFACT_DIRNAME / run_id(instant)
@@ -403,7 +340,6 @@ def write_waterfall_artifact(
 
 
 def read_waterfall_artifact(directory: Path) -> list[dict[str, Any]]:
-    """Load a written artifact, verifying every manifest sha256 first."""
 
     manifest_path = directory / "manifest.json"
     if not manifest_path.is_file():

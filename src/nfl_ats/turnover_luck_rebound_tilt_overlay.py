@@ -1,155 +1,3 @@
-"""Turnover-luck rebound tilt overlay: a parameter-free pick-level nudge.
-
-Research chain (all measured 2026-08-21, read from ``registry/weak_signals.json``
-before this module was built): the close-game/turnover LUCK regression
-battery (``scripts/close_game_luck_screen.py``, predeclared in
-``docs/close_game_luck_screen.md``) cell ``turnover_under_rebound`` --
-registered as ``close_game_luck_turnover_under_rebound`` -- flags a team
-whose PRIOR-season centered turnover differential per game sits in the
-bottom quartile of the pooled panel and predicts a POSITIVE cover rate on
-``team_covered`` (a rebound: a team that turned the ball over unluckily last
-season tends not to repeat it). Week-blocked, REG 2009-2025, n=8,634
-team-games (n_flag 2,036, 496 missing required data): full-slate effect
-**+0.4092 accuracy points**, 95% ``[-0.1526, +0.9692]``, ``probability_positive``
-**0.92**; season-blocked secondary 95% ``[+0.0297, +0.7949]``,
-``probability_positive`` 0.981.
-
-**Direction check passed, stated up front.** The flagged group covers
-51.33% against a 49.59% field (``subset_mean``/``complement_mean`` in
-``artifacts/close_game_luck_screen/20260821T182234Z/results.json``, cell
-``turnover_under_rebound``) -- exactly the REBOUND direction predeclared
-before this cell was scored, not a post-hoc sign flip.
-
-**The week-blocked interval crosses zero. Per AGENTS.md, at this evaluator's
-~2-point resolution that is the EXPECTED shape for a real-but-small signal,
-never grounds to decline building a no-window-cost prospective challenger.**
-Neither admissible closing ground applies (no resolved wrong sign -- the
-whole interval is not on the wrong side of zero -- and no positive-control
-bound was run), so this stays ``unresolved_below_power`` in the registry;
-wiring it here is an EV-positive dual-tracked play (``probability_positive``
-0.92 > 0.5), not a claim of a proven edge (AGENTS.md "a promotion bar is not
-a decision bar").
-
-**Reliability is low but positive -- 0.1322, not a closing ground.** The
-underlying trait's year-over-year Pearson correlation (season-centered
-``turnover_diff_per_game``, ``scripts/close_game_luck_screen.py::reliability_table``)
-is +0.1322, 95% CI ``[+0.0490, +0.2134]``, n=512 team-season pairs -- entirely
-positive, so the trait persists weakly across seasons rather than being pure
-noise. A reliability this low ATTENUATES the measurable effect (regression to
-the mean erases most, but not all, of a team's turnover-luck signature
-year over year); it does not refute the mechanism. No admissible closing
-ground turns on reliability alone unless it is exactly zero, and it is not.
-
-**Deliberately ASYMMETRIC -- the dead mirror is stated plainly, not buried.**
-The sibling cell ``turnover_over_fade`` (top-quartile centered turnover
-differential, predicted NEGATIVE/fade) reads full-slate **+0.0076 accuracy
-points**, ``probability_positive`` **0.5008** -- a dead coin flip on the SAME
-underlying trait. So this is ONE asymmetric signal (the bottom tail of the
-turnover-luck distribution moves; the top tail does not), never two votes for
-"turnover luck matters symmetrically." The registry's own note on
-``close_game_luck_turnover_under_rebound`` already says this: "Correlated
-decomposition of turnover trait, not independent confirmation." This overlay
-therefore only ever flips a pick ONTO the bottom-quartile team, never away
-from a top-quartile one -- there is no measured direction for that case.
-
-This module is the no-window-cost path, built on the exact pattern of
-``surface_switch_tilt_overlay.py`` (the canonical simplest tilt overlay),
-``interim_hc_first_game_tilt_overlay.py`` (flip TOWARD the flagged side,
-this overlay's own direction), and ``coach_fade_overlay.py`` /
-``backup_qb_fade_overlay.py`` (both-flagged clean-case handling): a
-**pick-level, post-prediction transform** of the active model's own forced
-pick, dual-tracked against that same active model in the prospective
-challenger ledger (``nfl_ats.prospective_scoring``), at no rotation-registry
-window cost and with zero training-time feature changes. **Nothing in this
-module is wired into ``publishing.py`` or the production pick path** -- like
-the tilt siblings, no owner decision to play this on the real card has been
-made; it is dual-tracked only.
-
-**The rule is parameter-free and frozen given the screen's own numbers**: no
-threshold is tuned here -- the bottom-quartile cutoff below is the screen's
-own pooled-panel 25th percentile of ``turnover_diff_per_game_centered``
-(``scripts/close_game_luck_screen.py:369``,
-``thresholds["turnover_q25"] = -0.4026832217261905``, read from
-``artifacts/close_game_luck_screen/20260821T182234Z/results.json``), carried
-here as a frozen constant rather than a knob (AGENTS.md: "every overlay
-parameter must be the registry cell's own measured value, cited"). REG season
-only (every measured read above was scored on regular-season games). When
-**exactly one** team in a game is flagged AND the active model's own forced
-pick is NOT that team, flip the pick ONTO that team. Both-flagged games are
-never touched -- no measured direction for a mutual case, mirroring
-``coach_fade_overlay`` / ``backup_qb_fade_overlay``'s clean-case handling --
-and a team already picked needs no flip.
-
-**Pregame-safe by construction.** :func:`turnover_under_flag_by_game` looks
-up each team's centered turnover differential from the season STRICTLY
-BEFORE the game being flagged (the same ``season + 1`` shift
-``scripts/close_game_luck_screen.py::_prior`` (line 193) uses), and a
-missing prior season (an expansion team, or any gap year) yields ``False``,
-never an error. The trait itself is a full PRIOR-season aggregate -- fully
-known before that season's Week 1 -- so it can and should fire in Week 1 of
-2026. Two leakage regression tests in
-``tests/test_turnover_luck_rebound_tilt_overlay.py`` prove this empirically:
-the flag is unchanged when the CURRENT season's or the target game's own
-turnover events are mutated (the function never even loads current-season
-play-by-play into the panel it looks the flag up from).
-
-Trait and quartile construction, transcribed VERBATIM (not re-derived) from
-``scripts/close_game_luck_screen.py``:
-
-* **Giveaways** (``build_giveaways_table``, lines 91-106): for REG-season
-  plays only, ``giveaways = interception + fumble_lost`` per play, summed by
-  ``(game_id, posteam)``.
-* **Takeaways** (``build_team_games``, lines 108-136): for each team-game,
-  ``takeaways`` is the OPPONENT's ``giveaways`` in that same game (a merge on
-  ``(game_id, opponent)``), so takeaways and giveaways are two views of the
-  same turnover events, never independently measured.
-* **Season aggregate** (``build_panel``, lines 139-163):
-  ``turnover_diff_per_game = (takeaways - giveaways) / games`` per
-  ``(season, team)``, summed/averaged across the WHOLE season.
-* **"Centered"** (``build_panel``, lines 160-162): ``league_mean`` is that
-  SAME season's mean ``turnover_diff_per_game`` across all teams
-  (``panel.groupby("season")[trait].transform("mean")``), and
-  ``turnover_diff_per_game_centered = turnover_diff_per_game - league_mean``
-  -- centering is PER-SEASON (removes that season's overall turnover
-  environment), never pooled across seasons.
-* **Bottom-quartile cut** (``main``, line 369):
-  ``thresholds["turnover_q25"] = panel["turnover_diff_per_game_centered"].quantile(0.25)``
-  -- a single POOLED quantile taken across the ENTIRE 2009-2025 panel (every
-  team-season at once, not a per-season or expanding cut), frozen here at
-  its measured value ``-0.4026832217261905``.
-* **Prior-season lookup** (``_prior``, lines 193-198): the CENTERED value is
-  shifted ``season + 1`` and joined back onto the following season's games by
-  ``team`` -- so a game in season *S* only ever sees the centered value
-  computed from season *S-1*.
-
-This module ports that construction on the ``turnover_diff_per_game`` leg
-only (the ``one_score_luck`` and ``takeaway_share`` legs the screen also
-carries belong to different, separately-registered cells and are out of
-scope here).
-
-Two things live here, mirroring the sibling overlays exactly:
-
-1. :func:`turnover_under_flag_by_game` -- the pregame-safe, DATA-DERIVED
-   signal, ported (trimmed to the turnover leg only) from
-   ``scripts/close_game_luck_screen.py``, read from the newest local schedule
-   and play-by-play snapshots, never hand-typed.
-2. :func:`apply_turnover_luck_rebound_tilt_overlay` -- the pick-level
-   transform, plus :func:`overlay_disclosure_note` for the plain-English
-   provenance sentence.
-
-:func:`record_turnover_luck_rebound_tilt_challenger_decisions` writes the
-overlay's own arm to the prospective challenger ledger so 2026 scores it
-cleanly, independent of whether it is ever played on the real card.
-
-**Composition correlation warning.** This overlay's flag and the dead-mirror
-``turnover_over_fade`` cell derive from the SAME underlying
-``turnover_diff_per_game_centered`` trait (opposite tails of the same
-distribution). If either cell is ever pooled with another weak-signal input,
-it must never be treated as independent confirmation of a second, different
-turnover-related finding -- see the registry's own note on
-``close_game_luck_turnover_under_rebound``.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -193,15 +41,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def _giveaways_table(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Ported verbatim from ``scripts/close_game_luck_screen.py::build_giveaways_table``
-    (lines 91-106): REG-season plays only, ``giveaways = interception +
-    fumble_lost`` per play, summed by ``(game_id, posteam)``.
-
-    Unlike the screen, this never caps the season range -- the screen's
-    ``SEASON_START``/``SEASON_END`` (2009-2025) bound its own HISTORICAL
-    measurement population only; this function must also score the CURRENT
-    (2026+) season, which the screen never saw.
-    """
 
     missing = sorted(_REQUIRED_PBP_COLUMNS.difference(pbp.columns))
     if missing:
@@ -224,11 +63,6 @@ def _giveaways_table(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def _team_game_turnovers(schedules: pd.DataFrame, giveaways: pd.DataFrame) -> pd.DataFrame:
-    """Ported (trimmed to the turnover leg) from
-    ``scripts/close_game_luck_screen.py::build_team_games`` (lines 108-136):
-    one row per team-game with ``giveaways`` and ``takeaways`` (the
-    OPPONENT's ``giveaways`` in that same game).
-    """
 
     missing = sorted(_REQUIRED_SCHEDULE_COLUMNS.difference(schedules.columns))
     if missing:
@@ -267,11 +101,6 @@ def _team_game_turnovers(schedules: pd.DataFrame, giveaways: pd.DataFrame) -> pd
 
 
 def _season_centered_turnover_panel(team_games: pd.DataFrame) -> pd.DataFrame:
-    """Ported verbatim from ``scripts/close_game_luck_screen.py::build_panel``
-    (lines 139-163), turnover leg only: per-``(season, team)``
-    ``turnover_diff_per_game = (takeaways - giveaways) / games``, then
-    centered by subtracting that SAME season's league mean.
-    """
 
     panel = (
         team_games.groupby(["season", "team"], sort=False)
@@ -291,27 +120,6 @@ def _season_centered_turnover_panel(team_games: pd.DataFrame) -> pd.DataFrame:
 
 
 def turnover_under_flag_by_game(schedules: pd.DataFrame, pbp: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``home_turnover_under_flag`` /
-    ``away_turnover_under_flag``.
-
-    A side is flagged when its PRIOR-season (``season - 1``) centered
-    ``turnover_diff_per_game`` is at or below the frozen bottom-quartile
-    threshold :data:`TURNOVER_UNDER_Q25_THRESHOLD` -- ported verbatim from
-    ``scripts/close_game_luck_screen.py``'s ``_prior``
-    (``season + 1`` shift, looked up by team) and ``turnover_under_rebound``
-    cell (``flag = prior_turnover_diff_per_game_centered <= thresholds["turnover_q25"]``,
-    line 449).
-
-    **Pregame-safe by construction.** The panel this function builds is
-    computed entirely from PRIOR-season play-by-play and schedule rows (the
-    ``season + 1`` shift means a game in season *S* only ever reads season
-    *S-1*'s already-completed, already-centered trait); it never reads a
-    game's own outcome, ``result``, or ``spread_line`` at all. A team with no
-    observed prior season in the data (an expansion team, or any data gap)
-    gets ``NaN`` from the merge, which compares ``False`` against the
-    threshold -- "missing prior-season data" always means "not flagged",
-    never an error.
-    """
 
     missing = sorted(_REQUIRED_SCHEDULE_COLUMNS.difference(schedules.columns))
     if missing:
@@ -362,8 +170,6 @@ def turnover_under_flag_by_game(schedules: pd.DataFrame, pbp: pd.DataFrame) -> p
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     flagged_team: str
@@ -372,17 +178,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``surface_switch_tilt_overlay.TiltResult``.
-    ``both_flagged_games`` lists games where BOTH teams are bottom-quartile
-    coming in -- no measured direction for that case (mirrors
-    ``coach_fade_overlay``'s ``both_year_one_games``), so those games are
-    flagged, never flipped.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     both_flagged_games: tuple[str, ...]
@@ -400,30 +195,6 @@ def apply_turnover_luck_rebound_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick ONTO the bottom-quartile-turnover-luck team.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (every measured
-      read -- the battery cell and its reliability -- was scored on
-      regular-season games only);
-    * :func:`turnover_under_flag_by_game` fires for EXACTLY ONE side of the
-      game; and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home) is
-      NOT already on the flagged side.
-
-    Both-flagged games are left untouched (see ``both_flagged_games``) --
-    no measured direction for a mutual case, mirroring
-    ``coach_fade_overlay`` / ``backup_qb_fade_overlay``'s clean-case
-    handling. **Deliberately ASYMMETRIC**, like the sibling tilts: this only
-    ever flips a pick ONTO a flagged team, never away from one -- the dead
-    mirror cell ``turnover_over_fade`` (module docstring) gives no measured
-    direction for fading a top-quartile team.
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    the sibling overlays do, so every existing reader of the column needs no
-    overlay-aware branch.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -479,12 +250,6 @@ def apply_turnover_luck_rebound_tilt_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -514,20 +279,6 @@ def record_turnover_luck_rebound_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``surface_switch_tilt_overlay.record_surface_switch_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

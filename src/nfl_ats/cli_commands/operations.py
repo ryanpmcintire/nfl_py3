@@ -1,5 +1,3 @@
-"""Operational commands: health checks, handoff and the weekly run."""
-
 from __future__ import annotations
 
 import argparse
@@ -84,12 +82,6 @@ def _cmd_preflight(args: argparse.Namespace) -> None:
 
 @dataclass(frozen=True)
 class WeeklyRunRequest:
-    """Everything ``nfl-ats weekly-run`` needs from the command line.
-
-    Built by :func:`parse_weekly_run_request` and consumed by
-    :func:`orchestrate_weekly_run`. It holds no environment lookups, so a
-    test can assert on it directly."""
-
     season: int
     week: int
     refresh_player_data: bool
@@ -103,10 +95,6 @@ class WeeklyRunRequest:
 
 
 def parse_weekly_run_request(args: argparse.Namespace) -> WeeklyRunRequest:
-    """Validate the parsed namespace into a WeeklyRunRequest.
-
-    Pure: reads only ``args`` and raises exactly what reading a missing or
-    ill-typed attribute raises today."""
 
     return WeeklyRunRequest(
         season=args.season,
@@ -123,11 +111,6 @@ def parse_weekly_run_request(args: argparse.Namespace) -> WeeklyRunRequest:
 
 
 def orchestrate_weekly_run(request: WeeklyRunRequest) -> dict[str, Any]:
-    """Run the weekly sequence and return its JSON summary.
-
-    Writes the lock-day decision package as a side effect in exactly the
-    place the handler used to (a ``finally`` block, fail-open). The caller
-    is responsible only for printing the returned summary."""
 
     artifacts_root = _artifacts_root()
     write_package = bool(request.record_decisions) and not bool(request.no_package)
@@ -193,7 +176,6 @@ def register_health(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the runtime health commands."""
 
     doctor = subparsers.add_parser("doctor", help="show runtime and data health")
     doctor.set_defaults(handler=_cmd_doctor)
@@ -221,7 +203,6 @@ def register_handoff(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the session-handoff command."""
 
     handoff = subparsers.add_parser(
         "handoff",
@@ -240,7 +221,6 @@ def register_weekly(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the weekly-run orchestrator command."""
 
     weekly = subparsers.add_parser(
         "weekly-run",

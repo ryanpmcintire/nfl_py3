@@ -1,5 +1,3 @@
-"""Shared schema, feature, and walk-forward definitions."""
-
 from __future__ import annotations
 
 MIN_FITTABLE_TRAIN_GAMES = 50
@@ -434,12 +432,6 @@ FEATURE_SETS: dict[str, tuple[str, ...]] = {
 
 
 def model_feature_columns() -> list[str]:
-    """Return the explicit model allowlist.
-
-    Labels, scores, final margins, identifiers, and kickoff timestamps are
-    intentionally absent. Adding a model input requires changing this function
-    and the accompanying leakage tests.
-    """
 
     columns = list(SCHEDULE_FEATURES)
     for metric in STATE_METRICS:

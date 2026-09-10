@@ -1,14 +1,3 @@
-"""The retired consensus rule's paired arms: the served refresh pick with and without it.
-
-The 1.0-point whole-market consensus rule (``movement_ge_1.0``) stopped
-governing served picks on 2026-09-10, measured at -1.627 accuracy points
-through the served chain over 2023-2025 (``docs/served_refresh_card.md``).
-This ledger records, on every pass that carries a captured line, the pick that
-pass WOULD have served with the rule still applied beside the one it did
-serve, at the same frozen Tuesday line, so both arms accrue game for game
-rather than being reconstructed later from a rule description.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -56,7 +45,6 @@ CONSENSUS_MOVEMENT_LEDGER_COLUMNS: tuple[str, ...] = (
 def build_consensus_movement_refresh_rows(
     plan: RefreshResult, *, original: pd.DataFrame
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Both arms for every eligible game the pass held a captured line on."""
 
     empty = pd.DataFrame(columns=list(CONSENSUS_MOVEMENT_LEDGER_COLUMNS))
     if original.empty:
@@ -118,7 +106,6 @@ def build_consensus_movement_refresh_rows(
 def record_consensus_movement_refresh_overlay(
     artifacts_root: Path, plan: RefreshResult, *, record_decisions: bool = False
 ) -> dict[str, Any]:
-    """Append both arms in a separate ledger, once per game and refresh run."""
 
     result: dict[str, Any] = {"challenger_id": CHALLENGER_ID, "recorded": 0}
     if not record_decisions:

@@ -1,5 +1,3 @@
-"""Replay the correction recorded by a card, without changing historical fits."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -29,11 +27,6 @@ class CardRefit:
     def predict(
         self, model: MarginModel, frame: pd.DataFrame, *, replay_served_pick: bool = True
     ) -> pd.DataFrame:
-        """``replay_served_pick`` replays the card's key-line pick read on the
-        touched games -- right for the INCUMBENT arm, which must equal the
-        card; a CANDIDATE arm (its own fitted model) passes ``False`` so its
-        own probability is what gets recorded (Codex lane AC, 2026-09-08:
-        candidate predictions of 0.20 and 0.80 were both becoming 0.472)."""
 
         if self.center_offsets is None:
             result = model.predict(frame, probability_method=self.probability_method)
@@ -58,14 +51,6 @@ def load_card_refit(
     *,
     historical_method: ResidualSmoothingMethod = "gaussian",
 ) -> CardRefit:
-    """Prefer the card's metadata; fall back to its sidecar, never refit offsets.
-
-    Old cards retain the caller's original mapping and uncorrected center.
-    Warnings are returned for inclusion in the recorder's result. The
-    key-line pick read's served probabilities are loaded the same way
-    (metadata block first, then the ``key_line_pick_read.json`` sidecar) and
-    are ``None`` for a card produced without it.
-    """
 
     pick_overrides = load_pick_overrides(metadata, forecast_dir)
     offsets = center_offsets_from_metadata(metadata, card)

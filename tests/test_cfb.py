@@ -395,7 +395,6 @@ def _fake_http(pages: dict[str, bytes]) -> Callable[[str], bytes]:
 
 
 def _fake_upstream(monkeypatch: pytest.MonkeyPatch, seasons: tuple[int, ...]) -> dict[str, bytes]:
-    """Serve every CFB source for the requested seasons from in-memory bytes."""
 
     pages: dict[str, bytes] = {}
     api = cfb.GITHUB_API_ROOT
@@ -441,7 +440,6 @@ def _fake_cfbd_upstream(
     seasons: tuple[int, ...],
     pages: dict[str, bytes] | None = None,
 ) -> list[str]:
-    """Serve CFBD endpoints from memory; returns the authenticated-call log."""
 
     pages = pages if pages is not None else {}
     pages[cfb.CFBD_API_DOCS_URL] = _json_bytes({"info": {"version": "5.99.0-test"}})

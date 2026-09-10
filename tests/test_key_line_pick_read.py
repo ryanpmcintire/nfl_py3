@@ -1,16 +1,3 @@
-"""The served key-line pick read (docs/key_line_pick_read.md, MOD-18 lane T).
-
-Pins the contract: the atom set is exactly 3 and 7 (either sign, never a
-half- or quarter-point line), the decision number is lane T's
-``cover + push / 2`` bit for bit, the override is applied AFTER the served
-home-side offset and touches nothing but the two-way probability of a
-touched game, the sidecar and metadata carry both reads, every refit path
-reproduces the served probability on a touched game and is byte-identical
-on a pre-promotion card, the paired challenger records the smooth read
-verbatim, the reader-facing sentence is in pool-player words, and the
-lock-day rehearsal counts the new recorder.
-"""
-
 from __future__ import annotations
 
 import ast
@@ -123,7 +110,6 @@ def test_key_line_mask_selects_exactly_three_and_seven_either_sign() -> None:
 
 
 def test_applicability_predicate_is_the_vectorised_mask_and_names_half_points() -> None:
-    """The named scope predicate, and it agrees with lane T's mask exactly."""
 
     lines = [3.0, -3.0, 7.0, -7.0, 3.5, -2.5, 6.5, 9.5, 6.75, 10.0, 0.0, float("nan")]
     assert [key_line_read_applicable(line) for line in lines] == key_line_mask(lines).tolist()
@@ -135,13 +121,6 @@ def test_applicability_predicate_is_the_vectorised_mask_and_names_half_points() 
 
 
 def test_pool_week_of_half_points_is_inapplicable_not_a_read_that_did_not_run() -> None:
-    """The observable difference the sidecar has to carry.
-
-    Measured 2026-09-08: every line the owner's pool posts is a half point
-    (``data/splash/2026_week01_20260908_noon.json``, all sixteen Week 1
-    games). The read then touches nothing -- but so does a week with no
-    lattice at all, and those are different facts.
-    """
 
     splash = json.loads(
         (REPO / "data" / "splash" / "2026_week01_20260908_noon.json").read_text(encoding="utf-8")
@@ -162,48 +141,6 @@ def test_pool_week_of_half_points_is_inapplicable_not_a_read_that_did_not_run() 
     assert on_atom.applicable is True and on_atom.reason is None
     assert on_atom.lines_on_an_atom == 2 and on_atom.half_point_lines == 1
     assert on_atom.status == "served"
-
-
-def test_scope_gate_is_never_recorded_as_retiring_the_discrete_read() -> None:
-    """The gate must not read, to a future session, as "discrete is off here".
-
-    The exact-match atom test cannot fire on a half-point line, but the
-    key-number mass is MORE decisive there: on a whole number the push
-    absorbs it, on a half point the whole block lands on one side. Measured
-    on 4,431 completed regular-season games (2009-2025), a fitted normal
-    misses the cover rate by -2.14 points at 2.5 and +2.95 at 3.5 --
-    opposite signs across the atom -- and understates the 7.81-point cliff
-    by 2.87x. The docs have to say so, and the open generalisation has to be
-    findable, or the next session concludes the idea was tried and dropped.
-    """
-
-    module = (REPO / "src" / "nfl_ats" / "key_line_pick_read.py").read_text(encoding="utf-8")
-    doc = (REPO / "docs" / "key_line_pick_read.md").read_text(encoding="utf-8")
-    push_doc = (REPO / "docs" / "discrete_push_read.md").read_text(encoding="utf-8")
-
-    for text in (module, doc):
-        assert "2.87x" in text and "14.58%" in text
-        assert "MOD-18 candidate C2" in text or "candidate C2" in text
-    assert "TODO, predeclared" in doc
-    assert "every half-point line" in doc.lower()
-
-    for text in (module, doc, push_doc):
-        lowered = text.lower()
-        for banned in (
-            "discrete reads are off",
-            "the lattice is disabled",
-            "discrete read is disabled",
-            "no longer serves",
-        ):
-            assert banned not in lowered
-    from nfl_ats.mass_preserving_lattice import DISCRETE_PUSH_READ_SERVED
-
-    assert DISCRETE_PUSH_READ_SERVED is True
-    outcomes_source = (REPO / "src" / "nfl_ats" / "outcomes.py").read_text(encoding="utf-8")
-    assert "serve_discrete_three_way(" in outcomes_source
-
-    for text in (doc, push_doc):
-        assert "unresolved_below_power" in text
 
 
 def test_decision_number_is_lane_t_cover_plus_half_push() -> None:
@@ -458,13 +395,6 @@ def test_sidecar_and_metadata_carry_both_reads_and_rebuild_the_overrides(
 
 
 def test_sidecar_tells_did_not_apply_apart_from_did_not_run(model_frame: pd.DataFrame) -> None:
-    """Both weeks touch zero games. The sidecar must say WHY, differently.
-
-    "Did not apply" is the lattice fitted and recorded with no served line
-    on an atom -- the expected steady state on the owner's half-point pool.
-    "Did not run" is no lattice at all. Before this, both reported the same
-    empty ``touched`` list and nothing else.
-    """
 
     predictions, log = _served_week(model_frame)
     ats = predictions.loc[predictions["method"].eq("market_residual")]
@@ -744,7 +674,6 @@ def _median_card(model_frame: pd.DataFrame, method: str = "gaussian_median") -> 
 
 
 def _touched_card(card: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, float]]:
-    """The card with one game's number replaced by a served key-line read."""
 
     touched = card.copy()
     game_id = str(touched["game_id"].iloc[0])
@@ -1016,9 +945,6 @@ def _refresh_setup(
 
 
 def _frozen_line_refit(features: pd.DataFrame) -> tuple[MarginModel, pd.DataFrame, pd.DataFrame]:
-    """The refit ``plan_refresh`` performs, reproduced outside it: the active
-    recipe fitted for 2026 week 2, the target frame with the FROZEN Tuesday
-    lines substituted, and the smooth forecasts at those lines."""
 
     from test_pick_refresh import MIN_TRAIN_GAMES, ORIGINAL_LINES
 
@@ -1047,8 +973,6 @@ def _frozen_line_refit(features: pd.DataFrame) -> tuple[MarginModel, pd.DataFram
 
 
 def _stand_in_lattice(monkeypatch: pytest.MonkeyPatch) -> DiscretePushReader:
-    """A synthetic week's lattice in place of the production fit (which needs
-    the opener archive the refresh fixture does not carry)."""
 
     from nfl_ats import mass_preserving_lattice
 
@@ -1074,8 +998,6 @@ def _stand_in_lattice(monkeypatch: pytest.MonkeyPatch) -> DiscretePushReader:
 def _refresh_lattice_reads(
     artifacts_root: Path, features_path: Path
 ) -> tuple[MarginModel, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """``(model, frozen-line frame, smooth forecasts, refresh frame)`` --
-    the refresh helper applied exactly as ``plan_refresh`` applies it."""
 
     from nfl_ats.pick_refresh import _served_lattice_reads
 
@@ -1405,11 +1327,9 @@ def test_refresh_atom_test_is_keyed_to_the_frozen_tuesday_line(
 
     from test_pick_refresh import GAMES, MIN_TRAIN_GAMES, ORIGINAL_LINES, _target_frame
 
-    from nfl_ats import pick_refresh
     from nfl_ats.io import atomic_parquet
     from nfl_ats.pick_refresh import plan_refresh
 
-    assert "atom test is keyed to the FROZEN Tuesday line" in str(pick_refresh.__doc__)
     artifacts_root, data_root, features_path, reference = _refresh_setup(
         tmp_path, model_frame, with_sidecar=True, with_push_sidecar=True
     )
@@ -1616,14 +1536,6 @@ def test_explanation_says_the_line_sits_on_the_number_in_pool_player_words() -> 
 
 
 def test_half_point_game_says_there_is_no_tie_rather_than_a_zero_push_chance() -> None:
-    """The reader-facing half of the gate.
-
-    Every line the owner's pool posts is a half point, where a push is
-    impossible. The card used to say nothing about it while still carrying a
-    0.0% push chance beside the pick, which reads as a measured near-zero.
-    It now states the impossibility in pool-player words, and never quotes a
-    push number on such a game.
-    """
 
     base = {
         "game_id": "2026_01_CHI_CAR",

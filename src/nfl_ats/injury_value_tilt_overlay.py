@@ -1,63 +1,3 @@
-"""Injury value-lost tilt overlay: a parameter-free pick-level nudge.
-
-Research chain: ``docs/injury_value_lost.md`` isolates
-``injury_value_lost_narrowed`` -- the ``player_value`` profile's two
-value-lost diff columns, fixed-prior severity, zero semantics-shift confound
--- at +1.316 accuracy points, ``probability_positive`` 0.8875 on the
-already-spent 456-game ``[2020, 2021]`` opener window (``unresolved_below_power``:
-the interval crosses zero, which AGENTS.md says is the EXPECTED shape for a
-real small signal, not grounds to close the line). That document's own
-predeclaration (section 7) explicitly defers spending the next NFL opener
-window (``[2022, 2023]``, one of only two left in the project) until the free,
-zero-cost 2026 prospective evidence for ``mod07_weak_signal_stack`` has
-accrued enough weeks to be informative -- so this module does NOT spend a
-window and does NOT touch the production pick path.
-
-This is the no-window-cost path instead, built on the same pattern as
-``coach_fade_overlay.py`` (year-1 head-coach fade) and
-``best_pick_nomination.py`` (nomination v2): a **pick-level, post-prediction
-transform** of the active model's own forced pick, dual-tracked against that
-same active model in the prospective challenger ledger
-(``nfl_ats.prospective_scoring``), at no rotation-registry window cost and
-with zero training-time feature changes.
-
-**The rule is parameter-free** -- no threshold, no tuning, nothing derived
-from 2018-2025 outcomes. It reads the SAME two pregame-available columns
-``docs/injury_value_lost.md`` section 4 isolated
-(``diff_injury_skill_epa_value_lost`` + ``diff_injury_defense_disruption_value_lost``,
-also named in ``nfl_ats.surgical_gating.VALUE_LOST_DIFF_COLUMNS`` -- imported
-from there rather than re-declared, so the two modules can never drift on
-which columns define the construct) from ``data/processed/game_features_player.parquet``
-(the canonical, weekly-rebuilt, FIXED-prior-severity table -- manifest
-``player_feature_version: "v2"`` means no learned-availability table was
-passed at build time, matching the exact isolation the registry entry
-measured). ``diff_X = home_X - away_X`` (``features.py``'s convention), so a
-positive total means the HOME team lost strictly more value than the away
-team.
-
-The tilt: when the active model's own forced pick sits on the side that lost
-STRICTLY MORE injury value than its opponent -- i.e. the model's pick
-disagrees with "tilt toward the side with less injury value lost" -- the
-overlay flips the pick to the healthier side. Ties (the differential is
-exactly zero, the common case: injuries are sparse) are left untouched, since
-a zero differential carries no directional information at all.
-
-Two things live here, mirroring ``coach_fade_overlay.py`` exactly:
-
-1. :func:`raw_value_lost_diff` -- the pregame-safe, DATA-DERIVED signal, read
-   straight from the already-built feature table, never hand-typed.
-2. :func:`apply_injury_value_tilt_overlay` -- the pick-level transform, plus
-   :func:`overlay_disclosure_note` for the plain-English provenance sentence.
-
-:func:`record_injury_value_tilt_challenger_decisions` writes the overlay's
-own arm to the prospective challenger ledger so 2026 scores it cleanly,
-independent of whether it is ever played on the real card. **Nothing in this
-module is wired into ``publishing.py`` or the real card path** -- unlike
-``coach_fade_overlay`` (an owner decision to play weeks 1-8 for real), no
-such decision has been made for this candidate, and the task that built this
-module was explicit: dual-track it, do not touch the production pick.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -91,15 +31,6 @@ PLAYER_FEATURE_TABLE_NAME = "game_features_player.parquet"
 
 
 def raw_value_lost_diff(features: pd.DataFrame) -> pd.DataFrame:
-    """One row per ``game_id``: the signed, pregame-available value-lost total.
-
-    ``diff_total = diff_injury_skill_epa_value_lost + diff_injury_defense_disruption_value_lost``,
-    each already ``home - away`` (``features.py``'s ``diff_`` convention).
-    Positive means the HOME team lost strictly more value; negative means the
-    AWAY team did; zero (the common case -- injuries are sparse) carries no
-    signal. Reads the same ``VALUE_LOST_DIFF_COLUMNS`` the surgical gate uses,
-    so the two modules can never silently disagree on the construct.
-    """
 
     required = {"game_id", *VALUE_LOST_DIFF_COLUMNS}
     missing = sorted(required.difference(features.columns))
@@ -114,8 +45,6 @@ def raw_value_lost_diff(features: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     hurt_team: str
@@ -125,13 +54,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``coach_fade_overlay.OverlayResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     enabled: bool
@@ -147,26 +69,6 @@ def apply_injury_value_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick wherever it sits on the strictly-more-hurt side.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (the construct's
-      split-half reliability and mechanism screen were both measured on
-      regular-season games only -- ``docs/injury_value_lost.md`` section 3.1);
-    * the value-lost differential for the game is strictly nonzero (a tie
-      carries no directional information, and injuries are sparse -- 29.86%
-      of games have an exactly-zero differential per
-      ``docs/surgical_injury.md`` section 1.2); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home)
-      lands on the side that lost STRICTLY MORE value than its opponent --
-      i.e. the model's pick disagrees with "tilt toward the side with less
-      injury value lost".
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    ``coach_fade_overlay.apply_coach_fade_overlay`` does, so every existing
-    reader of the column needs no overlay-aware branch.
-    """
 
     required = {"game_id", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -215,12 +117,6 @@ def apply_injury_value_tilt_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring
-    ``coach_fade_overlay.overlay_disclosure_note``.
-
-    Empty when the overlay is off or changed nothing this week. Not currently
-    surfaced on the published card -- this overlay is dual-tracked only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -250,22 +146,6 @@ def record_injury_value_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``coach_fade_overlay.record_overlay_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against (a
-    promotion under the challenger's feet must not silently convert into
-    "prospective evidence" for the tilt).
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

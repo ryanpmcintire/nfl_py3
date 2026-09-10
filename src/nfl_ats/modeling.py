@@ -1,5 +1,3 @@
-"""Model construction and chronological probability calibration."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -22,14 +20,6 @@ MODEL_NAMES = ("logistic", "hgb")
 
 
 def regular_season_rows(frame: pd.DataFrame) -> pd.DataFrame:
-    """Drop postseason rows when the frame is game-type aware.
-
-    The canonical feature table may carry WC/DIV/CON/SB rows for weekly
-    serving, but every training and evaluation path in this project is
-    regular-season only: the frozen model grades were measured on REG games,
-    and postseason inclusion would silently change what a fit means. Frames
-    without a ``game_type`` column pass through untouched.
-    """
 
     if "game_type" not in frame:
         return frame
@@ -111,8 +101,6 @@ def _logit(probabilities: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
 
 @dataclass
 class CoverModel:
-    """A fitted estimator plus an optional out-of-time Platt calibrator."""
-
     estimator: BaseEstimator
     calibrator: LogisticRegression | None
     model_name: str
@@ -139,12 +127,6 @@ def fit_cover_model(
     random_state: int = 42,
     feature_set: str = "full",
 ) -> CoverModel:
-    """Fit on past games and calibrate on the chronological tail.
-
-    The calibrator sees predictions from a model that was trained only on rows
-    before its calibration window. The final base estimator is then refit on
-    every supplied row; no random cross-validation is used.
-    """
 
     feature_columns = resolve_feature_columns(feature_set)
     validate_model_frame(frame, feature_columns)
@@ -208,7 +190,6 @@ def model_metadata(model: CoverModel) -> dict[str, Any]:
 
 
 def logistic_coefficients(model: CoverModel) -> pd.DataFrame:
-    """Return named standardized coefficients, including missingness flags."""
 
     if model.model_name != "logistic":
         raise ValueError("Named coefficients are available only for the logistic model")

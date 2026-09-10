@@ -80,13 +80,6 @@ def test_private_raw_policy_rejects_tracked_repo_destination_and_allows_external
 
 
 def test_private_raw_policy_still_rejects_an_in_repo_non_sanctioned_root() -> None:
-    """ENG-30: prove the guard's production behaviour is unchanged.
-
-    This intentionally builds its destination from `ROOT` (this test file's
-    own on-disk location), never from `tmp_path`/`private_raw_root`, so it
-    exercises the guard's real in-repo-rejection path independent of
-    wherever pytest's `--basetemp` happens to point.
-    """
 
     with pytest.raises(SourcePolicyError, match="gitignored private data root"):
         require_private_raw_destination("the_odds_api", ROOT / "docs" / "eng30-raw-probe")

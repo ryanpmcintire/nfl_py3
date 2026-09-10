@@ -1,13 +1,3 @@
-"""CLI coverage for ``nfl-ats weak-signals retag-units`` (WP16).
-
-The library-level behaviour (new units, sign convention, pool robustness on
-empty/one-entry buckets, the ``retag_effect_units`` helper itself) is covered
-in ``tests/test_weak_signals.py``. This file covers the CLI wiring: the new
-``--effect-units`` choices reaching ``record``, and the ``retag-units``
-subcommand end to end -- registry on disk in, registry on disk out, nothing
-but the unit and an audit note changed.
-"""
-
 from __future__ import annotations
 
 import json

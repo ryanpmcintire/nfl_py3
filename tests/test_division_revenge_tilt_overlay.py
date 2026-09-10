@@ -1,22 +1,3 @@
-"""Division-revenge tilt overlay (docs/division_revenge_tilt_overlay.md).
-
-Four things are load-bearing here, mirroring
-``tests/test_coach_fade_overlay.py``'s structure and AGENTS.md's "add a
-leakage regression test for every new feature family" spirit:
-
-1. :func:`division_revenge_side_by_game`'s flag is derived from data, not
-   hand-typed, is pregame-safe (a later meeting or a later season must never
-   retroactively change an earlier meeting's flag), and correctly identifies
-   the revenge side on EITHER the home or away side of the second meeting.
-2. :func:`apply_division_revenge_tilt_overlay` flips ONLY when the model's
-   pick sits against the (unique) revenge side, respects the REG-only gate,
-   and is parameter-free.
-3. :func:`overlay_disclosure_note` states the flip count and matchups.
-4. :func:`record_division_revenge_tilt_challenger_decisions` writes the
-   tilt's own picks to the prospective challenger ledger, dual-tracked and at
-   no rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -213,11 +194,6 @@ def test_revenge_flag_requires_its_schedule_columns() -> None:
 
 
 def test_revenge_flag_is_leak_safe_against_a_later_meeting_mutation() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    G2's flag (the 2nd REV/WIN meeting) depends only on G1 (the 1st
-    meeting); mutating G9 (a 3rd, LATER meeting) must not move it.
-    """
 
     baseline = division_revenge_side_by_game(_revenge_schedule()).set_index("game_id")
 
@@ -234,8 +210,6 @@ def test_revenge_flag_is_leak_safe_against_a_later_meeting_mutation() -> None:
 
 
 def test_revenge_flag_is_leak_safe_across_the_season_boundary() -> None:
-    """A future season's rematch (even between the same two teams) must
-    never change an earlier season's already-computed flag."""
 
     schedule = _revenge_schedule()
     baseline = division_revenge_side_by_game(schedule)
@@ -297,8 +271,6 @@ def test_overlay_does_not_flip_a_single_meeting() -> None:
 
 
 def test_overlay_leaves_postseason_games_untouched() -> None:
-    """Same shape as the flipped G2, but POST season -- the REG-only gate
-    blocks it."""
 
     result = apply_division_revenge_tilt_overlay(_predictions(), _revenge_schedule())
     assert all(flip.game_id != "2026_20_WIN_REV" for flip in result.flips)
@@ -333,8 +305,6 @@ def test_overlay_disabled_is_a_no_op() -> None:
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows() -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical -- the pick-level design's whole point."""
 
     predictions = _predictions()
     result = apply_division_revenge_tilt_overlay(predictions, _revenge_schedule())
@@ -514,7 +484,6 @@ def test_record_tilt_challenger_refuses_an_inactive_registration(tmp_path: Path)
 
 
 def test_tilt_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

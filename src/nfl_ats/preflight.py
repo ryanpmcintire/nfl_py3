@@ -1,39 +1,3 @@
-"""Read-only environment and configuration preflight (ENG-02).
-
-This module answers one question before any research command runs: is the
-local machine set up correctly, independent of whether research data has
-been rebuilt yet? It never writes configuration, never fetches from a
-network source, and never mutates ``data/``, ``artifacts/``, or
-``registry/``. Writability checks create a uniquely named temporary probe
-file and remove it immediately; nothing it touches is left behind.
-
-Every check is tagged with one of three categories, matching the ENG-02
-definition of done:
-
-- ``environment`` -- local tooling: Python interpreter version, the ``uv``
-  executable, the ``uv`` cache directory, Git, the ``core.hooksPath`` Git
-  setting, and whether the data/artifacts/registry destinations are
-  writable. A ``fail`` here blocks real work regardless of what research
-  data exists.
-- ``configuration`` -- source-policy inputs: whether ``THE_ODDS_API_KEY``
-  and ``CFBD_API_KEY`` are present (never their values) and whether the
-  ``NFL_ATS_DATA_DIR`` / ``NFL_ATS_ARTIFACTS_DIR`` / ``NFL_ATS_REGISTRY_DIR``
-  overrides are set. Missing API keys are reported as ``warn``, not
-  ``fail`` -- most commands do not need live network sources.
-- ``research_data`` -- the same local-artifact inventory rendered in
-  ``HANDOFF.md``'s "Local reproducibility inventory" section
-  (:func:`nfl_ats.handoff._local_inventory`, reused here rather than
-  duplicated so the two views cannot drift). A fresh clone legitimately
-  lacks every one of these files, so this category only ever reports
-  ``ok``/``warn``, never ``fail``.
-
-``run_preflight`` returns a :class:`PreflightReport`; :func:`preflight_exit_code`
-implements the CLI's exit-code rule: nonzero only for an ``environment`` or
-``configuration`` row with status ``fail``, unless ``strict=True`` is passed,
-in which case any non-``ok`` row (including missing research data) is also
-fatal.
-"""
-
 from __future__ import annotations
 
 import contextlib
@@ -75,8 +39,6 @@ _COMPARISON_OPERATORS: tuple[str, ...] = (">=", "<=", "==", "!=", ">", "<")
 
 @dataclass(frozen=True)
 class PreflightCheck:
-    """One structured, independently reportable preflight result."""
-
     name: str
     category: Category
     status: Status
@@ -95,8 +57,6 @@ class PreflightCheck:
 
 @dataclass(frozen=True)
 class PreflightReport:
-    """The full ordered set of checks from one preflight run."""
-
     generated_at_utc: str
     checks: tuple[PreflightCheck, ...]
 
@@ -122,13 +82,6 @@ class PreflightReport:
 
 
 def preflight_exit_code(report: PreflightReport, *, strict: bool = False) -> int:
-    """Exit-code rule: environment/configuration ``fail`` is always fatal.
-
-    Missing research data (``research_data`` rows, which are only ever
-    ``ok``/``warn``) is reported but not fatal by default. ``strict=True``
-    additionally fails on any non-``ok`` row in any category, which makes
-    missing research data fatal too.
-    """
 
     if report.has_environment_or_configuration_failure():
         return 1
@@ -146,7 +99,6 @@ def _parse_version(text: str) -> tuple[int, ...]:
 
 
 def _clause_satisfied(running: tuple[int, ...], clause: str) -> bool | None:
-    """Evaluate one comparison clause; ``None`` means it could not be parsed."""
 
     for operator_text in sorted(_COMPARISON_OPERATORS, key=len, reverse=True):
         if not clause.startswith(operator_text):
@@ -170,7 +122,6 @@ def _clause_satisfied(running: tuple[int, ...], clause: str) -> bool | None:
 
 
 def _python_satisfies(running: tuple[int, ...], spec: str) -> tuple[bool, list[str]]:
-    """Return (satisfied, unparsed_clauses) for a ``requires-python`` spec string."""
 
     satisfied = True
     unparsed: list[str] = []
@@ -187,7 +138,6 @@ def _python_satisfies(running: tuple[int, ...], spec: str) -> tuple[bool, list[s
 
 
 def _read_requires_python(repo_root: Path) -> tuple[str, str]:
-    """Return (spec, source_description); falls back when unreadable."""
 
     pyproject_path = repo_root / "pyproject.toml"
     if pyproject_path.is_file():
@@ -205,7 +155,6 @@ def _read_requires_python(repo_root: Path) -> tuple[str, str]:
 def check_python_version(
     repo_root: Path, *, running_version: tuple[int, int, int] | None = None
 ) -> PreflightCheck:
-    """Compare the running interpreter against the repo's declared requirement."""
 
     running = running_version or sys.version_info[:3]
     spec, source = _read_requires_python(repo_root)
@@ -247,7 +196,6 @@ def _uv_candidates(repo_root: Path) -> list[Path]:
 
 
 def check_uv_available(repo_root: Path) -> tuple[PreflightCheck, Path | None]:
-    """Locate a working ``uv`` executable: ``.tools/uv(.exe)`` first, then PATH."""
 
     for candidate in _uv_candidates(repo_root):
         if not candidate.is_file():
@@ -315,7 +263,6 @@ def _nearest_existing_ancestor(path: Path) -> Path:
 
 
 def _probe_writable(directory: Path) -> tuple[bool, str]:
-    """Create and immediately remove a uniquely named temp file. Read-only in effect."""
 
     probe_path = directory / f".nfl_ats_preflight_{uuid.uuid4().hex}.tmp"
     try:
@@ -328,7 +275,6 @@ def _probe_writable(directory: Path) -> tuple[bool, str]:
 
 
 def check_uv_cache(uv_path: Path | None) -> PreflightCheck:
-    """Check that ``uv cache dir`` resolves to a directory this user can write to."""
 
     if uv_path is None:
         return PreflightCheck(
@@ -414,7 +360,6 @@ def check_git_available() -> tuple[PreflightCheck, str | None]:
 
 
 def check_hooks_path(repo_root: Path, git_path: str | None) -> PreflightCheck:
-    """Read (never set) ``core.hooksPath``; AGENTS.md requires it to be ``.githooks``."""
 
     if git_path is None:
         return PreflightCheck(
@@ -467,7 +412,6 @@ def check_hooks_path(repo_root: Path, git_path: str | None) -> PreflightCheck:
 
 
 def check_writable_directory(name: str, directory: Path) -> PreflightCheck:
-    """Probe whether ``directory`` (or its nearest existing ancestor) is writable."""
 
     exists = directory.is_dir()
     probe_dir = directory if exists else _nearest_existing_ancestor(directory)
@@ -497,7 +441,6 @@ def check_writable_directory(name: str, directory: Path) -> PreflightCheck:
 
 
 def check_source_policy(env: Mapping[str, str]) -> list[PreflightCheck]:
-    """Report presence/absence of source-policy API keys. Values are never read out."""
 
     checks: list[PreflightCheck] = []
     for key, purpose in _SOURCE_POLICY_KEYS:
@@ -524,7 +467,6 @@ def check_source_policy(env: Mapping[str, str]) -> list[PreflightCheck]:
 
 
 def check_directory_overrides(env: Mapping[str, str]) -> list[PreflightCheck]:
-    """Report the three NFL_ATS_*_DIR overrides. Paths are not secrets."""
 
     checks: list[PreflightCheck] = []
     for key, default in _DIRECTORY_ENV_OVERRIDES:
@@ -545,12 +487,6 @@ def check_directory_overrides(env: Mapping[str, str]) -> list[PreflightCheck]:
 
 
 def check_research_artifacts(repo_root: Path, artifacts_root: Path) -> list[PreflightCheck]:
-    """Presence-only check of the same inventory HANDOFF.md renders.
-
-    Never ``fail`` -- an absent parquet table or artifact directory is
-    expected and legitimate on a fresh clone, which is exactly the
-    distinction ENG-02 asks this module to preserve.
-    """
 
     checks: list[PreflightCheck] = []
     for label, path in _local_inventory(repo_root, artifacts_root):
@@ -588,13 +524,6 @@ def run_preflight(
     env: Mapping[str, str] | None = None,
     generated_at: datetime | None = None,
 ) -> PreflightReport:
-    """Run every read-only check and return the combined report.
-
-    ``data_root``/``artifacts_root``/``registry_root`` default to the same
-    ``NFL_ATS_DATA_DIR`` / ``NFL_ATS_ARTIFACTS_DIR`` / ``NFL_ATS_REGISTRY_DIR``
-    environment overrides (falling back to ``data``/``artifacts``/``registry``)
-    that ``nfl_ats.cli`` uses, so this reads the same locations the CLI would.
-    """
 
     resolved_env: Mapping[str, str] = os.environ if env is None else env
     data_root = (

@@ -197,7 +197,6 @@ def test_research_state_block_counts_registries(tmp_path: Path) -> None:
 
 
 def test_rotation_summary_counts_coverage_stubs_separately(tmp_path: Path) -> None:
-    """ENG-37: a coverage stub is neither open nor closed and must not be counted as closed."""
 
     registry_root = tmp_path / "registry"
     registry_root.mkdir()
@@ -266,8 +265,6 @@ def test_readme_state_failures_empty_when_fresh(tmp_path: Path) -> None:
 
 
 def test_readme_state_failures_detects_stale_active_model_block(tmp_path: Path) -> None:
-    """The exact drift-detection requirement: a block that no longer matches
-    what the current artifacts would produce must be flagged, so CI catches it."""
 
     artifacts_root = tmp_path / "artifacts"
     _write_active_model(artifacts_root, model_id="stale-id")

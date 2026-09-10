@@ -1,24 +1,3 @@
-"""Fixture tests for the 2026-09-05 dashboard-improvement wave (ROADMAP.md
-UI-20, items (a)/(b)/(c)):
-
-(a) per-pick "Why this pick" explanations (``board_content.GameRow
-    .explanation_text`` / ``board_terminal._why_this_pick_html``) -- UI-20
-    layout A (2026-09-05) relocated these from a collapsed row under every
-    board pick into that game's own inspector panel; see the section (a)
-    tests below for the current contract;
-(b) the "Research this week" section on the findings page
-    (``findings_registry.recent_registry_activity`` /
-    ``board_terminal._recent_activity_section_html``);
-(c) the SOURCES panel's live-computed fallback when nothing was persisted
-    for this forecast (``board_content._load_source_policy_view`` /
-    ``board_terminal._source_policy_panel_html``).
-
-These are pure-renderer tests over hand-built content objects (the same
-discipline ``tests/_board_content_fixtures.py`` already uses) -- no real
-artifact tree, so they are immune to the concurrent ``data/processed``
-rewrite this session's other lanes are doing.
-"""
-
 from __future__ import annotations
 
 from dataclasses import replace
@@ -92,11 +71,6 @@ def test_lineup_legend_and_labels_match_playing_time_targets() -> None:
 
 
 def _panel_chunks(html: str) -> dict[str, str]:
-    """Split the This Week page's HTML into one chunk per inspector panel,
-    keyed by game id -- each chunk runs from just after that panel's own
-    opening ``id="..."`` through (but not including) the next panel's, so
-    a hidden panel's own content can be checked in isolation without a
-    full HTML parser."""
 
     marker = '<div class="dive-panel" id="'
     parts = html.split(marker)
@@ -108,15 +82,6 @@ def _panel_chunks(html: str) -> dict[str, str]:
 
 
 def test_why_this_pick_renders_once_per_game_hidden_unless_selected() -> None:
-    """UI-20 layout A (2026-09-05, owner: "layout A is definitely the
-    best. lets go with that."): the collapsed ``<details>`` this used to
-    be, printed under EVERY board row, is retired -- the same explanation
-    text now renders once per game, inside that game's own inspector panel
-    (``board_terminal._why_this_pick_html``). Only the board's
-    pre-selected game (the Best Pick) is visible without JavaScript or a
-    URL hash; every other game's copy sits inside a ``hidden`` panel, the
-    same "adds nothing to the default view" guarantee the old collapsed
-    row gave, expressed through panel visibility instead of ``<details>``."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -132,9 +97,6 @@ def test_why_this_pick_renders_once_per_game_hidden_unless_selected() -> None:
 
 
 def test_why_this_pick_shows_the_not_recorded_fallback_when_absent() -> None:
-    """The shared fixture never sets ``explanation_text`` -- ``GameRow``'s
-    own default (:data:`EXPLANATION_NOT_RECORDED_TEXT`) must render, never
-    an empty disclosure."""
 
     content = build_fixture_content()
     assert all(game.explanation_text == EXPLANATION_NOT_RECORDED_TEXT for game in content.games)
@@ -161,13 +123,6 @@ def test_why_this_pick_renders_a_real_explanation_when_present() -> None:
 
 
 def test_why_this_pick_percentages_stay_hidden_unless_the_games_panel_is_selected() -> None:
-    """A real explanation's percentages must not inflate the page's
-    default-visible percentage count -- the same de-firehose discipline the
-    rest of this board already follows (evidence chips, spread adjuster).
-    UI-20 layout A (2026-09-05): the mechanism moved from a collapsed
-    ``<details>`` to panel ``hidden``, but the guarantee is identical -- a
-    game that isn't the board's current selection contributes nothing
-    visible."""
 
     content = build_fixture_content()
     first, *rest = content.games
@@ -184,13 +139,6 @@ def test_why_this_pick_percentages_stay_hidden_unless_the_games_panel_is_selecte
 
 
 def test_row_link_class_is_in_the_stylesheet_allowlist() -> None:
-    """Regression guard for the mockup-class-set test (successor to the
-    retired ``explain`` row class, UI-20 layout A 2026-09-05: the board's
-    own rows, via ``.row-link``, replaced the old per-row ``<details>``
-    disclosure as the reader's entry point): the additive
-    ``row-link``/``is-selected``/``week-grid`` classes this restructure
-    introduced must actually be reachable from ``board_terminal_style.css``,
-    not just silently allowlisted."""
 
     html = board_terminal.render(build_fixture_content())
     assert 'class="row-link"' in html

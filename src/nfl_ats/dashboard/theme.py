@@ -1,20 +1,3 @@
-"""Design tokens and the shared stylesheet for the site's visual system.
-
-The palette is the dataviz reference instance (validated: adjacent-pair CVD
-DeltaE >= 8 and normal-vision >= 15 in both modes; see the skill's palette
-notes). Components are written against ROLE names, never raw hex, so light
-and dark swap in one place. Every page wraps its content in a root with
-``class="ats"`` so this stylesheet scopes cleanly and never fights host
-chrome.
-
-Series-role conventions (fixed, never cycled):
-  --series-model  (slot 1, blue)    = our model / our number
-  --series-market (slot 2, orange)  = the market / the pool's number
-  --series-third  (slot 3, aqua)    = a third comparator when one exists
-Status colors are reserved for state (sync, safety) and always ship with an
-icon + label, never color alone.
-"""
-
 from __future__ import annotations
 
 TOKENS_LIGHT: dict[str, str] = {
@@ -79,7 +62,6 @@ def _variables(tokens: dict[str, str]) -> str:
 
 
 def stylesheet() -> str:
-    """The one stylesheet every page starts with."""
 
     return f"""
 <style>

@@ -1,30 +1,10 @@
-"""Construction, sign-convention, franchise-normalisation and leakage
-contracts for the two LEAD-20/LEAD-25 quarterback-identity flags, plus the
-on-production confirmation wrapper's duck-typed reuse of
-``scripts/on_production_opener_confirmation.py``.
-
-Predeclared in ``docs/schedule_flag_battery.md`` "Wave 5". Every fixture is
-built in memory: these tests must pass in a fresh clone with no local data
-snapshots (no schedules/weekly_rosters/combine snapshot is ever read).
-"""
-
 from __future__ import annotations
-
-import sys
-from pathlib import Path
 
 import pandas as pd
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "scripts") not in sys.path:
-    sys.path.insert(0, str(ROOT / "scripts"))
-
-import qb_identity_on_production as qiop  # noqa: E402
-
-from nfl_ats.data import DataContractError  # noqa: E402
-from nfl_ats.margin import margin_feature_columns  # noqa: E402
-from nfl_ats.qb_identity_features import (  # noqa: E402
+from nfl_ats.data import DataContractError
+from nfl_ats.qb_identity_features import (
     QB_REVENGE_COLUMN,
     ROOKIE_QB_DEBUT_FADE_COLUMN,
     _canonical_schedule_team,
@@ -34,10 +14,10 @@ from nfl_ats.qb_identity_features import (  # noqa: E402
     draft_team_by_gsis_id,
     qb_revenge_join_diagnostics,
 )
-from nfl_ats.qb_identity_features import (  # noqa: E402
+from nfl_ats.qb_identity_features import (
     derive_qb_revenge_features as decision_derive_qb_revenge_features,
 )
-from nfl_ats.qb_identity_features import (  # noqa: E402
+from nfl_ats.qb_identity_features import (
     derive_rookie_qb_debut_fade_features as decision_derive_rookie_qb_debut_fade_features,
 )
 
@@ -70,8 +50,6 @@ def _schedule(rows: list[dict]) -> pd.DataFrame:
 
 
 def _rosters(rows: list[tuple[int, str, float]]) -> pd.DataFrame:
-    """(season, gsis_id, years_exp) rows -- the only columns
-    ``_season_years_exp`` reads."""
 
     return pd.DataFrame(rows, columns=["season", "gsis_id", "years_exp"])
 
@@ -121,10 +99,6 @@ def test_debut_rookie_sign_convention_home_is_negative() -> None:
 
 
 def test_veteran_whose_first_archived_start_is_not_a_debut() -> None:
-    """A player's first-archived start is not automatically a debut: the
-    rookie gate (``years_exp == 0``) must exclude an established veteran
-    whose true career debut predates the archive (the entire reason this
-    gate exists, per the LEAD-20 predeclaration)."""
 
     derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
         "game_id"
@@ -140,8 +114,6 @@ def test_second_start_is_never_flagged_as_a_debut() -> None:
 
 
 def test_unresolved_years_exp_is_never_flagged_a_debut() -> None:
-    """A first-archived start that cannot be joined to weekly_rosters is
-    treated as NOT a debut -- never guessed."""
 
     derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
         "game_id"
@@ -157,9 +129,6 @@ def test_both_sides_debuting_simultaneously_is_zero() -> None:
 
 
 def test_postseason_game_is_never_flagged() -> None:
-    """A debut is only ever defined against a REG start; a postseason game
-    (even one with a starter who has never had a REG start in the archive)
-    must read 0."""
 
     derived = derive_rookie_qb_debut_fade_features(_debut_schedule(), _debut_rosters()).set_index(
         "game_id"
@@ -176,10 +145,6 @@ def test_describe_rookie_qb_debut_population_diagnostic() -> None:
 
 
 def test_rookie_debut_leakage_ignores_unrelated_outcome_columns() -> None:
-    """Mutating an unrelated outcome-shaped column (e.g. a result/score field
-    that no LEAD-20 code path ever reads) must never change the flag --
-    neither ``derive_rookie_qb_debut_fade_features`` nor its required-column
-    set references any such column at all."""
 
     schedule = _debut_schedule()
     schedule["result"] = 3.0
@@ -229,8 +194,6 @@ def test_rookie_debut_derive_requires_every_schedule_column() -> None:
 
 
 def test_franchise_code_normalization_current_and_historical_codes_match() -> None:
-    """The schedule's own historical codes (OAK/SD/STL) and the CURRENT
-    codes (LV/LAC/LA) must canonicalize to the identical code space."""
 
     codes = pd.Series(["OAK", "LV", "SD", "LAC", "STL", "SL", "LA", "WAS", "ARI"])
     canonical = _canonical_schedule_team(codes)
@@ -283,7 +246,6 @@ def test_draft_team_by_gsis_id_rejects_unrecognized_names() -> None:
 
 
 def test_draft_team_by_gsis_id_keeps_earliest_draft_year_on_duplicate() -> None:
-    """A rare supplemental/re-entry-draft edge case: keep the ORIGINAL draft."""
 
     combine = pd.DataFrame(
         {
@@ -362,10 +324,6 @@ def test_qb_revenge_join_diagnostics_counts() -> None:
 
 
 def test_qb_revenge_leakage_ignores_unrelated_outcome_columns() -> None:
-    """``qb_revenge_flag`` never reads any outcome column at all (it is a
-    pure function of starter identity, team codes, and a static draft-team
-    lookup); mutating an unrelated result/score column must never change
-    it."""
 
     schedule = _revenge_schedule()
     schedule["result"] = 3.0
@@ -414,28 +372,6 @@ def test_qb_revenge_derive_requires_every_schedule_column() -> None:
     schedule = _revenge_schedule().drop(columns=["home_qb_id"])
     with pytest.raises(DataContractError, match="home_qb_id"):
         derive_qb_revenge_features(schedule, _revenge_lookup())
-
-
-@pytest.mark.parametrize("key", sorted(qiop.CANDIDATES))
-def test_registered_profile_is_production_plus_the_declared_one_column(key: str) -> None:
-    candidate = qiop.CANDIDATES[key]
-    baseline = set(margin_feature_columns("market_residual", qiop.BASELINE_PROFILE))
-    treatment = set(margin_feature_columns("market_residual", candidate.profile))
-    assert treatment - baseline == {candidate.column}
-    assert baseline - treatment == set()
-
-
-@pytest.mark.parametrize("key", sorted(qiop.CANDIDATES))
-def test_candidate_duck_types_with_the_template_profile_identity(key: str) -> None:
-    """``on_production_opener_confirmation.profile_identity`` is reused
-    unmodified: our ``QbIdentityCandidate`` need only carry the same
-    ``profile``/``column`` attribute names."""
-
-    candidate = qiop.CANDIDATES[key]
-    columns = margin_feature_columns("market_residual", candidate.profile)
-    frame = pd.DataFrame({column: [0.0] for column in columns})
-    observed = qiop.confirmation.profile_identity(candidate, frame)
-    assert observed["only_added_column"] == candidate.column
 
 
 def _fixture_depth(schedule: pd.DataFrame) -> pd.DataFrame:

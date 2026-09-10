@@ -1,12 +1,3 @@
-"""Phase 12 lane J: LEAD-26/27/30 PBP coaching-trait reliability tests.
-
-Covers each trait builder on a tiny synthetic play-by-play frame, the
-LEAD-30 opportunity filter's boundaries, the strictly-before-cutoff
-(leakage) guarantee of every rolling team-week builder, and the split-half
-reliability engine's math on a known frame (perfect correlation, and a
-label-shuffle null that must destroy real structure).
-"""
-
 from __future__ import annotations
 
 import numpy as np

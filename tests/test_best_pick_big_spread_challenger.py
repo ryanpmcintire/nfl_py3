@@ -1,5 +1,3 @@
-"""Prospective-only 10+ point spread Best-Pick eligibility challenger."""
-
 from __future__ import annotations
 
 import json

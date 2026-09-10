@@ -1,12 +1,3 @@
-"""POL-09 Best Pick selection.
-
-The signal these tests pin is a CONFIRMED one (``docs/best_pick_ranker.md``):
-it was scored on two registry windows that are now permanently spent, so its
-definition can never be re-derived from data. If one of these tests starts
-failing, the deployed Best Pick has drifted away from the signal that earned
-its confirmation -- fix the code, never the expectation.
-"""
-
 from __future__ import annotations
 
 import numpy as np
@@ -49,7 +40,6 @@ def test_width_is_the_contiguous_run_around_the_quote() -> None:
 
 
 def test_a_run_is_contiguous_not_a_total_count() -> None:
-    """An island of support away from the quote must not inflate the width."""
 
     probabilities = np.where((OFFSETS >= -0.5) & (OFFSETS <= 0.5), 0.6, 0.4)
     probabilities[OFFSETS >= 3.0] = 0.9
@@ -58,7 +48,6 @@ def test_a_run_is_contiguous_not_a_total_count() -> None:
 
 
 def test_away_picks_use_the_complement() -> None:
-    """The sweep reports HOME probability; an AWAY pick's edge is 1 - that."""
 
     probabilities = np.where((OFFSETS >= -1.0) & (OFFSETS <= 1.0), 0.2, 0.8)
     home = sweep_robustness(
@@ -106,13 +95,6 @@ def test_scores_cover_every_game_on_the_card() -> None:
 
 
 def test_an_unfiltered_multi_method_sweep_is_refused_not_ranked() -> None:
-    """``line_sweep`` artifacts stack every method; ranking a mixture is silent
-    nonsense, so the low-level function raises and the page-facing one degrades.
-
-    Measured on the live 2026 week 1 artifact: passing the unfiltered frame moved
-    eight of sixteen games to a width of 0.0 and left seven tied at the top, so
-    the failure is large and completely invisible without this guard.
-    """
 
     wide = np.where(np.abs(OFFSETS) <= 3.0, 0.6, 0.4)
     narrow = np.where(np.abs(OFFSETS) <= 0.5, 0.6, 0.4)

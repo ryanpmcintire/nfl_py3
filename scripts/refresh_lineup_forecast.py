@@ -1,5 +1,3 @@
-"""Refresh current depth charts and regenerate the active weekly forecast."""
-
 from __future__ import annotations
 
 import json

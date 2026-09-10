@@ -433,9 +433,6 @@ def test_cli_reports_user_errors(tmp_path: Path) -> None:
 
 
 def test_publish_predictions_regenerates_the_site_by_default() -> None:
-    """Default-on since 2026-08-19: a publish that skips the public site is how
-    docs/ served picks that disagreed with the published card. ``--no-board``
-    is the explicit rehearsal opt-out."""
 
     parser = cli.build_parser()
     assert parser.parse_args(["publish-predictions"]).with_board is True
@@ -448,12 +445,6 @@ def test_publish_predictions_does_not_record_by_default(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """The safe default: an ordinary publish-predictions run must not append
-    to the paper-decision ledger. Recording is a deliberate act
-    (--record-decisions) -- see docs/prospective_evidence.md, 'Known
-    divergence', for the incident this closes: a rehearsal run of this exact
-    command, with its old opt-OUT --skip-clv-ledger flag not passed, wrote 16
-    real rows to the real ledger on 2026-08-18."""
 
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
@@ -679,7 +670,6 @@ def test_publish_predictions_does_not_record_by_default(
 
 
 def test_publish_challenger_result_map_covers_live_active_registry() -> None:
-    """Every active publish-time challenger must have an observable CLI result."""
 
     registry_path = (
         Path(__file__).resolve().parents[1] / "artifacts" / "prospective" / "challengers.json"
@@ -700,7 +690,6 @@ def test_publish_challenger_result_map_covers_live_active_registry() -> None:
 def test_publish_new_overlay_recorders_are_opt_in(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """The six automatic arms remain inert unless recording is explicit."""
 
     calls: list[str] = []
 
@@ -768,7 +757,6 @@ def test_publish_new_overlay_recorders_are_opt_in(
 def test_refresh_crew_recorder_is_gated_and_fails_open(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """Crew tracking is refresh-time only and cannot interrupt a card append."""
 
     plan = SimpleNamespace(changed_games=(object(),))
     calls: list[bool] = []
@@ -827,7 +815,6 @@ def test_refresh_crew_recorder_is_gated_and_fails_open(
 def test_publish_new_overlay_recorder_failures_do_not_unpublish(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """A side-ledger failure is reported after, never instead of, publication."""
 
     destination = tmp_path / "card.md"
 
@@ -1180,15 +1167,6 @@ def test_publish_predictions_records_cleanly_when_a_challenger_is_deactivated(
     capsys: pytest.CaptureFixture[str],
     mean_refuses: bool,
 ) -> None:
-    """A deactivated challenger (e.g. backup_qb_fade_overlay, marked
-    DEACTIVATED_STRUCTURAL_NO_OP 2026-08-19 -- docs/prospective_evidence.md
-    'Tuesday-visibility audit') must record nothing and must NOT abort the
-    publish. The recorder itself raises ValueError on any non-ACTIVE_PROSPECTIVE
-    status (nfl_ats.prospective_scoring's shared status check, exercised
-    directly in tests/test_backup_qb_fade_overlay.py); this test pins the
-    publish-path contract that catches it: the command still exits 0, every
-    OTHER ledger still records normally, and the deactivated challenger's own
-    ledger entry reports recorded=0 with the error preserved for visibility."""
 
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(tmp_path / "registry"))
@@ -1298,7 +1276,6 @@ def test_publish_predictions_surfaces_stale_arrest_snapshot_refusal(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """A stale production source refuses publication before either file changes."""
 
     monkeypatch.setenv("NFL_ATS_ARTIFACTS_DIR", str(tmp_path / "artifacts"))
     monkeypatch.setenv("NFL_ATS_DATA_DIR", str(tmp_path / "data"))
@@ -1381,11 +1358,6 @@ def test_cli_refresh_picks_end_to_end(
     capsys: pytest.CaptureFixture[str],
     model_frame: pd.DataFrame,
 ) -> None:
-    """Smoke test for the `refresh-picks` command's CLI wiring (POL-11,
-    docs/late_week_refresh.md): opt-in recording, per-game kickoff/Sunday-lock
-    guard, and the additive card append all reachable through `cli.main`.
-    Deep unit coverage of the recompute itself lives in
-    tests/test_pick_refresh.py; this only proves the command is wired up."""
 
     data_root = tmp_path / "data"
     artifacts_root = tmp_path / "artifacts"

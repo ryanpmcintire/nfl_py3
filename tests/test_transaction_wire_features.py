@@ -110,10 +110,6 @@ def test_own_week_wednesday_freeze_is_the_same_calendar_week_wednesday_noon() ->
 
 
 def test_own_week_wednesday_freeze_for_a_tuesday_kickoff_is_the_prior_week() -> None:
-    """Documented edge case (see the function's own docstring): a Tuesday
-    kickoff's own calendar week's Wednesday has not happened yet, so the
-    MOST-RECENT-Wednesday-at-or-before-kickoff definition correctly resolves
-    to the PRIOR week -- not a bug, just worth pinning explicitly."""
 
     tuesday_kickoff = pd.Series(
         pd.to_datetime(["2026-09-15T17:00:00Z"]), dtype="datetime64[ns, UTC]"
@@ -249,10 +245,6 @@ def test_leakage_transaction_before_freeze_excluded_from_since_freeze_but_may_co
 
 
 def test_thursday_kickoff_freeze_instant_falls_inside_the_72h_window() -> None:
-    """Disclosed, not a bug: for a Thursday game, Wed-noon freeze is only
-    ~32h before kickoff -- INSIDE the 72h-before-kickoff window, so the two
-    features overlap for Thursday games specifically (unlike Sun/Mon games,
-    where they do not). A signing right after freeze counts in BOTH windows."""
 
     panel = build_team_week_population(_schedules_frame(), season_start=2026, season_end=2026)
     row = panel.loc[panel["team"] == "DAL"].iloc[0]
@@ -267,10 +259,6 @@ def test_thursday_kickoff_freeze_instant_falls_inside_the_72h_window() -> None:
 
 
 def test_leakage_bulk_random_events_never_leak_across_kickoff() -> None:
-    """A larger randomized check: for many synthetic events straddling many
-    team-week kickoffs, the counted set (by direct recomputation) always
-    equals the set with ``precise_ts < kickoff_utc`` -- never includes a
-    post-kickoff timestamp."""
 
     schedules = pd.DataFrame(
         {

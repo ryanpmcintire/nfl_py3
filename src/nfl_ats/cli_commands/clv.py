@@ -1,5 +1,3 @@
-"""Closing-line-value scoring, the predeclared pilot and drift diagnostics."""
-
 from __future__ import annotations
 
 import argparse
@@ -26,6 +24,7 @@ from nfl_ats.cli_common import (
 )
 from nfl_ats.clv import (
     FROZEN_PILOT_PROTOCOL,
+    OPENER_EVALUATION_METRIC_COLUMNS,
     ClosePredictionUnavailable,
     PilotProtocolBlocked,
     build_pairing_table,
@@ -34,6 +33,7 @@ from nfl_ats.clv import (
     live_close_reference,
     load_paper_decisions,
     opener_evaluation_home_side_offset_summary,
+    opener_evaluation_metric_draws,
     opener_evaluation_metrics,
     opener_pick_evaluation,
     predict_close_for_week,
@@ -290,15 +290,6 @@ def _find_drift_cards(
     feature_profile: str,
     probability_method: str,
 ) -> list[tuple[dict[str, Any], Path]]:
-    """Every margin-predict card matching this drift query, oldest first.
-
-    Cards are matched on configuration -- feature profile and probability
-    method, not directory name or recency -- because the active model's card
-    and every challenger's card share one ``margin_predictions`` namespace and
-    picking the newest would silently monitor the wrong model (the same
-    fingerprint lesson ``prospective-record`` learned; see
-    ``docs/prospective_evidence.md``).
-    """
 
     root = artifacts_root / "margin_predictions"
     if not root.is_dir():
@@ -421,6 +412,8 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
                 block="week",
                 samples=args.bootstrap_samples,
                 seed=args.bootstrap_seed,
+                metric_columns=OPENER_EVALUATION_METRIC_COLUMNS,
+                metric_draw_factory=opener_evaluation_metric_draws,
             ),
             week_blocked_bootstrap(
                 scored,
@@ -428,6 +421,8 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
                 block="season",
                 samples=args.bootstrap_samples,
                 seed=args.bootstrap_seed,
+                metric_columns=OPENER_EVALUATION_METRIC_COLUMNS,
+                metric_draw_factory=opener_evaluation_metric_draws,
             ),
         ],
         ignore_index=True,
@@ -585,7 +580,6 @@ def register_scoring(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the CLV scoring and paper-ledger commands."""
 
     clv_score = subparsers.add_parser(
         "clv-score", help="score a predictions parquet for closing-line value (CLV)"
@@ -624,7 +618,6 @@ def register_diagnostics(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the drift, pilot and opener/close diagnostic commands."""
 
     drift_report = subparsers.add_parser(
         "drift-report",

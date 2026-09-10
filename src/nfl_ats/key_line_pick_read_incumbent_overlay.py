@@ -1,20 +1,3 @@
-"""Smooth-everywhere two-way read, paired against the served key-line pick read.
-
-MOD-18 lane T promotion (2026-09-08, docs/key_line_pick_read.md): on games
-whose Tuesday line sits exactly on 3 or 7 the served pick is read off the
-key-number lattice. This challenger tracks the read WITHOUT that policy --
-the smooth ``gaussian_median`` two-way read on every game, offset included,
-the pick exactly as it was served before the promotion -- so the 2026 season
-scores both arms on the same games at no rotation-window cost.
-
-Like ``home_side_offset_incumbent_overlay`` it never refits:
-``margin-predict`` writes both reads per game into ``key_line_pick_read.json``
-beside the card, and this recorder reads the smooth probability from that
-sidecar verbatim. It refuses a forecast without a served sidecar (a
-pre-promotion card carries no paired read to record) and a fingerprint
-drift, exactly like its siblings.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -48,13 +31,6 @@ CHALLENGER_ID = "key_line_pick_read_off_incumbent"
 
 
 def smooth_card(card: pd.DataFrame, sidecar: dict[str, Any]) -> pd.DataFrame:
-    """``card`` with ``home_cover_probability`` replaced by the smooth read.
-
-    Every game on the card must appear in the sidecar; a missing game is a
-    contract failure, never a silent zero, because the whole point of the
-    pair is that both arms scored the same games. On an untouched game the
-    smooth read IS the served read, so only the touched games can differ.
-    """
 
     games = sidecar.get("games")
     if not isinstance(games, list):
@@ -91,12 +67,6 @@ def record_key_line_pick_read_incumbent_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the smooth-everywhere read's forced picks to the prospective challenger ledger.
-
-    ``data_root`` is accepted for signature parity with the other recorders
-    (the lock-day rehearsal calls every recorder the same way); this one
-    needs only the active forecast directory.
-    """
 
     del data_root
     entry = find_challenger(artifacts_root, CHALLENGER_ID)

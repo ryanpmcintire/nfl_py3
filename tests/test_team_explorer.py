@@ -1,11 +1,3 @@
-"""Tests for the team-explorer page logic and rendering.
-
-Driven entirely with the deterministic :func:`make_schema_fixture` (and a
-small hand-built feature table) so the contract holds with no on-disk parquet.
-Every function degrades to a clean empty state when its input is absent, and
-that path is asserted directly.
-"""
-
 from __future__ import annotations
 
 import pandas as pd
@@ -16,7 +8,6 @@ from nfl_ats.constants import STATE_METRICS
 
 
 def _feature_table() -> pd.DataFrame:
-    """A tiny canonical per-game feature table with home_/away_ state columns."""
 
     rows = {
         "game_id": ["2025_01_ARI_BUF"],

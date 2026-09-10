@@ -88,11 +88,6 @@ def test_bootstrap_validation(model_frame: pd.DataFrame) -> None:
 
 
 def test_block_bootstrap_intervals_flags_a_degenerate_block_count() -> None:
-    """REGRESSION TEST for D4 (``docs/estimation_variance.md`` sec 13): this
-    single-arm estimator reports levels, not paired deltas, but is exactly as
-    vulnerable to a low block count as
-    ``experiments.paired_feature_comparisons`` and must carry the same guard.
-    """
 
     rows = []
     for game in range(24):
@@ -131,12 +126,6 @@ def test_block_bootstrap_intervals_flags_a_degenerate_block_count() -> None:
 
 
 def _clv_predictions() -> pd.DataFrame:
-    """Two completed games, one per season, with known forced picks.
-
-    KC-CIN: model takes HOME (probability 0.7). SEA-NE: model takes AWAY
-    (probability 0.3). ``spread_line`` is the nflverse schedule close used as
-    the clv pipeline's fallback close.
-    """
 
     return pd.DataFrame(
         {
@@ -157,14 +146,6 @@ def _clv_predictions() -> pd.DataFrame:
 
 
 def _clv_store(root: Path) -> Path:
-    """Archive with tue_open + sun_late_close snapshots for both games.
-
-    Hand-computed pairing (median across 2 identical books):
-    - KC-CIN tue_open home_spread = +1.5, sun_late_close = +4.0, both captured
-      before the Thursday 00:20Z kickoff.
-    - SEA-NE tue_open home_spread = +2.5, sun_late_close = +1.0, both captured
-      before the Sunday 17:00Z kickoff.
-    """
 
     schedule = _clv_predictions()
     snapshots = [
@@ -209,7 +190,6 @@ def _clv_store(root: Path) -> Path:
 def test_season_scorecard_marks_clv_unavailable_without_capture_root(
     model_frame: pd.DataFrame,
 ) -> None:
-    """No archive supplied => explicit marker column, never a silent NaN."""
 
     predictions = model_frame.copy()
     predictions["home_cover_probability"] = 0.55
@@ -222,12 +202,6 @@ def test_season_scorecard_marks_clv_unavailable_without_capture_root(
 
 
 def test_season_scorecard_measures_clv_from_fixture_archive(tmp_path: Path) -> None:
-    """Hand-computed CLV through the real build_pairing_table/close_reference_table/score_clv path.
-
-    KC-CIN: HOME pick at decision spread +1.5, store close +4.0 =>
-    +1 * (4.0 - 1.5) = +2.5. SEA-NE: AWAY pick at decision spread +2.5,
-    store close +1.0 => -1 * (1.0 - 2.5) = +1.5.
-    """
 
     scorecard = season_scorecard(
         _clv_predictions(), market_capture_root=_clv_store(tmp_path / "raw")
@@ -242,7 +216,6 @@ def test_season_scorecard_measures_clv_from_fixture_archive(tmp_path: Path) -> N
 
 
 def test_season_scorecard_flags_seasons_the_archive_does_not_pair(tmp_path: Path) -> None:
-    """Partial archive coverage stays visible per season, not collapsed to NaN."""
 
     import json
     import shutil

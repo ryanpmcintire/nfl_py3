@@ -1,15 +1,3 @@
-"""Tests for the MOD-17 joint residual model (``docs/mod17_joint_residual_model.md``).
-
-Four things are pinned here, matching the task's own required coverage:
-(1) the two-target ridge fit shape, and the predeclared mathematical fact
-that it is column-independent (identical to two single-target fits);
-(2) a walk-forward cutoff leakage test built so that VIOLATING the guard
-changes the answer, mirroring ``tests/test_totals.py``'s own flip-week
-pattern; (3) the correlation math on a small hand-computable frame; and
-(4) enough of the realised-residual-frame / opener-evaluation plumbing to
-catch a wiring regression without re-deriving the real odds archive.
-"""
-
 from __future__ import annotations
 
 import numpy as np
@@ -46,16 +34,6 @@ def _synthetic_features(
     flip_week: int = 5,
     season: int = 2000,
 ) -> pd.DataFrame:
-    """A game table whose margin/total residuals REVERSE at ``flip_week``.
-
-    ``wind`` drives ``margin_residual`` with slope +6 before the flip week
-    and -6 from it onward (mirrors ``tests/test_totals.py``'s
-    ``_synthetic_population`` flip-week trick); ``temp`` drives
-    ``total_residual`` the same way. A walk-forward fit that honours the
-    guard when predicting the flip week has seen only the pre-flip regime;
-    one that leaked even a single later row has seen both, and the two give
-    visibly different predictions.
-    """
 
     generator = np.random.default_rng(20260905)
     rows = []
@@ -335,15 +313,6 @@ def test_leak_target_into_feature_replaces_only_the_named_column() -> None:
 
 
 def _synthetic_baseline(features: pd.DataFrame) -> pd.DataFrame:
-    """A hand-built stand-in for ``nfl_ats.clv.opener_pick_evaluation``'s output.
-
-    Only the columns :func:`joint_opener_pick_evaluation` and
-    :func:`paired_opener_accuracy` actually read. The reference "model" is
-    the simplest possible one -- always pick home to cover -- so
-    ``correct_at_open`` is just whether home actually covered; on the
-    zero-mean random ``margin_residual`` in :func:`_synthetic_features` that
-    reference sits near 50%, a legitimate (if unsophisticated) comparator.
-    """
 
     rows = []
     for _, row in features.iterrows():
@@ -396,16 +365,6 @@ def test_joint_opener_pick_evaluation_scores_every_baseline_week_and_agrees_on_t
 
 
 def test_joint_opener_pick_evaluation_positive_control_reads_hugely_positive() -> None:
-    """Leaking margin truth into a feature must make the sign-rule pick hugely accurate.
-
-    Not exactly 1.0: the pipeline's ridge penalty (alpha=10) shrinks even a
-    unit-slope, zero-noise relationship, and the earliest scored weeks train
-    on very few prior games. The real, full-scale positive control in
-    ``docs/mod17_joint_residual_model.md`` reads 96.9%, not 100%, for the
-    same reason; this synthetic fixture is smaller still, so the bar here is
-    looser than "nearly perfect" but still far above chance (baseline sign
-    accuracy on random noise is ~50%).
-    """
 
     features = _synthetic_features(weeks=8, games_per_week=40)
     baseline = _synthetic_baseline(features)

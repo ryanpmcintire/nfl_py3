@@ -1,20 +1,3 @@
-"""Positive-control sensitivity audit for the CFB market-residual benchmark.
-
-This ports the NFL evaluator sensitivity audit (``scripts/sensitivity_audit.py``)
-to the CFB-only benchmark: it measures whether the exact chronological weekly
-Ridge path used by ``cfb_benchmark`` recovers deliberately injected signal.
-The synthetic features are generated independently of real outcomes, then
-given a known counterfactual effect on the ATS margin (0.5, 1, and 2 points
-per feature standard deviation), repeated across independent signal draws,
-with permuted copies as negative controls. Before any effect is scored the
-audit must reproduce the benchmark's own market-residual predictions exactly;
-otherwise it measures a different evaluator and fails.
-
-Detection power is reported on the clean-core window (2012-2019, 2021-2025),
-the same sample the benchmark headline uses, with week- and season-blocked
-bootstrap intervals.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -130,13 +113,6 @@ def _fit_components(
     feature_columns: list[str],
     target: FloatArray,
 ) -> tuple[FloatArray, FloatArray]:
-    """One weekly fit reproducing ``fit_cfb_residual_model`` numerically.
-
-    Ridge is linear, so fitting the multi-output target ``[ats_margin,
-    signal]`` yields, for any effect ``e``, the prediction and residual
-    distribution of the counterfactual target ``ats_margin + e * signal`` as
-    the matching linear combination of columns.
-    """
 
     distribution_rows = int(len(training) * CFB_BENCHMARK_DISTRIBUTION_FRACTION)
     split = len(training) - distribution_rows
@@ -159,7 +135,6 @@ def _smoothed_probabilities(center: FloatArray, residuals: FloatArray) -> FloatA
 def _validate_benchmark_reproduction(
     reproduction: pd.DataFrame, *, prediction_rows: int
 ) -> tuple[float, float, int]:
-    """Fail unless the audit exactly reconstructs the benchmark evaluation."""
 
     prediction_error = float(
         np.abs(reproduction["baseline_yhat"] - reproduction["predicted_market_residual"]).max()
@@ -201,7 +176,6 @@ def run_cfb_sensitivity_audit(
     start_season: int = CFB_BENCHMARK_START_SEASON,
     min_train_games: int = CFB_BENCHMARK_MIN_TRAIN_GAMES,
 ) -> CfbSensitivityAuditResult:
-    """Measure the CFB benchmark's power to detect known injected effects."""
 
     if replicas < 1 or bootstrap_samples < 100:
         raise ValueError("replicas must be positive and bootstrap samples must be at least 100")
@@ -327,7 +301,6 @@ def run_cfb_sensitivity_audit(
 
 
 def summarize_cfb_sensitivity_details(details: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate replica rows into the detection-power table."""
 
     return (
         details.groupby("effect_points_per_sd", as_index=False)

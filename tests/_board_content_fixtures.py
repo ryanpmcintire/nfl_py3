@@ -1,15 +1,3 @@
-"""Shared ``BoardContent`` fixture for the ATS Terminal renderer tests.
-
-``board_terminal.render`` is a pure function over
-:class:`nfl_ats.board_content.BoardContent`, so its tests never need a real
-artifact tree -- a hand-built content object exercises the renderer exactly
-as thoroughly as one built from real artifacts. Shared here so
-``tests/test_board_terminal.py`` and ``tests/test_board_content_coverage.py``
-(the content-coverage guarantee that replaced the old cross-skin parity
-check once the Cover Desk skin was dropped) both render from the SAME
-fixture.
-"""
-
 from __future__ import annotations
 
 from dataclasses import replace
@@ -183,12 +171,6 @@ _BEST_PICK_COVER_CURVE = tuple(
 
 
 def build_fixture_dives(games: tuple[GameRow, ...]) -> tuple[GameDive, ...]:
-    """One dive per game: the Best Pick gets a full real attribution panel,
-    real cover curve (deliberately mismatched at offset 0 -- see the note
-    text below -- exercising the "designed disclosure" path), and a
-    line-offset adjuster; every other game exercises the degraded
-    "attribution not published" / "cover curve not published" / "adjuster
-    unavailable" paths, which the renderer must handle without raising."""
 
     dives = []
     for game in games:
@@ -261,7 +243,6 @@ def build_fixture_timeline(
 
 
 def build_fixture_content() -> BoardContent:
-    """A complete, deterministic 16-game ``BoardContent`` fixture."""
 
     games = build_fixture_games()
     headline = HeadlineStats(
@@ -388,7 +369,6 @@ def build_fixture_content() -> BoardContent:
 
 
 def build_fixture_history_content(*, settled: bool = False):
-    """Current-season results, a pending week, and a prior-season distractor."""
     from nfl_ats.board_site_content import HistoryPageContent, HistoryPickRow
 
     board = build_fixture_content()
@@ -430,10 +410,6 @@ def build_fixture_history_content(*, settled: bool = False):
 
 
 def build_fixture_content_with_degraded_states() -> BoardContent:
-    """Same fixture, but with EVERY game's dive in its designed
-    "unavailable" state -- exercises the degraded paths the renderer must
-    handle without raising, for the Best Pick's own panel too (not just the
-    other 15, which the default fixture already exercises)."""
 
     content = build_fixture_content()
     degraded_dives = tuple(
@@ -450,7 +426,6 @@ def build_fixture_content_with_degraded_states() -> BoardContent:
 
 
 def build_fixture_weak_spots():
-    """Small diagnostic table, deliberately distinct from real archive measurements."""
     from nfl_ats.model_weak_spots import HomeSplitRow, WeakSpotRow, WeakSpots
 
     return WeakSpots(

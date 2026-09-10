@@ -1,5 +1,3 @@
-"""Prospective challenger recording and scoring commands."""
-
 from __future__ import annotations
 
 import argparse
@@ -74,7 +72,6 @@ def _prospective_entrant_report(
     bootstrap_samples: int,
     bootstrap_seed: int,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Settle one entrant's ledger slice and summarize it (with intervals when settled)."""
 
     settled = settle_prospective_picks(decisions, outcomes, close_reference=close_reference)
     settled.insert(0, "entrant", name)
@@ -96,7 +93,6 @@ def _prospective_entrant_report(
 
 
 def _prospective_primary_entrants(active: pd.DataFrame) -> list[tuple[str, pd.DataFrame]]:
-    """Expose the played policy and its frozen raw-model control."""
 
     entrants = [("active_model", active)]
     if active.empty or "model_pick_side" not in active.columns:
@@ -238,7 +234,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the prospective ledger commands."""
 
     prospective_record = subparsers.add_parser(
         "prospective-record",

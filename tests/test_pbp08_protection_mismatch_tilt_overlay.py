@@ -1,5 +1,3 @@
-"""Tests for the PBP-08 protection-mismatch flags and tilt overlay."""
-
 from __future__ import annotations
 
 import numpy as np

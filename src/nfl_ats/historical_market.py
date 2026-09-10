@@ -1,11 +1,3 @@
-"""Free historical NFL market data acquisition and normalization.
-
-The public Spreadspoke/Kaggle archive contains one reported closing spread per
-game.  It is useful as an independent source and for opening-vs-closing work if
-an opener is added later, but it is not a timestamped quote history.  This
-module keeps that limitation explicit in every normalized row.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -75,7 +67,6 @@ def _http_bytes(url: str) -> bytes:
 
 
 def fetch_spreadspoke_archive() -> tuple[bytes, dict[str, Any]]:
-    """Download the public archive and its Kaggle version metadata."""
 
     archive = _http_bytes(SPREADSPOKE_DOWNLOAD_URL)
     metadata_payload = json.loads(_http_bytes(SPREADSPOKE_METADATA_URL))
@@ -92,7 +83,6 @@ def fetch_spreadspoke_archive() -> tuple[bytes, dict[str, Any]]:
 
 
 def parse_spreadspoke_archive(payload: bytes) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Read and validate the scores and franchise map from an archive payload."""
 
     try:
         with zipfile.ZipFile(io.BytesIO(payload)) as archive:
@@ -128,7 +118,6 @@ def normalize_spreadspoke(
     *,
     source_version: int | str | None = None,
 ) -> pd.DataFrame:
-    """Normalize favorite-oriented rows to the project's home-oriented convention."""
 
     require_columns(scores, SCORES_REQUIRED_COLUMNS, "spreadspoke_scores")
     require_columns(teams, TEAMS_REQUIRED_COLUMNS, "spreadspoke_teams")
@@ -185,7 +174,6 @@ def normalize_spreadspoke(
 
 
 def attach_nflverse_games(market: pd.DataFrame, reference_games: pd.DataFrame) -> pd.DataFrame:
-    """Attach nflverse IDs by season/date and stable franchise identifiers."""
 
     require_columns(
         reference_games,
@@ -215,7 +203,6 @@ def attach_nflverse_games(market: pd.DataFrame, reference_games: pd.DataFrame) -
 
 
 def audit_spread_agreement(market: pd.DataFrame) -> tuple[dict[str, Any], pd.DataFrame]:
-    """Compare overlapping reported closes with nflverse's historical close."""
 
     require_columns(
         market,
@@ -264,7 +251,6 @@ def write_historical_market_snapshot(
     discrepancies: pd.DataFrame | None = None,
     now: datetime | None = None,
 ) -> HistoricalMarketSnapshot:
-    """Write an immutable raw archive, normalized table, audit, and manifest."""
 
     instant = now or datetime.now(UTC)
     if instant.tzinfo is None:
@@ -325,7 +311,6 @@ def fetch_historical_market_snapshot(
     reference_games: pd.DataFrame | None = None,
     now: datetime | None = None,
 ) -> HistoricalMarketSnapshot:
-    """Fetch, normalize, cross-check, and preserve the public archive."""
 
     payload, metadata = fetch_spreadspoke_archive()
     scores, teams = parse_spreadspoke_archive(payload)

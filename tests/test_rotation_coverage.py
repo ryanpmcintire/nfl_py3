@@ -1,16 +1,3 @@
-"""Tests for ENG-27 rotation-registry coverage (ROADMAP.md Phase 13).
-
-Three pieces, tested together because they only make sense as a pipeline:
-``registry_explorer.coverage_plan`` (read-only: what should happen),
-``rotation.declare_coverage_stub`` / ``rotation.record_no_rotation_needed``
-(the write paths), and the ``nfl-ats rotation declare-coverage`` CLI that
-drives them. Every test either builds small synthetic registries (precise
-assertions on the classifier and the name-collision fallback) or copies the
-REAL tracked registries into ``tmp_path`` (a faithful dry-run/apply/idempotent
--second-apply rehearsal, with a byte-for-byte check that no pre-existing
-family or ``no_rotation_needed`` entry is ever mutated).
-"""
-
 from __future__ import annotations
 
 import json
@@ -304,18 +291,6 @@ def test_apply_is_idempotent_and_touches_no_pre_existing_family() -> None:
 
 
 def _write_uncovered_rotation_copy(destination: Path) -> None:
-    """Write a tmp copy of the LIVE rotation registry with ENG-27 coverage stripped.
-
-    ENG-27's own ``rotation declare-coverage --apply`` has already been run
-    for real against the tracked registry (that is this ticket's whole
-    point), so a byte-for-byte copy of the live file has ZERO uncovered
-    weak-signal families left -- a dry-run/apply test against it would
-    trivially plan nothing. Stripping every ``declared_for_coverage`` stub
-    and the ``no_rotation_needed`` section reconstructs the pre-ENG-27 state
-    (the 30 families declared by hand before this ticket) on a COPY, so this
-    test stays meaningful regardless of how complete the live registry's own
-    coverage becomes over time.
-    """
 
     payload = json.loads(LIVE_ROTATION.read_text(encoding="utf-8"))
     families = payload["families"]

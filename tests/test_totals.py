@@ -1,11 +1,3 @@
-"""Tests for the over/under regime (``docs/totals_model.md``, run 2026-09-01).
-
-The four the frozen contract names, in its order: the walk-forward guard, the
-feature allowlist, the blend math, and the tiebreaker wiring. The guard test
-is deliberately built so that VIOLATING it changes the answer -- a guard test
-that passes whether or not the guard exists is not a test.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -43,14 +35,6 @@ def _synthetic_population(
     flip_week: int = 4,
     season: int = 2000,
 ) -> pd.DataFrame:
-    """A population whose signal REVERSES at ``flip_week``.
-
-    ``wind`` drives the residual with slope +5 before the flip week and -5
-    from it onward. A model that honours the walk-forward guard when
-    predicting the flip week has seen only the +5 regime; a model that leaked
-    even one row from that week onward has seen both. The two therefore give
-    visibly different predictions, which is what makes the guard testable.
-    """
 
     rows = []
     generator = np.random.default_rng(20260901)
@@ -354,22 +338,6 @@ def test_tiebreaker_report_line_names_the_totals_disagreement_and_the_weight() -
 
 
 def test_totals_blend_cannot_move_the_neighborhood_across_a_line_bucket() -> None:
-    """The totals blend must never move the guess by moving a WINDOW EDGE.
-
-    This replaces a test that pinned the opposite (WP14, 2026-09-01). The old
-    ``_neighborhood`` used a HARD +/-1.5-point total window, and quoted totals
-    are quantized to half points, so a blend nudge smaller than the quantum
-    dropped or added a whole bucket of comparable games. Measured on the live
-    board 2026-09-01: with the market total 43.0 the window held 259 games
-    (buckets 41.5 through 44.5); at the blended 43.0421 it held 221 (the 41.5
-    bucket fell outside), the median actual total moved 43 -> 41, and the
-    published guess moved DOWN from KC 23 - DEN 20 to KC 22 - DEN 19 while the
-    totals model was arguing the total should be HIGHER (+0.42). A displayed
-    number moving the wrong way off a mechanical edge is a defect. The
-    neighborhood is now kernel-weighted and continuous in its centre, so the
-    0.042-point nudge moves the LINE (as the model said) and leaves the
-    comparable-game weighting, the median and the guess where they were.
-    """
 
     from nfl_ats.tiebreaker import MarketConsensus, build_report, lined_finals
 

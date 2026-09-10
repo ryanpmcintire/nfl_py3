@@ -1,16 +1,3 @@
-"""ENG-24: overlay and tiebreaker lineage on the card that is actually played.
-
-``nfl_ats.lineage`` already has tested adapters (``overlay_sources_from_composition``,
-``TiebreakerSource``) that turn a fired overlay or a tiebreaker input into a
-:class:`~nfl_ats.lineage.LineageRecord`; this module tests the WIRING that was
-previously missing: :func:`nfl_ats.lineage.extend_card_lineage_for_publication`
-(extend a forecast's own lineage with those records) and
-:func:`nfl_ats.tiebreaker.tiebreaker_lineage_sources` (the adapter from a built
-``TiebreakerReport`` to ``TiebreakerSource`` records), plus one end-to-end
-check that ``nfl_ats.publishing.publish_active_predictions`` actually calls
-them and writes the result as ``lineage.json`` beside the published card.
-"""
-
 from __future__ import annotations
 
 import json
@@ -161,9 +148,6 @@ def _finals() -> pd.DataFrame:
 
 
 def test_tiebreaker_record_present_when_configured() -> None:
-    """The market consensus alone is always recordable; a snapshot id embedded
-    in its ``source`` (the real ``snapshot_consensus`` naming convention)
-    resolves to a real capture instant rather than the fallback."""
 
     consensus = MarketConsensus(
         game_id="2026_01_DEN_KC",
@@ -306,9 +290,6 @@ def _write_arrest_snapshot(data_root: Path, *, snapshot_id: str, fetched_at_utc:
 
 
 def _write_played_card_fixture(root: Path) -> tuple[Path, Path]:
-    """One coach-fade-eligible game (KEEP hosting YR1's new coach) and NO
-    ``lineage.json`` for the forecast -- exercises the "build a fresh base
-    lineage" fallback path in the same test as the overlay wiring."""
 
     forecast = root / "margin_predictions" / "forecast"
     forecast.mkdir(parents=True)
@@ -413,8 +394,6 @@ def test_publish_writes_played_card_lineage_beside_the_card_not_the_forecast(
 
 
 def test_overlay_source_dataclass_still_round_trips_through_the_played_card(tmp_path: Path) -> None:
-    """Sanity check on the OverlaySource/TiebreakerSource shapes the publish
-    path constructs, independent of the composition/tiebreaker machinery."""
 
     base = _base_lineage()
     overlay = OverlaySource(

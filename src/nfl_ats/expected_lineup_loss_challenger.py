@@ -1,5 +1,3 @@
-"""LEAD-62: production plus frozen expected lineup loss, paired prospectively."""
-
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -57,7 +55,6 @@ def _record_instant(now: datetime | None) -> pd.Timestamp:
 
 @contextmanager
 def candidate_profile() -> Iterator[None]:
-    """Extend feature sets only for this refit, restoring them on every exit."""
     original = margin.margin_feature_set
 
     def feature_set(target: Any, feature_profile: Any = "base") -> str:
@@ -85,7 +82,6 @@ def candidate_profile() -> Iterator[None]:
 def visible_sources(
     panel: pd.DataFrame, injuries: pd.DataFrame, now: pd.Timestamp
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Publication time additionally bounds each game's pool decision cutoff."""
     observed = pd.to_datetime(
         panel.get("depth_observed_at", pd.Series(pd.NaT, index=panel.index)), utc=True
     )
@@ -101,7 +97,6 @@ def visible_sources(
 def build_stacked_features(
     base_features: pd.DataFrame, data_root: Path, now: pd.Timestamp, card: pd.DataFrame
 ) -> pd.DataFrame:
-    """Build historical losses and current starters from local predecision inputs."""
     panel = pd.read_parquet(data_root / "processed/play_probability_panel.parquet")
     snapshot = latest_player_snapshot(data_root / "players/raw")
     injuries, rosters, snaps = load_player_snapshot(snapshot, include_postseason=False)
@@ -141,12 +136,6 @@ def record_expected_lineup_loss_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Freeze candidate and baseline forced picks at the same decision spread.
-
-    The active recipe is fingerprint-pinned. Missing local inputs skip; future
-    forecasts refuse. Historical fits remain chronological, and no active
-    model, forecast or production feature profile is changed.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

@@ -280,9 +280,6 @@ _PROMOTED_CAVEAT_TOKENS = {
 def test_promoted_row_summary_carries_the_selection_caveat_and_no_other_row_does(
     ledger_paths: tuple[Path, Path, Path],
 ) -> None:
-    """2026-08-23: the promoted card's archive score was the best of 127
-    subsets, so its summary must state the selection caveat verbatim; every
-    challenger row stays untouched."""
 
     challengers, weak, manifest = ledger_paths
     ledger = build_model_ledger(challengers, weak, manifest)
@@ -298,10 +295,6 @@ def test_promoted_row_summary_carries_the_selection_caveat_and_no_other_row_does
 def test_promoted_row_summary_quotes_no_track_record_percentage(
     ledger_paths: tuple[Path, Path, Path],
 ) -> None:
-    """2026-08-23 consolidation law (owner directive): the played card's ledger
-    row must not re-quote its own track record -- the picks page carries the
-    one expectation number and the collapsed ladder carries the history, so the
-    only percentage the promoted summary may contain is the caveat's."""
 
     challengers, weak, manifest = ledger_paths
     ledger = build_model_ledger(challengers, weak, manifest)
@@ -528,8 +521,6 @@ def test_render_ledger_html_has_plain_headers_and_no_self_narration(
 def test_render_ledger_html_promoted_row_leads_with_name_and_hashes_into_title(
     ledger_paths: tuple[Path, Path, Path],
 ) -> None:
-    """B12: the promoted row must lead with its plain name; the raw model id
-    lives in the title attribute, never as the visible headline."""
 
     challengers, weak, manifest = ledger_paths
     ledger = build_model_ledger(challengers, weak, manifest)
@@ -543,8 +534,6 @@ def test_render_ledger_html_promoted_row_leads_with_name_and_hashes_into_title(
 def test_render_ledger_html_floors_extreme_p_plus_honestly(
     ledger_paths: tuple[Path, Path, Path],
 ) -> None:
-    """B10: a computed P+ of 0.998+ must display as ">0.99", never a fake
-    "1.00" -- and always adjacent to n."""
 
     challengers, weak, manifest = ledger_paths
     rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
@@ -553,10 +542,6 @@ def test_render_ledger_html_floors_extreme_p_plus_honestly(
 
 
 def _pplus_fixtures(tmp_path: Path) -> tuple[Path, Path, Path]:
-    """Ledger fixtures mirroring the three real rows the baseline flagged:
-    intervals rendered with no P+ anywhere because their ``registry_source``
-    names no weak_signals key (or none at all), while their own evidence
-    block carries a measured ``probability_positive``."""
 
     registry = _write_json(
         tmp_path / "weak_signals.json",
@@ -623,11 +608,6 @@ def _pplus_fixtures(tmp_path: Path) -> tuple[Path, Path, Path]:
 def test_interval_rows_render_a_p_plus_cell(
     tmp_path: Path,
 ) -> None:
-    """Dimension-3 contract: any challenger row that renders an accuracy-points
-    interval also renders a P+ marker beside it -- measured when available,
-    an explicit em dash when not -- so an interval can never sit bare again.
-    The promoted row's interval is a season accuracy-proportion CI, not an
-    accuracy-points effect interval, and is exempt."""
 
     challengers, weak, manifest = _pplus_fixtures(tmp_path)
     rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
@@ -650,9 +630,6 @@ def test_interval_rows_render_a_p_plus_cell(
 def test_own_evidence_probability_fills_the_registry_gap(
     tmp_path: Path,
 ) -> None:
-    """A challenger whose registry_source links no weak_signals key still has
-    its measured probability_positive surfaced: beside the interval, in the
-    summary sentence, and in the markdown table."""
 
     challengers, weak, manifest = _pplus_fixtures(tmp_path)
     ledger = build_model_ledger(challengers, weak, manifest)
@@ -680,8 +657,6 @@ def test_own_evidence_probability_fills_the_registry_gap(
 def test_interval_without_measurable_probability_states_it(
     tmp_path: Path,
 ) -> None:
-    """When no measured P+ exists anywhere in the row's data, the interval
-    cell says so explicitly rather than silently omitting it."""
 
     challengers, weak, manifest = _pplus_fixtures(tmp_path)
     rendered = render_ledger_html(build_model_ledger(challengers, weak, manifest))
@@ -691,8 +666,6 @@ def test_interval_without_measurable_probability_states_it(
 def test_own_probability_participates_in_confidence_ordering(
     tmp_path: Path,
 ) -> None:
-    """The caption promises ordering by best-evidence P+ descending; own
-    registered evidence counts toward that promise once it is surfaced."""
 
     challengers, weak, manifest = _pplus_fixtures(tmp_path)
     ledger = build_model_ledger(challengers, weak, manifest)

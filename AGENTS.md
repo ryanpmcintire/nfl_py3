@@ -80,10 +80,10 @@ distribution has local peaks at exactly ±3, ±7, ±10, ±14, ±17.
 - A comparison of two pooled-residual mappings against each other (the
   MOD-08 Gaussian-vs-ECDF test) is not a test of this rule and may not be
   cited as one.
-- **No unexplained threshold flips on the played card** (owner, 2026-09-07,
-  verbatim: "no more arbitrary pick flips because we can't explain a drop in
-  accuracy at certain point thresholds... we need to be able to explain
-  these things so we can understand the weak points in the model"). A rule
+- **No unexplained threshold flips on the played card** (owner, 2026-09-07:
+  a pick flip that cannot explain the accuracy drop it responds to is
+  arbitrary, and the weak points of the model have to be understood, not
+  papered over). A rule
   that flips the model's pick must name a mechanism; an accuracy dip that is
   only located at a spread threshold is a DIAGNOSIS to publish (the Model
   page's weak-spots table, MOD-18's reliability tables) and a modelling
@@ -309,7 +309,7 @@ invisible until someone regenerates and deploys the pages.
 
 ## Test moratorium (binding, owner, 2026-09-09)
 
-Owner, verbatim: "we need a moratorium on tests." Measured the same day: 6,471
+Owner directive: a moratorium on tests. Measured the same day: 6,471
 test functions across 367 files, 143,236 lines of test against 161,865 lines
 of source; 303 assertions pin an exact number literal that is edited to match
 on every legitimate change; 38 files test one-off research scripts that will
@@ -332,14 +332,40 @@ on a Tuesday) had no test and were interactions no pin would have caught.
 - The cut itself (which of the 367 files survive) is a separate owner
   decision; propose the list, do not delete unasked.
 
+### Two tiers of tests (binding, owner, 2026-09-10)
+
+Owner directive: tests split into two kinds, those checked in because they
+have long-term value and those written only to validate an experiment, a
+script or scaffolding in the moment, and the second kind is never committed.
+
+- **Durable tests** live under `tests/` proper and are the only tests that
+  may be committed. A durable test protects a contract the project would
+  regress without noticing: prediction safety, leakage / point-in-time
+  chronology, evaluator arithmetic, the board render contract, the
+  scheduler argv contract, registry closure validation. It never pins an
+  exact research number, never exercises a one-off script, and never
+  exists to prove a single session's scaffolding worked.
+- **Throwaway tests** live under `tests/scratch/`, which is gitignored and
+  refused by the pre-commit hook. `pytest` still collects them locally
+  (`testpaths = ["tests"]`), so a session validating an experiment, a
+  script or scaffolding writes its checks there, runs them, and leaves them
+  to be deleted with the scratch work. They are never promoted by moving
+  the file; a durable test is written on purpose against the list above.
+- The moratorium above still governs `tests/` proper: no new durable test
+  file or function until the owner lifts it. `tests/scratch/` is exempt
+  because nothing there is checked in.
+- Measured 2026-09-10 before the cut: 371 test files, 134,821 lines, of
+  which 107 files imported one-off research scripts and 34 of those tested
+  nothing else. Those are exactly the throwaway tier that had been checked
+  in for lack of a place to put it.
+
 ## No code comments (binding, owner, 2026-09-09)
 
-Owner, verbatim: "you also arent allowed to write code comments anymore. im
-serious... comments are banned and i actually want you to methodically delete
-existing comments." Measured the same day: 21,515 comment tokens in 780 files,
+Owner directive: code comments are banned outright, and the existing ones
+were to be deleted methodically. Measured the same day: 21,515 comment tokens in 780 files,
 24,821 lines, stripped in one pass (`scripts/strip_comments.py`).
 
-- No `#` comments in any `.py`, `.ps1`, `.sh` or `.cmd` file. Pragmas
+- No `#` comments and no docstrings in any `.py`, `.ps1`, `.sh` or `.cmd` file. Pragmas
   (`# noqa`, `# type:`, `# pragma`, the shebang) are the only exception.
 - Enforced twice: `.claude/hooks/guard_comments.py` denies any Edit/Write
   that adds one, and `.githooks/pre-commit` refuses a commit whose staged
@@ -347,7 +373,14 @@ existing comments." Measured the same day: 21,515 comment tokens in 780 files,
 - Subagents never see the hook on shell-written files; every subagent prompt
   says "no code comments" and the pre-commit check is the backstop.
 - Rationale belongs in the commit message, the ROADMAP row, or a doc, not
-  beside the code. Keep docstrings to one line.
+  beside the code.
+- **Docstrings are comments (owner, 2026-09-10).** Measured that day after
+  the `#` strip: 4,129 docstrings, 2,958 of them multi-line, 33,384 lines,
+  12.3% of all Python. No docstring of any length in any `.py` file:
+  module, class or function. The hook denies any Edit/Write that adds one
+  and `scripts/strip_comments.py --check` (pre-commit) refuses one; the
+  stripper removes them (a body left empty becomes `pass`). CLI help text
+  is a string literal passed to argparse, never `__doc__`.
 
 ## Repository hygiene
 

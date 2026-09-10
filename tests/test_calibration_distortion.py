@@ -20,12 +20,6 @@ from nfl_ats.purged_cv import synthetic_signal_accuracy, synthetic_signal_beta
 
 
 def test_full_pipeline_pick_matches_margin_model_predict(cfb_features_frame: pd.DataFrame) -> None:
-    """The vectorised pick must equal the production ``home_cover_probability >= 0.5``.
-
-    This is the pin that lets the screen skip ``MarginModel.predict``'s
-    per-row Python loop; if the two ever diverge the whole experiment is
-    measuring something other than the production rule.
-    """
 
     model = fit_cfb_residual_model(cfb_features_frame)
     forecasts = model.predict(cfb_features_frame)
@@ -48,7 +42,6 @@ def test_full_pipeline_pick_matches_smoothed_probability_directly() -> None:
 
 @pytest.mark.parametrize("size", [1, 2, 3, 10, 11, 100, 101])
 def test_implied_threshold_reproduces_full_pipeline_pick(size: int) -> None:
-    """The full pipeline is exactly a threshold on the predicted residual."""
 
     rng = np.random.default_rng(size)
     residuals = rng.normal(loc=1.1, scale=12.0, size=size)
@@ -58,7 +51,6 @@ def test_implied_threshold_reproduces_full_pipeline_pick(size: int) -> None:
 
 
 def test_zero_centred_residuals_make_the_two_estimators_agree() -> None:
-    """With a symmetric, zero-median residual sample the location term vanishes."""
 
     residuals = np.array([-3.0, -1.0, 0.0, 1.0, 3.0])
     predicted_residual = np.array([-2.0, -0.5, 0.5, 2.0])
@@ -70,16 +62,6 @@ def test_zero_centred_residuals_make_the_two_estimators_agree() -> None:
 
 
 def test_even_sized_residual_sample_uses_the_upper_median() -> None:
-    """An even sample has no exact median, so the threshold lands on an order statistic.
-
-    ``(successes + 0.5) / (n + 1) >= 0.5`` needs ``successes >= n / 2``, and
-    with ``n`` even that is the ``n/2``-th largest draw -- the UPPER of the two
-    middle values, not their average. On a perfectly symmetric four-draw sample
-    this leaves a small nonzero threshold where the median is exactly zero. The
-    effect is O(one order-statistic gap) and negligible at the 100-2,500 draw
-    sizes ``fit_cfb_residual_model`` actually produces, but it is real and is
-    pinned here so it is never mistaken for a location bias.
-    """
 
     residuals = np.array([-3.0, -1.0, 1.0, 3.0])
     assert float(np.median(residuals)) == pytest.approx(0.0)
@@ -87,7 +69,6 @@ def test_even_sized_residual_sample_uses_the_upper_median() -> None:
 
 
 def test_positive_residual_location_shifts_the_threshold_negative() -> None:
-    """A residual sample sitting above zero buys home picks it would not otherwise make."""
 
     residuals = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
     assert implied_pick_threshold(residuals) == pytest.approx(-3.0)
@@ -178,7 +159,6 @@ def test_additive_plant_validates_its_inputs() -> None:
 
 
 def test_additive_gamma_matches_the_overwrite_plants_own_scale() -> None:
-    """An additive '1.3 point' plant carries the identical coefficient the overwrite plant uses."""
 
     noise_std = 15.43
     assert additive_plant_gamma(0.513, noise_std) == pytest.approx(

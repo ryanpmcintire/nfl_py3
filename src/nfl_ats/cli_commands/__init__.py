@@ -1,22 +1,3 @@
-"""Per-domain ``nfl-ats`` subcommand modules.
-
-Each module owns the ``add_parser`` blocks and the ``_cmd_*`` handlers for one
-domain and exposes one or more registrar callables with the uniform signature
-``(subparsers, current_year) -> None``.
-
-``nfl_ats.cli.build_parser`` walks :data:`REGISTRARS` in order and calls each
-entry once. **That order is the ``nfl-ats --help`` listing order**, so it is
-part of the CLI contract: ``tests/test_cli_contract.py`` pins it against
-``tests/fixtures/cli_contract.json``. A domain whose commands are not
-contiguous in that historical order exposes one registrar per contiguous run
-(``market.register_odds`` and ``market.register_backfill``, for example) rather
-than being reordered.
-
-``current_year`` is threaded through instead of each registrar reading the
-clock so that one ``build_parser()`` call can never mix two calendar years in
-its defaults.
-"""
-
 from __future__ import annotations
 
 import argparse

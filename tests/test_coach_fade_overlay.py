@@ -1,20 +1,3 @@
-"""Year-1 head-coach fade overlay (PER-07 offshoot, docs/coach_fade_overlay.md).
-
-Three things are load-bearing here, matching AGENTS.md's "add a leakage
-regression test for every new feature family" and the owner's dual-arm
-recording requirement:
-
-1. :func:`year_one_by_game`'s flag is derived from data, not hand-typed, and
-   is pregame-safe -- a later week's or a later season's coach data must never
-   retroactively change an earlier game's flag.
-2. :func:`apply_coach_fade_overlay` flips ONLY the clean case (model sides
-   with a year-1 team against a KEPT-coach opponent), inside weeks 1-8, and
-   touches no other column.
-3. :func:`record_overlay_challenger_decisions` writes the overlay's own
-   picks -- which can diverge from the active model's raw picks on a flipped
-   game -- to the prospective challenger ledger, so both arms are on record.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -115,8 +98,6 @@ def test_year_one_by_game_requires_an_observed_contiguous_prior_season() -> None
 
 
 def test_year_one_flags_reproduce_the_seven_2026_teams_from_local_schedule_data() -> None:
-    """End-to-end sanity check against the SAME source the Week 1 2026 brief
-    used, proving the flag is derived rather than hand-typed."""
 
     path = Path("data/raw/20260817T235649Z/schedules.parquet")
     if not path.is_file():
@@ -132,12 +113,6 @@ def test_year_one_flags_reproduce_the_seven_2026_teams_from_local_schedule_data(
 
 
 def test_year_one_flag_is_leak_safe_against_a_later_week_mutation() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    Week 1's flag for YR1 must not move when week 5's OWN credited coach
-    value changes -- that would mean a later, in-season fact reached back and
-    relabeled an earlier, already-pregame-known game.
-    """
 
     baseline = year_one_by_game(_tenure_schedules()).set_index("game_id")
 
@@ -152,8 +127,6 @@ def test_year_one_flag_is_leak_safe_against_a_later_week_mutation() -> None:
 
 
 def test_year_one_flag_is_leak_safe_across_the_season_boundary() -> None:
-    """A future season's schedule (even one with the same teams) must never
-    change an earlier season's already-computed flag."""
 
     schedules = _tenure_schedules()
     baseline = year_one_by_game(schedules)
@@ -218,8 +191,6 @@ def test_overlay_disabled_is_a_no_op() -> None:
 
 
 def test_overlay_changes_only_home_cover_probability_on_the_flipped_row() -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical -- the pick-level design's whole point."""
 
     predictions = _predictions()
     result = apply_coach_fade_overlay(predictions, _tenure_schedules())
@@ -366,7 +337,6 @@ def test_record_overlay_challenger_refuses_an_inactive_registration(tmp_path: Pa
 
 
 def test_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

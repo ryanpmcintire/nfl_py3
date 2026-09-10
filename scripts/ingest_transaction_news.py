@@ -1,83 +1,3 @@
-"""Bulk ingestion of the Pro Football Rumors (PFR-rumors, not pro-football-
-reference) transaction-wire archive: signings, cuts, trades, IR moves,
-practice-squad churn.
-
-Follow-up to `docs/archive/data_source_scout_v3.md` rank-1 candidate ("Pro Football
-Rumors transaction-wire sitemap"). Clones the structure of
-`scripts/ingest_injury_news.py` (see `docs/injury_news_sourcing.md` sections
-1-4 for the proven pattern this mirrors: sitemap-index -> per-chunk fetch ->
-URL/slug extraction -> a small per-article JSON-LD verification sample), with
-two adaptations specific to this source:
-
-1. PFR chunks its sitemap by YEAR, not by month
-   (`sitemap-posttype-post.YYYY.xml`), so this script fetches yearly chunks.
-2. PFR's sitemap `<lastmod>` is measured (this session) to be CONTAMINATED by
-   a site-wide bulk retouch: a 2015-09-23 article
-   (`/2015/09/minor-nfl-transactions-9-23-15`) carries `<lastmod>
-   2025-12-26T23:27:00-06:00` while its own JSON-LD `datePublished` correctly
-   reads `2015-09-23T16:47:54-05:00` (`dateModified` also reads
-   2025-12-26 -- a genuine re-touch, not a parsing bug). `<lastmod>` is
-   therefore recorded for transparency but never treated as a publish-date
-   proxy. Two better signals are used instead: (a) the URL path itself
-   encodes `/YYYY/MM/slug` -- measured on the same article to match
-   `datePublished` exactly (`/2015/09/...` for a 2015-09-23 publish) -- a
-   free, reliable, no-extra-fetch year/month bound available for every url in
-   the full inventory; (b) a per-article JSON-LD `datePublished` fetch (exact
-   to the second) for a stratified verification sample, the same
-   per-article-verification pattern the PFT ingestion already uses.
-
-Source: `https://www.profootballrumors.com/sitemap.xml`, a WordPress sitemap
-index. Measured this session: yearly post chunks
-`sitemap-posttype-post.YYYY.xml` exist for 2013-2026, but 2013 and earlier
-return HTTP 200 with an empty urlset (one homepage placeholder `<url>`, no
-real content) -- true coverage starts at 2014. A `sitemap-posttype-page.xml`
-(static pages, not posts) and `sitemap-home.xml` also exist in the index and
-are deliberately excluded (not articles).
-
-Respects `robots.txt` (fetched and read this session):
-`https://www.profootballrumors.com/robots.txt` sets `Crawl-delay: 1` for
-`User-agent: *` and disallows only unrelated paths (`/wp-admin/`, `/search`,
-query-string variants) -- nothing on the sitemap or article paths used here.
-
-Private-research use only, matching this project's existing CFBD/cfbfastR and
-PFT precedent (`docs/data_feasibility.md` License item 6: "private
-caching/retention" permitted, raw tables "must never be republished"). Pro
-Football Rumors' own terms of use were not independently reviewed this
-session (label: inferred policy stance, not a verified legal fact) -- treat
-this archive the same way: cache privately, never republish, never
-redistribute raw rows.
-
-Usage:
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_transaction_news.py \\
-        --out data/raw/pfr_transactions --start 2014 --end 2026
-
-    # Stratified per-article JSON-LD verification sample (requires the
-    # yearly chunks for the sampled years already on disk):
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_transaction_news.py \\
-        --out data/raw/pfr_transactions --verify-sample 200
-
-Writes under --out/<snapshot>/ (default data/raw/pfr_transactions/<UTC
-timestamp>) -- gitignored by the repository's existing `data/raw/**` rule.
-The timestamped snapshot subdirectory matches this repo's existing
-convention: `nfl_ats.snapshots.latest_snapshot()` treats ANY directory
-directly under `data/raw/` that contains a `manifest.json` as a candidate
-schedules snapshot, so `manifest.json` must never sit directly at
-`data/raw/pfr_transactions/manifest.json` -- it must be nested one level
-down. Without `--snapshot`, a run resumes the most recent existing snapshot
-subdirectory under `--out` if one exists, or creates a fresh one.
-
-    <snapshot>/yearly/<YYYY>.parquet        one row per PFR post url in that
-                                              year's sitemap chunk.
-    <snapshot>/index.parquet                concatenation of every yearly
-                                              file present in this snapshot.
-    <snapshot>/manifest.json                run metadata + coverage summary.
-    <snapshot>/sample_articles/<slug>.json  per-article JSON-LD spot checks
-                                              (--verify-sample).
-    <snapshot>/date_verification_summary.json  aggregate match-rate stats
-                                              from the most recent
-                                              --verify-sample run.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -110,13 +30,6 @@ SNAPSHOT_DIR_RE = re.compile(r"^\d{8}T\d{6}Z$")
 
 
 def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
-    """Return the timestamped snapshot subdirectory to write/resume into.
-
-    A manifest.json must never sit directly at `out_dir` (see module
-    docstring). If `snapshot` is given, use/create `out_dir/snapshot`.
-    Otherwise resume the most recent existing `<UTC timestamp>` subdirectory
-    under `out_dir`, or create a fresh one.
-    """
 
     if snapshot is not None:
         snapshot_dir = out_dir / snapshot
@@ -136,9 +49,6 @@ def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
 
 
 def _latest_existing_snapshot(out_dir: Path, *, exclude: Path) -> Path | None:
-    """Most recent existing `<UTC timestamp>` snapshot dir under `out_dir`,
-    other than `exclude` (the brand-new snapshot dir a `--fresh-snapshot` run
-    just created). `None` if there is no prior snapshot to seed from."""
 
     candidates = sorted(
         path
@@ -151,25 +61,6 @@ def _latest_existing_snapshot(out_dir: Path, *, exclude: Path) -> Path | None:
 def create_fresh_snapshot_dir(
     out_dir: Path, *, refetch_years: set[str], now: datetime | None = None
 ) -> tuple[Path, list[str]]:
-    """Create a brand-new UTC-timestamped snapshot directory and copy forward
-    (no network) every already-cached `<year>.parquet` from the most recent
-    existing snapshot, EXCEPT years in `refetch_years` -- those are left
-    absent so `ingest()`'s own "skip if already present" check fetches them
-    fresh.
-
-    ENG-32: `resolve_snapshot_dir`'s "resume the most recent snapshot"
-    behaviour is correct for a one-off manual bulk ingestion, but it is why
-    the scheduled `pfr_transactions_wed`/`pfr_transactions_sat` jobs never
-    produced a fresh capture: `nfl_ats.capture_freshness` /
-    `nfl_ats.source_freshness_policy` read the snapshot DIRECTORY NAME, never
-    file contents or mtime, as the capture instant (see both modules'
-    docstrings) -- resuming the same 2026-08-20 directory forever, even after
-    a fully successful run, would leave this source looking permanently
-    stale. Closed, unchanging past years cost nothing to keep on disk
-    unchanged; only the current year's chunk can gain new posts, so only it
-    is worth a fresh network fetch each run -- bounded cost per run, matching
-    the SCHEDULE job's own "one yearly sitemap" comment.
-    """
 
     now = now or datetime.now(UTC)
     new_id = now.strftime("%Y%m%dT%H%M%SZ")
@@ -261,8 +152,6 @@ TRANSACTION_KEYWORDS = [
 
 @dataclass
 class RateLimiter:
-    """Enforces robots.txt Crawl-delay between requests to the same host."""
-
     delay_seconds: float
     _last_request: float | None = field(default=None, init=False)
 
@@ -292,8 +181,6 @@ def _fetch(url: str, limiter: RateLimiter, *, timeout: int = 30, retries: int = 
 
 
 def fetch_sitemap_index(limiter: RateLimiter) -> list[tuple[str, str]]:
-    """Return [(year, sitemap_url), ...] sorted chronologically, posts only
-    (excludes the pages sitemap and the home sitemap)."""
 
     raw = _fetch(SITEMAP_INDEX_URL, limiter)
     root = ElementTree.fromstring(raw)
@@ -362,15 +249,6 @@ def dry_run_report(
     *,
     fresh_snapshot: bool,
 ) -> dict[str, object]:
-    """Read-only report of what a real invocation WOULD fetch: resolves the
-    static sitemap-index URL, checks `config/source_policies.json` via
-    `nfl_ats.source_policy.require_acquisition` (raises `SourcePolicyError`,
-    same as a real run, if acquisition is not permitted), and lists which
-    requested years already have a cached `<year>.parquet` on disk (would be
-    skipped) versus which would be fetched -- all from local state, zero
-    network requests. Per-year sitemap chunk URLs are not resolved here: they
-    are only known after fetching the sitemap index itself, which this mode
-    deliberately never does."""
 
     policy = require_acquisition("pfr_transactions")
     years = [str(year) for year in range(int(start), int(end) + 1)]
@@ -475,9 +353,6 @@ def _rebuild_index_and_manifest(
     years_skipped_already_present: list[str],
     years_failed: list[str],
 ) -> dict[str, object]:
-    """Concatenate every yearly parquet on disk into index.parquet and write
-    manifest.json. Shared by `ingest()` (after a fetch) and
-    `recompute_keywords()` (after a local, no-fetch keyword redraw)."""
 
     yearly_dir = out_dir / "yearly"
     all_yearly = sorted(yearly_dir.glob("*.parquet"))
@@ -541,11 +416,6 @@ def _rebuild_index_and_manifest(
 
 
 def recompute_keywords(out_dir: Path) -> dict[str, object]:
-    """Redraw `matched_keywords`/`transaction_relevant` on every yearly
-    parquet already on disk from the current TRANSACTION_KEYWORDS list,
-    using the cached `slug` column -- no network fetch. Matches the module
-    docstring's stated design: the keyword line can be redrawn without
-    re-fetching."""
 
     yearly_dir = out_dir / "yearly"
     yearly_files = sorted(yearly_dir.glob("*.parquet"))
@@ -610,11 +480,6 @@ def verify_sample(
     relevant_only: bool = False,
     summary_filename: str = "date_verification_summary.json",
 ) -> dict[str, object]:
-    """Fetch a stratified (evenly spread across years) sample of real article
-    pages, extract JSON-LD datePublished/dateModified/headline, and compare
-    against (a) the contaminated sitemap lastmod and (b) the free url_year/
-    url_month proxy -- the task's "measure fetch cost and date reliability"
-    step."""
 
     limiter = limiter or RateLimiter(CRAWL_DELAY_SECONDS)
     candidates = _select_stratified_sample(out_dir, total_n, relevant_only=relevant_only)

@@ -1,5 +1,3 @@
-"""Shared card/sidecar fixtures for own-arm recorder regression tests."""
-
 import json
 
 import numpy as np

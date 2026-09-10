@@ -1,23 +1,3 @@
-"""ENG-05: golden-question evaluation for the board assistant.
-
-A broader fixture/evaluation suite for intent routing, unsupported-question
-fallback, numeric provenance, stale-data behaviour, and (together with the
-accessibility markup assertions in ``tests/test_assistant_golden.py``) the
-keyboard/no-JS accessibility contract -- see ROADMAP.md Phase 13, ENG-05.
-
-This module never opens an artifact or a network resource: everything here
-is a pure function over an already-built knowledge mapping (the same
-``dict`` :func:`nfl_ats.board_assistant.build_knowledge_for_board` and its
-siblings return) and a fixed corpus of golden-question rows loaded from
-``tests/fixtures/assistant_golden/questions.json``.
-
-``scripts/assistant_eval.py`` is the thin CLI that builds the real corpus
-from local artifacts and calls :func:`evaluate_golden`;
-``tests/test_assistant_golden.py`` calls it against synthetic,
-``build_fixture_content``-derived knowledge. Both share this one engine so
-the golden corpus is graded identically in CI and by hand.
-"""
-
 from __future__ import annotations
 
 import json
@@ -56,8 +36,6 @@ _NUMBER_RE = re.compile(r"\d")
 
 
 def has_provenance_anchor(text: str) -> bool:
-    """Whether ``text`` carries at least one recognized provenance marker
-    (see :data:`PROVENANCE_MARKERS`), case-insensitively."""
 
     lowered = text.lower()
     return any(marker in lowered for marker in PROVENANCE_MARKERS)
@@ -65,8 +43,6 @@ def has_provenance_anchor(text: str) -> bool:
 
 @dataclass(frozen=True)
 class QuestionCase:
-    """One golden-question row."""
-
     question: str
     expected_intent: str
     must_contain: tuple[str, ...]
@@ -76,9 +52,6 @@ class QuestionCase:
 
 @dataclass(frozen=True)
 class CaseResult:
-    """One evaluated row: the case, the actual answer, and why it failed
-    (empty when it passed)."""
-
     case: QuestionCase
     actual_topic: str
     actual_text: str
@@ -99,10 +72,6 @@ class CategoryReport:
 
 @dataclass(frozen=True)
 class EvalReport:
-    """The full run: totals, one :class:`CategoryReport` per category
-    present in the corpus, and every individual result (pass and fail) so
-    callers can inspect specific questions without re-running anything."""
-
     total: int
     passed: int
     category_reports: tuple[CategoryReport, ...]
@@ -118,11 +87,6 @@ class EvalReport:
 
 
 def load_questions(path: Path) -> tuple[QuestionCase, ...]:
-    """Load and validate the golden-question fixture at ``path`` (a JSON
-    array of objects; see ``tests/fixtures/assistant_golden/questions.json``
-    for the shape). Raises ``ValueError`` on a malformed row or an
-    unrecognized ``category`` -- a fixture bug should fail loud, not be
-    silently dropped from the report."""
 
     raw: Any = json.loads(Path(path).read_text(encoding="utf-8"))
     if not isinstance(raw, list):
@@ -151,22 +115,6 @@ def load_questions(path: Path) -> tuple[QuestionCase, ...]:
 def make_stale_lineup_knowledge(
     knowledge: Mapping[str, Any], *, as_of: str = "2000-01-01T00:00:00Z"
 ) -> dict[str, Any]:
-    """A deep copy of ``knowledge`` with every published lineup entry aged
-    past the documented staleness budget
-    (``nfl_ats.board_assistant_lineups.LINEUP_STALE_BUDGET_HOURS``).
-
-    Forces ``stale: True`` directly on every game-side and player entry --
-    the exact boolean
-    :func:`nfl_ats.board_assistant_lineups.build_lineup_knowledge` would
-    compute from an ``as_of`` this old, so every lineup-derived answer
-    function (which gates purely on that precomputed boolean, per that
-    module's "never re-derive at query time" contract) degrades to its
-    stale fallback exactly as it would from a real stale artifact.
-    ``as_of`` is overwritten too so the rendered anchor text
-    ("as of ... from ...") reads consistently old, not just the gating
-    flag. A knowledge mapping with no ``"lineups"`` block (or an empty one)
-    is returned unchanged -- there is nothing to age.
-    """
 
     clone: dict[str, Any] = json.loads(json.dumps(knowledge))
     lineups = clone.get("lineups")
@@ -223,27 +171,6 @@ def evaluate_golden(
     *,
     stale_knowledge: Mapping[str, Any] | None = None,
 ) -> EvalReport:
-    """Run every row in ``questions`` against ``knowledge`` and report
-    pass/fail per category plus every result with its actual answer.
-
-    Rows tagged ``category="stale_data"`` are graded against
-    ``stale_knowledge`` instead, when supplied (see
-    :func:`make_stale_lineup_knowledge`) -- staleness is a property of a
-    DIFFERENT snapshot in time, not of the primary corpus, so those rows
-    need their own knowledge object exactly as the ENG-05 spec describes.
-    When ``stale_knowledge`` is omitted, ``stale_data`` rows fall back to
-    ``knowledge`` itself (useful only if the caller already knows that
-    corpus is stale; :mod:`scripts.assistant_eval` always builds and passes
-    a forced-stale variant so this path never silently under-tests staleness
-    against a real, unpublished, or already-fresh corpus).
-
-    Rows tagged ``category="numeric_provenance"`` get one extra, automatic
-    check beyond ``must_contain``/``must_not_contain``: the answer must
-    contain a digit AND a recognized provenance marker (see
-    :func:`has_provenance_anchor`) -- the report can never call a
-    numeric_provenance case a pass if its answer prints a number with no
-    source anchor.
-    """
 
     results = tuple(_check_case(case, knowledge, stale_knowledge) for case in questions)
     by_category: dict[str, list[CaseResult]] = {}
@@ -266,10 +193,6 @@ def evaluate_golden(
 
 
 def render_report(report: EvalReport) -> str:
-    """A short, deterministic text summary: overall pass/fail, one line per
-    category, then every failing question with its expectation and the
-    actual answer -- meant to be read directly off a CI log or a terminal,
-    never parsed."""
 
     lines = [
         f"Golden assistant eval: {report.passed}/{report.total} passed "

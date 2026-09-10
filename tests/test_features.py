@@ -145,12 +145,6 @@ def test_offseason_state_regresses_and_season_game_count_resets() -> None:
 
 
 def _bracket_schedules() -> pd.DataFrame:
-    """Two seasons around a synthetic four-team postseason bracket.
-
-    2022: A, B, C, D play two regular-season weeks; A, B and C reach the
-    postseason (A beats C in the wild card, A beats B in the Super Bowl) and D
-    does not. 2023 opens with A hosting D and B hosting C.
-    """
 
     rows = [
         ("2022_01_B_A", 2022, "REG", 1, "2022-09-11", "B", "A", 3.0, 1.0),
@@ -332,7 +326,6 @@ def test_bias_family_leaves_every_pre_existing_column_bit_identical(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Additivity: the frozen columns must not move when the family is added."""
 
     from nfl_ats import features as features_module
 
@@ -355,16 +348,6 @@ def test_bias_family_leaves_every_pre_existing_column_bit_identical(
 
 
 def _surface_switch_schedule() -> pd.DataFrame:
-    """GRASSAWAY hosts two 2026 games on grass -- its 2026 modal home surface
-    is grass. It plays three road games: at TURFHOST (fieldturf, flagged --
-    grass-modal visitor on turf), at GRASSHOST (grass, not flagged -- no
-    switch), and a POST-season game at POSTHOST (fieldturf, same flagged
-    shape as the week-3 game -- excluded by the REG-only gate). TURFAWAY
-    hosts two 2026 games on turf -- modal turf; its road game at TURFHOST2
-    (turf) is not flagged (surfaces match, no switch). NOSURF hosts one game
-    with an unresolved (empty-string) surface -- modal None; its road game
-    at TURFHOST3 (turf) is not flagged (visitor's own modal surface is
-    unresolved)."""
 
     rows = [
         ("2026_01_GRASSAWAY_OPP1", 2026, "REG", "GRASSAWAY", "OPP1", "grass"),
@@ -429,9 +412,6 @@ def test_surface_switch_flag_fires_on_grass_modal_visitor_onto_turf() -> None:
 
 
 def test_surface_switch_flag_is_missing_surface_column_safe() -> None:
-    """Older/synthetic schedules without a ``surface`` column at all (the
-    ``schedules_and_stats`` fixture, e.g.) must degrade to 0.0, not raise --
-    this is a schedule-shaped enrichment, not a hard data contract."""
 
     schedule = _surface_switch_schedule().drop(columns=["surface"])
     flagged = add_surface_switch_features(schedule, schedule)
@@ -439,14 +419,6 @@ def test_surface_switch_flag_is_missing_surface_column_safe() -> None:
 
 
 def test_surface_switch_flag_never_reads_outcome_columns() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    ``add_surface_switch_features`` does not even require/read
-    ``result``/``spread_line`` -- adding them (with arbitrary values) and
-    mutating them must never change the already-computed flags, proving the
-    derivation is purely structural (surface/team/season), never outcome-
-    based.
-    """
 
     schedule = _surface_switch_schedule()
     schedule["result"] = 0.0
@@ -466,10 +438,6 @@ def test_surface_switch_flag_never_reads_outcome_columns() -> None:
 
 
 def test_surface_switch_flag_is_leak_safe_across_the_season_boundary() -> None:
-    """A future season's surface data (even for the SAME team) must never
-    change an earlier season's already-computed flags -- mirrors
-    tests/test_surface_switch_tilt_overlay.py's identical test for
-    surface_switch_flag_by_game."""
 
     schedule = _surface_switch_schedule()
     baseline = add_surface_switch_features(schedule, schedule).set_index("game_id")[
@@ -513,11 +481,6 @@ def test_surface_switch_features_land_in_build_game_features_and_leave_other_col
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Wiring + additivity, mirroring the bias family's own equivalent test
-    above: the column is present after a real ``build_game_features`` run
-    (through the missing-column fallback path, since this fixture carries no
-    ``surface`` column) and every pre-existing column stays bit-identical
-    whether or not the family runs."""
 
     from nfl_ats import features as features_module
 
@@ -557,7 +520,6 @@ _POOL_CAPTURE = DecisionLineOverride(
 
 
 def _with_upcoming_week(schedules: pd.DataFrame) -> pd.DataFrame:
-    """The shared fixture plus one UNPLAYED week 6 -- what a capture covers."""
 
     upcoming = schedules.iloc[[-1]].copy()
     upcoming["game_id"] = "2022_06_B_A"
@@ -571,11 +533,6 @@ def _with_upcoming_week(schedules: pd.DataFrame) -> pd.DataFrame:
 
 
 def _with_played_week(schedules: pd.DataFrame) -> pd.DataFrame:
-    """The same week 6, now PLAYED, with a real Sunday-night kickoff time.
-
-    Kickoff is 2022-10-16 20:20 Eastern, four days after ``_POOL_CAPTURE`` was
-    frozen -- so the pool's number is the number this game was graded on.
-    """
 
     played = _with_upcoming_week(schedules)
     played["gametime"] = "20:20"
@@ -589,11 +546,6 @@ def _with_played_week(schedules: pd.DataFrame) -> pd.DataFrame:
 def test_pool_capture_becomes_the_decision_line_for_the_week_it_covers(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """The captured board's number reaches the built table as ``spread_line``.
-
-    nflverse says +2.0 for this game and the pool's board says -1.5; the pool
-    is what grades the pick, so -1.5 is what the model must see.
-    """
 
     schedules, stats = schedules_and_stats
     schedules = _with_upcoming_week(schedules)
@@ -612,12 +564,6 @@ def test_pool_capture_becomes_the_decision_line_for_the_week_it_covers(
 def test_pool_capture_leaves_every_uncaptured_row_bit_identical(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """The history the archive and the registry are graded on must not move.
-
-    Only the captured ``(season, week)`` may change. Every other row -- the
-    seasons the 1,537-game opener archive and every weak-signal registry cell
-    were scored on -- has to come out of a rebuild exactly as it went in.
-    """
 
     schedules, stats = schedules_and_stats
     schedules = _with_upcoming_week(schedules)
@@ -638,13 +584,6 @@ def test_pool_capture_leaves_every_uncaptured_row_bit_identical(
 def test_pool_capture_applies_to_a_played_game_when_the_board_predates_kickoff(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """A finished game is not off limits -- a RETROACTIVE line is.
-
-    The board froze Tuesday at 12:45 ET and the game kicked off the following
-    Sunday at 20:20 ET, so -1.5 is the number the pool actually settled this
-    pick on. Archiving the week on nflverse's +2.0 instead would grade the
-    project's own record against a line it never played.
-    """
 
     schedules, _ = schedules_and_stats
     played = _with_played_week(schedules)
@@ -661,7 +600,6 @@ def test_pool_capture_applies_to_a_played_game_when_the_board_predates_kickoff(
 def test_pool_capture_refuses_a_played_game_when_the_board_postdates_kickoff(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """``ats_margin`` is derived, so a line written after kickoff may not land."""
 
     schedules, _ = schedules_and_stats
     played = _with_played_week(schedules)
@@ -683,7 +621,6 @@ def test_pool_capture_refuses_a_played_game_when_the_board_postdates_kickoff(
 def test_pool_capture_refuses_a_played_game_when_the_capture_has_no_instant(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """Fails closed: an unstamped capture is not permission to move the line."""
 
     schedules, _ = schedules_and_stats
     played = _with_played_week(schedules)
@@ -702,7 +639,6 @@ def test_pool_capture_refuses_a_played_game_when_the_capture_has_no_instant(
 def test_pool_capture_refuses_a_played_game_with_no_kickoff_on_the_schedule(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """Fails closed the other way: no kickoff, no comparison, no override."""
 
     schedules, _ = schedules_and_stats
     played = _with_played_week(schedules).drop(columns="gametime")
@@ -714,7 +650,6 @@ def test_pool_capture_refuses_a_played_game_with_no_kickoff_on_the_schedule(
 def test_pool_capture_refuses_a_week_it_only_half_covers(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """A half-Splash week would be the worst of both sources, so it raises."""
 
     schedules, _ = schedules_and_stats
     schedules = _with_upcoming_week(schedules)
@@ -732,7 +667,6 @@ def test_pool_capture_refuses_a_week_it_only_half_covers(
 def test_pool_capture_refuses_a_line_for_a_game_that_is_not_scheduled(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """A line whose game_id is not on the slate is a mis-read board."""
 
     schedules, _ = schedules_and_stats
     schedules = _with_upcoming_week(schedules)
@@ -752,12 +686,6 @@ def test_no_capture_at_all_leaves_the_feature_table_exactly_as_before(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
     tmp_path: Path,
 ) -> None:
-    """The regression that protects every other test in this repository.
-
-    A clone with no ``data/splash/`` directory discovers no overrides, and a
-    build handed no overrides is bit-identical to one that never heard of the
-    decision-line seam.
-    """
 
     schedules, stats = schedules_and_stats
     assert splash_decision_line_overrides(tmp_path) == ()
@@ -773,11 +701,6 @@ def test_no_capture_at_all_leaves_the_feature_table_exactly_as_before(
 
 
 def test_captures_on_disk_become_validated_overrides(tmp_path: Path) -> None:
-    """The real Week 1 board capture, read through the discovery layer.
-
-    Copied out of ``tests/fixtures/splash/`` rather than read from ``data/``,
-    so the test passes in a clone with an empty data root.
-    """
 
     fixture = (
         Path(__file__).resolve().parent / "fixtures" / "splash" / "2026_week01_20260908_noon.json"
@@ -801,15 +724,6 @@ def test_captures_on_disk_become_validated_overrides(tmp_path: Path) -> None:
 def test_the_real_week_one_board_still_applies_once_its_opener_is_played(
     tmp_path: Path,
 ) -> None:
-    """The operational hazard this rule was written for, on the real capture.
-
-    2026 Week 1's first game (NE at SEA) kicks off Wednesday 2026-09-09 at
-    20:20 ET and the board was frozen the previous day at 12:45 ET. The moment
-    that game finishes, ``build-features`` has to keep applying the pool's
-    number -- otherwise every refresh job and the next weekly lock hard-fail
-    for as long as the capture is on disk, and the only escape hatch silently
-    reverts the whole week to nflverse's close.
-    """
 
     fixture = (
         Path(__file__).resolve().parent / "fixtures" / "splash" / "2026_week01_20260908_noon.json"
@@ -849,7 +763,6 @@ def test_the_real_week_one_board_still_applies_once_its_opener_is_played(
 def test_applied_captures_are_recorded_for_the_build_manifest(
     schedules_and_stats: tuple[pd.DataFrame, pd.DataFrame],
 ) -> None:
-    """The provenance block a card later reads back to name its own line."""
 
     schedules, _ = schedules_and_stats
     _, applied = apply_decision_lines(_with_upcoming_week(schedules), (_POOL_CAPTURE,))

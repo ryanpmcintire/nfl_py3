@@ -1,5 +1,3 @@
-"""Tests for the minimal pool workbench (ROADMAP UI-09, POL-01)."""
-
 from __future__ import annotations
 
 import pandas as pd
@@ -36,7 +34,6 @@ _SUNDAY_LOCK_UTC = pd.Timestamp("2026-09-20T20:00:00+00:00")
 
 
 def _forecast_fixture() -> pd.DataFrame:
-    """The active model's recommendations.csv forecast format (minimal)."""
 
     return pd.DataFrame(
         {
@@ -76,10 +73,6 @@ def test_pool_rules_from_dict_accepts_partial_overrides() -> None:
 
 
 def test_pool_rules_composed_fields_match_cited_sources() -> None:
-    """POL-01: the pool facts the workbench previously left uncomposed --
-    forced-pick card count, grading line, tiebreak rule, and the per-game
-    deadline -- are now typed fields with provenance in their docstrings,
-    not re-derived or reimplemented."""
 
     rules = PoolRules.from_defaults()
     assert rules.cards_per_season == rules.total_games == 285
@@ -90,10 +83,6 @@ def test_pool_rules_composed_fields_match_cited_sources() -> None:
 
 
 def test_pool_rules_deadline_for_agrees_with_pick_refresh_on_every_slot() -> None:
-    """PoolRules.deadline_for must never diverge from
-    nfl_ats.pick_refresh.pick_deadline/sunday_pick_lock: it is a thin
-    wrapper, not a second implementation of the owner's per-game deadline
-    rule (owner, 2026-08-20, re-confirmed 2026-09-01)."""
 
     rules = PoolRules.from_defaults()
     all_kickoffs = list(_WEEK_KICKOFFS_UTC.values())

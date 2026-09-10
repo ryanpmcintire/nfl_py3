@@ -1,39 +1,3 @@
-"""Widen the project's referee-battery penalty data from totals to penalty-TYPE rates.
-
-2026-08-20 session, `docs/archive/data_source_scout_v4.md` lead #1 ("Penalty-type crew
-tendencies"): the repo's existing referee battery
-(`data/raw/officials/*/game_penalties.parquet`, built 2026-08-19) already
-aggregates per-game penalty COUNTS (`penalties_total`/`penalties_on_home`/
-`penalties_on_away`), but never persisted `penalty_type` -- confirming the
-scout doc's finding that this is a re-pull, not a new source: nflverse PBP's
-own `load_pbp()` already carries `penalty_type`/`penalty_team`/
-`penalty_player_id`/`penalty_player_name` (MEASURED this session,
-`nflreadpy.load_pbp(seasons=[2023])` columns), the project's local snapshots
-(`nfl_ats.pbp.PBP_SNAPSHOT_COLUMNS`, `data/pbp/team_style/raw_pbp_narrow.parquet`)
-just never retained them.
-
-This script re-fetches nflverse PBP one season at a time (bounding memory,
-matching `nfl_ats.pbp.fetch_pbp_snapshot`'s own pattern) for the SAME season
-window the existing officials/game_penalties snapshot covers (2015-2025 --
-`nflreadr.load_officials()`'s own documented floor), and persists ONLY a
-small derived long-format aggregate -- one row per (game_id, penalty_type)
-with `penalties_total`/`penalties_on_home`/`penalties_on_away` -- alongside a
-NEW timestamped snapshot directory under `data/raw/officials/`. The raw PBP
-itself is not persisted, mirroring the existing `game_penalties.parquet`
-convention exactly (see its own manifest: "raw PBP itself is NOT persisted
-here").
-
-Home/away attribution matches the existing `game_penalties.parquet` exactly:
-`penalty_team == home_team` -> `penalties_on_home`, `penalty_team ==
-away_team` -> `penalties_on_away` (MEASURED-verified against
-`game_penalties.parquet`'s own recorded 2015_01_BAL_DEN row: 8 home / 3 away
--- this script reproduces that split bit-for-bit as part of its own
-alignment check, see `verify_against_existing_totals`).
-
-Nothing about the EXISTING `officials.parquet`/`game_penalties.parquet`
-snapshot is mutated -- this writes a NEW, separate snapshot directory only.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -61,7 +25,6 @@ def _to_pandas(frame: Any) -> pd.DataFrame:
 
 
 def fetch_season_penalty_types(season: int) -> pd.DataFrame:
-    """One row per (game_id, penalty_type) for a single season's full PBP."""
 
     import nflreadpy as nfl
 
@@ -106,7 +69,6 @@ def fetch_season_penalty_types(season: int) -> pd.DataFrame:
 def verify_against_existing_totals(
     new_long: pd.DataFrame, existing_game_penalties: pd.DataFrame
 ) -> dict[str, Any]:
-    """Row-alignment check: per-game_id summed type counts vs. the existing snapshot."""
 
     resummed = (
         new_long.groupby("game_id")

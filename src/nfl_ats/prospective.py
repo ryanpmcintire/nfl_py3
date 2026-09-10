@@ -1,5 +1,3 @@
-"""Immutable, pre-kickoff forecast records for prospective evaluation."""
-
 from __future__ import annotations
 
 import json
@@ -71,7 +69,6 @@ class FrozenForecast:
 
 
 def verify_frozen_forecast(directory: Path) -> dict[str, Any]:
-    """Verify file integrity and re-run the prediction safety contract."""
 
     manifest_path = directory / "manifest.json"
     prediction_path = directory / "predictions.parquet"
@@ -121,7 +118,6 @@ def freeze_forecast(
     *,
     created_at: datetime | None = None,
 ) -> FrozenForecast:
-    """Write a new immutable forecast directory after enforcing pre-kickoff timing."""
 
     missing = sorted(set(FROZEN_PREDICTION_COLUMNS).difference(predictions.columns))
     if missing:
@@ -230,13 +226,6 @@ def _active_forecast_context(
     *,
     forecast_artifact: str | None = None,
 ) -> tuple[dict[str, Any], str, str, str]:
-    """The active model's linked weekly forecast, fingerprint-gated.
-
-    Mirrors nfl_ats.surface_switch_tilt_overlay's recorder exactly: refuses to
-    record when the active model's live configuration fingerprint no longer
-    matches the snapshot this challenger was registered against. Returns
-    (metadata, observed_fingerprint, source_artifact_name, source_card_sha256).
-    """
 
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -258,15 +247,6 @@ def _active_forecast_context(
 
 
 def _chain_card(artifacts_root: Path, metadata: Mapping[str, Any]) -> pd.DataFrame:
-    """The week's played-chain picks from the paper-decision ledger.
-
-    Both challengers compose ON TOP of the published chain (raw model -> coach
-    fade -> player-arrests policy), whose frozen side and grading line live in
-    artifacts/clv_ledger/decisions.parquet -- the same read
-    nfl_ats.pick_refresh.original_card uses. Empty means the week was never
-    recorded by --record-decisions, which for these recorders is a hard error:
-    they run inside that very call, after the paper ledger is written.
-    """
 
     season = int(metadata["season"])
     week = int(metadata["week"])
@@ -308,17 +288,6 @@ def _append_challenger_decisions(
 
 
 def movement_rule_pick(chain_pick_side: str, movement_delta: float | None) -> str:
-    """The composed movement rule, as a pure function.
-
-    ``movement_delta`` is current-captured minus frozen-Tuesday home spread,
-    home-oriented (the exact quantity nfl_ats.pick_refresh.plan_refresh already
-    computes as ``RefreshedGame.movement_delta``). At least 1.0 point of move
-    follows the market side (HOME if the home-oriented number rose, else AWAY);
-    below threshold -- or no usable captured line, ``None`` -- keeps the chain
-    pick. The 1.0 threshold is MOVEMENT_POLICY_THRESHOLD, frozen by the
-    predeclared 0.5/1.0 grid in docs/observed_movement_channel.md; the side
-    logic mirrors pick_refresh._movement_side verbatim.
-    """
 
     if movement_delta is None or abs(float(movement_delta)) < MOVEMENT_POLICY_THRESHOLD:
         return chain_pick_side
@@ -333,22 +302,6 @@ def record_movement_rule_composed_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the movement-rule-on-chain arm to the prospective challenger ledger.
-
-    Rule (registry/weak_signals.json:movement_rule_composed_chain,
-    docs/movement_composition_eval.md): if the latest locally captured market
-    home spread moved at least 1.0 point from the frozen Tuesday decision line,
-    follow the market side; otherwise keep the chain pick. Reuses
-    nfl_ats.pick_refresh.current_captured_home_spread -- the identical
-    read-only captured-line read the played movement policy consumes -- so this
-    challenger never fetches and never rebuilds market plumbing.
-
-    FAIL-OPEN: with no fresh capture at all the whole week is skipped
-    (``{"recorded": 0, "skipped": True}``), because recording kept picks with
-    no market look would be indistinguishable from "no move". A game merely
-    missing from an otherwise-fresh capture keeps the chain pick and is counted
-    in ``games_without_captured_line``.
-    """
 
     entry = find_challenger(artifacts_root, MOVEMENT_RULE_COMPOSED_CHALLENGER_ID)
     _require_active_status(entry, MOVEMENT_RULE_COMPOSED_CHALLENGER_ID)
@@ -484,13 +437,6 @@ def record_movement_rule_composed_challenger_decisions(
 def nflcom_out2_starters_flip(
     chain_pick_home: bool, picked_starter_out: float, opp_starter_out: float
 ) -> bool:
-    """The frozen NFL.com Friday-refresh rule, as a pure function.
-
-    Flip to the opponent iff the picked team carries at least
-    NFLCOM_STARTER_OUT_THRESHOLD Out designations on starter-caliber players
-    AND the opponent carries fewer; both flagged keeps (docs/nflcom_friday_refresh.md,
-    "Overlay rule (frozen before scoring)"). Returns the flipped arm's HOME side.
-    """
 
     picked_flag = picked_starter_out >= NFLCOM_STARTER_OUT_THRESHOLD
     opp_flag = opp_starter_out >= NFLCOM_STARTER_OUT_THRESHOLD
@@ -566,20 +512,6 @@ def nflcom_starter_key_sets(
 def nflcom_team_starter_out_counts(
     snapshot_dir: Path, snaps_path: Path
 ) -> dict[tuple[int, int, str], int]:
-    """Per-(season, week, canonical-team) count of OUT designations on
-    STARTER-CALIBER players, from one immutable NFL.com snapshot directory's
-    ``injuries.parquet`` plus one snap-counts table.
-
-    Extracted verbatim from ``record_nflcom_refresh_out2_starters_challenger_
-    decisions``' body (which now calls this) so the late-week refresh-path
-    overlay (``nfl_ats.nflcom_refresh_overlay``) consumes THE SAME
-    implementation instead of a second copy of the frozen machinery -- same
-    name normalization, same week+1 starter-proxy keying as
-    ``scripts/nflcom_friday_designation_screen.py``, the identical machinery
-    registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain measured
-    with. A team/week with no matching Out rows is simply absent from the
-    mapping (callers treat that as count 0).
-    """
 
     qa, _counts = load_nflcom_report(snapshot_dir / "injuries.parquet")
     out_rows = qa.loc[qa["status_norm"].eq("out")].copy()
@@ -632,19 +564,6 @@ def latest_nflcom_injuries_snapshot(
     data_root: Path,
     week_key: tuple[int, int] | None = None,
 ) -> tuple[Path, dict[tuple[int, int], str]] | None:
-    """The snapshot to read NFL.com injury pages from.
-
-    With ``week_key``, returns the NEWEST snapshot that actually contains that
-    (season, week) page. This matters once in-season capture runs alongside the
-    historical backfill: each weekly capture writes its own UTC-stamped
-    directory holding only the current week, so a bare "newest directory" read
-    would hide the multi-season archive behind the latest weekly capture (and,
-    within a week, would still find the right page only by luck of ordering).
-    Scanning newest-first also naturally prefers the FINAL revision of a week
-    that was captured several times as designations firmed up.
-
-    Without ``week_key``, keeps the original newest-directory behaviour.
-    """
 
     root = data_root / "raw" / "nflcom_injuries"
     if not root.is_dir():
@@ -669,27 +588,6 @@ def record_nflcom_refresh_out2_starters_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the NFL.com Friday out>=2-starters fade arm to the challenger ledger.
-
-    Rule text frozen in docs/nflcom_friday_refresh.md ("2026 prospective
-    challenger registration"), pasted verbatim into this challenger's
-    challengers.json registration: flip the chain pick to the opponent iff the
-    picked team carries >=2 Out designations on starter-caliber players
-    (>=50% of offense or defense snaps in the team's most recent prior REG
-    game; Week 1 proxy unavailable = no flag) per the week's FINAL NFL.com
-    league injury page, and the opponent carries <2; both flagged keeps.
-
-    Signal inputs are PORTED VERBATIM from
-    scripts/nflcom_friday_designation_screen.py's normalization/starter-proxy
-    machinery (see the helper block below), the same machinery
-    registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain measured
-    (+2.1795 pts, P+ 0.9954, three seasons, selection-inflated upper bound).
-
-    FAIL-OPEN per the frozen rule text: no snapshot, no snap-counts table, or a
-    week's page failing the freshness gate (fetched >= Friday 16:00 ET of that
-    game week AND < the week's earliest kickoff) skips the week with
-    ``{"recorded": 0, "skipped": True}`` rather than ever raising into publish.
-    """
 
     entry = find_challenger(artifacts_root, NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID)
     _require_active_status(entry, NFLCOM_REFRESH_OUT2_STARTERS_CHALLENGER_ID)

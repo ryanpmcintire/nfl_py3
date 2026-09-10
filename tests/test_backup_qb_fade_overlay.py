@@ -1,22 +1,3 @@
-"""Backup-QB fade overlay (docs/backup_qb_fade_overlay.md).
-
-Four things are load-bearing here, mirroring
-``tests/test_division_revenge_tilt_overlay.py``'s structure and AGENTS.md's
-"add a leakage regression test for every new feature family" spirit:
-
-1. :func:`backup_qb_flag_by_game`'s flag is derived from data, not
-   hand-typed, is pregame-safe (a later start must never retroactively
-   change an earlier game's flag), and respects the battery's own >=3-prior-
-   starts eligibility floor exactly.
-2. :func:`apply_backup_qb_fade_overlay` flips ONLY the clean case (the
-   model's pick sits on a flagged backup start against a non-backup
-   opponent), respects the REG-only gate, and is parameter-free.
-3. :func:`overlay_disclosure_note` states the flip count and matchups.
-4. :func:`record_backup_qb_fade_challenger_decisions` writes the overlay's
-   own picks to the prospective challenger ledger, dual-tracked and at no
-   rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -228,8 +209,6 @@ def test_backup_flag_fires_after_three_prior_starts_with_a_different_qb() -> Non
 
 
 def test_backup_flag_requires_the_eligibility_floor() -> None:
-    """Only 1 prior start (week 1) by week 2 -- below the 3-prior-starts
-    floor -- so EARLYBKUP's QB change is NOT flagged yet."""
 
     flags = backup_qb_flag_by_game(_qb_schedule()).set_index("game_id")
     assert bool(flags.loc["2026_02_OPP8_EARLYBKUP", "backup_away"]) is False
@@ -252,11 +231,6 @@ def test_backup_flag_requires_its_schedule_columns() -> None:
 
 
 def test_backup_flag_is_leak_safe_against_a_later_start_mutation() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    BKUP's week 4 flag depends only on weeks 1-3; mutating week 5 (a LATER
-    start) must not move it.
-    """
 
     baseline = backup_qb_flag_by_game(_qb_schedule()).set_index("game_id")
 
@@ -270,8 +244,6 @@ def test_backup_flag_is_leak_safe_against_a_later_start_mutation() -> None:
 
 
 def test_backup_flag_is_leak_safe_across_the_season_boundary() -> None:
-    """A future season's QB history (even for the same team) must never
-    change an earlier season's already-computed flag."""
 
     schedule = _qb_schedule()
     baseline = backup_qb_flag_by_game(schedule)
@@ -330,8 +302,6 @@ def test_overlay_does_not_touch_a_both_backup_game() -> None:
 
 
 def test_overlay_leaves_postseason_games_untouched() -> None:
-    """Same shape as the flipped clean case, but POST season -- the REG-only
-    gate blocks it."""
 
     result = apply_backup_qb_fade_overlay(_predictions(), _qb_schedule())
     assert all(flip.game_id != "2026_20_STARTQB_BKUP_POST" for flip in result.flips)
@@ -369,8 +339,6 @@ def test_overlay_disabled_is_a_no_op() -> None:
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows() -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical -- the pick-level design's whole point."""
 
     predictions = _predictions()
     result = apply_backup_qb_fade_overlay(predictions, _qb_schedule())
@@ -547,14 +515,6 @@ def test_record_fade_challenger_refuses_an_inactive_registration(tmp_path: Path)
 
 
 def test_record_fade_challenger_refuses_a_deactivated_registration(tmp_path: Path) -> None:
-    """Pins the 2026-08-19 deactivation (docs/prospective_evidence.md
-    'Tuesday-visibility audit'): backup_qb_fade_overlay is now registered
-    DEACTIVATED_STRUCTURAL_NO_OP in artifacts/prospective/challengers.json
-    (an OPERATIONAL defect -- home_qb_name/away_qb_name are only populated
-    post-game -- never an evidential closure of the underlying bias-battery
-    cell). The recorder must refuse cleanly, exactly like any other
-    non-ACTIVE_PROSPECTIVE status, and the ledger must stay empty: a
-    deactivated challenger records nothing."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts, status="DEACTIVATED_STRUCTURAL_NO_OP")
@@ -569,7 +529,6 @@ def test_record_fade_challenger_refuses_a_deactivated_registration(tmp_path: Pat
 
 
 def test_fade_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

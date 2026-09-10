@@ -1,5 +1,3 @@
-"""Append-only record of what the site printed per game, frozen at the game's pick deadline."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -33,8 +31,6 @@ SCORE_PLACES = 4
 
 @dataclass(frozen=True)
 class FrozenPick:
-    """What the site showed for one game the last time it published before the pick deadline."""
-
     game_id: str
     pick_team: str
     market_spread: float
@@ -62,7 +58,6 @@ def load_published_picks(artifacts_root: Path) -> pd.DataFrame:
 
 
 def game_deadlines(frame: pd.DataFrame) -> dict[str, pd.Timestamp]:
-    """``game_id -> pick deadline`` for a frame carrying ``game_id`` and ``kickoff``."""
 
     if frame.empty or not {"game_id", "kickoff"}.issubset(frame.columns):
         return {}
@@ -101,7 +96,6 @@ def record_published_picks(
     published_at: datetime,
     source: str = SOURCE_SITE_PUBLISH,
 ) -> int:
-    """Append one row per pre-deadline game whose printed state changed; returns the count."""
 
     instant = pd.Timestamp(published_at.astimezone(UTC))
     existing = load_published_picks(artifacts_root)
@@ -151,7 +145,6 @@ def frozen_picks(
     week: int | None = None,
     include_open: bool = False,
 ) -> dict[str, FrozenPick]:
-    """Past-deadline games at their last pre-deadline state; open games at their latest if asked."""
 
     frame = load_published_picks(artifacts_root)
     if frame.empty:

@@ -1,23 +1,3 @@
-"""Low-total divisional home-dog challenger (LEAD-42,
-docs/schedule_flag_battery.md Wave 2 section 6).
-
-Mirrors ``tests/test_spread_gap_zone_fade_overlay.py``'s structure (the
-closest precedent: no separate schedule-derived flag function, since
-eligibility is a pure function of the card's own ``div_game``/``total_line``/
-``spread_line`` columns).
-
-Three things are load-bearing here:
-
-1. :func:`apply_low_total_div_home_dog_overlay` flips ONLY the clean case
-   (away pick, divisional, decision total <= 42, home is the underdog),
-   respects the REG-only gate, and is deliberately ASYMMETRIC (never flips a
-   HOME pick to AWAY).
-2. :func:`overlay_disclosure_note` states the flip count and matchups.
-3. :func:`record_low_total_div_home_dog_challenger_decisions` writes the
-   overlay's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 import math
@@ -122,8 +102,6 @@ def test_overlay_treats_a_missing_total_line_as_not_eligible() -> None:
 
 
 def test_overlay_never_flips_a_home_pick_to_away() -> None:
-    """Deliberately asymmetric: eligibility only ever moves the pick TOWARD
-    the home dog, never off it."""
 
     predictions = _predictions()
     predictions.loc[predictions["game_id"].eq("2026_05_CLEAN"), "home_cover_probability"] = 0.55
@@ -316,8 +294,6 @@ def test_record_challenger_refuses_an_inactive_registration(tmp_path: Path) -> N
 
 
 def test_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches the recorder's
-    own fingerprint computation."""
 
     metadata = {
         "ats_method": "market_residual",

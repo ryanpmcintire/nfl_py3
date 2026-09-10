@@ -1,5 +1,3 @@
-"""Marginal value of registered-but-unserved tilt overlays on top of the played card."""
-
 from __future__ import annotations
 
 import json
@@ -125,7 +123,6 @@ def _flip_ids(result: Any) -> set[str]:
 def _verify_complement(
     predictions: pd.DataFrame, name: str, result: Any, flip_ids: set[str]
 ) -> None:
-    """Fail loudly if a member set a flipped game to anything but 1 - baseline."""
 
     if not flip_ids:
         return
@@ -139,7 +136,6 @@ def _verify_complement(
 
 
 def build_pbp08_flag_table(data_root: Path) -> tuple[pd.DataFrame, str]:
-    """Full-history PBP-08 protection-mismatch flags, built once."""
 
     snapshot = latest_pbp08_snapshot_dir(data_root)
     schedules_path = latest_pbp08_schedules(data_root)
@@ -160,7 +156,6 @@ def build_candidate_flip_sets(
     data_root: Path,
     repo_root: Path,
 ) -> tuple[dict[str, set[str]], dict[str, dict[str, Any]]]:
-    """Every candidate member's flip set on the opener archive, plus its input note."""
 
     archive_ids = set(predictions["game_id"].astype(str))
     notes: dict[str, dict[str, Any]] = {}
@@ -321,7 +316,6 @@ def build_served_flip_set(
     features: Path,
     incidents: Path,
 ) -> tuple[set[str], dict[str, set[str]]]:
-    """The played three-member joint-OR flip set, built the way the study builds it."""
 
     coach = apply_coach_fade_overlay(predictions, schedules, enabled=True)
     division = apply_division_revenge_tilt_overlay(predictions, schedules, enabled=True)
@@ -350,7 +344,6 @@ def build_served_card_flip_sets(
     features: Path,
     incidents: Path,
 ) -> dict[str, set[str]]:
-    """Every member of the SERVED nine-member policy, on the opener archive."""
 
     archive_ids = set(predictions["game_id"].astype(str))
     total_lines = schedules[["game_id", "total_line"]].drop_duplicates("game_id")
@@ -425,7 +418,6 @@ def served_card_flip_set(
     schedules: pd.DataFrame | None = None,
     card: str = "served",
 ) -> tuple[set[str], dict[str, set[str]]]:
-    """OR-union flip set of the card actually played, on one opener archive."""
 
     if card not in CARD_CHOICES:
         raise ValueError(f"card must be one of {CARD_CHOICES}, got {card!r}")
@@ -474,7 +466,6 @@ def run_unserved_tilt_marginals(
     seed: int = DEFAULT_SEED,
     card: str = "served",
 ) -> dict[str, Any]:
-    """Score every candidate tilt as a marginal on top of the played card."""
 
     started = perf_counter()
     if card not in CARD_CHOICES:

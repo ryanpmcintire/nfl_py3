@@ -1,5 +1,3 @@
-"""MOD-18 fixed mapping, feature, and chronological leakage contracts."""
-
 import numpy as np
 import pandas as pd
 import pytest

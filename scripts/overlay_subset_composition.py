@@ -1,5 +1,3 @@
-"""Compatibility wrapper for the importable overlay composition computation."""
-
 from __future__ import annotations
 
 import argparse

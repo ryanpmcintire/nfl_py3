@@ -1,76 +1,3 @@
-"""Per-player, per-game play/start probability -- a real forecast, not a base rate.
-
-Owner directive (2026-09-05, verbatim): "the percentages should obviously make
-sense my dude... it needs to be a forecast about the game and it needs to
-consider depth chart." The lineup panel's per-player number was a
-no-designation BASE RATE keyed only on (position_group, recent_role) --
-``nfl_ats.lineup_availability``'s ``returning_contributor``/``no_recent_role``/
-``unknown_no_history`` buckets (0.952 / 0.109 / 0.465). That base rate never
-looks at depth chart at all, so a rookie QB2 with no injury designation read
-47% (the ``unknown_no_history`` bucket) and a veteran healthy QB3 read 95%
-(``returning_contributor``) -- exactly backwards from what "makes sense."
-
-This module replaces that per-player number with a walk-forward, isotonic-
-calibrated gradient-boosting model of two probabilities:
-
-* ``played``  -- P(this player takes at least one snap this game).
-* ``started`` -- P(this player fills a starting slot by playing time): the
-  highest-snap players in each specific-position group, up to that group's
-  slot count, ties broken by pregame depth rank and then player id. This is
-  a playing-time proxy, not an official first-snap starter designation.
-
-Features exclude gameday roster status. Timestamped injury revisions are
-visible at or before the pool decision cutoff; daily depth observations must
-be strictly earlier. Outcomes require team-game snap coverage.
-
-For scored season S, train on seasons before S-1, calibrate on S-1, and
-predict S. If either historical fold is absent, fit all seasons before S
-without calibration and expose that fallback explicitly.
-
-Depth-chart history (all positions, not only QB) is not archived anywhere
-in this repository before this module: ``nfl_ats.quarterbacks``'s
-``depth-ingest``/``depth-history-ingest`` filter to QB rows only
-(``canonicalize_depth_charts``/``canonicalize_historical_depth_charts``,
-both ``pos_abb``/``depth_position`` == "QB"). ``config/source_policies.json``
-marks nflverse GREEN, so this module fetches and archives a full,
-all-position depth-chart history via nflreadpy's own
-``load_depth_charts`` -- the ONLY new network dependency this lane adds, run
-once to build the training archive under
-``data/players/raw/depth_charts/<stamp>/depth_charts.parquet`` (one directory
-deeper than a bare ``data/players/raw/<stamp>/`` -- measured this session:
-``nfl_ats.players.latest_player_snapshot`` globs ``data/players/raw/*/
-manifest.json`` and assumes every match is a ``PlayerSnapshot`` manifest; a
-depth-chart-history manifest living at that same depth broke it for every
-other caller sharing this tree, including ``scripts/build_week_lineups.py``'s
-``_no_designation_lookup``. Nesting one level further keeps the archive
-under ``data/players/raw`` while staying outside that glob's reach, without
-editing the shared, unowned ``players.py``).
-
-**A schema seam, measured this session:** ``nfl.load_depth_charts`` returns
-TWO different schemas depending on season. Seasons <= 2024 return legacy,
-week-labelled rows (``season``, ``week``, ``club_code``, ``depth_team``,
-``position``, ``depth_position``, ``formation``, one row per team per
-week). Seasons >= 2025 return daily snapshot rows instead (``dt``, ``team``,
-``pos_abb``, ``pos_rank``, no week label at all -- nflverse switched to
-continuous point-in-time capture). ``canonicalize_depth_chart_history``
-unifies both into one (season, week, team, gsis_id, position, position_group,
-depth_rank) table: legacy rows keep their own week label directly ("the
-depth chart's week used only for the game it describes" -- unlike
-``nfl_ats.quarterbacks.canonicalize_historical_depth_charts``'s conservative
-"strictly later games only" rule for the QB-only archive, which exists
-because that module could not otherwise rule out looking at a
-not-yet-finalized depth chart; a full weekly depth chart IS the team's own
-pregame lineup announcement for that week's game, so using week W's chart
-for week W's game is the correct, not the conservative, choice here); daily
-rows have no week label, so each (season, week, team) is assigned the most
-recent depth-chart snapshot observed strictly before that team's own
-decision cutoff via ``pandas.merge_asof`` -- never a later one. The archive's own
-``captured_at_utc`` (when THIS SESSION fetched it) is recorded in the
-manifest, separately from the per-row week label that determines which
-game a row may inform; the archive is a 2026 retrospective pull, and only
-the week label -- never the fetch date -- gates what a training row may see.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
@@ -197,7 +124,6 @@ def _started_share_bucket(position: object) -> str:
 
 
 def depth_rank_bucket(rank: object) -> str:
-    """Bucket a numeric depth-chart rank into ``"1"`` / ``"2"`` / ``"3+"``."""
 
     numeric = pd.to_numeric(pd.Series([rank]), errors="coerce").iloc[0]
     if pd.isna(numeric):
@@ -220,17 +146,6 @@ def _categorical(values: Iterable[object], column: str) -> pd.Categorical[str]:
 
 
 def _ordinal(season: pd.Series, week: pd.Series) -> pd.Series:
-    """A monotonic within/across-season week key: ``season * 100 + week``.
-
-    Only used for chronological ORDERING and gap arithmetic ("weeks since
-    last snap"), never as a real calendar distance -- the gap between week
-    17/18 of one season and week 1 of the next overstates the true calendar
-    gap (it counts the offseason as if it were consecutive weeks). Documented
-    simplification: a real calendar-week distance would need each season's
-    actual week count, which varies (16 vs 17 vs 18) across the training
-    window, for no benefit to a tree model that only needs monotonic,
-    consistent spacing to split on.
-    """
 
     return pd.to_numeric(season, errors="coerce") * 100 + pd.to_numeric(week, errors="coerce")
 
@@ -271,8 +186,6 @@ _SPECIALIST_POSITIONS = frozenset(("K", "P", "LS", "PK"))
 
 @dataclass(frozen=True)
 class DepthChartHistorySnapshot:
-    """An immutable, all-position, point-in-time depth-chart archive."""
-
     snapshot_id: str
     root: Path
     requested_seasons: tuple[int, ...]
@@ -307,12 +220,6 @@ def _sha256(path: Path) -> str:
 
 
 def _schedule_kickoff_utc(schedules: pd.DataFrame) -> pd.Series:
-    """Combine nflverse ``gameday`` + Eastern ``gametime`` into UTC.
-
-    Duplicated (not imported) from ``nfl_ats.players._schedule_kickoff_utc`` --
-    the same cross-module duplication convention every copy of this helper
-    already follows in this repository.
-    """
 
     if "gametime" not in schedules:
         return pd.Series(pd.NaT, index=schedules.index, dtype="datetime64[ns, UTC]")
@@ -325,7 +232,6 @@ def _schedule_kickoff_utc(schedules: pd.DataFrame) -> pd.Series:
 
 
 def _team_week_kickoffs(schedule: pd.DataFrame) -> pd.DataFrame:
-    """One row per (season, week, team) with that team's own REG kickoff."""
 
     require_columns(schedule, ("season", "week", "home_team", "away_team", "game_type"), "schedule")
     frame = schedule.copy()
@@ -352,14 +258,6 @@ def _team_week_kickoffs(schedule: pd.DataFrame) -> pd.DataFrame:
 
 
 def _dedupe_primary_role(frame: pd.DataFrame) -> pd.DataFrame:
-    """One row per (season, week, team, gsis_id): the player's PRIMARY role.
-
-    A return specialist can carry a second Special-Teams-only row (KR/PR/H)
-    alongside his real offensive or defensive depth-chart row; keeping both
-    would let the return-specialist rank stand in for his real position
-    rank. Ties are broken toward a non-"other" ``position_group`` first,
-    then the best (lowest) ``depth_rank``.
-    """
 
     priority = frame["position_group"].ne("other").astype(int)
     ordered = frame.assign(_priority=priority).sort_values(
@@ -457,16 +355,6 @@ def _canonicalize_daily_depth_history(frame: pd.DataFrame, schedule: pd.DataFram
 
 
 def canonicalize_depth_chart_history(frame: pd.DataFrame, schedule: pd.DataFrame) -> pd.DataFrame:
-    """Unify legacy week-labelled and daily dt-timestamped depth-chart rows.
-
-    ``frame`` is the raw union nflreadpy's ``load_depth_charts`` returns when
-    fetched across seasons spanning the 2025 schema change (all columns from
-    both schemas present, half of them null on any given row depending on
-    which schema produced it -- measured this session). ``schedule`` is the
-    raw nflverse schedule (``season``, ``week``, ``home_team``, ``away_team``,
-    ``game_type``, ``gameday``, ``gametime``), used only to assign a week to
-    the schema-less daily rows.
-    """
 
     pieces: list[pd.DataFrame] = []
     if "week" in frame.columns and "depth_team" in frame.columns:
@@ -531,12 +419,6 @@ def write_depth_chart_history_snapshot(
 def fetch_depth_chart_history_snapshot(
     seasons: list[int], raw_root: Path
 ) -> DepthChartHistorySnapshot:
-    """Fetch and archive the FULL (all-position) depth-chart history.
-
-    nflverse is GREEN in ``config/source_policies.json``. This is the ONLY
-    network fetch this module performs; every training/evaluation function
-    below reads only from the local archive it writes.
-    """
 
     if not seasons or seasons != sorted(set(seasons)):
         raise ValueError("Seasons must be non-empty, unique, and sorted")
@@ -576,16 +458,6 @@ def load_depth_chart_history_snapshot(snapshot: DepthChartHistorySnapshot) -> pd
 
 
 def _player_snap_history(rosters: pd.DataFrame, snaps: pd.DataFrame) -> pd.DataFrame:
-    """Each ``gsis_id``'s own chronological log of games it recorded a snap.
-
-    One row per (gsis_id, season, week) the player actually played (any
-    team), with ``trailing4_inclusive``: the mean "own side" snap share
-    (``max(offense_pct, defense_pct, st_pct)``) over that game and up to the
-    3 before it. Games the player did not dress for have no row at all
-    (nflverse's snap_counts only lists players who recorded >=1 snap), so a
-    gap between two consecutive rows for the same player already IS "weeks
-    absent" -- byes and healthy scratches need no separate handling.
-    """
 
     linked = attach_snap_player_ids(snaps, rosters)
     linked = linked.loc[linked["gsis_id"].notna()].copy()
@@ -613,13 +485,6 @@ def _player_snap_history(rosters: pd.DataFrame, snaps: pd.DataFrame) -> pd.DataF
 def attach_history_features(
     population: pd.DataFrame, rosters: pd.DataFrame, snaps: pd.DataFrame
 ) -> pd.DataFrame:
-    """Attach ``weeks_since_last_snap`` and ``trailing4_snap_share``.
-
-    Both use ``pandas.merge_asof`` with ``allow_exact_matches=False``: only a
-    STRICTLY EARLIER game (any team) this ``gsis_id`` played may inform
-    either value -- the leakage-safety property the module docstring's test
-    plan checks directly.
-    """
 
     history = _player_snap_history(rosters, snaps)
     result = population.reset_index(drop=True).copy()
@@ -801,13 +666,6 @@ def build_player_week_panel(
     *,
     schedule: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """One row per (season, week, team, gsis_id) depth-chart appearance with
-    every strictly-pregame feature and the two postgame labels
-    (``played``/``started``). The population is depth-chart rows -- the SAME
-    population ``scripts/build_week_lineups.py`` scores every player from --
-    not the broader weekly-roster population, so training and serving see
-    the same distribution of players.
-    """
 
     require_columns(depth_history, DEPTH_CHART_HISTORY_OUTPUT_COLUMNS, "depth_chart_history")
     population = depth_history.drop_duplicates(
@@ -854,9 +712,6 @@ def build_player_week_panel(
 
 @dataclass(frozen=True)
 class PlayProbabilityModel:
-    """A fitted, calibrated pair of boosters (played, started) for one
-    scored season, plus the provenance needed to describe how it was fit."""
-
     version: str
     scored_season: int
     train_seasons: tuple[int, ...]
@@ -902,7 +757,6 @@ def _fit_one_label(
 
 
 def fit_play_probability_model(panel: pd.DataFrame, *, scored_season: int) -> PlayProbabilityModel:
-    """Train before S-1, calibrate on S-1, score S; flag uncalibrated fallback."""
 
     require_columns(
         panel, (*FEATURE_COLUMNS, "season", LABEL_PLAYED, LABEL_STARTED), "player_week_panel"
@@ -940,8 +794,6 @@ def fit_play_probability_model(panel: pd.DataFrame, *, scored_season: int) -> Pl
 
 
 def predict_play_probabilities(model: PlayProbabilityModel, features: pd.DataFrame) -> pd.DataFrame:
-    """``play_probability`` (``played``) and ``start_probability`` (``started``),
-    both isotonic-calibrated, for every row in ``features``."""
 
     design = _prepare_matrix(features)
     played_raw = model.played_booster.predict_proba(design)[:, 1]
@@ -976,7 +828,6 @@ def _log_loss(actual: np.ndarray, predicted: np.ndarray, *, eps: float = 1e-9) -
 
 
 def walk_forward_evaluate(panel: pd.DataFrame, *, scored_seasons: Iterable[int]) -> pd.DataFrame:
-    """Per-season Brier/log-loss for the model, one row per (season, label)."""
 
     rows: list[dict[str, Any]] = []
     for season in sorted({int(value) for value in scored_seasons}):
@@ -1020,9 +871,6 @@ def walk_forward_evaluate(panel: pd.DataFrame, *, scored_seasons: Iterable[int])
 def depth_rank_only_baseline(
     panel: pd.DataFrame, *, scored_seasons: Iterable[int], prior: float = 50.0
 ) -> pd.DataFrame:
-    """Season-lagged, shrunk (position_group, depth_rank_bucket) rate --
-    everything this model's own depth-rank feature knows, and nothing else
-    (no injury report, no history, no roster status)."""
 
     frames: list[pd.DataFrame] = []
     for season in sorted({int(value) for value in scored_seasons}):
@@ -1057,19 +905,6 @@ def current_approach_baseline_predictions(
     *,
     scored_seasons: Iterable[int],
 ) -> pd.DataFrame:
-    """Walk-forward predictions from the approach this lane replaces:
-    ``nfl_ats.lineup_availability``'s no-designation base rate (by position
-    group and recent role) for a player with no visible injury designation
-    that week, and ``nfl_ats.availability.fixed_unavailability`` for a
-    player who IS listed -- the same two rules ``build_week_lineups.py``
-    used for every non-QB player before this lane's change. Documented
-    simplification: production's LEARNED availability-rate table (an
-    alternative to the fixed prior for listed players) is not reproduced
-    here -- building it needs a completed-game schedule this module
-    otherwise has no reason to fetch, and the base-rate branch (which IS
-    reproduced exactly) governs the large majority of rows, including the
-    QB2/QB3 sanity-check case the owner's complaint named.
-    """
 
     from nfl_ats.availability import fixed_unavailability
     from nfl_ats.lineup_availability import (
@@ -1120,12 +955,6 @@ def season_blocked_bootstrap(
     n_bootstrap: int = 5000,
     random_state: int = 0,
 ) -> dict[str, float]:
-    """Resample SEASONS (never rows or weeks) with replacement -- the
-    AGENTS.md/FLEET_BRIEF convention of blocking a bootstrap at the unit that
-    is genuinely independent, generalized here to season blocks because the
-    walk-forward evaluation itself only ever produces one independent draw
-    per scored season (each season's model is fit once, on data the OTHER
-    scored seasons never see)."""
 
     values = per_season_improvement.to_numpy(dtype=float)
     n = len(values)
@@ -1148,10 +977,6 @@ def season_blocked_bootstrap(
 
 
 def calibration_slot(position: object, depth_rank: object) -> str:
-    """One of QB1/QB2/QB3+, RB1/RB2+, WR1-3/WR4+, OL, DL, LB, CB, S, K/P,
-    other -- the reader-facing depth-slot grouping for the calibration
-    table (coarser than ``_START_SHARE_POSITION_BUCKETS``, which is used
-    only for the "started" label's own snap-share math)."""
 
     pos = str(position).strip().upper()
     rank_value = pd.to_numeric(pd.Series([depth_rank]), errors="coerce").iloc[0]
@@ -1198,8 +1023,6 @@ def calibration_slot(position: object, depth_rank: object) -> str:
 def calibration_table(
     frame: pd.DataFrame, *, prediction_column: str, actual_column: str
 ) -> pd.DataFrame:
-    """Mean predicted vs. observed by calibration slot -- the table the task
-    asks for by name: "QB1/QB2/QB3, RB1/RB2, WR1-3, OL, DL, LB, CB, S, K/P"."""
 
     working = frame.copy()
     working["slot"] = [
@@ -1222,11 +1045,6 @@ def calibration_table(
 def serving_player_history(
     rosters: pd.DataFrame, snaps: pd.DataFrame, *, as_of_season: int, as_of_week: int
 ) -> dict[str, dict[str, float]]:
-    """``{gsis_id: {"weeks_since_last_snap":..., "trailing4_snap_share":...}}``
-    as of strictly before (``as_of_season``, ``as_of_week``), from whatever
-    local snap/roster history is on file -- the SAME history construction
-    ``attach_history_features`` uses for training, queried once for every
-    player instead of joined against a training panel."""
 
     history = _player_snap_history(rosters, snaps)
     if history.empty:
@@ -1256,14 +1074,6 @@ def serving_feature_frame(
     player_history: dict[str, dict[str, float]],
     default_roster_status: str = "ACT",
 ) -> pd.DataFrame:
-    """Build ``FEATURE_COLUMNS`` for one team's current depth-chart rows.
-
-    ``depth_rows`` needs ``gsis_id``, ``position`` (nflverse's ``pos_abb``,
-    possibly side-specific), and ``depth_rank`` (nflverse's ``pos_rank``).
-    ``current_injuries`` is that team's visible injury rows, indexed by
-    ``gsis_id``. ``default_roster_status`` is retained for caller compatibility
-    but roster status is deliberately excluded from the model features.
-    """
 
     working = depth_rows.copy()
     working["position"] = working["position"].astype("string").str.upper()
@@ -1328,9 +1138,6 @@ PlayProbabilityPredictor = Callable[[pd.DataFrame], pd.DataFrame]
 
 
 def make_predictor(model: PlayProbabilityModel) -> PlayProbabilityPredictor:
-    """A small closure ``scripts/build_week_lineups.py`` injects into
-    ``_team_payload`` -- keeps that function's tests able to stub prediction
-    without needing a real trained model."""
 
     def _predict(features: pd.DataFrame) -> pd.DataFrame:
         return predict_play_probabilities(model, features)

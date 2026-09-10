@@ -1,48 +1,3 @@
-"""Lineup-aware assistant intents (ENG-04 / UI-18).
-
-Extends the board assistant's retrieval engine (:mod:`nfl_ats.board_assistant`)
-with intents that answer projected-QB and availability questions from the
-published ``lineups.json`` artifact ONLY -- via
-:class:`nfl_ats.lineup_view.TeamLineup`, the exact same structured data
-``board_content.py`` already loads with :func:`nfl_ats.lineup_view.load_lineups`
-and attaches to each :class:`nfl_ats.board_content.GameDive`
-(``home_lineup``/``away_lineup``). This module never opens an artifact itself
-and never calls a live provider; it only composes text from data the caller
-already loaded, exactly like every other entry in
-:func:`nfl_ats.board_assistant.build_knowledge`.
-
-Every SUPPORTED answer (a resolved starter, a player's availability, a
-team's injury notes, or a specific backup-QB game list) names its source and
-source-capture time inline, ``"as of <time> from <source>"`` -- see
-:data:`_ANCHOR_TEMPLATE`. Two documented fallbacks never guess:
-
-* **Absent** -- no lineup entry exists for the requested team/game (the
-  artifact was never published, or does not cover this week's game). See
-  :data:`_UNPUBLISHED_TEXT`.
-* **Stale** -- a lineup entry exists but its own ``as_of`` timestamp is older
-  than :data:`LINEUP_STALE_BUDGET_HOURS` relative to the page's own build
-  time (``BoardContent.generated_at``). See :data:`_STALE_TEXT`. Staleness is
-  computed ONCE, at corpus-build time (:func:`build_lineup_knowledge`), and
-  baked into the corpus as a plain boolean -- the same "precompute at publish
-  time, never at query time" discipline every other entry in this corpus
-  already follows.
-
-**Fail-closed forecast/lineup consistency rule.** ``scripts/build_week_lineups.py``
-already stamps ``TeamLineup.note`` whenever the current depth chart's QB1
-disagrees with the forecast's own assumed QB (``model_role == "base_model"``
-on a different player, or missing from the roster snapshot entirely). This
-module treats a non-``None`` ``note`` as the SAME signal :func:`docs
-projected_lineups.md` describes: when it fires, :func:`qb_starter_answer` and
-:func:`backup_qb_games_answer` name BOTH the forecast's assumed QB and the
-depth chart's current QB1 and explicitly refuse to state a single starter,
-rather than picking one silently.
-
-Depends on :mod:`nfl_ats.board_assistant` only through deferred (in-function)
-imports, so ``board_assistant`` can import this module at its own top level
-without a circular-import failure (``board_assistant`` -> this module is the
-only import edge that exists at module-load time).
-"""
-
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
@@ -110,9 +65,6 @@ def _make_answer(topic: str, text: str, anchors: Sequence[str]) -> AssistantAnsw
 
 
 def _hours_since(as_of: str | None, reference: datetime) -> float | None:
-    """Hours between ``as_of`` and ``reference``, or ``None`` when ``as_of``
-    is absent or unparseable -- callers must treat ``None`` as "cannot
-    verify freshness", never as "fresh", per the fail-closed rule."""
 
     if not as_of:
         return None
@@ -190,14 +142,6 @@ def build_lineup_knowledge(
     reference: datetime,
     budget_hours: float = LINEUP_STALE_BUDGET_HOURS,
 ) -> dict[str, Any]:
-    """The precomputed, retrieval-only lineup block merged into the
-    assistant corpus by ``board_assistant.build_knowledge_for_board``.
-
-    ``lineups`` is exactly what :func:`nfl_ats.lineup_view.load_lineups`
-    returns (``{game_id: (home, away)}``); ``reference`` is the page's own
-    build time (``BoardContent.generated_at``), so staleness is computed
-    once, at publish time -- never re-derived at query time in Python or JS.
-    """
 
     games: dict[str, Any] = {}
     players: list[dict[str, Any]] = []
@@ -248,9 +192,6 @@ def _team_lookup(
 def qb_starter_answer(
     teams: Sequence[str], lineup_knowledge: Mapping[str, Any] | None
 ) -> AssistantAnswer | None:
-    """ "Who is starting at QB for <team>" -- refuses to name a single
-    starter when the fail-closed consistency rule fires (``entry["note"]``)
-    or the snapshot is stale/absent, per the module docstring."""
 
     if not teams:
         return None
@@ -295,8 +236,6 @@ def qb_starter_answer(
 def team_injuries_answer(
     teams: Sequence[str], lineup_knowledge: Mapping[str, Any] | None
 ) -> AssistantAnswer | None:
-    """ "Any injuries for <team>" -- reports only what the lineup artifact
-    itself carries; never infers a status the artifact doesn't publish."""
 
     if not teams:
         return None
@@ -368,9 +307,6 @@ def _resolve_players(
 def player_availability_answer(
     tokens: frozenset[str], lineup_knowledge: Mapping[str, Any] | None
 ) -> AssistantAnswer | None:
-    """ "Is <player> playing / available" -- only fires when a player name
-    resolves AND the question carries an availability/status cue word, so a
-    shared surname token can never hijack an unrelated question."""
 
     if lineup_knowledge is None or not (tokens & AVAILABILITY_WORDS):
         return None
@@ -428,10 +364,6 @@ def player_availability_answer(
 
 
 def backup_qb_games_answer(lineup_knowledge: Mapping[str, Any] | None) -> AssistantAnswer:
-    """ "Which games have a backup QB" -- reads this as the same fail-closed
-    signal ``qb_starter_answer`` refuses a single starter over: a team whose
-    current depth-chart QB1 disagrees with the forecast's assumed QB. Games
-    with a stale snapshot are excluded (never guessed) and named as such."""
 
     if lineup_knowledge is None or not lineup_knowledge.get("games"):
         return _make_answer(

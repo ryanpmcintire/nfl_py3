@@ -1,23 +1,3 @@
-"""Contracts for the canonical officials archive loader (LEAD-59).
-
-Every test builds a SYNTHETIC sweep-run tree under ``tmp_path`` and a
-synthetic nflverse feed frame; no test reads ``data/raw/officials`` or
-``data/raw/officials_pfr_wayback``. The one real thing borrowed from the
-repository is ``scripts/officials_wayback_sweep.py``'s own
-``parse_officials_block`` -- reused, never reimplemented -- so the fixtures
-below are written in the same HTML shape the sweep actually captures
-(``<table id="ref_info">`` with a ``<th>`` position label and a ``<td>``
-name, the 2014-era layout measured in ``docs/officials_archive_probe.md``).
-
-Two of these are the family's LEAKAGE regression tests, required by
-AGENTS.md for every new feature family:
-
-- ``test_a_capture_at_or_before_kickoff_fails_closed``
-- ``test_archive_rows_are_refused_by_the_prospective_channel``
-
-See ``docs/officials_archive.md`` for the timing contract they enforce.
-"""
-
 from __future__ import annotations
 
 import json
@@ -166,7 +146,6 @@ def _schedules(rows: list[dict[str, Any]] | None = None) -> pd.DataFrame:
 
 
 def _feed(seasons: tuple[int, ...] = (2015, 2016)) -> pd.DataFrame:
-    """A synthetic nflverse ``officials.parquet``, in its measured schema."""
 
     records = []
     for season in seasons:
@@ -208,11 +187,6 @@ def _no_cross_test_cache() -> Any:
 
 
 def test_the_retyped_source_id_matches_the_sweep_scripts_own() -> None:
-    """``ARCHIVE_SOURCE`` is retyped rather than imported; pin it equal.
-
-    This also exercises the by-path import of the sweep whose
-    ``parse_officials_block`` every archive read reuses.
-    """
 
     sweep = _load_sweep_module(REPO_ROOT)
     assert ARCHIVE_SOURCE == sweep.SOURCE_ID
@@ -252,9 +226,6 @@ def test_a_complete_crew_parses_to_seven_positions(tmp_path: Path) -> None:
 
 
 def test_a_manifest_row_whose_page_is_not_on_disk_is_skipped(tmp_path: Path) -> None:
-    """An in-flight sweep names a page before it finishes writing it, and a
-    retried row can carry a ``*_failed`` label with no page at all. Disk is
-    the only truth."""
 
     raw_root = tmp_path / "officials_pfr_wayback"
     present = _manifest_game(
@@ -341,10 +312,6 @@ def test_canonical_table_has_the_frozen_columns_and_schedule_derived_fields(
 def test_a_duplicate_position_on_one_page_keeps_the_first_and_counts_the_discard(
     tmp_path: Path,
 ) -> None:
-    """Measured on the real archive (2026-09-08): ``2014_06_DET_MIN`` lists
-    "John Parry" and "John Perry" both as Referee, and ``2014_09_PHI_HOU``
-    lists two Back Judges. First in page order wins, so a duplicated Referee
-    can never double-count a game downstream."""
 
     crew = (("Referee", "John Parry"), ("Referee", "John Perry"), *FULL_CREW[1:])
     raw_root = _one_game_archive(tmp_path, crew=crew)
@@ -425,13 +392,6 @@ def test_an_empty_archive_yields_an_empty_canonical_table(tmp_path: Path) -> Non
 
 
 def test_a_capture_at_or_before_kickoff_fails_closed(tmp_path: Path) -> None:
-    """LEAKAGE. The archive's whole timing claim is that its captures are
-    strictly POST-game, so it can only ever support historical crew
-    identity. The sweep cannot produce a pre-game capture (CDX
-    ``from=<gameday + 1>``), and a pre-game PFR boxscore is a placeholder
-    with no officials block -- so a row claiming one is fabricated crew
-    data, not early knowledge, and must fail closed rather than be trusted
-    as a pregame capture."""
 
     raw_root = _one_game_archive(tmp_path, capture_ts="20140903120000")
     with pytest.raises(OfficialsArchiveError, match="after the game's own day"):
@@ -465,10 +425,6 @@ def test_a_missing_or_malformed_capture_timestamp_fails_closed() -> None:
 
 
 def test_archive_rows_are_refused_by_the_prospective_channel() -> None:
-    """LEAKAGE. The refresh path requires a snapshot captured strictly
-    before each game's own ``min(kickoff, Sunday 16:00 ET)`` deadline. Every
-    Wayback capture is after kickoff, so archive rows can never satisfy it
-    and are refused rather than silently accepted."""
 
     merged = load_officials(feed=_feed(), include_archive=False)
     refuse_archive_rows(merged, channel="crew_tilt_refresh_v1")
@@ -489,7 +445,6 @@ def test_the_prospective_loader_never_includes_the_archive(tmp_path: Path) -> No
 
 
 def test_the_shipped_default_returns_the_feed_bit_for_bit(tmp_path: Path) -> None:
-    """Routing a consumer through ``load_officials`` must change nothing."""
 
     assert INCLUDE_ARCHIVE_DEFAULT is False
     feed = _feed()
@@ -504,11 +459,6 @@ def test_the_shipped_default_returns_the_feed_bit_for_bit(tmp_path: Path) -> Non
 
 
 def test_every_2015_2025_row_survives_the_merge_bit_for_bit(tmp_path: Path) -> None:
-    """The pin the whole extension rests on: turning the archive ON must not
-    change a single value the nflverse feed already carries. The one declared
-    schema difference is ``jersey_number`` widening ``int32`` -> nullable
-    ``Int32`` (a PFR boxscore carries no jersey numbers); every 2015-2025
-    jersey number stays present and identical."""
 
     feed = _feed(seasons=(2015, 2016, 2017))
     raw_root = _one_game_archive(tmp_path)
@@ -537,8 +487,6 @@ def test_every_2015_2025_row_survives_the_merge_bit_for_bit(tmp_path: Path) -> N
 
 
 def test_nflverse_wins_on_overlap(tmp_path: Path) -> None:
-    """An archive game whose legacy id is already in the feed is dropped
-    WHOLE -- never merged position-by-position."""
 
     feed = _feed(seasons=(2014,))
     assert set(feed["game_id"]) == {"2014091000"}
@@ -577,9 +525,6 @@ def test_the_archive_uses_the_legacy_game_id_the_feed_joins_on(tmp_path: Path) -
 
 
 def test_merging_rejects_a_feed_missing_its_own_columns(tmp_path: Path) -> None:
-    """The merge needs the feed's full schema. The default path does NOT
-    validate -- it is a pure pass-through, and several consumer tests hand it
-    a minimal officials fixture carrying only the columns they use."""
 
     broken = _feed().drop(columns=["jersey_number"])
     empty = tmp_path / "officials_pfr_wayback"
@@ -611,7 +556,6 @@ def test_describe_archive_coverage_reports_per_season(tmp_path: Path) -> None:
 
 
 def test_the_row_cache_invalidates_when_a_sweep_writes(tmp_path: Path) -> None:
-    """A sweep is often still running; the memo must not pin a stale read."""
 
     raw_root = _one_game_archive(tmp_path)
     first = load_archive_crew_rows(repo_root=REPO_ROOT, raw_root=raw_root)

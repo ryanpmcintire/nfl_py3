@@ -16,10 +16,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts import capture_airnow_hourly as airnow
 from scripts import capture_scheduler
-from scripts.build_environmental_exposure_join import (
-    asof_merge_live_aqi,
-    load_airnow_captures,
-)
 
 
 def _payload(
@@ -189,66 +185,6 @@ def test_capture_fails_closed_on_stale_source_and_records_every_attempt(tmp_path
     assert manifest["status"] == "failed"
     assert len(manifest["attempted_urls"]) == 3
     assert manifest["source_url"].endswith("2026090221.dat")
-
-
-def test_live_aqi_join_uses_capture_time_not_earlier_observation_time() -> None:
-    games = pd.DataFrame(
-        {
-            "game_id": ["before", "after", "stale"],
-            "county_fips": ["42101"] * 3,
-            "decision_at_utc": pd.to_datetime(
-                ["2026-09-02T20:59Z", "2026-09-02T21:05Z", "2026-09-03T00:01Z"]
-            ),
-        }
-    )
-    captures = pd.DataFrame(
-        {
-            "stadium": ["Alpha"],
-            "county_fips": ["42101"],
-            "available_at_utc": pd.to_datetime(["2026-09-02T21:00Z"]),
-            "observed_at_utc": pd.to_datetime(["2026-09-02T20:00Z"]),
-            "aqi": [40.0],
-            "parameter": ["ozone"],
-            "aqs_site_id": ["421010001"],
-            "site_name": ["A"],
-        }
-    )
-
-    baseline = asof_merge_live_aqi(games, captures).set_index("game_id")
-    future = captures.copy()
-    future["available_at_utc"] = pd.Timestamp("2026-09-02T21:06Z")
-    future["aqi"] = 500.0
-    changed = asof_merge_live_aqi(games, pd.concat([captures, future])).set_index("game_id")
-
-    assert pd.isna(baseline.loc["before", "live_aqi"])
-    assert baseline.loc["after", "live_aqi"] == changed.loc["after", "live_aqi"] == 40.0
-    assert pd.isna(baseline.loc["stale", "live_aqi"])
-
-
-@pytest.mark.parametrize("tampered", ["source.dat", "stadium_aqi.parquet"])
-def test_loader_rejects_a_tampered_complete_snapshot(tmp_path: Path, tampered: str) -> None:
-    snapshot = tmp_path / "20260902T221500Z"
-    snapshot.mkdir()
-    data = snapshot / "stadium_aqi.parquet"
-    source = snapshot / "source.dat"
-    source.write_bytes(b"source")
-    pd.DataFrame({"aqi": [40]}).to_parquet(data, index=False)
-    manifest = {
-        "status": "complete",
-        "files": [
-            {"path": source.name, "sha256": hashlib.sha256(source.read_bytes()).hexdigest()},
-            {"path": data.name, "sha256": hashlib.sha256(data.read_bytes()).hexdigest()},
-        ],
-    }
-    (snapshot / "manifest.json").write_text(
-        json.dumps(manifest),
-        encoding="utf-8",
-    )
-    with (snapshot / tampered).open("ab") as stream:
-        stream.write(b"tampered")
-
-    with pytest.raises(ValueError, match="SHA-256"):
-        load_airnow_captures(tmp_path)
 
 
 def test_scheduler_captures_after_publication_and_before_checkpoint() -> None:

@@ -42,7 +42,7 @@ packages = ["src/nfl_ats"]
 # (model fits, bootstraps) and measured 216s serial vs ~40s on 24 workers
 # with zero order-dependence (verified 2026-09-03: 4 parallel runs, all
 # green). Override with `-n0` for a serial run when debugging.
-addopts = "-ra --strict-config --strict-markers -n auto"
+addopts = "-ra --strict-config --strict-markers -n auto --dist worksteal"
 testpaths = ["tests"]
 # ENG-11 (fast vs. full verification tiers): `full` tags the tests that
 # dominate `--durations`, fit a real model, read real on-disk data/artifacts,
@@ -94,21 +94,7 @@ warn_unused_configs = true
 module = ["nflreadpy.*", "sklearn.*", "joblib.*", "scipy.*"]
 ignore_missing_imports = true
 
-# nfl_ats.fluview_production_feature reuses scripts/fluview_battery_screen.py's
-# frozen as-of construction unchanged (docs/fluview_on_production.md: "reuse
-# the existing as-of/leakage-safe construction exactly -- do not rebuild it"),
-# the same "scripts is not part of the installed package" sys.path pattern
-# nfl_ats.cli._ensure_repo_root_on_path already uses. `mypy src` was never
-# configured to gate scripts/*.py (that tree is standalone research scripts,
-# not the installed package), so pulling one into src's import graph now
-# surfaces pre-existing typing gaps in a frozen, already-verified battery
-# script this session must not edit. Scoped to exactly the two script modules
-# reached this way, not a blanket scripts.* exemption.
-[[tool.mypy.overrides]]
-module = ["scripts.fluview_battery_screen", "scripts.fluview_battery_ingest"]
-ignore_errors = true
-
-# Same situation, same precedent, one module later (WP17): src/nfl_ats/
+# src/nfl_ats/
 # inactives_capture.py imports scripts/ingest_nflcom_injuries.py's team-code
 # map, HTML-stripping helper, and current-week resolver VERBATIM rather than
 # duplicating them (that script is the working, already-production parser for
@@ -133,10 +119,6 @@ ignore_errors = true
 # at runtime via the sys.path insert that script performs but has no stub for
 # mypy. Scoped to exactly this one script module, not a blanket scripts.*
 # exemption, and the frozen script itself is not edited.
-[[tool.mypy.overrides]]
-module = ["scripts.illness_battery_screen"]
-ignore_errors = true
-
 # Same situation, same precedent again (2026-09-01 on-production sweep, second
 # construct): src/nfl_ats/reddit_attention_production_feature.py imports
 # scripts/arctic_shift_battery_screen.py's frozen point-in-time-safe attention
@@ -150,10 +132,6 @@ ignore_errors = true
 # at runtime via the sys.path insert that script performs but have no stub for
 # mypy. Scoped to exactly this one script module, not a blanket scripts.*
 # exemption, and the frozen script itself is not edited.
-[[tool.mypy.overrides]]
-module = ["scripts.arctic_shift_battery_screen"]
-ignore_errors = true
-
 # Same situation, same precedent again (2026-09-01 on-production sweep):
 # src/nfl_ats/redzone_reversion_production_feature.py imports
 # scripts/redzone_reversion_screen.py's frozen efficiency-panel construction
@@ -166,6 +144,3 @@ ignore_errors = true
 # at runtime via the sys.path insert that script performs but has no stub for
 # mypy. Scoped to exactly this one script module, not a blanket scripts.*
 # exemption, and the frozen script itself is not edited.
-[[tool.mypy.overrides]]
-module = ["scripts.redzone_reversion_screen"]
-ignore_errors = true

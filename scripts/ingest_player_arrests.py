@@ -1,24 +1,3 @@
-"""Ingest USA Today's public NFL player-arrests table through its AJAX endpoint.
-
-The landing page is fetched on every run to obtain the current anonymous
-WordPress nonce. Table pages are then requested from ``admin-ajax.php`` with
-the same ``cspFetchTable`` form used by the public application. Raw landing
-HTML and JSON page responses are append-only inside an ignored timestamped
-snapshot; rerunning with ``--snapshot`` skips valid cached pages and resumes
-the missing page numbers.
-
-Point-in-time contract: ``incident_date`` is the only source field treated as
-an availability date. ``Outcome`` is retained only as ``outcome_archive_only``
-in the full archival index and is mechanically absent from
-``incidents_point_in_time.parquet``. Descriptions and links are excluded from
-that point-in-time view as well because the source exposes no revision history.
-
-Usage:
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_player_arrests.py
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_player_arrests.py \\
-        --snapshot 20260820T160000Z
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -79,7 +58,7 @@ POINT_IN_TIME_COLUMNS = (
 
 
 class PlayerArrestsIngestError(RuntimeError):
-    """Raised when the public page or AJAX response violates its contract."""
+    pass
 
 
 def sha256_bytes(payload: bytes) -> str:
@@ -130,7 +109,6 @@ def parse_sitedata(landing_html: bytes) -> dict[str, Any]:
 
 
 def sanitize_landing_html(landing_html: bytes, nonce: str) -> bytes:
-    """Redact the anonymous, ephemeral WordPress nonce before caching HTML."""
 
     text = landing_html.decode("utf-8", errors="replace")
     if nonce not in text:
@@ -158,7 +136,6 @@ _WINERROR_SOCKET_PERMISSION = 10013
 
 
 def _diagnose(error: Exception) -> str:
-    """A one-line, human-readable cause for a request failure, when known."""
 
     winerror = getattr(getattr(error, "reason", None), "winerror", None)
     if winerror == _WINERROR_SOCKET_PERMISSION:
@@ -288,7 +265,6 @@ def normalize_rows(rows: list[dict[str, Any]]) -> pd.DataFrame:
 
 
 def point_in_time_view(archive: pd.DataFrame) -> pd.DataFrame:
-    """Return only columns admitted to future point-in-time event matching."""
 
     return cast(pd.DataFrame, archive.loc[:, POINT_IN_TIME_COLUMNS].copy())
 

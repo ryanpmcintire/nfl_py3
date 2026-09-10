@@ -1,30 +1,3 @@
-"""UI-20: every listed player gets a play probability, not only the QB.
-
-Owner complaint: "why is that only quarterbacks have the lineup percentage
-filled in?" (measured cause: ``scripts/build_week_lineups.py`` only ever set
-``play_probability`` for the one QB the active model consumed). This file
-covers:
-
-* ``nfl_ats.lineup_availability``'s no-designation base-rate derivation and
-  per-player resolver, on a tiny synthetic roster/injury/snap fixture (unit
-  math, not the real multi-season snapshot).
-* ``scripts.build_week_lineups._team_payload``'s every-player coverage, its
-  ``model_qb_start_probability`` field (UI-20-AB, 2026-09-05: the owner's
-  directive to replace the base rate with a real forecast applies to the
-  scored QB too, so ``play_probability`` no longer stays pinned to the
-  forecast input for that one player -- the forecast input moved to this
-  separate field instead, preserved rather than deleted), and the
-  point-in-time leakage rule (a report dated after the artifact's
-  ``generated_at`` must not change a player's number). These tests inject a
-  small deterministic stub in place of a real trained
-  ``nfl_ats.play_probability`` model -- the model's OWN correctness is
-  covered by ``tests/test_play_probability.py``; these test only that
-  ``_team_payload`` wires whatever predictor it is given into the right
-  artifact fields.
-* The render legend/em-dash rule in ``nfl_ats.board_terminal``.
-* The lineup-aware assistant's availability answer for a non-QB player.
-"""
-
 from __future__ import annotations
 
 import re
@@ -258,14 +231,6 @@ def _synthetic_depth(team: str, players: list[dict]) -> pd.DataFrame:
 
 
 def _stub_predictor(features: pd.DataFrame) -> pd.DataFrame:
-    """A deterministic stand-in for a real, trained
-    ``nfl_ats.play_probability.PlayProbabilityModel``: 0.9 play / 0.5 start
-    normally, dropping to 0.0 / 0.0 when ``serving_feature_frame`` resolved
-    an "out" report for that row. Sensitive to exactly the one feature these
-    tests need to probe (whether the injury report was visible), so a test
-    failure here means ``_team_payload``'s WIRING is wrong, not the model's
-    own predictions (covered separately in ``tests/test_play_probability.py``).
-    """
 
     is_out = features["report_category"].eq("out")
     return pd.DataFrame(
@@ -367,9 +332,6 @@ def test_model_qb_start_probability_is_none_when_the_forecast_never_supplied_one
 
 
 def test_a_later_dated_injury_report_never_changes_a_players_number() -> None:
-    """Point-in-time discipline: only injury reports observed strictly
-    before the artifact's own ``generated_at`` may move a player's number.
-    """
 
     generated_at = pd.Timestamp("2026-09-10T12:00:00Z")
     schedule = pd.DataFrame(
@@ -535,11 +497,6 @@ def test_lineup_probability_cell_carries_the_reason_as_a_tooltip() -> None:
 
 
 def test_lineup_probability_cell_shows_a_real_percentage_for_every_player() -> None:
-    """UI-20-AB (2026-09-05): every player's percentage is a real
-    per-player, per-game forecast from the availability model now, not a
-    position-level base rate -- WR One (no injury designation) and QB
-    Model (designated) both show their real number, never the retired
-    "no designation" placeholder."""
 
     html = board_terminal._lineup_team_html(_lineup_for_render())
     rows = re.findall(r'<div class="lineup-row">.*?</div>\s*</div>', html, flags=re.S)
@@ -550,10 +507,6 @@ def test_lineup_probability_cell_shows_a_real_percentage_for_every_player() -> N
 
 
 def test_lineup_start_probability_renders_only_for_the_qb_slot() -> None:
-    """Second, smaller "start" number: the model's own P(starts), shown
-    only for the QB slot even when a non-QB row also carries a
-    `start_probability` value (WR One's is set deliberately to prove it is
-    suppressed there)."""
 
     html = board_terminal._lineup_team_html(_lineup_for_render())
     rows = re.findall(r'<div class="lineup-row">.*?</div>\s*</div>', html, flags=re.S)

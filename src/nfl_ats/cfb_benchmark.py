@@ -1,21 +1,3 @@
-"""Chronological CFB-only market-residual ATS benchmark (XLG-03).
-
-One frozen configuration, evaluated once, mirroring the active NFL
-market-residual model: a Ridge regression (alpha 10, no calibration) on the
-declared CFB feature contract predicts the home ATS margin
-(``result - spread_line``), with cover probabilities read from an out-of-time
-empirical residual distribution exactly as in ``margin.fit_margin_model``.
-Training is strictly earlier than each scored week, with the NFL minimum
-training floor of 500 games taken verbatim.
-
-The benchmark is CFB-only: no NFL rows are read and no NFL outcomes are
-touched. Its purpose is the instrument - sample, controls, and detection
-power for future CFB->NFL transfer claims - not an edge claim. The headline
-window is the clean core (2012-2019 and 2021-2025); 2006-2011 is reported as
-a thin-line-regime sensitivity split only, and 2020 as the sparse-provider
-regime split.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -69,7 +51,6 @@ class CfbBenchmarkResult:
 
 
 def cfb_evaluation_window(season: int) -> str:
-    """Name the reporting split a season belongs to."""
 
     if season in CFB_THIN_REGIME_SEASONS:
         return "thin_2006_2011"
@@ -89,16 +70,6 @@ def fit_cfb_residual_model(
     random_state: int = 42,
     feature_columns: tuple[str, ...] = CFB_MODEL_FEATURE_COLUMNS,
 ) -> MarginModel:
-    """Fit the CFB market-residual Ridge, mirroring ``fit_margin_model``.
-
-    The recipe is identical to the NFL implementation: sort chronologically,
-    hold out the trailing ``distribution_fraction`` as an out-of-time residual
-    distribution, then refit on all rows. Only the feature contract differs
-    (the declared CFB columns instead of a registered NFL feature set).
-    ``feature_columns`` defaults to the frozen XLG-03 contract; a declared
-    candidate family (e.g. the XLG-04 role-continuity columns) may extend it
-    without touching the frozen benchmark path.
-    """
 
     required = {"game_id", "gameday", "ats_margin", *feature_columns}
     missing = sorted(required.difference(training.columns))
@@ -173,7 +144,6 @@ def cfb_walk_forward_benchmark(
     min_train_games: int = CFB_BENCHMARK_MIN_TRAIN_GAMES,
     ridge_alpha: float = CFB_BENCHMARK_RIDGE_ALPHA,
 ) -> CfbBenchmarkResult:
-    """Score every eligible CFB week with strictly earlier training."""
 
     if end_season < start_season:
         raise ValueError("end_season cannot be earlier than start_season")
@@ -221,7 +191,6 @@ def cfb_walk_forward_benchmark(
 def summarize_cfb_benchmark(
     predictions: pd.DataFrame,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Summaries per evaluation window/method and per season/method."""
 
     summary_rows: list[dict[str, Any]] = []
     windows = ["clean_core", "thin_2006_2011", "regime_2020", "all"]
@@ -255,12 +224,6 @@ def cfb_benchmark_uncertainty(
     samples: int = CFB_BENCHMARK_BOOTSTRAP_SAMPLES,
     seed: int = CFB_BENCHMARK_BOOTSTRAP_SEED,
 ) -> pd.DataFrame:
-    """Week- and season-blocked intervals on the clean-core window.
-
-    Reuses the NFL outcome bootstrap: within-block schedule dependence is
-    preserved and every method's delta against the market baseline carries its
-    own blocked interval.
-    """
 
     clean = predictions.loc[predictions["evaluation_window"].eq("clean_core")].copy()
     if clean.empty:

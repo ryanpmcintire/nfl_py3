@@ -1,74 +1,3 @@
-"""Refit-aware uncertainty: the training-resample source no interval has ever carried.
-
-Research item: ``docs/estimation_variance.md``. Every interval this project has
-reported (``experiments.paired_feature_comparisons``,
-``outcomes.outcome_bootstrap_intervals``, ``cfb_benchmark.cfb_benchmark_uncertainty``)
-block-bootstraps GAMES around ONE already-fitted model. That answers "did this
-fitted model beat that fitted model on these games", conditional on whichever
-training rows the walk-forward happened to see. It has never answered the
-question a promotion decision actually needs: "would a model fit THIS WAY beat
-one fit THAT WAY in general" -- which requires resampling the TRAINING rows and
-refitting, not just resampling the evaluation games.
-
-This module adds that missing source as an opt-in layer, composed on top of the
-existing model/prediction machinery rather than inside it:
-
-- ``refit_predicted_values`` / ``point_predicted_values`` -- refit
-  ``margin.make_margin_estimator("ridge", ...)`` on bootstrap resamples of the
-  training rows (or once, unresampled, for the value every production run
-  reports today) and predict on a fixed test frame. Reuses the project's own
-  ridge/imputer/scaler pipeline verbatim; nothing about the estimator changes.
-- ``home_cover_probability_from_center`` -- reproduces
-  ``margin._smoothed_probability`` vectorized across many games sharing one
-  out-of-time residual sample, so refit centers can be turned into cover
-  probabilities without touching ``margin.py``.
-- ``naive_block_bootstrap_interval`` -- the CURRENTLY REPORTED style: resamples
-  games, never refits. A drop-in numpy analogue of
-  ``experiments.paired_feature_comparisons``'s accuracy-metric arm, generalized
-  off the pandas feature-set pivot so it can score any two fixed probability
-  arrays (real predictions or a synthetic validation harness).
-- ``refit_aware_paired_interval`` -- the FIRST honest interval (2026-08-18,
-  ``docs/estimation_variance.md`` secs 1-3): combines an independent
-  training-refit draw with an independent game-block resample in each outer
-  iteration. Kept unchanged so every number that document reports still
-  reproduces, but superseded by ``refit_aware_interval`` below, which fixes its
-  two declared weaknesses (quantiles read off only ``n_boot`` draws, and each
-  draw re-centred on a bootstrap refit rather than the reported point fit).
-- ``paired_refit_predicted_values`` / ``refit_common_variance`` /
-  ``refit_variance_decomposition`` / ``refit_aware_interval`` -- the durable
-  honest path (``docs/estimation_variance.md`` Part II). Both arms refit on the
-  SAME resampled training rows and scored on the SAME games (pairing is
-  structural, not a seed coincidence); the delta's variance split into a
-  training effect, a game effect and their INTERACTION; and the interval
-  widened by the DERIVED factor ``sqrt(1 + Var(a)/Var_conditional)``. The
-  interaction is the part that matters: it belongs to the game bootstrap
-  already, and adding it a second time is why both 2026-08-18 honest intervals
-  OVER-cover and why the "17-58% too narrow" band was overstated. On real CFB
-  the honest factor is 1.003 (95% upper bound 1.099), not 1.33.
-  ``inflate_recorded_interval`` applies a widening to an already-recorded
-  registry row without re-running anything.
-- ``MIN_BLOCKS_FOR_INTERVAL`` / ``guard_block_count`` /
-  ``distinct_block_resamples`` -- the D4 degeneracy guard. Measured, not
-  asserted: percentile block-bootstrap coverage of a known truth is 0.00 at 1
-  block, ~0.48 at 2, ~0.79 at 4 and only reaches 0.90 at 10 blocks, so the
-  "~4-5 block" floor in ``docs/anytime_valid.md`` sec 6 is far too generous.
-- ``bagged_values`` / ``shrink_predicted_margin`` -- two variance-REDUCTION
-  levers on the fit itself: averaging over bootstrap refits (bagging) and
-  uniformly shrinking the predicted center toward the market line, mirroring
-  ``residual_location.py``'s shrinkage of the residual READER but applied to
-  the prediction CENTRE instead.
-- ``picks_differ_fraction`` / ``mde80`` -- the ``f`` lever:
-  ``MDE80 = 280 * sqrt(f / n)`` where ``f`` is the fraction of games on which
-  two arms make different picks. ``gate_by_disagreement`` tests whether a
-  candidate can be made more provable by only trusting it where it disagrees
-  with the baseline enough to matter.
-
-Nothing here is wired into ``margin.py``, ``experiments.py``,
-``cfb_benchmark.py``, or the active model. Every function is additive:
-composed over the existing public estimator/dataclass interfaces so no
-production pick can move by importing this module.
-"""
-
 from __future__ import annotations
 
 import math
@@ -96,27 +25,14 @@ FloatArray = npt.NDArray[np.float64]
 
 
 class BootstrapDegeneracyError(ValueError):
-    """Raised when a block bootstrap has too few blocks to support an interval."""
+    pass
 
 
 class BootstrapDegeneracyWarning(UserWarning):
-    """Warned when a block bootstrap's interval is reported below the floor."""
+    pass
 
 
 def distinct_block_resamples(block_count: int) -> int:
-    """How many distinct resample COMPOSITIONS exist at ``block_count`` blocks.
-
-    Resampling ``k`` blocks with replacement from ``k`` blocks produces a
-    multiset, and the bootstrap statistic depends only on the multiset (how
-    many times each block was drawn), not on the draw order. So the number of
-    genuinely distinct achievable values is the number of multisets,
-    ``C(2k-1, k-1)``: 1 at k=1, 3 at k=2, 10 at k=3, 35 at k=4.
-
-    ``docs/anytime_valid.md`` sec 6 states this formula correctly but then
-    quotes "27 at k=3, 256 at k=4", which are ``k**k`` -- the count of ORDERED
-    draw tuples, which over-counts because most orderings collapse to the same
-    statistic. Its own later "``C(4+4-1, 3) = 35``" is the right number.
-    """
 
     if block_count < 1:
         raise ValueError("block_count must be at least 1")
@@ -125,8 +41,6 @@ def distinct_block_resamples(block_count: int) -> int:
 
 @dataclass(frozen=True)
 class BlockCountVerdict:
-    """Whether a block count can support a percentile interval at all."""
-
     block_count: int
     distinct_resamples: int
     degenerate: bool
@@ -141,7 +55,6 @@ def block_count_verdict(
     min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
     reliable_blocks: int = RELIABLE_BLOCKS_FOR_INTERVAL,
 ) -> BlockCountVerdict:
-    """Classify a block count against the measured coverage floor."""
 
     if block_count < 1:
         raise ValueError("block_count must be at least 1")
@@ -190,15 +103,6 @@ def guard_block_count(
     on_degenerate: OnDegenerate = "raise",
     context: str = "block bootstrap",
 ) -> BlockCountVerdict:
-    """Refuse -- loudly -- to hand back an interval too coarse to be one.
-
-    ``on_degenerate='raise'`` (the default for every estimator in this module)
-    raises ``BootstrapDegeneracyError``. ``'warn'`` emits a
-    ``BootstrapDegeneracyWarning`` and returns the verdict so the caller can
-    flag the row; it exists for the three production functions, which are wired
-    to warn-and-flag rather than raise so that adding this guard cannot change
-    a single number any existing call site already reports.
-    """
 
     verdict = block_count_verdict(block_count, min_blocks=min_blocks)
     if verdict.degenerate:
@@ -211,7 +115,6 @@ def guard_block_count(
 
 
 def bootstrap_row_indices(n: int, *, n_boot: int, seed: int) -> npt.NDArray[np.int64]:
-    """``n_boot`` independent with-replacement resamples of ``range(n)``."""
 
     if n <= 0:
         raise ValueError("n must be positive")
@@ -222,7 +125,6 @@ def bootstrap_row_indices(n: int, *, n_boot: int, seed: int) -> npt.NDArray[np.i
 
 
 def _feature_matrix(frame: pd.DataFrame, columns: Sequence[str]) -> FloatArray:
-    """Select numeric features once, preserving pandas' column-major layout."""
 
     return np.asfortranarray(
         frame.loc[:, list(columns)].to_numpy(dtype=np.float64, na_value=np.nan)
@@ -238,7 +140,6 @@ def point_predicted_values(
     ridge_alpha: float,
     random_state: int = 42,
 ) -> FloatArray:
-    """Single fit on every training row -- the value production reports today."""
 
     columns = list(feature_columns)
     estimator = make_margin_estimator("ridge", random_state, ridge_alpha=ridge_alpha)
@@ -258,13 +159,6 @@ def refit_predicted_values(
     seed: int,
     random_state: int = 42,
 ) -> FloatArray:
-    """Refit on ``n_boot`` row-bootstrap resamples of ``training``; predict on ``test``.
-
-    Returns shape ``(n_boot, len(test))``. Row-level resampling (not block
-    resampling) matches the audit this module acts on -- it is the model's OWN
-    estimation variance, not a resampling of games, so it operates entirely on
-    the training side and never touches the fixed test frame's rows or order.
-    """
 
     if n_boot < 1:
         raise ValueError("n_boot must be at least 1")
@@ -286,13 +180,6 @@ def refit_predicted_values(
 
 
 def refit_pick_flip_rate(point_values: FloatArray, refit_values: FloatArray) -> float:
-    """Fraction of (draw, game) cells whose sign disagrees with the point estimate.
-
-    This is the model's own pick instability under resampled training data --
-    the quantity the estimation-variance audit measured at 15-22% for CFB. Sign
-    is the right comparator here (not a 0.5 probability threshold): it is scale
-    -free across ``margin`` and ``market_residual`` targets alike.
-    """
 
     point = np.asarray(point_values, dtype=np.float64)
     refit = np.asarray(refit_values, dtype=np.float64)
@@ -302,13 +189,11 @@ def refit_pick_flip_rate(point_values: FloatArray, refit_values: FloatArray) -> 
 
 
 def refit_value_sd(refit_values: FloatArray) -> FloatArray:
-    """Per-game standard deviation of the predicted center across refit draws."""
 
     return np.asarray(np.std(refit_values, axis=0, ddof=1), dtype=np.float64)
 
 
 def bagged_values(refit_values: FloatArray) -> FloatArray:
-    """The bagged prediction: the mean predicted center across refit draws."""
 
     return np.asarray(np.mean(refit_values, axis=0), dtype=np.float64)
 
@@ -318,15 +203,6 @@ def home_cover_probability_from_center(
     lines: FloatArray,
     residuals: FloatArray,
 ) -> FloatArray:
-    """Vectorized ``margin._smoothed_probability`` across many games sharing one sample.
-
-    Reproduces the exact Laplace/KT continuity correction
-    ``(successes + 0.5) / (n + 1)`` production reads off the out-of-time
-    residual ECDF, just batched over games instead of called once per game.
-    Does not import or call ``margin._smoothed_probability`` (a private
-    function); the two are pinned equal by
-    ``tests/test_estimation_variance.py``.
-    """
 
     centers = np.asarray(predicted_margin, dtype=np.float64)
     thresholds = np.asarray(lines, dtype=np.float64) - centers
@@ -338,16 +214,6 @@ def home_cover_probability_from_center(
 def shrink_predicted_margin(
     spread: FloatArray, raw_residual_prediction: FloatArray, *, shrink_fraction: float
 ) -> FloatArray:
-    """Shrink the predicted CENTRE toward the market line by a uniform fraction.
-
-    ``predicted_margin = spread + shrink_fraction * raw_residual_prediction``.
-    ``shrink_fraction=1`` reproduces the production centre exactly;
-    ``shrink_fraction=0`` collapses the centre onto the market line (the
-    ``market`` arm's centre). This shrinks the estimator's OWN prediction, the
-    complement of ``residual_location.shrunk_survival``, which shrinks the
-    residual sample's location instead -- ``docs/residual_location.md`` found
-    that lever inert; this module asks whether the centre is.
-    """
 
     if not 0.0 <= shrink_fraction <= 1.0:
         raise ValueError("shrink_fraction must be between 0 and 1")
@@ -397,21 +263,6 @@ def naive_block_bootstrap_interval(
     min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
     on_degenerate: OnDegenerate = "warn",
 ) -> PairedInterval:
-    """The style every recorded interval uses today: resample games, never refit.
-
-    A numpy analogue of ``experiments.paired_feature_comparisons``'s accuracy
-    metric, generalized off the pandas feature-set pivot so it can score any
-    two FIXED probability arrays. Pinned equal to
-    ``paired_feature_comparisons`` on identical inputs by
-    ``tests/test_estimation_variance.py``.
-
-    ``on_degenerate`` defaults to ``'warn'`` here ON PURPOSE: this function
-    exists to REPRODUCE what the project reports today, so making it refuse
-    would change the very baseline every comparison is measured against. It
-    still warns below ``MIN_BLOCKS_FOR_INTERVAL`` and stamps ``degenerate=True``
-    on the result so no caller can render it as a normal interval by accident.
-    The honest estimator (``refit_aware_interval``) raises instead.
-    """
 
     if samples < 10:
         raise ValueError("samples must be at least 10")
@@ -453,22 +304,6 @@ def refit_aware_paired_interval(
     confidence: float = 0.95,
     seed: int = 20260812,
 ) -> PairedInterval:
-    """The honest interval: an independent refit draw AND game-block resample per iteration.
-
-    ``baseline_prob_refits``/``candidate_prob_refits`` are shape
-    ``(n_boot, n_games)`` -- one row per independent training-resample-and
-    -refit (see ``refit_predicted_values`` +
-    ``home_cover_probability_from_center``). For outer draw ``b`` this pairs
-    that refit's own probabilities with an INDEPENDENT block-bootstrap
-    resample of the test games, so a single loop of ``n_boot`` iterations
-    combines both variance sources (they arise from disjoint data -- training
-    rows vs. test games -- so combining them additively in one draw is exact,
-    not an approximation) without a nested double bootstrap. An arm with no
-    training-refit variance of its own (e.g. the unconditional ``market``
-    baseline, which fits no estimator) can be passed as a ``(1, n_games)``
-    array; it is broadcast to every draw, correctly contributing zero refit
-    variance from that side.
-    """
 
     if not 0.0 < confidence < 1.0:
         raise ValueError("confidence must be between 0 and 1")
@@ -503,13 +338,6 @@ def refit_aware_paired_interval(
 
 @dataclass(frozen=True)
 class PairedRefits:
-    """Two arms refit on the SAME resampled training rows, scored on the SAME games.
-
-    ``baseline`` and ``candidate`` are ``(n_boot, n_test)`` predicted centres.
-    Row ``b`` of both arrays came from ONE resample of the training rows
-    (``row_indices[b]``), which is what makes the pair a paired comparison.
-    """
-
     row_indices: npt.NDArray[np.int64]
     baseline: FloatArray
     candidate: FloatArray
@@ -531,30 +359,6 @@ def paired_refit_predicted_values(
     random_state: int = 42,
     paired: bool = True,
 ) -> PairedRefits:
-    """Refit BOTH arms on each bootstrap resample of the SAME training rows.
-
-    **This pairing is the whole point.** Paired deltas -- "does arm B beat arm
-    A on these same games" -- are this project's primary estimand, not levels.
-    If each arm is refit on its OWN independent resample, the two arms' refit
-    noise no longer cancels and the delta's variance becomes
-    ``Var_A + Var_B`` instead of ``Var(A - B)``, which for two models sharing
-    most of their features and all of their training rows is a large
-    over-statement in the opposite direction to the D2 defect. Fitting both
-    arms on one resample keeps the shared component shared, so only the part
-    of the fit that actually differs between the arms contributes.
-
-    ``refit_predicted_values`` called twice with the same ``seed`` and the same
-    ``training`` frame happens to produce the same row indices, so the two
-    existing scripts that do that are correct today -- but nothing in the API
-    said so or enforced it, and a caller passing ``seed`` and ``seed + 1``
-    would have silently got the unpaired, over-wide answer. This function makes
-    the pairing structural.
-
-    Arms that fit no estimator at all (the unconditional ``market`` baseline)
-    do not belong here: pass their fixed probabilities as a ``(1, n_games)``
-    array to the interval functions instead, which correctly contributes zero
-    refit variance from that side.
-    """
 
     if n_boot < 1:
         raise ValueError("n_boot must be at least 1")
@@ -616,18 +420,6 @@ def block_bootstrap_means(
     samples: int,
     seed: int,
 ) -> FloatArray:
-    """Vectorized block-bootstrap draws of ``mean(values)``.
-
-    Resampling ``k`` blocks with replacement and concatenating them, then
-    taking the mean, is identical to weighting each block's SUM and COUNT by
-    how many times it was drawn. Drawing the count vector from a
-    ``Multinomial(k, 1/k)`` is exactly drawing ``k`` block indices uniformly
-    with replacement, so this returns the same distribution as the explicit
-    concatenate-and-average loop in ``naive_block_bootstrap_interval`` and
-    ``experiments.paired_feature_comparisons`` -- at a fraction of the cost,
-    which is what makes 20,000 samples affordable inside a refit study.
-    Pinned distributionally against the loop in the tests.
-    """
 
     if samples < 10:
         raise ValueError("samples must be at least 10")
@@ -640,8 +432,6 @@ def block_bootstrap_means(
 
 @dataclass(frozen=True)
 class RefitCommonVariance:
-    """Training-side variance, split into the part the game bootstrap already carries and the part it does not."""  # noqa: E501
-
     common: float
     common_raw: float
     common_se: float
@@ -652,45 +442,6 @@ class RefitCommonVariance:
 def refit_common_variance(
     improvements: FloatArray, *, splits: int = 40, seed: int = 20260818
 ) -> RefitCommonVariance:
-    """Separate the training-refit variance that is NOT already in the game bootstrap.
-
-    Write a paired delta as ``Delta(T, G) = mu + a(T) + b(G) + e(T, G)``: a
-    training effect, a game-sampling effect, and their INTERACTION. Then
-
-    - the conditional block bootstrap (resample games, one fit) measures
-      ``Var(b) + Var(e)``;
-    - the spread of refit deltas on the FIXED test games measures
-      ``Var(a) + Var(e)``;
-    - the honest total is ``Var(a) + Var(b) + Var(e)``.
-
-    So adding the two measured quantities **double-counts ``Var(e)``**, and for
-    a forced-pick accuracy delta ``Var(e)`` is not a rounding term: it is the
-    dominant part of the refit spread. A refit that flips the pick on game *i*
-    moves the delta by ``+-1/n`` depending on whether that particular game
-    covered -- pure interaction. Both honest intervals built on 2026-08-18
-    (``refit_aware_paired_interval``, and this module's first
-    ``refit_aware_interval``) add the two, and both consequently OVER-cover:
-    measured 0.987-1.000 against a nominal 0.95 (``docs/estimation_variance.md``
-    Part II sec 9c). That is conservative rather than wrong, but it is still a
-    defect, and it is what inflated the published 17-58% band.
-
-    ``Var(a)`` alone is recovered by splitting the games into two disjoint
-    halves and taking the COVARIANCE of the two halves' refit-delta series
-    across draws. ``a(T)`` is common to both halves, so it survives; the
-    interaction averages of two disjoint game sets are uncorrelated, so
-    ``Var(e)`` cancels. Splitting by GAME rather than by block is correct here:
-    within-week game correlation is mandated to be exactly zero in this project
-    (``AGENTS.md``), and the across-week component that a training perturbation
-    shares IS ``a(T)`` by construction. Averaged over ``splits`` random halvings
-    to damp the choice of split.
-
-    The returned ``common`` is clamped at zero (it is a difference of estimates
-    and can come out negative when the truth is near zero), and ``common_se``
-    is reported alongside precisely because that clamping is not free: on the
-    real CFB comparison the point estimate is an order of magnitude BELOW its
-    own standard error, so the honest statement is an upper bound, not a
-    correction.
-    """
 
     matrix = np.atleast_2d(np.asarray(improvements, dtype=np.float64))
     n_boot, n_games = matrix.shape
@@ -722,16 +473,6 @@ def refit_common_variance(
 
 @dataclass(frozen=True)
 class VarianceDecomposition:
-    """Where a paired delta's uncertainty comes from, and what it costs to ignore.
-
-    ``inflation_factor`` is DERIVED, never typed in:
-    ``sqrt(1 + (refit_sd / conditional_sd) ** 2)``, where ``refit_sd`` is the
-    INTERACTION-FREE training component from ``refit_common_variance``. Using
-    the raw fixed-games refit spread instead double-counts the training-by-game
-    interaction and over-states the factor -- see that function's docstring, and
-    ``refit_fixed_games_sd`` below for the size of the difference.
-    """
-
     conditional_sd: float
     refit_sd: float
     refit_fixed_games_sd: float
@@ -759,13 +500,6 @@ def refit_variance_decomposition(
     on_degenerate: OnDegenerate = "raise",
     paired: bool = True,
 ) -> VarianceDecomposition:
-    """Split a paired delta's SD into game-sampling and training-refit parts.
-
-    The refit component is measured on the FIXED test games (no block resample
-    inside it), so it is a clean estimate of the training-side variance alone
-    and does not double-count the game-sampling variance the conditional
-    bootstrap already carries.
-    """
 
     baseline, candidate, _ = _broadcast_refits(baseline_prob_refits, candidate_prob_refits)
     grouped_ids = np.asarray(block_ids)
@@ -810,7 +544,6 @@ def _decompose(
     splits: int = 40,
     seed: int = 20260818,
 ) -> VarianceDecomposition:
-    """Combine an already-drawn conditional bootstrap with the refit spread."""
 
     n_boot = len(baseline)
     conditional_sd = float(np.std(conditional_draws, ddof=1))
@@ -859,8 +592,6 @@ def _broadcast_refits(
 
 @dataclass(frozen=True)
 class RefitAwareResult:
-    """Both intervals plus the decomposition that explains the gap between them."""
-
     honest: PairedInterval
     naive: PairedInterval
     decomposition: VarianceDecomposition
@@ -881,39 +612,6 @@ def refit_aware_interval(
     on_degenerate: OnDegenerate = "raise",
     paired: bool = True,
 ) -> RefitAwareResult:
-    """The honest interval: game-sampling variance PLUS training-refit variance.
-
-    Construction, and why it is not the same as
-    ``refit_aware_paired_interval`` (kept, unchanged, for reproducibility):
-
-    1. The conditional block-bootstrap draws are taken around the POINT fit --
-       the value production actually reports -- with the full ``samples``
-       budget, so the interval's shape and quantile resolution are as fine as
-       the naive interval's. ``refit_aware_paired_interval`` instead read its
-       quantiles off only ``n_boot`` draws, which at the ``N_BOOT=120`` used in
-       ``docs/estimation_variance.md`` sec 3 is a coarse 95% quantile (its own
-       declared limitation 3), and it re-centred each draw on a bootstrap
-       REFIT, which is systematically slightly worse than the full-data fit,
-       so the interval inherited that bias as a shift.
-    2. The refit draws supply ONE number: ``refit_sd``, the INTERACTION-FREE
-       training component (``refit_common_variance``). Taking the raw spread of
-       refit deltas on the fixed test games instead -- which is what BOTH
-       2026-08-18 estimators did -- double-counts the training-by-game
-       interaction that the conditional bootstrap already carries, and makes
-       the interval over-cover (measured 0.987-1.000 against nominal 0.95).
-    3. The conditional draws are then rescaled about THEIR OWN mean by
-       ``inflation_factor = sqrt(1 + (refit_sd/conditional_sd)**2)``, and the
-       bounds and ``probability_positive`` are read off the rescaled draws.
-       Rescaling rather than re-centring keeps the bootstrap's own skew, and
-       scaling about the draws' mean rather than the point estimate makes the
-       honest interval an exact widening of the interval this project already
-       reports: at ``inflation_factor == 1`` it returns the naive bounds to
-       floating-point equality, so any difference between the two IS the refit
-       variance and nothing else.
-
-    ``probability_positive`` is the headline this returns, not "excludes zero":
-    per ``AGENTS.md``, widening an interval is never grounds to close a signal.
-    """
 
     baseline, candidate, n_boot = _broadcast_refits(baseline_prob_refits, candidate_prob_refits)
     if n_boot < 2:
@@ -985,21 +683,6 @@ def inflate_recorded_interval(
     confidence: float = 0.95,
     probability_positive: float | None = None,
 ) -> PairedInterval:
-    """Re-read an ALREADY RECORDED interval under the honest widening.
-
-    The cheap path for the registry: an entry recorded ``estimate`` and either
-    a conditional interval or a conditional ``probability_positive``. Both pin
-    down the same conditional SD, so either can be widened without re-running
-    anything. The implied SD is taken from the interval when present (it is the
-    more direct record) and from ``probability_positive`` otherwise, via
-    ``sd = estimate / Phi_inv(P+)``.
-
-    Returns bounds and a ``probability_positive`` under the widened SD, using a
-    normal reference distribution -- the recorded rows do not keep their
-    bootstrap draws, so the bootstrap's own skew cannot be preserved here. The
-    ``kind`` is stamped ``'recorded_inflated'`` so no caller mistakes this for
-    a re-measurement.
-    """
 
     if inflation_factor < 1.0:
         raise ValueError("inflation_factor must be at least 1")
@@ -1034,12 +717,6 @@ def _normal_cdf(x: float) -> float:
 
 
 def _normal_quantile(p: float) -> float:
-    """Inverse standard normal CDF (Acklam's rational approximation, refined).
-
-    Accurate to better than 1e-9 after one Halley step, which is far finer than
-    any registry entry's recorded precision. Avoids a scipy dependency in a
-    module the whole project imports.
-    """
 
     if not 0.0 < p < 1.0:
         raise ValueError("p must be strictly between 0 and 1")
@@ -1095,7 +772,6 @@ def _normal_quantile(p: float) -> float:
 
 
 def picks_differ_fraction(baseline_prob: FloatArray, candidate_prob: FloatArray) -> float:
-    """``f``: the fraction of games where the two arms' forced picks differ."""
 
     baseline_pick = np.asarray(baseline_prob, dtype=np.float64) >= 0.5
     candidate_pick = np.asarray(candidate_prob, dtype=np.float64) >= 0.5
@@ -1103,7 +779,6 @@ def picks_differ_fraction(baseline_prob: FloatArray, candidate_prob: FloatArray)
 
 
 def mde80(f: float, n: int, *, coefficient: float = DEFAULT_MDE80_COEFFICIENT) -> float:
-    """Minimum detectable effect (accuracy points) at 80% power: ``coefficient*sqrt(f/n)``."""
 
     if f < 0.0:
         raise ValueError("f must be non-negative")
@@ -1115,16 +790,6 @@ def mde80(f: float, n: int, *, coefficient: float = DEFAULT_MDE80_COEFFICIENT) -
 def gate_by_disagreement(
     baseline_prob: FloatArray, candidate_prob: FloatArray, *, threshold: float
 ) -> FloatArray:
-    """Defer to the baseline wherever the candidate's opinion is too close to call.
-
-    The surgical-candidate design: only let the candidate move a pick where it
-    disagrees with the baseline by at least ``threshold`` in probability space;
-    elsewhere its probability is replaced by the baseline's EXACTLY, so it
-    contributes zero to ``f`` (and to every downstream metric) on that game.
-    ``threshold=0`` recovers the candidate untouched; a large enough threshold
-    recovers the baseline untouched (probabilities are bounded in ``[0, 1]``,
-    so no candidate can disagree by more than 1).
-    """
 
     if threshold < 0.0:
         raise ValueError("threshold must be non-negative")

@@ -1,129 +1,3 @@
-"""Polite, resumable Wayback sweep for 2009-2014 PFR officiating-crew boxscores.
-
-LEAD-59 (``ROADMAP.md``): the local nflverse officials feed
-(``data/raw/officials/*/officials.parquet``) only covers 2015-2025 (measured,
-``docs/referee_battery.md``). ``schedules.parquet`` already carries a single
-head-referee name for every season back to 2009 (``referee`` column), but the
-FULL seven-person crew (Umpire, Head Linesman/Down Judge, Line Judge, Field
-Judge, Side Judge, Back Judge, Replay Official) for 2009-2014 exists only on
-Pro-Football-Reference's own boxscore pages -- direct fetches of those pages
-draw an HTTP 403 bot wall (measured 2026-09-03/04, ``docs/officials_archive_probe.md``),
-and a single 2026-09-03/04 Wayback replay attempt of the same page drew an
-HTTP 429 throttle from prior heavy crawling. This script is the "polite
-Wayback pass" that probe document named as the unblock path: it never
-touches pro-football-reference.com directly, only ``web.archive.org``.
-
-Two-step fetch per game, both against ``web.archive.org`` only (the network
-exception this lane was granted): a **CDX API lookup**
-(``web.archive.org/cdx/search/cdx``, already used by
-``scripts/pilot_vegasinsider_wayback.py`` for the same purpose) substitutes
-for the "Wayback availability API" named in this lane's task brief -- the
-literal ``archive.org/wayback/available`` endpoint lives on a different host
-(``archive.org``, not ``web.archive.org``), which the granted exception does
-not cover; CDX answers the identical question ("does an archived capture of
-this URL exist, and at what timestamp") from a host the exception does
-cover. The second step replays the chosen capture at
-``web.archive.org/web/<ts>id_/<original>`` (the raw, unrewritten endpoint,
-same convention as ``pilot_vegasinsider_wayback.py``).
-
-Politeness contract (binding, not a default anyone should relax without a
-new measurement): at least ``--delay-seconds`` (floor 8.0, enforced) between
-every single HTTP request -- CDX and replay calls both, including retries;
-exponential backoff starting at ``--initial-backoff-seconds`` (default 60s,
-doubling each retry) on any 429 or 5xx response, up to
-``--max-request-retries`` attempts per call; and a hard stop, mid-sweep, the
-moment ``--max-consecutive-failures`` (default 5) GAMES in a row fail to
-produce a usable HTTP 200 for either the CDX lookup or the replay fetch
-after their own retries are exhausted. A "no capture exists for this game"
-CDX result (a clean 200 response whose JSON simply lists zero rows) is a
-content outcome, not a fetch failure, and does NOT count toward the
-consecutive-failure counter -- only throttle/error responses do.
-
-Resumable by construction: every fetched replay page is written to
-``<raw-root>/<run-id>/html/<pfr_id>__<capture_ts>.html`` (runs before
-2026-09-07 wrote ``html/<pfr_id>.html``; the manifest row's ``html_file``
-is authoritative either way) and recorded in
-``<raw-root>/<run-id>/manifest.json`` as it happens (not buffered to the
-end), so a killed or `Ctrl+C`-interrupted run, or a fresh invocation given
-the same ``--run-id``, skips every game whose manifest row names an HTML
-file that exists on disk -- zero new network requests for already-fetched
-games (unless ``--retry-unparsed`` is passed and the page parses 0, see
-below). Passing a new ``--run-id`` (or omitting it) starts a fresh snapshot
-directory instead.
-
-Two directories, per this fleet's data-hygiene rule (raw captures never
-mutated in place, derived tables never live under ``data/raw``):
-
-- ``data/raw/officials_pfr_wayback/<run-id>/`` -- the immutable capture:
-  every fetched HTML byte-for-byte, plus ``manifest.json`` (one row per
-  game: original/wayback URL, CDX capture timestamp, fetch instant, HTTP
-  status, retry/backoff counts, parse outcome).
-- ``data/processed/officials_pfr_wayback/<run-id>/officials_2009_2014.parquet``
-  -- the parsed crew-assignment rows, one per (game, position), with a
-  ``stamp_sidecar()`` provenance JSON beside it (ENG-38 convention: a
-  derived tabular write, not an experiment, so ``write_experiment_artifact``
-  would misrepresent it).
-
-Capture-selection policy (2026-09-07, lane N, after the 2009-2013 run
-``20260907T175420Z`` parsed 0 officials on 418 of 418 fetched pages): the
-EARLIEST post-game capture is the wrong one to take. PFR added the
-officials block to its boxscore layout years after the 2009-2011 games were
-played (the 2009-2010 pages captured 2009-2011 carry no ``game_info`` /
-``ref_info`` block at all; see ``docs/officials_archive_probe.md``), and even
-in 2014 a capture taken one or two days after kickoff can predate the
-block. The sweep therefore prefers the NEWEST capture after the game
-(CDX ``from=<day after game>`` keeps the pre-game placeholder pages out and
-the query carries no ``limit``, so the full post-game list is ranked
-client-side), and if the chosen capture parses zero
-officials it falls back through up to ``--fallback-captures`` (default 2)
-further post-game captures, newest first, before recording the game as
-parsed-0. Capture recency does not affect pregame safety: an officiating
-assignment is a fact fixed before kickoff, so a page archived in 2026 says
-exactly what a page archived in 2009 would have said about who officiated
-the game -- ``effective_time`` stays the game's own date regardless of
-which capture was read. ``--retry-unparsed`` makes a resumed run re-attempt
-games whose existing manifest row parsed 0 officials under the old policy
-(re-parsing the on-disk page first, then fetching newer captures only if
-that still yields nothing), so run ``20260907T175420Z`` can be re-swept
-without refetching pages that already parsed. Every fetched page is its own
-immutable file (``html/<pfr_id>__<capture_ts>.html``); the manifest row's
-``html_file`` names the capture the crew rows were read from and
-``attempted_captures`` lists every capture fetched for the game.
-
-Pregame-safety: an officiating-crew assignment is a fact fixed BEFORE
-kickoff (the same premise ``docs/referee_battery.md`` and
-``src/nfl_ats/referee_assignments_capture.py`` already argue from for the
-2015+ feed and the live weekly capture respectively). This module's
-``effective_time`` column is each game's own ``gameday`` -- the assignment
-is safe to use in any pregame feature keyed to that date or later, never
-earlier.
-
-**Parser structure**: originally (2026-09-05) written blind against two
-plausible layouts while Wayback was 429-throttled; since checked against
-live captures (2026-09-07). Measured layouts: 2013-2015-era captures carry
-``<table id="ref_info">`` with bolded position labels; 2016+ captures
-(including 2026 captures of 2009 and 2011 games) carry
-``<table id="officials">`` inside an HTML comment (``setup_commented``),
-which the regex reads through. The inline "Officials: Referee: X, ..."
-fallback has not been seen on any live capture and stays as a defensive
-third path. Pre-2013 captures of 2009-2011 games carry NO officials block
-under any layout -- that is why capture selection prefers the newest.
-
-Usage::
-
-    .\\.tools\\uv.exe run --no-sync python scripts/officials_wayback_sweep.py `
-        --season-start 2014 --season-end 2014 --run-id 20260905T000000Z
-
-    # continue the same run later (skips every game already on disk):
-    .\\.tools\\uv.exe run --no-sync python scripts/officials_wayback_sweep.py `
-        --season-start 2009 --season-end 2013 --run-id 20260905T000000Z
-
-    # re-sweep a run whose pages parsed 0 officials under the old policy
-    # (re-parses on-disk pages first; fetches newer captures only if needed):
-    .\\.tools\\uv.exe run --no-sync python scripts/officials_wayback_sweep.py `
-        --season-start 2009 --season-end 2013 --run-id 20260907T175420Z --retry-unparsed
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -187,8 +61,6 @@ OFFICIALS_PARQUET_COLUMNS = [
 
 @dataclass
 class RateLimiter:
-    """Enforces at least ``delay_seconds`` between successive ``wait()`` calls."""
-
     delay_seconds: float
     sleep_fn: Callable[[float], None] = time.sleep
     _last_call: float | None = field(default=None, init=False, repr=False)
@@ -247,12 +119,6 @@ def fetch_with_backoff(
     max_attempts: int = DEFAULT_MAX_REQUEST_RETRIES,
     sleep_fn: Callable[[float], None] = time.sleep,
 ) -> RequestOutcome:
-    """One URL, up to ``max_attempts`` tries, exponential backoff on 429/5xx only.
-
-    Every attempt (including retries) goes through ``limiter.wait()`` first,
-    so the >= 8s floor between requests holds even across retries of the
-    SAME url, not just between distinct games.
-    """
 
     if max_attempts < 1:
         raise ValueError("max_attempts must be >= 1")
@@ -367,12 +233,6 @@ def _parse_officials_inline(html: str) -> list[tuple[str, str]]:
 
 
 def parse_officials_block(html: str) -> tuple[list[tuple[str, str]], list[str]]:
-    """Return ``(rows, warnings)`` where each row is ``(position, official_name)``.
-
-    Tries the dedicated-table strategy first, then the inline-line strategy;
-    returns an empty list with a warning if neither structure is present.
-    See the module docstring's "Parser structure, honestly labelled" note.
-    """
 
     rows = _parse_officials_table(html)
     if rows:
@@ -727,11 +587,6 @@ def _find_manifest_row(manifest_rows: list[dict[str, Any]], pfr_id: str) -> dict
 
 
 def _upsert_manifest_row(manifest_rows: list[dict[str, Any]], row: dict[str, Any]) -> None:
-    """Replace the row for ``row['pfr_id']`` in place, or append if absent.
-
-    A resumed run that re-attempts a game (a failed CDX/replay row, or a
-    ``--retry-unparsed`` row) must not leave two rows for one game.
-    """
 
     for index, existing in enumerate(manifest_rows):
         if existing.get("pfr_id") == row.get("pfr_id"):
@@ -741,13 +596,6 @@ def _upsert_manifest_row(manifest_rows: list[dict[str, Any]], row: dict[str, Any
 
 
 def _previous_attempts(existing: dict[str, Any]) -> list[dict[str, Any]]:
-    """Every capture already fetched for this game, from an existing manifest row.
-
-    Rows written before the fallback policy carry a single capture in the
-    top-level replay fields; rows written after it carry ``attempted_captures``.
-    Each entry is tagged ``from_previous_run`` so the retry row keeps the
-    old page's provenance without re-fetching it.
-    """
 
     attempts = list(existing.get("attempted_captures") or [])
     if not attempts and existing.get("wayback_capture_timestamp"):
@@ -764,7 +612,6 @@ def _previous_attempts(existing: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _keep_existing_page(existing: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
-    """Carry the previously fetched page's fields into a retry row that found nothing better."""
 
     kept = dict(row)
     for key in (*_REPLAY_KEYS, "html_file", "officials_parsed", "parse_warnings"):
@@ -796,30 +643,12 @@ def _officials_row(
 
 
 def capture_not_before(gameday: Any) -> str:
-    """The CDX ``from=`` bound: the day AFTER the game, as ``YYYYMMDD``.
-
-    A PFR boxscore URL exists before kickoff as a placeholder page; the
-    officials block only appears on the post-game page. Measured 2026-09-07:
-    the earliest capture of 2014_01_GB_SEA (game 2014-09-04) was dated
-    2014-05-30 and parsed zero officials.
-    """
 
     day = pd.Timestamp(gameday).normalize() + pd.Timedelta(days=1)
     return day.strftime("%Y%m%d")
 
 
 def _rank_capture_timestamps(cdx_json_bytes: bytes, *, not_before: str | None = None) -> list[str]:
-    """Post-game capture timestamps from a CDX JSON body, NEWEST first, deduplicated.
-
-    2026-09-07 (lane N): the earliest post-game capture used to be taken,
-    and it parsed 0 officials on 418 of 418 pages for 2009-2010 -- PFR added
-    the officials block to that era's boxscores years after the games, so
-    only later captures carry it. Newest-first is safe because an
-    officiating assignment is fixed before kickoff; the archive date of the
-    page that reports it changes nothing about when the fact was knowable.
-    ``not_before`` re-applies the CDX ``from=`` bound client-side so a
-    response that ignored it can never hand back a pre-game placeholder.
-    """
 
     try:
         rows = json.loads(cdx_json_bytes.decode("utf-8"))
@@ -837,7 +666,6 @@ def _rank_capture_timestamps(cdx_json_bytes: bytes, *, not_before: str | None = 
 def _select_capture_timestamp(
     cdx_json_bytes: bytes, *, not_before: str | None = None
 ) -> str | None:
-    """The single preferred capture: the newest post-game one (see ``_rank_capture_timestamps``)."""
 
     ranked = _rank_capture_timestamps(cdx_json_bytes, not_before=not_before)
     return ranked[0] if ranked else None

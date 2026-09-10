@@ -1,22 +1,3 @@
-"""MOD-18 lane AH: the displayed score, calibrated to how the model has actually done.
-
-Predeclared in ``docs/displayed_confidence.md``. The served model states one
-confidence and reuses it at every line size -- 55.6% to 56.5% across the four
-buckets -- while its realised accuracy runs 56.2% / 51.4% / 51.6% / 47.3%
-(``docs/spread_hole_diagnosis.md``). This module replaces the number a READER
-sees with the shrunken realised correctness of that pick's own cell, four line
-buckets by three stated-probability bands, fitted only on games completed
-before the card's Tuesday.
-
-Nothing here touches a side. The pick is fixed before the transform runs and
-the transform is applied to the pick's own oriented probability, so a
-calibrated value below 0.5 is displayed as it is rather than flipping anything
-(AGENTS.md's ban on unexplained threshold flips). The estimator -- 20 fixed
-pseudo-observations shrinking toward the game's own stated probability -- is
-MOD-18 C3's, carried over rather than re-tuned
-(``docs/spread_regime_program.md``).
-"""
-
 from __future__ import annotations
 
 import json
@@ -44,7 +25,6 @@ STRENGTH_ROUNDING_PLACES = 3
 
 
 def display_spread_bucket(spread: pd.Series) -> pd.Series:
-    """The four line-size buckets the diagnosis and the Model page already report."""
 
     size = pd.to_numeric(spread, errors="raise").abs()
     return pd.Series(
@@ -59,7 +39,6 @@ def display_spread_bucket(spread: pd.Series) -> pd.Series:
 
 
 def probability_band(stated: pd.Series) -> pd.Series:
-    """MOD-18 C3's three stated-probability bands, verbatim."""
 
     value = pd.to_numeric(stated, errors="raise")
     return pd.Series(
@@ -81,8 +60,6 @@ def cell_keys(spread: pd.Series, stated: pd.Series) -> pd.Series:
 
 @dataclass(frozen=True)
 class ReliabilityCells:
-    """Prior games and prior correct picks per (bucket, band) cell."""
-
     games: dict[str, int]
     wins: dict[str, float]
 
@@ -132,7 +109,6 @@ class ReliabilityCells:
 
 
 def fit_reliability_cells(prior: pd.DataFrame) -> ReliabilityCells:
-    """Count games and correct picks per cell over completed rows of ``prior``."""
 
     completed = prior.loc[prior["correct"].notna()]
     keys = cell_keys(completed["spread_line"], completed["stated"])
@@ -146,12 +122,6 @@ def fit_reliability_cells(prior: pd.DataFrame) -> ReliabilityCells:
 
 
 def archive_display_stream(per_game: pd.DataFrame) -> pd.DataFrame:
-    """The opener-evaluation archive as the frame this module calibrates on.
-
-    ``stated`` is the served opener probability oriented to the model's own
-    probability-rule pick -- the number the card prints -- and ``correct`` is
-    whether that pick was right at the opener.
-    """
 
     required = {
         "game_id",
@@ -186,7 +156,6 @@ def archive_display_stream(per_game: pd.DataFrame) -> pd.DataFrame:
 
 
 def prior_rows_before(stream: pd.DataFrame, season: int, week: int) -> pd.DataFrame:
-    """Completed archive rows from a strictly earlier week, expanding from 2020."""
 
     earlier_season = stream["season"].lt(season)
     earlier_week = stream["season"].eq(season) & stream["week"].lt(week)
@@ -194,7 +163,6 @@ def prior_rows_before(stream: pd.DataFrame, season: int, week: int) -> pd.DataFr
 
 
 def walk_forward_displayed_confidence(stream: pd.DataFrame) -> pd.Series:
-    """Each row's calibrated display, fitted only on strictly earlier weeks."""
 
     calibrated = pd.Series(np.nan, index=stream.index, dtype=float)
     for _, group in stream.groupby(["season", "week"], sort=True):
@@ -207,8 +175,6 @@ def walk_forward_displayed_confidence(stream: pd.DataFrame) -> pd.Series:
 
 @dataclass(frozen=True)
 class StrengthBands:
-    """Where the board's slight/lean/strong meter cuts the displayed score."""
-
     lean_min: float
     strong_min: float
 
@@ -248,14 +214,6 @@ class StrengthBands:
 
 
 def derive_strength_bands(stream: pd.DataFrame) -> StrengthBands | None:
-    """Terciles of the archive's own walk-forward calibrated scores.
-
-    The meter says where a pick sits among the reads this model actually
-    produces, so its two edges are quantiles of that distribution rather than
-    round numbers. Measured on the 2020-2025 opener archive, realised accuracy
-    does NOT rise across the three bands, so the bands are relative standing
-    and never a promised hit rate -- see ``docs/displayed_confidence.md``.
-    """
 
     scored = stream.loc[stream["correct"].notna()]
     if scored.empty:
@@ -272,8 +230,6 @@ def derive_strength_bands(stream: pd.DataFrame) -> StrengthBands | None:
 
 @dataclass(frozen=True)
 class ProductionDisplayedConfidence:
-    """Cells fitted for one target week from an archived out-of-time stream."""
-
     policy: str
     cells: ReliabilityCells
     source_path: str | None
@@ -355,15 +311,6 @@ def fit_production_displayed_confidence(
     season: int,
     week: int,
 ) -> ProductionDisplayedConfidence:
-    """Fit the served display cells for one week from archived out-of-time picks.
-
-    History precedence, all read-only and mirroring
-    :func:`nfl_ats.home_side_location.fit_production_home_side_offsets`: the
-    opener evaluation matched to the active model, else the newest evaluation
-    of any model with the mismatch recorded as a warning, else no cells at all
-    (the stated probability is then displayed unchanged). The card is never
-    blocked by this layer.
-    """
 
     warnings: list[str] = []
     active_model_id = str(active.get("model_id")) if active and active.get("model_id") else None
@@ -421,7 +368,6 @@ def fit_production_displayed_confidence(
 def served_strength_bands(
     artifacts_root: Path, active: Mapping[str, object] | None
 ) -> StrengthBands | None:
-    """The meter edges the board serves, from the active model's own archive."""
 
     return fit_production_displayed_confidence(artifacts_root, active, season=0, week=0).bands
 
@@ -429,12 +375,6 @@ def served_strength_bands(
 def attach_displayed_confidence(
     predictions: pd.DataFrame, calibration: ProductionDisplayedConfidence | None
 ) -> pd.DataFrame:
-    """Add the pick-oriented displayed probability without touching any side.
-
-    The pick is read from ``home_cover_probability`` and never re-derived from
-    the calibrated value, so a cell whose realised correctness sits below 0.5
-    lowers the printed number and changes nothing else.
-    """
 
     frame = predictions.copy()
     if "home_cover_probability" not in frame or "spread_line" not in frame:
@@ -454,7 +394,6 @@ def attach_displayed_confidence(
 
 
 def displayed_pick_probability(row: Mapping[str, Any] | pd.Series) -> float | None:
-    """One row's displayed score, or ``None`` when the row does not carry one."""
 
     value: Any = row.get(DISPLAYED_PICK_PROBABILITY_COLUMN)
     try:
@@ -465,7 +404,6 @@ def displayed_pick_probability(row: Mapping[str, Any] | pd.Series) -> float | No
 
 
 def displayed_strength_word(row: Mapping[str, Any] | pd.Series) -> str | None:
-    """One row's derived strength word, or ``None`` when the row has none."""
 
     value: Any = row.get(DISPLAYED_STRENGTH_WORD_COLUMN)
     word = str(value).strip().lower() if isinstance(value, str) else ""

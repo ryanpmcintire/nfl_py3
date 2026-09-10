@@ -1,10 +1,3 @@
-"""Static invariants for the toggleable Gridiron Observatory skin pack.
-
-The skin must be inert by default (nothing outside ``.theme-obs`` scopes),
-define every token it references, and keep the shipped toggle script inside
-the public-board safety guards (no inline handlers, idempotent, bounded size).
-"""
-
 from __future__ import annotations
 
 import re
@@ -22,7 +15,6 @@ TOKEN_REFERENCE = re.compile(r"var\(--([a-z0-9-]+)")
 
 
 def _top_level_blocks(css: str) -> list[tuple[str, str]]:
-    """(selector, body) for each top-level rule; @media bodies stay raw."""
 
     blocks: list[tuple[str, str]] = []
     selector: str | None = None

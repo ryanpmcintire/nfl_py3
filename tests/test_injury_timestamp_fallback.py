@@ -1,26 +1,3 @@
-"""ENG-39: leakage-safe timestamp fallback for undated injury revisions.
-
-nflverse's 2025 injuries release drops ``date_modified`` entirely (measured,
-docs/injury_timestamp_fallback.md M1), and the historical (default) response
-in ``nfl_ats.players.canonicalize_injuries`` -- drop any row without one --
-silently zeroes the whole ``home_/away_/diff_injury_*`` feature block for
-every 2025+ game (M3). This file pins:
-
-* the default ``timestamp_fallback="drop"`` path stays byte-identical (a
-  hash pin, so any accidental change to it fails loudly here);
-* the opt-in ``"week_proxy"`` fallback never makes a proxied row visible
-  before its own proxy time (the leakage invariant AGENTS.md requires for
-  every new feature family);
-* the proxy is clamped to never precede the Tuesday that starts the row's
-  own NFL week;
-* a real ``date_modified`` is never overwritten by the fallback;
-* a 2025-shaped frame with no ``date_modified`` column at all survives
-  ``"week_proxy"`` (and still raises under the default ``"drop"``);
-* ``nfl_ats.prediction_safety``'s new ``injury_feature_presence`` check
-  fails a prospective card whose injury feature block is entirely
-  null/zero, and passes a healthy one.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -44,13 +21,6 @@ from nfl_ats.prediction_safety import (
 
 
 def _hash_pin_fixture() -> pd.DataFrame:
-    """A small multi-season, multi-revision, deliberately out-of-order frame.
-
-    Spans 2011 and 2024 (named in the plan this file implements) with a
-    duplicate row, an out-of-order revision, and multiple teams/players, so
-    the sort/dedup logic in ``canonicalize_injuries`` is actually exercised
-    rather than pinning a trivial single-row identity.
-    """
 
     rows: list[dict[str, object]] = []
     for season, week, team, gsis_id, revisions in (
@@ -206,11 +176,6 @@ def test_week_proxy_rejects_bad_arguments() -> None:
 
 
 def _week_proxy_snapshot_fixture() -> tuple[pd.DataFrame, pd.DataFrame]:
-    """A 2025-shaped injuries frame (no ``date_modified`` column) plus one
-    row with a real revision, canonicalized once with ``"week_proxy"`` --
-    i.e. exactly what a snapshot's own ``injuries.parquet`` looks like on
-    disk after ``player-ingest --timestamp-fallback week_proxy``.
-    """
 
     kickoff = pd.Timestamp("2024-09-15T17:00:00Z")
     schedule = pd.DataFrame([_schedule_row(kickoff=kickoff)])
@@ -264,10 +229,6 @@ def test_canonicalize_injuries_records_snapshot_basis_provenance_in_attrs() -> N
 
 
 def test_canonicalize_injuries_plain_snapshot_re_canonicalization_is_unchanged() -> None:
-    """A frame with no basis columns (every pre-ENG-39 snapshot) is untouched
-    by the idempotency branch -- re-canonicalizing it is a true no-op, and
-    it never gains the new columns.
-    """
 
     fixture = _hash_pin_fixture()
     once = canonicalize_injuries(fixture)
@@ -277,11 +238,6 @@ def test_canonicalize_injuries_plain_snapshot_re_canonicalization_is_unchanged()
 
 
 def test_enrich_with_player_features_default_mode_survives_a_week_proxy_snapshot() -> None:
-    """The exact end-to-end gap lane S measured: a feature-build call that
-    never passes ``injury_timestamp_fallback`` (production's own call sites,
-    pre-fix) must still see a proxied row, because the *snapshot itself*
-    (not this call) already carries the fallback's basis.
-    """
 
     games = _games()
     kickoff_week2 = pd.Timestamp(games.loc[games["week"].eq(2), "kickoff"].iloc[0])
@@ -311,10 +267,6 @@ def test_enrich_with_player_features_default_mode_survives_a_week_proxy_snapshot
 
 
 def test_qb_availability_canonicalization_is_idempotent_on_a_week_proxy_snapshot() -> None:
-    """Mirrors the players.py idempotency fix for
-    ``nfl_ats.quarterbacks._canonicalize_qb_availability``, the equivalent
-    re-canonicalization site on the named-QB availability path.
-    """
 
     from nfl_ats.quarterbacks import _canonicalize_qb_availability
 
@@ -339,14 +291,6 @@ def test_qb_availability_canonicalization_is_idempotent_on_a_week_proxy_snapshot
 
 
 def test_week_proxy_proxied_row_is_invisible_before_its_own_proxy_time() -> None:
-    """AGENTS.md: a proxied row must never be visible before its proxy time.
-
-    Team A's week-2 injury has no real ``date_modified``, so under
-    ``timestamp_fallback="week_proxy"`` it is proxied to that game's own
-    kickoff minus 24h. A decision cutoff 48h before kickoff sits BEFORE that
-    proxy time and must see nothing; a cutoff 1h before kickoff sits AFTER
-    it and must see the report.
-    """
 
     games = _games()
     kickoff_week2 = pd.Timestamp(games.loc[games["week"].eq(2), "kickoff"].iloc[0])
@@ -613,9 +557,6 @@ def test_proxy_lineage_counts_all_contributors_when_latest_revision_is_real():
 def test_outcome_card_empty_injury_block_passes_when_reports_are_proven_absent(
     model_frame: pd.DataFrame,
 ) -> None:
-    """2026-09-07: the evidenced escape. When the caller has verified the
-    week's injury reports do not exist yet, the all-zero block is absence,
-    not defect -- the check passes and records the reason verbatim."""
     predictions = score_outcome_week(model_frame, season=2020, week=1, min_train_games=80)
     zeroed = predictions.copy()
     for column in _INJURY_COLUMNS:

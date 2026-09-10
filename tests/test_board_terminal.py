@@ -1,15 +1,3 @@
-"""Tests for the ATS Terminal renderer (:mod:`nfl_ats.board_terminal`).
-
-``board_terminal.render`` is a pure function over
-:class:`nfl_ats.board_content.BoardContent`, so most of these tests render
-from the shared hand-built fixture in ``tests/_board_content_fixtures.py`` --
-no artifact tree needed. ``render_model_page``/``render_findings_page`` have
-no hand-built fixture (like the picks page's own ``_board_content_fixtures``
-predates the six-extra-page draft this replaced), so they get integration-
-level coverage against real repo artifacts via
-``board_site_content.load_site_content``, loaded once per test module.
-"""
-
 from __future__ import annotations
 
 import ast
@@ -61,12 +49,6 @@ _OLD_SITE_PAGE_HREFS = (
 
 @pytest.fixture(scope="module")
 def site_content(_shared_real_site_content: SiteContent) -> SiteContent:
-    """Real repo artifacts -- The Model and Findings pages have no
-    hand-built fixture (unlike the This Week page's
-    ``_board_content_fixtures``). Loaded once for the whole test session via
-    ``tests/conftest.py::_shared_real_site_content`` (WP51, test-suite
-    speed), shared with ``tests/test_board_improvements.py`` and (through
-    ``tests/test_board_site.py``'s ``site`` fixture) ``build_site``."""
 
     return _shared_real_site_content
 
@@ -103,9 +85,6 @@ def test_terminal_style_css_constant_matches_asset_file() -> None:
 
 
 def test_terminal_stylesheet_verbatim_prefix_is_byte_identical_to_the_mockup() -> None:
-    """The CSS the page ships is verbatim mockup CSS plus clearly delimited
-    appended blocks (degraded states, the game selector/adjuster, evidence
-    density, extended pages) -- never a re-expression of the design."""
 
     css = board_terminal.TERMINAL_STYLE_CSS
     marker = "/* degraded states -- appended to verbatim mockup sheet */"
@@ -150,11 +129,6 @@ def test_terminal_best_pick_flag_renders_once() -> None:
 
 
 def test_terminal_board_states_the_late_week_refresh_rule() -> None:
-    """UI-20 standing lane, 2026-09-06: the This Week board tells readers in
-    plain words that a pick can still move after Tuesday when lines move a
-    full point, and that a contrary injury report keeps Tuesday's pick --
-    the promoted late-week follow and its news veto, rendered from the single
-    ``REFRESH_POLICY_NOTE`` constant, never re-typed per page."""
 
     from nfl_ats.board_content import REFRESH_POLICY_NOTE
 
@@ -176,10 +150,6 @@ def test_terminal_no_cut_page_links() -> None:
 
 
 def test_terminal_stylesheet_class_set_is_subset_of_mockup_plus_allowlist() -> None:
-    """Every class used in the generated BODY is either a mockup class
-    (used in its body OR merely defined in its CSS, including the appended
-    blocks this conversion added) or one of the small, explicit additive
-    classes for the degraded states."""
 
     mockup_html = _mockup_style()
     generated = board_terminal.render(build_fixture_content())
@@ -207,8 +177,6 @@ def test_terminal_no_observatory_references() -> None:
 
 
 def test_terminal_no_illustrative_tag_survives() -> None:
-    """The mockup's 'Illustrative breakdown' sample-tag must never appear on
-    a page built from real content."""
 
     html = board_terminal.render(build_fixture_content())
     assert "Illustrative breakdown" not in html
@@ -335,11 +303,6 @@ def test_history_renders_settled_challenger_assessment_without_play_decision_thr
 
 
 def test_terminal_headline_main_foot_text_stays_mockup_scale() -> None:
-    """Regression guard for the 2026-08 coordinator finding: a long foot
-    caption inside ``.headline-main`` (``flex:0 0 auto``, no max-width in
-    the verbatim mockup CSS) balloons the box and crushes the ``.caveat``
-    sibling into a single-word rail. The played-card foot text used here
-    must stay short (mockup scale), never the long prose caption."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -350,9 +313,6 @@ def test_terminal_headline_main_foot_text_stays_mockup_scale() -> None:
 
 
 def test_terminal_headline_main_has_a_defensive_max_width_rule() -> None:
-    """Defense in depth alongside the short-caption fix: even if a future
-    caption grows long again, the stylesheet itself must not let
-    ``.headline-main`` balloon and crush ``.caveat``."""
 
     rule_bodies = re.findall(r"\.headline-main\{([^}]*)\}", board_terminal.TERMINAL_STYLE_CSS)
     assert len(rule_bodies) >= 2, "expected the mockup rule plus an appended override"
@@ -362,15 +322,6 @@ def test_terminal_headline_main_has_a_defensive_max_width_rule() -> None:
 
 
 def _selectors_with_declaration(css: str, declaration_pattern: str) -> set[str]:
-    """Every selector (normalized to single-spaced, comma-split tokens) that
-    appears in a rule whose body matches ``declaration_pattern``. Strips
-    ``/* ... */`` comments first -- this file's comments routinely mention a
-    class name (e.g. ``.policy-note``) in prose right before the real rule,
-    and without stripping them that prose glues onto the first selector in
-    the following comma list. Works across ``@media`` blocks too: the regex
-    only ever matches an innermost, non-nested ``selector{body}`` pair, so an
-    enclosing ``@media (...){`` never itself completes a match and is simply
-    skipped over."""
 
     css = re.sub(r"/\*.*?\*/", "", css, flags=re.S)
     selectors: set[str] = set()
@@ -382,12 +333,6 @@ def _selectors_with_declaration(css: str, declaration_pattern: str) -> set[str]:
 
 
 def test_mobile_overflow_fix_css_covers_every_long_identifier_class() -> None:
-    """Every class that can hold a long unbreakable mono identifier must
-    carry ``overflow-wrap:anywhere`` -- not the legacy ``break-word`` the
-    ``.ledger-fixed td`` rule already used, which does not shrink an
-    element's min-content size and so never lets a flex/grid item actually
-    shrink to fit (that's the whole reason ``anywhere`` was introduced
-    alongside it)."""
 
     covered = _selectors_with_declaration(
         board_terminal.TERMINAL_STYLE_CSS, r"overflow-wrap\s*:\s*anywhere"
@@ -405,11 +350,6 @@ def test_mobile_overflow_fix_css_covers_every_long_identifier_class() -> None:
 
 
 def test_mobile_overflow_fix_attr_row_first_column_can_shrink() -> None:
-    """``.attr-row``'s first grid column is track ``1fr``, which -- like a
-    flex item -- defaults to ``min-width:auto`` and will not shrink below
-    its own content's min-content width. ``overflow-wrap`` on ``.chan``
-    alone cannot help unless this parent explicitly opts out of that
-    floor."""
 
     bodies = re.findall(
         r"\.attr-row\s*>\s*div:first-child\{([^}]*)\}", board_terminal.TERMINAL_STYLE_CSS
@@ -419,12 +359,6 @@ def test_mobile_overflow_fix_attr_row_first_column_can_shrink() -> None:
 
 
 def test_mobile_overflow_fix_board_table_cells_wrap_onto_multiple_lines() -> None:
-    """The mobile board-collapse (``@media (max-width:680px)``) turns every
-    ``table.board td`` into a flex container, ``flex-wrap:nowrap`` by
-    default. A cell with more than one child -- several ``.evidence-pill``
-    chips, or a name plus its ``.game-sub`` caption -- needs
-    ``flex-wrap:wrap`` or those children are forced onto one un-shrinking
-    line regardless of any ``overflow-wrap`` set on them."""
 
     css = board_terminal.TERMINAL_STYLE_CSS
     index = css.rfind("@media (max-width:680px)")
@@ -436,9 +370,6 @@ def test_mobile_overflow_fix_board_table_cells_wrap_onto_multiple_lines() -> Non
 
 
 def test_terminal_attribution_labels_are_plain_english() -> None:
-    """Regression guard: no raw jargon family ids (``player_qb``,
-    ``weekly_context``) or a wall of near-zero rows -- curated, capped,
-    plain-English labels only."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -454,10 +385,6 @@ def test_terminal_attribution_labels_are_plain_english() -> None:
 def test_this_week_page_renders_from_real_artifacts_with_guard_proven_adjusters(
     site_content: SiteContent,
 ) -> None:
-    """End-to-end proof (not just the hand-built fixture) that
-    ``load_board_content`` builds a real, guard-proven adjuster for every
-    game the active model's probability method supports, and the page
-    renders every one of them without raising."""
 
     html = board_terminal.render(site_content.board)
     assert html.startswith("<!doctype html>")
@@ -469,10 +396,6 @@ def test_this_week_page_renders_from_real_artifacts_with_guard_proven_adjusters(
 
 
 def test_board_rows_select_every_game_and_default_to_the_best_pick() -> None:
-    """UI-20 layout A (2026-09-05, owner: "layout A is definitely the
-    best. lets go with that."): the old standalone ``.dive-selector`` tab
-    strip is gone -- the board's own rows (``.row-link`` anchors) are the
-    one and only selector into the inspector's panels."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -482,9 +405,6 @@ def test_board_rows_select_every_game_and_default_to_the_best_pick() -> None:
 
 
 def test_default_inspector_panel_is_the_best_pick_and_only_one_is_visible() -> None:
-    """New for layout A: exactly one inspector panel is visible without
-    JavaScript or a URL hash, and it is the Best Pick's -- every other
-    game's panel carries ``hidden``."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -497,8 +417,6 @@ def test_default_inspector_panel_is_the_best_pick_and_only_one_is_visible() -> N
 
 
 def test_every_game_has_an_inspector_panel() -> None:
-    """New for layout A: every game on the board gets a panel in the
-    inspector, addressable by its own game id -- not only the Best Pick."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -508,9 +426,6 @@ def test_every_game_has_an_inspector_panel() -> None:
 
 
 def test_board_row_anchors_resolve_to_a_real_inspector_panel_id() -> None:
-    """New for layout A: with JavaScript disabled, each board row is a
-    plain ``href="#<game_id>"`` link -- every one of those ids must name a
-    real ``.dive-panel`` so the link actually resolves to something."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -522,9 +437,6 @@ def test_board_row_anchors_resolve_to_a_real_inspector_panel_id() -> None:
 
 
 def test_week_grid_holds_the_board_and_inspector_columns_in_order() -> None:
-    """New for layout A: the board and inspector both render inside one
-    ``.week-grid``, board first (left column), inspector second (right
-    column) -- matching the approved "board + inspector" mockup."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -537,8 +449,6 @@ def test_week_grid_holds_the_board_and_inspector_columns_in_order() -> None:
 
 
 def test_week_grid_css_is_two_columns_on_desktop_and_stacks_below_1100px() -> None:
-    """New for layout A: desktop (>=1100px) is a real two-column CSS grid;
-    below 1100px it stacks to one column (board first, by document order)."""
 
     css = board_terminal.TERMINAL_STYLE_CSS
     assert "main.week-page{ width:100%; max-width:1320px; margin:0 auto; }" in css
@@ -550,9 +460,6 @@ def test_week_grid_css_is_two_columns_on_desktop_and_stacks_below_1100px() -> No
 
 
 def test_dive_panels_render_every_games_attribution_and_chart_without_raising() -> None:
-    """The 15 non-Best-Pick games in the default fixture exercise the
-    degraded "attribution not published" / "cover curve not published"
-    paths; the renderer must handle all of it without raising."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -580,9 +487,6 @@ def test_adjuster_widget_carries_guard_proven_params_for_the_best_pick() -> None
 
 
 def test_inspector_panel_star_marks_the_best_pick_only() -> None:
-    """UI-20 layout A: the old standalone selector's star check moves to
-    the inspector's own panels -- across all 16 (mostly hidden) panels,
-    only the Best Pick's carries the star in its header."""
 
     content = build_fixture_content()
     html = board_terminal.render(content)
@@ -600,10 +504,6 @@ def test_cover_curve_offset_zero_note_renders_when_present() -> None:
 
 
 def test_cover_curve_marker_is_oriented_to_the_pick_side() -> None:
-    """Regression guard: the curve's own marker/aria-label must name the
-    PICK side, never the home team when the pick is the away team (2026-08
-    coordinator finding: marker read "LV +3.5" while the headline read
-    "MIA +3.5" for the same game)."""
 
     content = build_fixture_content()
     best_pick = next(game for game in content.games if game.is_best)
@@ -614,8 +514,6 @@ def test_cover_curve_marker_is_oriented_to_the_pick_side() -> None:
 
 
 def test_terminal_index_title_stays_unqualified() -> None:
-    """Regression guard: only ``index.html`` keeps the bare ``ATS Terminal``
-    title; every other page must be qualified with its own page label."""
 
     html = board_terminal.render(build_fixture_content())
     assert "<title>ATS Terminal</title>" in html
@@ -642,9 +540,6 @@ def test_model_page_renders_real_ledger_and_season_facts(site_content: SiteConte
 
 
 def test_model_page_headline_matches_this_week_headline(site_content: SiteContent) -> None:
-    """The one deliberate cross-page dedup exception: The Model page's
-    headline strip must be the SAME object This Week renders, not a
-    recomputed copy."""
 
     assert site_content.model.headline is site_content.board.headline
 
@@ -652,10 +547,6 @@ def test_model_page_headline_matches_this_week_headline(site_content: SiteConten
 def test_model_page_promoted_row_never_prints_the_bare_no_cited_evidence_phrase(
     site_content: SiteContent,
 ) -> None:
-    """Regression guard for the 2026-08-31 browser-QA finding: the promoted
-    row's evidence cell must carry a real provenance line, never the
-    ``.micro``-forced-uppercase ``NO CITED EVIDENCE`` that read like an
-    indictment."""
 
     html = board_terminal.render_model_page(site_content.model)
     assert "NO CITED EVIDENCE" not in html
@@ -667,9 +558,6 @@ def test_model_page_promoted_row_never_prints_the_bare_no_cited_evidence_phrase(
 def test_model_page_ledger_evidence_collapses_past_the_inline_limit(
     site_content: SiteContent,
 ) -> None:
-    """Regression guard for the row-height bug: a challenger with many
-    evidence entries must collapse the overflow behind a ``<details>``
-    toggle rather than rendering every chip inline unbounded."""
 
     html = board_terminal.render_model_page(site_content.model)
     many_evidence_rows = [row for row in site_content.model.rows if len(row.evidence) > 3]
@@ -681,8 +569,6 @@ def test_model_page_ledger_evidence_collapses_past_the_inline_limit(
 
 
 def test_model_page_ledger_table_uses_a_fixed_layout(site_content: SiteContent) -> None:
-    """Regression guard for the row-height bug's other half: auto layout
-    let one column's long content squeeze another down to a sliver."""
 
     html = board_terminal.render_model_page(site_content.model)
     assert 'table class="board ledger-fixed"' in html
@@ -692,13 +578,6 @@ def test_model_page_ledger_table_uses_a_fixed_layout(site_content: SiteContent) 
 def test_model_ledger_interval_never_renders_an_impossible_percentage(
     site_content: SiteContent,
 ) -> None:
-    """Regression guard for the 2026-08-31 browser-QA unit bug: several
-    challenger rows carry accuracy-POINTS effect intervals (e.g.
-    ``surface_switch_tilt_overlay``'s ``[0.29, 2.038]``), which a percent
-    formatter rendered as absurd percentages -- ``[29.0%, 203.8%]``,
-    ``[79.0%, 3167.0%]``. The smoking gun: no rendered ledger interval may
-    ever show a percentage above 100%, and no accuracy-points-typed interval
-    may render a ``%`` sign at all -- it must render as signed points."""
 
     html = board_terminal.render_model_page(site_content.model)
     for match in re.findall(r"(-?\d+(?:\.\d+)?)%", html):
@@ -733,15 +612,6 @@ def test_model_ledger_interval_never_renders_an_impossible_percentage(
 
 
 def test_model_ledger_every_live_challenger_arm_has_a_human_display_name() -> None:
-    """Regression guard for the 2026-08-31 browser-QA name-gap bug:
-    ``pbp08_protection_mismatch_tilt_overlay`` rendered its raw id as its
-    display name, because it was missing from ``CHALLENGER_DISPLAY_NAMES``
-    -- every OTHER arm has a curated human name (that mapping's own
-    docstring: "Human names for every arm id"). This reads the LIVE
-    ``artifacts/prospective/challengers.json`` (never a hand-typed id list,
-    the exact staleness that let the gap regress silently), so a future
-    challenger added to the registry without a curated name fails this test
-    immediately rather than rendering its raw id on the public site."""
 
     from nfl_ats.dashboard.findings_content import CHALLENGER_DISPLAY_NAMES
 
@@ -828,21 +698,6 @@ def test_home_side_push_trace_uses_registry_probability() -> None:
 def test_findings_page_real_content_carries_no_banned_boilerplate(
     site_content: SiteContent,
 ) -> None:
-    """Every other banned-boilerplate check in this suite (e.g.
-    ``tests/test_board_content_coverage.py``,
-    ``tests/test_played_card_expectation.py``) runs against a HAND-BUILT
-    fixture, so it can never catch a banned phrase that only exists in the
-    real registry text -- "Research this week" (UI-20(b)) and "What we're
-    watching" both print registry ``plain_summary``/``description`` prose
-    almost verbatim (``board_terminal._recent_activity_category_html`` /
-    ``_watching_lead_html``). This is the ONE test in the suite that scans
-    the real, registry-fed findings page for :data:`BANNED_BOILERPLATE`,
-    guarding against a phrase like "not a promotion or wagering claim"
-    (found live on ``docs/findings.html`` 2026-09-05, sourced from
-    ``registry/weak_signals.json``'s ``per13_durability_on_production_opener_ats``
-    entry, reworded to plain English rather than banned outright -- see that
-    constant's own docstring for why a bare "wagering" ban would
-    false-positive elsewhere) surviving a future registry write."""
 
     html = board_terminal.render_findings_page(site_content.findings)
     for phrase in BANNED_BOILERPLATE:
@@ -850,9 +705,6 @@ def test_findings_page_real_content_carries_no_banned_boilerplate(
 
 
 def test_findings_page_has_no_standalone_challenger_cards_field() -> None:
-    """Dedup regression guard: the tracked-challenger cards this page used
-    to render are superseded by The Model page's own (richer) ledger rows
-    -- the content object must not carry that field at all."""
 
     from nfl_ats.board_site_content import FindingsPageContent
 
@@ -870,9 +722,6 @@ def test_findings_page_signal_registry_summary_renders(site_content: SiteContent
 
 
 def test_findings_page_ledger_summary_is_not_the_full_registry_table() -> None:
-    """The compact secondary section shows the registry's highest-
-    confidence signals, capped -- never every recorded signal (that would
-    just be the old standalone Signal Ledger page again)."""
 
     from nfl_ats.board_site_content import _NOTABLE_SIGNAL_LIMIT
 
@@ -880,9 +729,6 @@ def test_findings_page_ledger_summary_is_not_the_full_registry_table() -> None:
 
 
 def test_ledger_rows_appear_on_model_page_not_on_findings_page(site_content: SiteContent) -> None:
-    """Dedup guard: a model-ledger arm's display name is distinctive
-    (e.g. "Played card — model + fix-up rules") and must not leak onto
-    Findings -- the ledger lives on exactly one page now."""
 
     model_html = board_terminal.render_model_page(site_content.model)
     findings_html = board_terminal.render_findings_page(site_content.findings)
@@ -892,9 +738,6 @@ def test_ledger_rows_appear_on_model_page_not_on_findings_page(site_content: Sit
 
 
 def test_cut_legacy_page_renderers_no_longer_exist() -> None:
-    """The owner cut these pages entirely from the build and nav (2026-08-31
-    redirect) -- the renderer functions themselves must be gone, not just
-    unwired, so nothing can accidentally call them back into the site."""
 
     assert not hasattr(board_terminal, "render_team_explorer_page")
     assert not hasattr(board_terminal, "render_pool_workbench_page")
@@ -931,10 +774,6 @@ def test_sources_panel_legacy_neutral_row_has_no_invented_day() -> None:
 
 
 def test_sources_panel_absent_block_renders_not_recorded_without_crashing() -> None:
-    """The shared fixture never sets ``source_policy`` -- ``BoardContent``'s
-    own default is the explicit not-recorded view, matching what a real
-    forecast whose metadata predates ENG-14 persistence also degrades to
-    (see ``nfl_ats.board_content._default_source_policy_view``)."""
 
     html = board_terminal.render(build_fixture_content())
     assert 'class="sources-panel policy-note"' in html
@@ -1004,7 +843,6 @@ def test_sources_panel_blocked_state_renders_with_state_class() -> None:
 
 
 def test_sources_panel_follows_table_tiebreaker_and_policy() -> None:
-    """Picks come first; all supporting panels remain below them."""
 
     html = board_terminal.render(build_fixture_content())
     header_index = html.index('id="board-h"')
@@ -1016,9 +854,6 @@ def test_sources_panel_follows_table_tiebreaker_and_policy() -> None:
 
 
 def test_sources_panel_is_static_markup_with_no_script_required() -> None:
-    """The panel must render with JS disabled, like the rest of the board:
-    it is plain HTML built once in Python, never populated by
-    ``<script>``-run DOM code."""
 
     view = SourcePolicyView(
         card_state="complete",
@@ -1106,10 +941,6 @@ def _board_row_html(html: str, game_id: str) -> str:
 
 
 def test_each_board_row_prints_when_its_pick_locks() -> None:
-    """The reader-facing form of the owner's deadline rule: a Thursday game
-    locks at its own kickoff, the Sunday night and Monday games lock at
-    Sunday 4:00 PM ET, and a row with no known kickoff instant prints no
-    time at all rather than a guess."""
     html = board_terminal.render(build_fixture_content())
 
     thursday = _board_row_html(html, "2026_01_SF_LA")
@@ -1232,12 +1063,6 @@ def test_week_refresh_schedule_matches_enabled_pick_refresh_commands() -> None:
     ],
 )
 def test_week_timeline_names_only_the_next_check(now: str, expected: str, absent: str) -> None:
-    """The page says when the lines locked, when picks are due, and what is next.
-
-    Owner, 2026-09-08, on the forty-line schedule wall this replaced:
-    "nothing short of a mistake". The itinerary is still BUILT -- the
-    per-game deadlines below prove it -- it is just no longer printed.
-    """
 
     content = build_fixture_content()
     timeline = build_fixture_timeline(content.games, datetime.fromisoformat(now))
@@ -1302,10 +1127,6 @@ def test_week_timeline_is_on_this_week_page_and_escapes_content() -> None:
 def test_injury_state_chip_is_scannable_beside_its_own_sentence(
     note: str, label: str, state: str
 ) -> None:
-    """The sentence alone was not readable as a state, and the SOURCES panel
-    below it can say the injury feed is COMPLETE in a week where no report
-    existed at all. The chip names which fact the picks actually had, in the
-    same ``<b>label</b> -- text`` idiom as the Policy overlay line."""
 
     content = replace(build_fixture_content(), injury_note=note)
     html = board_terminal.render(content)
@@ -1316,8 +1137,6 @@ def test_injury_state_chip_is_scannable_beside_its_own_sentence(
 
 
 def test_injury_state_chip_borrows_only_existing_source_state_ink() -> None:
-    """No new colour vocabulary: every state the chip can print must already
-    have a ``.src-state`` rule in the stylesheet."""
 
     css = board_terminal.TERMINAL_STYLE_CSS
     for _prefix, _label, state in board_content._INJURY_STATES:
@@ -1341,9 +1160,6 @@ def _rival_panel() -> board_content.RivalRulesPanel:
 
 
 def test_rival_rules_section_shows_the_public_test_and_hides_the_detail() -> None:
-    """UI-20(e): a reader can see the card is run against rivals recorded in
-    advance -- and the per-rule detail is collapsed, because the owner struck
-    the last multi-line block off the top of this page on 2026-09-08."""
 
     content = replace(build_fixture_content(), rivals=_rival_panel())
     html = board_terminal.render(content)
@@ -1366,9 +1182,6 @@ def test_rival_rules_section_shows_the_public_test_and_hides_the_detail() -> Non
 
 
 def test_rival_rules_section_speaks_pool_words_not_research_words() -> None:
-    """Reader text carries no registry id, no research jargon, and none of
-    the banned boilerplate (AGENTS.md, "The board is for humans"). "Rival
-    rules" is the deliberate plain-English rename of "challenger"."""
 
     content = replace(build_fixture_content(), rivals=_rival_panel())
     section = board_terminal._rival_rules_section(content)

@@ -1,11 +1,3 @@
-"""POL-10: prospective pick recording and forced-pick ATS settlement.
-
-The load-bearing tests here are the anti-backdating ones. Prospective evidence
-is only worth anything if the picks provably existed before kickoff, so both
-the write path and the read path are tested for refusing a post-kickoff pick,
-and the fingerprint guard is tested for refusing a silently re-tuned challenger.
-"""
-
 from __future__ import annotations
 
 import json
@@ -41,7 +33,6 @@ RECORDED = pd.Timestamp("2026-09-08T16:00:00Z")
 
 
 def _decisions(**overrides: Any) -> pd.DataFrame:
-    """Four picks with hand-chosen lines: one home win, one away win, two pushes."""
 
     frame = pd.DataFrame(
         {
@@ -188,12 +179,6 @@ def test_settlement_contract_guards() -> None:
 
 
 def test_scoring_refuses_a_pick_recorded_at_or_after_its_own_kickoff() -> None:
-    """The read-side half of the guarantee.
-
-    A hand-edited ledger row claiming a pick that was really chosen after the
-    game started must not be launderable into "prospective" evidence just by
-    running the scorer over it.
-    """
 
     backdated = _decisions()
     backdated.loc[0, "recorded_at_utc"] = KICKOFF + pd.Timedelta(hours=3)
@@ -324,10 +309,6 @@ def test_record_challenger_records_dedupes_and_refuses_started_games(tmp_path: P
 
 
 def test_record_challenger_refuses_a_recording_weeks_before_kickoff(tmp_path: Path) -> None:
-    """Same guard as the paper-decision ledger, and the same shared function
-    (nfl_ats.clv.refuse_if_outside_recording_lock_window) -- a rehearsal run
-    weeks before a week's real kickoff must not reach the challenger ledger
-    either."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -346,7 +327,6 @@ def test_record_challenger_refuses_a_recording_weeks_before_kickoff(tmp_path: Pa
 
 
 def test_record_challenger_refuses_a_retuned_configuration(tmp_path: Path) -> None:
-    """A different profile under the same challenger id is a different hypothesis."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -387,11 +367,6 @@ def test_unknown_challenger_names_the_registered_ones(tmp_path: Path) -> None:
 
 
 def test_artifact_lookup_matches_on_fingerprint_not_on_recency(tmp_path: Path) -> None:
-    """The active model's card and the challenger's share one directory namespace.
-
-    Picking the newest directory would silently record the BASELINE's picks as
-    the challenger's, which is the failure mode this lookup exists to prevent.
-    """
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -434,12 +409,6 @@ def test_fingerprint_is_stable_across_int_float_and_path_style() -> None:
 
 
 def test_a_ledger_without_the_best_pick_column_marks_no_best_pick() -> None:
-    """The challenger ledger has no Best Pick flag, and must not grow a phantom one.
-
-    Regression: a boolean column built with ``pd.Series(dtype=bool, index=...)``
-    fills with NaN, which reads back True, so every row of a flagless ledger
-    looked like the week's Best Pick.
-    """
 
     flagless = _decisions().drop(columns=["is_best_pick"])
     settled = settle_prospective_picks(flagless, _outcomes())

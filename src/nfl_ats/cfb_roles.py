@@ -1,65 +1,3 @@
-"""XLG-04 cross-league role-delivery replication (predeclared).
-
-This module is the predeclared XLG-04 experiment; see ``docs/cfb_role_replication.md``
-for the full predeclaration (frozen before any delivery or absence result was
-computed). The frozen configuration below (``FROZEN_ROLE_SEASONS``,
-``FROZEN_ROLE_SPAN``, ``FROZEN_MIN_PRIOR_APPEARANCES``,
-``FROZEN_ROLE_THRESHOLDS``, ``FROZEN_MIN_TEAM_ACTIONS``,
-``FROZEN_CREDIT_COVERAGE_MIN``, and ``FROZEN_REPLICATION_GATES``) mirrors that
-document exactly. It replicates the NFL PER-12 "expected role delivery"
-diagnostic (``artifacts/role_delivery_experiment/*/predeclaration.md``,
-2026-08-16) on college football play-by-play, asking whether a team's
-"expected deliverer" of a role (dropbacks, carries, receptions) actually
-gets credit for it at close to their trailing rate, and whether that pattern
-looks the same across leagues.
-
-CFB has no injury report, no lineup/depth chart with observation timestamps,
-and no snap counts -- unlike the NFL side, there is no ground truth for *why*
-a credited player didn't appear. Every CFB "absence" event built here is
-therefore a **proxy label only**: a qualifying player who received zero
-credited actions in an otherwise-valid team-game. Per the XLG-02 play-
-participant contract (``nfl_ats.cfb.CFB_PARTICIPANT_AVAILABILITY_CONTRACT``),
-**absence of credit is never evidence of absence** -- it can mean the player
-was benched, injured, played but went uncredited (see the coverage gate
-below), or simply had a quiet game. Absence rows are reported for
-description only; they are never used to gate replication.
-
-The gated replication target is instead the **delivery sample**: appearances
-that already condition on positive participation evidence (at least one
-credited action). Delivery asks a strictly easier, more measurable question
-than absence -- "given the player showed up in the box score, did their
-share match their trailing role" -- and it is the only one of the two the
-predeclared gates (:data:`FROZEN_REPLICATION_GATES`) score.
-
-Module layout
--------------
-1. League-neutral core: :func:`build_role_states` (appearance-only EWM role
-   state, mirroring ``nfl_ats.players``' role-state update exactly),
-   :func:`build_delivery_frame`, :func:`build_absence_frame`,
-   :func:`summarize_delivery`, :func:`evaluate_replication_gates`.
-2. League adapters: :func:`cfb_role_actions` (ESPN CFB play-by-play) and
-   :func:`nfl_role_actions` (the canonical ``nfl_ats.role_actions`` weekly
-   action-count snapshot), both producing the same
-   actions/team-games/coverage shape.
-3. :func:`run_role_replication`, the end-to-end runner the CLI wires up.
-
-Known, flagged deviation from a literal reading of the predeclared spec
-------------------------------------------------------------------------
-The predeclared spec for the CFB regular-season filter reads "keep rows
-where ``seasonType`` string starts with 'regular' case-insensitively." Real
-``data/cfb/pbp`` snapshots do not carry that string: ``seasonType`` is the
-*numeric* code documented in ``docs/cfb_data.md`` and used throughout
-``nfl_ats.cfb``/``nfl_ats.cfb_features`` (``CFB_PBP_SEASON_TYPE_CODES``,
-``"2"`` = regular season; ``tests/conftest.py``'s own CFB pbp fixture uses
-``seasonType=2``). A literal string-prefix match would silently keep zero
-rows against real data. :func:`_regular_season_mask` therefore checks
-*both*: the numeric code mapped through ``CFB_PBP_SEASON_TYPE_CODES`` (the
-path real snapshots take) and a case-insensitive "regular" prefix match (so
-a caller that already has a human-readable value, as the literal spec
-describes, still works). This is recorded here and in the implementation
-report, not applied silently.
-"""
-
 from __future__ import annotations
 
 import math
@@ -163,26 +101,6 @@ _NFL_ROLE_STATS_COLUMNS: tuple[str, ...] = (
 
 
 def build_role_states(actions: pd.DataFrame) -> pd.DataFrame:
-    """Compute each player's appearance-only span-8 EWM role state.
-
-    ``actions`` holds one row per (game, team, player, action_type) with
-    ``count >= 1`` -- appearance rows only, exactly as produced by
-    :func:`cfb_role_actions`/:func:`nfl_role_actions`. For each
-    ``(team, player_id, action_type)`` group, rows are processed in
-    chronological order (``order_key`` then ``game_id``):
-    ``prior_share`` is the state *before* this appearance (``NaN`` when
-    there is none yet), ``prior_appearances`` is how many appearance rows
-    preceded it, and the state is then updated to ``share`` (first
-    appearance) or ``alpha * share + (1 - alpha) * state`` with
-    ``alpha = 2 / (FROZEN_ROLE_SPAN + 1)``.
-
-    This exactly mirrors ``nfl_ats.players.enrich_with_player_features``'s
-    role-state update (``role_states[team].setdefault(...)``,
-    ``alpha * value + (1 - alpha) * previous``): no zero-imputation for a
-    missed game (a missed game simply has no row here), no cross-season
-    decay, and state kept within team so a player changing teams starts a
-    fresh state (the groupby key includes ``team``).
-    """
 
     require_columns(actions, ROLE_ACTION_COLUMNS, "role actions")
     if (pd.to_numeric(actions["count"], errors="coerce") < 1).any():
@@ -215,13 +133,6 @@ def build_delivery_frame(
     thresholds: dict[str, float] = FROZEN_ROLE_THRESHOLDS,
     min_prior: int = FROZEN_MIN_PRIOR_APPEARANCES,
 ) -> pd.DataFrame:
-    """Appearances whose *prior* state already qualified as a delivered role.
-
-    ``ratio = share / prior_share`` compares the realized share for this
-    appearance against the trailing role it is scored against -- above 1
-    means the player delivered more than their trailing role, below 1
-    means less. Unlike the NFL PER-12 diagnostic this is left unclipped.
-    """
 
     require_columns(states, ROLE_STATE_COLUMNS, "role states")
     threshold = states["action_type"].map(thresholds)
@@ -236,7 +147,6 @@ def build_delivery_frame(
 
 
 def _team_total_trailing(team_games: pd.DataFrame, span: int) -> pd.Series:
-    """Span-``span`` EWM of each ``(team, action_type)``'s prior ``team_total``."""
 
     alpha = 2.0 / (span + 1.0)
     trailing = pd.Series(np.nan, index=team_games.index, dtype="float64")
@@ -257,29 +167,6 @@ def build_absence_frame(
     min_team_actions: dict[str, int] = FROZEN_MIN_TEAM_ACTIONS,
     span: int = FROZEN_ROLE_SPAN,
 ) -> pd.DataFrame:
-    """One row per (team-game, action_type, qualifying player) the player missed.
-
-    ``team_games`` is the *full* set of team-games per ``(team, action_type)``
-    -- not just appearance rows -- restricted here (defensively; the league
-    adapters already apply this) to ``team_total >= min_team_actions``. A
-    player becomes trackable only after their first credited appearance for
-    a ``(team, action_type)``; before that there is no prior role to be
-    absent from.
-
-    Once trackable, the player's qualifying state does **not** update on a
-    missed game -- it mirrors the appearance-only EWM in
-    :func:`build_role_states` exactly, carrying the post-appearance state
-    forward unchanged until the next appearance. A qualifying player who
-    misses several team-games in a row is therefore reported as absent in
-    every one of them at the *same* ``prior_share``, and the streak ends
-    their qualification only when a later appearance changes the state
-    (potentially below threshold) -- this is intended, not a bug: it is the
-    literal consequence of "the state does not update on absence."
-
-    Every row here is a proxy label (see the module docstring): it is never
-    evidence the player was actually unavailable, only that they received
-    zero credited actions in an otherwise-valid team-game.
-    """
 
     require_columns(team_games, TEAM_GAME_COLUMNS, "team games")
     require_columns(states, ROLE_STATE_COLUMNS, "role states")
@@ -378,7 +265,6 @@ def build_absence_frame(
 
 
 def summarize_delivery(delivery: pd.DataFrame) -> pd.DataFrame:
-    """One row per ``action_type``: central tendency and tail behavior of ``ratio``."""
 
     require_columns(delivery, ("action_type", "ratio"), "delivery frame")
     columns = (
@@ -417,15 +303,6 @@ def evaluate_replication_gates(
     nfl_summary: pd.DataFrame,
     gates: dict[str, float] = FROZEN_REPLICATION_GATES,
 ) -> dict[str, dict[str, Any]]:
-    """Per-action_type pass/fail against the three frozen replication gates.
-
-    ``passed_median_band``: the CFB median ratio falls in
-    ``[median_low, median_high]``. ``passed_league_gap``: the CFB and NFL
-    median ratios differ by no more than ``median_league_gap_max``.
-    ``passed_severe_under``: the CFB severe-under-delivery fraction
-    (``ratio <= 0.5``) is at most ``severe_under_delivery_max``.
-    ``replicated`` requires all three.
-    """
 
     cfb_by_type = {str(row["action_type"]): row for row in cfb_summary.to_dict("records")}
     nfl_by_type = {str(row["action_type"]): row for row in nfl_summary.to_dict("records")}
@@ -461,13 +338,6 @@ def evaluate_replication_gates(
 
 
 def _regular_season_mask(season_type: pd.Series) -> pd.Series:
-    """True for CFB pbp rows tagged regular season -- see the module docstring.
-
-    Real snapshots carry the numeric ``CFB_PBP_SEASON_TYPE_CODES`` code
-    (``"2"`` = regular); this also accepts a human-readable value with a
-    case-insensitive "regular" prefix, matching the predeclared spec's
-    literal wording for callers that already have one.
-    """
 
     text = season_type.astype("string")
     coded = text.map(CFB_PBP_SEASON_TYPE_CODES)
@@ -486,41 +356,6 @@ def _drop_below_minimum(
 def cfb_role_actions(
     pbp: pd.DataFrame, canonical_games: pd.DataFrame
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Adapt ESPN CFB play-by-play into the league-neutral actions/team-games/coverage shape.
-
-    Frozen action definitions:
-
-    - **dropback**: ``pass == True`` and ``passer_player_id`` not null,
-      credited to ``passer_player_id``.
-    - **carry**: ``rush == True`` and ``rusher_player_id`` not null,
-      credited to ``rusher_player_id``. Kneels are included -- CFB pbp has
-      no reliable, universal way to separate them out here that the NFL
-      ``role_actions`` source (official ``carries``) also excludes, so
-      excluding them on one side only would bias the cross-league
-      comparison; this matches the NFL source's inability to exclude them.
-    - **reception**: ``type.text == "Pass Reception"`` and
-      ``receiver_player_id`` not null, credited to ``receiver_player_id``.
-
-    ``canonical_games`` (the CFB canonical feature table) restricts ``pbp``
-    to FBS-vs-FBS regular-season games with a resolvable spread (via an
-    inner join on ``game_id``, both sides coerced to ``str``) and supplies
-    ``gameday`` as ``order_key``. Seasons are restricted to
-    ``FROZEN_ROLE_SEASONS``; the regular-season filter is
-    :func:`_regular_season_mask`.
-
-    **Coverage gate.** Per ``(season, action_type)``, ``coverage =
-    credited_plays / eligible_plays`` (eligible: ``pass``/``rush``/
-    ``type.text == "Pass Reception"`` respectively). A season below
-    ``FROZEN_CREDIT_COVERAGE_MIN`` for an action_type is *excluded* from
-    that action_type's ``actions``/``team_games`` (never patched) and
-    flagged in the returned coverage frame.
-
-    ``team_total`` is the sum of credited counts across players for a
-    ``(game, team, action_type)`` -- so ``share = count / team_total``
-    sums to 1 within a team-game-action_type by construction, matching the
-    NFL adapter. Team-games below ``FROZEN_MIN_TEAM_ACTIONS`` are dropped
-    from both ``actions`` and ``team_games``.
-    """
 
     require_columns(pbp, CFB_ROLE_PBP_LOAD_COLUMNS, "cfb play_by_play")
     require_columns(canonical_games, ("game_id", "gameday"), "cfb canonical games")
@@ -637,17 +472,6 @@ def cfb_role_actions(
 
 
 def nfl_role_actions(role_stats: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Adapt the canonical ``nfl_ats.role_actions`` snapshot to the shared shape.
-
-    ``dropback = attempts + sacks_taken``, ``carry = carries``,
-    ``reception = receptions``; ``order_key = season * 100 + week``. Seasons
-    are restricted to ``FROZEN_ROLE_SEASONS`` and the same
-    ``FROZEN_MIN_TEAM_ACTIONS`` minimums are applied. The coverage gate does
-    not apply to official nflverse aggregates: one row is emitted per
-    ``(season, action_type)`` with ``coverage = 1.0``, ``excluded = False``,
-    and ``note = "official_stats"``, keeping the frame shape identical to
-    :func:`cfb_role_actions`'s coverage output.
-    """
 
     require_columns(role_stats, _NFL_ROLE_STATS_COLUMNS, "nfl role_actions")
     working = role_stats.copy()
@@ -723,7 +547,6 @@ def run_role_replication(
     cfb_canonical_games: pd.DataFrame,
     nfl_role_stats: pd.DataFrame,
 ) -> dict[str, Any]:
-    """Run the end-to-end XLG-04 replication and return every intermediate frame."""
 
     cfb_actions, cfb_team_games, cfb_coverage = cfb_role_actions(cfb_pbp, cfb_canonical_games)
     nfl_actions, nfl_team_games, nfl_coverage = nfl_role_actions(nfl_role_stats)
@@ -768,11 +591,6 @@ def run_role_replication(
 
 
 def summarize_absences(cfb_absences: pd.DataFrame, nfl_absences: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate proxy-label absence events per league and action_type (CLI report only).
-
-    Never used for gating (see the module docstring); this is descriptive
-    context alongside the delivery-sample gate results.
-    """
 
     columns = (
         "league",

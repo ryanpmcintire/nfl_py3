@@ -1,12 +1,3 @@
-"""H1's paired arms: the served refresh pick with and without the handle follow.
-
-The served card follows the heavy-money side from Saturday noon ET
-(``nfl_ats.pick_refresh``); this ledger records, on every pass that carries a
-reading, the pick the pass WOULD have served without that rule beside the one
-it did serve, at the same frozen Tuesday line, so both arms accrue game for
-game rather than being reconstructed later from a rule description.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -49,7 +40,6 @@ HANDLE_FOLLOW_LEDGER_COLUMNS: tuple[str, ...] = (
 def build_handle_follow_refresh_rows(
     plan: RefreshResult, *, original: pd.DataFrame
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Both arms for every eligible game the pass held a reading on."""
 
     empty = pd.DataFrame(columns=list(HANDLE_FOLLOW_LEDGER_COLUMNS))
     if original.empty:
@@ -107,7 +97,6 @@ def build_handle_follow_refresh_rows(
 def record_handle_follow_refresh_overlay(
     artifacts_root: Path, plan: RefreshResult, *, record_decisions: bool = False
 ) -> dict[str, Any]:
-    """Append both arms in a separate ledger, once per game and refresh run."""
 
     result: dict[str, Any] = {"challenger_id": CHALLENGER_ID, "recorded": 0}
     if not record_decisions:

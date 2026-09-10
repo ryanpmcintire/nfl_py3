@@ -1,5 +1,3 @@
-"""The findings baseline follows the same validated artifact as the board."""
-
 from dataclasses import replace
 from datetime import UTC, datetime
 from pathlib import Path

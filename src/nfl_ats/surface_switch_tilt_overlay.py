@@ -1,97 +1,3 @@
-"""Grass-to-turf surface switch tilt overlay: a parameter-free pick-level nudge.
-
-Research chain (mined lineage, all measured 2026-08-19, read from
-``registry/weak_signals.json`` before this module was built):
-
-1. **Weather battery cell.** ``weather_battery_surface_switch_grass_to_turf``
-   -- one of 8 predeclared cells in the NFL weather/environment bias battery
-   (``scripts/nfl_weather_battery_screen.py``, mined, uncorrected multiplicity)
-   -- flags games where the AWAY team's modal home surface this season
-   normalizes to grass AND this game's own surface normalizes to turf (a
-   footing/speed mismatch). Week-blocked, REG 2009-2025, n=4,317 games:
-   +1.1618 accuracy points, 95% [+0.2896, +2.038], ``probability_positive``
-   0.995.
-2. **Venue-controlled follow-up.** ``surface_familiarity_r1_turf_venue_visitor_split``
-   isolates the same mechanism WITHIN turf-venue games only (holding venue
-   fixed, so it cannot be confounded with "turf venues are just different"):
-   grass-modal-home visitors vs. turf-modal-home visitors, both playing at a
-   turf venue. Full-slate effect +1.4579 accuracy points, 95%
-   [-0.4774, +3.3655], ``probability_positive`` 0.9332, n_pair=1,857
-   (2009-2025). The gap SURVIVES holding venue fixed and is even larger than
-   the parent cell's full-slate effect.
-3. **CFB cross-league replication.** ``cfb_surface_familiarity_turf_venue_visitor_split``
-   replicates the SAME venue-controlled construct on FBS games (2012-2025,
-   n_pair=6,133): +1.5579 accuracy points, 95% [-0.6665, +3.7421],
-   ``probability_positive`` 0.9156 -- same sign, a comparable (if anything
-   larger) point estimate, cross-league, venue-controlled.
-
-**All three intervals cross zero.** Per AGENTS.md, at this evaluator's
-~2-point resolution that is the EXPECTED shape for a real small signal, never
-grounds to decline building a no-window-cost prospective challenger. Neither
-admissible closing ground applies to any of the three reads (no resolved
-wrong sign, no positive-control bound), so all three remain
-``unresolved_below_power`` in the registry.
-
-**The symmetric mirror is null in BOTH leagues -- stated up front, not
-buried.** If this were a clean bilateral "surface-switch cost" mechanism, the
-GRASS-venue mirror (turf-modal visitors on grass, vs. grass-modal visitors)
-should show the SAME-SIZED positive gap. It does not: NFL
-``surface_familiarity_r2_grass_venue_mirror`` reads -0.4995 points,
-``probability_positive`` 0.3205 (near a coin flip, leaning the wrong way);
-CFB ``cfb_surface_familiarity_grass_venue_mirror`` reads -0.1218 points,
-``probability_positive`` 0.4291 (also near a coin flip, also leaning the
-wrong way). This is why the rule below is deliberately ASYMMETRIC -- it only
-ever fires in the one direction (grass-modal visitor onto turf) that both
-leagues' primary reads actually support, never the mirror direction that
-neither league corroborates.
-
-**Era caveat -- the NFL effect concentrates in 2018-2025.** The venue-
-controlled follow-up's own era split
-(``surface_familiarity_r3_era_2009_2017`` / ``surface_familiarity_r3_era_2018_2025``)
-shows the SAME sign in both eras (sign-stable) but a roughly 4.5x larger
-magnitude in the later half: 2009-2017 full-slate +0.5277 points,
-``probability_positive`` 0.6482 (n=973); 2018-2025 full-slate +2.3869 points,
-``probability_positive`` 0.9578 (n=884). Both eras stay ``unresolved_below_power``
--- this is reported as a caveat on the effect's stability, not as grounds to
-restrict the overlay's eligible weeks (the overlay applies to all of 2026
-regardless of era, since 2026 postdates both halves).
-
-This module is the no-window-cost path, built on the exact pattern of
-``backup_qb_fade_overlay.py``, ``division_revenge_tilt_overlay.py``,
-``injury_value_tilt_overlay.py``, and ``coach_fade_overlay.py`` (the original
-precedent): a **pick-level, post-prediction transform** of the active model's
-own forced pick, dual-tracked against that same active model in the
-prospective challenger ledger (``nfl_ats.prospective_scoring``), at no
-rotation-registry window cost and with zero training-time feature changes.
-**Nothing in this module is wired into ``publishing.py`` or the production
-pick path** -- like the three tilt/fade siblings, and unlike the coach-fade
-overlay, no owner decision to play this on the real card has been made; it is
-dual-tracked only.
-
-**The rule is parameter-free and frozen** -- no threshold, no tuning, nothing
-derived from 2018-2025 outcomes: when the flag is set AND the active model's
-own forced pick is the AWAY team, flip to the home team. REG season only
-(every read above was scored on regular-season games); missing surface data
-means no flip.
-
-Two things live here, mirroring the sibling overlays exactly:
-
-1. :func:`surface_switch_flag_by_game` -- the pregame-safe, DATA-DERIVED
-   signal, ported VERBATIM from ``scripts/nfl_weather_battery_screen.py``'s
-   ``_normalize_surface`` function and ``load_population``'s modal-home-
-   surface derivation (same ``GRASS_SURFACES``/``TURF_SURFACES`` sets, same
-   per-``(home_team, season)`` modal-surface aggregation, same
-   ``away_modal_surface == "grass" and surface_norm == "turf"`` flag
-   definition), read straight from the newest local schedule snapshot
-   (``data/raw/<snapshot>/schedules.parquet``), never hand-typed.
-2. :func:`apply_surface_switch_tilt_overlay` -- the pick-level transform, plus
-   :func:`overlay_disclosure_note` for the plain-English provenance sentence.
-
-:func:`record_surface_switch_tilt_challenger_decisions` writes the overlay's
-own arm to the prospective challenger ledger so 2026 scores it cleanly,
-independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -131,14 +37,6 @@ OVERLAY_FLAG_COLUMN = "_surface_switch_tilt_flag"
 
 
 def _normalize_surface(raw: object) -> str | None:
-    """Ported verbatim from ``scripts/nfl_weather_battery_screen.py::_normalize_surface``.
-
-    Lower-cases and strips whitespace (schedules carries at least one raw
-    ``"grass "`` value with a trailing space) before matching against the
-    frozen surface sets; anything unmatched (including the empty string and
-    non-string/NaN values) normalizes to ``None`` -- "missing surface data",
-    which :func:`surface_switch_flag_by_game` folds into "not flagged".
-    """
 
     if not isinstance(raw, str):
         return None
@@ -155,38 +53,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def surface_switch_flag_by_game(schedules: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``surface_switch_flag``.
-
-    ``surface_switch_flag`` fires when the AWAY team's modal home surface
-    THIS SEASON normalizes to grass AND this game's OWN surface normalizes
-    to turf -- ported verbatim from
-    ``scripts/nfl_weather_battery_screen.py``'s ``load_population`` (the
-    ``away_modal_surface`` merge and the cell-6 flag definition in
-    ``build_cells``): for every ``(home_team, season)``, the MODE of that
-    team's normalized home-game surface across the FULL regular season
-    (``s.mode().iat[0] if not s.mode(dropna=True).empty else None``, the
-    exact aggregation the source script uses), then looked up for each
-    game by its AWAY team and season.
-
-    **Why a full-season aggregate is pregame-safe here, unlike the coach and
-    QB overlays' strictly-prior-only aggregates**: a team's home-stadium
-    surface is a STRUCTURAL, stadium-level fact fixed for essentially the
-    entire season and public knowledge before Week 1 -- it is not an
-    outcome, and this function never reads ``result`` or ``spread_line`` at
-    all. The source script's own comment makes the same point: "roof/surface
-    is a stadium fact, not a cover outcome". Two leakage regression tests
-    (``tests/test_surface_switch_tilt_overlay.py``) prove this empirically:
-    mutating a game's own ``result``/outcome columns has no bearing (the
-    function does not even read them), and a future season's surface data
-    never changes an earlier season's already-computed flags.
-
-    Team codes are canonicalized (``TEAM_ABBREVIATION_ALIASES``) before the
-    ``(home_team, season)`` grouping and the away-team lookup -- a merge-
-    safety measure so this function's output joins cleanly against the
-    predictions frame's own team codes; it does not change which surface a
-    team's home games in a given season actually used, so it does not alter
-    the measured construct itself.
-    """
 
     required = {"game_id", "season", "game_type", "home_team", "away_team", "surface"}
     missing = sorted(required.difference(schedules.columns))
@@ -217,8 +83,6 @@ def surface_switch_flag_by_game(schedules: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     grass_modal_visitor: str
@@ -227,13 +91,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``coach_fade_overlay.OverlayResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     enabled: bool
@@ -249,39 +106,6 @@ def apply_surface_switch_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick from AWAY to HOME wherever the flag fires.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (every measured
-      read -- the weather battery cell, the venue-controlled follow-up, the
-      CFB replication -- was scored on regular-season games only);
-    * :func:`surface_switch_flag_by_game` fires for the game (the AWAY
-      team's modal home surface this season is grass AND this game's own
-      surface is turf); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home)
-      is currently on the AWAY side.
-
-    **Deliberately ASYMMETRIC, unlike the sibling tilt overlays**: this
-    never flips a HOME pick to AWAY when the flag fires, because the
-    measured evidence never supports that direction -- the grass-venue
-    mirror (the symmetric case) is near-null in both leagues (NFL
-    ``probability_positive`` 0.3205, CFB 0.4291), so there is no measured
-    direction to fade INTO the flagged side, only away from picking the
-    grass-modal visitor on turf.
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    the sibling overlays do, so every existing reader of the column needs no
-    overlay-aware branch.
-
-    The flag is ALWAYS this module's own schedules-derived
-    :func:`surface_switch_flag_by_game` output, merged under the private
-    :data:`OVERLAY_FLAG_COLUMN` name: a predictions frame that already
-    carries a same-named ``surface_switch_flag`` column (the feature table
-    ports this exact derivation as a model input) collides silently instead
-    of crashing, and if no flag column survives the merge at all the result
-    is the documented no-op -- zero flips, never a KeyError.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -330,12 +154,6 @@ def apply_surface_switch_tilt_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -366,20 +184,6 @@ def record_surface_switch_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``division_revenge_tilt_overlay.record_division_revenge_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

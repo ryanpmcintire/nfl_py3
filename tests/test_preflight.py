@@ -1,5 +1,3 @@
-"""Tests for the ENG-02 read-only environment/configuration preflight."""
-
 from __future__ import annotations
 
 import json

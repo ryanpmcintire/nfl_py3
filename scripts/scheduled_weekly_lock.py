@@ -1,25 +1,3 @@
-"""Run the guarded, idempotent Tuesday paper-forecast lock job.
-
-This entry point is owned by ``capture_scheduler.py``. It deliberately has no
-season/week flags: the verified schedule must identify exactly one game week
-whose line-lock Tuesday is today, preventing manual backdating.
-
-A failure here used to be diagnosable only from a doubly-truncated string:
-this script kept the last 500 characters of the child's stderr, and
-``capture_scheduler`` then logged the first 200 characters of the JSON line
-that carried it. On 2026-09-08 that left a lock-day abort recorded as the
-tail of a ``BootstrapDegeneracyWarning`` from step 4 plus the step 5 banner,
-with the actual error past the cut and gone. Every failure now persists the
-child's COMPLETE stdout, stderr and traceback under ``FAILURE_LOG_DIR`` and
-leads the reported error with that path, so the 200-character survivor still
-says where the whole story lives.
-
-Step one is ``scripts/check_splash_board.py``'s pool-board check, which costs
-milliseconds: without it a week whose Splash board was never captured spent
-about eight minutes refitting before the ``pool_line_source`` safety check
-refused the card.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -53,8 +31,6 @@ _PROGRESS_PREFIXES = ("weekly-run step ", "lock-day decision package: ")
 
 
 class WeeklyRunFailure(RuntimeError):
-    """``weekly-run`` exited non-zero; the complete child output is on disk."""
-
     def __init__(self, message: str, *, log_path: Path) -> None:
         super().__init__(message)
         self.log_path = log_path
@@ -68,12 +44,6 @@ def _repo_relative(path: Path) -> str:
 
 
 def write_failure_log(kind: str, sections: dict[str, str]) -> Path:
-    """Persist every section verbatim and return the file written.
-
-    Deliberately dumb: no truncation, no filtering, no parsing. The whole
-    point is that the next person reading a failed lock gets the same bytes
-    the child produced.
-    """
 
     FAILURE_LOG_DIR.mkdir(parents=True, exist_ok=True)
     stamp = datetime.now(tz=UTC).strftime("%Y%m%dT%H%M%SZ")
@@ -86,14 +56,6 @@ def write_failure_log(kind: str, sections: dict[str, str]) -> Path:
 
 
 def _error_summary(stderr: str | None, *, limit: int = 240) -> str:
-    """The one line that says WHY, pulled out of a stderr full of chatter.
-
-    ``nfl_ats.cli.main`` ends a failed run with ``error: <message>``, and an
-    unhandled exception ends with ``ExceptionType: message`` at column 0, so
-    both survive; step banners, the decision-package line, warning headers and
-    every indented continuation (warning source echoes, traceback frames) are
-    skipped.
-    """
 
     lines = [line.rstrip() for line in (stderr or "").splitlines() if line.strip()]
     for line in reversed(lines):

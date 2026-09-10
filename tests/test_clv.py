@@ -68,7 +68,6 @@ from nfl_ats.odds_backfill import (
 
 
 def record_paper_decisions(artifacts_root: Path, *, now: datetime | None = None) -> dict[str, Any]:
-    """Exercise legacy/non-production fixtures without an arrest source."""
 
     return _record_paper_decisions(
         artifacts_root,
@@ -99,12 +98,6 @@ def _spread_book(key: str, standardized_home_spread: float, *, price: int = -110
 def _asymmetric_spread_book(
     key: str, standardized_home_spread: float, *, home_price: int, away_price: int
 ) -> dict[str, Any]:
-    """Like ``_spread_book`` but with independently-set home/away prices.
-
-    ``_spread_book`` deliberately applies the same price to both sides (it
-    exists for tests where the price is irrelevant); MKT-03's price-surfacing
-    tests need genuinely asymmetric juice.
-    """
 
     home_raw = -standardized_home_spread
     return {
@@ -392,8 +385,6 @@ def test_close_reference_prefers_store_then_falls_back_to_schedule(two_game_stor
 
 
 def test_build_pairing_table_columns_unchanged_by_price_sibling(two_game_store: Path) -> None:
-    """Regression guard for the frozen-inputs invariant: build_pairing_table's
-    own output never gained the new price columns."""
 
     pairing = build_pairing_table(two_game_store, capture_kind=HISTORICAL_CAPTURE_KIND)
     assert "home_spread_price" not in pairing.columns
@@ -828,7 +819,6 @@ def test_sign_test_requires_data() -> None:
 
 
 def _live_features_frame() -> pd.DataFrame:
-    """The pilot fixture frame plus one final, still-unplayed target game."""
 
     features = _pilot_features_frame(n_games=71)
     features.loc[features.index[-1], ["result", "ats_margin"]] = np.nan
@@ -838,7 +828,6 @@ def _live_features_frame() -> pd.DataFrame:
 def _store_live_tuesday_snapshot(
     root: Path, features: pd.DataFrame, game_row: pd.Series, *, home_spread: float
 ) -> None:
-    """A live capture observed on the game's own-week Tuesday at 13:00 UTC."""
 
     schedule = features.loc[features["game_id"].eq(game_row["game_id"])][
         ["game_id", "home_team", "away_team", "gameday"]
@@ -1014,13 +1003,6 @@ def _published_card_artifacts(
     sweep_widths: list[float] | None = None,
     game_type: str | None = None,
 ) -> Path:
-    """A minimal artifacts root with a synchronized active model and linked card.
-
-    ``sweep_widths`` writes a ``line_sweep.parquet`` beside the card in which
-    each game's pick holds >= 0.50 across a run of that half-width, which is
-    exactly what ``sweep_robustness`` measures -- so the widest entry is the
-    week's Best Pick.
-    """
 
     artifacts = tmp_path / "artifacts"
     forecast_relative = "margin_predictions/2026-week-01-test"
@@ -1126,8 +1108,6 @@ def test_record_paper_decisions_records_dedupes_and_skips_started(tmp_path: Path
 def test_record_paper_decisions_replace_week_rerecords_from_a_named_forecast(
     tmp_path: Path,
 ) -> None:
-    """Owner, 2026-09-09: a week recorded on the wrong lines is re-recorded from
-    the card that was actually played; the prior ledger survives as a .bak."""
     now = datetime(2026, 9, 10, 0, 0, tzinfo=UTC)
     artifacts = _published_card_artifacts(
         tmp_path,
@@ -1182,11 +1162,6 @@ def test_record_paper_decisions_replace_week_rerecords_from_a_named_forecast(
 def test_record_paper_decisions_refuses_a_recording_weeks_before_kickoff(
     tmp_path: Path,
 ) -> None:
-    """The guard that would have caught the 2026-08-18 incident: a rehearsal
-    run weeks before a week's real kickoff must not reach the ledger, even
-    though nothing else about the card looks wrong (docs/prospective_evidence.md,
-    'Known divergence' -- 16 rows recorded 2026-08-18T01:24:56Z for games that
-    did not kick off until September)."""
 
     now = datetime(2026, 8, 18, 1, 24, 56, tzinfo=UTC)
     artifacts = _published_card_artifacts(
@@ -1387,13 +1362,6 @@ def test_best_pick_is_persisted_with_the_week_and_matches_the_ranker(tmp_path: P
 def test_best_pick_is_never_nominated_once_any_game_of_the_week_has_started(
     tmp_path: Path,
 ) -> None:
-    """The anti-backdating rule for the weekly nomination.
-
-    The pool locks every pick before the week's first kickoff. Choosing a Best
-    Pick after Thursday night has been played would be choosing with a result
-    in hand, so the week simply gets no Best Pick -- the decision rows are still
-    recorded, and the flag stays False forever.
-    """
 
     artifacts = _published_card_artifacts(
         tmp_path,
@@ -1444,11 +1412,6 @@ def test_best_pick_is_first_write_wins_across_republications(tmp_path: Path) -> 
 
 
 def test_best_pick_flag_can_land_on_rows_an_earlier_run_appended(tmp_path: Path) -> None:
-    """A card published before the sweep existed still gets its Best Pick.
-
-    The decision rows are append-only, but the nomination is a separate,
-    one-time, still-pre-kickoff write about the week.
-    """
 
     artifacts = _published_card_artifacts(
         tmp_path,
@@ -1477,7 +1440,6 @@ def test_best_pick_flag_can_land_on_rows_an_earlier_run_appended(tmp_path: Path)
 
 
 def test_postseason_cards_get_no_best_pick(tmp_path: Path) -> None:
-    """The pool awards a Best Pick per REGULAR-season week only."""
 
     artifacts = _published_card_artifacts(
         tmp_path,
@@ -1587,19 +1549,6 @@ def test_opener_pick_evaluation_settles_each_pick_at_its_own_line(
 def test_opener_pick_evaluation_probability_rule_can_diverge_from_sign_rule(
     tmp_path: Path,
 ) -> None:
-    """Production plays ``home_cover_probability >= 0.5``, not ``residual > 0``.
-
-    They usually agree but do not have to: ``home_cover_probability`` is the
-    share of the model's empirical out-of-time residual distribution above
-    the line, so it tracks that distribution's MEDIAN, while the sign rule
-    tracks its MEAN (via the point prediction). This fixture's synthetic
-    ``ats_margin`` (``docs/opener_evaluation.md``-style archive fixture,
-    ``_pilot_features_frame``) is deliberately skewed 2:1 toward -3 vs +3,
-    so a thin, shared-week training slice reliably produces a residual
-    distribution whose mean and median sit on opposite sides of a game's own
-    point prediction -- pinned below with fixed (non-random) inputs so the
-    divergence is reproducible, not a coin flip.
-    """
 
     features = _pilot_features_frame(n_games=120)
     root = tmp_path / "raw"
@@ -1636,14 +1585,6 @@ def test_opener_pick_evaluation_probability_rule_can_diverge_from_sign_rule(
 
 
 def test_opener_evaluation_metrics_omits_probability_rule_keys_when_columns_absent() -> None:
-    """Backward compatible with hand-rolled scored frames lacking the new columns.
-
-    ``scripts/ridge_alpha_promotion_eval.py`` keeps its own line-for-line
-    copy of the opener-evaluation recipe (predating this addition) and calls
-    ``opener_evaluation_metrics`` directly on its own scored frame, which
-    never gains the ``*_probability_rule`` columns. That must keep working
-    -- no KeyError, and no probability-rule keys silently fabricated.
-    """
 
     scored = pd.DataFrame(
         {
@@ -1732,15 +1673,6 @@ def test_opener_manifest_mapping_matches_production_and_ignores_future_outcomes(
 def test_opener_pick_evaluation_serves_the_walk_forward_home_side_offset(
     pilot_setup: tuple[Path, pd.DataFrame, dict[str, Any]], tmp_path: Path
 ) -> None:
-    """The headline evaluation applies the SAME offset the card serves.
-
-    docs/home_side_offset_promotion.md "Known gap": after the 2026-09-07
-    promotion the board headline was the raw model's evaluation. Now the
-    served columns carry the walk-forward offset, the raw residual stays the
-    archive stream production fits from (so ``fit_production_home_side_offsets``
-    reproduces this evaluation's own per-week offsets from its artifact), and
-    the raw twins remain beside them.
-    """
 
     from nfl_ats.home_side_location import (
         archive_prior_stream,
@@ -1828,8 +1760,6 @@ def test_opener_command_flag_scores_the_raw_model_as_a_comparison(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """``--no-home-side-offset`` records served=False and never claims the
-    active model id, exactly like a probability-method comparison run."""
 
     from types import SimpleNamespace
 

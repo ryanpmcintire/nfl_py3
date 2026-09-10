@@ -1,5 +1,3 @@
-"""Diagnostics for serial dependence in out-of-time forecast errors."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -19,7 +17,6 @@ class DependenceAudit:
 
 
 def team_residual_panel(predictions: pd.DataFrame) -> pd.DataFrame:
-    """Return the model's cover-probability error from each team's perspective."""
 
     required = (
         "game_id",
@@ -110,7 +107,6 @@ def prediction_dependence_audit(
     confidence: float = 0.95,
     seed: int = 20260812,
 ) -> DependenceAudit:
-    """Test lag-one team error correlation against season-preserving shuffles."""
 
     if permutations < 100:
         raise ValueError("permutations must be at least 100")

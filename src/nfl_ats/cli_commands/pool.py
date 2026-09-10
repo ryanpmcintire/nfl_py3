@@ -1,5 +1,3 @@
-"""Pool-facing commands: tiebreaker, pool observables and totals backtest."""
-
 from __future__ import annotations
 
 import argparse
@@ -87,7 +85,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the pool/totals commands."""
 
     tiebreaker = subparsers.add_parser(
         "tiebreaker",

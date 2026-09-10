@@ -1,24 +1,3 @@
-"""BET-09 guard: paper mode default; no automated wager-placement path.
-
-Enforces AGENTS.md's research invariant ("This is a research and
-paper-decision project; do not add automated wagering.") in code, not just
-prose, per this project's "directives now enforced in code" discipline
-(memory: directives-now-enforced-in-code -- a rule that only lives in prose
-does not bind).
-
-Three checks:
-
-(a) No `pyproject.toml` dependency (any dependency group) matches a
-    denylist of sportsbook/exchange wagering-client package names.
-(b) No wager-PLACEMENT verb (``place_bet``, ``place_wager``, ``submit_bet``,
-    a POST to a ``/bets``-shaped endpoint) appears anywhere in ``src/`` or
-    ``scripts/``, outside the explicitly allowlisted read-only odds modules.
-(c) A paper-only/limitations statement exists in ``docs/``.
-
-Kept fast (<1s) and deterministic: static text scanning of files already on
-disk, no imports of the package under test, no network, no fixtures.
-"""
-
 from __future__ import annotations
 
 import re
@@ -66,13 +45,6 @@ WAGER_CLIENT_DENYLIST = {
 
 
 def _dependency_names() -> set[str]:
-    """Every declared dependency's bare distribution name, from every group.
-
-    Covers ``[project.dependencies]``, ``[project.optional-dependencies]``,
-    and every group under ``[dependency-groups]`` -- the last is
-    `[read, pyproject.toml:27]`'s ``dev`` group, and this stays generic so a
-    future group is covered without editing this test.
-    """
 
     data = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
     project = data.get("project", {})
@@ -138,10 +110,6 @@ def test_no_wager_placement_verb_outside_the_readonly_odds_client() -> None:
 
 
 def test_allowlisted_odds_modules_actually_exist_and_stay_read_only() -> None:
-    """Guards the allowlist itself: if one of these files is ever renamed or
-    deleted, or ever grows a wager-placement verb, this must fail rather
-    than silently allowlisting nothing (an empty allowlist would make the
-    check above vacuous for these exact files)."""
 
     for path in ALLOWLISTED_READONLY_ODDS_MODULES:
         assert path.is_file(), f"expected allowlisted odds module to exist: {path}"
@@ -156,13 +124,6 @@ RESPONSIBLE_USE_DOC = REPO_ROOT / "docs" / "responsible_use.md"
 
 
 def test_a_paper_only_limitations_statement_exists() -> None:
-    """No sentence in README.md or docs/*.md said, in so many words, "paper
-    mode is the default and there is no automated wager-placement path"
-    [read, README.md:548-553 -- that "Responsible use" section advises a
-    reader who might wager real money; it does not describe this codebase's
-    own paper-only architecture]. `docs/responsible_use.md` was added by
-    this work package to say so explicitly, and is asserted on here per
-    instructions rather than editing README.md."""
 
     assert RESPONSIBLE_USE_DOC.is_file(), (
         "docs/responsible_use.md is required as the paper-only/limitations "

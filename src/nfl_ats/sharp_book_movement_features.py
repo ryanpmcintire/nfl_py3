@@ -1,5 +1,3 @@
-"""Frozen MKT-15 refresh exposure; no outcomes or model fitting."""
-
 from __future__ import annotations
 
 from typing import cast
@@ -31,7 +29,6 @@ LEADER_FOLLOW_BIG_SPREAD_THRESHOLD = 0.5
 
 
 def leader_follow_threshold(decision_home_spread: float | None) -> float:
-    """Half a point once the frozen line reaches 10.5, a full point below it."""
     try:
         line = abs(float(cast(float, decision_home_spread)))
     except (TypeError, ValueError):
@@ -44,12 +41,6 @@ def leader_follow_threshold(decision_home_spread: float | None) -> float:
 
 
 def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
-    """One row/game, at the earlier of supplied cutoff and pool deadline.
-
-    Games require game_id, commence_time_utc, week_first_commence_utc.
-    Optional cutoff_utc allows an earlier prospective refresh timestamp.
-    Quotes use the existing archive's standardized positive-home margin line.
-    """
     required = {"game_id", "commence_time_utc", "week_first_commence_utc"}
     if not required.issubset(games.columns) or games.game_id.duplicated().any():
         raise DataContractError("Games require unique IDs and kickoff/week anchors")
@@ -150,7 +141,6 @@ def refresh_pick(
     *,
     threshold: float | pd.Series = THRESHOLD,
 ) -> pd.Series:
-    """Follow qualifying movement; absent/subthreshold movement keeps production."""
     return production_home.astype(bool).mask(net_move.abs().ge(threshold), net_move.gt(0))
 
 
@@ -170,33 +160,6 @@ def late_week_follow_frame(
     now: pd.Timestamp,
     tuesday_pick_side: pd.Series,
 ) -> tuple[pd.DataFrame, int]:
-    """The frozen MKT-15/CX18 follow rule, shared by the paired challenger and
-    the served refresh pick so the two can never drift apart.
-
-    ``quotes`` are live intraday spread rows (never historical backfills);
-    ``games`` carries :data:`LATE_WEEK_GAMES_COLUMNS`; ``tuesday_pick_side``
-    maps game_id to the frozen Tuesday played side (``HOME``/``AWAY``).
-    A later snapshot must not backdate an earlier observation into this pass:
-    rows with ``observed_at_utc`` or ``snapshot_timestamp_utc`` at/after
-    ``now``, or a provider update later than the observation, are refused and
-    counted, never scored. Returns ``(exposure, refused_quote_rows)`` where
-    exposure carries both arms on every row -- ``leader_median_net_move`` /
-    ``leader_books`` for the SERVED leader-median rule and ``equal_net_move`` /
-    ``eligible_books`` for the paired equal-book arm -- plus
-    ``tuesday_pick_side``, ``movement_would_be_pick_side`` (the served
-    :func:`refresh_pick` decision: market side when
-    ``|leader_median_net_move|`` is at least that game's own
-    :func:`leader_follow_threshold`, else the Tuesday side),
-    ``movement_flip``, ``late_week_threshold_applied`` (the gate that game
-    was judged at), the retired flat full-point gate's own
-    ``leader_median_flat_would_be_pick_side`` /
-    ``leader_median_flat_movement_flip`` and the retired half-point gate's
-    ``leader_median_half_would_be_pick_side`` /
-    ``leader_median_half_movement_flip`` (the paired OFF arms, read at
-    :data:`LEADER_FOLLOW_THRESHOLD` and :data:`THRESHOLD`), and the
-    equal-book arm's own ``equal_would_be_pick_side`` /
-    ``equal_movement_flip``, one row per input game.
-    """
 
     now_ts = pd.Timestamp(now)
     if now_ts.tzinfo is None or now_ts > pd.Timestamp.now(tz="UTC"):

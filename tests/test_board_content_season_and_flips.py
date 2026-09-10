@@ -1,21 +1,3 @@
-"""Tests for the owner-approved improvement batch's new pure functions in
-:mod:`nfl_ats.board_content`:
-
-* item 1 -- flip member labels and the raw-vs-played flip note
-  (:func:`_flip_member_labels`, :func:`_flip_note`);
-* item 3 -- the paired prospective scoreboard
-  (:func:`_build_prospective_scoreboard`, :func:`_grade_decisions`);
-* item 4 -- in-season finals and the running record strip
-  (:func:`_game_final_state`, :func:`_build_season_record`).
-
-These are pure functions over hand-built ``pandas.DataFrame``s (the same
-schemas ``nfl_ats.clv.load_paper_decisions`` /
-``nfl_ats.prospective_scoring.load_challenger_decisions`` /
-``data/processed/game_features.parquet`` carry), so no real artifact tree or
-parquet fixture is needed -- exactly the discipline
-``tests/test_board_content.py`` already uses for the cover-curve fallback.
-"""
-
 from __future__ import annotations
 
 from datetime import date
@@ -45,8 +27,6 @@ def test_flip_member_labels_from_production_overlay_provenance() -> None:
 
 
 def test_flip_member_labels_reports_every_member_on_an_overlap() -> None:
-    """The joint-OR policy can flip one game via more than one member -- the
-    label tuple must name every member that fired, not just one."""
 
     game_provenance = SimpleNamespace(
         game_id="2026_01_BAL_IND", member_ids=("coach_fade", "division_revenge_tilt")
@@ -103,8 +83,6 @@ def test_flip_note_names_raw_side_vs_played_side() -> None:
 
 
 def test_flip_note_is_none_when_raw_side_equals_played_side() -> None:
-    """A flip can toggle the probability without toggling the final team
-    (e.g. a near-50% game) -- nothing to say in that case."""
 
     game = _dive_game(home="BAL", away="IND", pick_team="BAL", flip_member_labels=("coach fade",))
     assert board_content._flip_note(game, raw_home_cover_probability=0.6) is None
@@ -315,9 +293,6 @@ def test_prospective_scoreboard_reports_paired_record_once_settled() -> None:
 
 
 def test_prospective_scoreboard_ignores_rows_from_a_different_policy_or_challenger() -> None:
-    """Only ``POLICY_ID``/``INCUMBENT_CHALLENGER_ID`` rows count -- a stray
-    row from a different decision policy or challenger must never leak into
-    the paired record."""
 
     paper = _decisions(
         [
@@ -340,7 +315,12 @@ def test_prospective_scoreboard_ignores_rows_from_a_different_policy_or_challeng
         ]
     )
     scoreboard = board_content._build_prospective_scoreboard(paper, challenger, _outcomes([]))
-    assert scoreboard.dormant is True
+    assert scoreboard.dormant is False
+    assert "prior chain 0-0" in scoreboard.headline_text
+    assert "0 of 1 recorded games settled" in scoreboard.headline_text
+
+    empty = pd.DataFrame()
+    assert board_content._build_prospective_scoreboard(empty, challenger, _outcomes([])).dormant
 
 
 def test_season_record_is_none_when_ledger_is_empty() -> None:

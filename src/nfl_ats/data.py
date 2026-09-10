@@ -1,5 +1,3 @@
-"""nflverse acquisition and input schema validation."""
-
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -13,7 +11,7 @@ from nfl_ats.snapshots import Snapshot, write_snapshot
 
 
 class DataContractError(ValueError):
-    """Raised when upstream data no longer satisfies the expected contract."""
+    pass
 
 
 def require_columns(frame: pd.DataFrame, required: Iterable[str], dataset: str) -> None:
@@ -59,7 +57,6 @@ def fetch_nflverse(
     raw_root: Path,
     team_stat_seasons: list[int] | None = None,
 ) -> Snapshot:
-    """Download schedules and weekly team stats into an immutable snapshot."""
 
     if not seasons:
         raise ValueError("At least one season is required")
@@ -91,7 +88,6 @@ def fetch_nflverse(
 
 
 def check_nflverse_contract(schedule_season: int, stats_season: int) -> dict[str, Any]:
-    """Fetch small current source slices and fail loudly on schema drift."""
 
     import nflreadpy as nfl
 

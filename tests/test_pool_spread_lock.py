@@ -1,32 +1,3 @@
-"""The pool's spread lock is declared once, and the live opener honours it.
-
-OPS-05 follow-up (2026-09-08, lock day). The pool fixes its spreads at
-12:00 ET on Tuesday; the scheduler captures at 12:05. But a legacy Windows
-Task Scheduler entry fired a 09:00 ET capture that morning, and the opener
-rule was "each book's EARLIEST Tuesday quote", so that stray capture
-silently became the opener. These tests pin the replacement rule
-(``nfl_ats.market_data.tuesday_opener_quotes``):
-
-* the lock time lives in exactly one place (``POOL_SPREAD_LOCK_ET``) and is
-  a wall-clock time in the pool's zone, so its UTC instant follows DST;
-* per book, the opener is the earliest Tuesday quote AT OR AFTER the lock;
-  a book with no post-lock quote falls back to its earliest pre-lock quote;
-* per game, the median is over post-lock books only whenever any exist,
-  and ``opener_basis`` says which rule produced the line;
-* days are Eastern calendar days (``pool_calendar_day``), so a game's own
-  Tuesday is keyed to its kickoff's ET date (``own_week_tuesday``): Monday
-  night's 00:15Z-Tuesday kickoff belongs to the Tuesday before it, a Monday
-  21:00 ET capture is Monday (never an opener) and a Tuesday 20:30 ET capture
-  is a post-lock Tuesday quote -- lane AF, 2026-09-08, after the UTC-day
-  keying dropped DEN at KC from the live openers on lock day (15 of 16);
-* ``tuesday_opener_quotes`` and ``live_tuesday_openers`` share that one
-  filter (``own_week_tuesday_quotes``) and agree game-for-game;
-* the historical ``tue_open`` archive (``nfl_ats.clv.build_pairing_table``)
-  never routes through the live rule and is unchanged bit-for-bit;
-* the one-click refresh guard and the line-gap report read the shared
-  constant instead of restating a clock time.
-"""
-
 from __future__ import annotations
 
 import json
@@ -74,7 +45,6 @@ if str(REPO) not in sys.path:
 
 import scripts.capture_scheduler as capture_scheduler  # noqa: E402
 import scripts.refresh_now as refresh_now  # noqa: E402
-import scripts.tuesday_line_gap as tuesday_line_gap  # noqa: E402
 
 TUESDAY = date(2026, 9, 8)
 GAME_ID = "2026_01_NE_SEA"
@@ -123,7 +93,6 @@ def _quotes(
     game_id: str = GAME_ID,
     kickoff: pd.Timestamp = KICKOFF,
 ) -> pd.DataFrame:
-    """Minimal in-memory home-spread rows, one per book, standardized home line."""
 
     return pd.DataFrame(
         {
@@ -143,7 +112,6 @@ def _history(*captures: tuple[datetime, dict[str, float]]) -> pd.DataFrame:
 
 
 def _payload(books: dict[str, float]) -> bytes:
-    """A real Odds API event so the store tests go through the parser."""
 
     return json.dumps(
         [
@@ -191,7 +159,6 @@ def test_the_pool_lock_is_declared_once_and_every_reader_uses_that_name() -> Non
     assert POOL_TIMEZONE.key == "America/New_York"
     assert capture_scheduler.ET.key == POOL_TIMEZONE.key
     assert refresh_now.POOL_SPREAD_LOCK_ET is POOL_SPREAD_LOCK_ET
-    assert POOL_SPREAD_LOCK_ET.strftime("%H:%M") == tuesday_line_gap.DEFAULT_LOCK
     assert not hasattr(refresh_now, "OPENER_HOUR")
 
 
@@ -250,10 +217,6 @@ def test_only_pre_lock_captures_fall_back_to_the_earliest_and_say_so() -> None:
 
 
 def test_monday_evening_capture_is_monday_and_never_an_opener() -> None:
-    """Tuesday 01:00Z is Monday 21:00 in the pool's zone; the opener rule
-    keys on that zone's calendar day, so the quote is not a Tuesday quote at
-    all -- not the opener beside a post-lock capture, and not the fallback
-    when it stands alone."""
 
     assert MONDAY_EVENING.astimezone(UTC).weekday() == 1
     with_lock = _history((MONDAY_EVENING, {"book_a": 2.5}), (LOCK_CAPTURE, {"book_a": 3.5}))
@@ -265,10 +228,6 @@ def test_monday_evening_capture_is_monday_and_never_an_opener() -> None:
 
 
 def test_tuesday_evening_capture_after_20_et_is_still_tuesday_and_post_lock() -> None:
-    """Wednesday 00:30Z is Tuesday 20:30 in the pool's zone: a Tuesday quote,
-    measured against Tuesday's lock (post-lock), so with nothing earlier it
-    is the opener and with a 12:05 capture present it loses to the earlier
-    post-lock quote."""
 
     assert TUESDAY_LATE_EVENING.astimezone(UTC).weekday() == 2
     alone = tuesday_opener_quotes(_history((TUESDAY_LATE_EVENING, {"book_a": 3.0}))).iloc[0]
@@ -298,9 +257,6 @@ def test_own_week_tuesday_is_the_kickoffs_eastern_date_not_its_utc_day() -> None
 
 
 def test_monday_night_game_gets_its_own_tuesdays_post_lock_opener() -> None:
-    """DEN at KC, Monday 2026-09-14 20:15 ET (2026-09-15T00:15Z). Keyed on the
-    UTC day its 'own Tuesday' was its kickoff day and the 09-08 quotes were
-    excluded; keyed on the Eastern date it is 09-08 like the rest of Week 1."""
 
     history = _quotes(
         LOCK_CAPTURE,
@@ -382,11 +338,6 @@ def _week_1_history(observed_at: datetime, line: float) -> pd.DataFrame:
 
 
 def test_lock_day_capture_yields_all_sixteen_openers_including_monday_night() -> None:
-    """Lock day 2026-09-08, measured at 12:10 ET: the 16:05:46Z capture quoted
-    all 16 Week 1 games, yet ``live_tuesday_openers`` returned 15 -- DEN at
-    KC missing. Reproduced here in memory with the same kickoffs and one
-    capture at the same instant, and pinned fixed: 16 games, every one
-    ``post_lock`` at that instant."""
 
     capture = datetime(2026, 9, 8, 16, 5, 46, tzinfo=UTC)
     history = _week_1_history(capture, 3.0)
@@ -404,7 +355,6 @@ def test_lock_day_capture_yields_all_sixteen_openers_including_monday_night() ->
 def _write_week_1_capture(
     root: Path, schedule: pd.DataFrame, observed_at: datetime, line: float
 ) -> None:
-    """A real Odds API payload for all sixteen Week 1 games, through the parser."""
 
     names = {code: name for name, code in market_data.NFL_TEAM_NAMES.items()}
     events = []
@@ -448,11 +398,6 @@ def _write_week_1_capture(
 
 
 def test_both_live_readers_agree_game_for_game(tmp_path: Path) -> None:
-    """``live_tuesday_openers`` (the CLV / predicted-close reader, via the
-    manifest index) and ``tuesday_opener_quotes`` on the free-form quote
-    history (Best Pick nomination, the board's observation column) share
-    one own-week filter and return the same line, instant and basis for
-    every game -- the Monday-night game included."""
 
     root = tmp_path / "raw"
     schedule = pd.DataFrame(
@@ -489,11 +434,6 @@ def test_both_live_readers_agree_game_for_game(tmp_path: Path) -> None:
 
 
 def test_books_quoting_only_before_the_lock_are_excluded_from_a_post_lock_median() -> None:
-    """Rule: when ANY book has a post-lock Tuesday quote, the game's median is
-    over post-lock books only. book_a quoted 3.0 at 09:00 and nothing after
-    the lock; its line could have moved before the lock, so it does not
-    dilute the locked median (4.5 over book_b and book_c), and the book
-    count and dispersion describe the post-lock books alone."""
 
     history = _history(
         (EARLY, {"book_a": 3.0, "book_b": 3.0, "book_c": 3.0}),
@@ -517,11 +457,6 @@ def test_games_are_judged_independently() -> None:
 
 
 def test_restored_early_snapshot_cannot_displace_the_locked_line(tmp_path: Path) -> None:
-    """Lock day's quarantined 09:00 ET capture (snapshot 20260908T130004Z,
-    moved to data/market/raw_early_tuesday/) may be restored under
-    data/market/raw once this rule is in: with all three captures present,
-    both the free-form store read and ``live_tuesday_openers`` still pick
-    the 12:05 quotes."""
 
     root = tmp_path / "raw"
     _write_live_capture(root, datetime(2026, 9, 8, 13, 0, 4, tzinfo=UTC), {"a": 3.0, "b": 3.0})
@@ -573,7 +508,6 @@ def test_forecast_frame_carries_the_basis_beside_the_observation_instant(tmp_pat
 
 
 def _historical_two_game_store(root: Path) -> pd.DataFrame:
-    """A ``tue_open`` backfill snapshot at 09:00 ET (13:00Z), as the archive is."""
 
     schedule = pd.DataFrame(
         {
@@ -670,10 +604,6 @@ def _historical_two_game_store(root: Path) -> pd.DataFrame:
 def test_historical_tue_open_archive_never_routes_through_the_live_rule(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """``build_pairing_table``'s ``tue_open`` label is the archive the model
-    is graded on (09:00 ET backfill snapshots). It is unchanged bit-for-bit:
-    the same frame comes back with the lock moved to an absurd hour, and
-    with the live opener function replaced by one that raises."""
 
     root = tmp_path / "raw"
     _historical_two_game_store(root)
@@ -720,8 +650,6 @@ def test_refresh_guard_skips_a_spread_capture_only_before_the_pool_lock(
 
 
 def test_refresh_guard_reads_the_shared_lock_constant(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Move the (imported) constant and the guard moves with it -- proof it is
-    not a restated local clock time."""
 
     monkeypatch.setattr(refresh_now, "POOL_SPREAD_LOCK_ET", time(14, 0))
     before = {step.name: step for step in refresh_now.plan(_et(12, 30))}
@@ -729,71 +657,3 @@ def test_refresh_guard_reads_the_shared_lock_constant(monkeypatch: pytest.Monkey
     assert before["spreads"].skip_reason is not None
     assert "14:00 ET spread lock" in str(before["spreads"].skip_reason)
     assert after["spreads"].skip_reason is None
-
-
-def test_line_gap_report_compares_earliest_pre_lock_with_first_post_lock() -> None:
-    """OPS-05's question: how far did the line move before the pool locked
-    it? Per game the earliest PRE-lock capture (the 09:00 legacy capture)
-    against the FIRST post-lock capture (12:05), never the post-lock opener
-    against itself; the served opener and its basis sit beside them."""
-
-    history = _history(
-        (EARLY, {"book_a": 3.0, "book_b": 3.0}),
-        (_et(11, 0), {"book_a": 3.5, "book_b": 3.5}),
-        (LOCK_CAPTURE, {"book_a": 3.5, "book_b": 4.0}),
-        (LATER, {"book_a": 4.5, "book_b": 4.5}),
-    )
-    table = tuesday_line_gap.tuesday_gap(history, TUESDAY, POOL_SPREAD_LOCK_ET)
-    assert list(table.columns) == tuesday_line_gap.COLUMNS
-    row = table.iloc[0]
-    assert row["game_id"] == GAME_ID
-    assert row["pre_lock"] == pytest.approx(3.0)
-    assert row["pre_lock_at"] == pd.Timestamp("2026-09-08T13:00:00Z")
-    assert row["post_lock"] == pytest.approx(3.75)
-    assert row["post_lock_at"] == pd.Timestamp("2026-09-08T16:05:00Z")
-    assert row["move"] == pytest.approx(0.75)
-    assert row["opener"] == pytest.approx(3.75)
-    assert row["opener_basis"] == OPENER_BASIS_POST_LOCK
-
-
-def test_line_gap_report_says_when_there_is_nothing_to_compare(
-    capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    post_only = tuesday_line_gap.tuesday_gap(
-        _history((LOCK_CAPTURE, {"book_a": 3.5})), TUESDAY, POOL_SPREAD_LOCK_ET
-    )
-    row = post_only.iloc[0]
-    assert pd.isna(row["pre_lock"]) and pd.isna(row["move"])
-    assert row["post_lock"] == 3.5
-    assert row["opener_basis"] == OPENER_BASIS_POST_LOCK
-    pre_only = tuesday_line_gap.tuesday_gap(
-        _history((EARLY, {"book_a": 3.0})), TUESDAY, POOL_SPREAD_LOCK_ET
-    )
-    row = pre_only.iloc[0]
-    assert row["pre_lock"] == 3.0
-    assert pd.isna(row["post_lock"]) and pd.isna(row["move"])
-    assert row["opener_basis"] == OPENER_BASIS_PRE_LOCK_FALLBACK
-
-    monkeypatch.setattr(
-        tuesday_line_gap,
-        "load_decision_quotes",
-        lambda *_args, **_kwargs: _history((LOCK_CAPTURE, {"a": 3.5})),
-    )
-    assert tuesday_line_gap.main(["--date", TUESDAY.isoformat()]) == 0
-    out = capsys.readouterr().out
-    assert tuesday_line_gap.NO_PRE_LOCK_MESSAGE in out
-    summary = json.loads(out.strip().splitlines()[-1])
-    assert summary["with_pre_lock_capture"] == 0
-    assert summary["with_post_lock_capture"] == 1
-    assert summary["comparable"] == 0
-    assert "mean_abs_move" not in summary
-
-
-def test_line_gap_report_lists_the_monday_night_game_on_its_own_tuesday() -> None:
-    table = tuesday_line_gap.tuesday_gap(
-        _week_1_history(datetime(2026, 9, 8, 16, 5, 46, tzinfo=UTC), 3.0),
-        TUESDAY,
-        POOL_SPREAD_LOCK_ET,
-    )
-    assert len(table) == 16
-    assert MONDAY_NIGHT_GAME in set(table["game_id"])

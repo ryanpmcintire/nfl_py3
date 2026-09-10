@@ -1,79 +1,131 @@
 from __future__ import annotations
 
-import tempfile
-from collections.abc import Iterator
-from datetime import date, timedelta
-from pathlib import Path
-from unittest.mock import patch
+import os
 
-import numpy as np
-import pandas as pd
-import pytest
+for _thread_env in (
+    "OMP_NUM_THREADS",
+    "OPENBLAS_NUM_THREADS",
+    "MKL_NUM_THREADS",
+    "NUMEXPR_NUM_THREADS",
+):
+    os.environ.setdefault(_thread_env, "1")
 
-from nfl_ats.board_site_content import SiteContent, load_site_content
-from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS
-from nfl_ats.market_data import QUOTE_COLUMNS
+import pickle  # noqa: E402
+import tempfile  # noqa: E402
+import time  # noqa: E402
+from collections.abc import Iterator  # noqa: E402
+from datetime import date, timedelta  # noqa: E402
+from pathlib import Path  # noqa: E402
+from typing import Any  # noqa: E402
+from unittest.mock import patch  # noqa: E402
+
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import pytest  # noqa: E402
+
+from nfl_ats import four_overlay_composition  # noqa: E402
+from nfl_ats.board_site_content import SiteContent, load_site_content  # noqa: E402
+from nfl_ats.constants import GRAPH_FEATURE_COLUMNS, MODEL_FEATURE_COLUMNS  # noqa: E402
+from nfl_ats.market_data import QUOTE_COLUMNS  # noqa: E402
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
+_SITE_CONTENT_CACHE_WAIT_SECONDS = 120.0
+
+
+def _offline_forecasts_for_card(
+    predictions: pd.DataFrame, schedules: pd.DataFrame, registry_root: Path
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    return (
+        four_overlay_composition._empty_temp_forecasts(predictions),
+        four_overlay_composition._empty_precip_forecasts(predictions),
+    )
+
+
+def _zero_delay(fetch_one_game: Any) -> Any:
+    def wrapped(*args: Any, **kwargs: Any) -> Any:
+        kwargs["delay_seconds"] = 0.0
+        return fetch_one_game(*args, **kwargs)
+
+    return wrapped
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _no_live_weather_fetch() -> Iterator[None]:
+    from nfl_ats import (
+        forecast_cold_visitor_tilt_overlay as cold,
+    )
+    from nfl_ats import (
+        forecast_weather_kn_warm_team_cold_late_tilt_overlay as kickoff_nearest,
+    )
+
+    with (
+        patch.object(four_overlay_composition, "forecasts_for_card", _offline_forecasts_for_card),
+        patch.object(cold, "fetch_one_game_temp", _zero_delay(cold.fetch_one_game_temp)),
+        patch.object(
+            kickoff_nearest,
+            "fetch_one_game_kickoff_nearest",
+            _zero_delay(kickoff_nearest.fetch_one_game_kickoff_nearest),
+        ),
+    ):
+        yield
 
 
 @pytest.fixture
 def private_raw_root() -> Iterator[Path]:
-    """A per-test temp directory that is guaranteed to sit outside this
-    repository, regardless of where `--basetemp` points (ENG-30).
-
-    `tmp_path`/`tmp_path_factory` are both rooted under pytest's
-    `--basetemp`, which is allowed to be an in-repo scratch directory (e.g.
-    `.agent_tmp/...`). Two families of test rely on their temp directory
-    NOT being inside this repository's tree: (1) `source_policy.py`'s
-    `require_private_raw_destination` guard, which correctly refuses to
-    write "raw" acquisition output under any in-repo path other than the
-    sanctioned `data/{raw,market,cfb,players}` roots -- an in-repo
-    `--basetemp` makes an ordinary `tmp_path` trip that guard even though
-    the test has nothing to do with the policy under test
-    (`tests/test_provenance.py`, `tests/test_odds_backfill.py`,
-    `tests/test_sportradar_injury_capture.py`); and (2) tests asserting "no
-    enclosing git repository" (`tests/test_provenance.py`), which see this
-    repository's own `.git` once `tmp_path` is nested inside it. Root this
-    fixture at `tempfile.gettempdir()` -- the real OS temp directory, never
-    repo-relative -- the same escape hatch `scripts/verify_fast.py` and
-    `scripts/verify_full.py` already use to keep their own basetemp out of
-    the repo. See `docs/verification_tiers.md` for the three basetemp modes
-    this makes the suite robust to.
-    """
 
     with tempfile.TemporaryDirectory(prefix="nfl_ats_private_raw_") as raw_dir:
         yield Path(raw_dir).resolve()
 
 
-@pytest.fixture(scope="session")
-def _shared_real_site_content() -> SiteContent:
-    """Loads real repo artifacts into a :class:`SiteContent` ONCE for the
-    whole test session (WP51, test-suite speed).
+def _unwrap_cached_site_content(blob: bytes) -> SiteContent:
+    kind, payload = pickle.loads(blob)
+    if kind == "content":
+        return payload
+    raise RuntimeError(f"shared site content could not be built: {payload}")
 
-    ``load_site_content(artifacts_root, require_fresh_arrest_overlay=False)``
-    is a pure, read-only function of its arguments -- see its own docstring
-    in ``nfl_ats/board_site_content.py`` ("this module itself never opens an
-    artifact" / loaders only read). ``tests/test_board_improvements.py`` and
-    ``tests/test_board_terminal.py`` each called it with these exact
-    arguments in their own module-scoped ``site_content`` fixture, and
-    ``tests/test_board_site.py``'s ``site`` fixture triggered a THIRD,
-    identical call indirectly via ``build_site``. Each call cost ~44-54s of
-    real I/O (measured), so three modules paid it three times for the same
-    result. This fixture computes it once; the three test files' own
-    fixtures now return this shared, frozen (immutable) object instead of
-    recomputing it. Nothing may mutate it -- every dataclass it references is
-    ``@dataclass(frozen=True)`` with tuple fields, and every test that reads
-    it only reads or calls ``dataclasses.replace`` to produce an unrelated
-    copy.
-    """
 
+def _build_real_site_content() -> SiteContent:
     empty_quotes = pd.DataFrame(columns=QUOTE_COLUMNS)
     with patch(
         "nfl_ats.best_pick_nomination.load_quote_history",
         return_value=empty_quotes,
     ):
         return load_site_content(_REPO_ROOT / "artifacts", require_fresh_arrest_overlay=False)
+
+
+@pytest.fixture(scope="session")
+def _shared_real_site_content(
+    tmp_path_factory: pytest.TempPathFactory, worker_id: str
+) -> SiteContent:
+
+    if worker_id == "master":
+        return _build_real_site_content()
+
+    shared = tmp_path_factory.getbasetemp().parent
+    cache = shared / "shared_real_site_content.pickle"
+    lock = shared / "shared_real_site_content.lock"
+    deadline = time.monotonic() + _SITE_CONTENT_CACHE_WAIT_SECONDS
+    while True:
+        if cache.is_file():
+            return _unwrap_cached_site_content(cache.read_bytes())
+        try:
+            os.close(os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+        except FileExistsError:
+            if time.monotonic() > deadline:
+                return _build_real_site_content()
+            time.sleep(0.1)
+            continue
+        try:
+            payload: tuple[str, object] = ("content", _build_real_site_content())
+        except Exception as exc:
+            payload = ("error", repr(exc))
+        staged = shared / f"shared_real_site_content.{worker_id}.tmp"
+        try:
+            staged.write_bytes(pickle.dumps(payload))
+        except Exception:
+            staged.write_bytes(pickle.dumps(("error", "site content is not picklable")))
+        os.replace(staged, cache)
+        return _unwrap_cached_site_content(cache.read_bytes())
 
 
 CFB_FIXTURE_SEASONS = (2013, 2014)
@@ -345,7 +397,6 @@ def _cfb_pbp_rows(schedule: pd.DataFrame) -> list[dict[str, object]]:
 
 @pytest.fixture(scope="session")
 def _shared_cfb_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Build the deterministic CFB source fixture once per test session."""
 
     schedules = pd.DataFrame(_cfb_schedule_rows())
     lines = pd.DataFrame(_cfb_line_rows(schedules))
@@ -357,7 +408,6 @@ def _shared_cfb_inputs() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 def cfb_inputs(
     _shared_cfb_inputs: tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame],
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Return isolated copies so a test cannot mutate the shared templates."""
 
     schedules, lines, pbp = _shared_cfb_inputs
     return schedules.copy(deep=True), lines.copy(deep=True), pbp.copy(deep=True)
@@ -376,7 +426,6 @@ def _shared_cfb_features_frame(
 
 @pytest.fixture
 def cfb_features_frame(_shared_cfb_features_frame: pd.DataFrame) -> pd.DataFrame:
-    """Return a deep copy of the session-cached deterministic feature table."""
 
     return _shared_cfb_features_frame.copy(deep=True)
 

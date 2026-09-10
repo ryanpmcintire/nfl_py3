@@ -1,5 +1,3 @@
-"""LEAD-23: production plus trade-deadline integration drag, paired prospectively."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -54,11 +52,6 @@ def visible_transactions(
     snapshot_time: pd.Timestamp,
     prospective_season: int,
 ) -> pd.DataFrame:
-    """Use observed times live; disclose month-end availability for legacy history.
-
-    Sitemap last-modified values are contaminated and never used as observation
-    times. Untimestamped current-season rows are known only at snapshot capture.
-    """
     years = pd.to_numeric(transactions["url_year"], errors="raise").astype(int)
     months = pd.to_numeric(transactions["url_month"], errors="raise").astype(int)
     proxy = pd.to_datetime({"year": years, "month": months, "day": 1}, utc=True)
@@ -72,7 +65,6 @@ def visible_transactions(
 def build_stacked_features(
     base_features: pd.DataFrame, data_root: Path, now: pd.Timestamp, card: pd.DataFrame
 ) -> pd.DataFrame:
-    """Attach only transactions visible before each game's pool decision."""
     paths = sorted((data_root / "raw/pfr_transactions").glob("*/index.parquet"))
     if not paths:
         raise FileNotFoundError("Transaction information is unavailable")
@@ -118,12 +110,6 @@ def record_deadline_drag_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Freeze candidate and baseline forced picks at the same decision spread.
-
-    The active recipe is fingerprint-pinned. Missing local inputs skip; future
-    forecasts refuse. Historical fits remain chronological, and no active
-    model, forecast or production feature profile is changed.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

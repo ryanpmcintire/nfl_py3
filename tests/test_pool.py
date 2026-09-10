@@ -87,7 +87,6 @@ def test_head_to_head_closed_form_on_hand_computable_cases() -> None:
 
 
 def test_a_symmetric_pool_is_a_lottery() -> None:
-    """No edge, no correlation, no bonus: everyone's chance is 1/(N+1)."""
 
     fmt = PoolFormat(weekly_games=(16,) * 4, best_pick_bonus=0.0)
     entry = build_entry(fmt, cover_probability=0.5, public_agreement=0.5, seed=11)
@@ -98,7 +97,6 @@ def test_a_symmetric_pool_is_a_lottery() -> None:
 
 
 def test_a_field_that_copies_our_card_can_only_tie() -> None:
-    """public_lean 1.0 with our side public everywhere: identical entries."""
 
     fmt = PoolFormat(weekly_games=(16,) * 4, best_pick_bonus=0.0)
     entry = build_entry(fmt, cover_probability=0.53, public_agreement=np.ones(64), seed=3)
@@ -120,7 +118,6 @@ def test_a_perfect_card_always_finishes_first() -> None:
 
 
 def test_simulator_reproduces_the_head_to_head_closed_form() -> None:
-    """One deterministic opponent: the margin is decided only by disagreements."""
 
     fmt = PoolFormat(weekly_games=(10,) * 3, best_pick_bonus=0.0)
     public = np.array([True] * 21 + [False] * 9)

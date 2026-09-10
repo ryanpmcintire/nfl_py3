@@ -1,5 +1,3 @@
-"""Home-side shift shrinkage, same-side lattice support, and leakage contracts (lane T)."""
-
 from __future__ import annotations
 
 import numpy as np
@@ -23,7 +21,6 @@ from nfl_ats.home_side_mapping import (
 
 
 def history(n: int = 1200) -> pd.DataFrame:
-    """Home underdogs at -8 beat their centre by 6; home favourites at +8 miss by 2."""
     line = np.tile([8.0, -8.0, 3.0], n // 3)
     center = np.tile([2.0, -2.0, 1.0], n // 3)
     result = center + np.tile([-2.0, 6.0, 0.0], n // 3)

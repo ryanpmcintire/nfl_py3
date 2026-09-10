@@ -1,51 +1,3 @@
-"""CFB role-continuity feature family (the XLG-04 follow-up).
-
-XLG-04 (``docs/cfb_role_replication.md``) established that role delivery is
-league-general for dropbacks and carries: a player with a material trailing
-role who participates at all delivers approximately that role, in both
-leagues. This module turns that replicated mechanism into ONE pregame CFB
-feature family and the machinery to score it against the frozen XLG-03
-benchmark -- see ``docs/cfb_role_features.md`` for the predeclaration, which
-is frozen before any run that touches ATS outcomes.
-
-The roadmap's stated prerequisite is honored first: **separating permanent
-departures from temporary absences**. CFB has no injury reports, so the only
-pregame-knowable evidence about a role holder is their own participation
-trail. Three consequences shape the frozen feature:
-
-1. **Season scoping** (departure separation, cross-season): a player who has
-   not yet appeared for the team in the current season is outside the role
-   mass. Graduation, transfer, and the draft all present exactly this way,
-   and :func:`absence_separation_study` measures how rarely a season's
-   qualified role holders return the following season.
-2. **Streak capping** (departure separation, within-season): a qualified
-   holder who misses ``streak_cap`` consecutive valid team-games is treated
-   as departed/out-for-season and leaves the role mass;
-   :func:`absence_separation_study` measures how quickly same-season
-   reappearance probability decays with streak length to justify the cap.
-3. **Recency** (the signal): among the remaining active mass, the feature is
-   the share-weighted fraction that participated in the team's most recent
-   valid game -- the pregame-knowable trace of a role disruption.
-
-Everything here is computed from credited actions only (dropback/carry --
-the two replicated action types; receptions carry XLG-04's recorded
-non-replication and are excluded). Absence of credit is never treated as
-proof of unavailability; the feature only measures *observed participation
-continuity*, a weaker and honest claim.
-
-Module layout
--------------
-1. :func:`absence_separation_study` -- descriptive, participation-only:
-   absence episodes with hindsight reappearance labels, plus cross-season
-   carryover of qualified role holders. Never reads spreads or outcomes.
-2. :func:`build_role_continuity` / :func:`attach_role_continuity` -- the
-   frozen pregame feature (leak-free single chronological pass).
-3. :func:`cfb_role_benchmark` -- the three-arm walk-forward (market, frozen
-   ``market_residual``, ``market_residual_roles``) on identical weeks, with
-   paired week/season-blocked comparisons via
-   ``nfl_ats.experiments.paired_feature_comparisons``.
-"""
-
 from __future__ import annotations
 
 import math
@@ -142,12 +94,6 @@ class _PlayerTrail:
 def _iter_team_action_games(
     actions: pd.DataFrame, team_games: pd.DataFrame
 ) -> list[tuple[str, str, list[dict[str, Any]], dict[str, dict[str, float]]]]:
-    """Chronological valid team-games plus per-game appearance shares.
-
-    Returns one entry per ``(team, action_type)``: the ordered list of that
-    pair's valid team-game rows and a ``game_id -> {player_id: share}``
-    lookup of credited appearances.
-    """
 
     require_columns(actions, ROLE_ACTION_COLUMNS, "role actions")
     require_columns(team_games, TEAM_GAME_COLUMNS, "team games")
@@ -197,24 +143,6 @@ def absence_separation_study(
     min_prior: int = FROZEN_MIN_PRIOR_APPEARANCES,
     span: int = FROZEN_ROLE_SPAN,
 ) -> dict[str, pd.DataFrame]:
-    """Label every qualified-holder absence episode with hindsight reappearance.
-
-    Participation data only -- no spreads and no game outcomes are read, so
-    this may legitimately run before the feature predeclaration is frozen
-    (its results are design inputs, recorded in the predeclaration).
-
-    An **episode** is a maximal run of consecutive valid team-games missed
-    by a player who was a qualified role holder when the run began
-    (finite state ``>= threshold`` with ``>= min_prior`` appearances).
-    Hindsight labels: reappeared for the same team later in the same season,
-    reappeared only in a later season, or never reappeared in the data.
-
-    The **carryover** frame asks the cross-season question: for each season
-    a player ended as a qualified holder, did they appear for the same team
-    in the following season at all? ``next_season_observed`` marks whether
-    the team even has valid games in that following season (a final-season
-    row cannot count as evidence of departure).
-    """
 
     alpha = 2.0 / (span + 1.0)
     episode_rows: list[dict[str, Any]] = []
@@ -329,12 +257,6 @@ def absence_separation_study(
 
 
 def summarize_absence_episodes(episodes: pd.DataFrame) -> pd.DataFrame:
-    """Per action_type: same-season reappearance by episode length reached.
-
-    For each length ``k`` (1..8), among episodes that reached at least ``k``
-    missed valid games, what fraction eventually reappeared in the same
-    season? This is the decay curve the frozen streak cap is read from.
-    """
 
     require_columns(episodes, _EPISODE_COLUMNS, "absence episodes")
     rows: list[dict[str, Any]] = []
@@ -361,7 +283,6 @@ def summarize_absence_episodes(episodes: pd.DataFrame) -> pd.DataFrame:
 
 
 def summarize_carryover(carryover: pd.DataFrame) -> pd.DataFrame:
-    """Per action_type: how often a qualified holder returns the next season."""
 
     require_columns(carryover, _CARRYOVER_COLUMNS, "carryover")
     rows: list[dict[str, Any]] = []
@@ -391,25 +312,6 @@ def build_role_continuity(
     span: int = FROZEN_ROLE_SPAN,
     streak_cap: int = FROZEN_STREAK_CAP,
 ) -> pd.DataFrame:
-    """Pregame role continuity per valid (team-game, action_type).
-
-    For each valid team-game, evaluated strictly BEFORE that game's own
-    credits update any state:
-
-    - **Active role mass**: players with a finite EWM state at or above the
-      action's qualification threshold, ``>= min_prior`` prior appearances,
-      at least one appearance for this team in the game's own season, and a
-      current missed-valid-game streak strictly below ``streak_cap``.
-    - ``continuity`` = (state-weighted mass of active players whose streak
-      is 0, i.e. who appeared in the team's most recent valid game) divided
-      by the total active mass. Empty active mass -> ``CONTINUITY_NEUTRAL``.
-
-    Season scoping and the streak cap are the departure/temporary-absence
-    separation: a graduated, transferred, or drafted player never appears in
-    the new season (excluded by scoping), and a within-season long-term loss
-    ages out of the mass after ``streak_cap`` misses instead of depressing
-    continuity all season.
-    """
 
     alpha = 2.0 / (span + 1.0)
     rows: list[dict[str, Any]] = []
@@ -475,11 +377,6 @@ def build_role_continuity(
 
 
 def _normalized_id(values: pd.Series) -> pd.Series:
-    """Team ids as canonical plain strings ('12', not '12.0' or '12 ').
-
-    Missing ids become the literal '<NA>' string, which matches nothing and
-    therefore falls through to the neutral imputation.
-    """
 
     return pd.to_numeric(values, errors="coerce").astype("Int64").astype(str)
 
@@ -487,22 +384,6 @@ def _normalized_id(values: pd.Series) -> pd.Series:
 def attach_role_continuity(
     canonical_games: pd.DataFrame, continuity: pd.DataFrame, team_ids: pd.DataFrame
 ) -> pd.DataFrame:
-    """Join home/away/diff continuity columns onto the canonical CFB table.
-
-    The continuity frame keys teams by the play-by-play ``pos_team`` display
-    name (e.g. "Minnesota Golden Gophers") while the canonical table names
-    sides from the schedule source (e.g. "Minnesota"), so names must never
-    be the join key (the first benchmark attempt failed exactly this way
-    and was voided -- see docs/cfb_role_features.md). ``team_ids`` -- one
-    row per ``(game_id, team, team_id)`` from the same play-by-play slice --
-    maps continuity rows to ESPN team ids, which are then matched against
-    the canonical ``home_id``/``away_id`` columns.
-
-    Every canonical game gets all six :data:`CFB_ROLE_FEATURE_COLUMNS`;
-    a side without a computable continuity row (invalid team-game, missing
-    volume, week one) is imputed to :data:`CONTINUITY_NEUTRAL` so the
-    feature is defined everywhere and encodes "no known disruption".
-    """
 
     require_columns(canonical_games, ("game_id", "home_id", "away_id"), "cfb canonical games")
     require_columns(continuity, _CONTINUITY_COLUMNS, "role continuity")
@@ -564,16 +445,6 @@ def cfb_role_benchmark(
     bootstrap_samples: int = 2_000,
     bootstrap_seed: int = 20260817,
 ) -> CfbRoleBenchmarkResult:
-    """Walk-forward the frozen benchmark arms plus the role-continuity arm.
-
-    ``features`` is the canonical CFB table already carrying the six
-    :data:`CFB_ROLE_FEATURE_COLUMNS`. Weeks, training windows, and the
-    frozen Ridge recipe are identical across arms; the ONLY difference in
-    the candidate arm is the six extra columns. The paired frame reports
-    per-game improvements of the candidate over the frozen
-    ``market_residual`` arm with week- and season-blocked intervals on the
-    clean core, via ``paired_feature_comparisons``.
-    """
 
     required = {*_PREDICTION_PASSTHROUGH, *CFB_MODEL_FEATURE_COLUMNS, *CFB_ROLE_FEATURE_COLUMNS}
     missing = sorted(required.difference(features.columns))

@@ -1,5 +1,3 @@
-"""Median-card verification and paired former-mean challenger ledger contracts."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -37,9 +35,6 @@ def _week_card(
     week: int = _WEEK,
     ridge_alpha: float = _RIDGE_ALPHA,
 ) -> pd.DataFrame:
-    """Build a real card the same way the promoted production default does:
-    via the shared weekly refit and its explicit gaussian_median read,
-    never a hand-typed probability."""
 
     target, margin_models = fit_margin_models_for_week(
         model_frame,
@@ -60,9 +55,6 @@ def _week_card(
 
 
 def test_overlay_reproduces_the_gaussian_control_before_mapping(model_frame: pd.DataFrame) -> None:
-    """The load-bearing proof: the refit Gaussian check passes silently --
-    this really is reading the SAME residual draws the (post-promotion)
-    card was built from."""
 
     card = _week_card(model_frame)
     result = apply_gaussian_mean_mapping_incumbent_overlay(
@@ -111,10 +103,6 @@ def test_overlay_changes_every_probability_and_only_that_column(model_frame: pd.
 
 
 def test_overlay_flip_consistency(model_frame: pd.DataFrame) -> None:
-    """Every reported flip is a genuine side-crossing and every non-flip
-    stayed on the same side -- checked against the overlay's own output, not
-    hardcoded numbers, since the exact flip set is a property of a Ridge fit
-    on synthetic data, not something to pin by hand."""
 
     card = _week_card(model_frame)
     result = apply_gaussian_mean_mapping_incumbent_overlay(
@@ -159,9 +147,6 @@ def test_overlay_requires_its_prediction_columns(model_frame: pd.DataFrame) -> N
 def test_overlay_refuses_a_mean_card(
     model_frame: pd.DataFrame,
 ) -> None:
-    """If the supplied card's probability is the pre-promotion mean read (or
-    any other drift), the refit median reproduction fails and the overlay
-    refuses rather than silently comparing against a moved target."""
 
     target, margin_models = fit_margin_models_for_week(
         model_frame,
@@ -212,8 +197,6 @@ def test_disclosure_note_is_empty_when_disabled(model_frame: pd.DataFrame) -> No
 
 
 def test_disclosure_note_formats_a_flip() -> None:
-    """A pure formatting check on a hand-built result, independent of whether
-    the real fixture happens to produce a flip this run."""
 
     result = GaussianMeanMappingIncumbentResult(
         overlaid_predictions=pd.DataFrame({"game_id": ["G1"]}),

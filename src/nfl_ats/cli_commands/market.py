@@ -1,5 +1,3 @@
-"""Odds ingest/summary and the market backfill commands."""
-
 from __future__ import annotations
 
 import argparse
@@ -79,14 +77,6 @@ def _cmd_odds_ingest(args: argparse.Namespace) -> None:
 
 
 def _cmd_odds_ingest_halves(args: argparse.Namespace) -> None:
-    """LEAD-61: per-event half/quarter-game market capture for the current week.
-
-    Requires a bulk-board ``odds-ingest`` snapshot to already exist under the
-    same market root (the scheduler enforces this via
-    ``requires=("odds_tue_open",)`` / ``requires=("odds_sat",)``); this
-    command reads that snapshot's event ids and last-known quota reading
-    rather than spending a request of its own to list events.
-    """
 
     market_root = _data_root() / "market" / "raw"
     require_private_raw_destination("the_odds_api", market_root)
@@ -227,7 +217,6 @@ def register_odds(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the point-in-time odds commands."""
 
     odds_ingest = subparsers.add_parser(
         "odds-ingest", help="archive timestamped NFL quotes from The Odds API"
@@ -276,7 +265,6 @@ def register_backfill(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the historical market backfill commands."""
 
     odds_backfill = subparsers.add_parser(
         "odds-backfill",

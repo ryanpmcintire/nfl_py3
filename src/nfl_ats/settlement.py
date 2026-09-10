@@ -1,33 +1,3 @@
-"""Turn a final score into a graded row on every prospective ledger (POL-10).
-
-``nfl-ats prospective-score`` settles two of the fifteen ledgers the lock and
-refresh passes write -- the active model's paper ledger and the shared
-challenger ledger -- and it reads results out of
-``data/processed/game_features.parquet``, which only ``weekly-run`` rebuilds,
-on a Tuesday. Everything else a 2026 week records (the pick-revision ledger,
-the six refresh-challenger ledgers, the paired challenger ledgers, the Best
-Pick pair, the tiebreaker shade) either had no scorer at all or was settled
-only as a side effect of the next publication.
-
-This module is the missing settlement pass: one results table, one grading
-rule, every ledger, and a long graded frame written BESIDE each ledger so the
-recorded rows are never touched.
-
-Three rules it encodes, because getting any of them wrong silently changes the
-record:
-
-* **Grade at the ledger's own decision line.** Every arm settles against the
-  spread frozen on its own row, never a re-read current line.
-* **Pushes come from the line, not from a rule.** ``result - line`` is exactly
-  zero only on a whole-number spread; a half-point pool line can never push.
-  :func:`nfl_ats.clv.pick_correct` is the one implementation and this module
-  calls it rather than adding a second.
-* **A refresh ledger holds one row per pass, not one row per game.** The graded
-  row is the LATEST pass recorded strictly before that game's own deadline
-  (``min(kickoff, Sunday 16:00 ET)``, already frozen on the row); counting the
-  passes as independent games would multiply one week into four.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
@@ -91,7 +61,6 @@ def graded_index_path(artifacts_root: Path) -> Path:
 
 
 def normalise_results(schedules: pd.DataFrame) -> pd.DataFrame:
-    """A schedules frame reduced to the columns settlement needs."""
 
     frame = schedules.copy()
     for column in ("game_id", "season", "week", "away_team", "home_team"):
@@ -114,13 +83,6 @@ def newest_local_schedules(data_root: Path) -> Path | None:
 
 
 def fetch_live_results(seasons: Sequence[int]) -> pd.DataFrame:
-    """nflverse schedules for ``seasons``, fetched now.
-
-    The season guard that blocks the seasonal loaders
-    (:mod:`nfl_ats.nflverse_current_season`) does not apply here:
-    ``load_schedules`` reads one release covering every season, so a Week 1
-    that opens before nflreadpy's Thursday rollover is still reachable.
-    """
 
     import nflreadpy as nfl
 
@@ -130,13 +92,6 @@ def fetch_live_results(seasons: Sequence[int]) -> pd.DataFrame:
 
 
 def seasons_in_scope(results: pd.DataFrame, *, start_season: int) -> list[int]:
-    """The seasons a local snapshot covers from ``start_season`` onward.
-
-    The refresh target is read off the snapshot rather than the calendar so a
-    settlement run in January asks for the season that is playing, not the
-    year on the clock -- and never asks nflverse for a season it has never
-    published.
-    """
 
     if results.empty:
         return []
@@ -151,7 +106,6 @@ def load_results(
     refresh: bool = True,
     results_path: Path | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """The freshest results table available, plus how it was obtained."""
 
     if results_path is not None:
         return normalise_results(pd.read_parquet(results_path)), {
@@ -190,12 +144,6 @@ def load_results(
 
 @dataclass(frozen=True)
 class Arm:
-    """One decision line on one ledger: a pick, the line it was made at, and
-    the game it was made on. ``split_by`` fans a single pick column out into
-    one arm per distinct value (the shared challenger ledger's
-    ``challenger_id``); ``filter_column`` restricts an arm to the rows whose
-    flag is true (the weekly Best Pick)."""
-
     label: str
     pick_column: str
     line_column: str = "decision_home_spread"
@@ -206,8 +154,6 @@ class Arm:
 
 @dataclass(frozen=True)
 class TotalsArm:
-    """One served total, graded on absolute error against the final score."""
-
     label: str
     total_column: str
     game_column: str = "game_id"
@@ -215,8 +161,6 @@ class TotalsArm:
 
 @dataclass(frozen=True)
 class LedgerSpec:
-    """One append-only ledger and how to grade it."""
-
     key: str
     relative_path: str
     arms: tuple[Arm, ...] = ()
@@ -427,13 +371,6 @@ def _column(frame: pd.DataFrame, name: str) -> pd.Series:
 
 
 def _deadline(frame: pd.DataFrame, spec: LedgerSpec) -> pd.Series:
-    """The frozen deadline each row was recorded against.
-
-    ``deadline`` when the recorder wrote one (``min(kickoff, Sunday 16:00
-    ET)``), otherwise the game's own kickoff. Reading ``kickoff`` on a ledger
-    that carries a real ``deadline`` would credit a Sunday-afternoon pass on a
-    Sunday-night game the pool had already locked.
-    """
 
     for column in spec.deadline_columns:
         if column in frame.columns:
@@ -442,12 +379,6 @@ def _deadline(frame: pd.DataFrame, spec: LedgerSpec) -> pd.Series:
 
 
 def latest_pre_deadline_rows(frame: pd.DataFrame, spec: LedgerSpec) -> pd.DataFrame:
-    """One row per game: the last pass recorded strictly before its deadline.
-
-    A pass recorded at or after the deadline was not playable and is dropped
-    rather than graded. ``passes_recorded`` keeps the count of eligible passes
-    so a reader can see the four Week 1 refresh passes behind one graded row.
-    """
 
     if frame.empty:
         return frame.assign(passes_recorded=pd.Series(dtype="int64"))
@@ -623,7 +554,6 @@ def grade_ledger(
     *,
     graded_at: datetime,
 ) -> pd.DataFrame:
-    """The long graded frame for one ledger: one row per (arm, game)."""
 
     empty = pd.DataFrame(columns=list(GRADED_COLUMNS))
     if frame.empty:
@@ -651,7 +581,6 @@ def grade_ledger(
 
 
 def arm_summary(graded: pd.DataFrame) -> list[dict[str, Any]]:
-    """``won``/``lost``/``pushed``/``pending`` per (ledger, arm)."""
 
     if graded.empty:
         return []
@@ -703,7 +632,6 @@ def settle_ledgers(
     specs: Sequence[LedgerSpec] = LEDGERS,
     reader: Callable[[Path], pd.DataFrame] = pd.read_parquet,
 ) -> dict[str, Any]:
-    """Grade every ledger and (optionally) write its graded frame beside it."""
 
     instant = graded_at or datetime.now(UTC)
     ledgers: list[dict[str, Any]] = []
@@ -753,7 +681,6 @@ def settle_ledgers(
 
 
 def render_arm_table(arms: Sequence[dict[str, Any]]) -> str:
-    """The printed per-arm won/lost/pushed/pending table."""
 
     header = f"{'ledger':<38} {'arm':<46} {'won':>4} {'lost':>4} {'push':>4} {'pend':>5}"
     lines = [header, "-" * len(header)]

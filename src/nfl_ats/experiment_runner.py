@@ -1,65 +1,3 @@
-"""The agentless experiment pipeline: put a declarative spec in, get an answer out.
-
-Motivation (2026-08-18 session): three separate hand-transcription defects were
-caught in one sitting -- a 100x fraction-vs-points scaling bug, a sign bug, and
-a corrupted source path, all in numbers a human copied from console output into
-``registry/weak_signals.json`` by hand. Every piece needed to avoid that error
-class already existed as separate machinery:
-
-- ``nfl_ats.experiments.paired_feature_comparisons`` -- the block-bootstrap
-  engine with the D4 degeneracy guard.
-- ``nfl_ats.estimation_variance`` -- ``MIN_BLOCKS_FOR_INTERVAL``,
-  ``guard_block_count``, and the honest refit-correction band this module
-  cites (see :data:`HONEST_REFIT_WIDENING_UPPER_BOUND`).
-- ``nfl_ats.weak_signals`` -- ``record_signal``/``validate_closure``, which
-  IS the closing-ground taxonomy encoded as a validator, not prose.
-- ``nfl_ats.provenance.write_experiment_artifact`` -- the run-provenance
-  stamp every CLI command already gets as a side effect of its artifact write.
-- ``scripts/penalty_discipline_interval.py`` /
-  ``scripts/nfl_bias_battery_screen.py`` -- the subset-vs-complement,
-  week-blocked joint bootstrap, full-slate-scaling pattern this module
-  generalizes into a registry of named, reusable flag builders.
-
-What was missing was the GLUE: a single entry point that runs the whole loop
-(reliability check -> screen -> bootstrap -> mechanical classification ->
-registry record -> provenance stamp) from a declarative spec, computing every
-registry field directly from data so there is no point where a human retypes
-a number.
-
-Both ``experiment_type: "subset_bias"`` (a pregame-safe boolean flag vs. its
-complement, cover rate vs. the spread) and ``"feature_arm"`` (profile-vs-profile
-or ridge_alpha-vs-ridge_alpha, via ``nfl_ats.outcomes.walk_forward_outcomes`` +
-``nfl_ats.experiments.paired_feature_comparisons``, the pattern
-``scripts/ridge_alpha_promotion_eval.py``'s ``evaluate_arm`` demonstrated for
-the opener grade specifically) are implemented. ``subset_bias`` additionally
-supports ``population.grade: "opener"`` (a population loader analogous to
-``clv.opener_pick_evaluation``, restricted to the paired Tuesday-opener
-archive); ``feature_arm`` supports only ``grade: "close"`` this pass.
-
-**Mechanical classification (AGENTS.md, "An interval crossing zero is NOT
-grounds for rejection", binding).** This runner writes exactly one non-default
-terminal verdict on its own authority: ``refuted_mechanism`` /
-``wrong_sign_resolved``, and ONLY when both hold:
-
-1. the PRIMARY (week-blocked) interval sits entirely below zero, and
-2. the inflation factor needed to widen that interval back across zero
-   exceeds :data:`HONEST_REFIT_WIDENING_UPPER_BOUND` -- the documented
-   one-sided 95%% upper bound on how much an honest, refit-aware interval
-   could widen a naive one for a fit-changing comparison
-   (``docs/estimation_variance.md``: "...1.293x to 1.003x (one-sided 95%%
-   upper bound 1.099x)"; also the reviewer note on
-   ``mod06_js_shrinkage_position_prior_cfb`` in
-   ``registry/weak_signals.json``, which refused closure at a required
-   1.082x widening because it sat *inside* that band).
-
-Every other outcome -- including a naive interval that excludes zero but
-would need less than 1.099x widening to re-cross -- is recorded
-``unresolved_below_power`` with no ``closing_ground``. The runner NEVER
-produces ``bounded_by_control`` or a reliability-grounded
-``no_split_half_reliability`` closure; both remain human adjudications, and a
-spec cannot request them (there is no field for it).
-"""
-
 from __future__ import annotations
 
 import contextlib
@@ -115,18 +53,11 @@ _BLOCK_COLUMNS = {"week": "week_block", "season": "season"}
 
 
 class ExperimentSpecError(ValueError):
-    """Raised when a declarative experiment spec fails strict validation.
-
-    A ``ValueError`` subclass so the CLI reports a user-facing error rather
-    than a traceback, matching ``WeakSignalError``/``ExperimentRecordError``.
-    """
+    pass
 
 
 class ExperimentRunnerError(ValueError):
-    """Raised when a valid spec cannot be run (unknown builder, unsupported
-    grade, unimplemented experiment type, empty population after filtering,
-    a reliability-check/builder mismatch, or a registry-locking failure).
-    """
+    pass
 
 
 _TOP_LEVEL_FIELDS = frozenset(
@@ -156,34 +87,12 @@ DEFAULT_FEATURE_ARM_RIDGE_ALPHA = 10.0
 
 @dataclass(frozen=True)
 class FeatureArmConfig:
-    """One ``feature_arm`` arm: a feature profile and a ridge penalty.
-
-    ``feature_profile`` must be a name registered in
-    ``margin.MARGIN_FEATURE_PROFILES``; ``ridge_alpha`` defaults to
-    ``fit_margin_model``'s own default (10.0) when the spec omits it.
-    """
-
     feature_profile: str
     ridge_alpha: float
 
 
 @dataclass(frozen=True)
 class ExperimentSpec:
-    """A validated, immutable declarative experiment spec.
-
-    Mirrors ``weak_signals.WeakSignal``'s validate-once-then-trust-the-
-    dataclass shape: every field here has already survived
-    :func:`experiment_spec_from_payload`'s strict checks, so downstream code
-    never re-validates.
-
-    ``flag_builder``/``construct_params`` are populated only for
-    ``experiment_type == "subset_bias"`` (empty string / empty dict
-    otherwise); ``feature_arm_baseline``/``feature_arm_candidate`` are
-    populated only for ``experiment_type == "feature_arm"`` (``None``
-    otherwise) -- which pair is live is entirely determined by
-    ``experiment_type``, never guessed downstream.
-    """
-
     name: str
     hypothesis: str
     experiment_type: str
@@ -421,7 +330,6 @@ def load_experiment_spec(path: Path) -> ExperimentSpec:
 
 
 def experiment_spec_to_payload(spec: ExperimentSpec) -> dict[str, Any]:
-    """Inverse of :func:`experiment_spec_from_payload`, for provenance hashing."""
 
     if spec.experiment_type == "subset_bias":
         construct: dict[str, Any] = {
@@ -460,15 +368,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def _base_team_game_table(features: pd.DataFrame) -> pd.DataFrame:
-    """REG-season, pushes-dropped, one row per (game, team) side.
-
-    Ported from ``scripts/nfl_bias_battery_screen.py``'s ``build_long_table``
-    / ``scripts/penalty_discipline_interval.py``'s ``build_team_game_table``,
-    trimmed to the columns every currently-registered builder needs
-    (``team_spread``/``spread_line`` for the situational builders,
-    ``team``/``season`` for the trait-based ones) and merged into one
-    function since both precedent scripts built this table independently.
-    """
 
     required = {
         "game_id",
@@ -519,27 +418,6 @@ def _base_team_game_table(features: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class SubsetBiasConstruct:
-    """What a named flag builder hands back to the generic pipeline.
-
-    ``table`` is the population this construct is defined over (already
-    filtered to whatever rows the builder's own trait requires -- e.g. a team
-    penalty rate builder drops the first season of local history, which has
-    no prior-season rate to lag). ``flag``/``eligible`` are boolean Series
-    aligned to ``table.index``.
-
-    ``eligible=None`` means "compare the flag against everyone else in
-    ``table``" (the one-sided design ``hc_year_one_fade`` and the bias
-    battery use: the fraction of the slate scaling the effect is
-    ``n_flag / len(table)``). A non-``None`` ``eligible`` restricts the
-    comparison to a named subset of ``table`` that is neither the whole
-    population nor just the flag (the two-sided, paired design
-    ``penalty_discipline`` uses: quartile 1 vs quartile 4, with quartiles 2-3
-    still counted in ``len(table)`` for scaling but excluded from the direct
-    comparison). Both are legitimate, already-precedented designs; which one
-    applies is a property of the construct, not something the generic
-    pipeline guesses.
-    """
-
     table: pd.DataFrame
     flag: pd.Series
     eligible: pd.Series | None
@@ -612,7 +490,6 @@ _PLAYER_ARREST_TEAM_ALIASES = {
 def _flag_recent_player_arrest(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """Team-game flag for an incident strictly before the Tuesday decision date."""
 
     del seasons
     unknown = sorted(
@@ -743,12 +620,6 @@ def _flag_recent_player_arrest(
 
 
 def _team_season_penalty_rate(pbp: pd.DataFrame) -> pd.DataFrame:
-    """``mean(penalty)`` over every raw regular-season play where ``posteam == team``.
-
-    Ported verbatim from ``scripts/penalty_discipline_interval.py`` (which
-    documents, at length, why this exact definition -- no play-type filter --
-    is the one that reproduces the recorded 0.0750 +/- 0.0101 figures).
-    """
 
     plays = pbp.loc[pbp["posteam"].notna()].copy()
     plays["penalty"] = pd.to_numeric(plays["penalty"], errors="coerce").fillna(0.0)
@@ -783,14 +654,6 @@ def _lag_and_quartile(rate: pd.DataFrame) -> pd.DataFrame:
 def _flag_penalty_rate_quartile(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """Reproduces ``scripts/penalty_discipline_interval.py``'s construct exactly.
-
-    Least-penalized quartile (Q1) vs most-penalized quartile (Q4) of a team's
-    PRIOR-season penalty rate (global quartile cut), team-game cover rate.
-    Quartiles 2-3 are excluded from the direct comparison but still count
-    toward the full-slate scaling denominator (this is the "two-sided,
-    paired" design; see :class:`SubsetBiasConstruct`).
-    """
 
     del seasons
     pbp_raw_root = Path(params.get("pbp_raw_root", repo_root / "data" / "pbp" / "raw"))
@@ -849,9 +712,6 @@ _BIAS_BATTERY_LONG_AWAY = {
 
 
 def _bias_battery_merged_features(features: pd.DataFrame, repo_root: Path) -> pd.DataFrame:
-    """REG-season ``features`` inner-joined with the newest schedules snapshot's
-    rest/roof/surface/QB-name columns -- ``nfl_bias_battery_screen.load_merged``.
-    """
 
     schedules_path = _latest_schedules_snapshot(repo_root)
     schedules = pd.read_parquet(schedules_path).loc[
@@ -862,7 +722,6 @@ def _bias_battery_merged_features(features: pd.DataFrame, repo_root: Path) -> pd
 
 
 def _bias_battery_build_long_table(merged: pd.DataFrame) -> pd.DataFrame:
-    """One row per (game, side); pushes dropped -- ``nfl_bias_battery_screen.build_long_table``."""
 
     merged = merged.copy()
     merged["home_team"] = _canonical_team(merged["home_team"])
@@ -914,10 +773,6 @@ def _bias_battery_build_long_table(merged: pd.DataFrame) -> pd.DataFrame:
 
 
 def _bias_battery_qb_backup_flag(group: pd.DataFrame) -> pd.Series:
-    """Per (team, season) group, sorted by gameday.
-
-    Ported from ``nfl_bias_battery_screen._qb_backup_flag``.
-    """
 
     counts: Counter[str] = Counter()
     flags: list[float] = []
@@ -934,9 +789,6 @@ def _bias_battery_qb_backup_flag(group: pd.DataFrame) -> pd.Series:
 
 
 def _bias_battery_add_history_features(long_df: pd.DataFrame) -> pd.DataFrame:
-    """Every within-season, strictly-prior-game derived column the battery needs --
-    ``nfl_bias_battery_screen.add_history_features``, ported verbatim.
-    """
 
     long_df = long_df.sort_values(["team", "season", "gameday"]).reset_index(drop=True)
     grouped = long_df.groupby(["team", "season"], sort=False)
@@ -989,7 +841,6 @@ def _bias_battery_add_history_features(long_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _bias_battery_team_game_table(features: pd.DataFrame, repo_root: Path) -> pd.DataFrame:
-    """The full bias-battery long table, schedules-merged and history-featured."""
 
     merged = _bias_battery_merged_features(features, repo_root)
     long_df = _bias_battery_build_long_table(merged)
@@ -1174,16 +1025,6 @@ def _latest_officials_snapshot(repo_root: Path) -> tuple[Path, Path, str]:
 
 @dataclass(frozen=True)
 class _RefereeTraitData:
-    """Per-game_id referee trait table plus the two traits' own split-half reliability.
-
-    ``game_trait`` has one row per (standard-format) game_id that has a
-    matched REG-season head-referee assignment: ``official_name``, ``season``,
-    ``lag_penalty_rate_quartile``/``lag_home_away_diff_quartile`` (1-4, NaN
-    for an official's first dataset-visible season -- no valid year-over-year
-    lag), and ``prior_seasons_experience`` (count of distinct PRIOR seasons
-    that official appears as ``Referee`` in this dataset; always present).
-    """
-
     game_trait: pd.DataFrame
     penalty_rate_reliability: float | None
     penalty_rate_reliability_pairs: int
@@ -1519,16 +1360,6 @@ def _latest_penalty_type_snapshot(repo_root: Path) -> tuple[Path, str]:
 
 @dataclass(frozen=True)
 class _RefereeTypeTraitData:
-    """Per-game_id lagged quartile of one referee's PRIOR-season rate of ONE penalty type.
-
-    Same shape and construction as ``_RefereeTraitData``'s ``mean_total``
-    trait, restricted to a single ``penalty_type`` value. A game with zero
-    penalties of this type is a genuine zero observation (not a missing one)
-    -- it is simply absent from the long ``game_penalty_types`` table for
-    that type, so the per-referee-season mean is computed over EVERY game
-    that referee worked, with absent games filled to 0.0, never dropped.
-    """
-
     game_trait: pd.DataFrame
     reliability: float | None
     reliability_pairs: int
@@ -1599,15 +1430,6 @@ def _build_referee_type_trait_data(repo_root: Path, penalty_type: str) -> _Refer
 
 
 def _merge_home_pass_rate_quartile(table: pd.DataFrame, repo_root: Path) -> pd.DataFrame:
-    """Attach a GAME-level (not duplicated-row-level) quartile of the home team's
-    prior-rolling pregame-safe pass rate (``enrich_with_pbp_features``'s
-    ``home_pbp_off_pass_rate``, an EWMA of games strictly before the one being
-    scored -- see ``nfl_ats.pbp.enrich_with_pbp_features``'s own docstring).
-    Quartile boundaries are computed once over the deduplicated per-game
-    population, then merged onto every row of ``table`` (both team-game
-    sides carry the same HOME-team value; only ``is_home`` rows are ever
-    flagged by a caller of this helper).
-    """
 
     path = repo_root / "data" / "processed" / "game_features_pbp.parquet"
     if not path.is_file():
@@ -1624,7 +1446,6 @@ def _merge_home_pass_rate_quartile(table: pd.DataFrame, repo_root: Path) -> pd.D
 
 
 def _merge_total_line_quartile(table: pd.DataFrame, features: pd.DataFrame) -> pd.DataFrame:
-    """Attach a GAME-level quartile of the game's own (pregame) total (over/under) line."""
 
     total_line = features.loc[:, ["game_id", "total_line"]].copy()
     total_line["total_line"] = pd.to_numeric(total_line["total_line"], errors="coerce")
@@ -1638,18 +1459,6 @@ def _merge_total_line_quartile(table: pd.DataFrame, features: pd.DataFrame) -> p
 def _flag_referee_high_flag_heavy_underdog(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """Cell A: high-total-flag crew (existing mean_total trait) AND home team a heavy underdog.
-
-    Reuses the ALREADY-MEASURED mean_total trait (referee_battery.md cells
-    1/2, split-half +0.370) -- no new trait, only a narrower population.
-    Mechanism: cell 1's hypothesized road-team communication/tempo
-    disruption from extra stoppages is hypothesized to matter MOST when the
-    home team is already a big underdog and most needs the extra time
-    stoppages buy to control tempo/limit possessions against a stronger
-    opponent, so the home-cover edge should concentrate in this subset.
-    Sign: +1. Designed to run at ``population.grade="opener"`` per AGENTS.md's
-    binding "grade the decision at the opener" rule.
-    """
 
     del seasons
     threshold = float(params.get("underdog_threshold", _HEAVY_UNDERDOG_THRESHOLD_DEFAULT))
@@ -1687,15 +1496,6 @@ def _flag_referee_high_flag_heavy_underdog(
 def _flag_referee_dpi_tilt_pass_heavy_favorite(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """Cell B: crew's PRIOR-season Defensive Pass Interference rate top quartile AND
-    home team is BOTH the favorite AND in the top quartile of prior-rolling pass rate.
-
-    Mechanism: a crew that calls DPI at a high rate is hypothesized to
-    disproportionately extend a pass-heavy offense's drives (more DPI flags
-    against the defense = more automatic first downs/yardage for the
-    offense); a pass-heavy favorite facing such a crew is hypothesized to
-    cover MORE. Sign: +1.
-    """
 
     del seasons, params
     type_trait = _build_referee_type_trait_data(repo_root, _DPI_PENALTY_TYPE)
@@ -1742,15 +1542,6 @@ def _flag_referee_dpi_tilt_pass_heavy_favorite(
 def _flag_referee_holding_tilt_run_heavy(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """Cell C: crew's PRIOR-season Offensive Holding rate top quartile AND home team
-    in the BOTTOM quartile of prior-rolling pass rate (i.e. run-heavy).
-
-    Mechanism: a crew that calls offensive holding at a high rate is
-    hypothesized to disproportionately disrupt a run-heavy team's sustained
-    run-blocking schemes (more holding scrutiny on run blocks), hurting
-    drive sustain for the home team when it is run-heavy. Sign: -1 (home
-    cover DECREASES in this subset).
-    """
 
     del seasons, params
     type_trait = _build_referee_type_trait_data(repo_root, _HOLDING_PENALTY_TYPE)
@@ -1795,18 +1586,6 @@ def _flag_referee_holding_tilt_run_heavy(
 def _flag_referee_flag_rate_high_total_line(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """Cell D: crew's overall PRIOR-season flag rate (existing mean_total trait) top
-    quartile AND the game's own total (over/under) line in the top quartile.
-
-    Mechanism: a high-flag crew's extra stoppages are hypothesized to matter
-    most for tempo/possession control in a high-total (shootout-projected,
-    typically pass-heavy/up-tempo) game; the home team, which controls the
-    game plan at home, is hypothesized to benefit from that extra structure
-    more than the visitor. Sign: +1. Implemented as the boolean AND of two
-    top-quartile flags (this module's `subset_bias` framework is
-    boolean-flag-based project-wide; a continuous z-score interaction term
-    is out of scope, see docs/experiment_pipeline.md).
-    """
 
     del seasons, params
     merged, trait_data = _referee_team_game_table(features, repo_root)
@@ -1883,14 +1662,6 @@ def _forecast_weather_archive(repo_root: Path, params: dict[str, Any]) -> tuple[
 
 
 def _team_season_pass_rate(pbp: pd.DataFrame) -> pd.DataFrame:
-    """``pass_attempt / (pass_attempt + rush_attempt)`` per (season, team), over
-
-    every raw regular-season play where ``posteam == team`` -- the volume
-    (play-calling) analogue of ``_team_season_penalty_rate``, same shape
-    (columns ``season``, ``team``, ``rate``) so it drops directly into the
-    already-reviewed ``_year_over_year_reliability``/``_lag_and_quartile``
-    helpers below with no changes to either.
-    """
 
     plays = pbp.loc[pbp["posteam"].notna()].copy()
     plays["pass_attempt"] = pd.to_numeric(plays["pass_attempt"], errors="coerce").fillna(0.0)
@@ -1907,16 +1678,6 @@ def _team_season_pass_rate(pbp: pd.DataFrame) -> pd.DataFrame:
 def _forecast_weather_game_table(
     features: pd.DataFrame, repo_root: Path, params: dict[str, Any]
 ) -> tuple[pd.DataFrame, str]:
-    """One row per REG game (pushes dropped), with every column the 6
-    forecast-weather builders below need already attached: ``outdoor``,
-    ``week_block``, ``team_covered`` (=``home_cover``), the forecast archive's
-    own ``forecast_temp_f``/``forecast_wind_mph``/``forecast_precip_prob_pct``,
-    ``away_modal_roof`` and ``climate_temp`` (away team's own same-season
-    aggregates, ACTUAL weather, same convention as
-    scripts/nfl_forecast_weather_screen.py), and ``away_prior_actual_temp``
-    (the away team's own immediately-preceding same-season game's actual
-    temp, for the temp-swing-vs-prior-week cell).
-    """
 
     schedules_path = _latest_schedules_snapshot(repo_root)
     schedules = pd.read_parquet(schedules_path, columns=["game_id", "stadium", "roof"])
@@ -2073,20 +1834,6 @@ def _flag_forecast_weather_kn_temp_gap_cold_visitor(
 def _flag_forecast_weather_kn_wind_passing_away_favorite(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """NEW cell (2026-08-20 backward-extension family): forecast wind >= 15mph
-
-    AND the AWAY team is both the market favorite (spread_line < 0, this
-    module's convention: positive spread_line = home favored, see
-    ``_flag_large_favorite``'s ``team_spread``) AND that team's PRIOR-season
-    pass-rate quartile (global qcut(4) over every (team, season) pair with a
-    valid year-over-year lag, mirroring ``_flag_penalty_rate_quartile``'s
-    construction exactly but on pass rate instead of penalty rate) is Q4 (most
-    pass-heavy). Predicted POSITIVE home_cover edge: a pass-heavy road
-    favorite's game plan is disrupted by real wind, benefiting the home
-    underdog. Deliberately one-sided (away-favorite only, not
-    home-favorite-symmetric) so the flag has a single, unambiguous sign -- see
-    the section header for why a mixed-sign construction was avoided.
-    """
 
     del seasons
     pbp_raw_root = Path(params.get("pbp_raw_root", repo_root / "data" / "pbp" / "raw"))
@@ -2134,15 +1881,6 @@ def _flag_forecast_weather_kn_wind_passing_away_favorite(
 def _flag_forecast_weather_kn_precip_high_total(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """NEW cell: outdoor AND forecast precip probability >= 60% AND total_line
-
-    >= 47. Predicted POSITIVE home_cover edge (consistent with this family's
-    other adverse-weather cells: a high total suggests the market has not
-    fully priced in precip-driven scoring suppression, and the home team is
-    disclosed-conventionally assumed better adapted to its own site's weather
-    -- the SAME unverified folk mechanism the sibling cells already carry, not
-    a new assumption).
-    """
 
     del seasons
     table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
@@ -2173,12 +1911,6 @@ def _flag_forecast_weather_kn_precip_high_total(
 def _flag_forecast_weather_kn_temp_swing_prior_week(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """NEW cell: outdoor AND |forecast_temp_f - away team's own immediately
-
-    preceding same-season game's ACTUAL temp| >= 30F. Predicted POSITIVE
-    home_cover edge: a large temperature swing (either direction) since the
-    away team's last game is a disruption borne only by the visitor.
-    """
 
     del seasons
     table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
@@ -2206,14 +1938,6 @@ def _flag_forecast_weather_kn_temp_swing_prior_week(
 def _flag_forecast_weather_kn_dome_cold_windy(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """NEW cell: away team's modal home roof this season is dome/closed AND
-
-    this game is outdoor AND forecast_temp_f <= 32F AND forecast_wind_mph >=
-    10mph. A compound, stricter version of forecast_weather_dome_team_outdoors_cold
-    (temp<=40F alone) -- tests whether COLD+WINDY together compounds the
-    dome-team disadvantage beyond cold alone, a distinct predeclared
-    hypothesis, not a threshold retune of the sibling cell.
-    """
 
     del seasons
     table, archive_rel_path = _forecast_weather_game_table(features, repo_root, params)
@@ -2256,18 +1980,6 @@ def _latest_interim_coaches_snapshot(repo_root: Path) -> Path:
 
 @dataclass(frozen=True)
 class _InterimCoachTraitData:
-    """One row per (game_id, team) that matched an interim-coach stint.
-
-    ``entry_id`` identifies the specific stint (a (interim coach, team,
-    season) triple from the source list); ``interim_game_number`` is a
-    1-indexed rank within that stint ordered by gameday (the "interim window
-    length so far" sub-flag); ``fired_coach_was_year_one``/
-    ``fired_coach_year_one_known`` reuse
-    ``coach_fade_overlay.team_season_primary_coach``'s EXACT year-1
-    definition, applied to the season BEFORE the takeover season, to ask
-    whether the coach who got fired was himself in year 1 of his own tenure.
-    """
-
     game_trait: pd.DataFrame
     n_entries_total: int
     n_entries_joinable: int
@@ -2605,13 +2317,6 @@ def _flag_interim_hc_fired_year_one(
 def _flag_drought_severe_grass(
     features: pd.DataFrame, seasons: tuple[int, int], params: dict[str, Any], repo_root: Path
 ) -> SubsetBiasConstruct:
-    """Fresh USDM D2+ county exposure at an outdoor grass home venue.
-
-    This is the declarative-runner port of the predeclared cell in
-    ``docs/environmental_exposures.md`` section 6.B.  The environmental join
-    has already applied the official USDM release timestamp; this builder
-    deliberately consumes only the joined, point-in-time-safe columns.
-    """
 
     del seasons
     unknown = sorted(set(params).difference({"d2_area_threshold"}))
@@ -2997,20 +2702,6 @@ FLAG_BUILDERS: dict[str, FlagBuilder] = {
 
 
 def scale_subset_effect(raw_gap_fraction: float, *, sign: int, fraction_of_slate: float) -> float:
-    """Full-slate-scaled effect in accuracy POINTS, positive favours the candidate.
-
-    The one place this module converts a cover-rate FRACTION (e.g. 0.0067,
-    not 0.67) into accuracy POINTS -- the exact 100x step a hand-transcription
-    got backwards this session (``best_pick_tiebreak_cfb_stage0_ecdf_gaussian``'s
-    recorded correction note). ``raw_gap_fraction`` must be a fraction;
-    passing points here silently reintroduces that bug.
-
-    Scaling precedent: ``hc_year_one_fade`` (``registry/weak_signals.json``)
-    scaled a 4.26-point subset gap by the 17.7% of the slate it applies to
-    before recording 0.7528; ``penalty_discipline``
-    (``scripts/penalty_discipline_interval.py``) scales a two-sided quartile
-    gap by the fraction of the slate the compared quartiles represent.
-    """
 
     if sign not in (1, -1):
         raise ValueError("sign must be 1 or -1")
@@ -3022,20 +2713,6 @@ def scale_subset_effect(raw_gap_fraction: float, *, sign: int, fraction_of_slate
 def _block_bootstrap_subset_gap(
     df: pd.DataFrame, *, flag: pd.Series, value_col: str, block_col: str, samples: int, seed: int
 ) -> npt.NDArray[np.float64]:
-    """Vectorized joint block bootstrap of ``100*(flag_mean - complement_mean)``.
-
-    Both arms' means for a given draw come from the SAME resampled set of
-    blocks (one multinomial draw over the shared block ids), the correct way
-    to jointly bootstrap a two-group comparison sharing a blocking structure.
-    A generalization of ``scripts/nfl_bias_battery_screen.py``'s
-    ``block_bootstrap_two_group`` / ``scripts/penalty_discipline_interval.py``'s
-    ``block_bootstrap_quartile_gap`` from a specific pair of groups to any
-    boolean flag -- with the same block-id-derivation order (``np.unique``,
-    sorted, order-independent of row order), the same single
-    ``rng.multinomial`` call shape, and the same sums/counts-via-bincount
-    trick, this reproduces either precedent bit-for-bit given the same
-    (already-restricted) population, flag, block column, samples, and seed.
-    """
 
     blocks, block_index = np.unique(df[block_col].to_numpy(), return_inverse=True)
     block_index = np.asarray(block_index).reshape(-1)
@@ -3104,21 +2781,6 @@ def _interval_summary(
 
 
 def widening_factor_to_recross_zero(estimate: float, upper: float) -> float:
-    """Symmetric-about-``estimate`` inflation factor that brings ``upper`` back to zero.
-
-    ``upper`` must be strictly below zero, and ``estimate`` must sit strictly
-    below ``upper`` (further from zero) -- the usual shape of a wrong-signed
-    interval, where the point estimate is more negative than its own upper
-    bound. Scaling the interval by factor ``f`` about the point estimate
-    sends ``upper -> estimate + f * (upper - estimate)``; solving that for
-    ``f`` at a target of zero gives ``f = -estimate / (upper - estimate)``.
-
-    This is exactly the arithmetic behind the reviewer note on
-    ``mod06_js_shrinkage_position_prior_cfb``
-    (``registry/weak_signals.json``): effect -0.526, interval upper -0.043 ->
-    ``0.526 / (0.526 - 0.043) = 1.089`` (reported there, from slightly
-    rounder inputs, as "1.082x").
-    """
 
     if upper >= 0.0:
         raise ValueError("upper must be strictly below zero")
@@ -3139,13 +2801,6 @@ class ClassificationResult:
 def classify_subset_bias_result(
     *, estimate: float, lower: float, upper: float
 ) -> ClassificationResult:
-    """The runner's ONE mechanically-computed terminal verdict; see module docstring.
-
-    Never returns ``bounded_by_control``, and the only admissible
-    ``closing_ground`` this can ever emit is ``wrong_sign_resolved`` --
-    matching ``weak_signals.validate_closure``'s own requirement that
-    ``wrong_sign_resolved`` demands an interval entirely below zero.
-    """
 
     if upper >= 0.0:
         return ClassificationResult(
@@ -3200,25 +2855,6 @@ def classify_subset_bias_result(
 def _opener_graded_features(
     features: pd.DataFrame, *, repo_root: Path, market_root: Path | None
 ) -> tuple[pd.DataFrame, str]:
-    """Restrict ``features`` to the paired Tuesday-opener archive and overwrite
-    ``spread_line``/``home_cover``/``ats_margin`` to the OPENER line.
-
-    Mirrors ``clv.opener_pick_evaluation``'s population definition exactly:
-    every REG-season game with BOTH a ``tue_open`` consensus AND a resolvable
-    close (``docs/opener_evaluation.md``'s 1,537-game, 2020-2025 archive,
-    ``build_pairing_table`` + ``close_reference_table``). Unlike
-    ``opener_pick_evaluation`` this skips the margin-model fit entirely --
-    ``subset_bias`` flags are pregame-safe situational constructs, not model
-    predictions, so all that is needed is which line to grade cover rate
-    against. Every registered flag builder reads ``spread_line``/
-    ``home_cover`` off whatever features frame it is handed (see
-    ``_base_team_game_table``/the bias-battery table builder below), so
-    overwriting those two columns here -- plus recomputing ``ats_margin`` for
-    consistency, using the exact ``features.add_ats_outcomes`` convention
-    (``ats_margin = result - spread_line``; ``home_cover`` = 1/0/NaN-on-push
-    from its sign) -- is enough to make every already-registered NFL builder
-    opener-aware with zero builder-side changes.
-    """
 
     required = {"game_id", "season", "week", "gameday", "result", "game_type"}
     missing = sorted(required.difference(features.columns))
@@ -3866,7 +3502,6 @@ def run_experiment(
     features_path: Path | None = None,
     market_root: Path | None = None,
 ) -> ExperimentRunResult:
-    """Dispatch on ``spec.experiment_type``."""
 
     if spec.experiment_type == "subset_bias":
         return run_subset_bias_experiment(
@@ -3878,17 +3513,6 @@ def run_experiment(
 
 
 class _RegistryLock:
-    """A cheap filesystem lock so two concurrent runner invocations cannot race
-    a load-modify-save of ``weak_signals.json`` into a lost update.
-
-    ``registry/weak_signals.json`` has a documented single-writer convention
-    (``nfl_ats.weak_signals`` module docstring context, and every existing
-    CLI writer) that this runner is now one more caller of; a lockfile makes
-    that convention mechanically enforced for THIS writer rather than merely
-    documented. Uses exclusive file creation (``O_CREAT | O_EXCL``), which is
-    atomic on both POSIX and Windows -- no new dependency.
-    """
-
     def __init__(self, registry_path: Path, *, timeout: float = 30.0, poll: float = 0.05) -> None:
         self._lock_path = registry_path.with_suffix(registry_path.suffix + ".lock")
         self._timeout = timeout
@@ -3928,7 +3552,6 @@ def record_experiment_signal(
     registry_path: Path | None = None,
     replace: bool = False,
 ) -> dict[str, Any]:
-    """Record the run's WeakSignal under the registry lock. Raises on validation failure."""
 
     path = registry_path or default_registry_path()
     signal = _weak_signal_for_result(result, spec_path=spec_path, artifact_dir=artifact_dir)
@@ -3968,12 +3591,6 @@ def run_experiment_cli(
     registry_path: Path | None = None,
     run_id_value: str | None = None,
 ) -> ExperimentRunOutcome:
-    """The whole loop: load spec, run, classify, and (unless dry-run) stamp provenance and record.
-
-    ``--dry-run`` performs every computation but writes nothing to disk --
-    no artifact, no registry row -- and returns the record it WOULD have
-    written for inspection.
-    """
 
     spec = load_experiment_spec(spec_path)
     result = run_experiment(

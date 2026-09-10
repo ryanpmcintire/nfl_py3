@@ -1,11 +1,3 @@
-"""ENG-01: the immutable lock-day decision package.
-
-Everything here runs against a synthetic artifacts/data tree under ``tmp_path``.
-The real Week 1 lock is 2026-09-08; no test in this file may read, write or
-depend on the production ``artifacts/`` or ``data/`` trees, and none of them
-runs a recorder.
-"""
-
 from __future__ import annotations
 
 import json
@@ -52,7 +44,6 @@ def _decision_rows(count: int, *, start: int = 0) -> pd.DataFrame:
 
 @pytest.fixture
 def tree(tmp_path: Path) -> dict[str, Path]:
-    """A synthetic repo/artifacts/data tree shaped like the real one."""
 
     repo_root = tmp_path / "repo"
     artifacts = repo_root / "artifacts"
@@ -228,9 +219,6 @@ def _write_package(tree: dict[str, Path], **overrides: Any) -> dict[str, Any]:
 def test_package_links_inputs_model_outputs_recorders_ledgers_and_verify(
     tree: dict[str, Path],
 ) -> None:
-    """The definition of done, as one assertion set: one manifest linking
-    source snapshots, feature hashes, model identity, forecast/card hashes,
-    recorder results, ledger writes, and lockday_verify output."""
 
     before = capture_ledger_state(tree["artifacts"])
     paper = ledger_paths(tree["artifacts"])["paper_decisions"]
@@ -320,7 +308,6 @@ def test_every_linked_hash_is_recomputable(tree: dict[str, Path]) -> None:
 def test_appended_row_digest_changes_when_a_different_row_is_appended(
     tree: dict[str, Path],
 ) -> None:
-    """The digest has to be of THIS run's rows, not of the whole ledger."""
 
     paper = ledger_paths(tree["artifacts"])["paper_decisions"]
     paper.parent.mkdir(parents=True, exist_ok=True)
@@ -347,8 +334,6 @@ def test_appended_row_digest_changes_when_a_different_row_is_appended(
 def test_a_broken_component_still_yields_a_manifest_with_an_errors_list(
     tree: dict[str, Path],
 ) -> None:
-    """Fail-safe: by the time the package runs the ledger rows are already
-    appended, so a broken component degrades one section and nothing else."""
 
     def exploding_verify(*_args: Any, **_kwargs: Any) -> dict[str, Any]:
         raise RuntimeError("lockday_verify blew up")
@@ -370,7 +355,6 @@ def test_a_broken_component_still_yields_a_manifest_with_an_errors_list(
 def test_write_decision_package_never_raises_on_an_unwritable_destination(
     tree: dict[str, Path],
 ) -> None:
-    """The outermost guard: even a failed WRITE must not abort the lock."""
 
     blocker = tree["repo_root"] / "not-a-directory"
     blocker.write_text("occupied\n", encoding="utf-8")
@@ -473,8 +457,6 @@ def test_verifier_fails_when_the_manifest_itself_is_edited(tree: dict[str, Path]
 def test_verifier_tolerates_an_appended_ledger_but_not_a_changed_card(
     tree: dict[str, Path],
 ) -> None:
-    """Ledgers are append-only and later refresh passes add rows: a changed
-    ledger is reported, never a verification failure."""
 
     paper = ledger_paths(tree["artifacts"])["paper_decisions"]
     paper.parent.mkdir(parents=True, exist_ok=True)
@@ -526,8 +508,6 @@ def test_rehearsal_packages_are_tagged(tree: dict[str, Path]) -> None:
 def test_real_lockday_verify_runs_in_process_against_a_synthetic_root(
     tree: dict[str, Path],
 ) -> None:
-    """The default path imports scripts/lockday_verify.py by file location and
-    calls its own ``verify``; this pins that wiring without a stub."""
 
     manifest = build_manifest(
         season=2026,
@@ -599,7 +579,6 @@ def _weekly_run_stub(calls: list[dict[str, Any]], summary: dict[str, Any] | None
 
 @pytest.fixture
 def wired(tree: dict[str, Path], monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
-    """weekly-run pointed at the synthetic tree, with the runner stubbed out."""
 
     from nfl_ats import cli
 
@@ -655,8 +634,6 @@ def test_no_package_opts_out_without_changing_the_run(
 def test_package_is_written_even_when_the_run_aborts(
     tree: dict[str, Path], monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The rows are already appended when a late step fails, so the package
-    must still be written -- and must not swallow the failure."""
 
     from nfl_ats import cli
     from nfl_ats.weekly import WeeklyRunError
@@ -683,10 +660,6 @@ def test_package_is_written_even_when_the_run_aborts(
 def test_package_write_failure_never_aborts_the_lock(
     tree: dict[str, Path], wired: dict[str, Any], capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """The binding contract, at the CALL SITE. ``write_decision_package`` has
-    its own guard, so this replaces it with a builder that has none: only
-    ``_cmd_weekly_run``'s own try/except is under test. The lock stands, the
-    run's JSON summary is still printed, and the failure is named on stderr."""
 
     from nfl_ats import cli
 
@@ -715,7 +688,6 @@ def test_package_write_failure_never_aborts_the_lock(
 def test_dry_run_with_record_decisions_writes_no_package(
     tree: dict[str, Path], wired: dict[str, Any]
 ) -> None:
-    """--dry-run runs nothing, so there is nothing to package."""
 
     cli = wired["cli"]
     cli.main(["weekly-run", "--season", "2026", "--week", "1", "--record-decisions", "--dry-run"])

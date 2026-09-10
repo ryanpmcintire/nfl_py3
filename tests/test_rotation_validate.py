@@ -1,18 +1,3 @@
-"""Tests for the ENG-27 rotation-registry validator (ROADMAP.md Phase 13).
-
-``rotation.validate_registry`` is a full-audit pass, separate from the hard
-``_validate`` gate that already runs at load/save time: it never raises, and
-it returns every issue in one pass instead of stopping at the first one.
-Three of its four checks (overlap, missing mined-acknowledgment) can never
-actually fire on a registry that went through the strict loader -- `_validate`
-already hard-refuses those -- so those two are tested against Registry
-objects built directly from dataclasses, bypassing `_validate` on purpose, to
-prove `validate_registry` is a complete standalone audit and not merely a
-thin wrapper around the loader. The width and status checks CAN fire on a
-loaded registry (the loader never checked either), so those are tested via
-the normal JSON-payload path.
-"""
-
 from __future__ import annotations
 
 import json
@@ -487,14 +472,6 @@ def test_cli_rotation_validate_clean_registry_exits_zero(
 def test_cli_rotation_validate_exits_zero_on_the_live_registry(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """ROADMAP.md ENG-37 (2026-09-05): the tracked registry's only validator
-
-    error (``pbp_drive_bundle``'s pre-validator width) is now grandfathered
-    to a warning, so ``nfl-ats rotation validate`` exits 0 against the real
-    tracked ledger. Points ``NFL_ATS_REGISTRY_DIR`` at the repo's own
-    ``registry/`` directory by absolute path (matching ``LIVE_REGISTRY``
-    above) rather than relying on the test process's cwd.
-    """
 
     monkeypatch.setenv("NFL_ATS_REGISTRY_DIR", str(REPO_ROOT / "registry"))
     assert cli.main(["rotation", "validate", "--json"]) == 0

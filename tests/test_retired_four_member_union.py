@@ -1,5 +1,3 @@
-"""The retired union stays paired without toggling overlapping member flips."""
-
 from __future__ import annotations
 
 import json

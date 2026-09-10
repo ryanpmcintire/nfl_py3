@@ -1,13 +1,3 @@
-"""Construction, phrase-discipline, sign-convention, and leakage contracts
-for the two LEAD-13/LEAD-17 roster-availability flags.
-
-Predeclared in ``docs/schedule_flag_battery.md`` "Wave 7". Every fixture is
-built in memory: these tests must pass in a fresh clone with no local data
-snapshots (no PFR transaction-wire index, no snap_counts, no injuries, no
-schedules snapshot is ever read from disk except via an explicit
-``tmp_path`` parquet this test suite writes itself).
-"""
-
 from __future__ import annotations
 
 import pandas as pd
@@ -139,10 +129,6 @@ def test_ir_activate_regex_positive_matches_both_prepositions() -> None:
 
 
 def test_ir_activate_regex_compound_slug_isolates_correct_player() -> None:
-    """Regression for a real, measured compound headline: one team
-    activating one player from IR while separately designating a SECOND
-    player for return. The activation clause must only ever capture the
-    ACTIVATED player, never the designated one."""
 
     m = IR_ACTIVATE_RE.search(
         "falcons-activate-ol-elijah-wilkinson-from-ir-designate-ol-matt-hennessy-for-return"
@@ -197,9 +183,6 @@ def _full_universe_slugs() -> pd.DataFrame:
 
 
 def test_designate_return_events_excludes_pup_list_return() -> None:
-    """Measured real-corpus trap: "designated ... for return" is the
-    IDENTICAL verb phrase for a PUP-list return, which is NOT an IR
-    return and must be excluded."""
 
     index = _transactions(
         [_txn_row("seahawks-designate-abraham-lucas-for-return-from-pup-list", 2022, 9)]
@@ -216,8 +199,6 @@ def test_designate_return_events_bare_suffix_is_treated_as_ir() -> None:
 
 
 def test_ir_activate_events_compound_slug_never_misattributes() -> None:
-    """The activation event must resolve Wilkinson, never Hennessy; a
-    SEPARATE designate-return event resolves Hennessy from the same slug."""
 
     index = _transactions(
         [
@@ -238,11 +219,6 @@ def test_ir_activate_events_compound_slug_never_misattributes() -> None:
 
 
 def test_specialist_ir_placement_events_lsp_restricted_universe() -> None:
-    """A whole-slug scan over the FULL player universe would wrongly
-    attribute a compound "place PLAYER-A on IR, claim PLAYER-B" headline's
-    unrelated claimed player if he happened to be a known name; restricting
-    the search to the LS/P-only universe prevents that AND correctly
-    excludes a non-specialist placed player."""
 
     injuries = _injuries(
         [
@@ -327,9 +303,6 @@ def test_ir_return_reinforcement_no_prior_snap_history_never_guessed() -> None:
 
 
 def test_ir_return_reinforcement_leakage_guard() -> None:
-    """A report whose latest-possible date is NOT strictly before a week
-    5-8 game's own kickoff must not flag that game, even though the player
-    is otherwise a confirmed returning starter."""
 
     index = _transactions([_txn_row("commanders-activate-fake-return-from-ir", 2025, 10)])
     derived = derive_ir_return_reinforcement_features(
@@ -339,9 +312,6 @@ def test_ir_return_reinforcement_leakage_guard() -> None:
 
 
 def test_ir_return_reinforcement_dedupes_designated_then_activated() -> None:
-    """A player both designated and later activated in the same season
-    must contribute exactly one event (the earliest report), not double
-    weight."""
 
     index = _transactions(
         [
@@ -414,8 +384,6 @@ def _specialist_wire_schedule() -> pd.DataFrame:
 
 
 def test_specialist_absence_fade_wire_placement_window_open_ended() -> None:
-    """No activation event confirmed -> the placement window stays open
-    through the rest of the season."""
 
     index = _transactions([_txn_row("raiders-place-ls-fake-snapper-on-ir", 2021, 3)])
     derived = derive_specialist_absence_features(

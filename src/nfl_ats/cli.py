@@ -1,15 +1,3 @@
-"""Command-line entry point for the NFL ATS research pipeline.
-
-This module owns three things and nothing else: the parser skeleton, the
-dispatch in :func:`main`, and a small set of backwards-compatible re-exports
-for callers that already reach into ``nfl_ats.cli`` by name.
-
-Everything a command actually *does* lives in :mod:`nfl_ats.cli_commands` (one
-module per domain, each exposing registrars with the uniform signature
-``(subparsers, current_year) -> None``); the helpers shared by more than one
-domain live in :mod:`nfl_ats.cli_common`. See ``docs/cli_architecture.md``.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -52,11 +40,6 @@ __all__ = [
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Build the full ``nfl-ats`` parser by running every registrar in order.
-
-    ``current_year`` is read once here and passed down so a single parser can
-    never mix two calendar years across its clock-derived defaults.
-    """
 
     current_year = datetime.now().year
     parser = argparse.ArgumentParser(

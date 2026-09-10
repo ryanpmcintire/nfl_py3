@@ -1,37 +1,3 @@
-"""Turn a read of the Splash Sports contest board into a validated capture file.
-
-The pool grades on the spreads printed on the Splash board, which lock Tuesday
-at noon ET. Until 2026-09-08 those numbers were never recorded and the card
-used nflverse's closing ``spread_line`` as a stand-in; see
-``docs/splash_lines.md`` for what that cost.
-
-Taking a capture is a two-step job: a human (or a browser agent) copies the
-board text off the page, and this script does the rest -- parse, validate,
-write. Nothing here scrapes the site.
-
-Usage::
-
-    # from a file
-    uv run --no-sync python scripts/capture_splash_lines.py \
-        --season 2026 --week 2 --text-file board.txt --dry
-
-    # from stdin
-    Get-Content board.txt | uv run --no-sync python scripts/capture_splash_lines.py \
-        --season 2026 --week 2
-
-The board text is the repeated block shape the page renders::
-
-    CHI   Sun, Sep 13 1:00 PM   CAR
-    Winner (ATS)
-    Bears      CHI -2.5
-    Panthers   CAR +2.5
-
-Every line is validated before anything is written (half points only, nflverse
-game ids, both sides of each spread exact opposites). A capture that fails
-validation is not written at all -- a silently wrong number on the card is the
-failure this whole path exists to prevent.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -62,7 +28,6 @@ from nfl_ats.splash_lines import (  # noqa: E402
 
 
 def capture_label(captured_at: datetime) -> str:
-    """``noon`` for a capture taken in the pool's noon lock hour, else ``HHMM``."""
 
     if captured_at.hour == 12:
         return "noon"
@@ -116,7 +81,7 @@ def _parse_et(value: str, *, flag: str) -> datetime:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description="Capture the pool board lines")
     parser.add_argument("--season", type=int, required=True)
     parser.add_argument("--week", type=int, required=True)
     parser.add_argument(

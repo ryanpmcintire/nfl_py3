@@ -1,93 +1,3 @@
-"""Official T-90 inactives as a refresh-time, CHALLENGER-ONLY overlay (WP41).
-
-**Binding closing-grounds taxonomy (AGENTS.md), restated verbatim per this
-project's rule for any module that scores or adjudicates an experiment:** an
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. At this evaluator's ~2-point resolution, "contains zero" is
-the EXPECTED outcome for a real small signal. Only two grounds ever close a
-line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval
-on the wrong side of zero) or zero split-half reliability; (2) bounded by a
-positive control proven able to detect an effect that size. Everything else
-is ``unresolved_below_power``: record it with ``nfl-ats weak-signals
-record``, report ``probability_positive``, never the binary "contains zero."
-
-What this module is
--------------------
-``docs/inactives_channel.md`` Section 1 found the official game-day inactive
-list to be the last unclaimed slice of the injury timeline (Tue/Fri/Sat are
-all already tested), Section 2 MEASURED 238/272 (87.5%) of 2026 REG games as
-deadline-eligible for it, and WP17 built the capture
-(``nfl_ats.inactives_capture``, snapshots under
-``data/players/inactives/<UTC stamp>/``). What was missing is the wiring: no
-code read a captured snapshot back into a pick. This module is that wiring,
-and NOTHING else. Its rule is frozen in that document's
-"Prospective wiring predeclaration (2026-09-01, WP41)" section, written
-before this file existed.
-
-Per game, at every ``nfl-ats refresh-picks`` pass:
-
-* **SNF/MNF** -- the official inactives instant (``kickoff - 90 minutes``,
-  the league convention reported in that document's Section 3 and used
-  unchanged throughout its Section 2 arithmetic) falls at or after the game's
-  own pick deadline, so the channel can never act. Keep the Tuesday pick,
-  tagged :data:`SOURCE_STRUCTURALLY_EXCLUDED`.
-* **No in-window snapshot** -- no snapshot for this (season, week) was
-  captured strictly before this game's deadline AND actually reported rows.
-  Keep the Tuesday pick, tagged :data:`SOURCE_NO_SNAPSHOT`. A zero-row
-  snapshot (the off-season placeholder case, and any future
-  ``empty_reason``) counts as "no report yet", never as "nobody is
-  inactive" -- the same fail-open convention
-  ``nfl_ats.nflcom_refresh_overlay`` already uses for an absent or stale
-  NFL.com page. "Strictly before the deadline" is also the anti-backdating
-  guard: the deadline is at most the kickoff, so a snapshot captured at or
-  after kickoff can never apply.
-* **In-window snapshot** -- recompute the injury construct with every listed
-  player at **P(plays) = 0**, everyone else exactly as the injury report
-  already has them, and re-run the production pick at the frozen Tuesday
-  line. Tagged ``inactives_snapshot <stamp>``.
-
-No constant is invented
------------------------
-``P(plays) = 0`` is unavailability ``1.0`` by definition, and that is
-bit-identical to the weight production already assigns a player ruled Out
-(``nfl_ats.availability.fixed_unavailability`` maps ``"out" -> 1.0``). The
-overlay therefore applies the INCREMENT ``1.0 - fixed_unavailability(newest
-visible report row)`` -- 0.0 for a player already Out (no double-count), 1.0
-for a genuine surprise absence -- and folds it through
-``nfl_ats.players._injury_features``, PRODUCTION'S OWN aggregation function,
-imported rather than reimplemented, via the ``_unavailability`` hook that
-function already reads. Its ``severity x share / 11`` and per-group ``/5``,
-``/6``, ``/7`` normalizers are production's, not a copy. Role shares come
-from the player's most recent strictly-earlier same-season snap-count row --
-the same table and the same prior-game-share proxy
-``nfl_ats.nflcom_refresh_overlay`` uses for its starter proxy; a player with
-no prior snap row scores share 0 and contributes nothing, identical to
-production's own ``roles.get(gsis_id, {})`` default. Every threshold
-downstream is ``nfl_ats.pick_refresh``'s own, reused and never re-tuned
-here (notably ``MOVEMENT_POLICY_THRESHOLD = 1.0``, frozen by
-``docs/observed_movement_channel.md``'s predeclared grid).
-
-Scope boundary, disclosed rather than discovered
-------------------------------------------------
-The active ``weak_stack`` profile consumes NINE injury columns: seven
-``diff_injury_*_unavailability`` and two ``diff_injury_*_value_lost``. This
-module adjusts **the seven unavailability columns only**. The two
-value-lost columns need a per-player value rate drawn from a span-16 EWMA
-state ``players.enrich_with_player_features`` builds transiently and never
-persists, and rebuilding it here would be a reimplementation of production's
-aggregation -- exactly what this design refuses to do. The candidate arm
-therefore moves LESS than a full feature-table rebuild would, so a small or
-null reading from it bounds the channel from below, not above.
-
-Never touches the played pick
------------------------------
-The ``RefreshResult`` handed in is consumed strictly read-only. The
-recomputed pick exists only as a column of a SEPARATE append-only ledger
-(``artifacts/prospective/inactives_refresh_decisions.parquet``), never in
-``pick_revisions.parquet`` and never on the published card. A prospective
-registration is paper evidence at zero window cost, not a promotion.
-"""
-
 from __future__ import annotations
 
 import json
@@ -130,7 +40,6 @@ _RECOGNIZED_SOURCES = frozenset({"primary", "fallback"})
 
 
 def snapshot_source_tag(snapshot_id: str) -> str:
-    """The per-game ``source`` tag for a game an in-window snapshot reached."""
 
     return f"inactives_snapshot {snapshot_id}"
 
@@ -170,7 +79,6 @@ def inactives_refresh_overlay_ledger_path(artifacts_root: Path) -> Path:
 
 
 def load_inactives_refresh_overlay_decisions(artifacts_root: Path) -> pd.DataFrame:
-    """The append-only inactives refresh-overlay ledger (empty frame when none)."""
 
     path = inactives_refresh_overlay_ledger_path(artifacts_root)
     if not path.is_file():
@@ -186,8 +94,6 @@ def load_inactives_refresh_overlay_decisions(artifacts_root: Path) -> pd.DataFra
 
 @dataclass(frozen=True)
 class InactivesSnapshot:
-    """One ``nfl_ats.inactives_capture`` snapshot, as its manifest describes it."""
-
     snapshot_id: str
     root: Path
     captured_at_utc: pd.Timestamp
@@ -203,12 +109,6 @@ class InactivesSnapshot:
 
     @property
     def reported_inactives(self) -> bool:
-        """Did this snapshot actually carry an inactive list?
-
-        A zero-row snapshot means "no report yet" (the off-season placeholder,
-        an unreachable source, an unrecognized page), never "nobody is
-        inactive" -- see the module docstring's fail-open note.
-        """
 
         return (
             self.row_count > 0
@@ -228,12 +128,6 @@ def _as_utc(value: Any) -> pd.Timestamp | None:
 
 
 def load_inactives_snapshots(data_root: Path) -> tuple[InactivesSnapshot, ...]:
-    """Every readable inactives snapshot, oldest capture instant first.
-
-    FAIL-OPEN: a snapshot whose manifest is missing, malformed, or carries no
-    usable ``captured_at_utc`` is skipped, not raised on -- one bad directory
-    must never take down a refresh pass.
-    """
 
     root = data_root / "players" / "inactives"
     found: list[InactivesSnapshot] = []
@@ -282,12 +176,6 @@ def newest_snapshot_before(
     now: pd.Timestamp | None = None,
     game_day: pd.Timestamp | None = None,
 ) -> InactivesSnapshot | None:
-    """The newest snapshot for this week captured STRICTLY before ``deadline``.
-
-    Strictness is the anti-backdating guard: a game's deadline is at most its
-    own kickoff (``pick_refresh.pick_deadline``), so a snapshot captured at or
-    after kickoff can never be returned here for that game.
-    """
 
     decision_instant = _as_utc(now) if now is not None else None
     game_instant = _as_utc(game_day) if game_day is not None else None
@@ -309,7 +197,6 @@ def newest_snapshot_before(
 
 
 def read_inactives_rows(snapshot: InactivesSnapshot) -> pd.DataFrame:
-    """One snapshot's parquet, team codes canonicalized. Empty frame on failure."""
 
     try:
         rows = pd.read_parquet(snapshot.parquet_path)
@@ -333,12 +220,6 @@ def inactives_rows_for_game(
     home_team: str,
     away_team: str,
 ) -> pd.DataFrame:
-    """Return one safely aligned game's rows, otherwise an empty frame.
-
-    Captures are slate-wide, but an inactive list can only affect the game it
-    explicitly names. A malformed, partial, or schedule-misaligned snapshot
-    is therefore indistinguishable from no report for this challenger.
-    """
 
     rows = read_inactives_rows(snapshot)
     required = {
@@ -378,22 +259,12 @@ def inactives_rows_for_game(
 
 @dataclass(frozen=True)
 class PlayerContext:
-    """Everything needed to turn one inactives list into injury increments."""
-
     identities: dict[tuple[int, str, str], str]
     credited: dict[tuple[int, int, str, str], float]
     roles: dict[str, dict[str, float | str]]
 
 
 def _share(value: Any) -> float:
-    """A snap share as a float, with a missing/unparseable share meaning 0.0.
-
-    Production's own default for a player it has no role state for is an empty
-    role dict, which ``_injury_features`` reads as ``0.0`` for every share
-    (``float(role.get("offense_pct", 0.0))``); this keeps a NaN snap
-    percentage on the same side of that convention instead of poisoning the
-    whole team's total with NaN.
-    """
 
     if value is None or pd.isna(value):
         return 0.0
@@ -426,14 +297,6 @@ def _identity_lookup(rosters: pd.DataFrame) -> dict[tuple[int, str, str], str]:
 def _credited_unavailability(
     injuries: pd.DataFrame, *, cutoff: pd.Timestamp
 ) -> dict[tuple[int, int, str, str], float]:
-    """The unavailability the injury report ALREADY credits, per player-week.
-
-    Keyed ``(season, week, team, gsis_id)``, taken from the newest report row
-    visible at ``cutoff`` (the snapshot's own capture instant -- rows filed
-    after it were not knowable when the inactive list posted). Uses
-    production's ``fixed_unavailability`` verbatim, so a player already ruled
-    Out credits 1.0 and the override's increment for them is exactly zero.
-    """
 
     if injuries.empty:
         return {}
@@ -460,14 +323,6 @@ def _credited_unavailability(
 def _prior_snap_roles(
     snaps: pd.DataFrame, *, season: int, week: int
 ) -> dict[str, dict[str, float | str]]:
-    """gsis_id -> role shares from that player's most recent EARLIER game.
-
-    Same-season, strictly-earlier week, latest row wins: the identical
-    prior-game snap-share proxy ``nfl_ats.nflcom_refresh_overlay`` already
-    uses for its starter proxy. Week 1 has no prior game, so every share is
-    absent and the override contributes nothing that week -- the same
-    documented Week-1 behaviour that overlay's frozen rule text carries.
-    """
 
     scoped = snaps.loc[snaps["season"].eq(season) & snaps["week"].lt(week)]
     scoped = scoped.loc[scoped["gsis_id"].notna()]
@@ -488,13 +343,6 @@ def _prior_snap_roles(
 def load_player_context(
     data_root: Path, *, season: int, week: int, cutoff: pd.Timestamp
 ) -> PlayerContext | None:
-    """Assemble the identity/credit/role inputs, or ``None`` on ANY failure.
-
-    FAIL-OPEN by design, mirroring
-    ``injury_signal_refresh_tilt._latest_official_injuries_fail_open``: a
-    missing or malformed player snapshot means the override contributes
-    nothing this pass, never an exception into ``refresh-picks``.
-    """
 
     try:
         snapshot = latest_player_snapshot(data_root / "players" / "raw")
@@ -519,15 +367,6 @@ def team_unavailability_increments(
     week: int,
     team: str,
 ) -> tuple[dict[str, float], int]:
-    """One team's inactives folded through production's own aggregation.
-
-    Returns ``(increments, listed_count)`` where ``increments`` maps each of
-    ``players.PLAYER_INJURY_STATE_METRICS`` to the amount this team's listed
-    inactives ADD on top of what the injury report already credited. Computed
-    by calling ``players._injury_features`` -- the exact function
-    ``enrich_with_player_features`` calls -- so the normalizers are
-    production's, never a copy.
-    """
 
     zero = dict.fromkeys(PLAYER_INJURY_STATE_METRICS, 0.0)
     if inactives.empty:
@@ -565,16 +404,6 @@ def team_unavailability_increments(
 def apply_inactives_increments(
     features: pd.DataFrame, increments: dict[str, dict[str, dict[str, float]]]
 ) -> pd.DataFrame:
-    """A COPY of ``features`` with only the named games' injury columns moved.
-
-    ``increments`` maps ``game_id -> {"home": {...}, "away": {...}}``. Every
-    other row and every other column is byte-identical, which is what keeps
-    ``fit_margin_models_for_week``'s training set -- and therefore the fitted
-    model -- unchanged when the candidate plan is computed on this table.
-    ``diff_`` is recomputed as ``home - away``, ``features.py``'s convention.
-    A NaN column (a game production could not build an injury state for) stays
-    NaN: adding to it changes nothing, which is the correct no-op.
-    """
 
     adjusted = features.copy()
     if not increments:
@@ -608,12 +437,6 @@ def _inactives_instant(kickoff: pd.Timestamp) -> pd.Timestamp:
 
 
 def structurally_excluded(kickoff: pd.Timestamp, deadline: pd.Timestamp) -> bool:
-    """SNF/MNF: the inactives instant lands at or after the pick deadline.
-
-    NOT ``deadline < kickoff`` -- that naive test would also exclude the
-    Sunday 16:05-17:00 ET slot, which ``docs/inactives_channel.md`` Section 2
-    MEASURED as playable at +65 to +85 minutes of slack.
-    """
 
     return _inactives_instant(kickoff) >= pd.Timestamp(deadline)
 
@@ -625,16 +448,6 @@ def build_inactives_refresh_overlay_rows(
     data_root: Path,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Pure computation: one row per ELIGIBLE game in ``plan``, three arms each.
-
-    Every eligible game gets a row whether or not an inactives snapshot
-    reached it -- the paired comparator is the whole Tuesday card, so games
-    the channel could not touch are part of the population, not missing from
-    it. FAIL-OPEN throughout: an absent snapshot store, an unreadable player
-    snapshot, or an all-zero increment leaves the candidate arm equal to the
-    played pick and says so in the diagnostics, never raises and never flips.
-    Never writes anything -- see :func:`record_inactives_refresh_overlay`.
-    """
 
     empty = pd.DataFrame(columns=list(INACTIVES_REFRESH_OVERLAY_COLUMNS))
     eligible = [game for game in plan.games if game.eligible]
@@ -825,21 +638,6 @@ def record_inactives_refresh_overlay(
     record_decisions: bool = False,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> dict[str, Any]:
-    """Append this pass's inactives-refreshed picks to the overlay ledger.
-
-    Mirrors ``nflcom_refresh_overlay.record_nflcom_refresh_overlay`` exactly:
-    the same opt-in ``record_decisions`` contract, the same
-    ``refuse_if_outside_recording_lock_window`` guard against the week's
-    ORIGINAL card kickoffs, and the same guarantee that the played pipeline
-    cannot see this function's output -- it writes only its own separate
-    ledger and consumes the ``RefreshResult`` strictly read-only.
-
-    Repeated passes across a week legitimately append MULTIPLE rows per game
-    (not deduped): a Thursday pass sees no Sunday inactives, and how the
-    channel's reach grows across a week is part of what prospective scoring
-    reads. Scoring consumes the LATEST pre-kickoff row per game, mirroring
-    ``pick_refresh.final_pick_per_game``.
-    """
 
     if not record_decisions:
         return {

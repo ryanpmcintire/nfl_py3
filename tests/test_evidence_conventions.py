@@ -1,10 +1,3 @@
-"""The two shared evidence conventions, and the defects they replaced.
-
-Both were copy-pasted across ~100 call sites and both failed in the SAME
-direction: they turned measurements that said nothing into resolved-looking
-negatives. These are regression tests for that direction specifically.
-"""
-
 from __future__ import annotations
 
 import math

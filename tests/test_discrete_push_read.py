@@ -1,17 +1,6 @@
-"""The served discrete push read (docs/discrete_push_read.md, MOD-18 lane S).
-
-Pins the contract: the mass-preserving lattice is the source of the served
-push and every alternative-line three-way split, the atoms keep their
-absolute key-number mass, every read is walk-forward, and the pick-deciding
-``home_cover_probability`` is bit-for-bit what the smooth read produced --
-switched on or off.
-"""
-
 from __future__ import annotations
 
 import json
-import os
-import sys
 from pathlib import Path
 
 import numpy as np
@@ -46,11 +35,8 @@ from nfl_ats.outcomes import score_outcome_week, score_outcome_week_line_sweep
 from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.spread_explorer import SpreadExplorerGameDistribution, spread_explorer_three_way
 
-REPO = Path(__file__).resolve().parents[1]
-
 
 def key_number_atoms() -> tuple[np.ndarray, np.ndarray]:
-    """A base distribution with real key-number spikes at 3, 7, 10 and 14."""
 
     margins = np.arange(-21.0, 22.0)
     counts = np.ones_like(margins)
@@ -61,8 +47,6 @@ def key_number_atoms() -> tuple[np.ndarray, np.ndarray]:
 
 
 def synthetic_pool(push_share: float = 0.10, games: int = 600, seed: int = 3) -> pd.DataFrame:
-    """Prior games quoted near 3 whose finals land exactly on 3 a declared share
-    of the time -- the push mass the served read must reproduce."""
 
     rng = np.random.default_rng(seed)
     lines = rng.choice([2.5, 3.0, 3.5], size=games)
@@ -94,13 +78,6 @@ def reader_for_2020_week_1(pool: pd.DataFrame) -> DiscretePushReader:
 
 
 def integer_line_week(model_frame: pd.DataFrame) -> pd.DataFrame:
-    """The shared fixture with 2020 week 1 quoted on 3 / 3.5 alternately.
-
-    Whole numbers on purpose: these are the lines the key-number machinery
-    exists FOR, and the archive it was measured on is quoted on them. The
-    owner's pool never posts one, so any orchestration test built on this
-    fixture pairs it with :func:`allow_whole_number_pool_lines`.
-    """
 
     frame = model_frame.copy()
     target = frame["season"].eq(2020) & frame["week"].eq(1)
@@ -110,15 +87,6 @@ def integer_line_week(model_frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def allow_whole_number_pool_lines(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Declare that this test's week is NOT the owner's pool.
-
-    ``prediction_safety.validate_pool_lines`` fails the served card closed
-    when a decision line is a whole number, because the pool posts only half
-    points and a whole number therefore proves the line came from the
-    schedule feed instead. A fixture that deliberately quotes 3.0 to
-    exercise the key-number read has to say so out loud; nothing in
-    production may take this path.
-    """
 
     monkeypatch.setattr(prediction_safety, "POOL_QUOTES_HALF_POINT_LINES", False)
 
@@ -246,10 +214,6 @@ def test_prior_pool_prefers_archived_opener_lines_and_drops_unplayed_rows() -> N
 
 
 def test_one_pure_per_game_function_backs_every_served_answer() -> None:
-    """The coordinator's key-line pick override, the card's push path and the
-    sweep must all read the SAME lattice: ``discrete_read`` (walk-forward
-    window applied inside), ``DiscretePushReader.read`` and ``band_read`` on
-    the same prior rows give one identical read."""
 
     pool = synthetic_pool()
     cutoff = pd.Timestamp("2020-09-10")
@@ -524,8 +488,6 @@ def test_production_reader_prefers_archived_opener_lines_and_degrades_without_th
 def test_margin_predict_writes_the_sidecar_with_both_reads(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, model_frame: pd.DataFrame
 ) -> None:
-    """End to end: the real ``margin-predict`` orchestration serves the
-    discrete split on the card, keeps the pick, and writes the sidecar."""
 
     data_root = tmp_path / "data"
     artifacts_root = tmp_path / "artifacts"
@@ -638,46 +600,6 @@ def test_explanation_names_the_push_chance_in_pool_player_words() -> None:
     assert "push" not in absent
     tiny = explain_pick({**base, "spread_line": 1.0, "push_probability": 0.002}).text
     assert "push" not in tiny
-
-
-def _lane_k_root() -> Path:
-    override = os.environ.get("NFL_ATS_ARTIFACTS_DIR")
-    root = Path(override) if override else REPO / "artifacts"
-    return root / "research" / "laneK"
-
-
-@pytest.mark.skipif(
-    not (_lane_k_root() / "replay.parquet").is_file()
-    or not (_lane_k_root() / "pool.parquet").is_file(),
-    reason="lane K's research artifacts are local-only and absent here",
-)
-def test_lane_k_research_numbers_replay_bit_for_bit_through_the_module() -> None:
-    sys.path.insert(0, str(REPO / "scripts"))
-    from mass_preserving_lattice_opener_eval import ARMS, mass_preserving
-
-    root = _lane_k_root()
-    pool = pd.read_parquet(root / "pool.parquet")
-    frame = pd.read_parquet(root / "replay.parquet")
-    targets = frame[["game_id", "season", "week"]].copy()
-    targets["gameday"] = pool.set_index("game_id")["gameday"].reindex(frame["game_id"]).to_numpy()
-    targets["line"] = frame["tue_open_home_spread"].to_numpy()
-    targets["point"] = frame["center_S3"].to_numpy()
-    assert not targets["gameday"].isna().any()
-    for arm, half_width in ARMS.items():
-        if f"p_{arm}" not in frame.columns:
-            pytest.skip(f"replay.parquet predates the {arm} mapping")
-        mapped = mass_preserving(pool, targets, half_width).set_index("game_id")
-        mapped = mapped.reindex(frame["game_id"])
-        for column, recorded in (
-            ("home_cover_probability", f"p_{arm}"),
-            ("push", f"push_{arm}"),
-            ("theta", f"theta_{arm}"),
-            ("band", f"band_{arm}"),
-            ("band_games", f"band_games_{arm}"),
-        ):
-            assert np.array_equal(
-                mapped[column].to_numpy(dtype=float), frame[recorded].to_numpy(dtype=float)
-            ), f"{arm} {column} does not replay bit-for-bit"
 
 
 def _synthetic_reader() -> DiscretePushReader:

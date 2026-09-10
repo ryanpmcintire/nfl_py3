@@ -1,75 +1,3 @@
-"""Two quarterback-identity pregame flags, each stacked on PRODUCTION
-(``docs/schedule_flag_battery.md`` "Wave 5"): LEAD-20 rookie-QB debut fade,
-LEAD-25 quarterback revenge game.
-
-Default flags use timestamped depth-chart observations strictly before the pool
-cutoff. Untimestamped historical depth rows do not establish visibility.
-Recorded assignments are available only through explicit oracle_ functions.
-
-LEAD-20: rookie-QB debut fade
-------------------------------
-A debut is the quarterback's first **REG-season** start anywhere in the
-2009-2025 archive AND that player is a rookie THAT SEASON per
-``weekly_rosters.years_exp == 0`` -- the rookie gate exists because the
-archive itself begins in 2009, so an established veteran whose first
-*archived* start happens to be a 2009 game (a genuine, real NFL veteran, not
-a debut) would otherwise be mislabelled as debuting. ``describe_rookie_qb_debut_population``
-reports the count of first-archived-starts that are NOT rookies as a
-diagnostic, exactly as predeclared.
-
-Signed ``rookie_qb_debut_fade_flag``: ``+1`` when the AWAY starter is a debut
-rookie (fade the road debut -> favour home), ``-1`` when the HOME starter is,
-``0`` otherwise (including both sides debuting simultaneously).
-
-LEAD-25: quarterback revenge game
------------------------------------
-BACK the quarterback facing the franchise that drafted him. Draft team comes
-from ``data/raw/combine/*/combine.parquet``'s ``draft_team`` (a full team
-name, e.g. "Oakland Raiders") plus ``draft_year``/``pfr_id``; ``pfr_id`` is
-joined to ``gsis_id`` through ``weekly_rosters``' own pfr/gsis crosswalk,
-reusing ``nfl_ats.players._stable_crosswalk`` (the identical helper
-``nfl_ats.players.attach_snap_player_ids`` already uses to link PFR player
-identities to GSIS IDs, imported rather than re-derived so both call sites
-share one crosswalk-selection rule: for a ``pfr_id`` with more than one
-observed ``gsis_id`` across roster rows, take the most frequently co-occurring
-one, GSIS-id ascending as a deterministic tiebreak).
-
-Franchise relocations are normalised through a FROZEN
-``DRAFT_TEAM_NAME_TO_CODE`` mapping (every historical AND current full team
-name -> current canonical abbreviation: "Oakland Raiders"/"Las Vegas Raiders"
--> ``LV``; "San Diego Chargers"/"Los Angeles Chargers" -> ``LAC``;
-"St. Louis Rams"/"Los Angeles Rams" -> ``LA``; "Washington
-Redskins"/"Washington Football Team"/"Washington Commanders" -> ``WAS``) and
-the schedule's own ``home_team``/``away_team`` (which still carry the
-historical ``OAK``/``SD``/``STL`` codes for old games) are canonicalised
-through the SAME ``nfl_ats.constants.TEAM_ABBREVIATION_ALIASES`` every other
-franchise-continuity feature in this repo already uses
-(``nfl_ats.transaction_wire_features.canonical_team``,
-``nfl_ats.pbp_coaching_traits``, ``nfl_ats.pbp_trait_on_production_features``),
-so both sides of the revenge comparison share one canonical code space
-regardless of which season's schedule row is being read.
-
-Signed ``qb_revenge_flag``: ``+1`` when the HOME QB faces the franchise that
-drafted him, ``-1`` when the AWAY QB does, ``0`` otherwise (including both
-sides being a revenge game simultaneously, or a QB whose draft team could not
-be resolved -- an unjoined QB is treated as ``0`` for that side, never
-guessed).
-
-**Distinct from the deployed division-revenge TEAM overlay.** ``gap_division_revenge``
-(``nfl_ats.weak_stack_v3_features._add_gap_bias_flags``, already in
-PRODUCTION's own ``weak_stack_v3`` feature set) fires when a TEAM plays a
-divisional opponent it already lost to earlier the same season -- a
-team-level rematch-after-a-loss construct with no reference to any individual
-player. ``qb_revenge_flag`` is a PLAYER-level construct (a specific
-quarterback facing the specific franchise that drafted him, regardless of
-division and regardless of any earlier result this season) and is never
-pooled with, or read as confirming/contradicting, the division-revenge cell.
-
-Mirrors ``nfl_ats.schedule_flag_features``'s additive-merge discipline: every
-pre-existing column comes back bit-identical, only the one new column is
-added.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -159,14 +87,6 @@ def _require_schedule_columns(schedule: pd.DataFrame, required: set[str]) -> Non
 
 
 def default_schedule(repo_root: Path | None = None) -> pd.DataFrame:
-    """Load the newest ``data/raw/*/schedules.parquet`` snapshot.
-
-    Same "newest snapshot, sorted lexicographically" convention every
-    schedule-only battery in this repo uses
-    (``nfl_ats.schedule_flag_features.default_schedule``), duplicated here
-    rather than imported so this module has no dependency on the concurrently
-    edited ``schedule_flag_features`` module.
-    """
 
     root = repo_root or REPO_ROOT
     candidates = sorted((root / "data" / "raw").glob("*/schedules.parquet"))
@@ -176,7 +96,6 @@ def default_schedule(repo_root: Path | None = None) -> pd.DataFrame:
 
 
 def default_weekly_rosters(repo_root: Path | None = None) -> pd.DataFrame:
-    """Load and canonicalize the newest ``data/players/raw/<snapshot>/weekly_rosters.parquet``."""
 
     root = repo_root or REPO_ROOT
     snapshot = latest_player_snapshot(root / "data" / "players" / "raw")
@@ -185,7 +104,6 @@ def default_weekly_rosters(repo_root: Path | None = None) -> pd.DataFrame:
 
 
 def latest_combine_snapshot(repo_root: Path | None = None) -> Path:
-    """Newest ``data/raw/combine/<snapshot>/combine.parquet``."""
 
     root = repo_root or REPO_ROOT
     candidates = sorted((root / "data" / "raw" / "combine").glob("*/combine.parquet"))
@@ -197,15 +115,11 @@ def latest_combine_snapshot(repo_root: Path | None = None) -> Path:
 
 
 def default_combine(repo_root: Path | None = None) -> pd.DataFrame:
-    """Load the newest local combine snapshot."""
 
     return pd.read_parquet(latest_combine_snapshot(repo_root))
 
 
 def _first_reg_start_table(schedule: pd.DataFrame) -> pd.DataFrame:
-    """One row per (qb_id, REG game they started), flagging whether THIS game
-    is that quarterback's first-ever archived REG start, chronologically,
-    regardless of which team he started for."""
 
     _require_schedule_columns(schedule, _ROOKIE_QB_DEBUT_REQUIRED_SCHEDULE_COLUMNS)
     reg = schedule.loc[schedule["game_type"].eq("REG")].copy()
@@ -227,7 +141,6 @@ def _first_reg_start_table(schedule: pd.DataFrame) -> pd.DataFrame:
 
 
 def _season_years_exp(rosters: pd.DataFrame) -> pd.DataFrame:
-    """One row per (season, gsis_id) -> years_exp entering that season."""
 
     required = {"season", "gsis_id", "years_exp"}
     missing = sorted(required.difference(rosters.columns))
@@ -240,14 +153,6 @@ def _season_years_exp(rosters: pd.DataFrame) -> pd.DataFrame:
 
 
 def describe_rookie_qb_debut_population(schedule: pd.DataFrame, rosters: pd.DataFrame) -> dict:
-    """Diagnostic counts for the rookie-QB debut population (never used to
-    build the flag itself, only reported alongside it): the number of
-    first-archived-REG-starts, how many are confirmed rookies
-    (``years_exp == 0``), how many are confirmed NOT rookies (an established
-    veteran whose first *archived* start happens not to be a real debut --
-    the exact population the rookie gate exists to exclude), and how many
-    could not be resolved against ``weekly_rosters`` at all.
-    """
 
     starts = _first_reg_start_table(schedule)
     debut = starts.loc[starts["is_first_archived_start"]].copy()
@@ -269,17 +174,6 @@ def describe_rookie_qb_debut_population(schedule: pd.DataFrame, rosters: pd.Data
 def oracle_derive_rookie_qb_debut_fade_features(
     schedule: pd.DataFrame, rosters: pd.DataFrame
 ) -> pd.DataFrame:
-    """Return ``(game_id, rookie_qb_debut_fade_flag)`` for every game in ``schedule``.
-
-    ``+1`` if the AWAY starter is making his first-ever archived REG start
-    AND is a rookie that season (``years_exp == 0``); ``-1`` if the HOME
-    starter is; ``0`` otherwise -- including a non-REG game (a debut is only
-    ever defined against a REG start), a first-archived start whose
-    ``years_exp`` resolves to something other than 0 (an established veteran
-    whose true NFL debut predates the 2009 archive -- see
-    :func:`describe_rookie_qb_debut_population`), or a first-archived start
-    that could not be joined to ``weekly_rosters`` at all (never guessed).
-    """
 
     starts = _first_reg_start_table(schedule)
     debut = starts.loc[starts["is_first_archived_start"]].copy()
@@ -319,7 +213,6 @@ def attach_rookie_qb_debut_fade_features(
     rosters: pd.DataFrame | None = None,
     depth_charts: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``rookie_qb_debut_fade_flag`` onto ``features`` by ``game_id``."""
 
     if "game_id" not in features.columns:
         raise DataContractError("features is missing the game_id join key")
@@ -347,26 +240,11 @@ def attach_rookie_qb_debut_fade_features(
 
 
 def _canonical_schedule_team(codes: pd.Series) -> pd.Series:
-    """Canonicalize a schedule ``home_team``/``away_team`` column through the
-    same ``TEAM_ABBREVIATION_ALIASES`` every other franchise-continuity
-    feature in this repo uses (OAK->LV, SD->LAC, STL/SL->LA)."""
 
     return codes.astype(str).replace(TEAM_ABBREVIATION_ALIASES)
 
 
 def draft_team_by_gsis_id(combine: pd.DataFrame, rosters: pd.DataFrame) -> dict[str, str]:
-    """``gsis_id`` -> the CANONICAL current code of the franchise that drafted
-    that player, via ``pfr_id`` -> ``gsis_id`` (``nfl_ats.players._stable_crosswalk``)
-    then ``draft_team`` -> code (:data:`DRAFT_TEAM_NAME_TO_CODE`).
-
-    Not restricted to combine rows whose own ``pos`` says "QB": the
-    population that matters is whichever ``gsis_id`` later appears as a
-    schedule QB starter, and a player's real draft team does not depend on
-    how combine.parquet happens to have labelled his position. A player
-    combine-invited more than once, or drafted more than once (a rare
-    supplemental-draft edge case), keeps only his EARLIEST ``draft_year`` row
-    -- his actual original draft.
-    """
 
     required = {"pfr_id", "draft_team", "draft_year"}
     missing = sorted(required.difference(combine.columns))
@@ -389,11 +267,6 @@ def draft_team_by_gsis_id(combine: pd.DataFrame, rosters: pd.DataFrame) -> dict[
 
 
 def qb_revenge_join_diagnostics(schedule: pd.DataFrame, draft_team_lookup: dict[str, str]) -> dict:
-    """Measured join-rate diagnostic: of every non-null
-    ``home_qb_id``/``away_qb_id`` occurrence in ``schedule`` (one row per
-    side per game, i.e. weighted by how many games each quarterback
-    started), what fraction resolve to a known draft-team code. Reported
-    alongside the flag, never used to build it."""
 
     home = schedule["home_qb_id"].dropna().astype(str)
     away = schedule["away_qb_id"].dropna().astype(str)
@@ -409,14 +282,6 @@ def qb_revenge_join_diagnostics(schedule: pd.DataFrame, draft_team_lookup: dict[
 def oracle_derive_qb_revenge_features(
     schedule: pd.DataFrame, draft_team_lookup: dict[str, str]
 ) -> pd.DataFrame:
-    """Return ``(game_id, qb_revenge_flag)`` for every game in ``schedule``.
-
-    ``+1`` when the HOME starter's draft-team code equals the (canonicalized)
-    AWAY team; ``-1`` when the AWAY starter's draft-team code equals the
-    (canonicalized) HOME team; ``0`` otherwise -- including both sides
-    qualifying simultaneously, or a starter whose draft team could not be
-    resolved (treated as ``0`` for that side, never guessed).
-    """
 
     _require_schedule_columns(schedule, _QB_REVENGE_REQUIRED_SCHEDULE_COLUMNS)
     home_team = _canonical_schedule_team(schedule["home_team"])
@@ -447,13 +312,6 @@ def attach_qb_revenge_features(
     depth_charts: pd.DataFrame | None = None,
     draft_team_lookup: dict[str, str] | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``qb_revenge_flag`` onto ``features`` by ``game_id``.
-
-    ``draft_team_lookup`` may be supplied directly (fixtures, tests) to avoid
-    touching the real combine/roster stores; otherwise it is built from
-    ``combine``/``rosters`` (each loaded from the newest local snapshot if
-    not supplied either).
-    """
 
     if "game_id" not in features.columns:
         raise DataContractError("features is missing the game_id join key")
@@ -510,7 +368,6 @@ __all__ = [
 def decision_time_qb_schedule(
     schedule: pd.DataFrame, depth_charts: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Resolve QB1 strictly before cutoff; missing timestamp coverage stays unknown."""
     from nfl_ats.nfl_week import pool_decision_cutoff
     from nfl_ats.players import _schedule_kickoff_utc
 
@@ -633,7 +490,6 @@ def derive_rookie_qb_debut_fade_features(
 
 
 def default_depth_chart_observations() -> pd.DataFrame:
-    """Union local timestamped history and QB captures, without inventing dates."""
     paths = sorted((DEFAULT_PLAYERS_RAW_ROOT / "depth_charts").glob("*/depth_charts.parquet"))
     paths += sorted((REPO_ROOT / "data/quarterbacks/depth/raw").glob("*/quarterbacks.parquet"))
     pieces = []

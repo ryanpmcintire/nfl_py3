@@ -1,49 +1,3 @@
-"""Seven pure-schedule (plus, for two, the Tuesday-opener market consensus)
-pregame flags, each stacked on PRODUCTION.
-
-``docs/schedule_flag_battery.md`` predeclares LEAD-21 (post-overtime
-fatigue), LEAD-22 (Monday-night-road short week) and LEAD-40 (home-Thursday
-rest compound) -- Wave 1 -- before any of them was scored. Every flag here is
-a deterministic function of ``data/raw/*/schedules.parquet`` alone -- no PBP,
-no injuries, no market data -- and every input a flag reads (``gameday``,
-``weekday``, ``home_team``/``away_team``, ``overtime``) is a pregame-known
-schedule fact for the game that PRODUCED it. Section "leakage" in the
-predeclaration doc states the binding claim this module exists to satisfy:
-shuffling or altering a game's own outcome (its score, its margin, its own
-``result``) never changes any flag, because no flag reads any column that
-depends on a game's own outcome other than ``overtime`` (whether OT was
-PLAYED, not who won it) -- and even that column is read only from a game's
-*own preceding* game, never from the game the flag is attached to.
-
-The doc's "Wave 2" section predeclares four more: LEAD-39 (new-stadium
-honeymoon), LEAD-41 (dome-shootout favorite archetype), LEAD-42 (low-total
-divisional home dog), and LEAD-35 (September heat-humidity home edge). The
-first and last are pure schedule facts, same discipline as Wave 1;
-LEAD-41/LEAD-42 additionally read the Tuesday-OPENER consensus spread/total
-from :func:`default_opener_lines` (``nfl_ats.clv.build_pairing_table``'s
-historical decision-labeled archive) -- never the nflverse schedule's own
-(closing) ``spread_line``/``total_line`` -- which is still pregame-known
-information (a Tuesday market quote), not an outcome of any game.
-
-Mirrors ``nfl_ats.team_style_pace_production_feature`` /
-``nfl_ats.redzone_reversion_production_feature``'s additive-merge discipline:
-every pre-existing column comes back bit-identical, only the one new column
-is added.
-
-**Within-season lookback only.** Each flag's "previous game" is the
-immediately preceding row for that team, sorted by (season, gameday), and the
-shift never crosses a season boundary -- a team's first game of a season has
-no in-season predecessor, so LEAD-21/LEAD-22 evaluate to their "does not
-qualify" state (**0.0**, not NaN) for it, deliberately: physical fatigue from
-an offseason-old overtime game, or a short week off an offseason-old Monday
-road trip, is not a real mechanism either predeclaration claims, so "no
-prior game this season" is a genuine fact (definitely not fatigued/short-
-week), not missing information. This differs from
-``nfl_ats.team_style_pace_production_feature``'s NaN-on-missing convention,
-where "no prior-season data" really is an unknown team-quality state; the
-predeclaration doc states this distinction explicitly for each construct.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -100,13 +54,6 @@ MNF_ROAD_SHORT_WEEK_REST_DAYS = 6
 
 
 def default_schedule(repo_root: Path | None = None) -> pd.DataFrame:
-    """Load the newest ``data/raw/*/schedules.parquet`` snapshot.
-
-    Reuses ``nfl_ats.weak_stack_v3_features.latest_schedules_snapshot`` --
-    the same "newest snapshot, sorted lexicographically" convention every
-    schedule-only battery in this repo already uses -- rather than
-    re-implementing snapshot discovery.
-    """
 
     root = repo_root or REPO_ROOT
     return pd.read_parquet(latest_schedules_snapshot(root))
@@ -119,13 +66,6 @@ def _require_schedule_columns(schedule: pd.DataFrame) -> None:
 
 
 def _team_long_table(schedule: pd.DataFrame) -> pd.DataFrame:
-    """One row per (game, side): team, this game's own weekday/overtime, plus
-    that team's PRECEDING in-season game's weekday/overtime/site/gameday.
-
-    Sorted by (team, season, gameday) before the ``shift(1)``, so byes are
-    skipped automatically (they are not rows in the schedule) and the shift
-    never reaches across a season boundary (grouped by ``(team, season)``).
-    """
 
     _require_schedule_columns(schedule)
 
@@ -158,7 +98,6 @@ def _team_long_table(schedule: pd.DataFrame) -> pd.DataFrame:
 
 
 def _pivot_home_away(long_df: pd.DataFrame, value_column: str) -> pd.DataFrame:
-    """(game_id, home_<value>, away_<value>) from the per-side long table."""
 
     home = long_df.loc[long_df["is_home"], ["game_id", value_column]].rename(
         columns={value_column: f"home_{value_column}"}
@@ -170,14 +109,6 @@ def _pivot_home_away(long_df: pd.DataFrame, value_column: str) -> pd.DataFrame:
 
 
 def derive_post_ot_fatigue_features(schedule: pd.DataFrame) -> pd.DataFrame:
-    """Return ``(game_id, post_ot_fatigue_flag)`` for every game in ``schedule``.
-
-    ``+1`` if the AWAY team's immediately preceding in-season game went to
-    overtime and the HOME team's did not; ``-1`` if the reverse; ``0`` if
-    both did, neither did, or either side has no in-season preceding game.
-    Sign chosen so a positive fitted coefficient means "fading the post-OT
-    side helped" (docs/schedule_flag_battery.md section 1).
-    """
 
     long_df = _team_long_table(schedule)
     qualifies = long_df["prev_overtime"].eq(1.0)
@@ -193,24 +124,11 @@ def derive_post_ot_fatigue_features(schedule: pd.DataFrame) -> pd.DataFrame:
 def attach_post_ot_fatigue_features(
     features: pd.DataFrame, *, schedule: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Additively join ``post_ot_fatigue_flag`` onto ``features`` by ``game_id``."""
 
     return _attach(features, schedule, derive_post_ot_fatigue_features, (POST_OT_FATIGUE_COLUMN,))
 
 
 def derive_mnf_road_short_week_features(schedule: pd.DataFrame) -> pd.DataFrame:
-    """Return ``(game_id, mnf_road_short_week_flag)`` for every game in ``schedule``.
-
-    A side "qualifies" when its immediately preceding in-season game was on
-    a Monday, it was the away (road) team in that game, AND this game is
-    exactly ``MNF_ROAD_SHORT_WEEK_REST_DAYS`` (6) calendar days later on a
-    Sunday. ``+1`` if the AWAY team qualifies and the HOME team does not;
-    ``-1`` if the reverse; ``0`` if both qualify, neither does, or a side has
-    no in-season preceding game. Sign chosen so a positive fitted
-    coefficient means "fading the short-week road side helped"
-    (docs/schedule_flag_battery.md section 2), the same convention LEAD-21
-    uses.
-    """
 
     long_df = _team_long_table(schedule)
     gap_days = (long_df["gameday_dt"] - long_df["prev_gameday_dt"]).dt.days
@@ -232,7 +150,6 @@ def derive_mnf_road_short_week_features(schedule: pd.DataFrame) -> pd.DataFrame:
 def attach_mnf_road_short_week_features(
     features: pd.DataFrame, *, schedule: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Additively join ``mnf_road_short_week_flag`` onto ``features`` by ``game_id``."""
 
     return _attach(
         features, schedule, derive_mnf_road_short_week_features, (MNF_ROAD_SHORT_WEEK_COLUMN,)
@@ -240,17 +157,6 @@ def attach_mnf_road_short_week_features(
 
 
 def derive_home_thursday_features(schedule: pd.DataFrame) -> pd.DataFrame:
-    """Return ``(game_id, home_thursday_flag)`` for every game in ``schedule``.
-
-    ``1.0`` when this game's own ``weekday`` is Thursday, ``0.0`` otherwise
-    -- a plain calendar fact about the CURRENT game, unlike LEAD-21/LEAD-22,
-    which needs no in-season lookback. Unsigned (not home-minus-away) because
-    the construct is not a comparison between the two teams' conditions: on a
-    Thursday game the home side never travels while the away side does, so
-    "Thursday" already IS the home-favouring condition (matching the parent
-    ``travel_rest_thursday_pure`` cell's own plain boolean shape). A missing
-    ``weekday`` value returns NaN, never a silent 0.
-    """
 
     _require_schedule_columns(schedule)
     weekday = schedule["weekday"]
@@ -261,7 +167,6 @@ def derive_home_thursday_features(schedule: pd.DataFrame) -> pd.DataFrame:
 def attach_home_thursday_features(
     features: pd.DataFrame, *, schedule: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Additively join ``home_thursday_flag`` onto ``features`` by ``game_id``."""
 
     return _attach(features, schedule, derive_home_thursday_features, (HOME_THURSDAY_COLUMN,))
 
@@ -279,17 +184,6 @@ _NEW_STADIUM_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "season", "stadium_id"}
 
 
 def derive_new_stadium_home_features(schedule: pd.DataFrame) -> pd.DataFrame:
-    """Return ``(game_id, new_stadium_home_flag)`` for every game in ``schedule``.
-
-    ``1.0`` when the game's own ``stadium_id`` is one of the six frozen
-    permanent-build venues in :data:`NEW_STADIUM_HONEYMOON_SEASONS` AND
-    ``season`` is one of that venue's own first two REG seasons of use;
-    ``0.0`` otherwise. No in-season lookback, no team-level state, and no
-    outcome of any game (this game's or any other) is read -- a plain
-    venue-assignment/calendar fact known long before kickoff. Unsigned,
-    matching LEAD-40's shape: this is a single-side effect (BACK the home
-    team), not a differential between the two teams' conditions.
-    """
 
     missing = sorted(_NEW_STADIUM_REQUIRED_SCHEDULE_COLUMNS.difference(schedule.columns))
     if missing:
@@ -306,7 +200,6 @@ def derive_new_stadium_home_features(schedule: pd.DataFrame) -> pd.DataFrame:
 def attach_new_stadium_home_features(
     features: pd.DataFrame, *, schedule: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Additively join ``new_stadium_home_flag`` onto ``features`` by ``game_id``."""
 
     return _attach(features, schedule, derive_new_stadium_home_features, (NEW_STADIUM_COLUMN,))
 
@@ -314,19 +207,6 @@ def attach_new_stadium_home_features(
 def default_opener_lines(
     schedule: pd.DataFrame, *, market_root: Path | None = None
 ) -> pd.DataFrame:
-    """Tuesday-opener consensus home spread + total line, keyed by ``game_id``.
-
-    ``tue_open_home_spread`` follows this repo's uniform sign convention
-    (positive = HOME favored by that many points; see
-    ``nfl_ats.open_benchmark``'s ``"positive_spread_line_means_home_favorite"``
-    and ``nfl_ats.market_data.parse_odds_api_response``'s
-    ``standardized_home_line = -home_point``) -- identical to the nflverse
-    schedule's own ``spread_line``, just measured at the Tuesday opener
-    instead of the close. A game absent from the historical decision-labeled
-    archive, or present without a resolved total, gets NaN in the
-    corresponding column here; callers must treat NaN as "unknown," never as
-    zero, before applying a threshold.
-    """
 
     if "game_id" not in schedule.columns:
         raise DataContractError("schedule is missing the game_id column")
@@ -354,23 +234,6 @@ _DOME_SHOOTOUT_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "roof"}
 def oracle_derive_dome_shootout_favorite_features(
     schedule: pd.DataFrame, opener_lines: pd.DataFrame
 ) -> pd.DataFrame:
-    """Return ``(game_id, dome_shootout_favorite_flag)`` for every game.
-
-    Archetype: ``roof`` is a fixed dome or a retractable roof recorded
-    CLOSED for this game, AND the Tuesday-opener total is >= 49, AND the
-    Tuesday-opener home spread's absolute value is <= 3. ``+1`` when the
-    HOME team is the favorite in an archetype game (opener home spread >
-    0), ``-1`` when the AWAY team is (opener home spread < 0), ``0``
-    otherwise -- including a non-archetype game, an exact pick'em (spread
-    == 0, no favorite to back), or a game missing an opener total/spread in
-    the store (never silently treated as satisfying either threshold).
-
-    Declared approximation, the same kind ``nfl_ats.clv.opener_pick_evaluation``
-    already accepts for every sibling on-production candidate: ``roof`` is
-    read from the schedule's own (post-decision) recorded value, which for a
-    retractable-roof venue may not be finalized until close to kickoff --
-    later than the Tuesday opener this flag is otherwise scored against.
-    """
 
     missing = sorted(_DOME_SHOOTOUT_REQUIRED_SCHEDULE_COLUMNS.difference(schedule.columns))
     if missing:
@@ -408,12 +271,6 @@ def attach_dome_shootout_favorite_features(
     market_root: Path | None = None,
     announcements: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``dome_shootout_favorite_flag`` onto ``features``.
-
-    ``opener_lines`` may be supplied directly (fixtures, tests) to avoid
-    touching the real market store; otherwise it is loaded via
-    :func:`default_opener_lines` from the resolved schedule.
-    """
 
     def _derive(sched: pd.DataFrame) -> pd.DataFrame:
         lines = (
@@ -434,16 +291,6 @@ _LOW_TOTAL_DIV_DOG_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "div_game"}
 def derive_low_total_div_home_dog_features(
     schedule: pd.DataFrame, opener_lines: pd.DataFrame
 ) -> pd.DataFrame:
-    """Return ``(game_id, low_total_div_home_dog_flag)`` for every game.
-
-    ``1.0`` when the game is divisional (``div_game == 1``), the
-    Tuesday-opener total is <= 42, AND the home team is the underdog at the
-    Tuesday opener (opener home spread < 0); ``0.0`` otherwise -- including
-    a game missing an opener total/spread in the store. A missing opener
-    total is NEVER encoded as 0 for the threshold comparison itself (that
-    would wrongly satisfy "<= 42"); only the FINAL flag defaults to 0 when
-    any required opener input is unresolved.
-    """
 
     missing = sorted(_LOW_TOTAL_DIV_DOG_REQUIRED_SCHEDULE_COLUMNS.difference(schedule.columns))
     if missing:
@@ -473,12 +320,6 @@ def attach_low_total_div_home_dog_features(
     opener_lines: pd.DataFrame | None = None,
     market_root: Path | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``low_total_div_home_dog_flag`` onto ``features``.
-
-    ``opener_lines`` may be supplied directly (fixtures, tests) to avoid
-    touching the real market store; otherwise it is loaded via
-    :func:`default_opener_lines` from the resolved schedule.
-    """
 
     def _derive(sched: pd.DataFrame) -> pd.DataFrame:
         lines = (
@@ -540,16 +381,6 @@ _SEPT_HEAT_REQUIRED_SCHEDULE_COLUMNS = {
 
 
 def oracle_derive_sept_heat_home_features(schedule: pd.DataFrame) -> pd.DataFrame:
-    """Return ``(game_id, sept_heat_home_flag)`` for every game in ``schedule``.
-
-    ``1.0`` when ALL hold: the game is REG season, week <= 3; the HOME team
-    is heat-acclimated (MIA/TB/JAX unconditionally, or HOU/NO/ATL only when
-    this game's own roof is outdoors/open); the AWAY team is on the frozen
-    cold-climate list; and the home team's own LOCAL kickoff hour is 13 (1
-    PM local, converted from the schedule's Eastern-Time ``gametime`` by the
-    home team's fixed ET offset). ``0.0`` otherwise. A plain pregame
-    schedule/roster-assignment fact; no outcome of any game is read.
-    """
 
     missing = sorted(_SEPT_HEAT_REQUIRED_SCHEDULE_COLUMNS.difference(schedule.columns))
     if missing:
@@ -587,7 +418,6 @@ def attach_sept_heat_home_features(
     schedule: pd.DataFrame | None = None,
     announcements: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``sept_heat_home_flag`` onto ``features`` by ``game_id``."""
 
     def _derive(sched: pd.DataFrame) -> pd.DataFrame:
         return derive_sept_heat_home_features(sched, announcements=announcements)
@@ -603,20 +433,6 @@ _ROAD_FAV_BIG_FADE_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "game_type"}
 def derive_road_fav_big_fade_features(
     schedule: pd.DataFrame, opener_lines: pd.DataFrame
 ) -> pd.DataFrame:
-    """Return ``(game_id, road_fav_big_fade_flag)`` for every game.
-
-    docs/public_claim_battery.md's ``public_claim_road_fav_big_fade`` tested
-    only fading a ROAD favorite of 7+ (sign -1: back the home team) and said
-    nothing about a home favorite of 7+. docs/schedule_flag_battery.md
-    "Wave 3" instructs a symmetric on-production extension: ``+1`` when the
-    AWAY team is favored by >= 7 points at the Tuesday opener (the tested
-    claim -- fade the road favorite, back home), ``-1`` when the HOME team is
-    favored by >= 7 points at the opener (the mirror case, NOT separately
-    tested by lane G's battery, disclosed rather than silently assumed),
-    ``0`` otherwise -- including a non-REG game, an opener spread inside
-    +/-7, or a game missing a resolved opener spread (never silently treated
-    as satisfying either threshold).
-    """
 
     missing = sorted(_ROAD_FAV_BIG_FADE_REQUIRED_SCHEDULE_COLUMNS.difference(schedule.columns))
     if missing:
@@ -645,12 +461,6 @@ def attach_road_fav_big_fade_features(
     opener_lines: pd.DataFrame | None = None,
     market_root: Path | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``road_fav_big_fade_flag`` onto ``features``.
-
-    ``opener_lines`` may be supplied directly (fixtures, tests) to avoid
-    touching the real market store; otherwise it is loaded via
-    :func:`default_opener_lines` from the resolved schedule.
-    """
 
     def _derive(sched: pd.DataFrame) -> pd.DataFrame:
         lines = (
@@ -675,13 +485,6 @@ _DIVISION_DOG_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "game_type", "div_game"}
 def derive_division_dog_features(
     schedule: pd.DataFrame, opener_lines: pd.DataFrame
 ) -> pd.DataFrame:
-    """Return ``(game_id, division_dog_flag)`` for every game.
-
-    ``+1`` when the game is a REG-season divisional game AND the home team
-    is the underdog at the Tuesday opener; ``-1`` when it is divisional AND
-    the away team is the underdog; ``0`` otherwise (non-divisional, not REG
-    season, an exact opener pick'em, or a missing opener spread).
-    """
 
     missing = sorted(_DIVISION_DOG_REQUIRED_SCHEDULE_COLUMNS.difference(schedule.columns))
     if missing:
@@ -709,12 +512,6 @@ def attach_division_dog_features(
     opener_lines: pd.DataFrame | None = None,
     market_root: Path | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``division_dog_flag`` onto ``features``.
-
-    ``opener_lines`` may be supplied directly (fixtures, tests) to avoid
-    touching the real market store; otherwise it is loaded via
-    :func:`default_opener_lines` from the resolved schedule.
-    """
 
     def _derive(sched: pd.DataFrame) -> pd.DataFrame:
         lines = (
@@ -731,12 +528,6 @@ _WEEK1_DOG_REQUIRED_SCHEDULE_COLUMNS = {"game_id", "game_type", "week"}
 
 
 def derive_week1_dog_features(schedule: pd.DataFrame, opener_lines: pd.DataFrame) -> pd.DataFrame:
-    """Return ``(game_id, week1_dog_flag)`` for every game.
-
-    Same shape as :func:`derive_division_dog_features`: ``+1`` when it is a
-    REG-season Week 1 game AND the home team is the underdog at the Tuesday
-    opener, ``-1`` when it is Week 1 AND the away team is, ``0`` otherwise.
-    """
 
     missing = sorted(_WEEK1_DOG_REQUIRED_SCHEDULE_COLUMNS.difference(schedule.columns))
     if missing:
@@ -764,12 +555,6 @@ def attach_week1_dog_features(
     opener_lines: pd.DataFrame | None = None,
     market_root: Path | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``week1_dog_flag`` onto ``features``.
-
-    ``opener_lines`` may be supplied directly (fixtures, tests) to avoid
-    touching the real market store; otherwise it is loaded via
-    :func:`default_opener_lines` from the resolved schedule.
-    """
 
     def _derive(sched: pd.DataFrame) -> pd.DataFrame:
         lines = (
@@ -796,18 +581,6 @@ _ATS_STREAK_REQUIRED_SCHEDULE_COLUMNS = {
 
 
 def _team_ats_streak_entering_each_game(schedule: pd.DataFrame) -> pd.DataFrame:
-    """One row per (team, REG game), that team's own cover-loss streak
-    length STRICTLY ENTERING that game (0.0 for a team's first REG game of a
-    season).
-
-    A push (``home_cover`` NaN) neither extends nor resets the streak -- it
-    is skipped from the team's own ordered sequence entirely, exactly the
-    convention docs/public_claim_battery.md's own ``ats_streak_len`` column
-    freezes. The streak resets to 0 at every season boundary and on any
-    cover. Nothing here reads a row's own outcome to compute that SAME row's
-    entering streak -- only strictly earlier rows in the team's own ordered
-    sequence feed each entering value.
-    """
 
     missing = sorted(_ATS_STREAK_REQUIRED_SCHEDULE_COLUMNS.difference(schedule.columns))
     if missing:
@@ -853,15 +626,6 @@ def _team_ats_streak_entering_each_game(schedule: pd.DataFrame) -> pd.DataFrame:
 
 
 def derive_ats_streak_regress_features(schedule: pd.DataFrame) -> pd.DataFrame:
-    """Return ``(game_id, ats_streak_regress_flag)`` for every game in ``schedule``.
-
-    ``+1`` if the HOME team enters this game on a losing ATS streak of
-    :data:`ATS_STREAK_REGRESS_MIN_STREAK` (3) or more AND the AWAY team does
-    not; ``-1`` if the reverse; ``0`` if both do, neither does, or the game
-    is not REG season (streak history and the flag itself are both built
-    from REG-season games only, matching docs/public_claim_battery.md's own
-    population -- a stated design choice, not an oversight).
-    """
 
     per_team = _team_ats_streak_entering_each_game(schedule)
     home_side = per_team.rename(columns={"team": "home_team", "streak_entering": "home_streak"})
@@ -894,7 +658,6 @@ def derive_ats_streak_regress_features(schedule: pd.DataFrame) -> pd.DataFrame:
 def attach_ats_streak_regress_features(
     features: pd.DataFrame, *, schedule: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Additively join ``ats_streak_regress_flag`` onto ``features`` by ``game_id``."""
 
     return _attach(
         features, schedule, derive_ats_streak_regress_features, (ATS_STREAK_REGRESS_COLUMN,)
@@ -1025,7 +788,6 @@ VENUE_INDOOR_DEFAULTS = {
 def decision_time_roof_schedule(
     schedule: pd.DataFrame, announcements: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Use venue metadata unless a roof announcement was observed before cutoff."""
     import json
 
     from nfl_ats.nfl_week import pool_decision_cutoff

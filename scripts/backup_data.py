@@ -1,50 +1,3 @@
-"""Incremental off-device mirror of the local data trees.
-
-Why this exists
----------------
-On 2026-08-27 an audit of the backup state found that ~70% of `data/` by bytes
-was copied anywhere, the copy was 11 days stale, and the entire `data/raw/`
-tree -- 741 MB across 31 scraped sources -- had never been backed up at all.
-The one prior backup was a hand-run `robocopy` from 2026-08-16 that a session
-performed once and nobody repeated, because nothing in the repository knew it
-was supposed to happen.
-
-The point-in-time captures under `data/market/raw/` and most of `data/raw/`
-are scrapes of pages that have since changed. They cannot be re-fetched at
-their original timestamps, so losing them does not cost a download -- it costs
-the observation permanently. That asymmetry is the whole justification for this
-script: everything here is cheap to run and some of what it protects is
-impossible to recreate.
-
-Same-disk copies do not count
------------------------------
-The repository lives on F:. The 2026-08-16 backup wrote to BOTH `F:\\` and
-`E:\\`, which reads like two copies but is one device plus a folder on the
-source disk -- a single SSD failure takes the repo and the F: copy together.
-`DEFAULT_DESTS` therefore points at E: only (a separate physical drive). Pass
-`--dest` to add more; pass it twice for two drives.
-
-Mirror, not dated snapshots
----------------------------
-The 2026-08-16 backups are dated, read-only, verified snapshots. Those stay
-exactly as they are -- they are the immutable floor. This script maintains a
-separate rolling MIRROR instead, because multi-gigabyte trees that grow every
-week cannot afford a fresh full snapshot per run. The tradeoff is deliberate
-and worth naming: a mirror can propagate a deletion, a dated snapshot cannot.
-The mirror never deletes on its own (there is no `--delete`), so the failure
-mode requires someone to remove files from the mirror by hand.
-
-Usage
------
-    python scripts/backup_data.py --status   # what is covered, what is not
-    python scripts/backup_data.py            # copy what is new/changed, verify it
-    python scripts/backup_data.py --include-artifacts  # data + research ledgers/results
-    python scripts/backup_data.py --verify-all   # re-hash the whole mirror
-
-`--status` is the command that answers "how much of our data is backed up?"
-without an ad-hoc investigation. Every mode is idempotent.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -74,8 +27,6 @@ MANIFEST_NAME = "backup_manifest.json"
 
 @dataclass
 class TreeReport:
-    """Per-source-tree tally for one destination."""
-
     name: str
     source_files: int = 0
     source_bytes: int = 0
@@ -94,8 +45,6 @@ class TreeReport:
 
 @dataclass
 class RunReport:
-    """Everything one destination's run produced, for printing and the manifest."""
-
     dest: Path
     trees: list[TreeReport] = field(default_factory=list)
 
@@ -108,7 +57,6 @@ class RunReport:
 
 
 def iter_source_files(root: Path) -> Iterator[Path]:
-    """Yield every mirrorable file under `root`, skipping machine-local state."""
     if not root.exists():
         return
     for path in sorted(root.rglob("*")):
@@ -125,13 +73,6 @@ def sha256(path: Path) -> str:
 
 
 def copy_state(source: Path, destination: Path) -> str:
-    """Classify one file as ``ok``, ``missing`` or ``stale``.
-
-    Size plus mtime, not content: hashing 3.5 GB to decide what to skip would
-    cost more than the copy it saves. Content IS checked, but only on the files
-    this run actually wrote (or under --verify-all), which is where a silent
-    corruption would have been introduced.
-    """
     if not destination.exists():
         return "missing"
     source_stat = source.stat()
@@ -159,7 +100,6 @@ def process_tree(
     apply: bool,
     verify_all: bool,
 ) -> TreeReport:
-    """Mirror (or, when `apply` is False, merely audit) one source tree."""
     report = TreeReport(name=name)
     source_root = REPO / name
     if not source_root.exists():
@@ -283,7 +223,7 @@ READ_ONLY_EXCEPTIONS: dict[int, str] = {
 
 
 def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0] if __doc__ else None)
+    parser = argparse.ArgumentParser(description="Mirror data and artifacts to the backup drive")
     parser.add_argument(
         "--dest",
         action="append",

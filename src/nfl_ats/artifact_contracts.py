@@ -1,40 +1,3 @@
-"""ENG-09: explicit schema/builder-version contracts for generated artifacts.
-
-ROADMAP Phase 13's definition of done: "Give feature tables, forecasts,
-cards, and ledgers explicit schema and builder versions plus compatibility
-checks, and refuse incompatible combinations before fitting or publishing."
-
-This module is a SECOND, coarser version axis layered on top of what already
-exists, not a replacement for it:
-
-* Feature-table families already carry their own fine-grained version
-  constants recorded directly in the manifest (``pbp_feature_version``,
-  ``player_feature_version``, ``qb_feature_version`` -- see
-  :mod:`nfl_ats.pbp`, :mod:`nfl_ats.players`, :mod:`nfl_ats.quarterbacks`).
-* Card provenance already has :mod:`nfl_ats.lineage` (``schema_version``,
-  ``builder_version`` on ``CardLineage``), which answers "where did this
-  decision-bearing field come from" at the *field* level.
-
-What was missing is an *artifact-kind* level contract: a small, uniform
-``{"kind", "schema_version", "builder_version", "builder_module"}`` block
-every artifact kind carries, plus one function that looks at two (or three)
-of those blocks together and says whether they are safe to combine --
-refusing a genuine version MISMATCH while never treating an artifact that
-predates this module (no block at all) as an error. That distinction is the
-whole point: an absent/unknown version on an artifact nobody has ever
-version-stamped is ``legacy_unversioned`` (a warning, so existing local
-artifacts keep working); a mismatch between two versions that are BOTH
-present is the hard failure.
-
-Stamped artifacts carry the contract block under the single top-level key
-:data:`CONTRACT_KEY` (``"artifact_contract"``), never as flat top-level
-keys, specifically so stamping never collides with a pre-existing
-``schema_version`` key an artifact may already use for something else (for
-example ``lockday_package.build_manifest``'s own package ``schema_version``,
-which predates this module and means something narrower: that package
-format's own version, not this artifact-kind contract).
-"""
-
 from __future__ import annotations
 
 import json
@@ -152,8 +115,6 @@ _PICK_REVISION_LEDGER_COLUMNS: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class ArtifactKindSpec:
-    """The registered contract for one artifact kind."""
-
     kind: str
     schema_version: int
     builder_version: str
@@ -220,7 +181,7 @@ ARTIFACT_KINDS: dict[str, ArtifactKindSpec] = {
 
 
 class ArtifactContractError(ValueError):
-    """An artifact-contract check found a hard failure that must block the caller."""
+    pass
 
 
 def _spec(kind: str) -> ArtifactKindSpec:
@@ -247,12 +208,6 @@ def _optional_int(value: Any) -> int | None:
 
 
 def stamp(kind: str, metadata: Mapping[str, Any]) -> dict[str, Any]:
-    """Return a copy of ``metadata`` with an ``artifact_contract`` block added.
-
-    Additive and pure: ``metadata`` itself is never mutated, and every
-    existing key is preserved untouched. Raises :class:`ArtifactContractError`
-    for an unregistered ``kind`` rather than silently stamping nonsense.
-    """
 
     spec = _spec(kind)
     stamped = dict(metadata)
@@ -267,8 +222,6 @@ def stamp(kind: str, metadata: Mapping[str, Any]) -> dict[str, Any]:
 
 @dataclass(frozen=True)
 class ArtifactContract:
-    """One artifact's contract block, or the explicit absence of one."""
-
     kind: str | None
     schema_version: int | None
     builder_version: str | None
@@ -291,12 +244,6 @@ _LEGACY_CONTRACT = ArtifactContract(
 
 
 def read_contract(path_or_metadata: Path | str | Mapping[str, Any]) -> ArtifactContract:
-    """Read an artifact's ``artifact_contract`` block from a path or an in-memory mapping.
-
-    Returns the explicit ``legacy_unversioned`` shape (never raises) when the
-    block is absent, so callers can read any artifact -- stamped or not --
-    through one function.
-    """
 
     if isinstance(path_or_metadata, Mapping):
         payload: Mapping[str, Any] = path_or_metadata
@@ -336,8 +283,6 @@ class CompatibilityIssue:
 
 @dataclass(frozen=True)
 class CompatibilityReport:
-    """The result of one :func:`check_compatible` or :func:`check_ledger` call."""
-
     issues: tuple[CompatibilityIssue, ...] = ()
 
     @property
@@ -350,20 +295,10 @@ class CompatibilityReport:
 
     @property
     def compatible(self) -> bool:
-        """``True`` iff nothing here rises above a warning.
-
-        Deliberately NOT named after the crossing-zero rule this repository
-        already bans (an interval containing zero is never grounds to
-        reject) -- this is a different, narrower question: whether two
-        artifacts' EXPLICIT version stamps contradict each other. A
-        ``legacy_unversioned`` warning is compatible; a ``version_mismatch``
-        is not.
-        """
 
         return not self.hard_failures
 
     def refuse_if_incompatible(self, *, action: str) -> None:
-        """Raise :class:`ArtifactContractError` when a hard failure is present."""
 
         failures = self.hard_failures
         if not failures:
@@ -383,25 +318,6 @@ def check_compatible(
     feature_table_manifest: Mapping[str, Any] | None,
     forecast_metadata: Mapping[str, Any] | None = None,
 ) -> CompatibilityReport:
-    """Whether a model, the feature table it would use, and (optionally) a forecast agree.
-
-    Three independent checks, each fail-soft into ``legacy_unversioned``
-    rather than fail-hard, EXCEPT the one case this exists to catch -- two
-    version stamps that are both present and disagree:
-
-    1. ``feature_table_manifest``'s stamped ``schema_version``/``builder_version``
-       vs. the same fields recorded on ``model_manifest`` (the active model's
-       own record of what it was fit on -- see
-       ``nfl_ats.active_model.activate_matching_ats_model``). Absent on
-       either side -> ``legacy_unversioned`` warning. Present on both and
-       different -> ``version_mismatch`` hard failure.
-    2. ``forecast_metadata``'s stamped contract, when supplied. Absent ->
-       ``legacy_unversioned`` warning. Present but not the schema version
-       this code recognizes -> ``unknown_forecast_schema`` hard failure.
-
-    ``model_manifest=None`` (no active model yet) skips check 1 entirely --
-    there is nothing to compare against, which is not the same as a mismatch.
-    """
 
     issues: list[CompatibilityIssue] = []
     table_contract = read_contract(feature_table_manifest or {})
@@ -466,15 +382,6 @@ def check_compatible(
 
 
 def check_ledger(kind: str, columns: Iterable[str]) -> CompatibilityReport:
-    """Whether a ledger frame's columns satisfy ``kind``'s required-column contract.
-
-    Missing columns are always a hard failure -- there is no legacy-warning
-    case here, because both ledger loaders (``nfl_ats.clv.load_paper_decisions``,
-    ``nfl_ats.pick_refresh.load_pick_revisions``) already backfill defaults for
-    columns older artifacts lack before this check would ever see them; a
-    frame that still lacks a required column has a schema problem, not an
-    age problem.
-    """
 
     spec = _spec(kind)
     present = set(columns)

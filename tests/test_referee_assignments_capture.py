@@ -1,18 +1,3 @@
-"""Tests for the weekly officiating-crew-assignments capture (WP22).
-
-Covers parse correctness against the two real, trimmed fixtures in
-``tests/fixtures/`` (double- and single-quoted markup variants; "at" and
-"vs." matchup forms; ``<sup>`` seed annotations and "*" footnote markers),
-team-code mapping, referee-name normalisation and its measured join rate
-against the historical crew traits (``officials.parquet``), the
-category-index/direct-guess source-selection logic, every ``empty_reason``
-branch (including which ones must still exit non-zero), manifest field
-presence, schedule-derived game_id/home_team/away_team resolution by
-unordered team pair, and the scheduler-naming/dedupe contract the
-``referee_assignments_wed`` job depends on (matching how ``player_arrests_tue``
-and the ``inactives_*`` jobs already dedupe).
-"""
-
 from __future__ import annotations
 
 import json
@@ -128,9 +113,6 @@ def test_parse_week10_fixture_maps_teams_and_both_matchup_forms() -> None:
 
 
 def test_referee_name_alias_resolves_the_one_measured_mismatch() -> None:
-    """Football Zebras prints "Ron Torbert"; officials.parquet's own
-    official_name has always recorded him as "Ronald Torbert" (measured,
-    src/nfl_ats/referee_assignments_capture.py module docstring)."""
     rows, _ = rac.parse_assignment_page(
         WEEK10_HTML,
         season=2025,
@@ -145,8 +127,6 @@ def test_referee_name_alias_resolves_the_one_measured_mismatch() -> None:
 
 
 def test_parse_week18_excerpt_strips_sup_seed_tags_and_asterisk_footnote() -> None:
-    """Single-quoted markup variant; exercises <sup>seed</sup> annotations
-    and the "*" footnote WordPress attaches to "Buccaneers*"."""
     rows, warnings = rac.parse_assignment_page(
         WEEK18_EXCERPT_HTML,
         season=2025,
@@ -195,12 +175,6 @@ def test_empty_referee_cell_and_unparseable_matchup_are_skipped_with_warnings() 
 
 
 def test_current_crew_names_join_the_historical_officials_snapshot() -> None:
-    """MEASURED (this session): the 2026-season Football Zebras crew roster
-    lists 17 referees; 16 match officials.parquet's official_name verbatim,
-    and the alias table resolves the lone remaining mismatch (Ron Torbert).
-    This pins that measurement so a future officials.parquet refresh or a
-    roster change cannot silently break the join without a test failing.
-    """
     officials_snapshot = sorted(
         (Path(__file__).resolve().parents[1] / "data" / "raw" / "officials").glob(
             "*/officials.parquet"
@@ -251,9 +225,6 @@ def test_find_week_url_locates_a_listed_week() -> None:
 
 
 def test_find_week_url_returns_none_for_a_week_not_yet_listed() -> None:
-    """MEASURED 2026-09-01: this real category-index fetch does not (yet)
-    list a 2026 Week 1 post -- the genuine current not_yet_published state.
-    """
     assert rac.find_week_url(CATEGORY_INDEX_HTML, season=2026, week=1) is None
 
 
@@ -315,9 +286,6 @@ def test_run_capture_category_index_success_resolves_schedule_join(tmp_path: Pat
 
 
 def test_run_capture_not_yet_published_is_expected_zero_row_ok(tmp_path: Path) -> None:
-    """The real, current (2026-09-01) state for 2026 Week 1: the index loads
-    fine and simply does not list it yet, and no schedule exists to build a
-    direct-guess URL from either."""
     fetch, calls = make_fetch({rac.CATEGORY_URL: (CATEGORY_INDEX_HTML, 200, None, True)})
     out_root = tmp_path / "data" / "players" / "referee_assignments"
 

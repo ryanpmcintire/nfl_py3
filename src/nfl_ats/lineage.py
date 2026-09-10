@@ -1,65 +1,3 @@
-"""End-to-end lineage from a published card field back to its source (ENG-16).
-
-A weekly card is a small number of decisions wrapped in a lot of display.
-When a pick is questioned months later the answerable question is not "what
-did the model say" -- ``recommendations.csv`` already answers that -- but
-"what did that number *see*, and when could it have seen it".  This module
-emits that answer as a machine-readable artifact (``lineage.json``, written
-next to the forecast) so the prediction-safety contract can refuse to publish
-a card whose decision-bearing fields cannot say where they came from.
-
-Decision-bearing, defined
--------------------------
-A card field is **decision-bearing** when changing it would change what gets
-submitted to the pool.  Concretely, and this list is the definition rather
-than a summary of one:
-
-1. :data:`FIELD_PICK` -- the side actually played.
-2. :data:`FIELD_MODEL_PROBABILITY` -- the model probability the pick is read
-   from, and the number the confidence ordering uses.
-3. :data:`FIELD_MARKET_LINE` -- the market line the pick is expressed and
-   graded against.
-4. One ``overlay:<member_id>`` field for **each overlay that fired**.  An
-   overlay that did not fire changed nothing, so it has nothing to justify;
-   an overlay that flipped a pick is as decision-bearing as the pick.
-5. One ``tiebreaker:<input>`` field per tiebreaker input, because the pool's
-   tiebreaker score is a submitted number too.
-6. One ``model_input:<family>`` field per feature family the fitted model
-   actually consumed.  These are the pick's ingredients; a family whose
-   snapshot nobody recorded is exactly the gap this module exists to surface.
-
-Everything else on the card -- matchup text, formatted dates, cosmetic ranks
--- is display.  Display fields may carry ``"lineage": null`` provided they
-carry an explicit ``reason``; silence is not permitted anywhere.
-
-What "complete" means
----------------------
-:func:`validate_card_lineage` (re-exported through
-:mod:`nfl_ats.prediction_safety`, so it is release-blocking alongside the
-existing checks) requires, for every decision-bearing field:
-
-* a record exists, with non-empty ``feature_family``, ``builder_version``,
-  ``builder_module`` and ``effective_timestamp``;
-* ``source_snapshot`` is present, **or** ``unknown_source_reason`` explains in
-  words why it is not recordable today.  An unrecorded provenance has to be
-  declared, not merely absent -- that is what keeps
-  ``docs/feature_lineage.md``'s honest gap list from quietly growing;
-* ``effective_timestamp <= prediction_timestamp``.  This is the project's
-  pregame-information invariant ("features may only use information available
-  before the prediction timestamp") restated at the lineage layer, where it is
-  checkable from the artifact alone rather than from the builder's intent.
-
-``effective_timestamp`` is the as-of cutoff the feature used when the builder
-records one.  Most builders do not, so the field carries a companion
-:attr:`LineageRecord.effective_timestamp_basis` naming what was actually
-available: a recorded cutoff (``"declared"`` / ``"training_cutoff"``), the
-capture instant of the source snapshot (``"source_capture"``), or the feature
-table's build time (``"feature_table_build"``) -- the tightest provable upper
-bound on an as-of that nobody wrote down.  Reporting an upper bound as though
-it were the cutoff would be exactly the kind of unlabelled claim this
-repository already bans.
-"""
-
 from __future__ import annotations
 
 import json
@@ -106,11 +44,10 @@ TIMESTAMP_BASES = frozenset(
 
 
 class LineageError(ValueError):
-    """A card's lineage is missing, incomplete, or violates the cutoff rule."""
+    pass
 
 
 def is_decision_bearing(card_field: str) -> bool:
-    """Whether ``card_field`` changes what actually gets submitted to the pool."""
 
     return card_field in REQUIRED_DECISION_BEARING_FIELDS or card_field.startswith(
         (OVERLAY_FIELD_PREFIX, TIEBREAKER_FIELD_PREFIX, MODEL_INPUT_FIELD_PREFIX)
@@ -134,7 +71,6 @@ def _optional_int(value: Any) -> int | None:
 
 
 def as_utc(value: Any) -> datetime | None:
-    """Best-effort UTC datetime for a timestamp of unknown flavour."""
 
     if value is None:
         return None
@@ -158,16 +94,6 @@ INJURY_OBSERVED_AT_COLUMNS: tuple[str, ...] = ("home_injury_observed_at", "away_
 
 
 def _frame_observed_at(forecast: pd.DataFrame, columns: Sequence[str]) -> datetime | None:
-    """The LATEST non-null instant across ``columns`` present in ``forecast``.
-
-    A single lineage record covers every row of the card, so the latest (not
-    earliest) per-row observation is the only value that is still a valid
-    upper bound for all of them: if the newest is still ``<=
-    prediction_timestamp``, every row's is too. Returns ``None`` when none of
-    ``columns`` exist or all values are null -- callers keep their existing
-    fallback in that case, so a frame built before ENG-23 (no such columns)
-    is unaffected.
-    """
 
     present = [column for column in columns if column in forecast.columns]
     if not present:
@@ -180,16 +106,6 @@ def _frame_observed_at(forecast: pd.DataFrame, columns: Sequence[str]) -> dateti
 
 
 def parse_snapshot_capture(snapshot_id: str | None) -> str | None:
-    """Capture instant encoded in an ``nfl_ats.snapshots`` id (``%Y%m%dT%H%M%SZ``).
-
-    Snapshot directories are named for the UTC instant they were written, so
-    the id *is* the capture timestamp -- and it is the only capture field that
-    is uniform across sources (the manifests themselves variously call it
-    ``fetched_at_utc``, ``created_at_utc``, ``captured_at_utc``,
-    ``observed_at_utc``, ``generated_at_utc`` or ``retrieved_at_utc``).
-    Returns ``None`` for ids that do not follow the convention rather than
-    guessing.
-    """
 
     if not snapshot_id:
         return None
@@ -202,8 +118,6 @@ def parse_snapshot_capture(snapshot_id: str | None) -> str | None:
 
 @dataclass(frozen=True)
 class LineageRecord:
-    """One card field's path back to a source snapshot and a builder."""
-
     card_field: str
     feature_family: str
     source_snapshot: str | None
@@ -244,8 +158,6 @@ class LineageRecord:
 
 @dataclass(frozen=True)
 class CardLineageEntry:
-    """One card field: a lineage record, or an explicitly reasoned absence."""
-
     card_field: str
     decision_bearing: bool
     lineage: LineageRecord | None
@@ -272,8 +184,6 @@ class CardLineageEntry:
 
 @dataclass(frozen=True)
 class CardLineage:
-    """Every field of one weekly card, with its provenance or its excuse."""
-
     prediction_timestamp: str
     entries: tuple[CardLineageEntry, ...]
     season: int | None = None
@@ -333,19 +243,12 @@ class CardLineage:
         return None
 
     def with_entries(self, entries: Iterable[CardLineageEntry]) -> CardLineage:
-        """Return a copy with ``entries`` appended.
-
-        Used by the publish path, which only learns which overlays fired after
-        the forecast artifact has already been written.
-        """
 
         return replace(self, entries=self.entries + tuple(entries))
 
 
 @dataclass(frozen=True)
 class FamilyBuilder:
-    """Which module builds a feature family, and where its source is recorded."""
-
     builder_module: str
     builder_version: str
     manifest_snapshot_key: str | None = None
@@ -458,19 +361,11 @@ MANIFEST_VERSION_KEYS: dict[str, str] = {
 
 
 def family_builder(family: str) -> FamilyBuilder:
-    """The registered builder for ``family``, or an explicitly unknown default."""
 
     return FAMILY_BUILDERS.get(family, DEFAULT_FAMILY_BUILDER)
 
 
 def families_for_columns(columns: Iterable[str]) -> tuple[str, ...]:
-    """Feature families covering ``columns``, in :data:`FEATURE_FAMILIES` order.
-
-    A column belonging to no declared family is reported under the synthetic
-    family ``"unassigned"`` rather than dropped: an input the model consumed
-    that no family claims is precisely the thing a lineage record should
-    expose, not hide.
-    """
 
     wanted = set(columns)
     families: list[str] = []
@@ -487,8 +382,6 @@ def families_for_columns(columns: Iterable[str]) -> tuple[str, ...]:
 
 @dataclass(frozen=True)
 class OverlaySource:
-    """One overlay that actually fired, and what it read to decide that."""
-
     member_id: str
     builder_module: str
     builder_version: str
@@ -515,8 +408,6 @@ class OverlaySource:
 
 @dataclass(frozen=True)
 class TiebreakerSource:
-    """One input to the pool tiebreaker guess (market consensus, model view...)."""
-
     input_name: str
     builder_module: str
     builder_version: str
@@ -546,13 +437,6 @@ ARREST_SNAPSHOT_MEMBERS = frozenset({"player_arrests_back_side_policy"})
 def overlay_sources_from_composition(
     result: Any, *, fallback_effective_timestamp: str
 ) -> tuple[OverlaySource, ...]:
-    """Adapt a ``four_overlay_composition`` result into overlay lineage inputs.
-
-    Duck-typed on purpose: the composition result is a heavy object owned by
-    the played-policy module, and lineage should not become a reason that
-    module cannot change.  Only members that actually flipped a game are
-    returned -- a member that changed nothing is not decision-bearing.
-    """
 
     arrest_snapshot = _optional_text(getattr(result, "arrest_snapshot_id", None))
     captured = as_utc(getattr(result, "arrest_snapshot_fetched_at_utc", None))
@@ -598,7 +482,6 @@ def overlay_sources_from_composition(
 
 
 def feature_table_manifest(metadata: Mapping[str, Any]) -> Mapping[str, Any]:
-    """The feature-builder manifest embedded in a forecast's provenance block."""
 
     provenance = metadata.get("provenance")
     if not isinstance(provenance, Mapping):
@@ -633,12 +516,6 @@ def _training_cutoff(forecast: pd.DataFrame) -> datetime | None:
 
 
 def _decision_basis(forecast: pd.DataFrame, manifest: Mapping[str, Any]) -> tuple[datetime, str]:
-    """The tightest defensible as-of for the card's own decision fields.
-
-    A pick sees both the fitted model (bounded by the training cutoff) and the
-    target week's own feature row (bounded by when the feature table was
-    built), so the honest bound is the later of the two.
-    """
 
     built = as_utc(manifest.get("built_at_utc"))
     trained = _training_cutoff(forecast)
@@ -654,16 +531,6 @@ def _decision_basis(forecast: pd.DataFrame, manifest: Mapping[str, Any]) -> tupl
 def _inherited_snapshot(
     manifest_snapshot_key: str | None, manifest: Mapping[str, Any]
 ) -> tuple[str | None, str | None]:
-    """(snapshot_id, captured_at) an ENG-22 ``source_snapshots`` block names.
-
-    ``manifest_snapshot_key`` (e.g. ``"source_snapshot"``,
-    ``"source_pbp_snapshot"``) is the same key
-    :data:`FamilyBuilder.manifest_snapshot_key` already looks for directly on
-    the manifest; derived manifests that predate ENG-22, or a legacy
-    manifest with no ``source_snapshots`` block at all, simply have nothing
-    under this key, and the caller keeps falling through to the digest
-    fallback exactly as before ENG-22 existed.
-    """
 
     if manifest_snapshot_key is None:
         return None, None
@@ -758,25 +625,6 @@ def build_card_lineage(
     display_fields: Mapping[str, str] | None = None,
     generated_at: datetime | None = None,
 ) -> CardLineage:
-    """Build lineage for every decision-bearing field of one weekly card.
-
-    ``metadata`` is the forecast artifact's ``metadata.json`` payload; its
-    ``provenance.feature_table.manifest`` block supplies the source snapshots
-    and builder versions.  ``active_model`` is ``active_ats_model.json`` when
-    the card has been activated.  ``feature_columns`` is the model's own input
-    contract -- pass ``margin.margin_feature_columns(target, profile)`` -- so
-    the emitted families are the ones the fit actually consumed rather than
-    every column that happens to sit in the table.
-
-    ENG-23: when ``forecast`` carries :data:`nfl_ats.market_observation.MARKET_OBSERVED_AT_COLUMN`
-    or :data:`INJURY_OBSERVED_AT_COLUMNS`, the ``market_line`` and
-    ``model_input:player_injuries`` records use the latest non-null value
-    across those columns as ``source_captured_at`` / ``effective_timestamp``
-    in place of the whole-table manifest fallback -- a real per-card capture
-    instant instead of an upper bound nobody wrote down. A frame without
-    those columns (every frame built before ENG-23) validates exactly as it
-    did before.
-    """
 
     manifest = feature_table_manifest(metadata)
     feature_table_id = _feature_table_identifier(metadata)
@@ -904,32 +752,6 @@ def extend_card_lineage_for_publication(
     prediction_timestamp: Any = None,
     generated_at: datetime | None = None,
 ) -> CardLineage:
-    """Extend a forecast's own lineage with what publish time learns (ENG-24).
-
-    ``margin-predict``/``predict`` write ``lineage.json`` before the four-member
-    overlay policy and the pool tiebreaker guess ever run (see
-    ``docs/feature_lineage.md`` gap items 4-5), so neither can appear in that
-    file. ``nfl_ats.publishing`` reads it back (or builds an equivalent fresh
-    one when it is absent), adapts the overlay result and the tiebreaker guess
-    into :class:`OverlaySource`/:class:`TiebreakerSource` records the same way
-    :func:`build_card_lineage` would have, and calls this function to produce
-    the PLAYED card's own lineage -- a distinct object/file from the
-    forecast's, written beside the published card rather than overwritten
-    into the forecast artifact.
-
-    ``prediction_timestamp`` defaults to keeping the base lineage's own value
-    unchanged (a no-op extension). Pass the publish instant when the new
-    records were captured after the original forecast was built -- the normal
-    case, since an arrest snapshot or market quote read fresh at publish time
-    postdates the forecast's own cutoff -- so the pregame-information check in
-    :func:`validate_card_lineage` compares every record, old and new, against
-    the moment the PLAYED card was actually decided. The cutoff only ever
-    moves LATER than the base's own: a caller-supplied instant earlier than
-    ``lineage.prediction_timestamp`` is ignored rather than applied, because
-    shrinking the cutoff could turn an already-valid base record (built,
-    honestly, at its own "now" when neither a manifest nor a training cutoff
-    was available) into a manufactured leak.
-    """
 
     entries = [
         CardLineageEntry(f"{OVERLAY_FIELD_PREFIX}{overlay.member_id}", True, overlay.record())
@@ -989,12 +811,6 @@ def validate_card_lineage(
     prediction_timestamp: Any = None,
     required_fields: Sequence[str] = REQUIRED_DECISION_BEARING_FIELDS,
 ) -> tuple[str, ...]:
-    """Fail closed when a card cannot say where its decisions came from.
-
-    Raises :class:`LineageError` naming every offending field.  Returns the
-    names of the checks that passed, matching the shape
-    :mod:`nfl_ats.prediction_safety` already reports.
-    """
 
     if lineage.schema_version != LINEAGE_SCHEMA_VERSION:
         raise LineageError(
@@ -1051,7 +867,6 @@ def validate_card_lineage(
 
 
 def write_card_lineage(lineage: CardLineage, directory: Path) -> Path:
-    """Write ``lineage.json`` into a forecast artifact directory, atomically."""
 
     destination = Path(directory) / LINEAGE_FILENAME
     atomic_json(lineage.to_dict(), destination)
@@ -1059,7 +874,6 @@ def write_card_lineage(lineage: CardLineage, directory: Path) -> Path:
 
 
 def read_card_lineage(directory: Path) -> CardLineage:
-    """Read ``lineage.json`` back out of a forecast artifact directory."""
 
     return CardLineage.from_json((Path(directory) / LINEAGE_FILENAME).read_text(encoding="utf-8"))
 

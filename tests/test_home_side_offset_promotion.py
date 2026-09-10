@@ -1,11 +1,3 @@
-"""MOD-18 lane S promotion: the served home-side offset and its paired challenger.
-
-Covers the production fit path (history precedence, target-week exclusion,
-leakage), the point-shift contract on ``MarginModel.predict`` /
-``line_sweep``, the sidecar-driven challenger recorder, and the served /
-challenger parity that the promotion rests on.
-"""
-
 from __future__ import annotations
 
 import json
@@ -38,7 +30,6 @@ from nfl_ats.prospective_scoring import load_challenger_decisions
 
 
 def _archive(rows: int = 240, seed: int = 7) -> pd.DataFrame:
-    """A synthetic opener archive: big home favourites under-located by +3."""
 
     rng = np.random.default_rng(seed)
     seasons = np.repeat([2021, 2022, 2023, 2024, 2025], rows // 5)
@@ -161,8 +152,6 @@ def _model_frame(rows: int = 320, seed: int = 3) -> pd.DataFrame:
 
 
 def _fitted_model() -> tuple[MarginModel, pd.DataFrame]:
-    """A real ``MarginModel`` on one synthetic feature, built directly so the
-    test does not depend on any named feature profile."""
 
     from sklearn.linear_model import Ridge
 

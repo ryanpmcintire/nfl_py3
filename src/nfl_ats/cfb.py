@@ -1,24 +1,3 @@
-"""Immutable college-football source ingestion for cross-league research.
-
-XLG-02 phase 1 ingests the no-key bulk sources selected by the XLG-01
-feasibility audit: sportsdataverse-data GitHub release assets (ESPN CFB
-play-by-play, game rosters, play participants, and the per-season betting
-cross-check) plus cfbfastR-data raw files (CFBD-flavor schedules and the
-multi-book line-odds archive). Upstream assets are rebuilt in place, so every
-refresh writes an immutable snapshot holding the verbatim downloaded bytes,
-SHA-256 hashes of raw and canonical files, and the upstream release-asset
-timestamps or pinned git commit that produced them.
-
-XLG-02 phase 3 adds the CollegeFootballData API gap-fillers that no bulk
-archive carries: NFL draft picks with the collegeAthleteId/nflAthleteId
-crosswalk, returning production, team and player recruiting, player usage,
-and the transfer portal. Every CFBD call is authenticated with the
-CFBD_API_KEY environment variable (free tier: 1,000 calls per month), the
-verbatim JSON response bytes are snapshotted next to the canonical parquet
-partitions, and the manifest records the endpoint, params, and API version
-behind each partition. The key itself is never written anywhere.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -90,8 +69,6 @@ _sleep = time.sleep
 
 @dataclass(frozen=True)
 class CfbSourceSpec:
-    """Where one CFB dataset lives upstream and which seasons are ingestable."""
-
     key: str
     dataset: str
     partition_filename: str
@@ -631,7 +608,6 @@ CFBD_PORTAL_IDENTITY_CONTRACT = (
 def assert_no_quarantined_roster_columns(
     frame: pd.DataFrame, dataset: str = "cfb_game_rosters"
 ) -> None:
-    """Refuse any roster table that still carries the unreliable flags."""
 
     present = sorted(set(CFB_ROSTER_QUARANTINED_COLUMNS).intersection(frame.columns))
     if present:
@@ -654,7 +630,6 @@ def cfb_line_source_regime(season: int) -> str:
 def canonicalize_cfb_schedules(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one CFBD-flavor schedule season and audit its composition."""
 
     require_columns(frame, CFB_SCHEDULE_REQUIRED_COLUMNS, "cfb_schedules")
     result = fill_missing_columns(frame, CFB_SCHEDULE_SNAPSHOT_COLUMNS)
@@ -682,7 +657,6 @@ def canonicalize_cfb_schedules(
 def canonicalize_cfb_lines(
     frame: pd.DataFrame, seasons: list[int]
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize the multi-book line archive with regime and opener contracts."""
 
     require_columns(frame, CFB_LINE_REQUIRED_COLUMNS, "cfb_line_odds")
     result = frame.loc[:, list(CFB_LINE_REQUIRED_COLUMNS)].copy()
@@ -749,7 +723,6 @@ def canonicalize_cfb_lines(
 
 
 def canonicalize_cfb_pbp(frame: pd.DataFrame, season: int) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one ESPN CFB play-by-play season to the storage contract."""
 
     require_columns(frame, CFB_PBP_REQUIRED_COLUMNS, "espn_cfb_pbp")
     result = fill_missing_columns(frame, CFB_PBP_SNAPSHOT_COLUMNS)
@@ -805,7 +778,6 @@ def canonicalize_cfb_pbp(frame: pd.DataFrame, season: int) -> tuple[pd.DataFrame
 def canonicalize_cfb_game_rosters(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one game-roster season, excluding quarantined availability flags."""
 
     require_columns(frame, CFB_ROSTER_REQUIRED_COLUMNS, "cfb_game_rosters")
     rows_in = len(frame)
@@ -833,7 +805,6 @@ def canonicalize_cfb_game_rosters(
 def canonicalize_cfb_play_participants(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one play-participants season (credited actors only)."""
 
     require_columns(frame, CFB_PARTICIPANT_REQUIRED_COLUMNS, "cfb_play_participants")
     result = fill_missing_columns(frame, CFB_PARTICIPANT_SNAPSHOT_COLUMNS)
@@ -851,7 +822,6 @@ def canonicalize_cfb_play_participants(
 def canonicalize_espn_cfb_betting(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize the single-line ESPN betting cross-check, refusing placeholders."""
 
     require_columns(frame, ESPN_CFB_BETTING_REQUIRED_COLUMNS, "espn_cfb_betting")
     result = frame.loc[:, list(ESPN_CFB_BETTING_REQUIRED_COLUMNS)].copy()
@@ -888,7 +858,6 @@ def _nonnull_rate(series: pd.Series) -> float:
 def canonicalize_cfbd_draft_picks(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one draft year, enforcing the athlete-id crosswalk contract."""
 
     require_columns(frame, CFBD_DRAFT_PICK_REQUIRED_COLUMNS, "cfbd_draft_picks")
     result = fill_missing_columns(frame, CFBD_DRAFT_PICK_SNAPSHOT_COLUMNS)
@@ -918,7 +887,6 @@ def canonicalize_cfbd_draft_picks(
 def canonicalize_cfbd_returning_production(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one returning-production season (team grain, no athlete ids)."""
 
     require_columns(frame, CFBD_RETURNING_REQUIRED_COLUMNS, "cfbd_returning_production")
     result = fill_missing_columns(frame, CFBD_RETURNING_REQUIRED_COLUMNS)
@@ -944,7 +912,6 @@ def canonicalize_cfbd_returning_production(
 def canonicalize_cfbd_recruiting_teams(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one team recruiting-class ranking year (team grain, no ids)."""
 
     require_columns(frame, CFBD_RECRUITING_TEAM_REQUIRED_COLUMNS, "cfbd_recruiting_teams")
     result = fill_missing_columns(frame, CFBD_RECRUITING_TEAM_REQUIRED_COLUMNS)
@@ -962,7 +929,6 @@ def canonicalize_cfbd_recruiting_teams(
 def canonicalize_cfbd_recruiting_players(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one player recruiting class, requiring stable recruit ids."""
 
     require_columns(frame, CFBD_RECRUIT_REQUIRED_COLUMNS, "cfbd_recruiting_players")
     result = fill_missing_columns(frame, CFBD_RECRUIT_SNAPSHOT_COLUMNS)
@@ -997,7 +963,6 @@ def canonicalize_cfbd_recruiting_players(
 def canonicalize_cfbd_usage(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one player-usage season, requiring stable athlete ids."""
 
     require_columns(frame, CFBD_USAGE_REQUIRED_COLUMNS, "cfbd_usage")
     result = fill_missing_columns(frame, CFBD_USAGE_REQUIRED_COLUMNS)
@@ -1035,7 +1000,6 @@ def canonicalize_cfbd_usage(
 def canonicalize_cfbd_portal(
     frame: pd.DataFrame, season: int
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Normalize one transfer-portal season (name-keyed source, no athlete ids)."""
 
     require_columns(frame, CFBD_PORTAL_REQUIRED_COLUMNS, "cfbd_portal")
     result = fill_missing_columns(frame, CFBD_PORTAL_REQUIRED_COLUMNS)
@@ -1101,7 +1065,6 @@ def _read_parquet_bytes(payload: bytes, description: str) -> pd.DataFrame:
 
 
 def cfbd_api_key() -> str:
-    """Read the CFBD key from the environment, failing closed when unset."""
 
     key = os.environ.get(CFBD_API_KEY_ENV, "").strip()
     if not key:
@@ -1114,7 +1077,6 @@ def cfbd_api_key() -> str:
 
 
 def _cfbd_http(url: str, api_key: str) -> tuple[bytes, dict[str, str]]:
-    """One authenticated CFBD request; the key travels only in the header."""
 
     request = urllib.request.Request(
         url,
@@ -1163,7 +1125,6 @@ def _cfbd_records(payload: bytes, description: str) -> list[dict[str, Any]]:
 
 
 def resolve_cfbd_api() -> dict[str, str]:
-    """Record the CFBD host and OpenAPI version without spending a quota call."""
 
     payload = _download(CFBD_API_DOCS_URL, "CFBD OpenAPI document")
     try:
@@ -1183,7 +1144,6 @@ def resolve_cfbd_api() -> dict[str, str]:
 
 
 def resolve_cfbfastr_commit() -> dict[str, str]:
-    """Pin the cfbfastR-data head commit so raw-file downloads are reproducible."""
 
     payload = _github_json(
         f"{GITHUB_API_ROOT}/repos/{CFBFASTR_DATA_REPOSITORY}/branches/{CFBFASTR_DATA_BRANCH}"
@@ -1201,7 +1161,6 @@ def _cfbfastr_raw_url(commit_sha: str, relative_path: str) -> str:
 
 
 def resolve_release_assets(release_tag: str) -> dict[str, Any]:
-    """List one sportsdataverse-data release's assets with sizes and timestamps."""
 
     payload = _github_json(
         f"{GITHUB_API_ROOT}/repos/{SPORTSDATAVERSE_DATA_REPOSITORY}/releases/tags/{release_tag}"
@@ -1258,8 +1217,6 @@ def _validate_requested_seasons(spec: CfbSourceSpec, seasons: list[int]) -> list
 
 @dataclass(frozen=True)
 class CfbSnapshot:
-    """An immutable, season-partitioned CFB source snapshot."""
-
     source: str
     snapshot_id: str
     root: Path
@@ -1372,7 +1329,6 @@ def _canonicalize_season(
 def _season_source_urls(
     spec: CfbSourceSpec, seasons: list[int]
 ) -> tuple[dict[str, Any], dict[int, dict[str, Any]]]:
-    """Resolve provenance and one source file per season without downloading."""
 
     files: dict[int, dict[str, Any]]
     if spec.origin == "cfbfastr_raw":
@@ -1482,7 +1438,6 @@ def _cfbd_partition(
     season: int,
     source_file: dict[str, Any],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
-    """Canonicalize and write one CFBD season partition, returning its manifest row."""
 
     canonical, season_audit = _canonicalize_season(spec, frame, season)
     path = snapshot.season_path(season)
@@ -1500,7 +1455,6 @@ def _cfbd_partition(
 def _fetch_cfbd_snapshot(
     spec: CfbSourceSpec, seasons: list[int], destination: Path, identifier: str
 ) -> CfbSnapshot:
-    """Snapshot one CFBD gap-filler source with raw JSON bytes and call audit."""
 
     api_key = cfbd_api_key()
     provenance: dict[str, Any] = dict(resolve_cfbd_api())
@@ -1571,7 +1525,6 @@ def fetch_cfb_snapshot(
     cfb_root: Path,
     snapshot_id: str | None = None,
 ) -> CfbSnapshot:
-    """Download one CFB source into an immutable season-partitioned snapshot."""
 
     spec = cfb_source_spec(source)
     requested = _validate_requested_seasons(spec, seasons)
@@ -1620,7 +1573,6 @@ def fetch_cfb_snapshot(
 
 
 def plan_cfb_ingest(source: str, seasons: list[int]) -> dict[str, Any]:
-    """Resolve upstream files and sizes for an ingest without downloading data."""
 
     spec = cfb_source_spec(source)
     requested = _validate_requested_seasons(spec, seasons)
@@ -1740,7 +1692,6 @@ def load_cfb_snapshot(snapshot: CfbSnapshot) -> pd.DataFrame:
 
 
 def summarize_cfb_snapshots(cfb_root: Path) -> dict[str, Any]:
-    """Report the latest snapshot per CFB source for the cfb-summary command."""
 
     summary: dict[str, Any] = {}
     for key in sorted(CFB_SOURCES):

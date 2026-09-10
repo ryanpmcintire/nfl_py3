@@ -1,15 +1,3 @@
-"""Refresh-path wiring of the NFL.com Friday out>=2-starters fade challenger.
-
-Pins, per the task's contract and the repo's leakage invariant:
-- the flag computation (2+ starter-caliber Outs on the picked team, opponent
-  unflagged -> flip; both flagged -> keep; nothing flagged -> keep);
-- played-pick INVARIANCE (the overlay cannot alter any RefreshedGame side or
-  the pick-revision ledger -- it only ever writes its own separate ledger);
-- FAIL-OPEN no-ops (no snapshot / no snap counts / page absent / page stale /
-  page fetched at-or-after kickoff -- never an error, never a flip);
-- challenger record emission (opt-in recording, append-only across passes).
-"""
-
 from __future__ import annotations
 
 import json
@@ -352,10 +340,6 @@ def test_noop_when_snap_counts_are_absent(tmp_path: Path) -> None:
 def test_leakage_regression_page_fetched_at_or_after_kickoff_is_a_documented_noop(
     tmp_path: Path,
 ) -> None:
-    """The flag may ONLY consume a page predating a game's OWN pick deadline:
-    when the page post-dates every eligible game's deadline the pass must be a
-    skipped no-op with zero ledger writes -- never a fallback read, never a
-    flip."""
 
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"
@@ -373,14 +357,6 @@ def test_leakage_regression_page_fetched_at_or_after_kickoff_is_a_documented_noo
 
 
 def test_a_thursday_game_no_longer_silences_the_whole_week(tmp_path: Path) -> None:
-    """Regression for the 2026-08-25 correction.
-
-    The gate used to demand the page predate the week's EARLIEST kickoff. Every
-    real NFL week opens with a Thursday night game, so a Friday-final page never
-    satisfied that and the arm recorded NOTHING, all season -- measured
-    unsatisfiable on 7 of 7 real weeks. The correct boundary is each game's OWN
-    pick deadline: the Thursday game drops out, the Sunday slate is scored.
-    """
 
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"

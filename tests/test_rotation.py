@@ -48,10 +48,6 @@ def _seeded() -> Registry:
 
 
 def test_live_ledger_loads_and_validates() -> None:
-    """The shipped ledger must always satisfy the schema, whatever it now holds.
-
-    Deliberately asserts no counts: spending a window is the registry working.
-    """
 
     registry = load_registry(LIVE_REGISTRY)
     assert registry.families
@@ -117,11 +113,6 @@ def _window(**overrides: Any) -> dict[str, Any]:
 def _synthetic_seasons(
     *, seasons: Iterable[int], weeks: int = 16, games_per_week: int = 16
 ) -> pd.DataFrame:
-    """A regular schedule of whole 256-game seasons, for warm-up arithmetic.
-
-    Deliberately synthetic: the eligibility floor must be provable without a
-    local feature table, which a fresh clone does not have.
-    """
 
     rows: list[dict[str, Any]] = []
     for season in seasons:
@@ -626,12 +617,6 @@ def test_cli_rotation_workflow(
 
 
 def test_closed_negative_requires_an_admissible_closing_ground() -> None:
-    """AGENTS.md, binding: an interval containing zero never closes a family.
-
-    The registry refuses a closed_negative verdict that names no admissible
-    ground, quoting the rule -- so a session that never loaded the prose rule
-    hits it anyway, at the exact moment it matters.
-    """
 
     registry = declare_family(_seeded(), "alpha", description="candidate", grade="nflverse_spread")
     registry = assign_window(registry, "alpha")
@@ -680,12 +665,6 @@ def test_non_terminal_verdicts_cannot_carry_a_closing_ground() -> None:
 
 
 def test_legacy_groundless_closures_load_but_new_grounds_are_checked() -> None:
-    """Historical ledger entries are never re-judged on load (the warm-up-floor
-    principle), so a prose-era closed_negative without a ground still parses.
-    A ground that IS present must be admissible and belong to a closure, and
-    the live-ledger contract test separately holds the tracked registry to the
-    full taxonomy.
-    """
 
     legacy = _window(
         seasons=[2012, 2014],
@@ -730,10 +709,6 @@ def test_legacy_groundless_closures_load_but_new_grounds_are_checked() -> None:
 
 
 def test_effect_fields_round_trip_through_load_and_save(tmp_path: Path) -> None:
-    """The five effect fields (docs/estimation_variance.md's proposed backfill)
-    parse from a payload, survive a save/load round trip, and serialize back
-    out unchanged -- the same contract the pre-existing fields already hold.
-    """
 
     window = _window(
         seasons=[2012, 2014],

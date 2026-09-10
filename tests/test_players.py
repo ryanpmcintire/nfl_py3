@@ -122,7 +122,6 @@ def _snaps() -> pd.DataFrame:
 
 
 def _offseason_continuity_sources() -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Add a prior season with known retained/departed snap mass."""
 
     rosters = _rosters()
     prior_rosters = []
@@ -619,7 +618,6 @@ def test_player_value_uses_only_prior_game_stats() -> None:
 
 
 def test_value_shrinkage_target_zero_is_bit_identical_to_default() -> None:
-    """MOD-06's opt-in path must leave default production behaviour untouched."""
 
     default_call = enrich_with_player_features(
         _games(), _injuries(), _rosters(), _snaps(), _pbp(), _player_stats(), qb_min_dropbacks=1
@@ -638,24 +636,6 @@ def test_value_shrinkage_target_zero_is_bit_identical_to_default() -> None:
 
 
 def _thin_player_fixture() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Rosters/snaps/stats/injuries for MOD-06's position-prior candidate.
-
-    WR-A and WR-B are given inflated (unrealistic, deliberately so -- this is
-    synthetic fixture data, not a realistic snap count) offense_snaps so that,
-    with ``value_prior_snaps=200``, both clear the "experienced" pool
-    threshold after two games and form a POSITIVE (receiving_epa=2.0 flat
-    every week, both teams -- no cancellation) league-wide skill-channel
-    prior by week 3. WR2-A is a thin bench player on team A: one week (week 1)
-    of a handful of snaps and zero recorded production, then injured "Out"
-    from week 2 onward. Their own career_offense_snaps stays tiny (3), so
-    under the "zero" target their value-lost contribution is exactly 0
-    (raw_rate is exactly 0.0, since their only recorded receiving_epa is
-    0.0); under "position_prior" it should shrink toward the positive pool
-    prior instead, once the pool is populated (week 3 injury, not week 2 --
-    the pool snapshot for a game reflects state only through the PRIOR
-    completed week, so WR-A/WR-B are not yet "experienced" for the week-2
-    game's own snapshot).
-    """
 
     rosters = pd.concat(
         [
@@ -850,18 +830,6 @@ def test_position_prior_shrinkage_falls_back_to_zero_below_pool_minimum_and_diff
 
 
 def test_position_prior_shrinkage_uses_only_prior_game_stats() -> None:
-    """Leakage regression test for MOD-06's new opt-in path (AGENTS.md).
-
-    The channel prior is recomputed fresh at every game from
-    ``player_value_states`` -- this proves it only ever reflects state
-    strictly before the game being predicted, mirroring
-    ``test_player_value_uses_only_prior_game_stats`` above: modify a week's
-    own production, confirm that SAME week's already-computed feature is
-    unaffected (the prior snapshot for a game is taken before that game's
-    own updates are folded in), then confirm the NEXT week's feature does
-    move (proving the modification was actually visible to the pipeline
-    and this isn't a vacuous no-op check).
-    """
 
     rosters, snaps, player_stats, injuries = _thin_player_fixture()
     kwargs = {

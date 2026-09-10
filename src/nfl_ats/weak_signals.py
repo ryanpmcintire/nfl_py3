@@ -1,41 +1,6 @@
-"""Registry of signals too small to resolve alone, and the arithmetic to pool them.
-
-The evaluator resolves roughly 2 ATS points (RWB-15). Almost every candidate
-feature in this sport is worth a fraction of that, so "no significant effect"
-has been the *expected* outcome for real-but-small signals — and recording each
-one as a negative quietly threw away the ones that were genuinely there. Two
-such mistakes were caught on 2026-08-17 (4th-down aggressiveness and penalty
-discipline, both filed as "priced" on intervals far too wide to say so).
-
-This module is the fix. A signal that lands in category 3 of the taxonomy in
-``docs/pool_edge_plan.md`` — *unresolved below detection power*, meaning its
-interval contains both zero and the hypothesised effect — is no longer deleted.
-It is recorded here with its effect, its uncertainty, and above all its
-**direction**, and it waits.
-
-Why waiting works, and this is the whole point:
-
-- **Directions accumulate faster than precision.** Under a true null a point
-  estimate is equally likely to fall either side of zero. Ten of twelve
-  independent candidates leaning the same way is a binomial event with a
-  p-value you can actually compute, long before any single one is resolvable.
-  That is `sign_test`.
-- **Pooling shrinks the standard error as sqrt(K).** Twelve signals each three
-  times too noisy to see individually are, pooled, about 3.46 times sharper —
-  which is to say, visible. That is `pooled_effect`.
-
-Both come with a trap this repo has already documented: results measured on the
-*same seasons* share noise, so pooling them overstates precision and can
-manufacture a finding out of one lucky stretch of football. `overlap_warnings`
-reports that rather than hiding it, and the honest use of a pooled estimate is
-to justify ONE predeclared combined look on a window none of the inputs touched.
-
-Nothing here scores a model or spends a rotation window. It records what was
-measured, and does arithmetic on it.
-"""
-
 from __future__ import annotations
 
+import bisect
 import dataclasses
 import json
 import math
@@ -150,28 +115,11 @@ _CORRECTABLE_FIELDS = frozenset({"probability_positive"})
 
 
 class WeakSignalError(ValueError):
-    """Raised when the weak-signal ledger is invalid or a rule would be violated.
-
-    A ``ValueError`` subclass so the CLI reports it as a user-facing error
-    rather than a traceback, matching ``RegistryError`` and ``DataContractError``.
-    """
+    pass
 
 
 class UnknownRegistryFieldWarning(UserWarning):
-    """Emitted instead of :class:`WeakSignalError` when a field this build of
-    the code does not recognise is tolerated rather than rejected.
-
-    See ``on_unknown_field`` on :func:`signal_from_payload`,
-    :func:`registry_from_payload` and :func:`load_registry` -- the incident
-    this exists for (measured 2026-09-08): a session committed a new
-    ``corrections`` field on registry entries and the matching addition to
-    ``_SIGNAL_FIELDS`` in the SAME commit, but a scheduled ``publish-board``
-    ran between the data write and the code write and read a payload one
-    field ahead of the code that had to parse it -- aborting the whole
-    ``weekly-run`` at the ``publish-board`` step. A schema addition is
-    forward-compatible by construction; it is never grounds to take down the
-    public site.
-    """
+    pass
 
 
 OnUnknownField = Literal["raise", "warn"]
@@ -190,8 +138,6 @@ def _handle_unknown_fields(message: str, *, on_unknown_field: OnUnknownField) ->
 
 @dataclass(frozen=True)
 class WeakSignal:
-    """One measured effect that was too small for its own test to resolve."""
-
     name: str
     recorded_at: str
     description: str
@@ -219,37 +165,16 @@ class WeakSignal:
 
     @property
     def favours_candidate(self) -> bool:
-        """Whether the point estimate fell strictly on the candidate's side of zero.
-
-        The single most valuable field in the registry: precision accumulates
-        slowly, but signs accumulate at one bit per experiment.
-
-        NOT the negation of :attr:`favours_baseline`. This is False for an
-        effect of exactly zero as well as for a negative one, so ``not
-        favours_candidate`` means "did not favour the candidate", never
-        "favoured the baseline". Reading it the second way is what made the
-        sign test score 208 exact ties as baseline wins; use :attr:`direction`
-        when a three-way answer is what you need.
-        """
 
         return self.effect > 0.0
 
     @property
     def favours_baseline(self) -> bool:
-        """Whether the point estimate fell strictly on the baseline's side of zero."""
 
         return self.effect < 0.0
 
     @property
     def direction(self) -> int:
-        """+1 for the candidate, -1 for the baseline, 0 for an exact tie.
-
-        An effect of exactly zero is the common case here, not a curiosity:
-        two arms that make the same picks on every game produce a paired delta
-        of exactly zero, and 208 of the 1,489 eligible NFL signals sit there.
-        A tie carries no directional information, so it belongs in its own
-        bucket rather than being folded into either side.
-        """
 
         if self.effect > 0.0:
             return 1
@@ -262,7 +187,6 @@ class WeakSignal:
         return range(self.seasons[0], self.seasons[1] + 1)
 
     def resolved_standard_error(self) -> float | None:
-        """The standard error, taken directly or recovered from the interval."""
 
         if self.standard_error is not None:
             return self.standard_error
@@ -276,8 +200,6 @@ class WeakSignal:
 
 @dataclass(frozen=True)
 class Registry:
-    """The whole weak-signal ledger."""
-
     version: int
     notes: tuple[str, ...]
     signals: dict[str, WeakSignal]
@@ -298,13 +220,6 @@ def validate_closure(
     reliability: float | None,
     probability_positive: float | None = None,
 ) -> None:
-    """Reject any terminal verdict that does not stand on an admissible ground.
-
-    This is the code form of AGENTS.md's binding rule. It runs both when a
-    signal is recorded and when the ledger is loaded, so a session that never
-    read the prose rule still cannot write the violation — and the error it
-    gets quotes the rule it was about to break.
-    """
 
     if classification in TERMINAL_CLASSIFICATIONS:
         admissible = CLOSING_GROUNDS[classification]
@@ -363,16 +278,6 @@ def validate_coherence(
     effect: float,
     interval: tuple[float, float] | None,
 ) -> None:
-    """Reject a point estimate recorded outside its own interval.
-
-    This is a recording contradiction, not a statistical property: whatever
-    produced the row cannot have drawn an effect outside the interval it
-    quotes alongside it. Enforced at RECORD time (and in ``record_signal``),
-    deliberately NOT at load time -- one pre-existing ledger entry predates
-    this check, and AGENTS.md forbids silently editing recorded measurements,
-    so history loads unchanged while every new write is held to it. Use
-    :func:`coherence_problems` to surface any historical rows at report time.
-    """
 
     if interval is None:
         return
@@ -393,22 +298,6 @@ def _validate_signal_numeric_fields(
     interval: tuple[float, float] | None,
     probability_positive: float | None,
 ) -> None:
-    """The value-level numeric checks a stored signal must satisfy.
-
-    Shared between the load path (:func:`signal_from_payload`) and the write
-    path (:func:`record_signal`) -- exactly the same messages either way, so
-    a caller cannot tell which path caught the problem from the text alone.
-    Structural/type coercion (JSON payload shapes) stays in
-    ``signal_from_payload`` alone; this is only the values.
-
-    ``record_signal`` needs this call explicitly because the CLI's ``record``
-    command builds a :class:`WeakSignal` directly rather than routing through
-    :func:`signal_from_payload` (the same reason :func:`validate_closure` is
-    already called from both places). Without it, ``weak-signals record``
-    accepted ``--standard-error 0.0`` with no complaint -- measured
-    2026-09-08 -- and the row only failed on the NEXT load, by which point it
-    was already written and blocking every other write to the registry too.
-    """
 
     _require(math.isfinite(effect), f"Signal {name!r} has a non-finite effect")
     if standard_error is not None:
@@ -424,13 +313,6 @@ def _validate_signal_numeric_fields(
 
 
 def coherence_problems(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
-    """Report signals whose point estimate sits outside their own interval.
-
-    The load-time counterpart of :func:`validate_coherence`: historical rows
-    are never rewritten (AGENTS.md preserves recorded measurements), so the
-    contradiction is surfaced to the reader of ``status``/``pool`` output
-    instead of blocking the ledger.
-    """
 
     problems: list[dict[str, Any]] = []
     for signal in sorted(signals, key=lambda s: s.name):
@@ -454,16 +336,6 @@ def coherence_problems(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
 def _validate_corrections(
     name: str, corrections: Any, *, on_unknown_field: OnUnknownField = "raise"
 ) -> None:
-    """A correction may fix a wrong SUMMARY; it may never revise a measurement.
-
-    Keeping this narrow is the point. ``probability_positive`` is a summary of
-    a bootstrap that is not itself stored, so a demonstrably wrong summary can
-    be restated without re-running anything. An effect, an interval or a
-    classification cannot: changing one of those silently rewrites what was
-    measured, and a classification change would additionally let a correction
-    stand in for a closure -- which needs an admissible closing ground, never
-    an edit (``AGENTS.md``, the interval-crossing-zero invariant).
-    """
 
     if corrections is None:
         return
@@ -499,12 +371,6 @@ def _validate_corrections(
 def signal_from_payload(
     name: str, payload: dict[str, Any], *, on_unknown_field: OnUnknownField = "raise"
 ) -> WeakSignal:
-    """Build a :class:`WeakSignal` from its raw JSON payload.
-
-    ``on_unknown_field`` (default ``"raise"``) governs ONLY the unrecognised
-    -field check, not any other validation -- see :data:`OnUnknownField` for
-    why that split exists and who is expected to pass ``"warn"``.
-    """
 
     unknown = sorted(set(payload).difference(_SIGNAL_FIELDS))
     if unknown:
@@ -634,12 +500,6 @@ def signal_from_payload(
 def registry_from_payload(
     payload: dict[str, Any], *, on_unknown_field: OnUnknownField = "raise"
 ) -> Registry:
-    """Build a :class:`Registry` from the raw ``weak_signals.json`` payload.
-
-    ``on_unknown_field`` is forwarded to :func:`signal_from_payload` for every
-    entry and also governs this function's own top-level check; see
-    :data:`OnUnknownField`.
-    """
 
     unknown = sorted(set(payload).difference(_TOP_LEVEL_FIELDS))
     if unknown:
@@ -664,24 +524,6 @@ def registry_from_payload(
 
 @dataclass(frozen=True)
 class QuarantinedSignal:
-    """One registry entry that failed its own validation on a permissive load.
-
-    Produced only by :func:`registry_from_payload_permissive` /
-    :func:`load_registry_permissive` -- the strict path
-    (:func:`registry_from_payload` / :func:`load_registry`) never quarantines
-    anything, it raises, exactly as before. Exists so a WRITE command
-    (``weak-signals record --replace``, ``invalidate``, ``retag-units``,
-    ``set-reliability``) is never blocked from repairing the very entry that
-    is broken, or from touching an unrelated, valid entry, just because SOME
-    entry in the file currently fails validation.
-
-    Measured 2026-09-08: a degenerate ``standard_error: 0.0`` entry made
-    ``record --replace`` -- the one sanctioned repair tool -- unusable on
-    itself. The registry had to be hand-edited with a throwaway script to
-    delete the row before it could be re-recorded, exactly the workaround
-    AGENTS.md exists to make unnecessary.
-    """
-
     name: str
     payload: dict[str, Any]
     error: str
@@ -690,21 +532,6 @@ class QuarantinedSignal:
 def registry_from_payload_permissive(
     payload: dict[str, Any], *, on_unknown_field: OnUnknownField = "raise"
 ) -> tuple[Registry, dict[str, QuarantinedSignal]]:
-    """Like :func:`registry_from_payload`, but a signal that fails ITS OWN
-    validation (a non-positive standard_error, an inverted interval, an
-    unrecognised classification, ...) is set aside in the returned
-    quarantine map instead of aborting the whole load.
-
-    Top-level structural problems (an unsupported version, a non-object
-    ``signals`` map) still raise -- those are not one entry's problem a
-    targeted repair can fix, and quarantining them would only hide a much
-    bigger break. The returned :class:`Registry` never needs re-validating:
-    every signal in it individually passed :func:`signal_from_payload`, and
-    this module enforces no CROSS-signal invariant (unlike ``rotation.py``'s
-    "at most one assigned window"), so dropping the quarantined entries out
-    of the parsed registry cannot silently violate a rule that spans
-    multiple signals.
-    """
 
     unknown = sorted(set(payload).difference(_TOP_LEVEL_FIELDS))
     if unknown:
@@ -771,27 +598,12 @@ def registry_to_payload(registry: Registry) -> dict[str, Any]:
 
 
 def default_registry_path(root: Path | None = None) -> Path:
-    """Return the tracked registry path, honouring ``NFL_ATS_REGISTRY_DIR`` when
-    ``root`` is not given explicitly -- matching ``rotation.default_registry_path``'s
-    convention, so a caller that forgets to thread an explicit root still lands in
-    whatever isolated directory a test (or ``NFL_ATS_REGISTRY_DIR``-aware caller)
-    has already set up, rather than silently falling back to the real tracked
-    ``registry/`` tree.
-    """
 
     base = Path(os.environ.get("NFL_ATS_REGISTRY_DIR", "registry")) if root is None else root
     return base / WEAK_SIGNAL_REGISTRY_FILENAME
 
 
 def load_registry(path: Path, *, on_unknown_field: OnUnknownField = "raise") -> Registry:
-    """Load the ledger at ``path``, or an empty one if it does not exist yet.
-
-    ``on_unknown_field`` (default ``"raise"``, unchanged behaviour) is
-    forwarded to :func:`registry_from_payload`; pass ``"warn"`` for a reader
-    that must never abort on a purely additive schema change -- currently
-    only ``findings_registry.load_weak_signal_registry``, the site build's
-    entry point. See :data:`OnUnknownField`.
-    """
 
     if not path.is_file():
         return Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
@@ -802,12 +614,6 @@ def load_registry(path: Path, *, on_unknown_field: OnUnknownField = "raise") -> 
 def load_registry_permissive(
     path: Path, *, on_unknown_field: OnUnknownField = "raise"
 ) -> tuple[Registry, dict[str, QuarantinedSignal]]:
-    """Load the ledger the way :func:`load_registry` does, except an
-    individually-invalid entry is quarantined instead of aborting the whole
-    file. See :func:`registry_from_payload_permissive`; pair with
-    :func:`save_registry_preserving_quarantine` so a write that uses this to
-    get past someone else's broken row does not silently delete that row.
-    """
 
     if not path.is_file():
         return Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={}), {}
@@ -822,21 +628,6 @@ def save_registry(registry: Registry, path: Path) -> None:
 def save_registry_preserving_quarantine(
     registry: Registry, quarantined: Mapping[str, QuarantinedSignal], path: Path
 ) -> None:
-    """Write ``registry``, re-inserting the RAW payload of every entry in
-    ``quarantined`` that ``registry.signals`` does not now hold, verbatim.
-
-    Pairs with :func:`load_registry_permissive`. A repair -- ``record
-    --replace`` on the one broken entry, or any other write while some
-    UNRELATED entry is still broken -- must never silently delete a
-    different entry's history from the file just because a permissive load
-    set it aside to get past it. AGENTS.md forbids silently discarding a
-    recorded measurement; a quarantined entry is already invalid, but
-    "invalid" is not "gone", and a future session must still be able to see
-    and repair it in its own turn. An entry that WAS quarantined and is now
-    present in ``registry.signals`` (the one this call just repaired) is
-    correctly not re-added -- its fixed, validated form is what
-    :func:`registry_to_payload` already wrote for it.
-    """
 
     payload = registry_to_payload(registry)
     signals = payload["signals"]
@@ -848,12 +639,6 @@ def save_registry_preserving_quarantine(
 
 
 def record_signal(registry: Registry, signal: WeakSignal, *, replace: bool = False) -> Registry:
-    """Add a measured signal to the ledger.
-
-    Re-recording an existing name requires ``replace``: a silently overwritten
-    effect would let a second look at the same signal masquerade as new
-    evidence, which is exactly the accounting this registry exists to prevent.
-    """
 
     validate_invalidation(
         status=signal.status,
@@ -931,7 +716,6 @@ def invalidate_signal(
     superseded_by: str | None = None,
     changed_at: str | None = None,
 ) -> Registry:
-    """Retain an invalid measurement for audit, without adjudicating its mechanism."""
     _require(name in registry.signals, f"No recorded signal named {name!r}")
     signal = registry.signals[name]
     validate_invalidation(
@@ -975,18 +759,6 @@ def retag_effect_units(
     reason: str,
     changed_at: str | None = None,
 ) -> Registry:
-    """Correct a mis-tagged ``effect_units`` on one already-recorded entry.
-
-    Some entries had no unit that matched what was actually measured (a
-    correlation coefficient, an MAE/Brier/log-loss *improvement*) and were
-    forced into an existing unit with the true sign convention explained only
-    in prose inside ``notes`` -- exactly the kind of note a pooler will not
-    read before averaging. This changes ONLY ``effect_units`` and appends one
-    audit line to ``notes``; every other field (effect, interval,
-    classification, closing_ground, probability_positive, ...) is carried
-    over byte-for-byte, because AGENTS.md forbids silently rewriting a
-    recorded measurement and a unit correction is not a new measurement.
-    """
 
     _require(name in registry.signals, f"No recorded signal named {name!r}")
     _require(
@@ -1018,26 +790,6 @@ def set_reliability(
     reason: str,
     changed_at: str | None = None,
 ) -> Registry:
-    """Attach a measured split-half reliability to one already-recorded entry.
-
-    Reliability is one of only two admissible closing grounds (AGENTS.md:
-    "wrong sign, or the trait has no split-half reliability"), yet most
-    entries carry ``reliability: null`` -- so the ground can be neither used
-    nor ruled out. This fills that field from a measurement and NOTHING else:
-    ``effect``, ``interval``, ``classification``, ``closing_ground``,
-    ``probability_positive``, ``source`` and every other field are carried
-    over byte-for-byte, exactly as :func:`retag_effect_units` does, because a
-    reliability measurement is not a re-measurement of the effect and must
-    never silently become one.
-
-    The registry schema has no reliability-interval field, so the interval,
-    the METHOD (which quantity was measured -- a trait's split-half
-    correlation and a flag's exposure reliability are different quantities and
-    must not be compared) and the artifact path are appended to ``notes`` as
-    one audit line. Recording a number here does NOT reclassify anything: a
-    low value is a *candidate* for the ``no_split_half_reliability`` ground,
-    and closing on it stays a separate, explicit decision.
-    """
 
     _require(name in registry.signals, f"No recorded signal named {name!r}")
     for label, value in (
@@ -1080,37 +832,6 @@ def set_reliability(
 
 
 def sign_test(signals: Sequence[WeakSignal]) -> dict[str, Any]:
-    """Do the point estimates lean one way more than chance allows?
-
-    Precision accumulates slowly; signs accumulate at one bit per experiment.
-    Under a true null each candidate is equally likely to land either side of
-    zero, so a lopsided tally is testable even when no single result is.
-
-    Tie convention (fixed 2026-09-08, and the headline number moved)
-    ---------------------------------------------------------------
-    An effect of exactly zero used to be counted a win for the BASELINE,
-    because the tally was ``favours_candidate`` on one side and everything
-    else on the other. That is not a tie-breaking convention, it is a
-    one-directional thumb on the scale, and it was heavy: 208 of the 1,489
-    eligible NFL signals are exact zeros, so the pile read 576/1489 = 38.7%
-    (p = 2.2e-18, "resolved") when the informative signals alone read
-    576/1281 = 45.0% (p = 3.4e-04, "leaning").
-
-    The reported test now EXCLUDES ties, which is the classical sign-test
-    construction (Dixon-Mood): a tie carries zero information about direction,
-    so conditioning on the informative comparisons keeps the binomial exact
-    rather than forcing a half-integer count through it. The half-credit
-    reading -- ties split evenly, matching
-    :func:`~nfl_ats.evidence_conventions.probability_positive_from_draws`'s
-    zero-atom convention -- is reported alongside it as
-    ``favouring_candidate_half_credit``, and ``ties`` is always reported, so
-    no number here is ambiguous about which convention produced it.
-
-    Both conventions leaned the same way on the registry as it stood when this
-    was fixed, so nothing about the pile's DIRECTION changed. Neither reading
-    resolves anything on its own, and neither is grounds to close a line of
-    work.
-    """
 
     excluded_invalidated = sum(s.status == "invalidated" for s in signals)
     signals = [s for s in signals if s.status != "invalidated"]
@@ -1159,13 +880,6 @@ _IMPLAUSIBLE_SE_ROBUST_SIGMAS = 3.0
 
 
 def _median_games_per_block(signals: Sequence[WeakSignal]) -> float | None:
-    """The pool's own median games-per-block, or ``None`` when nothing in
-    ``signals`` carries both ``sample_games`` and ``sample_blocks`` to derive
-    it from. Shared by :func:`_pool_sample_sizes` (imputing a missing sample
-    size at POOL time) and :func:`_floor_standard_error_for_record`
-    (converting a single new signal's ``sample_blocks`` at RECORD time) --
-    the same conversion, so the two never drift apart.
-    """
 
     per_block = [
         s.sample_games / s.sample_blocks
@@ -1176,14 +890,6 @@ def _median_games_per_block(signals: Sequence[WeakSignal]) -> float | None:
 
 
 def _pool_sample_sizes(usable: Sequence[WeakSignal]) -> tuple[list[float] | None, int]:
-    """How much football each entry actually saw, with missing values imputed.
-
-    ``sample_games`` first; then ``sample_blocks`` converted at the pool's own
-    median games-per-block; then the pool's median sample size, so an entry
-    that recorded neither field keeps an ordinary voice instead of being
-    dropped. Returns ``None`` when no entry carries either field, which is the
-    signal to fall back to the legacy inverse-variance weighting.
-    """
 
     games_per_block = _median_games_per_block(usable)
 
@@ -1205,23 +911,12 @@ def _pool_sample_sizes(usable: Sequence[WeakSignal]) -> tuple[list[float] | None
 
 @dataclass(frozen=True)
 class _PlausibilityCurve:
-    """The pool's own standard-error-versus-sample-size relationship.
-
-    An honest estimator's standard error scales as ``sigma / sqrt(n)``, so
-    ``SE^2 * n`` should be roughly constant across a commensurable pool. The
-    scale is estimated by MEDIAN so a handful of degenerate bootstrap bands
-    cannot set it, and how far an entry may fall below the curve before it
-    stops being ordinary variation is measured in the pool's own robust
-    standard deviations rather than picked in advance.
-    """
-
     scale: float
     sample_sizes: list[float]
     log_ratios: list[float]
     cutoff: float
 
     def floor_for(self, index: int) -> float:
-        """The narrowest standard error this entry's sample size can support."""
 
         return math.exp(self.cutoff) * math.sqrt(self.scale / self.sample_sizes[index])
 
@@ -1230,7 +925,6 @@ class _PlausibilityCurve:
 
 
 def _plausibility_curve(usable: Sequence[WeakSignal]) -> _PlausibilityCurve | None:
-    """Fit the SE-versus-sample curve, or ``None`` when the pool is too thin to."""
 
     sample_sizes, _ = _pool_sample_sizes(usable)
     if sample_sizes is None or len(usable) < 3:
@@ -1268,41 +962,10 @@ def _plausibility_curve(usable: Sequence[WeakSignal]) -> _PlausibilityCurve | No
 
 
 class ImplausibleStandardErrorWarning(UserWarning):
-    """Emitted when :func:`record_signal` widens an incoming ``standard_error``
-    up to the pool's own plausibility floor instead of storing it as offered.
-
-    ``docs/weak_signal_pooling.md`` defect 4 already establishes the
-    convention -- a band narrower than its own ``sample_games`` can support is
-    a block-bootstrap artifact, not statistical power, so it is FLOORED, not
-    trusted and not dropped -- and :attr:`_PlausibilityCurve.floor_for`
-    applies it at POOL time. This is the same formula applied at RECORD time
-    instead, so a future lane cannot store a zero-width (or otherwise
-    implausibly narrow) band in the first place. Measured 2026-09-08: a
-    15-game positive-control cell where a leaked feature was right on all 15
-    games and the baseline wrong on all 15 recorded ``standard_error: 0.0`` --
-    a genuinely degenerate bootstrap, not a typo -- and that single row later
-    took the whole public site build down and blocked its own repair (see
-    :class:`UnknownRegistryFieldWarning` and :func:`load_registry_permissive`
-    for the rest of that incident). Widening is a courtesy, not a silent
-    rewrite: it only ever WIDENS (never narrows) an already-positive value
-    that fails :func:`_validate_signal_numeric_fields`'s own hard floor of
-    zero, and it always warns when it fires.
-    """
+    pass
 
 
 def _floor_standard_error_for_record(registry: Registry, signal: WeakSignal) -> float | None:
-    """The narrowest ``standard_error`` ``signal`` may plausibly store, per
-    the REST of the registry's own same-unit pool -- or ``None`` when there
-    is nothing to floor against (fewer than three usable same-unit,
-    non-invalidated entries elsewhere in the registry, or this signal's own
-    sample size cannot be determined), in which case :func:`record_signal`
-    stores the offered value unchanged.
-
-    Deliberately excludes ``signal.name`` itself from the fitting pool (the
-    entry being written -- new or a ``--replace`` -- must never be able to
-    move its own floor), and only ever widens: the caller compares the
-    result against the signal's OWN standard_error and keeps the larger.
-    """
 
     if signal.standard_error is None or signal.standard_error <= 0.0:
         return None
@@ -1334,62 +997,6 @@ def pooled_effect(
     method: str = "random",
     weighting: str = "sample_floored",
 ) -> dict[str, Any]:
-    """Pooled effect across signals sharing one unit, weighted by football seen.
-
-    Fixed-effect pooling assumes every input estimates the SAME quantity, which
-    is rarely true across different football signals, so ``random`` (the
-    DerSimonian-Laird estimator) is the default: it inflates the variance by the
-    observed between-signal heterogeneity rather than pretending it away.
-
-    The payoff is the sqrt(K) shrinkage in the standard error, which is what
-    makes a pile of individually invisible effects visible together.
-
-    Why the weights are not ``1 / SE^2`` any more (fixed 2026-09-08)
-    ----------------------------------------------------------------
-    Textbook inverse-variance weighting is right when the reported standard
-    errors are trustworthy. In THIS registry they systematically are not, and
-    they fail in the one direction that does maximum damage: these intervals
-    come from block bootstraps of mined cells, and a bootstrap band SHRINKS as
-    the cell it resamples gets smaller and more degenerate. Weighting by
-    ``1 / SE^2`` therefore handed the least informative entries the most
-    influence. Measured on the NFL ``accuracy_points`` pool before this fix:
-    ``roof_battery_visiting_dome_open_vs_closed_opener`` -- a THREE-game cell
-    whose own ``classification_evidence`` says in as many words that its
-    narrowness "is an artifact of resampling a 3-point sample, not statistical
-    power" -- held 99.997% of the fixed-effect weight, and ``--method fixed``
-    reported ``excludes_zero: True`` on a number that was that single cell's
-    own estimate to five decimals.
-
-    The fix keeps inverse-variance weighting and stops taking the untrustworthy
-    field at face value. An honest estimator's variance scales as
-    ``sigma^2 / n``, so the per-entry variance is REBUILT from the fields that
-    do reflect how much football was seen -- ``sample_games``, falling back to
-    ``sample_blocks`` -- with a single per-game variance scale ``sigma^2``
-    estimated robustly as the MEDIAN of ``SE^2 * n`` across the pool. A handful
-    of degenerate bands cannot move a median, so one three-game cell can no
-    longer set the scale for 1,369 entries.
-
-    That makes an entry's influence proportional to its sample size (exactly
-    the Hunter-Schmidt convention, and the same thing inverse-variance
-    weighting would do if the variances were honest), which is what "no single
-    entry dominates" means here: influence is bounded by the largest real
-    window in the pool rather than by the narrowest resampling artifact.
-    Under ``random`` the weights ``n / (sigma^2 + tau^2 * n)`` saturate at
-    ``1 / tau^2``, so heterogeneity bounds a big window's influence further.
-
-    NOTHING IS DROPPED. There is no minimum sample size and no admissibility
-    rule: a three-game cell keeps a three-game cell's voice, which is small but
-    real. Excluding a signal for being underpowered is exactly the move
-    AGENTS.md forbids, and the whole point of this registry is that
-    below-power entries are kept.
-
-    Args:
-        method: ``random`` (DerSimonian-Laird, the default) or ``fixed``.
-        weighting: ``sample_size`` (the default, described above) or
-            ``inverse_variance`` (the legacy scheme, kept so the change stays
-            auditable; the fixed weighting's result is reported under
-            ``legacy_inverse_variance`` on every call).
-    """
 
     _require(method in ("fixed", "random"), f"Unknown pooling method {method!r}")
     _require(
@@ -1541,25 +1148,6 @@ def pooled_effect(
 
 
 def implausible_standard_errors(signals: Sequence[WeakSignal]) -> list[dict[str, Any]]:
-    """Entries whose recorded band is far too narrow for the sample they name.
-
-    Reads the same curve :func:`pooled_effect` floors against, so the list of
-    rows flagged for re-measurement can never disagree with the list of rows
-    whose variance was floored.
-
-    One curve is fitted PER (league, effect_units) group. ``SE^2 * n`` is only
-    comparable within a commensurable population -- same units, same scale,
-    same league, exactly the rule AGENTS.md already imposes on pooling -- so
-    fitting a single curve across a mixed pile would flag rows for belonging to
-    the tighter unit rather than for being implausible. ``pooled_effect``
-    already validates a single unit before it calls this, but the registry-wide
-    callers do not.
-
-    This FLAGS rows. It does not drop them from the pool, and it says nothing
-    about whether the underlying signal is real: a band that is too narrow is
-    a measurement to redo, not a mechanism to close. Nothing here closes a
-    line of work.
-    """
 
     usable = [
         s for s in signals if s.status != "invalidated" and s.resolved_standard_error() is not None
@@ -1590,39 +1178,6 @@ def implausible_standard_errors(signals: Sequence[WeakSignal]) -> list[dict[str,
 
 
 def rows_needing_remeasurement(signals: Sequence[WeakSignal]) -> dict[str, Any]:
-    """Rows recorded under conventions since found defective, listed for re-measurement.
-
-    Recorded values are NOT rewritten by this function or anywhere else: the
-    original bootstrap draws were never stored, so most of these rows cannot be
-    honestly recomputed from what is on disk. Flagging is not closing. None of
-    these rows is refuted, none is bounded by a control, and nothing here
-    changes any classification -- they are measurements to redo, and until they
-    are redone they stay exactly as unresolved as they already were.
-
-    Three buckets:
-
-    ``zero_atom_probability_positive``
-        ``probability_positive`` of exactly 0.0 recorded alongside an effect of
-        exactly 0.0 and a degenerate ``[0, 0]`` interval. Under the strict
-        ``draws > 0`` convention this repository used until 2026-09-08, a
-        candidate making IDENTICAL picks on every game scored the strongest
-        negative the scale can express. Under
-        :func:`~nfl_ats.evidence_conventions.probability_positive_from_draws`
-        the same measurement is 0.5. These are DETERMINISTICALLY correctable --
-        every resample was an exact tie, so no stored draws are needed -- and
-        two rows in the registry were already recorded at 0.5 by hand, with
-        reasoning, before the convention was fixed.
-
-    ``strict_zero_with_nonzero_effect``
-        ``probability_positive`` of exactly 0.0 on a NON-zero effect. These may
-        or may not have had a zero atom folded into the count; without the
-        draws it cannot be told from the registry. Listed as unknown, not
-        assumed wrong.
-
-    ``implausible_standard_error``
-        Bands too narrow for the sample size the row itself records; see
-        :func:`implausible_standard_errors`.
-    """
 
     active = [s for s in signals if s.status != "invalidated"]
     deterministic = [
@@ -1672,18 +1227,6 @@ def rows_needing_remeasurement(signals: Sequence[WeakSignal]) -> dict[str, Any]:
 
 
 def signal_family(signal: WeakSignal) -> str:
-    """The measurement family a signal belongs to, for overlap accounting.
-
-    An explicit ``family`` field wins. Otherwise the family is inferred from
-    the name with two rules shared with ``findings_registry``'s duplication
-    passes: decomposition suffixes (``_opener`` grades, ``_era_YYYY_YYYY`` and
-    bare-year window splits, ``_preYYYY``/``_postYYYY`` splits) are stripped,
-    and a battery marker in the first three tokens collapses the whole
-    screening battery to its prefix. Inference is advisory and conservative:
-    when it is unsure it keeps signals in separate families rather than
-    merging measurements that might be distinct. Declare ``family`` explicitly
-    at record time whenever the name alone does not capture the grouping.
-    """
 
     if signal.family:
         return signal.family
@@ -1703,22 +1246,22 @@ def signal_family(signal: WeakSignal) -> str:
     return name
 
 
-def family_overlap_warnings(signals: Sequence[WeakSignal]) -> dict[str, Any]:
-    """Per-family overlap report for a pool of signals.
+def _interval_overlap_counts(lows: Sequence[int], highs: Sequence[int]) -> tuple[int, list[bool]]:
+    count = len(lows)
+    if count < 2:
+        return 0, [False] * count
+    sorted_low = sorted(lows)
+    sorted_high = sorted(highs)
+    before = [bisect.bisect_left(sorted_high, value) for value in lows]
+    after = [count - bisect.bisect_right(sorted_low, value) for value in highs]
+    pairs = count * (count - 1) // 2 - sum(before)
+    participates = [
+        earlier + later < count - 1 for earlier, later in zip(before, after, strict=True)
+    ]
+    return pairs, participates
 
-    The pairwise :func:`overlap_warnings` list grew past 55,000 entries once
-    batteries started recording every cell on the same seasons
-    (``docs/registry_correlation_audit_20260822.md``, risk #3) -- correct but
-    unreadable, which is its own hazard: a warning nobody reads protects
-    nothing. This groups the same information by measurement family (see
-    :func:`signal_family`) as ``docs/registry_correlation_audit_20260822.md``
-    §3's correlation map does: members of one family sharing seasons are
-    correlated decompositions of the same football, not independent votes, so
-    both the pooled interval and the sign test overstate precision by however
-    much those members duplicate each other. Like everything in this module it
-    reports rather than blocks; the honest use of a pooled estimate remains ONE
-    predeclared combined look on untouched windows.
-    """
+
+def family_overlap_warnings(signals: Sequence[WeakSignal]) -> dict[str, Any]:
 
     excluded_invalidated = sum(s.status == "invalidated" for s in signals)
     ordered = sorted((s for s in signals if s.status != "invalidated"), key=lambda s: s.name)
@@ -1729,14 +1272,12 @@ def family_overlap_warnings(signals: Sequence[WeakSignal]) -> dict[str, Any]:
     pairwise_pairs = 0
     within_family: list[dict[str, Any]] = []
     for (league, family), members in sorted(families.items()):
-        overlapping: list[WeakSignal] = []
-        for index, first in enumerate(members):
-            for second in members[index + 1 :]:
-                low = max(first.seasons[0], second.seasons[0])
-                high = min(first.seasons[1], second.seasons[1])
-                if low <= high:
-                    pairwise_pairs += 1
-                    overlapping.extend((first, second))
+        pair_count, participates = _interval_overlap_counts(
+            [signal.seasons[0] for signal in members],
+            [signal.seasons[1] for signal in members],
+        )
+        pairwise_pairs += pair_count
+        overlapping = [signal for signal, hit in zip(members, participates, strict=True) if hit]
         if not overlapping:
             continue
         low_season = min(signal.seasons[0] for signal in overlapping)
@@ -1764,17 +1305,18 @@ def family_overlap_warnings(signals: Sequence[WeakSignal]) -> dict[str, Any]:
         for (league, family), members in sorted(families.items())
     ]
     cross_family_pairs = 0
+    for league in {span[0] for span in family_spans}:
+        spans = [span for span in family_spans if span[0] == league]
+        cross_family_pairs += _interval_overlap_counts(
+            [span[2] for span in spans], [span[3] for span in spans]
+        )[0]
     total_pairwise_pairs = 0
-    for index, (league_a, _, low_a, high_a) in enumerate(family_spans):
-        for league_b, _, low_b, high_b in family_spans[index + 1 :]:
-            if league_a == league_b and max(low_a, low_b) <= min(high_a, high_b):
-                cross_family_pairs += 1
-    for index, first in enumerate(ordered):
-        for second in ordered[index + 1 :]:
-            if first.league == second.league and max(first.seasons[0], second.seasons[0]) <= min(
-                first.seasons[1], second.seasons[1]
-            ):
-                total_pairwise_pairs += 1
+    for league in {signal.league for signal in ordered}:
+        members = [signal for signal in ordered if signal.league == league]
+        total_pairwise_pairs += _interval_overlap_counts(
+            [signal.seasons[0] for signal in members],
+            [signal.seasons[1] for signal in members],
+        )[0]
 
     return {
         "families": len(families),
@@ -1797,13 +1339,6 @@ def family_overlap_warnings(signals: Sequence[WeakSignal]) -> dict[str, Any]:
 
 
 def overlap_warnings(signals: Sequence[WeakSignal]) -> list[str]:
-    """Flag pairs measured on overlapping seasons within the same league.
-
-    Results from the same seasons share the same football, so their errors are
-    correlated and pooling them overstates precision — the "pooling ten weak
-    positives on the SAME window proves nothing" trap in
-    ``docs/pool_edge_plan.md``. This does not block anything; it reports.
-    """
 
     warnings: list[str] = []
     ordered = sorted((s for s in signals if s.status != "invalidated"), key=lambda s: s.name)
@@ -1828,12 +1363,6 @@ def poolable_signals(
     league: str | None = None,
     effect_units: str | None = None,
 ) -> list[WeakSignal]:
-    """Only genuinely unresolved signals are eligible to be pooled.
-
-    A refuted mechanism and a control-bounded null are real negatives; folding
-    either into a pool would launder a known failure into a fresh-looking
-    positive.
-    """
 
     chosen: list[WeakSignal] = []
     for signal in registry.signals.values():
@@ -1855,7 +1384,6 @@ def combination_report(
     method: str = "random",
     weighting: str = "sample_floored",
 ) -> dict[str, Any]:
-    """Everything needed to decide whether the pile is worth one combined look."""
 
     eligible = poolable_signals(registry, league=league, effect_units=effect_units)
     invalidated = [
@@ -1913,7 +1441,6 @@ def combination_report(
 
 
 def signals_from_iterable(entries: Iterable[dict[str, Any]]) -> list[WeakSignal]:
-    """Build signals from raw dicts, each carrying its own ``name``."""
 
     built: list[WeakSignal] = []
     for entry in entries:

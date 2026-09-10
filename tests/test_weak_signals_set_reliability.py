@@ -1,14 +1,3 @@
-"""``nfl-ats weak-signals set-reliability`` writes ONLY the reliability field.
-
-Reliability is one of only two admissible closing grounds (AGENTS.md: "wrong
-sign, or the trait has no split-half reliability"), yet most NFL entries carry
-``reliability: null`` -- so the ground can be neither used nor ruled out. The
-sweep that fills them in must not become a back door for rewriting recorded
-measurements, so these tests pin the guarantee byte-for-byte: every other
-field survives untouched, an out-of-range or non-finite value is refused, and
-attaching a low reliability never reclassifies anything on its own.
-"""
-
 from __future__ import annotations
 
 import math
@@ -108,13 +97,6 @@ def test_sets_only_reliability_and_appends_one_audit_note() -> None:
 
 
 def test_a_low_reliability_does_not_reclassify_or_close_the_entry() -> None:
-    """AGENTS.md: recording is not closing.
-
-    A measured reliability below ``NO_SPLIT_HALF_RELIABILITY_MAX`` makes an
-    entry a *candidate* for the ``no_split_half_reliability`` ground. Acting on
-    that stays a separate, explicit decision, so this command must leave the
-    classification and closing_ground exactly as it found them.
-    """
 
     registry = registry_from_payload(_payload(flat_cell=_signal()))
     updated = set_reliability(
@@ -211,14 +193,6 @@ def test_refuses_values_outside_the_correlation_scale(
 
 @pytest.mark.parametrize("bad", [math.nan, math.inf, -math.inf])
 def test_refuses_a_non_finite_reliability(bad: float) -> None:
-    """An unmeasurable reliability is reported as unmeasured, never as a number.
-
-    ``split_half_reliability`` returns NaN when a construct has too few
-    usable units to split. Writing that through as if it were a measurement
-    would manufacture the appearance of evidence where none exists, and --
-    because reliability is a closing ground -- could later be cited to close
-    a line of work on nothing at all.
-    """
 
     registry = registry_from_payload(_payload(alpha=_signal()))
     with pytest.raises(WeakSignalError, match="must be a finite number"):
@@ -254,13 +228,6 @@ def test_refuses_an_interval_that_does_not_contain_the_point_estimate() -> None:
     [("method", "method is required"), ("source", "source is required"), ("reason", "reason is")],
 )
 def test_requires_method_source_and_reason(field: str, message: str) -> None:
-    """Which quantity was measured is not optional metadata.
-
-    A trait's split-half correlation and a per-game flag's exposure
-    reliability are different quantities on the same [-1, 1] scale; without
-    the method recorded alongside the number, a later reader cannot tell them
-    apart and would compare them.
-    """
 
     registry = registry_from_payload(_payload(alpha=_signal()))
     kwargs: dict[str, Any] = {

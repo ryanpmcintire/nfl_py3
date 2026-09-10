@@ -1,29 +1,3 @@
-"""weak_stack_v4 forecast-weather features (docs/weak_stack_v4.md).
-
-Six continuous/structural columns joined by ``game_id`` from a forecast
-archive built at the pool's real decision timestamp: the earlier of kickoff
-and Sunday 16:00 America/New_York in that game's NFL week.  The former
-``kickoff_nearest`` archive is intentionally rejected because its Sunday-night
-and Monday-night rows can use bulletins published after the card locked.
-
-Deliberately continuous. ``weak_stack_v3`` already tested fifteen hand-coded
-situational FLAGS and was refused at the opener on EV; the registered
-forecast-weather cells are the same shape (the strongest,
-``forecast_weather_kn_warm_team_cold_late_full``, fires on 1.51% of the slate).
-The open question is whether ridge finds more in the raw variables than the
-cells did, so this family hands it the variables.
-
-Leak safety: every consumed row proves ``issuance_runtime_utc <=
-decision_cutoff_utc == min(kickoff, Sunday 16:00 ET)``.  The loader verifies
-that chronology, the declared cutoff mode, complete game-id coverage, allowed
-fetch statuses, and the parquet hash recorded in the sibling manifest before
-returning any feature values.
-
-These columns stay OUT of ``MODEL_FEATURE_COLUMNS``, on the same
-``BIAS_METRICS``/``SURFACE_SWITCH_FEATURE_COLUMNS`` precedent, so only the
-explicitly opted-in ``weak_stack_v4`` profile ever reads them.
-"""
-
 from __future__ import annotations
 
 import json
@@ -76,25 +50,6 @@ _OBSERVED_SOURCE_COLUMNS = ("game_id", "roof", "actual_temp_f", "actual_wind_mph
 
 
 def derive_observed_weather_features(archive: pd.DataFrame) -> pd.DataFrame:
-    """Observed weather as an ORACLE, for bounding the whole weather channel.
-
-    **This is deliberately leaky and must never reach production.** It answers
-    a question a better forecast cannot: if the model is handed the weather
-    that actually occurred -- a forecast of infinite skill -- does forced-pick
-    accuracy move at all?
-
-    That makes it a positive control in the AGENTS.md sense. If even perfect
-    weather knowledge does not beat the baseline, the channel is
-    ``bounded_by_control``: no improvement in forecasting can recover an effect
-    the oracle itself cannot produce. If it DOES help, the gap between the
-    oracle and the real forecast arm is exactly the headroom better forecasting
-    could buy, which is the number worth having before spending effort on a
-    better wind source.
-
-    Mirrors :func:`derive_forecast_features` exactly, substituting
-    ``actual_*`` for ``forecast_*``, so the two arms differ in the ORACLE and
-    nothing else.
-    """
 
     missing = sorted(set(_OBSERVED_SOURCE_COLUMNS).difference(archive.columns))
     if missing:
@@ -124,7 +79,6 @@ def attach_observed_weather_features(
     repo_root: Path | None = None,
     archive_path: Path | None = None,
 ) -> pd.DataFrame:
-    """Additively join the oracle columns. POSITIVE CONTROL ONLY."""
 
     root = repo_root or Path.cwd()
     path = archive_path or (root / DEFAULT_FORECAST_ARCHIVE)
@@ -152,7 +106,6 @@ def attach_observed_weather_features(
 
 
 def load_observed_archive(path: Path) -> pd.DataFrame:
-    """The archive with its observed-weather columns kept."""
 
     if not path.is_file():
         raise FileNotFoundError(f"Forecast archive not found: {path}")
@@ -243,7 +196,6 @@ def _validate_pool_decision_archive(frame: pd.DataFrame) -> None:
 
 
 def load_forecast_archive(path: Path) -> pd.DataFrame:
-    """Read and verify the immutable pool-decision archive."""
 
     if not path.is_file():
         raise FileNotFoundError(
@@ -266,13 +218,6 @@ def load_forecast_archive(path: Path) -> pd.DataFrame:
 
 
 def derive_forecast_features(archive: pd.DataFrame) -> pd.DataFrame:
-    """The six declared columns, from the archive's raw fields.
-
-    The two ``_outdoor`` interactions exist because a dome game's forecast
-    temperature is not a football input at all. They are masked to the OUTDOOR
-    MEDIAN rather than to zero, so a dome never reads as an extreme cold game
-    -- zero-filling would invent the very signal the family is testing for.
-    """
 
     frame = archive.copy()
     outdoors = frame["roof"].astype(str).str.lower().eq("outdoors")
@@ -298,14 +243,6 @@ def attach_forecast_weather_features(
     repo_root: Path | None = None,
     archive_path: Path | None = None,
 ) -> pd.DataFrame:
-    """Additively join the six forecast columns onto a feature table.
-
-    Every pre-existing column is returned bit-identical; only the six new
-    columns are added.  Every feature-table game must have exactly one archive
-    record. Deliberately unmappable international rows remain NaN; any absent
-    row or unresolved domestic fetch fails closed. Imputation belongs to the
-    model's own training fold, not to this join.
-    """
 
     root = repo_root or Path.cwd()
     path = archive_path or (root / DEFAULT_FORECAST_ARCHIVE)
@@ -340,7 +277,6 @@ def attach_forecast_weather_features(
 
 
 def coverage_summary(features: pd.DataFrame) -> dict[str, float | int]:
-    """Coverage of the six columns, for a build log or a write-up."""
 
     present = features["forecast_temp_f"].notna()
     return {

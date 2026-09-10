@@ -1,85 +1,3 @@
-"""Bulk-ingest the FULL-column nflverse injuries release, season by season,
-into an immutable snapshot -- fixing a real column loss in the repo's
-existing player pipeline.
-
-**Measured, this session**: the repo's only local injury sources before this
-script are (1) ``data/raw/nflcom_injuries/20260821T222602Z/injuries.parquet``,
-an NFL.com scrape covering only seasons 2022-2024 (17,483 rows, no revision
-history, one ``fetched_at_utc`` per week not per player), and (2)
-``nfl_ats.players.canonicalize_injuries`` (``src/nfl_ats/players.py``), which
-already calls ``nflreadpy.load_injuries(seasons=...)`` but immediately
-subsets the result to ``INJURY_REQUIRED_COLUMNS`` -- 9 columns -- dropping
-``report_primary_injury``, ``report_secondary_injury``,
-``practice_primary_injury``, and ``practice_secondary_injury`` on ingest.
-Those description columns are exactly what any illness/designation-reason
-feature (this script exists to support ``docs/illness_battery.md``) needs,
-and they are NOT recoverable from the existing snapshot -- they were never
-written to disk in the first place.
-
-**Loader choice (measured, this session)**: ``nflreadpy`` (an existing repo
-dependency) exposes ``load_injuries(seasons=...)`` -- confirmed by reading
-its source, ``nflreadpy/load_injuries.py``: for each requested season it
-calls ``downloader.download("nflverse-data", f"injuries/injuries_{season}")``,
-which resolves to exactly
-``https://github.com/nflverse/nflverse-data/releases/download/injuries/injuries_{season}.parquet``
-(``NflverseDownloader.BASE_URLS["nflverse-data"]``, read from
-``nflreadpy/downloader.py``) -- the same release-asset pattern
-``docs/new_lead_classes_20260826.md`` reported from raw URL probing. This
-script therefore uses ``nflreadpy.load_injuries`` (the maintained library
-path) rather than fetching those URLs directly, per repo instruction to
-prefer the library when it exists. It calls the loader ONE SEASON AT A TIME
-(rather than the single bulk ``seasons=True`` call) so the manifest can carry
-one row -- source URL, per-season row count, per-season SHA-256 -- per
-release asset, matching this repo's other per-source ingest manifests
-(``scripts/fluview_battery_ingest.py``, ``scripts/ingest_nflcom_injuries.py``).
-
-**Season coverage, measured this session** (``get_current_season()`` from
-``nflreadpy.utils_date`` resolves to 2025 as of 2026-08-26, so
-``seasons=True`` would already stop at 2025; confirmed directly): seasons
-2009-2025 all return real data (2009: 4,821 rows; 2025: 6,068 rows).
-``injuries_2026.parquet`` returns HTTP 404 (checked directly) -- the 2026
-season has not been published yet, consistent with it being the offseason.
-
-**Critical point-in-time finding, measured this session**: the ``date_modified``
-column -- the per-row revision timestamp this whole battery's as-of
-construction depends on -- is NOT uniformly populated:
-  - 2011-2024 (14 seasons): 0 nulls.
-  - 2010: 62 nulls out of 4,491 rows (~1.4%).
-  - 2009: 4,804 nulls out of 4,821 rows (~99.6%) -- effectively unusable
-    for point-in-time construction.
-  - **2025: 6,068 nulls out of 6,068 rows -- ENTIRELY missing.** The 2025
-    release has no ``date_modified`` column at all; it instead carries a
-    ``season_type`` column (REG/POST) that 2009-2024 lack. This is a
-    genuine upstream schema change, not a parsing bug on this side (checked
-    directly against the raw per-season frame's own column list). Any
-    as-of/checkpoint construction built on ``date_modified`` will correctly
-    treat every 2025 row as unresolvable-as-of -- i.e. missing, never a
-    leaked final value -- by the same "no checkpoint row qualifies -> missing"
-    construction ``docs/fluview_battery.md`` section 3 already uses for its
-    own pre-2017 gap. This is disclosed here, before any scoring, exactly as
-    that precedent requires.
-
-Because 2025 lacks ``date_modified`` and 2009 is 99.6% missing it, this
-ingest still pulls the full 2009-2025 range (per repo convention: report the
-gap, do not silently truncate the ingest around it), but the
-point-in-time-recoverable window for any downstream battery is realistically
-2010-2024.
-
-Output: ``data/raw/nflverse_injuries/<UTC timestamp>/injuries.parquet`` (one
-combined table, all 17 seasons, union of every season's columns -- some
-older/newer columns are season-specific, see the finding above) plus
-``manifest.json`` recording, per season: the exact source URL, fetch
-timestamp, row count, column list, and a SHA-256 of that season's own
-re-serialized parquet bytes (labelled honestly as a fingerprint of what this
-ingest consumed and stored, not a byte-identical copy of the upstream HTTP
-response -- ``nflreadpy`` parses the response through polars before this
-script ever sees bytes, so a byte-identical hash of the original file is not
-recoverable from the library path). The combined output file's own SHA-256
-(via ``nfl_ats.provenance.sha256_file``, the repo's existing convention for
-hashing a written artifact) is also recorded. Gitignored, per repo convention
-(``data/raw`` is never committed).
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -106,9 +24,6 @@ SEASON_END = 2026
 
 
 def _to_pandas(frame: Any) -> pd.DataFrame:
-    """Polars -> pandas, tolerant of nflreadpy returning either (matches the
-    ``_to_pandas`` helper already used by ``src/nfl_ats/participation.py`` /
-    ``src/nfl_ats/pbp.py`` for the identical nflreadpy-return-type concern)."""
 
     if isinstance(frame, pd.DataFrame):
         return frame

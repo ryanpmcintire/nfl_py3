@@ -1,16 +1,3 @@
-"""RWB-12 drift monitoring: signals, thresholds, artifacts, and pipeline wiring.
-
-Drift reports are operational telemetry, not evidence. These tests pin the
-signals (feature shift, PSI, missingness, probability drift, calibration
-drift), the fail-loud behavior on missing inputs, the artifact format, and
-the weekly-pipeline hook -- including that the hook is optional and never on
-the card's critical path.
-
-Constructions are deterministic wherever a threshold sits nearby: random
-draws at n=16 sit close enough to the warn/alert boundaries that a seeded
-RNG would still be flaky under ``-k`` selection.
-"""
-
 from __future__ import annotations
 
 import json
@@ -39,7 +26,6 @@ from nfl_ats.weekly import plan_weekly_run
 
 
 def _features_frame(weeks: list[tuple[int, int]], games_per_week: int = 16) -> pd.DataFrame:
-    """Sixteen prior weeks plus whatever target week the caller asks about."""
 
     rng = np.random.default_rng(20260825)
     rows = []
@@ -94,13 +80,6 @@ def ceil_div(a: int, b: int) -> int:
 
 
 def _deterministically_calibrated_outcomes(probabilities: np.ndarray, seed: int = 0) -> np.ndarray:
-    """Outcomes drawn as ``Bernoulli(p)`` against a stratified uniform draw.
-
-    The uniforms are a fixed grid permuted by a seeded RNG, so the run is
-    deterministic while the empirical cover rate in every probability region
-    tracks that region's mean predicted probability -- a genuinely
-    well-calibrated baseline without RNG flake at the thresholds.
-    """
 
     n = len(probabilities)
     uniforms = np.random.default_rng(seed).permutation((np.arange(n) + 0.5) / n)
@@ -108,12 +87,6 @@ def _deterministically_calibrated_outcomes(probabilities: np.ndarray, seed: int 
 
 
 def _history_predictions(features: pd.DataFrame, weeks: list[tuple[int, int]]) -> pd.DataFrame:
-    """Enough settled history to clear the calibration floors (32 recent / 200 prior).
-
-    Each week is repeated across twelve synthetic cards with distinct game ids,
-    so the most recent four weeks hold 4 x 16 x 12 = 768 settled games and the
-    prior holds the rest.
-    """
 
     frames = []
     for repetition in range(12):
@@ -411,7 +384,6 @@ def test_weekly_plan_can_skip_drift(tmp_path: Path) -> None:
 
 
 def _write_weekly_data_root(tmp_path: Path) -> Path:
-    """Minimal data root so plan_weekly_run can resolve production manifests."""
 
     from nfl_ats.io import atomic_json
 

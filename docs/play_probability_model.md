@@ -2,9 +2,8 @@
 
 ## The complaint this replaces
 
-Owner directive, verbatim: "the percentages should obviously make sense my
-dude... it needs to be a forecast about the game and it needs to consider
-depth chart."
+Owner directive: the percentages have to make sense, be a forecast about
+the game, and take the depth chart into account.
 
 Before this change, the lineup panel's per-player number was a
 no-designation BASE RATE keyed only on `(position_group, recent_role)` --

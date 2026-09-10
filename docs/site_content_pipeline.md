@@ -1,9 +1,8 @@
 # How the findings page is generated, and how it stays current
 
-The owner's complaint that started this work, verbatim: "a huge amount of
-the stuff in What We've Learned and Track Record tabs is out of date....
-I don't understand why it's not setup so all findings are auto-updated when
-new evidence comes in." This document describes the fix: where
+The owner's complaint that started this work: much of the What We've
+Learned and Track Record tabs was out of date, and findings should update
+automatically when new evidence comes in. This document describes the fix: where
 `docs/findings.html`'s content comes from, how the build refuses to ship a
 stale claim, and -- the part that matters for a future session -- what you
 have to do when you record new evidence. The answer to that last question is

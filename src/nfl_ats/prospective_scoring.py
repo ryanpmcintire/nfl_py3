@@ -1,60 +1,3 @@
-"""Did the recorded 2026 picks win? Prospective forced-pick ATS settlement (POL-10).
-
-Everything else in this repository grades models on history. This module grades
-them on the future: it takes picks that were **written down before kickoff** and
-settles them against results, so the evidence needs no rotation-registry
-confirmation window at all (``docs/rotation_registry.md``, "what this
-deliberately does not do"). Two frozen results depend on it -- the MOD-07 weak
-signal stack (``unresolved`` at ``probability_positive`` 0.8745 against a
-pre-fixed 0.90 bar) and the Best Pick ranker (``unresolved`` on 35 top-1
-picks -- the naive +8.68-point delta was tie-break luck, not a signal;
-tie-agnostic it is +0.92, and the play decision holds only because the
-alternatives are measured negatives, not because this cleared its gate) --
-and only two opener windows remain project-wide.
-
-Two ledgers feed it:
-
-* the **active model's** paper-decision ledger (``nfl_ats.clv``,
-  ``artifacts/clv_ledger/decisions.parquet``), which already records every
-  published card's pre-kickoff picks and now carries the weekly Best Pick flag;
-* the **challenger** ledger written here
-  (``artifacts/prospective/challenger_decisions.parquet``), one row per
-  (challenger, game) for every configuration registered in
-  ``artifacts/prospective/challengers.json``.
-
-Both settle through :func:`settle_prospective_picks`, which reports accuracy at
-**two grades**:
-
-1. the **recorded line** -- the spread the pick was actually made at. This is
-   the PRIMARY grade, because the pool freezes its number on Tuesday and scores
-   entries against it (``docs/pool_edge_plan.md``);
-2. the **close** -- the same pick settled against the closing number. Secondary,
-   and reported for continuity with the historical 52.50%/51.09% pair.
-
-Note the difference from :func:`nfl_ats.clv.opener_pick_evaluation`, which
-re-forms a pick at each line. Here the pick is a fact on the ledger; only the
-settlement line changes. Asking "would this recorded pick have won at the
-close?" is the question the entry price answers, and re-picking at the close
-would silently score a model we never published.
-
-Anti-backdating
----------------
-The guarantee is enforced twice, on write and again on read:
-
-* **On write** -- :func:`record_challenger_decisions` (and
-  :func:`nfl_ats.clv.record_paper_decisions`) refuse any game at or past
-  kickoff and never rewrite a row that already exists, so a pick cannot be
-  invented or moved once the result is knowable.
-* **On read** -- :func:`settle_prospective_picks` re-checks every row's
-  ``recorded_at_utc`` against its own ``kickoff`` and raises rather than score a
-  ledger that has been edited after the fact. A hand-written row therefore
-  cannot be laundered into evidence by running the scorer.
-
-Push handling follows FND-04 exactly (``result - line``; strictly positive is a
-home cover; zero is a push excluded from accuracy) by calling
-:func:`nfl_ats.clv.pick_correct` rather than reimplementing it.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -97,7 +40,6 @@ def _utc_series(values: pd.Series) -> pd.Series:
 
 
 def _settlement_status(margin: pd.Series) -> pd.Series:
-    """``pending`` (nothing to settle against), ``push`` (zero margin), or ``settled``."""
 
     return pd.Series(
         np.where(margin.isna(), "pending", np.where(margin.eq(0.0), "push", "settled")),
@@ -107,13 +49,6 @@ def _settlement_status(margin: pd.Series) -> pd.Series:
 
 
 def assert_recorded_before_kickoff(decisions: pd.DataFrame) -> None:
-    """Raise unless every decision was recorded strictly before its own kickoff.
-
-    This is the read-side half of the anti-backdating guarantee. The write path
-    already refuses post-kickoff games, so a violation here means the ledger
-    file itself was edited -- exactly the case where scoring it would launder a
-    hindsight pick into "prospective" evidence.
-    """
 
     if decisions.empty:
         return
@@ -140,15 +75,6 @@ def settle_prospective_picks(
     *,
     close_reference: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Settle one entrant's recorded picks against results, at both grades.
-
-    ``decisions`` is one ledger slice with unique ``game_id`` values (the caller
-    splits a multi-entrant ledger by entrant first, so the uniqueness check
-    keeps its meaning). ``outcomes`` supplies ``game_id`` and ``result``
-    (home minus away points); games it does not cover stay ``pending``.
-    ``close_reference`` is :func:`nfl_ats.clv.live_close_reference`'s output, or
-    ``None`` when the close grade is unavailable.
-    """
 
     missing = sorted(set(SETTLEMENT_REQUIRED_COLUMNS).difference(decisions.columns))
     if missing:
@@ -206,12 +132,6 @@ def settle_prospective_picks(
 
 
 def _column(frame: pd.DataFrame, name: str, *, fill: Any) -> pd.Series:
-    """``frame[name]``, or a column of ``fill`` when the ledger predates it.
-
-    The fill value is explicit because ``pd.Series(dtype=bool, index=...)``
-    fills with NaN, which reads back as True for a boolean column -- an absent
-    ``is_best_pick`` would then mark every row as the week's Best Pick.
-    """
 
     if name in frame.columns:
         return frame[name]
@@ -238,12 +158,6 @@ def _grade_summary(settled: pd.DataFrame, grade: str) -> dict[str, Any]:
 
 
 def prospective_accuracy(settled: pd.DataFrame) -> dict[str, Any]:
-    """Forced-pick accuracy at both grades, plus the Best Pick and bet subsets.
-
-    ``decision_line`` is the primary number: it is the line the pick was made
-    at and the one a Tuesday-locked pool grades. ``close_line`` is reported
-    beside it and is never the headline.
-    """
 
     summary: dict[str, Any] = {
         "decisions": len(settled),
@@ -270,7 +184,6 @@ def prospective_accuracy(settled: pd.DataFrame) -> dict[str, Any]:
 
 
 def prospective_accuracy_metrics(settled: pd.DataFrame) -> dict[str, float]:
-    """``metric_fn`` shape for :func:`nfl_ats.clv.week_blocked_bootstrap`."""
 
     at_decision = pd.to_numeric(settled[f"correct_at_{DECISION_GRADE}"], errors="coerce").dropna()
     at_close = pd.to_numeric(settled[f"correct_at_{CLOSE_GRADE}"], errors="coerce").dropna()
@@ -292,7 +205,6 @@ def prospective_accuracy_metrics(settled: pd.DataFrame) -> dict[str, float]:
 
 
 def prospective_week_summary(settled: pd.DataFrame) -> pd.DataFrame:
-    """One row per season/week: the running weekly record the pool cares about."""
 
     if settled.empty:
         return pd.DataFrame(
@@ -384,7 +296,6 @@ def challenger_ledger_path(artifacts_root: Path) -> Path:
 
 
 def _normalise_config(config: Mapping[str, Any]) -> dict[str, Any]:
-    """Coerce a config to comparable primitives so 10 and 10.0 do not differ."""
 
     normalised: dict[str, Any] = {}
     for key in CONFIG_FINGERPRINT_KEYS:
@@ -403,7 +314,6 @@ def _normalise_config(config: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def config_fingerprint(config: Mapping[str, Any]) -> str:
-    """A short, stable digest of the fields that define a challenger."""
 
     payload = json.dumps(_normalise_config(config), sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:16]
@@ -439,7 +349,6 @@ def find_challenger(artifacts_root: Path, challenger_id: str) -> dict[str, Any]:
 
 
 def active_challenger_ids(artifacts_root: Path) -> list[str]:
-    """Registered challengers whose weekly picks should be recorded."""
 
     registry = load_challenger_registry(artifacts_root)
     return [
@@ -450,7 +359,6 @@ def active_challenger_ids(artifacts_root: Path) -> list[str]:
 
 
 def load_challenger_decisions(artifacts_root: Path) -> pd.DataFrame:
-    """The append-only challenger ledger (empty frame when none exists)."""
 
     path = challenger_ledger_path(artifacts_root)
     if not path.is_file():
@@ -465,7 +373,6 @@ def load_challenger_decisions(artifacts_root: Path) -> pd.DataFrame:
 
 
 def artifact_model_config(metadata: Mapping[str, Any]) -> dict[str, Any]:
-    """The fingerprintable configuration of a ``margin-predict`` artifact."""
 
     provenance = metadata.get("provenance")
     provenance = provenance if isinstance(provenance, dict) else {}
@@ -489,13 +396,6 @@ def artifact_model_config(metadata: Mapping[str, Any]) -> dict[str, Any]:
 def find_challenger_artifact(
     artifacts_root: Path, entry: Mapping[str, Any], *, season: int, week: int
 ) -> Path | None:
-    """Newest ``margin-predict`` card for a season/week matching this challenger.
-
-    Matching is by configuration fingerprint, not by directory name: the weekly
-    run writes the active model's card and the challenger's card into the same
-    ``artifacts/margin_predictions/`` namespace, and picking the wrong one would
-    silently record the baseline's picks as the challenger's.
-    """
 
     root = artifacts_root / "margin_predictions"
     if not root.is_dir():
@@ -534,15 +434,6 @@ def record_challenger_decisions(
     now: datetime | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append a registered challenger's pre-kickoff picks to the challenger ledger.
-
-    The same discipline as the active model's ledger, plus one guard the active
-    model does not need: the source card's configuration fingerprint must equal
-    the fingerprint of the registered declaration. A challenger whose profile,
-    alpha, edge floor, training floor or feature table changed mid-season is a
-    different hypothesis, and stacking its picks under the old id would quietly
-    convert a re-tune into "prospective evidence".
-    """
 
     entry = find_challenger(artifacts_root, challenger_id)
     status = str(entry.get("status"))

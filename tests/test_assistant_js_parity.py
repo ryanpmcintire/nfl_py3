@@ -1,28 +1,3 @@
-"""ENG-25: Python/JS parity for the board assistant, including the four
-ENG-04 lineup intents ported into ``board_assistant.assistant_script`` by
-this same backlog item.
-
-Builds ONE synthetic knowledge corpus from the shared fixtures ENG-05 already
-uses (``_board_content_fixtures.build_fixture_content`` plus the mixed
-lineups artifact ``test_assistant_golden.py`` writes -- reused here, not
-duplicated, so both suites exercise the identical MIA/LV mismatch and
-NE/SEA clean game), then runs every golden-corpus question
-(``tests/fixtures/assistant_golden/questions.json``) plus the lineup
-regression phrasings ``test_board_assistant_lineups.py`` pins in Python
-through BOTH engines: the Python reference
-(:func:`nfl_ats.board_assistant.answer`) and the inline-JS port, evaluated
-under Node by ``tests/parity/assistant_parity.mjs`` (the script text is
-extracted from :func:`nfl_ats.board_assistant.assistant_script`'s own
-output, never hand-copied, so the two can never silently diverge from what
-actually ships).
-
-Skips (never fails) when ``node`` is not on this machine's PATH -- a missing
-local dev dependency is not a code defect, and the project rule is to skip
-loudly, not report a false pass or a false fail. When Node IS available,
-every question must match exactly (topic, text, anchors) or the test fails
-with the full list of mismatches.
-"""
-
 from __future__ import annotations
 
 import json
@@ -72,19 +47,11 @@ LINEUP_REGRESSION_QUESTIONS: tuple[str, ...] = (
 
 
 def _node_executable() -> str | None:
-    """The ``node`` binary on PATH, or ``None`` when this machine doesn't
-    have one. Callers must skip, never fail, when this returns ``None`` --
-    see the ENG-25 spec: the harness must be authored and skip cleanly
-    without Node, not be treated as a hard CI dependency."""
 
     return shutil.which("node")
 
 
 def _extract_inline_script(rendered: str) -> str:
-    """Strip the ``<script>``/``</script>`` wrapper :func:`assistant_script`
-    returns, leaving bare JS the Node harness can ``require()`` as
-    CommonJS (written by the caller to a ``.cjs`` path so Node treats it as
-    CommonJS regardless of any nearby ``package.json`` ``"type"`` field)."""
 
     match = _SCRIPT_RE.search(rendered)
     assert match is not None, "assistant_script() did not return a <script>...</script> block"
@@ -93,12 +60,6 @@ def _extract_inline_script(rendered: str) -> str:
 
 @pytest.fixture(scope="module")
 def parity_knowledge(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]:
-    """The exact corpus a page embeds: ``build_knowledge_for_board``'s
-    output plus the ``"teams"`` list :func:`board_assistant.assistant_section`
-    merges in before inlining it -- the JS ``parse()`` reads team aliases
-    from ``corpus.teams`` (Python reads its own private ``_TEAM_SYNONYMS``
-    instead), so the JS side needs that key present or every team-scoped
-    question would silently fail to resolve a team on the JS side only."""
 
     tmp_path = tmp_path_factory.mktemp("assistant_js_parity")
     _write_lineups_artifact(tmp_path)
@@ -123,8 +84,6 @@ def parity_knowledge(tmp_path_factory: pytest.TempPathFactory) -> dict[str, Any]
 
 @pytest.fixture(scope="module")
 def all_questions() -> tuple[str, ...]:
-    """Every golden-corpus question (deduped, in fixture order) plus the
-    lineup regression phrasings above (skipping any exact duplicate)."""
 
     seen: list[str] = []
     for case in GOLDEN_QUESTIONS:

@@ -1,5 +1,3 @@
-"""Rotation and weak-signal registry commands."""
-
 from __future__ import annotations
 
 import argparse
@@ -78,22 +76,6 @@ def _cmd_rotation_status(_: argparse.Namespace) -> None:
 def _load_weak_signals_for_write(
     path: Path,
 ) -> tuple[WeakSignalRegistry, dict[str, QuarantinedSignal]]:
-    """Load the weak-signal registry for a WRITE command.
-
-    The common case is a strict, fully-valid load, returned with an empty
-    quarantine map so every write command behaves exactly as it always has.
-    Only when the file currently holds an entry that fails validation does
-    this fall back to a permissive load that sets that one entry aside --
-    read-only commands (``status``, ``pool``) stay on the strict path
-    unchanged, since their job IS to surface exactly this kind of problem.
-
-    Measured 2026-09-08: a single degenerate entry (``standard_error: 0.0``)
-    made ``weak-signals record --replace`` -- the one sanctioned tool for
-    fixing it -- unusable on ITSELF, forcing a hand-edit of the JSON file
-    that AGENTS.md exists to prevent. Every write command below now falls
-    back the same way, so an unrelated broken row can never block a write to
-    a different, valid one either.
-    """
 
     try:
         return load_weak_signals(path), {}
@@ -104,12 +86,6 @@ def _load_weak_signals_for_write(
 def _save_weak_signals_for_write(
     registry: WeakSignalRegistry, quarantined: dict[str, QuarantinedSignal], path: Path
 ) -> None:
-    """Save after a WRITE command, preserving any quarantined entry this call
-    did not touch (see :func:`_load_weak_signals_for_write` and
-    ``weak_signals.save_registry_preserving_quarantine``): a repair must
-    never silently delete a DIFFERENT entry's history just because loading
-    had to set it aside to get past it.
-    """
 
     if quarantined:
         save_registry_preserving_quarantine(registry, quarantined, path)
@@ -186,16 +162,6 @@ def _cmd_weak_signals_invalidate(args: argparse.Namespace) -> None:
 
 
 def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
-    """Record one below-power result so it stops being re-litigated in prose.
-
-    This command exists because its absence was the actual defect. The registry
-    had ``status`` and ``pool`` but no way in, so recording a signal meant
-    hand-writing Python against the internal API -- and every session took the
-    cheaper path of writing a prose verdict instead. A standing rule with no
-    ergonomic path is a rule that silently stops being followed: the ledger sat
-    at three entries while a documented 13 of 27 discarded families belonged in
-    it.
-    """
 
     path = weak_signal_registry_path()
     interval = None
@@ -261,7 +227,6 @@ def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
 
 
 def _cmd_weak_signals_pool(args: argparse.Namespace) -> None:
-    """Ask whether the accumulated below-power pile is worth one combined look."""
 
     path = weak_signal_registry_path()
     registry = load_weak_signals(path)
@@ -276,17 +241,6 @@ def _cmd_weak_signals_pool(args: argparse.Namespace) -> None:
 
 
 def _cmd_weak_signals_retag_units(args: argparse.Namespace) -> None:
-    """Correct a mis-tagged ``effect_units`` on one entry without touching anything else.
-
-    Exists because some entries were forced into a unit that did not match
-    what was measured (a correlation coefficient, an MAE/Brier/log-loss
-    *improvement*), with the true sign convention explained only in prose
-    inside ``notes`` -- exactly the note a pooler will not read. This changes
-    only the unit and appends one audit line; effect, interval,
-    classification, and closing_ground are untouched (AGENTS.md forbids
-    silently rewriting a recorded measurement, and a unit correction is not a
-    new one).
-    """
 
     path = weak_signal_registry_path()
     registry, quarantined = _load_weak_signals_for_write(path)
@@ -313,17 +267,6 @@ def _cmd_weak_signals_retag_units(args: argparse.Namespace) -> None:
 
 
 def _cmd_weak_signals_set_reliability(args: argparse.Namespace) -> None:
-    """Attach a measured split-half reliability to one entry, touching nothing else.
-
-    Most entries carry ``reliability: null``, which leaves one of only two
-    admissible closing grounds neither usable nor rulable-out. This writes the
-    measured number (plus its interval, method and artifact path, as one audit
-    line in ``notes`` -- the schema has no interval field) and leaves effect,
-    interval, classification, closing_ground and source byte-identical. It
-    does NOT reclassify: a low reliability is a candidate for the
-    ``no_split_half_reliability`` ground, and acting on it stays a separate,
-    explicit decision.
-    """
 
     path = weak_signal_registry_path()
     registry, quarantined = _load_weak_signals_for_write(path)
@@ -374,13 +317,6 @@ def _cmd_rotation_declare(args: argparse.Namespace) -> None:
 
 
 def _cmd_rotation_set_plain_summary(args: argparse.Namespace) -> None:
-    """Attach (or correct) one family's reader-facing plain-English summary.
-
-    Additive to the CLI surface, not a new registry concept: it changes
-    ONLY ``plain_summary`` on one already-declared family, leaving grade,
-    status, windows and every recorded verdict byte-identical -- see
-    ``nfl_ats.rotation.set_plain_summary``.
-    """
 
     path = default_registry_path()
     with file_lock(path):
@@ -457,14 +393,6 @@ def _render_rotation_validate_text(payload: dict[str, Any]) -> str:
 
 
 def _cmd_rotation_validate(args: argparse.Namespace) -> None:
-    """ENG-27: full-audit pass; never modifies the ledger.
-
-    Exits non-zero on any error-severity issue -- see
-    ``nfl_ats.rotation.validate_registry`` for what each check means and why
-    it never blocks a ``save_registry`` write (existing tracked data, e.g.
-    ``fluview_elevated_on_production``'s ``[2011, 2025]`` window, predates
-    several of these checks and must keep loading).
-    """
 
     path = default_registry_path()
     registry = load_registry(path)
@@ -494,15 +422,6 @@ def _cmd_rotation_validate(args: argparse.Namespace) -> None:
 
 
 def _cmd_rotation_declare_coverage(args: argparse.Namespace) -> None:
-    """ENG-27: cover every weak-signal family lacking a rotation family.
-
-    Read-only unless ``--apply``: computes the plan
-    (``registry_explorer.coverage_plan``), and only writes when told to.
-    Additive only -- every action either reserves a brand-new rotation
-    -family name (a ``declared_for_coverage`` stub with no window) or
-    records a brand-new ``no_rotation_needed`` entry; no existing family or
-    look is ever touched.
-    """
 
     weak_path = weak_signal_registry_path()
     rotation_path = default_registry_path()
@@ -566,7 +485,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the ``rotation`` and ``weak-signals`` command groups."""
 
     rotation = subparsers.add_parser(
         "rotation",

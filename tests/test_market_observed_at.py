@@ -1,26 +1,3 @@
-"""ENG-23: a real market/injury observation instant on the card, not a snapshot
-fallback -- and the leakage regression that instant must never violate.
-
-Covers, per ``docs/feature_lineage.md`` gap items 2 and 3:
-
-* ``nfl_ats.market_observation.attach_market_observed_at`` joining the
-  point-in-time odds capture's ``observed_at_utc`` onto a forecast frame by
-  ``game_id`` -- synthetic snapshots under ``tmp_path``, and the null-safe
-  path for games (most of history) with no matching capture.
-* ``nfl_ats.players.enrich_with_player_features``'s ``injury_snapshot_captured_at``
-  fallback populating ``{side}_injury_observed_at`` for a team with no
-  visible injury revision, guarded so it can never fire after that game's own
-  decision cutoff.
-* ``nfl_ats.lineage.build_card_lineage`` preferring those frame-level columns
-  over the whole-table manifest fallback for the ``market_line`` and
-  ``model_input:player_injuries`` records, with legacy frames (no such
-  columns) unaffected.
-* The leakage invariant itself: a synthetic row whose observed-at is AFTER
-  the prediction timestamp fails the existing ``market_timing``
-  (``prediction_safety``) and ``lineage_effective_timestamp`` (``lineage``)
-  checks -- these are not new checks, only new columns proven to trip them.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path

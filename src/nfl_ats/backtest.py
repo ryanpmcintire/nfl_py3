@@ -1,5 +1,3 @@
-"""Expanding-window backtests and honest betting metrics."""
-
 from __future__ import annotations
 
 import math
@@ -178,12 +176,6 @@ def walk_forward_backtest(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     feature_set: str = "full",
 ) -> BacktestResult:
-    """Retrain before each week using only games from earlier dates.
-
-    ``start_season`` and ``end_season`` bound only the scored rows. Training
-    always includes every eligible game strictly before that week's cutoff,
-    which mirrors a model that is refreshed as new results become available.
-    """
 
     validate_model_frame(features)
     if end_season is not None and end_season < start_season:

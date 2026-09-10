@@ -1,128 +1,3 @@
-"""Forecast (kickoff-nearest) warm-team-cold-late tilt overlay: a
-parameter-free pick-level nudge built on a LIVE kickoff-nearest GFS-MOS
-temperature forecast -- a different cutoff/model than
-``forecast_cold_visitor_tilt_overlay``'s Tuesday-noon fetch, per this cell's
-own registered evidence (see below).
-
-Research chain: ``docs/forecast_weather_screen.md``'s 2026-08-20 extension
-("2009-2019 archive backward + a 6-cell family"), cell 1,
-``forecast_weather_kn_warm_team_cold_late``. Measured this session (read
-directly from ``registry/weak_signals.json``, current after the archive's
-full 2009-2025 fetch completed and all 12 kickoff_nearest specs were
-re-run with ``--replace``): full window (REG 2009-2025) +0.1697 accuracy
-points, week-blocked 95% **[+0.0091, +0.3169]**, ``probability_positive``
-0.9800, n_flag=65 of n_total=4,317; pre2020 window (REG 2009-2019) +0.2285
-accuracy points, 95% **[+0.0208, +0.4167]**, ``probability_positive`` 0.9848,
-n_flag=43 of n_total=2,735. **Both windows' intervals exclude zero** --
-per ``docs/forecast_weather_screen.md``'s revised "Wiring recommendations"
-section this is the highest-EV cell in the whole forecast-weather family,
-"wire first." (An earlier, INTERIM read of this cell, taken before the
-archive's 2009-2025 fetch finished, showed a much weaker +0.0771/+0.1265
-pts on a checkpoint population that still crossed zero -- superseded, see
-the doc's own "Status: complete" section; this module is built against the
-FINAL numbers only.)
-
-Neither admissible AGENTS.md closing ground applies in the other direction
-either (the interval excluding zero on the POSITIVE side is a strong
-confirming read, not a closing ground -- the registry's own mechanical
-classifier does not auto-close on that side, and this module does not treat
-it as "resolved" or promotable to the real card either). It stays
-``unresolved_below_power`` in the registry; wiring it here is a
-straightforwardly EV-positive dual-tracked play (``probability_positive``
-0.98 > 0.5), not a claim of a proven edge (AGENTS.md "a promotion bar is not
-a decision bar").
-
-**Corroborating evidence, a DIFFERENT construction on a DIFFERENT (narrower)
-population -- disclosed, not pooled as independent**: this cell's
-tuesday_noon sibling, ``forecast_weather_warm_team_cold_late`` (REG
-2020-2025 only, model=MEX): +0.3322 accuracy points, 95% [-0.0117, +0.6569],
-``probability_positive`` 0.9711 (season-blocked secondary: +0.3322 pts, 95%
-[+0.1661, +0.5171], ``probability_positive`` 1.0000). Same mechanism
-(warm-metro away team, outdoor, cold late-season forecast), same static
-team list and threshold, different cutoff/model and a different (wider)
-population for the kickoff_nearest cell measured here -- per
-``docs/forecast_weather_screen.md``'s own convention this is reported as
-corroboration, never pooled as a second independent evidence point for the
-SAME cell.
-
-**Cutoff/model: kickoff_nearest, NOT tuesday_noon -- a deliberate,
-doc-directed departure from ``forecast_cold_visitor_tilt_overlay``'s live
-fetch.** This cell's registered evidence (above) is built on the
-kickoff_nearest archive (model=GFS), not the tuesday_noon archive (model=MEX)
-``forecast_cold_visitor_tilt_overlay`` fetches live. Per
-``docs/forecast_weather_screen.md``'s wiring recommendation #1: "switch
-cutoff to kickoff_nearest per this cell's registered evidence... no new data
-source, no new plumbing beyond the cutoff-mode swap." This module therefore
-owns its OWN live fetch (below), reusing
-``forecast_cold_visitor_tilt_overlay``'s cutoff-agnostic MOS-bulletin
-primitives (:func:`nfl_ats.forecast_cold_visitor_tilt_overlay.fetch_mos_bulletin`,
-:func:`nfl_ats.forecast_cold_visitor_tilt_overlay.nearest_row`,
-:func:`nfl_ats.forecast_cold_visitor_tilt_overlay.candidate_runtimes`)
-directly rather than reimplementing them, but computes its OWN cutoff
-(kickoff itself -- ``kickoff_nearest_cutoff_utc`` in
-``scripts/ingest_forecast_archive.py`` is the identity function on
-``kickoff_utc``; ``candidate_runtimes`` floors that to the nearest 00Z/12Z
-MOS cycle at-or-before kickoff and walks strictly backward, so point-in-time
-discipline -- never a bulletin issued after kickoff -- is enforced by the
-walk itself, the same guarantee the tuesday_noon cutoff function provides)
-and requests model=GFS, not MEX.
-
-**This module's fetch also captures precipitation probability
-(``forecast_precip_prob_pct``, ``p06`` falling back to ``p12``), even though
-this cell's own flag does not use it**, so a second kickoff_nearest
-challenger needing precip
-(``nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay``, cell 4 of
-the same 6-cell family, ``docs/forecast_weather_screen.md`` wiring
-recommendation #3) can share this module's fetch instead of making its own
-outbound HTTP request for the identical (game, station, cutoff) set --
-"one fetch, several consumers," ported from
-``forecast_cold_visitor_tilt_overlay``'s own wiring note to this new
-cutoff/model pair.
-:func:`fetch_shared_kickoff_nearest_forecasts_fail_open` is the entry point
-a caller wiring both challengers in the same publish call should use.
-
-**FAIL-OPEN, unconditionally.** Any failure fetching or parsing live
-forecast data -- a missing/unreadable station map, a stadium absent from it,
-a network timeout, a malformed API response, anything -- is caught by
-:func:`fetch_kickoff_nearest_forecasts_fail_open`, logged as a
-``RuntimeWarning``, and folded into "every game gets no forecast, the flag
-is False everywhere" rather than raised. This overlay must never be able to
-block a publish. Per-game fetch problems (a single station with no
-bulletin, one slow request) already fold into "not flagged" one level down,
-inside :func:`fetch_one_game_kickoff_nearest`, mirroring
-``scripts/ingest_forecast_archive.py``'s own ``fetch_status`` design.
-
-**Tilt direction: HOME**, matching the cell's own predicted direction
-("predicted home_cover edge") and mirroring
-``forecast_cold_visitor_tilt_overlay``'s deliberately ASYMMETRIC pattern:
-flip AWAY -> HOME only when the flag fires AND the model's own pick is
-currently on the away side; never the reverse (no measured direction exists
-for a warm-forecast or non-flagged case).
-
-This module is the no-window-cost path, built on the exact pattern of
-``forecast_cold_visitor_tilt_overlay.py``, ``surface_switch_tilt_overlay.py``,
-and ``interim_hc_first_game_tilt_overlay.py``: a **pick-level,
-post-prediction transform** of the active model's own forced pick,
-dual-tracked against that same active model in the prospective challenger
-ledger (``nfl_ats.prospective_scoring``), at no rotation-registry window
-cost and with zero training-time feature changes. **Nothing in this module
-is wired into ``publishing.py`` or the production pick path** -- like the
-tilt/fade siblings, no owner decision to play this on the real card has been
-made; it is dual-tracked only.
-
-:func:`record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions`
-writes the overlay's own arm to the prospective challenger ledger so 2026
-scores it cleanly, independent of whether it is ever played on the real
-card.
-
-**Operational cutoff correction, 2026-09-02:** historical evidence and
-public function names retain their ``kickoff_nearest`` identity for
-provenance, but live fetches now use ``pool_decision``:
-``min(kickoff, Sunday 16:00 America/New_York)``. The historical replacement
-archive is not required by this live path; supplied forecast frames must
-declare and prove the new cutoff.
-"""
-
 from __future__ import annotations
 
 import time
@@ -189,18 +64,6 @@ def _live_cutoff_metadata(kickoff_utc: pd.Timestamp) -> dict[str, str]:
 def _nearest_row_with_field(
     rows: list[dict[str, Any]], kickoff_utc: pd.Timestamp, field: str
 ) -> dict[str, Any] | None:
-    """Ported verbatim from ``scripts/ingest_forecast_archive.py``: like
-    :func:`nearest_row`, restricted to rows where ``field`` is non-null.
-    GFS MOS precipitation-probability fields (``p06``/``p12``) are only
-    populated on a subset of rows within a bulletin (measured in that
-    script's own 2009-2019 extension: every OTHER 3h row, i.e. the
-    6h-boundary rows), so the plain :func:`nearest_row` pick (nearest by
-    valid time to kickoff, ANY field) frequently lands on a row where
-    ``p06``/``p12`` are both null even though a nearby row in the SAME
-    already-fetched bulletin has them. This does a second, field-restricted
-    nearest-by-valid-time pick over the SAME rows -- no extra HTTP call, no
-    relaxation of the point-in-time issuance walk.
-    """
 
     candidates = [row for row in rows if row.get(field) is not None]
     return nearest_row(candidates, kickoff_utc)
@@ -215,22 +78,6 @@ def fetch_one_game_kickoff_nearest(
     delay_seconds: float = DELAY_SECONDS_DEFAULT,
     fetch_bulletin: FetchBulletin = fetch_mos_bulletin,
 ) -> dict[str, Any]:
-    """Adapted from ``scripts/ingest_forecast_archive.py::fetch_one_game``,
-    trimmed to temperature and precipitation probability (this overlay
-    family does not use wind).
-
-    The public name is retained for compatibility with the registered
-    challengers, but selection now uses the real pool deadline: the earlier
-    of kickoff and Sunday 16:00 America/New_York.  This matters for SNF and
-    MNF, whose cards lock before kickoff. :func:`candidate_runtimes` walks
-    strictly backward from that deadline.
-
-    Never raises: a transport failure at any lookback step is folded into
-    ``fetch_status="transport_error"`` (per-game fail-open); the outer
-    :func:`fetch_kickoff_nearest_forecasts_fail_open` wrapper handles
-    whole-batch failures (a missing station map, an entirely unmapped
-    stadium).
-    """
 
     cutoff_metadata = _live_cutoff_metadata(kickoff_utc)
     cutoff_utc = pd.Timestamp(cutoff_metadata["decision_cutoff_utc"])
@@ -286,13 +133,6 @@ def fetch_one_game_kickoff_nearest(
 
 
 def games_for_forecast_fetch(card: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """The ``(game_id, kickoff, stadium)`` frame the fetch below needs, built
-    by joining the active weekly card's own ``kickoff`` onto the newest
-    local schedule snapshot's ``stadium`` display string. Mirrors
-    ``forecast_cold_visitor_tilt_overlay``'s own helper of the same name
-    (that module's tuesday_noon fetch and this module's kickoff_nearest
-    fetch each need the identical shape, just consumed by a different
-    cutoff/model)."""
 
     schedules_lookup = schedules[["game_id", "stadium"]].copy()
     schedules_lookup["game_id"] = schedules_lookup["game_id"].astype(str)
@@ -310,14 +150,6 @@ def _fetch_kickoff_nearest_forecasts(
     delay_seconds: float = DELAY_SECONDS_DEFAULT,
     fetch_bulletin: FetchBulletin = fetch_mos_bulletin,
 ) -> pd.DataFrame:
-    """Fetch the kickoff-nearest forecast temperature and precipitation
-    probability for every game. ``games`` needs ``game_id``, ``stadium``,
-    ``kickoff``. Raises on a whole-batch problem (missing station map file,
-    a stadium entirely absent from it) -- callers must use
-    :func:`fetch_kickoff_nearest_forecasts_fail_open` for the fail-open
-    contract this overlay requires; this inner function stays strict so its
-    own unit tests can assert on the raise directly.
-    """
 
     required = {"game_id", "stadium", "kickoff"}
     missing = sorted(required.difference(games.columns))
@@ -375,16 +207,6 @@ def fetch_kickoff_nearest_forecasts_fail_open(
     station_map_path: Path,
     **kwargs: Any,
 ) -> pd.DataFrame:
-    """FAIL-OPEN wrapper around :func:`_fetch_kickoff_nearest_forecasts`.
-
-    Any exception -- a missing/unreadable station map, a stadium absent from
-    it, a network timeout, a malformed API response -- is caught, logged as
-    a ``RuntimeWarning``, and folded into "every game gets no forecast" (NaN
-    ``forecast_temp_f``/``forecast_precip_prob_pct``,
-    ``fetch_status="fetch_failed"``) so downstream flag computation naturally
-    reads zero flags rather than raising. This overlay must never be able to
-    block a publish.
-    """
 
     try:
         return _fetch_kickoff_nearest_forecasts(games, station_map_path, **kwargs)
@@ -421,28 +243,6 @@ def fetch_shared_kickoff_nearest_forecasts_fail_open(
     fetch_bulletin: FetchBulletin = fetch_mos_bulletin,
     forecast_artifact: str | None = None,
 ) -> pd.DataFrame | None:
-    """Fetch the live kickoff-nearest GFS-MOS forecast (temp AND precip) ONCE
-    for the active model's current weekly card, so a caller wiring more than
-    one kickoff_nearest forecast-based challenger in the same
-    ``nfl-ats publish-predictions --record-decisions`` call (currently this
-    module and ``nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay``
-    -- ``docs/forecast_weather_screen.md``'s "Wiring recommendations"
-    section: "one fetch, several consumers") can pass the SAME ``forecasts``
-    DataFrame to each challenger's own
-    ``record_*_challenger_decisions(..., forecasts=...)`` parameter, instead
-    of every challenger making its own outbound HTTP request for the
-    identical (game, station, cutoff) set.
-
-    Returns ``None`` -- never raises -- on ANY failure in the prologue (no
-    active model, no linked forecast, no local schedule snapshot yet, an
-    unreadable card): this helper is a pure network-deduplication
-    optimization, never a new way for a publish to fail. A caller receiving
-    ``None`` should simply omit ``forecasts=`` from each challenger's own
-    call and let each recorder fetch (and fail-open) independently. The
-    underlying per-game fetch is already fail-open by construction
-    (:func:`fetch_kickoff_nearest_forecasts_fail_open`), so a partial
-    failure never reaches this function as an exception either.
-    """
 
     try:
         active = load_active_ats_model(artifacts_root)
@@ -475,18 +275,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 def warm_team_cold_late_flag_by_game(
     schedules: pd.DataFrame, forecasts: pd.DataFrame
 ) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``warm_team_cold_late_flag``,
-    ``forecast_temp_f``.
-
-    ``forecasts`` needs ``game_id``, ``forecast_temp_f`` (one row per game;
-    extra columns, including a missing/NaN temp for any game, are fine --
-    they fold into "not flagged"). Mirrors the 6-cell family's cell 1
-    definition (``docs/forecast_weather_screen.md``): away team in the
-    static warm-winter-metro list AND outdoor AND kickoff-nearest forecast
-    temp<=35F AND week>=13. Every input is either a static team-list
-    membership or this game's own roof/week/forecast, never an aggregate
-    over other games, so no pregame-safety adaptation is needed.
-    """
 
     required_forecast = {"game_id", "forecast_temp_f"}
     missing = sorted(required_forecast.difference(forecasts.columns))
@@ -528,8 +316,6 @@ def warm_team_cold_late_flag_by_game(
 
 @dataclass(frozen=True)
 class WarmTeamColdLateFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     away_team: str
@@ -539,13 +325,6 @@ class WarmTeamColdLateFlip:
 
 @dataclass(frozen=True)
 class WarmTeamColdLateResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``forecast_cold_visitor_tilt_overlay.ForecastColdVisitorResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[WarmTeamColdLateFlip, ...]
     enabled: bool
@@ -562,24 +341,6 @@ def apply_warm_team_cold_late_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> WarmTeamColdLateResult:
-    """Flip the forced pick from AWAY to HOME wherever the flag fires.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present;
-    * :func:`warm_team_cold_late_flag_by_game` fires for the game (away team
-      in the static warm-winter-metro list, outdoor, kickoff-nearest
-      forecast temp<=35F, week>=13); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home) is
-      currently on the AWAY side.
-
-    **Deliberately ASYMMETRIC**, mirroring
-    ``forecast_cold_visitor_tilt_overlay``: never flips a HOME pick to AWAY,
-    since the cell's own predicted direction is a positive home_cover edge
-    with no measured mirror-direction support. Missing forecast data
-    (including a total fetch failure upstream) folds into "not flagged",
-    never an error.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -628,12 +389,6 @@ def apply_warm_team_cold_late_tilt_overlay(
 
 
 def overlay_disclosure_note(result: WarmTeamColdLateResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -707,30 +462,6 @@ def record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors
-    ``forecast_cold_visitor_tilt_overlay.record_forecast_cold_visitor_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    ``forecasts``, when supplied, is used AS-IS instead of fetching again --
-    see :func:`fetch_shared_kickoff_nearest_forecasts_fail_open` for the
-    "one fetch, several consumers" path this parameter exists for (shared
-    with ``nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay``).
-    ``None`` (the default) fetches for itself, using the exact same
-    fail-open live path (:func:`fetch_kickoff_nearest_forecasts_fail_open`):
-    a network or station-mapping failure never raises out of this function,
-    it simply yields zero flags for the week.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

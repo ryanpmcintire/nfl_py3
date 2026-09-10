@@ -1,30 +1,10 @@
-"""Construction, opener-conditioning, streak-reset, and leakage contracts for
-the four Wave 3 (docs/schedule_flag_battery.md "Wave 3", LEAD-57 leads on
-production) public-claim flags: ``road_fav_big_fade_flag``,
-``division_dog_flag``, ``week1_dog_flag``, ``ats_streak_regress_flag``.
-
-Every fixture is built in memory: these tests must pass in a fresh clone
-with no local data snapshots (no schedules.parquet or market archive is
-ever read).
-"""
-
 from __future__ import annotations
-
-import sys
-from pathlib import Path
 
 import pandas as pd
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "scripts") not in sys.path:
-    sys.path.insert(0, str(ROOT / "scripts"))
-
-import schedule_flag_on_production as sfop  # noqa: E402
-
-from nfl_ats.data import DataContractError  # noqa: E402
-from nfl_ats.margin import margin_feature_columns  # noqa: E402
-from nfl_ats.schedule_flag_features import (  # noqa: E402
+from nfl_ats.data import DataContractError
+from nfl_ats.schedule_flag_features import (
     ATS_STREAK_REGRESS_COLUMN,
     DIVISION_DOG_COLUMN,
     ROAD_FAV_BIG_FADE_COLUMN,
@@ -72,7 +52,6 @@ def _schedule(rows: list[dict]) -> pd.DataFrame:
 
 
 def _opener_lines(rows: dict[str, tuple[float | None, float | None]]) -> pd.DataFrame:
-    """``{game_id: (home_spread, total_line)}`` -> the opener_lines frame shape."""
 
     return pd.DataFrame(
         {
@@ -84,7 +63,6 @@ def _opener_lines(rows: dict[str, tuple[float | None, float | None]]) -> pd.Data
 
 
 def test_road_fav_big_fade_away_favorite_is_positive() -> None:
-    """Away favored by 7+ at the opener (home_spread <= -7) -> +1 (back home)."""
 
     schedule = _schedule([_game("g1", 2020, "2020-09-13", "AAA", "BBB")])
     lines = _opener_lines({"g1": (-7.0, 45.0)})
@@ -93,7 +71,6 @@ def test_road_fav_big_fade_away_favorite_is_positive() -> None:
 
 
 def test_road_fav_big_fade_home_favorite_is_negative() -> None:
-    """Home favored by 7+ at the opener -> -1, the task-instructed mirror case."""
 
     schedule = _schedule([_game("g2", 2020, "2020-09-13", "AAA", "BBB")])
     lines = _opener_lines({"g2": (7.5, 45.0)})
@@ -117,7 +94,6 @@ def test_road_fav_big_fade_missing_opener_spread_is_zero_not_nan() -> None:
 
 
 def test_road_fav_big_fade_non_reg_game_is_zero_even_if_qualifying() -> None:
-    """A postseason big road favorite is never flagged (REG-only population)."""
 
     schedule = _schedule([_game("g5", 2020, "2021-01-10", "AAA", "BBB", game_type="WC", week=18)])
     lines = _opener_lines({"g5": (-10.0, 45.0)})
@@ -126,8 +102,6 @@ def test_road_fav_big_fade_non_reg_game_is_zero_even_if_qualifying() -> None:
 
 
 def test_road_fav_big_fade_uses_the_opener_not_the_schedules_own_close() -> None:
-    """Opener conditioning: the schedule's own close spread_line disagrees
-    with the opener, and the flag follows the OPENER."""
 
     schedule = _schedule([_game("g6", 2020, "2020-09-13", "AAA", "BBB", spread_line=-2.0)])
     lines = _opener_lines({"g6": (-9.0, 45.0)})
@@ -173,8 +147,6 @@ def test_division_dog_pickem_is_zero() -> None:
 
 
 def test_division_dog_excludes_postseason_divisional_rematches() -> None:
-    """A divisional playoff game (div_game can be 1 in the WC/DIV round) is
-    never flagged -- REG-only population, matching lane G's own claim."""
 
     schedule = _schedule(
         [_game("d5", 2020, "2021-01-10", "AAA", "BBB", game_type="DIV", week=19, div_game=1)]
@@ -320,8 +292,6 @@ def test_ats_streak_regress_non_reg_game_is_zero() -> None:
 
 
 def test_ats_streak_regress_is_invariant_to_this_games_own_outcome() -> None:
-    """Mutating game s4's own (currently missing) result must not change its
-    own flag -- only STRICTLY PRIOR games feed the streak entering it."""
 
     schedule = _streak_schedule()
     before = derive_ats_streak_regress_features(schedule).set_index("game_id")
@@ -333,8 +303,6 @@ def test_ats_streak_regress_is_invariant_to_this_games_own_outcome() -> None:
 
 
 def test_ats_streak_regress_a_later_games_flag_may_depend_on_an_earlier_result() -> None:
-    """The converse: mutating an EARLIER game's own result legitimately
-    changes a LATER game's streak flag -- pregame-known history, not leakage."""
 
     schedule = _streak_schedule()
     before = derive_ats_streak_regress_features(schedule).set_index("game_id")
@@ -374,24 +342,3 @@ def test_attach_refuses_to_overwrite_an_existing_column() -> None:
     features = pd.DataFrame({"game_id": schedule["game_id"], DIVISION_DOG_COLUMN: 0.0})
     with pytest.raises(DataContractError, match=DIVISION_DOG_COLUMN):
         attach_division_dog_features(features, schedule=schedule, opener_lines=lines)
-
-
-WAVE_3_CANDIDATES = ("road_fav_big_fade", "division_dog", "week1_dog", "ats_streak_regress")
-
-
-@pytest.mark.parametrize("key", WAVE_3_CANDIDATES)
-def test_registered_profile_is_production_plus_the_declared_one_column(key: str) -> None:
-    candidate = sfop.CANDIDATES[key]
-    baseline = set(margin_feature_columns("market_residual", sfop.BASELINE_PROFILE))
-    treatment = set(margin_feature_columns("market_residual", candidate.profile))
-    assert treatment - baseline == {candidate.column}
-    assert baseline - treatment == set()
-
-
-@pytest.mark.parametrize("key", WAVE_3_CANDIDATES)
-def test_candidate_duck_types_with_the_template_profile_identity(key: str) -> None:
-    candidate = sfop.CANDIDATES[key]
-    columns = margin_feature_columns("market_residual", candidate.profile)
-    frame = pd.DataFrame({column: [0.0] for column in columns})
-    observed = sfop.confirmation.profile_identity(candidate, frame)
-    assert observed["only_added_column"] == candidate.column

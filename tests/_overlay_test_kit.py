@@ -1,19 +1,3 @@
-"""Shared fixture-writing scaffold for overlay/tilt challenger-decision tests.
-
-Extracted from the byte-identical copies of these helpers that were pasted
-across ``tests/test_*overlay*.py`` / ``tests/test_*tilt*.py`` (wave-1
-ref-tests-kit refactor; see reports/wave1/ref-tests-kit.md).
-
-What lives here: the registry / active-model-card / stadium-registry-root
-writers, which are identical across files except for a handful of constants
-(challenger id, model config, season, week, created-at stamp).
-
-What deliberately stays per-file: scenario data -- schedules, prediction
-frames (``_recorder_predictions``), per-overlay behavioral asserts, and the
-``*_is_leak_safe_*`` / ``refuses_*`` regression tests. Those are the leakage
-and contract guards AGENTS.md mandates; they are NOT duplicated scaffolding.
-"""
-
 from __future__ import annotations
 
 import json
@@ -33,7 +17,6 @@ def write_challenger_registry(
     model_config: dict[str, object],
     status: str = "ACTIVE_PROSPECTIVE",
 ) -> None:
-    """Write the ``prospective/challengers.json`` registry payload."""
     payload = {
         "ledger": "prospective_challengers",
         "schema_version": 1,
@@ -61,8 +44,6 @@ def write_active_model_and_card(
     min_train_games: int = 500,
     feature_table_path: str = DEFAULT_FEATURE_TABLE_PATH,
 ) -> None:
-    """Write the weekly forecast card (metadata + recommendations) and the
-    ``active_ats_model.json`` snapshot the challenger recorders read."""
     if forecast_dir is None:
         forecast_dir = f"{season}-week-{week:02d}-forecast"
     forecast = artifacts / "margin_predictions" / forecast_dir
@@ -119,7 +100,6 @@ def write_active_model_and_card(
 
 
 def write_registry_root(tmp_path: Path, *, stadium_station_map_csv: str) -> Path:
-    """Write the reference stadium/station map under ``<tmp>/registry``."""
     registry_root = tmp_path / "registry"
     (registry_root / "reference").mkdir(parents=True, exist_ok=True)
     (registry_root / "reference" / "stadium_station_map.csv").write_text(

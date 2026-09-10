@@ -1,5 +1,3 @@
-"""Prospective recorder for the four-overlay policy's immediate incumbent."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -44,13 +42,6 @@ def record_former_production_incumbent_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Record the former coach->arrests side frozen in the primary ledger.
-
-    The primary recorder runs first and freezes both the newly played side and
-    ``former_policy_pick_side`` from the exact same resolved card. Reading that
-    field here prevents a second source load from producing a subtly different
-    paired control.
-    """
 
     del data_root
     entry = find_challenger(artifacts_root, INCUMBENT_CHALLENGER_ID)

@@ -375,7 +375,6 @@ def test_overlapping_seasons_are_flagged_as_shared_noise() -> None:
 
 
 def test_signal_family_collapses_decompositions_of_one_construct() -> None:
-    """Grades, era splits, window splits and battery cells are ONE family."""
 
     def family(name: str, *, league: str = "nfl") -> str:
         return signal_family(signal_from_payload(name, _signal(league=league)))
@@ -399,8 +398,6 @@ def test_signal_family_collapses_decompositions_of_one_construct() -> None:
 
 
 def test_family_overlap_warnings_report_families_not_pairs() -> None:
-    """The per-family report replaces 55k+ pairwise strings with one row per
-    correlated decomposition group (registry_correlation_audit risk #3)."""
 
     members = [
         signal_from_payload("bias_battery_cell_a", _signal(seasons=[2009, 2025])),
@@ -445,12 +442,6 @@ def test_combination_report_carries_per_family_overlap_output() -> None:
 
 
 def test_effect_outside_interval_is_refused_at_record_time() -> None:
-    """A point estimate outside its own interval is a recording contradiction.
-
-    Enforced only at RECORD time: historical rows are never rewritten, so the
-    pre-existing ledger entry predating this check must keep loading -- it is
-    surfaced by ``coherence_problems`` instead.
-    """
 
     contradictory = signal_from_payload("alpha", _signal(effect=0.05, interval=[-0.03, 0.03]))
     base = Registry(version=WEAK_SIGNAL_REGISTRY_VERSION, notes=(), signals={})
@@ -539,11 +530,6 @@ def test_combination_report_filters_by_league_and_records_seasons() -> None:
 
 
 def test_pooling_refuses_to_mix_leagues_when_none_is_chosen() -> None:
-    """NFL and CFB are different populations, so an unscoped pool is an error.
-
-    Latent until the registry held its first CFB signal: before that every
-    eligible entry was NFL, so the omitted filter silently did the right thing.
-    """
 
     registry = registry_from_payload(
         _payload(
@@ -558,7 +544,6 @@ def test_pooling_refuses_to_mix_leagues_when_none_is_chosen() -> None:
 
 
 def test_live_ledger_validates_if_present() -> None:
-    """The shipped ledger must always satisfy the schema, whatever it holds."""
 
     path = Path(__file__).resolve().parents[1] / "registry" / "weak_signals.json"
     if not path.is_file():
@@ -582,12 +567,6 @@ def test_weak_signal_direction_is_the_recorded_field() -> None:
 
 
 def test_terminal_verdict_requires_an_admissible_closing_ground() -> None:
-    """AGENTS.md, binding: an interval containing zero never closes a line.
-
-    A terminal classification with no stated ground is exactly how that
-    violation was written in practice -- "failed, CI contains 0" -- so the
-    ledger now refuses it with the rule quoted in the error.
-    """
 
     with pytest.raises(WeakSignalError, match="no admissible closing_ground"):
         signal_from_payload(
@@ -664,7 +643,6 @@ def test_unresolved_signals_cannot_carry_a_closing_ground() -> None:
 
 
 def test_record_signal_enforces_closure_grounds_directly() -> None:
-    """The CLI builds WeakSignal directly, so record time must enforce too."""
 
     from nfl_ats.weak_signals import WeakSignal
 
@@ -878,15 +856,6 @@ def test_retag_effect_units_round_trips_through_save_and_load(tmp_path: Path) ->
 
 
 def test_a_correction_may_restate_a_summary_but_never_a_measurement() -> None:
-    """`corrections` exists for the 2026-09-08 zero-atom fix and nothing wider.
-
-    A stored `probability_positive` can be demonstrably wrong while the
-    measurement behind it is fine, so it may be restated in place with a
-    reason. An effect, an interval or a classification cannot: rewriting one
-    of those silently changes what was measured, and a classification edit
-    would let a correction stand in for a closure, which needs an admissible
-    closing ground (AGENTS.md's interval-crossing-zero invariant).
-    """
 
     base = _signal(
         description="identical picks on every game",

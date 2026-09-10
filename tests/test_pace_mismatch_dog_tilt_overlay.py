@@ -1,26 +1,3 @@
-"""Pace-mismatch dog tilt overlay (docs/pace_mismatch_dog_tilt_overlay.md).
-
-Four things load-bearing, mirroring the sibling overlay test files'
-structure (``tests/test_spread_gap_zone_fade_overlay.py``,
-``tests/test_surface_switch_tilt_overlay.py``,
-``tests/test_pbp08_protection_mismatch_tilt_overlay.py``):
-
-1. :func:`pace_mismatch_flag_by_game` -- the trait/quartile-cut flag,
-   reproducing the screen's own construction (PRIOR-SEASON join, frozen
-   numeric threshold, ``>=`` comparator, missing data -> False never an
-   error), plus leakage regression tests (AGENTS.md): no outcome columns
-   read, no future-season contamination, and -- the construct-specific test
-   this rule needs -- no CURRENT-season contamination (only the PRIOR season
-   may ever be read).
-2. :func:`apply_pace_mismatch_dog_tilt_overlay` -- the pick-level transform:
-   both spread directions (home favourite and road favourite each flip to
-   the correct underdog side), pick'em exclusion, already-underdog no-op, no
-   effect outside the flagged population, REG-only gate.
-3. :func:`overlay_disclosure_note`.
-4. :func:`record_pace_mismatch_dog_tilt_challenger_decisions` -- dual-tracked,
-   no window, fingerprint/status gates.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -133,7 +110,6 @@ def test_flag_is_false_below_the_frozen_threshold() -> None:
 
 
 def test_flag_boundary_is_inclusive_at_the_frozen_threshold() -> None:
-    """``>=`` per scripts/team_style_screen.py:468, not ``>``."""
 
     flags = _flags().set_index("game_id")
     assert flags.loc["2026_05_BOUNDARY", "pace_diff_abs"] == pytest.approx(PACE_DIFF_ABS_THRESHOLD)
@@ -163,12 +139,6 @@ def test_flag_requires_its_team_season_style_columns() -> None:
 
 
 def test_flag_never_reads_outcome_columns() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    ``pace_mismatch_flag_by_game`` does not even require/read ``result`` or
-    ``spread_line`` -- adding them (with arbitrary values) and mutating them
-    must never change the already-computed flags.
-    """
 
     schedule = _schedule()
     schedule["result"] = 0.0
@@ -184,8 +154,6 @@ def test_flag_never_reads_outcome_columns() -> None:
 
 
 def test_flag_is_leak_safe_across_a_future_season_boundary() -> None:
-    """A future season's schedule/style data must never change an earlier
-    season's already-computed flags."""
 
     baseline = pace_mismatch_flag_by_game(_schedule(), _team_season_style())
 
@@ -218,12 +186,6 @@ def test_flag_is_leak_safe_across_a_future_season_boundary() -> None:
 
 
 def test_flag_uses_only_the_prior_season_never_the_current_seasons_data() -> None:
-    """Pregame-only, the construct-specific leakage check: a mutated
-    CURRENT-season (2026) pace row for a team playing IN 2026 must never
-    change that game's flag -- only the season=2025 PRIOR row may be read
-    (scripts/team_style_screen.py's ``_prior`` shift-by-one convention,
-    ported in this module's own prior-season merge).
-    """
 
     baseline = pace_mismatch_flag_by_game(_schedule(), _team_season_style()).set_index("game_id")
 
@@ -247,8 +209,6 @@ def test_flag_uses_only_the_prior_season_never_the_current_seasons_data() -> Non
 
 
 def test_overlay_flips_a_home_favourite_pick_to_the_underdog() -> None:
-    """Spread direction 1 of 2: ``spread_line > 0`` (home favoured), model
-    holds the favourite (home) -- flips to the away underdog."""
 
     result = apply_pace_mismatch_dog_tilt_overlay(_predictions(), _flags())
 
@@ -263,8 +223,6 @@ def test_overlay_flips_a_home_favourite_pick_to_the_underdog() -> None:
 
 
 def test_overlay_flips_an_away_favourite_pick_to_the_underdog() -> None:
-    """Spread direction 2 of 2: ``spread_line < 0`` (away favoured), model
-    holds the favourite (away) -- flips to the home underdog."""
 
     result = apply_pace_mismatch_dog_tilt_overlay(_predictions(), _flags())
 
@@ -286,8 +244,6 @@ def test_overlay_leaves_a_pick_already_on_the_underdog_untouched() -> None:
 
 
 def test_overlay_never_touches_a_pickem_game() -> None:
-    """``spread_line == 0``: no defined underdog, never touched -- explicit
-    per the frozen rule, regardless of the pace flag or the model's pick."""
 
     result = apply_pace_mismatch_dog_tilt_overlay(_predictions(), _flags())
     assert all(flip.game_id != "2026_05_PICKEM" for flip in result.flips)
@@ -320,8 +276,6 @@ def test_overlay_leaves_postseason_games_untouched() -> None:
 
 
 def test_overlay_flip_set_is_exactly_the_expected_games() -> None:
-    """No effect anywhere outside the three intended flips -- the strongest
-    form of the "no effect outside the flagged population" guarantee."""
 
     result = apply_pace_mismatch_dog_tilt_overlay(_predictions(), _flags())
     flipped_ids = {flip.game_id for flip in result.flips}
@@ -353,8 +307,6 @@ def test_overlay_with_an_empty_flag_table_is_a_documented_no_op_not_a_crash() ->
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows() -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical."""
 
     predictions = _predictions()
     result = apply_pace_mismatch_dog_tilt_overlay(predictions, _flags())
@@ -458,8 +410,6 @@ def _write_active_model_and_card(artifacts: Path, *, ridge_alpha: float = 10.0) 
 
 
 def _write_data_root(tmp_path: Path) -> Path:
-    """A real schedule snapshot + team-season pace cache, so the recorder's
-    fail-open flag build actually finds data and can produce a real flip."""
 
     data_root = tmp_path / "data"
     empty_team_stats = pd.DataFrame({"season": pd.Series(dtype="int64")})
@@ -537,11 +487,6 @@ def test_record_pace_mismatch_challenger_refuses_outside_recording_lock_window(
 
 
 def test_pace_mismatch_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches
-    CONFIG_FINGERPRINT_KEYS -- and that it equals the FROZEN fingerprint this
-    challenger is registered against, ``bc77638d47e2748c`` (measured this
-    session against both the ``model`` block and the live active-model
-    artifact -- see the module report)."""
 
     metadata = {
         "ats_method": "market_residual",

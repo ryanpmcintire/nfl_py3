@@ -1,9 +1,3 @@
-"""Interactive dashboard presentation over the normal, guarded site content.
-
-Assets are packaged with the renderer and inlined so every generated page is
-self-contained. No saved preview, alternate forecast, or browser storage is used.
-"""
-
 from __future__ import annotations
 
 import json
@@ -46,7 +40,6 @@ def _final_scores(game: GameRow) -> dict[str, int] | None:
 
 
 def card_payload(board: BoardContent) -> dict[str, object]:
-    """Use exactly the picks, explanations and lineups rendered on this card."""
     dives = {dive.game_id: dive for dive in board.dives}
     games = []
     for game in board.games:
@@ -87,7 +80,6 @@ def card_payload(board: BoardContent) -> dict[str, object]:
 
 
 def enhance(document: str, *, page: str, board: BoardContent) -> str:
-    """Apply the approved interactive design to a freshly rendered site page."""
     key = "week" if page == "index.html" else Path(page).stem
     payload = json.dumps(card_payload(board), ensure_ascii=True, allow_nan=False).replace(
         "<", "\\u003c"

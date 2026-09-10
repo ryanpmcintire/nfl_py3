@@ -1,15 +1,3 @@
-"""Reproducibility metadata for generated research artifacts.
-
-Also home to the RWB-09 experiment-provenance registry: a durable, git-
-tracked record of which code/config/data produced a headline number, kept
-independent of ``artifacts/`` (gitignored, local-disk-only, and proven twice
-in one session to disappear -- see ``docs/closure_audit.md``). One small JSON
-file per experiment run lives under ``registry/experiments/<command>/``,
-written by :func:`write_experiment_artifact` as a side effect of the artifact
-write every CLI command already does, so recording is not a discipline a
-session has to remember.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -72,15 +60,6 @@ def git_state(workdir: Path) -> dict[str, Any]:
 
 
 def git_diff_sha256(workdir: Path) -> str | None:
-    """SHA-256 of the working tree's diff against HEAD.
-
-    ``git_state`` records ``dirty`` as a bare boolean, which only tells you
-    that the revision hash alone will not reproduce the code that ran -- not
-    *what* changed. Hashing ``git diff HEAD`` closes that gap without
-    embedding the diff's own (potentially large) text into a git-tracked
-    registry row. Returns ``None`` outside a git repository, matching
-    ``git_state``'s own degenerate case.
-    """
 
     diff = subprocess.run(
         ["git", "diff", "HEAD"],
@@ -154,20 +133,11 @@ DEFAULT_METRICS_SCHEMA_VERSION = 1
 
 
 class ExperimentRecordError(ValueError):
-    """Raised when an experiment-registry row is invalid.
-
-    A ``ValueError`` subclass so callers see a user-facing error rather than
-    a bare traceback, matching ``WeakSignalError``/``RegistryError``.
-    """
+    pass
 
 
 @dataclass(frozen=True)
 class ExperimentRecord:
-    """One experiment run: enough to answer "does this number reproduce" and
-    "what code/config/data produced it" months later, after ``artifacts/``
-    (gitignored, local-disk-only) is gone.
-    """
-
     experiment_id: str
     recorded_at: str
     command: str
@@ -287,27 +257,12 @@ def save_experiment_record(record: ExperimentRecord, path: Path) -> None:
 
 
 def default_experiment_registry_root(root: Path | None = None) -> Path:
-    """Return the tracked experiment-registry root, honouring ``NFL_ATS_REGISTRY_DIR``
-    when ``root`` is not given explicitly -- the same convention as
-    ``rotation.default_registry_path``/``weak_signals.default_registry_path``, so
-    a caller that forgets to thread an explicit root still lands in whatever
-    isolated directory a test (or ``NFL_ATS_REGISTRY_DIR``-aware caller) has
-    already set up, rather than silently falling back to the real tracked
-    ``registry/`` tree.
-    """
 
     base = Path(os.environ.get("NFL_ATS_REGISTRY_DIR", "registry")) if root is None else root
     return base / EXPERIMENT_REGISTRY_DIRNAME
 
 
 def experiment_command_slug(command: str) -> str:
-    """Filesystem-safe directory name for a command or script path.
-
-    ``registry/experiments/<slug>/<stamp>.json`` -- slugified so a future
-    script-path command (e.g. ``scripts/foo.py``) cannot smuggle a path
-    separator into the registry layout, even though this pass only wires
-    ``cli.py``'s command names, which are already safe as-is.
-    """
 
     slug = re.sub(r"[^A-Za-z0-9_.-]+", "_", command.strip())
     return slug or "unknown"
@@ -315,13 +270,6 @@ def experiment_command_slug(command: str) -> str:
 
 @dataclass(frozen=True)
 class ExperimentLinkVerification:
-    """One row's artifact-link check.
-
-    Records whether the stored ``artifact_directory`` resolves to something
-    that actually exists on disk, the candidate paths tried, and any
-    consistency flags the row carries.
-    """
-
     experiment_id: str
     command: str
     artifact_directory: str | None
@@ -337,31 +285,6 @@ def verify_experiment_links(
     *,
     artifacts_roots: list[Path] | None = None,
 ) -> list[ExperimentLinkVerification]:
-    """Check every committed experiment-registry row's linked artifact.
-
-    Read-only: never writes. Walks ``registry/experiments/*/*.json`` and, for
-    each row, resolves its ``artifact_directory`` against a set of candidate
-    roots (an absolute stored path as-is; a relative one against each provided
-    ``artifacts_roots`` entry and the registry's own repo root) and reports
-    whether any candidate exists on disk.
-
-    ``artifacts/`` is gitignored and local-disk-only, so a MISSING link is NOT
-    necessarily a defect -- the reproducibility guarantee is the row's hashes
-    (``config_hash``/``code_revision``/``feature_table_sha256``/``uv_lock_sha256``),
-    not the path. This helper exists so a session can *measure* which links
-    still resolve rather than guessing, and so path/identity inconsistencies
-    surface instead of hiding.
-
-    Flags:
-      - ``absolute_machine_path``: the stored ``artifact_directory`` is an
-        absolute, machine-specific path rather than a repo-relative one.
-      - ``id_not_filesystem_safe``: the row's ``command`` required slugification
-        to match its directory, so the raw ``experiment_id`` is not directly
-        usable as a path.
-      - ``source_not_a_path``: the stored ``source`` is not a path (e.g.
-        ``nfl-ats <command>`` or a ``docs/...`` reference), so it cannot be
-        checked for existence.
-    """
 
     experiments_root = default_experiment_registry_root(registry_root)
     repo_root = experiments_root.parent.parent
@@ -426,12 +349,6 @@ def _json_size(value: Any) -> int:
 
 
 def bounded_metrics(metrics: dict[str, Any]) -> dict[str, Any]:
-    """Cap a metrics dict's serialized size, naming (not hiding) what was dropped.
-
-    Public so the one-time backfill script (``scripts/backfill_experiment_registry.py``)
-    can apply the identical rule to metrics lifted from an existing artifact,
-    not just to metrics passed through :func:`write_experiment_artifact`.
-    """
     if _json_size(metrics) <= _METRICS_MAX_BYTES:
         return dict(metrics)
     kept: dict[str, Any] = {}
@@ -462,31 +379,6 @@ def write_experiment_artifact(
     project_root: Path | None = None,
     registry_root: Path | None = None,
 ) -> dict[str, Any]:
-    """Write an artifact's own metadata file AND its experiment-registry row.
-
-    ``metadata`` must already carry an ``artifact_provenance()``-shaped dict
-    -- either under ``metadata[provenance_key]`` (the usual ``metadata.json``
-    convention) or, when ``provenance_key`` is ``None``, ``metadata`` itself
-    IS that dict (the bare ``run.json`` convention a few commands use). This
-    function does not compute provenance; it stamps what the caller already
-    computed, so it is a strict superset of the ``atomic_json(metadata,
-    directory / filename)`` line it replaces -- not a second path a caller
-    has to remember to keep in sync.
-
-    A dirty tree is RECORDED, never blocked: research reality is dirty trees,
-    and refusing to log a dirty run would just push it outside the registry
-    entirely, defeating the point. ``code_diff_sha256`` is computed (only
-    when dirty, to avoid a needless subprocess call on a clean run) so a
-    dirty run's actual working tree is pinned too, not just its base
-    revision.
-
-    The registry stamp reuses ``directory.name`` -- the same ``run_id()``
-    stamp already used for the artifact directory -- rather than generating
-    a fresh one, so the two writes can never drift to different timestamps.
-
-    Returns the registry row's payload (e.g. to fold into a command's own
-    printed JSON summary).
-    """
 
     atomic_json(metadata, directory / filename)
 
@@ -535,27 +427,6 @@ def write_stamped_artifact(
     *,
     project_root: Path | None = None,
 ) -> dict[str, Any]:
-    """Write a JSON artifact stamped with code provenance, WITHOUT creating a
-    ``registry/experiments/`` row.
-
-    :func:`write_experiment_artifact` always creates that row -- exactly the
-    property that made it the wrong fit for scripts like
-    ``scripts/snapshot_diff.py`` and ``scripts/prospective_scorecard.py``:
-    both write real, useful artifacts under ``artifacts/`` but are explicitly
-    NOT experiments (no hypothesis, no cell, no closing ground; see each
-    script's own module docstring), so an adjudicated-screen row would
-    misrepresent them. This helper is the sanctioned alternative the
-    ENG-29 provenance gate accepts in place of
-    :func:`write_experiment_artifact`: it still stamps enough to answer
-    "which commit produced this" months later (the same
-    ``code_revision``/``code_dirty`` pair :func:`git_state` reports for the
-    experiment registry), under a fixed ``_provenance_stamp`` key chosen not
-    to collide with a caller's own payload keys, but it writes only the one
-    file the caller asked for.
-
-    Returns the stamped payload (the same dict written to ``destination``),
-    e.g. so a caller can fold the stamp into its own printed summary.
-    """
 
     root = (project_root or Path.cwd()).resolve()
     code = git_state(root)
@@ -575,21 +446,6 @@ def stamp_sidecar(
     *,
     project_root: Path | None = None,
 ) -> Path:
-    """Stamp a non-JSON artifact (CSV/Parquet/etc.) with a ``<path>.provenance.json``
-    sidecar carrying the same fields as :func:`write_stamped_artifact`'s
-    ``_provenance_stamp``.
-
-    ENG-38: several non-experiment writer scripts (``scripts/*_screen.py``,
-    ``*_eval.py``, builders/ingesters) write tabular result tables that
-    ``write_stamped_artifact`` cannot stamp in place -- it always writes JSON.
-    Rather than reformat a script's own table-writing call, this writes a tiny
-    JSON sidecar beside the artifact naming which commit produced it, so the
-    ENG-29 provenance gate has a sanctioned path for tabular writes without
-    ever touching the table's own bytes.
-
-    ``extra`` folds additional caller-supplied fields (e.g. a row count or the
-    logical run id) into the sidecar; it is never required.
-    """
 
     root = (project_root or Path.cwd()).resolve()
     code = git_state(root)

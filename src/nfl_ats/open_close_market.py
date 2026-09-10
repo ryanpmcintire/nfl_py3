@@ -1,10 +1,3 @@
-"""Free 2025 NFL opening/closing multi-book sample acquisition.
-
-The source identifies quotes as an opener or a reported book close, but does
-not provide quote timestamps.  The normalized contract preserves that useful
-stage information without pretending the rows are timestamped observations.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -211,7 +204,6 @@ def _implied_probability(price: float) -> float:
 
 
 def _spread_moneyline_consistent(away_price: float, home_price: float, home_line: float) -> bool:
-    """Check whether spread and moneyline identify the same favorite."""
 
     away_probability = _implied_probability(away_price)
     home_probability = _implied_probability(home_price)
@@ -230,7 +222,6 @@ def normalize_open_close_sample(
     source_version: int | str | None = None,
     raw_archive_sha256: str = "",
 ) -> pd.DataFrame:
-    """Convert the wide source into one row per market outcome and book."""
 
     require_columns(table, BASE_REQUIRED_COLUMNS, "open_close_sample")
     required_market_columns: list[str] = []
@@ -377,7 +368,6 @@ def summarize_open_close_games(
     quotes: pd.DataFrame,
     reference_games: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Build one-game open/consensus-close movement and source-audit rows."""
 
     home_spreads = quotes.loc[
         quotes["market"].eq("spreads") & quotes["outcome_side"].eq("HOME")

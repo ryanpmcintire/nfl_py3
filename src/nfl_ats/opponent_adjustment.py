@@ -1,19 +1,3 @@
-"""Leak-safe, regularized opponent adjustment for team-game PBP metrics.
-
-The module is two layers. The lower one — :class:`OpponentEffects`,
-:func:`opponent_adjustment_weeks`, :func:`eligible_opponent_history`, and
-:func:`fit_opponent_effects` — is the league-agnostic estimator and its
-point-in-time contract: one weighted ridge decomposition of an observed
-team-game metric into an offense effect and an opposing-defense effect, fit
-only from strictly earlier weeks and strictly earlier game dates. The upper
-one is the NFL feature builder that turns those effects into matchup
-expectations.
-
-Other leagues (see ``nfl_ats.cfb_opponent_adjustment``) reuse the lower layer
-rather than re-implementing it, so there is exactly one estimator and one
-leakage contract to audit.
-"""
-
 from __future__ import annotations
 
 import math
@@ -34,30 +18,19 @@ OPPONENT_HISTORY_COLUMNS: tuple[str, ...] = ("team", "opponent", "season", "week
 
 @dataclass(frozen=True)
 class OpponentEffects:
-    """One week's decomposition of a metric into offense and defense effects.
-
-    ``offense[t] + defense[o] + intercept`` is the expected value of the
-    metric when team ``t`` faces opponent ``o``. Teams absent from the fit's
-    eligible history keep a 0.0 effect, i.e. they are treated as league
-    average until they have been observed.
-    """
-
     intercept: float
     offense: dict[str, float]
     defense: dict[str, float]
 
     def expectation(self, team: str, opponent: str) -> float:
-        """The matchup expectation for ``team`` facing ``opponent``."""
 
         return self.intercept + self.offense.get(team, 0.0) + self.defense.get(opponent, 0.0)
 
     def offense_rating(self, team: str) -> float:
-        """``team``'s opponent-adjusted metric against an average defense."""
 
         return self.intercept + self.offense.get(team, 0.0)
 
     def defense_rating(self, team: str) -> float:
-        """``team``'s opponent-adjusted metric allowed to an average offense."""
 
         return self.intercept + self.defense.get(team, 0.0)
 
@@ -68,12 +41,6 @@ def _canonical_team(value: object) -> str:
 
 
 def opponent_adjustment_weeks(games: pd.DataFrame) -> pd.DataFrame:
-    """Every (season, week) with its earliest kickoff, in chronological order.
-
-    The earliest kickoff of a week is that week's cutoff: no game played in
-    the week — not even one played days before the rest of it — is eligible
-    for the week's own fit.
-    """
 
     require_columns(games, ("season", "week", "gameday"), "opponent adjustment games")
     return (
@@ -87,12 +54,6 @@ def opponent_adjustment_weeks(games: pd.DataFrame) -> pd.DataFrame:
 def eligible_opponent_history(
     history: pd.DataFrame, *, season: int, week: int, cutoff: pd.Timestamp
 ) -> pd.DataFrame:
-    """History a (season, week) fit may see: earlier week AND earlier date.
-
-    Both conditions are required, so a mislabeled week cannot smuggle a
-    same-day or later game into an earlier week's fit, and a game labeled to
-    an earlier week but played after the cutoff is excluded as well.
-    """
 
     prior_week = (history["season"].lt(season)) | (
         history["season"].eq(season) & history["week"].lt(week)
@@ -111,19 +72,6 @@ def fit_opponent_effects(
     min_team_games: int,
     include_opponent: bool = True,
 ) -> OpponentEffects | None:
-    """Decompose one metric into offense and opposing-defense effects.
-
-    ``history`` must already be restricted to rows the cutoff allows (see
-    :func:`eligible_opponent_history`). Observations are weighted by an
-    exponential decay in weeks before ``cutoff``. Returns ``None`` when the
-    eligible history is too thin to fit, so callers leave the week unscored
-    instead of inventing a value.
-
-    ``include_opponent=False`` drops the opposing-defense block, leaving a
-    time-decayed, ridge-shrunk team mean and an all-zero defense map. That is
-    the control for "what does the *opponent* block buy?": everything else —
-    decay, penalty, warm-up, cutoff — is held identical.
-    """
 
     usable = history.loc[history[metric].notna()].copy()
     if (
@@ -168,7 +116,6 @@ def fit_opponent_effects(
 def validate_opponent_adjustment_parameters(
     *, half_life_weeks: float, ridge_alpha: float, min_team_games: int
 ) -> None:
-    """Reject adjustment parameters that cannot produce a meaningful fit."""
 
     if not math.isfinite(half_life_weeks) or half_life_weeks <= 0:
         raise ValueError("half_life_weeks must be positive")
@@ -186,13 +133,6 @@ def add_opponent_adjusted_pbp_features(
     ridge_alpha: float = 10.0,
     min_team_games: int = 64,
 ) -> pd.DataFrame:
-    """Add weekly, point-in-time matchup expectations from prior PBP games.
-
-    For each efficiency metric, a weighted ridge model decomposes an observed
-    team-game result into an offensive-team effect and an opposing-defense
-    effect. Every game in an NFL week is scored before that week's observations
-    are eligible for fitting.
-    """
 
     validate_opponent_adjustment_parameters(
         half_life_weeks=half_life_weeks,

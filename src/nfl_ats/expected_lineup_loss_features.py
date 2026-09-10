@@ -1,28 +1,3 @@
-"""Expected lineup loss from the play-probability model (LEAD-62).
-
-Predeclared in ``docs/expected_lineup_loss.md`` before any candidate arm was
-scored. For each team-game, sum over that team's WEEK-OF depth-chart
-starters (``depth_rank == 1`` at each position slot) of
-``(1 - P(plays)) * trailing-4-week snap share``, split into three groups
-(``qb``, ``offense``, ``defense``); the signed production column for each
-group is ``home - away``. ``P(plays)`` is
-``nfl_ats.play_probability``'s own walk-forward, isotonic-calibrated model
-(imported, never edited); the panel it trains on is the one lane AB built
-(``data/processed/play_probability_panel.parquet``).
-
-Safety follows the corrected play-probability implementation: shared pool
-cutoff (kickoff or Sunday 16:00 Eastern), visible injury revisions, strictly
-earlier daily depth observations, and disjoint chronological calibration.
-Legacy week-labelled depth rows retain that archive's pregame assumption;
-their actual sub-week observation time cannot be verified. Snap-history
-features must come from ``play_probability.attach_history_features``.
-
-The old 24-hour timing and training descriptions in the frozen predeclaration
-are superseded by the owner's CX5 task; its formula is unchanged. The current
-probability model does not consume roster_status; the compatibility column is
-still forced to ACT. See the appended results in ``docs/expected_lineup_loss.md``.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -88,7 +63,6 @@ _GAMES_REQUIRED_COLUMNS: tuple[str, ...] = (
 
 
 def team_week_decision_instants(games: pd.DataFrame) -> pd.DataFrame:
-    """One row per team-game at min(kickoff, Sunday 16:00 Eastern)."""
 
     require_columns(games, _GAMES_REQUIRED_COLUMNS, "games")
     long = pd.concat(
@@ -107,12 +81,6 @@ def team_week_decision_instants(games: pd.DataFrame) -> pd.DataFrame:
 def visible_injury_lookup(
     injuries: pd.DataFrame, decision_at_by_team_week: pd.DataFrame
 ) -> pd.DataFrame:
-    """Injuries visible strictly at-or-before each (season, week, team)'s own
-    ``decision_at`` -- the same ``<= decision_at`` rule
-    ``nfl_ats.players._injury_rows_asof`` applies to PRODUCTION's own
-    ``diff_injury_*`` block (duplicated, not imported; see module docstring).
-    One row per (season, week, team, gsis_id): the LATEST visible revision.
-    """
 
     require_columns(injuries, _INJURY_REQUIRED_COLUMNS, "injuries")
     require_columns(
@@ -150,9 +118,6 @@ def _lineup_group(position: pd.Series, position_group: pd.Series) -> pd.Series:
 
 
 def select_week_starters(panel: pd.DataFrame) -> pd.DataFrame:
-    """Depth-rank-1 rows only, tagged with their ``lineup_group``
-    (``qb``/``offense``/``defense``); special-teams-only starters
-    (``position_group == "other"``) are dropped."""
 
     require_columns(panel, _PANEL_REQUIRED_COLUMNS, "play_probability panel")
     visible = _visible_panel(panel)
@@ -162,12 +127,6 @@ def select_week_starters(panel: pd.DataFrame) -> pd.DataFrame:
 
 
 def _visible_panel(panel: pd.DataFrame) -> pd.DataFrame:
-    """Keep only pre-decision depth observations; legacy weeks are archive proxies.
-
-    A prepared panel must carry the same decision cutoff as the game. History
-    columns are supplied by play_probability.attach_history_features. Never
-    accept a post-decision daily depth row, even as model-training evidence.
-    """
     require_columns(panel, ("decision_at", "source_schema"), "play_probability panel")
     decision = pd.to_datetime(panel["decision_at"], utc=True, errors="coerce")
     observed = pd.to_datetime(
@@ -185,9 +144,6 @@ def _visible_panel(panel: pd.DataFrame) -> pd.DataFrame:
 def attach_asof_injury_features(
     starters: pd.DataFrame, injury_lookup: pd.DataFrame
 ) -> pd.DataFrame:
-    """Replace the panel's own (final-week-status) injury columns with the
-    asof-visible ones, and force ``roster_status`` to ``"ACT"`` -- see the
-    module docstring's "Strict pregame safety" section."""
 
     result = starters.reset_index(drop=True).copy()
     result["_row"] = np.arange(len(result))
@@ -212,13 +168,6 @@ def attach_asof_injury_features(
 def attach_play_probabilities(
     starters: pd.DataFrame, panel: pd.DataFrame, *, scored_seasons: Iterable[int] | None = None
 ) -> pd.DataFrame:
-    """Walk-forward ``play_probability`` for every starter row: for each
-    scored season Y, ``fit_play_probability_model(panel, scored_season=Y)``
-    (fit on every season strictly before Y, calibrated on Y-1) predicts every
-    starter row whose own ``season`` is Y. A season with no strictly-prior
-    training season (2013, the panel's first) can never be scored and is
-    dropped -- the same walk-forward floor
-    ``docs/play_probability_model.md``'s own evaluation starts at 2014."""
 
     panel = _visible_panel(panel)
     available_seasons = sorted(int(value) for value in panel["season"].unique())
@@ -246,11 +195,6 @@ def attach_play_probabilities(
 
 
 def team_week_expected_loss(starters_with_probability: pd.DataFrame) -> pd.DataFrame:
-    """One row per (season, week, team) with the three group totals.
-
-    A starter with no snap history (``trailing4_snap_share`` is ``NaN``)
-    contributes zero to the sum -- see the module docstring's predeclared
-    "documented choice"."""
 
     require_columns(starters_with_probability, ("play_probability",), "starters")
     working = starters_with_probability.loc[
@@ -294,18 +238,6 @@ def attach_expected_lineup_loss_features(
     injuries: pd.DataFrame,
     scored_seasons: Iterable[int] | None = None,
 ) -> pd.DataFrame:
-    """Attach the three ``diff_expected_lineup_loss_*`` columns to
-    ``base_features`` (home minus away). ``base_features`` must already
-    carry ``season``/``week``/``home_team``/``away_team``/``kickoff``
-    (PRODUCTION's ``game_features_weak_stack.parquet`` does). ``panel`` is
-    ``nfl_ats.play_probability``'s own training panel
-    (``data/processed/play_probability_panel.parquet``); ``injuries`` is the
-    SAME player snapshot's raw, already-``week_proxy``-canonicalized
-    ``injuries.parquet`` (carries ``effective_observed_at``).
-
-    Never writes ``data/processed`` itself -- the caller decides where the
-    augmented table is written, if at all.
-    """
 
     decision_at = team_week_decision_instants(base_features)
     injury_lookup = visible_injury_lookup(injuries, decision_at)
@@ -352,10 +284,6 @@ def attach_expected_lineup_loss_features(
 
 
 def team_season_split_half_reliability(team_week_loss: pd.DataFrame) -> dict[str, float]:
-    """Odd/even-week split-half Pearson reliability of the team-season mean
-    COMBINED expected loss (``qb + offense + defense``, before home/away
-    signing) -- the predeclared reliability measure in
-    ``docs/expected_lineup_loss.md``."""
 
     require_columns(
         team_week_loss,

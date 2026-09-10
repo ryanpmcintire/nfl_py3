@@ -1,81 +1,3 @@
-"""Phase 12 PBP coaching-trait reliability screen (lane J: LEAD-26/27/30).
-
-**Scope, binding for this module.** These three ROADMAP rows are marked
-"reliability first, ATS look second" and this module is the reliability
-stage only. It builds team-season and rolling team-week versions of three
-coaching-preparation traits from raw nflverse play-by-play and measures
-their split-half reliability two ways (odd/even week within a season, and
-season-to-season for the same franchise code). It NEVER stacks a trait onto
-the model, runs an ATS comparison, or grades a forced pick -- that is a
-later lane's job, gated on a trait clearing the reliability bar measured
-here. Definitions below were frozen (see ``docs/pbp_trait_reliability.md``)
-before any number in this file was produced.
-
-**Binding closing-grounds taxonomy (verbatim, AGENTS.md / CLAUDE.md).** An
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. At this evaluator's ~2-point resolution, "contains zero" is
-the EXPECTED outcome for a real small signal. Only two grounds ever close a
-line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval
-on the wrong side of zero) or zero split-half reliability; (2) bounded by a
-positive control proven able to detect an effect that size. Everything else
-is ``unresolved_below_power``: record it with ``nfl-ats weak-signals
-record``, report ``probability_positive``, never the binary "contains
-zero". The registry code hard-rejects inadmissible closures; if a record
-command errors, the verdict is wrong, not the validator. Nothing in this
-module closes anything -- every recorded signal from this screen uses
-classification ``unresolved_below_power`` regardless of the measured value,
-per this lane's task (deciding whether a low reliability ever earns
-``no_split_half_reliability`` is deliberately left to a later, dedicated
-adjudication, not bundled into a first measurement).
-
-**Three traits, three builders each producing a team-game long table, a
-team-season aggregate (with opportunity counts), and a rolling team-week
-version computed strictly from that team's STRICTLY EARLIER completed
-games** (never the current or a future game -- see
-``tests/test_pbp_coaching_traits.py`` for the leakage regression proof):
-
-- LEAD-26 scripted-drive efficiency: :func:`build_opening_drive_team_games`
-  -- opening-drive (a team's own minimum ``fixed_drive`` id in the game;
-  ``fixed_drive`` is a whole-game, alternating counter, verified read on
-  ``data/pbp/raw/20260817T184927Z/season=2009/plays.parquet`` game
-  ``2009_01_BUF_NE``) TD rate and EPA/play, via
-  ``nfl_ats.pbp.build_drive_table`` (the v1 analysis-play filter already
-  used for every other PBP_STATE_METRICS quantity in production).
-- LEAD-27 third-quarter adjustments:
-  :func:`build_third_quarter_point_diff_team_games` -- a team's own points
-  scored in the third quarter minus its opponent's, derived from the
-  ``score_differential``/``posteam_score`` state at the first play of Q3 and
-  the first play of Q4 (this correctly captures defensive/special-teams
-  scores too, since ``score_differential`` is the authoritative running
-  score gap, not a play-type-specific tally).
-- LEAD-30 fourth-down aggressiveness:
-  :func:`build_fourth_down_opportunities` -- go-for-it rate on 4th-and-<=3
-  outside field-goal range (``yardline_100`` in [30, 70]), the frozen
-  definition named in the ROADMAP row and the task brief.
-
-**Reliability engine** (:func:`paired_split_half_reliability`) is generic
-over any (team, season, value_a, value_b, block_season) pairing so the same
-estimator serves both split methods for all four recorded metrics:
-
-- ``within_season_odd_even_week`` -- team-season unit, halves = odd/even
-  week, Spearman-Brown corrected to full-season length.
-- ``season_to_season_same_franchise`` -- year *t* vs year *t+1* for the
-  same team code (``nfl_ats.constants.TEAM_ABBREVIATION_ALIASES`` already
-  folds OAK/LV, SD/LAC, STL-SL/LA into one continuous franchise, matching
-  the alias convention ``nfl_ats.pbp.build_pbp_team_game_metrics`` already
-  applies; a genuine relocation that also changed the on-file team code
-  breaks that one transition, which is a known, accepted limitation, not a
-  bug).
-
-Both methods get a SEASON-BLOCKED bootstrap (resample whole seasons with
-replacement, not individual team-season rows -- team-seasons sharing a
-season are not independent draws, they share the rule year, ball,
-officiating crop, etc.) and a null built by shuffling which team's "b"-half
-value is paired with which team's "a"-half value, WITHIN each season block
-(preserves each season's own value distribution, destroys the true team-level
-pairing) -- a real reliability estimator should center this null near zero.
-"""
-
 from __future__ import annotations
 
 import math
@@ -143,17 +65,6 @@ def _normalize_teams(frame: pd.DataFrame, columns: tuple[str, ...]) -> pd.DataFr
 
 
 def build_opening_drive_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
-    """One row per (game_id, team): opening-drive TD flag, EPA, plays.
-
-    "Opening drive" = the team's own minimum ``fixed_drive`` id in the game.
-    Built on top of ``nfl_ats.pbp.build_drive_table``, which already applies
-    the v1 analysis-play filter (real pass/rush snaps with valid EPA/WP, no
-    kneels/spikes/aborted plays) -- the same convention every other
-    PBP_STATE_METRICS EPA/play quantity in production uses. A team-game with
-    zero eligible plays on its opening possession (e.g. an all-penalty
-    3-and-out) is absent from ``build_drive_table`` and is silently dropped
-    here too; this is a known, accepted, rare edge case, not a bug.
-    """
 
     _require_pbp_columns(pbp)
     drives = build_drive_table(pbp)
@@ -187,7 +98,6 @@ def build_opening_drive_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_opening_drive_team_seasons(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Team-season aggregate: opening-drive TD rate and play-weighted EPA/play."""
 
     team_games = build_opening_drive_team_games(pbp)
     columns = [
@@ -220,13 +130,6 @@ def build_opening_drive_team_seasons(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_opening_drive_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Rolling team-week opening-drive state, using STRICTLY prior games only.
-
-    Row *i* (a team's game) carries the cumulative rate/EPA-per-play from
-    every earlier game that same team played, in (season, week) order, and
-    NEVER includes game *i*'s own opening-drive outcome -- the cumulative
-    sums are shifted by one row within each team group before being divided.
-    """
 
     team_games = (
         build_opening_drive_team_games(pbp)
@@ -267,15 +170,6 @@ def build_opening_drive_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_third_quarter_point_diff_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
-    """One row per (game_id, team): the team's own Q3 points minus its opponent's.
-
-    Uses ``score_differential`` (posteam's score minus defteam's score,
-    nflverse's own authoritative running gap, correct for defensive/special
-    teams scores too) at the FIRST play of Q3 and the FIRST play of Q4 to
-    read the exact score state entering and leaving the quarter, converted
-    to a fixed home-team perspective (``home_lead_pre``) and then split back
-    out per team with the correct sign.
-    """
 
     _require_pbp_columns(pbp)
     columns = ["game_id", "season", "week", "team", "q3_point_diff"]
@@ -335,7 +229,6 @@ def build_third_quarter_point_diff_team_games(pbp: pd.DataFrame) -> pd.DataFrame
 
 
 def build_third_quarter_team_seasons(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Team-season aggregate: mean Q3 point differential across the team's games."""
 
     team_games = build_third_quarter_point_diff_team_games(pbp)
     columns = ["team", "season", "n_games", "q3_point_diff"]
@@ -350,7 +243,6 @@ def build_third_quarter_team_seasons(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_third_quarter_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Rolling team-week Q3 point-differential state, STRICTLY prior games only."""
 
     team_games = (
         build_third_quarter_point_diff_team_games(pbp)
@@ -380,26 +272,6 @@ def build_third_quarter_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_fourth_down_opportunities(pbp: pd.DataFrame) -> pd.DataFrame:
-    """One row per eligible 4th-down opportunity: did the team go for it?
-
-    Frozen population (predeclared, see module docstring and
-    ``docs/pbp_trait_reliability.md``): down == 4, 1 <= ydstogo <= 3,
-    yardline_100 in [30, 70], ``play_type`` in {run, pass, punt,
-    field_goal} (``no_play`` -- penalty-nullified -- snaps excluded because
-    the intended call cannot be recovered from ``play_type`` alone). Going
-    for it = ``play_type`` in {run, pass}.
-
-    Deliberately does NOT gate on nflverse's ``play`` indicator: that column
-    is 0 for kicking plays (punts, field goals) by nflverse's own convention
-    -- the same convention ``nfl_ats.pbp.analysis_plays`` relies on to keep
-    only scrimmage snaps for EPA aggregation -- so requiring ``play == 1``
-    here would silently discard every punt and field-goal attempt and leave
-    only "go" outcomes in the eligible population (caught in a real-data
-    run 2026-09-05: ``go_for_it`` came back constant at 1.0 for all 467
-    within-season units before this was fixed). ``qb_kneel``/``qb_spike``/
-    ``aborted_play`` are still excluded directly; they are not real
-    go-for-it-vs-kick decisions.
-    """
 
     _require_pbp_columns(pbp)
     columns = ["game_id", "season", "week", "team", "go_for_it"]
@@ -458,7 +330,6 @@ def build_fourth_down_opportunities(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_fourth_down_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
-    """One row per (game_id, team) that had >=1 eligible 4th-down opportunity."""
 
     opportunities = build_fourth_down_opportunities(pbp)
     columns = ["game_id", "season", "week", "team", "go_count", "eligible_count"]
@@ -473,7 +344,6 @@ def build_fourth_down_team_games(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_fourth_down_team_seasons(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Team-season aggregate: go rate = total go-for-it / total eligible opportunities."""
 
     team_games = build_fourth_down_team_games(pbp)
     columns = ["team", "season", "n_games", "go_count", "eligible_count", "fourth_down_go_rate"]
@@ -495,7 +365,6 @@ def build_fourth_down_team_seasons(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_fourth_down_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Rolling team-week fourth-down go rate, STRICTLY prior opportunities only."""
 
     team_games = (
         build_fourth_down_team_games(pbp)
@@ -528,12 +397,6 @@ def build_fourth_down_rolling(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_odd_even_halves(long: pd.DataFrame, value_col: str, *, min_per_half: int) -> pd.DataFrame:
-    """Team-season odd/even-week halves: one row per team-season with both halves.
-
-    ``long`` is any (team, season, week, value) table -- a team-game frame
-    or an opportunity-level frame both work identically, since a simple
-    ``.mean()`` over opportunity rows already IS the correctly-weighted rate.
-    """
 
     columns = ["team", "season", "block_season", "value_a", "value_b"]
     frame = long.loc[:, ["team", "season", "week", value_col]].dropna(subset=[value_col]).copy()
@@ -557,14 +420,6 @@ def build_odd_even_halves(long: pd.DataFrame, value_col: str, *, min_per_half: i
 
 
 def build_season_to_season_pairs(team_season: pd.DataFrame, value_col: str) -> pd.DataFrame:
-    """Pairs of (season *t* value, season *t+1* value) for the same team code.
-
-    ``block_season`` is *t*, the pair's starting season, used to block the
-    bootstrap. A franchise whose on-file team code changed in a relocation
-    year (beyond the OAK/LV, SD/LAC, STL-SL/LA aliases already folded by
-    ``nfl_ats.constants.TEAM_ABBREVIATION_ALIASES``) simply has that one
-    transition dropped, not mis-paired.
-    """
 
     columns = ["team", "season", "block_season", "value_a", "value_b"]
     frame = team_season.loc[:, ["team", "season", value_col]].dropna(subset=[value_col]).copy()
@@ -584,15 +439,6 @@ def build_season_to_season_pairs(team_season: pd.DataFrame, value_col: str) -> p
 def _season_blocked_bootstrap(
     value_a: np.ndarray, value_b: np.ndarray, block_season: np.ndarray, *, n_boot: int, seed: int
 ) -> dict[str, np.ndarray]:
-    """Resample whole SEASONS with replacement (not team-season rows).
-
-    Team-seasons that share a season are not independent draws -- they
-    share the rule year, the ball, the officiating crop -- so bootstrapping
-    over rows directly would understate the true sampling uncertainty. Each
-    draw resamples the set of distinct seasons with replacement, keeps every
-    row whose ``block_season`` was drawn (duplicated for repeats), and
-    recomputes both correlations on the resampled pool.
-    """
 
     seasons = np.unique(block_season)
     season_to_idx = {season: np.where(block_season == season)[0] for season in seasons}
@@ -613,12 +459,6 @@ def _season_blocked_bootstrap(
 def _within_season_label_shuffle_null(
     value_a: np.ndarray, value_b: np.ndarray, block_season: np.ndarray, *, n_shuffle: int, seed: int
 ) -> np.ndarray:
-    """Shuffle which team's B-half pairs with which team's A-half, WITHIN season.
-
-    Preserves each season's own value distribution (so this is not a naive
-    "destroy everything" null) but breaks the true team-level pairing. A
-    sound reliability estimator should center this near zero.
-    """
 
     seasons = np.unique(block_season)
     rng = np.random.default_rng(seed)
@@ -644,20 +484,6 @@ def paired_split_half_reliability(
     n_null: int = PBP_TRAIT_N_NULL,
     spearman_brown: bool,
 ) -> dict[str, Any]:
-    """Pearson + Spearman reliability of one (value_a, value_b) pairing.
-
-    ``pairs`` needs ``team``, ``season``, ``block_season``, ``value_a``,
-    ``value_b`` -- the shape :func:`build_odd_even_halves` and
-    :func:`build_season_to_season_pairs` both produce. Returns a
-    JSON-serializable dict: raw Pearson r (the quantity to record as
-    ``--effect``), its season-blocked bootstrap 95% CI and
-    ``probability_positive`` (the quantity for ``--interval-low
-    --interval-high --probability-positive``), the matching Spearman
-    figures, the Spearman-Brown full-length correction (only meaningful for
-    the within-season odd/even split; ``None`` for season-to-season or when
-    the correction falls outside [-1, 1]), and the label-shuffle null's mean
-    and SD (must sit near zero for the estimator to be trusted).
-    """
 
     n = len(pairs)
     n_seasons = int(pairs["block_season"].nunique()) if n else 0
@@ -743,12 +569,6 @@ def compute_trait_reliability(
     n_boot: int = PBP_TRAIT_N_BOOT,
     n_null: int = PBP_TRAIT_N_NULL,
 ) -> dict[str, Any]:
-    """Run both split methods for one metric and package them together.
-
-    ``long`` needs ``team``, ``season``, ``week``, ``value`` (game- or
-    opportunity-level, either works with :func:`build_odd_even_halves`).
-    ``team_season`` needs ``team``, ``season``, ``value``.
-    """
 
     within = paired_split_half_reliability(
         build_odd_even_halves(long, "value", min_per_half=min_per_half),
@@ -783,13 +603,6 @@ def run_all_trait_reliabilities(
     n_null: int = PBP_TRAIT_N_NULL,
     min_per_half: int = PBP_TRAIT_MIN_PER_HALF,
 ) -> dict[str, Any]:
-    """Build every trait and run both reliability methods on all four metrics.
-
-    Returns a dict keyed by the four weak-signal names this screen records
-    (``opening_drive_td_rate``, ``opening_drive_epa_per_play``,
-    ``q3_point_diff``, ``fourth_down_go_rate``), each holding its team-season
-    table's shape plus :func:`compute_trait_reliability`'s output.
-    """
 
     _require_pbp_columns(pbp)
 

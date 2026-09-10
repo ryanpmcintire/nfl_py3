@@ -1,14 +1,3 @@
-"""Historical point-in-time snapshot backfill from The Odds API historical endpoint.
-
-The Odds API archives full odds boards from 2020-06-06 (10-minute snapshot
-intervals; 5-minute from September 2022). One historical call returns the whole
-slate at the snapshot closest to, and never later than, the requested time, and
-costs ``10 x markets x regions`` credits. This module plans weekly decision
-timestamps from the canonical schedule, fetches those snapshots, and stores them
-in the same append-only layout as live captures with a ``historical_backfill``
-marker so backfilled rows are never confused with live ones.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -61,8 +50,6 @@ DECISION_LABELS = tuple(label for label, _, _, _ in DECISION_TIMES)
 
 @dataclass(frozen=True)
 class BackfillTarget:
-    """One planned historical snapshot request."""
-
     season: int
     week: int
     label: str
@@ -78,8 +65,6 @@ class BackfillTarget:
 
 @dataclass(frozen=True, eq=False)
 class HistoricalOddsCapture:
-    """Parsed historical response: snapshot metadata plus normalized quotes."""
-
     snapshot_at_utc: datetime
     previous_snapshot_at_utc: datetime | None
     next_snapshot_at_utc: datetime | None
@@ -112,13 +97,6 @@ def plan_backfill(
     labels: Iterable[str] | None = None,
     archive_start: datetime = HISTORICAL_ARCHIVE_START_UTC,
 ) -> list[BackfillTarget]:
-    """Derive weekly decision timestamps from schedule rows (season, week, gameday).
-
-    Each scheduled week is anchored on the Sunday of its Tue..Mon cycle (the
-    most common cycle Sunday among the week's game dates, so COVID-era Tuesday
-    and Wednesday reschedules do not shift the anchor). Timestamps earlier than
-    the provider archive start are dropped.
-    """
 
     if end_season < start_season:
         raise ValueError("end-season cannot be earlier than start-season")
@@ -170,7 +148,6 @@ def plan_backfill(
 
 
 def summarize_backfill_plan(targets: Sequence[BackfillTarget]) -> dict[str, Any]:
-    """Dry-run summary: exact call count and credit cost, broken down by season."""
 
     seasons: dict[str, dict[str, int]] = {}
     for target in targets:
@@ -197,7 +174,6 @@ def fetch_historical_odds_api(
     bookmakers: str | None = None,
     timeout: int = 30,
 ) -> tuple[bytes, dict[str, str]]:
-    """Request the historical odds snapshot at or immediately before ``snapshot_at``."""
 
     if not api_key.strip():
         raise ValueError("The Odds API key is empty")
@@ -229,12 +205,6 @@ def fetch_historical_odds_api(
 
 
 def parse_historical_odds_response(payload: bytes) -> HistoricalOddsCapture:
-    """Unwrap the historical envelope and normalize its event data into quotes.
-
-    The quotes carry the API's snapshot ``timestamp`` as ``observed_at_utc``,
-    the SHA-256 of the full raw historical payload, and a ``capture_kind``
-    column marking every row as ``historical_backfill``.
-    """
 
     decoded = json.loads(payload)
     if not isinstance(decoded, dict):
@@ -266,7 +236,6 @@ def store_historical_snapshot(
     target: BackfillTarget,
     quota: dict[str, str] | None = None,
 ) -> MarketSnapshot:
-    """Write one immutable historical snapshot into the shared market store."""
 
     previous_at = capture.previous_snapshot_at_utc
     next_at = capture.next_snapshot_at_utc
@@ -297,7 +266,6 @@ def store_historical_snapshot(
 
 
 def completed_backfill_requests(root: Path) -> set[str]:
-    """Requested-at timestamps of historical snapshots already in the store."""
 
     completed: set[str] = set()
     if not root.is_dir():
@@ -337,12 +305,6 @@ def execute_backfill(
     sleeper: Callable[[float], None] | None = None,
     log: Callable[[str], None] = _stderr_log,
 ) -> dict[str, Any]:
-    """Fetch and store planned snapshots with budget, quota-floor, and resume guards.
-
-    Already-present targets are skipped with ``resume=True`` (without it any
-    overlap aborts before spending credits). The run stops cleanly before any
-    call that would drop the provider's remaining credits below ``quota_floor``.
-    """
 
     fetch_snapshot = fetch or fetch_historical_odds_api
     pause = sleeper or sleep

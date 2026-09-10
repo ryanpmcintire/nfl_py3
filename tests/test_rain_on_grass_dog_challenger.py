@@ -1,23 +1,3 @@
-"""Rain-on-grass underdog challenger (LEAD-37, docs/weather_venue_leads.md).
-
-Mirrors ``tests/test_forecast_weather_kn_precip_high_total_tilt_overlay.py``'s
-structure -- this module is a THIRD consumer of the same shared live
-kickoff-nearest GFS-MOS fetch, so no real network call is made in any test
-here. Load-bearing here:
-
-1. :func:`rain_on_grass_flag_by_game` -- grass surface AND live
-   kickoff-nearest forecast precip prob>=60%, missing-data-safe, REG-only.
-2. :func:`apply_rain_on_grass_dog_tilt_overlay` -- flips ONLY the clean case
-   (a real underdog exists, the flag fires, the model's pick is not already
-   on the dog), REG-only, parameter-free, SYMMETRIC (both directions,
-   whichever side the market names as the underdog).
-3. :func:`record_rain_on_grass_dog_challenger_decisions` writes the overlay's
-   own picks to the prospective challenger ledger, dual-tracked and at no
-   rotation-registry window cost, and honors a pre-fetched ``forecasts=``
-   override (the "one fetch, several consumers" path) without making its own
-   network call.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -158,7 +138,6 @@ def test_overlay_flips_to_the_home_underdog() -> None:
 
 
 def test_overlay_flips_to_the_away_underdog() -> None:
-    """Symmetric direction: the away side is just as flippable as home."""
 
     result = apply_rain_on_grass_dog_tilt_overlay(_predictions(), _schedule(), _forecasts())
 
@@ -448,9 +427,6 @@ def test_recorder_rejects_forecasts_issued_after_recording(tmp_path: Path) -> No
 
 
 def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_path: Path) -> None:
-    """The "one fetch, several consumers" path: when ``forecasts`` is
-    supplied (e.g. the frame the warm-team-cold-late sibling already
-    fetched), the recorder must not call ``fetch_bulletin`` at all."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)

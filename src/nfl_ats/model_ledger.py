@@ -1,37 +1,3 @@
-"""The data contract behind the transparency dashboard's Model Ledger tabular
-view: one row per arm (the promoted card plus every registered prospective
-challenger), each explicitly badged PROMOTED / CHALLENGER / RETIRED /
-SUPERSEDED, sortable by track record and confidence, with per-arm evidence
-linked into ``registry/weak_signals.json`` under the same discipline
-:func:`nfl_ats.findings_registry.validate_curation` enforces for curated
-prose.
-
-Everything here is a pure reader/builder over injected inputs -- this module
-never writes an artifact and never edits a registry.
-
-Evidence-linkage rules (challenger_id -> registry keys):
-
-1. ``evidence.registry_source`` is normalized (string or list of strings,
-   split on commas). Any fragment containing ``registry/weak_signals.json``
-   yields a candidate key: the text after its first ``:``, truncated at the
-   first whitespace -- which strips attached prose such as ``(the latter NOT
-   the basis ...)``. Marker-less comma-continuation fragments that FOLLOW a
-   ``registry/weak_signals.json`` fragment are treated as bare candidate
-   keys (the ``...json: key_one, key_two`` shorthand), until a fragment
-   starting with ``(`` (attached prose) or a non-registry path ends the run.
-   Every candidate is kept only if it exists in the live registry, so stray
-   prose tokens can never become evidence.
-2. Candidate keys are kept ONLY if they exist in the live weak-signals
-   registry loaded from ``weak_signals_path``. Unknown fragments are dropped,
-   never invented.
-3. Fallback (used only when steps 1-2 produced nothing AND
-   ``registry_source`` named no weak_signals fragment): a registry key equal
-   to the challenger_id or ending with ``_<challenger_id>`` (the
-   ``mod08_smooth_cdf_mapping`` <-> ``smooth_cdf_mapping`` convention).
-   A challenger with no admissible link gets an explicit empty evidence
-   tuple.
-"""
-
 from __future__ import annotations
 
 import json
@@ -82,10 +48,7 @@ _NUMERIC_TOKEN = re.compile(r"-?\d+(?:\.\d+)?")
 
 
 class LedgerError(ValueError):
-    """A ledger row violates the contract: a badge it cannot support, an
-    evidence key the registry does not contain, a summary sentence quoting a
-    number no cited field produces, or evidence whose recorded content moved
-    after the ledger was built."""
+    pass
 
 
 @dataclass(frozen=True)
@@ -140,12 +103,6 @@ def build_model_ledger(
     active_manifest_path: str | Path,
     per_game_frames: Mapping[str, Mapping[str, str]] | None = None,
 ) -> ModelLedger:
-    """Build the ledger from the three live sources.
-
-    ``per_game_frames``, when supplied, maps ``arm_id -> {game_id: pick}``;
-    agreement-vs-promoted is populated only for rows whose arm (and the
-    promoted arm) appear in it.
-    """
 
     challengers_payload = _load_json(Path(challengers_path))
     registry_payload = _load_json(Path(weak_signals_path))
@@ -168,9 +125,6 @@ def build_model_ledger(
 
 
 def validate_ledger(ledger: ModelLedger) -> None:
-    """Hard-fail on any contract violation, re-reading the weak-signals
-    registry from disk the way :func:`nfl_ats.findings_registry.validate_curation`
-    re-reads its registries at render time."""
 
     registry_payload = _load_json(ledger.weak_signals_path)
     signals: Mapping[str, Any] = registry_payload["signals"]
@@ -210,7 +164,6 @@ def validate_ledger(ledger: ModelLedger) -> None:
 
 
 def render_markdown_table(ledger: ModelLedger) -> str:
-    """Deterministic markdown rendering of the ledger for docs embedding."""
 
     header = (
         "| Arm | Badge | Grade | Games | Accuracy | Interval | Best P+ "
@@ -416,9 +369,6 @@ def _agreement(
 
 
 def _row_probability(row: LedgerRow) -> float | None:
-    """Best available confidence for a row: the strongest linked registry
-    entry's ``probability_positive``, falling back to the challenger's own
-    registered evidence block when no linked entry carries one."""
 
     best_ref = max(
         (ref.probability_positive for ref in row.evidence if ref.probability_positive is not None),
@@ -670,18 +620,6 @@ _DASH = "\u2014"
 
 
 def render_ledger_html(ledger: ModelLedger, *, css_mode: str = "classes") -> str:
-    """Deterministic static HTML fragment for the Model Ledger tabular view.
-
-    One row per arm in ledger (promoted-first) order: a glyph+text status
-    badge that never relies on color alone, the display name and summary,
-    the track record, best-evidence P+, interval, footnote-linked evidence
-    count, and agreement-vs-promoted ("--" when unpopulated). Plain headers:
-    ordering is fixed and stated once in the caption, never decorated. All
-    text is escaped and every numeral is rendered from a ledger field. The
-    fragment reuses the design-system classes (``table.data``, ``badge-*``,
-    ``fine``, ``num``) and ships no scripts, inline handlers, or external
-    references.
-    """
 
     if css_mode != "classes":
         raise LedgerError(f"unsupported css_mode {css_mode!r}; only 'classes' is supported")
@@ -753,7 +691,6 @@ def build_and_render(
     weak_signals_path: str | Path,
     active_manifest_path: str | Path,
 ) -> str:
-    """Build the ledger from live artifacts, validate it, render HTML."""
 
     ledger = build_model_ledger(challengers_path, weak_signals_path, active_manifest_path)
     validate_ledger(ledger)
@@ -797,7 +734,6 @@ def _best_evidence_cell(row: LedgerRow) -> str:
 
 
 def _interval_cell_text(row: LedgerRow) -> str:
-    """Plain-text interval cell for the markdown rendering."""
 
     track = row.track_record
     if track is None or track.interval_low is None or track.interval_high is None:
@@ -811,11 +747,6 @@ def _interval_cell_text(row: LedgerRow) -> str:
 
 
 def _interval_cell(row: LedgerRow) -> str:
-    """Interval plus, beside it, the row's best available P+ (2026-08-24
-    dimension-3 fix: three ledger rows rendered intervals with no P+ at all).
-    When no measured P+ exists the cell says so explicitly instead of hiding
-    the gap. The promoted row's interval is a season accuracy-proportion CI,
-    not an accuracy-points effect interval, so it carries no P+."""
 
     track = row.track_record
     if track is None or track.interval_low is None or track.interval_high is None:

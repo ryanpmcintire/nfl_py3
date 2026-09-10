@@ -1,12 +1,3 @@
-"""Former trailing-mean Gaussian mapping, paired against the median promotion.
-
-Mirror of ecdf_mapping_incumbent_overlay: refit the active recipe and require
-its gaussian_median read to reproduce the supplied card to floating-point
-precision before replacing probabilities with the gaussian (mean) read of
-exactly the same residual draws. The append-only challenger ledger records
-forced picks only: bet_side PASS and edge NaN. See docs/gaussian_median_promotion.md.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -47,8 +38,6 @@ _REQUIRED_PREDICTION_COLUMNS = frozenset(
 
 @dataclass(frozen=True)
 class GaussianMeanMappingIncumbentFlip:
-    """One game whose forced pick moved sides under the trailing-mean Gaussian read."""
-
     game_id: str
     matchup: str
     from_side: str
@@ -59,15 +48,6 @@ class GaussianMeanMappingIncumbentFlip:
 
 @dataclass(frozen=True)
 class GaussianMeanMappingIncumbentResult:
-    """The overlay's effect on one or more weeks' cards.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on every row (the trailing-mean Gaussian read replaces the
-    median Gaussian read for every game, not only flipped ones) -- every other
-    column stays byte-identical, mirroring
-    ``smooth_cdf_mapping_overlay.SmoothCdfMappingResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[GaussianMeanMappingIncumbentFlip, ...]
     enabled: bool
@@ -89,21 +69,6 @@ def apply_gaussian_mean_mapping_incumbent_overlay(
     center_offsets: Mapping[str, float] | None = None,
     pick_overrides: Mapping[str, float] | None = None,
 ) -> GaussianMeanMappingIncumbentResult:
-    """Replace ``home_cover_probability`` with the trailing-mean Gaussian read of the same
-    out-of-time residual sample the (post-promotion) production median Gaussian read
-    reads.
-
-    ``predictions`` may span more than one (season, week) group; each group is
-    refit independently with a training cutoff strictly before that week's
-    earliest kickoff, exactly as ``score_outcome_week`` does for the real
-    card. Every group's refit MEDIAN GAUSSIAN probability is required to reproduce
-    the supplied ``home_cover_probability`` to floating-point precision --
-    this is the module's proof that it is reading the SAME residual draws the
-    card was built from, not a drifted reimplementation, and it raises
-    ``DataContractError`` rather than silently comparing against a moved
-    target if the feature table, configuration, or (pre-2026-09-07) mapping
-    default has changed underneath it.
-    """
 
     missing = sorted(_REQUIRED_PREDICTION_COLUMNS.difference(predictions.columns))
     if missing:
@@ -208,13 +173,6 @@ def apply_gaussian_mean_mapping_incumbent_overlay(
 
 
 def overlay_disclosure_note(result: GaussianMeanMappingIncumbentResult) -> str:
-    """Plain-language provenance sentence, mirroring
-    ``smooth_cdf_mapping_overlay.overlay_disclosure_note``.
-
-    Empty when the overlay is off or changed no picks this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -245,21 +203,6 @@ def record_gaussian_mean_mapping_incumbent_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the trailing-mean Gaussian-incumbent overlay's picks to the prospective challenger
-    ledger.
-
-    Mirrors
-    ``smooth_cdf_mapping_overlay.record_smooth_cdf_mapping_challenger_decisions``
-    exactly for the write-path guarantees: this is not a retrained model with
-    its own ``margin-predict`` artifact -- its "model" IS the active model's
-    own recipe, refit and read differently -- so it reads the active model's
-    own synchronized weekly forecast rather than searching
-    ``artifacts/margin_predictions/`` by fingerprint, and it refuses to
-    record if the active model's live fingerprint no longer matches the
-    snapshot this challenger was registered against (a promotion under this
-    challenger's feet must not silently convert into "prospective evidence"
-    for a different base model).
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

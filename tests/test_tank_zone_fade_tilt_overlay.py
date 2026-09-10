@@ -1,28 +1,3 @@
-"""Tank-zone fade tilt overlay (docs/tank_zone_fade_tilt_overlay.md).
-
-Five things are load-bearing here, mirroring
-``tests/test_interim_hc_first_game_tilt_overlay.py``'s structure and AGENTS.md's
-"add a leakage regression test for every new feature family" mandate:
-
-1. :func:`tank_zone_flag_by_game` reproduces the registered cell's flag --
-   bottom TWO league-wide records, ordered wins ascending / losses descending /
-   team ascending -- and is DATA-DERIVED, never a hardcoded team list.
-2. It is PREGAME-SAFE: the standings entering week *W* use only completed games
-   from strictly prior weeks of the same season, so neither the flagged game's
-   own ``result`` nor any later week's results can move its flag. Two explicit
-   leakage regression tests.
-3. :func:`apply_tank_zone_fade_tilt_overlay` fades the tank-zone side ONLY in
-   weeks 14-18, ONLY when exactly one side carries the flag, and ONLY when the
-   model's own pick is that side. Weeks 1-13 never flip. Both-flagged games
-   never flip.
-4. :func:`overlay_disclosure_note` states the flip count and matchups and never
-   claims the published card.
-5. :func:`record_tank_zone_fade_tilt_challenger_decisions` writes the overlay's
-   own picks to the prospective challenger ledger, refuses a retuned/foreign
-   model configuration (fingerprint stability), and refuses a non-
-   ``ACTIVE_PROSPECTIVE`` registration.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -147,12 +122,6 @@ def test_flag_requires_its_schedule_columns() -> None:
 
 
 def test_flag_is_leak_safe_against_the_games_own_result() -> None:
-    """A game's OWN ``result``/``spread_line`` must never move its own flag.
-
-    Blanking every outcome from the flagged week onward -- exactly what a live
-    Tuesday-lock snapshot looks like, where the current and all later weeks are
-    unplayed -- must leave the week-14 flags byte-identical.
-    """
 
     schedule = _schedule()
     baseline = tank_zone_flag_by_game(schedule).set_index("game_id")
@@ -178,7 +147,6 @@ def test_flag_is_leak_safe_against_the_games_own_result() -> None:
 
 
 def test_flag_is_leak_safe_against_later_weeks() -> None:
-    """Results from weeks AFTER a game can never change that game's flag."""
 
     schedule = _schedule()
     baseline = tank_zone_flag_by_game(schedule).set_index("game_id")
@@ -201,9 +169,6 @@ def test_flag_is_leak_safe_against_later_weeks() -> None:
 
 
 def test_flag_never_reads_an_unplayed_current_week() -> None:
-    """Dropping every week-14+ ROW entirely (a true Tuesday snapshot, where
-    later games exist on the schedule but carry no result) still produces the
-    same week-14 standings for the games that remain."""
 
     schedule = _schedule()
     tuesday = schedule.copy()
@@ -236,9 +201,6 @@ def test_overlay_fades_the_tank_zone_side_when_the_model_picks_it() -> None:
 
 
 def test_overlay_never_flips_before_week_14() -> None:
-    """The registered cell's flag is weeks 14-18 only; weeks 1-13 carry no
-    claim, so a flagged week-13 game the model picks on the tank side must be
-    left exactly alone. This is also why a Week 1 card can never move."""
 
     result = apply_tank_zone_fade_tilt_overlay(_predictions(), _schedule())
     assert all(flip.game_id != _GAME_WEEK_13 for flip in result.flips)
@@ -250,7 +212,6 @@ def test_overlay_never_flips_before_week_14() -> None:
 
 
 def test_overlay_never_flips_a_week_1_card() -> None:
-    """Week 1 is structurally outside the window: zero flips, by construction."""
 
     week_one = _predictions().assign(week=1)
     result = apply_tank_zone_fade_tilt_overlay(week_one, _schedule())
@@ -440,8 +401,6 @@ def test_record_tank_zone_fade_challenger_refuses_outside_recording_lock_window(
 
 
 def test_record_tank_zone_fade_challenger_refuses_a_fingerprint_mismatch(tmp_path: Path) -> None:
-    """Fingerprint stability: a retuned or foreign active model configuration
-    must refuse to record, never silently switch base models under this id."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -464,7 +423,6 @@ def test_record_tank_zone_fade_challenger_refuses_an_inactive_registration(tmp_p
 
 
 def test_tank_zone_fade_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """The fixture's config really does match CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

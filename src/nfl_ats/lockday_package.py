@@ -1,51 +1,3 @@
-"""ENG-01: the immutable lock-day decision package.
-
-Why this exists
----------------
-Week 1 2026 locks on Tuesday 2026-09-08 as one command --
-``nfl-ats weekly-run --record-decisions``. That single run downloads a
-snapshot, rebuilds four feature tables, re-fits the walk-forward evaluation,
-scores the week, publishes the tracked card and the public site, and appends
-rows to up to seven append-only ledgers. Afterwards the evidence for "what
-exactly did we decide, from what inputs, with which model" is scattered across
-``data/processed/`` manifests, ``artifacts/active_ats_model.json``, a
-timestamped ``artifacts/margin_predictions/`` directory, a tracked Markdown
-card, twenty nested JSON recorder keys inside one stdout blob, and the parquet
-ledgers themselves. ``artifacts/`` is gitignored and local-disk-only, and has
-been observed to disappear.
-
-So the run writes ONE folder that links all of it by SHA-256:
-
-    artifacts/lockday_packages/<season>_wk<week>_<UTC stamp>/
-        manifest.json      the package (written read-only)
-        manifest.sha256    the manifest's own digest, so tampering shows
-        README.md          how to read and verify it without this code
-
-Design contracts
-----------------
-**Fail-safe, always.** By the time this runs, the ledger rows are already
-appended and the card is already published. An exception in here must never
-abort or roll back a lock that already happened, so every component is
-collected behind :func:`_collect`, which records the failure in the
-manifest's ``errors`` list and keeps going. A package with an ``errors`` list
-is the designed output of a partially-broken run, not a failure.
-
-**Read-only, not tamper-proof.** ``manifest.json`` gets the read-only
-attribute (best effort; Windows/POSIX both), and ``manifest.sha256`` pins its
-content. Neither stops a determined edit -- they stop an accidental one, and
-they make a deliberate one detectable.
-
-**Independently readable.** Nothing in the manifest requires this module to
-interpret: it is plain JSON, every hash names the algorithm and the exact
-bytes hashed, and ``scripts/lockday_package_verify.py`` recomputes the lot.
-:func:`load_package` and :func:`summarise_package` are conveniences, not the
-contract.
-
-**Ledgers are append-only and are never touched here.** This module only ever
-reads them, and it reads them twice: :func:`capture_ledger_state` before the
-run, the package build after. The difference is the week's write.
-"""
-
 from __future__ import annotations
 
 import importlib.util
@@ -117,13 +69,6 @@ def _collect(
     builder: Callable[[], Any],
     default: Any = None,
 ) -> Any:
-    """Run one manifest component, recording rather than raising its failure.
-
-    The whole point of the package is that it survives a partially-broken
-    run: the ledger rows are already on disk by the time anything here
-    executes, so an exception must degrade one section, never the package
-    and never the lock.
-    """
 
     try:
         return builder()
@@ -150,11 +95,6 @@ def hash_entry(
     mutable: bool | None = None,
     note: str = "",
 ) -> dict[str, Any]:
-    """One hashed file, in the flat shape the verifier recomputes.
-
-    Never raises: a missing or unreadable file is a recorded fact, because a
-    lock that produced no card is exactly the run whose package matters most.
-    """
 
     entry: dict[str, Any] = {
         "role": role,
@@ -215,7 +155,6 @@ def _read_json_file(path: Path) -> Any:
 
 
 def ledger_paths(artifacts_root: Path) -> dict[str, Path]:
-    """Every append-only ledger a lock-day run can write, by name."""
 
     return {name: resolve(artifacts_root) for name, resolve in LEDGER_PATH_FUNCTIONS.items()}
 
@@ -240,13 +179,6 @@ def _ledger_snapshot(name: str, path: Path) -> dict[str, Any]:
 
 
 def capture_ledger_state(artifacts_root: Path) -> dict[str, dict[str, Any]]:
-    """Row counts and file digests for every ledger, BEFORE the run writes.
-
-    Call this immediately before ``run_weekly``; pass the result to
-    :func:`build_manifest`. Read-only: it opens the parquet files and nothing
-    else. A ledger that does not exist yet is recorded as zero rows, which is
-    the correct "before" for Week 1's first ever write.
-    """
 
     return {
         name: _ledger_snapshot(name, path) for name, path in ledger_paths(artifacts_root).items()
@@ -268,7 +200,6 @@ def ledger_diff(
     artifacts_root: Path,
     before: Mapping[str, Mapping[str, Any]] | None,
 ) -> list[dict[str, Any]]:
-    """Per-ledger before/after row counts plus a digest of this run's rows."""
 
     rows: list[dict[str, Any]] = []
     for name, path in ledger_paths(artifacts_root).items():
@@ -319,16 +250,6 @@ def _step_commands(run_summary: Mapping[str, Any] | None) -> list[list[str]]:
 
 
 def _referenced_tables(run_summary: Mapping[str, Any] | None) -> list[str]:
-    """Every ``.parquet`` path any executed step named on its command line.
-
-    Mechanical on purpose: ``weekly-run``'s plan passes the card's feature
-    table as ``--features`` and the learned-availability build's outputs as
-    ``--destination``/``--rates-destination``, and the set of flags has
-    already changed once (the 2026-08-18 promotion moved the card path from
-    ``player`` to ``weak_stack``). Reading every parquet-shaped token off the
-    commands that ACTUALLY ran cannot go stale the way an enumerated flag
-    list would.
-    """
 
     seen: list[str] = []
     for command in _step_commands(run_summary):
@@ -351,13 +272,6 @@ def _snapshot_ids(run_summary: Mapping[str, Any] | None) -> dict[str, list[str]]
 
 
 def _recorder_results(run_summary: Mapping[str, Any] | None) -> dict[str, Any]:
-    """Each step's output JSON verbatim, plus a flat challenger_id index.
-
-    Verbatim matters: the recorders are deliberately fail-open
-    (``{"recorded": 0, "error": ...}``), so the ONLY durable evidence that a
-    challenger skipped for a documented reason rather than silently breaking
-    is the JSON it returned at the time.
-    """
 
     steps: dict[str, Any] = {}
     for step in _steps(run_summary):
@@ -395,13 +309,6 @@ VerifyRunner = Callable[[Path, int, int, Mapping[str, Any] | None], dict[str, An
 
 
 def _load_lockday_verify(repo_root: Path) -> Any:
-    """Import ``scripts/lockday_verify.py`` by path.
-
-    ``scripts/`` is not part of the installed package, so this is a file-
-    location import rather than a module import -- the same pattern
-    ``nfl_ats.cli`` already uses for script reuse, and it keeps the verifier
-    out of ``mypy src``'s import graph.
-    """
 
     path = repo_root / "scripts" / "lockday_verify.py"
     spec = importlib.util.spec_from_file_location("nfl_ats_lockday_verify", path)
@@ -420,7 +327,6 @@ def run_lockday_verify(
     *,
     repo_root: Path | None = None,
 ) -> dict[str, Any]:
-    """The lock-day verifier's report plus its rendered human text."""
 
     module = _load_lockday_verify(repo_root or Path.cwd())
     report = module.verify(
@@ -579,7 +485,6 @@ def _output_section(
 
 
 def default_card_paths(repo_root: Path) -> list[Path]:
-    """The published artefacts a lock-day run rewrites, in publish order."""
 
     return [
         repo_root / "CURRENT_PREDICTIONS.md",
@@ -602,7 +507,6 @@ def build_manifest(
     verify_runner: VerifyRunner | None = None,
     command: str = "weekly-run --record-decisions",
 ) -> dict[str, Any]:
-    """Assemble the manifest dict. Never raises; failures land in ``errors``."""
 
     errors: list[dict[str, Any]] = []
     hashed: list[dict[str, Any]] = []
@@ -714,12 +618,6 @@ def package_directory(
     *,
     now: datetime | None = None,
 ) -> Path:
-    """A fresh, never-reused directory: ``<season>_wk<week>_<UTC stamp>``.
-
-    The stamp has one-second resolution, so a same-second second write gets a
-    ``-2`` suffix rather than landing on top of an existing, read-only
-    package.
-    """
 
     base = f"{int(season)}_wk{int(week):02d}_{run_id(now)}"
     candidate = root / base
@@ -731,8 +629,6 @@ def package_directory(
 
 
 def _set_read_only(path: Path) -> bool:
-    """Best-effort immutability flag. Never fatal: a package that exists and
-    is writable beats no package at all."""
 
     try:
         mode = path.stat().st_mode
@@ -814,7 +710,6 @@ def write_package(
     manifest: Mapping[str, Any],
     directory: Path,
 ) -> dict[str, Any]:
-    """Write manifest.json, its digest, and the README; flag them read-only."""
 
     directory.mkdir(parents=True, exist_ok=True)
     manifest_path = directory / MANIFEST_FILENAME
@@ -854,13 +749,6 @@ def write_decision_package(
     verify_runner: VerifyRunner | None = None,
     command: str = "weekly-run --record-decisions",
 ) -> dict[str, Any]:
-    """Build and write the package. **Never raises.**
-
-    This is the entry point ``weekly-run`` calls as its last step. By then the
-    ledger rows are appended and the card is published, so the contract is
-    absolute: any failure here is reported (in the returned payload and on
-    stderr) and the lock stands.
-    """
 
     try:
         manifest = build_manifest(
@@ -901,13 +789,11 @@ def write_decision_package(
 
 
 def resolve_manifest_path(path: Path) -> Path:
-    """Accept either the package folder or the manifest file itself."""
 
     return path / MANIFEST_FILENAME if path.is_dir() else path
 
 
 def load_package(path: Path) -> dict[str, Any]:
-    """Read a written package back. Accepts the folder or the manifest file."""
 
     manifest_path = resolve_manifest_path(path)
     payload = _read_json_file(manifest_path)
@@ -938,19 +824,6 @@ def verify_package(
     repo_root: Path | None = None,
     strict: bool = False,
 ) -> dict[str, Any]:
-    """Recompute every digest the package claims.
-
-    ``ok`` is the package's own integrity: the manifest matches its recorded
-    digest, and every immutable file that is still on disk still hashes to
-    what the manifest says. Ledgers are ``mutable`` -- later in-week refresh
-    passes append to them by design -- so a changed ledger is reported, never
-    fatal. ``strict`` additionally requires every file that WAS hashed at
-    write time to still exist, which ``artifacts/`` being gitignored and
-    local-disk-only makes a deliberate opt-in rather than the default. Entries
-    carrying no digest at all (a ledger this lock never wrote, an over-size
-    file) are reported under ``unhashed`` and are fatal in neither mode --
-    there is no claim to check.
-    """
 
     manifest_path = resolve_manifest_path(path)
     directory = manifest_path.parent
@@ -1037,7 +910,6 @@ def _ledger_lines(manifest: Mapping[str, Any]) -> Iterable[str]:
 
 
 def summarise_package(manifest: Mapping[str, Any]) -> str:
-    """A human-readable read of one package, for a session report."""
 
     identity = manifest.get("model_identity") or {}
     code = manifest.get("code") or {}

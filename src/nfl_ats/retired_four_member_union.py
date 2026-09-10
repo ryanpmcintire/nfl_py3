@@ -1,5 +1,3 @@
-"""Track the retired four-member OR union against the three-member played card."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -39,7 +37,6 @@ def _record_instant(now: datetime | None) -> pd.Timestamp:
 
 
 def retired_union_sides(primary: pd.DataFrame) -> pd.Series:
-    """The original four-member joint OR, using decision-time ledger fields."""
     zone = (
         pd.to_numeric(primary["decision_home_spread"], errors="raise")
         .abs()
@@ -58,12 +55,6 @@ def record_retired_four_member_union_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Reconstruct the retired union from the primary ledger's frozen inputs.
-
-    Union the played composition's flip with the former zone condition and
-    complement the frozen model side once. Overlap never cancels a flip.
-    No schedule or arrest source is loaded a second time.
-    """
 
     del data_root
     entry = find_challenger(artifacts_root, INCUMBENT_CHALLENGER_ID)

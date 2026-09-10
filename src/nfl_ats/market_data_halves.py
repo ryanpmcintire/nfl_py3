@@ -1,40 +1,3 @@
-"""Per-event half/quarter-game market capture (LEAD-61 step 2).
-
-The bulk board endpoint (``/v4/sports/{sport}/odds/``, ``nfl_ats.market_data
-.fetch_odds_api``) rejects ``spreads_h1``/``spreads_h2``/``totals_h1``/
-``totals_h2`` with HTTP 422 ``INVALID_MARKET`` -- measured by lane AM,
-``docs/half_game_markets.md`` -- because The Odds API serves period/alternate
-markets only from the per-event endpoint,
-``/v4/sports/{sport}/events/{eventId}/odds``. That endpoint is scoped to ONE
-game, so capturing a week's slate costs one call per event rather than one
-call for the whole board -- lane AO measured this at 1 credit per
-market x region, confirmed live (``docs/half_game_markets.md``, "Build
-plan").
-
-This module implements that design exactly: read event ids for the next scheduled
-NFL week starting within eight days (never the whole remaining-season
-board a bulk snapshot carries) from the newest bulk-board snapshot already on disk, fetch each
-event's half markets, and assemble the per-event responses into one JSON
-array shaped exactly like the bulk endpoint's own top-level array -- so the
-existing ``nfl_ats.market_data.parse_odds_api_response`` /
-``write_market_snapshot`` machinery needs no format-specific branch.
-
-Cost accounting and the quota floor
-------------------------------------
-``DEFAULT_QUOTA_FLOOR`` is imported from ``nfl_ats.odds_backfill`` (never
-redeclared, so the two can never drift) even though that constant's origin
-is the historical-endpoint quota policy in ``config/source_policies.json``
--- lane AO's probe found no existing floor scoped to the live ``/odds`` or
-per-event endpoints, and recommended adopting the same 600-credit
-convention rather than inventing a new one. The refusal check
-(:func:`plan_half_market_capture`) runs BEFORE any per-event call is made,
-using the ``x-requests-remaining`` header already sitting in the paired
-bulk-board snapshot's own manifest (that capture always runs first, via
-``requires=("odds_tue_open",)`` / ``requires=("odds_sat",)`` in
-``scripts/capture_scheduler.py``) -- never a value fetched fresh for this
-purpose alone.
-"""
-
 from __future__ import annotations
 
 import json
@@ -79,16 +42,11 @@ _BULK_SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}Z)$")
 
 
 class NoEventsToCapture(RuntimeError):
-    """The bulk board holds no event inside the upcoming week's kickoff window.
-
-    Raised instead of ``ValueError`` so the CLI can treat an empty slate as a
-    logged no-op (exit 0) rather than a failure the scheduler counts against
-    the job -- the 2026-09-05 Saturday run hit exactly this before Week 1.
-    """
+    pass
 
 
 class QuotaFloorRefusal(RuntimeError):
-    """The planned per-event capture would breach the provider quota floor."""
+    pass
 
 
 def _utc(instant: datetime | None) -> datetime:
@@ -118,15 +76,6 @@ def _parse_float(value: Any) -> float | None:
 
 
 def current_week_kickoff_window(now: datetime) -> tuple[datetime, datetime]:
-    """The half-open ``[Tuesday 00:00, next Tuesday 00:00)`` America/New_York
-    window (as UTC bounds) for the NFL week cycle containing ``now``.
-
-    Anchored on :func:`nfl_ats.nfl_week.week_cycle_sunday`, the same anchor
-    ``nfl_ats.odds_backfill.plan_backfill`` uses for weekly decision
-    timestamps -- a Tuesday-through-Monday cycle, matching the project's own
-    "grade at the Tuesday opener" convention rather than a Sunday-anchored
-    calendar week.
-    """
 
     if now.tzinfo is None:
         raise ValueError("now must carry an explicit timezone")
@@ -140,18 +89,6 @@ def current_week_kickoff_window(now: datetime) -> tuple[datetime, datetime]:
 
 
 def filter_events_to_week(events: Sequence[Any], now: datetime) -> list[dict[str, Any]]:
-    """Keep only events whose ``commence_time`` falls in the current week.
-
-    A bulk-board snapshot carries the entire remaining-season schedule
-    (measured 272 events, ``docs/half_game_markets.md``) -- calling the
-    per-event endpoint for every one of them would multiply the measured
-    per-event cost by ~17x for no benefit. Events with a missing or
-    unparseable ``commence_time`` are dropped rather than guessed into the
-    window. ``events`` is typed ``Sequence[Any]``, not
-    ``Sequence[dict[str, Any]]``, because it is untrusted external JSON --
-    a non-dict element is dropped by the ``isinstance`` guard below rather
-    than raising.
-    """
 
     start, end = current_week_kickoff_window(now)
     selected: list[dict[str, Any]] = []
@@ -169,12 +106,6 @@ def filter_events_to_week(events: Sequence[Any], now: datetime) -> list[dict[str
 def filter_events_to_next_week(
     events: Sequence[Any], now: datetime, schedule: pd.DataFrame
 ) -> list[dict[str, Any]]:
-    """Select the next scheduled NFL slate starting within eight days.
-
-    Schedule season/week labels determine the slate when available. Minimal
-    schedules fall back to the kickoff calendar already in the bulk snapshot.
-    Only future events are requested; a season board never becomes one job.
-    """
     instant = _utc(now)
     horizon = instant + timedelta(days=8)
     upcoming = [
@@ -211,8 +142,6 @@ def filter_events_to_next_week(
 
 @dataclass(frozen=True)
 class BulkSnapshotRef:
-    """The newest plain-timestamped bulk-board snapshot on disk."""
-
     snapshot_id: str
     root: Path
     raw_path: Path
@@ -220,13 +149,6 @@ class BulkSnapshotRef:
 
 
 def newest_bulk_snapshot(market_root: Path) -> BulkSnapshotRef | None:
-    """The newest ``data/market/raw/<stamp>/`` bulk snapshot, or ``None``.
-
-    Only directories matching the bare ``YYYYMMDDTHHMMSSZ`` name are
-    considered -- this module's own ``<stamp>-halves`` output, and any other
-    suffixed probe directory, are never mistaken for a bulk snapshot to read
-    event ids from.
-    """
 
     if not market_root.is_dir():
         return None
@@ -252,9 +174,6 @@ def newest_bulk_snapshot(market_root: Path) -> BulkSnapshotRef | None:
 
 @dataclass(frozen=True)
 class HalfMarketCapturePlan:
-    """The exact call/credit plan for one capture run, decided before any
-    per-event request is made."""
-
     event_ids: tuple[str, ...]
     markets: str
     regions: str
@@ -274,12 +193,6 @@ def plan_half_market_capture(
     known_remaining: float | None,
     quota_floor: int = DEFAULT_QUOTA_FLOOR,
 ) -> HalfMarketCapturePlan:
-    """Decide, from the LAST known quota reading, whether this capture may run.
-
-    ``known_remaining=None`` (no quota reading available yet) never refuses --
-    matching ``nfl_ats.odds_backfill.execute_backfill``'s own convention that
-    an absent quota reading is not evidence of a breach.
-    """
 
     market_count = len([m for m in markets.split(",") if m.strip()])
     if market_count == 0:
@@ -319,7 +232,6 @@ def fetch_event_odds(
     regions: str = "us",
     timeout: int = 30,
 ) -> tuple[dict[str, Any], dict[str, str]]:
-    """One live call to the per-event odds endpoint for a single event."""
 
     if not api_key.strip():
         raise ValueError("The Odds API key is empty")
@@ -355,7 +267,6 @@ def fetch_event_odds(
 
 
 def assemble_events_payload(events: Sequence[dict[str, Any]]) -> bytes:
-    """Serialize accumulated per-event objects into one bulk-shaped JSON array."""
 
     return json.dumps(list(events), separators=(",", ":")).encode()
 
@@ -386,29 +297,6 @@ def capture_half_markets(
     sleeper: Callable[[float], None] | None = None,
     receipt_clock: Callable[[], datetime] | None = None,
 ) -> HalfMarketCaptureResult:
-    """Capture the next scheduled NFL slate and write ONE snapshot.
-
-    Reads event ids from the newest bulk-board snapshot under
-    ``market_root`` (never spends a network request to list events itself),
-    selects the next scheduled week starting within eight days, and refuses
-    before any call if the bulk capture's last-known quota says the plan would breach
-    ``quota_floor``, then fetches each event's half markets and writes them
-    as one combined snapshot via the existing
-    ``nfl_ats.market_data.write_market_snapshot`` machinery, suffixed
-    ``"-halves"`` so it can never collide with the paired bulk snapshot.
-
-    ``observed_at`` (defaults to the real current time) names the snapshot;
-    each response is stamped when received using ``receipt_clock`` (UTC now
-    by default). The observation must always be the
-    REAL capture instant, never fabricated, so it is never derived from a
-    week-selection override. ``week_reference`` (defaults to ``observed_at``)
-    is ONLY the anchor :func:`filter_events_to_next_week` uses to pick which
-    week's events to fetch; a caller running an ad-hoc verification ahead of
-    the scheduled window (e.g. proving this job against next week's slate
-    mid-week, as this module's own live-capture proof did) passes it
-    separately so the resulting snapshot still carries an honest capture
-    timestamp instead of a fabricated future one.
-    """
 
     observed = _utc(observed_at)
     week_now = _utc(week_reference) if week_reference is not None else observed

@@ -1,36 +1,3 @@
-"""Leak-safe college-football game table and pregame team state (XLG-03).
-
-This module derives the CFB-only market-residual benchmark inputs from the
-immutable XLG-02 snapshots. It deliberately mirrors the NFL machinery instead
-of inventing new conventions:
-
-- **ATS semantics** match ``features.add_ats_outcomes``: ``result`` is the
-  home margin, ``spread_line`` is the home team's expected margin (positive =
-  home favored), ``ats_margin = result - spread_line``, and ``home_cover`` is
-  1/0/NaN with pushes excluded from classification.
-- **Market spread aggregation**: the line archive stores one resolved quote
-  per game/market/book/side (a close proxy; no observation timestamps). Each
-  book's home-oriented spread is the mean of its oriented side rows, the
-  per-game ``spread_line`` is the **median across books**, and the table
-  records the contributing ``spread_book_count``, the population standard
-  deviation ``spread_dispersion``, the median opener where present, and the
-  season's ``source_regime``. Team sides are identified without name joins by
-  intersecting each season's line abbreviation against the schedule's ESPN
-  home/away team ids, with a per-game partner-repair pass; games whose sides
-  cannot be identified are excluded and counted, never guessed.
-- **Team state** mirrors ``features.build_team_states``: a span-8
-  exponentially weighted mean per team over strictly earlier completed games,
-  a three-game maturity rule, and explicit offseason regression toward the
-  season league mean with retention 0.67 (all NFL values taken verbatim).
-  Metrics are EPA/play offense and defense, success rate, explosive rate, and
-  pace, built from competitive scrimmage plays (rush/pass, kneels removed,
-  win probability between 5% and 95%) of regular-season FBS-vs-FBS games.
-
-Exclusions are logged in the build audit, never silent: non-FBS games,
-postseason rows (present in the schedule source only from 2024), incomplete
-games, games without an orientable spread, and games without play-by-play.
-"""
-
 from __future__ import annotations
 
 import math
@@ -178,7 +145,6 @@ _LINE_LOAD_COLUMNS = (
 
 
 def cfb_season_partitions(cfb_root: Path, source: str) -> dict[int, Path]:
-    """Map each ingested season to its newest snapshot partition."""
 
     spec = cfb_source_spec(source)
     partitions: dict[int, Path] = {}
@@ -199,7 +165,6 @@ def load_cfb_seasons(
     seasons: list[int],
     columns: list[str] | None = None,
 ) -> pd.DataFrame:
-    """Load season partitions across snapshots, newest snapshot per season."""
 
     partitions = cfb_season_partitions(cfb_root, source)
     missing = sorted(season for season in seasons if season not in partitions)
@@ -212,7 +177,6 @@ def load_cfb_seasons(
 def load_cfb_benchmark_inputs(
     cfb_root: Path, start_season: int, end_season: int
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """Load the schedules, lines, and play-by-play slices the benchmark needs."""
 
     seasons = list(range(start_season, end_season + 1))
     schedules = load_cfb_seasons(
@@ -261,15 +225,6 @@ def _filtered_schedule(
 
 
 def _season_abbr_map(pairs: pd.DataFrame) -> dict[str, int]:
-    """Resolve line abbreviations to ESPN team ids for one season.
-
-    Each spread row names a team only by the archive's abbreviation. Within a
-    season an abbreviation's team id must appear in every game it quotes, so
-    intersecting the home/away id pairs across its games identifies it without
-    any name join. Abbreviations whose intersection is empty (two teams share
-    the label) or not unique (too few games) stay unresolved here and are
-    handled by the per-game partner repair.
-    """
 
     resolved: dict[str, int] = {}
     for abbr, group in pairs.groupby("abbr", sort=False):
@@ -287,7 +242,6 @@ def _season_abbr_map(pairs: pd.DataFrame) -> dict[str, int]:
 def _repair_game_sides(
     game_rows: pd.DataFrame,
 ) -> tuple[dict[str, str] | None, str]:
-    """Assign home/away to a game's abbreviations, or name the exclusion."""
 
     per_abbr = game_rows.drop_duplicates("abbr")
     abbrs = per_abbr["abbr"].astype(str).tolist()
@@ -315,7 +269,6 @@ def _repair_game_sides(
 def _oriented_spread_rows(
     spread: pd.DataFrame,
 ) -> tuple[pd.DataFrame, dict[str, int]]:
-    """Attach a home/away side to every spread row, excluding unresolvable games."""
 
     working = spread.copy()
     sides: dict[str, str] = {}
@@ -366,14 +319,6 @@ def _oriented_spread_rows(
 def build_cfb_market_table(
     lines: pd.DataFrame, schedule: pd.DataFrame
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Aggregate the multi-book line archive to one market row per game.
-
-    ``spread_line`` is the median across books of each book's home-oriented
-    close-proxy spread; ``spread_open`` aggregates the opener column the same
-    way where present. ``home_spread_odds``/``away_spread_odds`` are the
-    median American prices across the oriented side rows and feed only the
-    market baseline's no-vig probability, never the residual model.
-    """
 
     require_columns(lines, _LINE_LOAD_COLUMNS, "cfb_line_odds")
     require_columns(schedule, ("game_id", "season", "home_id", "away_id"), "cfb schedule table")
@@ -494,12 +439,6 @@ def build_cfb_market_table(
 
 
 def cfb_competitive_plays(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Apply the documented CFB play filter, mirroring the NFL v1 filter.
-
-    Keeps regular-season scrimmage plays (rush or pass) with a finite EPA,
-    removes kneels, and marks the 5%-95% possession-team win-probability
-    subset used for state aggregation.
-    """
 
     require_columns(pbp, _PBP_LOAD_COLUMNS, "cfb play_by_play")
     result = pbp.copy()
@@ -524,7 +463,6 @@ def cfb_competitive_plays(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_cfb_team_game_metrics(pbp: pd.DataFrame) -> tuple[pd.DataFrame, dict[str, int]]:
-    """Build offense and opponent-derived defense metrics per completed game."""
 
     plays = cfb_competitive_plays(pbp)
     plays = plays.loc[plays["competitive_play"]].copy()
@@ -598,12 +536,6 @@ def build_cfb_team_states(
     min_periods: int = 3,
     offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
-    """Calculate the state after each completed game, exactly as the NFL does.
-
-    Rows deliberately include the game on the row; ``attach_cfb_team_states``
-    uses a strictly-earlier lookup so a state is available only to the team's
-    next game.
-    """
 
     if span < 2:
         raise ValueError("span must be at least 2")
@@ -669,7 +601,6 @@ def attach_cfb_team_states(
     states: pd.DataFrame,
     offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> pd.DataFrame:
-    """Attach the most recent state strictly before each game's date."""
 
     result = games.copy()
     state_columns = [f"state_{metric}" for metric in CFB_STATE_METRICS]
@@ -710,7 +641,6 @@ def attach_cfb_team_states(
 def _rest_base_schedule(
     schedules: pd.DataFrame, start_season: int, end_season: int
 ) -> pd.DataFrame:
-    """All completed regular-season appearances (any division) with a date."""
 
     frame = schedules.copy()
     for column in ("season", "home_id", "away_id"):
@@ -732,11 +662,6 @@ def _rest_base_schedule(
 
 
 def _add_rest_features(games: pd.DataFrame, full_schedule: pd.DataFrame) -> pd.DataFrame:
-    """Days since each team's previous game this season, from the full schedule.
-
-    Rest uses every completed regular-season game the team played (including
-    against non-FBS opponents) because only dates are consumed - no outcomes.
-    """
 
     appearances = pd.concat(
         [
@@ -782,12 +707,6 @@ def build_cfb_game_features(
     min_periods: int = 3,
     offseason_retention: float = DEFAULT_OFFSEASON_RETENTION,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Build the canonical CFB benchmark table with one row per eligible game.
-
-    Eligible games are completed regular-season FBS-vs-FBS games in the season
-    window that carry both an orientable close-proxy spread and play-by-play.
-    Every other exclusion is counted in the returned audit.
-    """
 
     all_schedule, schedule_audit = _filtered_schedule(schedules, start_season, end_season)
     rest_base = _rest_base_schedule(schedules, start_season, end_season)

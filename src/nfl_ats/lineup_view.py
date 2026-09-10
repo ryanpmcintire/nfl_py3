@@ -1,10 +1,3 @@
-"""Static, source-aware projected lineup view models for the public board.
-
-The board is a static GitHub Pages site, so this module deliberately reads a
-pre-built JSON artifact.  It never calls a live provider while rendering and
-it keeps freshness and model/data mismatches visible to the reader.
-"""
-
 from __future__ import annotations
 
 import json
@@ -45,9 +38,6 @@ class TeamLineup:
     def with_model_impact(
         self, *, family_points: float | None, model_qb_id: str | None
     ) -> TeamLineup:
-        """Attach the team-level QB family contribution without inventing a
-        player coefficient.  The waterfall is family-level, not player-level.
-        """
         players = list(self.players)
         for index, player in enumerate(players):
             if player.position != "QB":
@@ -111,7 +101,6 @@ STABLE_LINEUP_PATH = Path("lineups") / "current" / "lineups.json"
 
 
 def load_lineups(artifacts_root: Path) -> dict[str, tuple[TeamLineup, TeamLineup]]:
-    """Load the newest optional lineups artifact, failing open when absent."""
     root = artifacts_root / "lineups"
     stable = artifacts_root / STABLE_LINEUP_PATH
     candidates = [stable] if stable.is_file() else []
@@ -144,7 +133,6 @@ def load_lineups(artifacts_root: Path) -> dict[str, tuple[TeamLineup, TeamLineup
 def validate_lineup_model_sync(
     lineups: Mapping[str, tuple[TeamLineup, TeamLineup]], predictions: Any
 ) -> None:
-    """Fail closed rather than publish a model beside a different QB lineup."""
     if not lineups or not hasattr(predictions, "iterrows"):
         return
     missing: list[str] = []

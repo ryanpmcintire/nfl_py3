@@ -1,5 +1,3 @@
-"""The one-click refresh (scripts/refresh_now.py): plan, guard, argv parity."""
-
 from __future__ import annotations
 
 import sys
@@ -68,13 +66,6 @@ def test_every_nfl_ats_argv_parses_against_the_real_parser() -> None:
 def test_spreads_capture_is_skipped_on_tuesday_before_the_opener(
     now: datetime, skipped: bool
 ) -> None:
-    """A capture before the pool's spread lock (``POOL_SPREAD_LOCK_ET``,
-    12:00 ET) on a Tuesday could BE the week's opener: ``tuesday_opener_quotes``
-    prefers the earliest quote at or after the lock but falls back to the
-    earliest pre-lock quote when the 12:05 capture never lands. From the lock
-    onward a press is the locked line itself, so it is allowed. Days are the
-    pool's Eastern calendar days, the same ones the opener rule keys on, so a
-    Monday-evening press (already Tuesday in UTC) is Monday and allowed."""
     spreads = _by_name(now)["spreads"]
     assert (spreads.skip_reason is not None) is skipped
     others = [step for step in refresh_now.plan(now) if step.name != "spreads"]

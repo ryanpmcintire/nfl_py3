@@ -1,5 +1,3 @@
-"""Serializable model cards for evaluated backtest artifacts."""
-
 from __future__ import annotations
 
 import json
@@ -15,7 +13,6 @@ def build_model_card(
     provenance: dict[str, Any],
     predictions: pd.DataFrame,
 ) -> dict[str, Any]:
-    """Describe intended use, evaluation history, and known limitations."""
 
     season_history = json.loads(
         season_scorecard(predictions).to_json(orient="records", date_format="iso")

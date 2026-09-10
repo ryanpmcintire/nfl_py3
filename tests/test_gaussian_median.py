@@ -1,5 +1,3 @@
-"""MOD-06: additive location choice, unchanged scale and incumbent defaults."""
-
 import hashlib
 from pathlib import Path
 

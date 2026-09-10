@@ -1,15 +1,3 @@
-"""Rebuild the play-probability training panel from local archives only.
-
-Reads the all-position depth history, player snapshot, injury revisions and
-latest local schedules.parquet. Injury visibility uses the game's pool
-cutoff. Daily depth rows without a provable pre-decision observation time
-are excluded; their count is recorded in the output sidecar. Legacy weekly
-rows retain the archive's week-labelled pregame assumption.
-
-Writes data/processed/play_probability_panel.parquet and its provenance
-sidecar (or --output). Source ingestion is a separate operation.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -40,7 +28,6 @@ PANEL_OUTPUT_PATH = Path("data") / "processed" / "play_probability_panel.parquet
 
 
 def resolve_injuries_path(path: Path | None = None) -> Path:
-    """Use an explicit archive or the newest local timestamped injury snapshot."""
     if path is not None:
         if not path.is_file():
             raise FileNotFoundError(f"No local injury archive at {path}")
@@ -69,7 +56,6 @@ def _load_or_fetch_depth_history(start_season: int, end_season: int) -> pd.DataF
 def load_panel_depth_history(
     start_season: int, end_season: int, schedule: pd.DataFrame
 ) -> pd.DataFrame:
-    """Replace only 2025 with the newest complete immutable daily snapshot."""
     history = _load_or_fetch_depth_history(start_season, end_season)
     history = history.loc[history["season"].between(start_season, end_season)].copy()
     if not start_season <= 2025 <= end_season:

@@ -1,5 +1,3 @@
-"""Point-in-time market quote adapters, immutable storage, and CLV helpers."""
-
 from __future__ import annotations
 
 import hashlib
@@ -130,7 +128,6 @@ def parse_odds_api_response(
     *,
     observed_at: datetime | None = None,
 ) -> pd.DataFrame:
-    """Normalize a V4 odds response without discarding the raw representation."""
 
     decoded = json.loads(payload)
     if not isinstance(decoded, list):
@@ -204,7 +201,6 @@ def parse_odds_api_response(
 
 
 def attach_nflverse_game_ids(quotes: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """Match quotes by normalized teams and nearest kickoff within twelve hours."""
 
     required = {"game_id", "home_team", "away_team", "kickoff"}
     missing = sorted(required.difference(schedules.columns))
@@ -288,17 +284,6 @@ def write_market_snapshot(
     extra_manifest: dict[str, Any] | None = None,
     snapshot_suffix: str = "",
 ) -> MarketSnapshot:
-    """Write one immutable market snapshot under ``root / (run_id + snapshot_suffix)``.
-
-    ``snapshot_suffix`` is additive (default ``""``, byte-for-byte identical to
-    every pre-existing caller): LEAD-61's per-event half-market capture passes
-    ``"-halves"`` so its snapshot directory (``<stamp>-halves``) can never
-    collide with the paired bulk-board capture's own ``<stamp>`` directory
-    when both run inside the same scheduler window, and so
-    ``scripts/capture_scheduler.py``'s ``SNAPSHOT_NAME`` regex (a bare
-    ``YYYYMMDDTHHMMSSZ`` match) does not treat it as a substitute for the
-    bulk snapshot the dedupe/freshness checks expect.
-    """
 
     identifier = run_id(observed_at) + snapshot_suffix
     destination = root / identifier
@@ -392,31 +377,12 @@ def spread_consensus(quotes: pd.DataFrame) -> pd.DataFrame:
 
 
 def pool_spread_lock_utc(day: date) -> pd.Timestamp:
-    """The pool's spread-lock instant (UTC) for the calendar day ``day``.
-
-    ``day`` is a calendar date in the pool's own zone (:data:`POOL_TIMEZONE`);
-    the instant is :data:`POOL_SPREAD_LOCK_ET` on that date, converted to
-    UTC. Because the conversion goes through the zone, the UTC hour follows
-    the DST rule: 16:00Z while Eastern Daylight Time is in force (a September
-    Tuesday) and 17:00Z under Eastern Standard Time (a November Tuesday).
-    """
 
     local = datetime.combine(day, POOL_SPREAD_LOCK_ET, tzinfo=POOL_TIMEZONE)
     return pd.Timestamp(local).tz_convert(UTC)
 
 
 def pool_calendar_day(instants_utc: pd.Series) -> pd.Series:
-    """Each instant's calendar day in the pool's zone (:data:`POOL_TIMEZONE`),
-    as a tz-naive midnight timestamp.
-
-    This is the ONE definition of "which day a quote or a kickoff belongs to"
-    for the live opener rule: a Monday 21:00 ET capture is Monday (even
-    though it is already Tuesday 01:00Z), and a Tuesday 20:30 ET capture is
-    Tuesday (even though it is already Wednesday 00:30Z). Calendar days are
-    tz-naive on purpose: day arithmetic on a zone-aware series is absolute
-    time, so subtracting six days across a DST change would land an hour
-    into the wrong day.
-    """
 
     wall_clock = pd.to_datetime(instants_utc, utc=True).dt.tz_convert(POOL_TIMEZONE)
     days: pd.Series = wall_clock.dt.tz_localize(None).dt.normalize()
@@ -424,17 +390,6 @@ def pool_calendar_day(instants_utc: pd.Series) -> pd.Series:
 
 
 def own_week_tuesday(kickoff_utc: pd.Series) -> pd.Series:
-    """Each game's own-week Tuesday: the most recent Tuesday on or before the
-    kickoff's calendar day in the pool's zone (tz-naive midnight timestamps,
-    the same representation as :func:`pool_calendar_day`).
-
-    NFL games fall Thursday through Monday, so this is always the Tuesday the
-    game's week opened -- INCLUDING Monday night, which kicks off at 20:15 ET
-    (00:15Z Tuesday). Keying on the UTC day instead made a Monday-night
-    game's "own Tuesday" its kickoff day, so its real opener (quoted the
-    Tuesday before) was never found and every Monday-night game lost its
-    live opener (found on Week 1 2026 lock day: 15 of 16 games had one).
-    """
 
     kickoff_day = pool_calendar_day(kickoff_utc)
     days_since_tuesday = (kickoff_day.dt.weekday - 1) % 7
@@ -443,18 +398,6 @@ def own_week_tuesday(kickoff_utc: pd.Series) -> pd.Series:
 
 
 def own_week_tuesday_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
-    """The rows of ``quotes`` observed on their game's own-week Tuesday, pregame.
-
-    The shared filter behind :func:`tuesday_opener_quotes` and
-    :func:`nfl_ats.clv.live_tuesday_openers`: a quote is an own-week Tuesday
-    quote when its observation's pool-zone calendar day
-    (:func:`pool_calendar_day`) equals its game's :func:`own_week_tuesday`
-    and it was observed before kickoff. A quote from an earlier week's
-    Tuesday is never an opener, post-lock or not (Codex lane AC, 2026-09-08:
-    an August 18 quote had been standing in for a September 13 game).
-    ``observed_at_utc`` and ``commence_time_utc`` must already be UTC
-    datetimes.
-    """
 
     observed = quotes["observed_at_utc"]
     kickoff = quotes["commence_time_utc"]
@@ -463,13 +406,6 @@ def own_week_tuesday_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
 
 
 def _pool_lock_for_observations(observed_at_utc: pd.Series) -> pd.Series:
-    """Per-quote lock instant: the pool lock on each quote's own calendar day
-    in the pool's zone (:func:`pool_calendar_day`).
-
-    A Tuesday 20:30 ET quote (already Wednesday 00:30Z) therefore measures
-    against Tuesday's 12:00 ET lock and is post-lock; a Monday 21:00 ET quote
-    is Monday's, and never reaches the opener rule at all.
-    """
 
     days = pool_calendar_day(observed_at_utc)
     lookup = {day: pool_spread_lock_utc(day.date()) for day in days.unique()}
@@ -478,58 +414,6 @@ def _pool_lock_for_observations(observed_at_utc: pd.Series) -> pd.Series:
 
 
 def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
-    """The Tuesday-captured home spread per game the pool locks on (the "Tuesday opener").
-
-    Bookmakers conventionally release opening lines for the coming week's
-    slate on Tuesday, and the pool fixes its spreads at
-    :data:`POOL_SPREAD_LOCK_ET` that day. Days are calendar days in the
-    pool's zone (:func:`pool_calendar_day`, ``America/New_York``): a game's
-    own Tuesday is the most recent Tuesday on or before its kickoff's ET
-    date (:func:`own_week_tuesday` -- for Monday night's 20:15 ET kickoff,
-    00:15Z Tuesday, that is the Tuesday six days earlier), a quote belongs
-    to the game's opener when its observation's ET date is that Tuesday and
-    it is pregame (:func:`own_week_tuesday_quotes`), and the lock for it is
-    that Tuesday's 12:00 ET (:func:`pool_spread_lock_utc`). So a Monday
-    21:00 ET capture is Monday and never an opener, and a Tuesday 20:30 ET
-    capture is a (post-lock) Tuesday quote, whatever the UTC clock says.
-
-    Rule (2026-09-08, after a legacy 09:00 ET task fired on lock day and
-    silently became the opener): per game and bookmaker, the opener is the
-    EARLIEST quote observed on a Tuesday **at or after the pool lock**; only
-    a book with no post-lock Tuesday quote falls back to its earliest
-    pre-lock Tuesday quote. At the game level the cross-book median is taken
-    over post-lock books ONLY whenever at least one book has a post-lock
-    quote -- a book that quoted only before the lock is excluded rather than
-    mixed in, since its line could still have moved before the lock. The
-    returned ``opener_basis`` column says which happened: ``"post_lock"``
-    (the median is over post-lock quotes) or ``"pre_lock_fallback"`` (no
-    book has a post-lock Tuesday quote for the game, so the previous
-    earliest-Tuesday rule stands and the line may predate the lock).
-    ``observed_at_utc`` is the earliest instant among the quotes that formed
-    the median. A pre-lock manual press, a legacy task or a future job can
-    therefore no longer displace the locked line once the post-lock capture
-    exists.
-
-    This is the LIVE rule only. The historical archive the model is graded
-    on (``nfl_ats.clv.build_pairing_table``'s ``tue_open`` decision label,
-    backfilled at 09:00 ET) never routes through this function and is
-    unchanged.
-
-    Distinct from ``spread_consensus``, which reports the *latest*
-    pre-kickoff quote instead of the opening one.
-
-    ``opener_std`` (cross-book standard deviation of each book's own opener
-    line) is the same dispersion proxy ``nfl_ats.clv.build_pairing_table``
-    computes for the historical decision-labeled archive (its ``spread_std``,
-    ``line_std`` renamed) -- added here so a LIVE production caller has the
-    identical measure available from the free-form ``odds-ingest`` capture
-    this project's weekly pipeline actually writes to ``data/market/raw``,
-    without needing a decision-labeled snapshot store
-    (``nfl_ats.best_pick_nomination`` is the first consumer). ``std`` on a
-    single-book game is ``NaN`` by construction (pandas' ddof=1 default), not
-    zero -- callers that treat missing dispersion as "not measurable" get
-    that for free rather than a false zero.
-    """
 
     required = {
         "observed_at_utc",
@@ -593,7 +477,6 @@ def tuesday_opener_quotes(quotes: pd.DataFrame) -> pd.DataFrame:
 
 
 def closing_line_value(decisions: pd.DataFrame, quotes: pd.DataFrame) -> pd.DataFrame:
-    """Compare stored decisions with the last same-book pre-kickoff spread quote."""
 
     required = {
         "game_id",

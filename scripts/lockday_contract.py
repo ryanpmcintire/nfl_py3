@@ -1,10 +1,3 @@
-"""Millisecond-scale static audit of lock-day challenger wiring.
-
-This command deliberately does not import pandas or ``nfl_ats``, execute a
-recorder, read model data, or write a ledger.  It checks the tracked registry,
-the literal CLI result-key map, and verifier coverage as source contracts.
-"""
-
 from __future__ import annotations
 
 import ast
@@ -21,7 +14,6 @@ WEEKLY_RESULT_KEYS: dict[str, str] = {
 
 
 def _literal_assignment(source: str, name: str) -> dict[str, str]:
-    """Read one literal mapping without parsing the entire 6k-line CLI."""
 
     assignment = source.find(name)
     start = source.find("{", assignment)

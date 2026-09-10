@@ -1,64 +1,3 @@
-"""Per-player play probabilities for the This Week lineup panel.
-
-Owner complaint (2026-09-05): "why is that only quarterbacks have the lineup
-percentage filled in?" Root cause, read in ``scripts/build_week_lineups.py``:
-``probability = qb_probability if position == "QB" and gsis_id == model_qb_id
-else None`` -- every other listed starter was ``model_role: "context_only"``
-with no probability at all.
-
-This module does not invent a new probability model. It reuses the EXACT
-same learned-then-fixed availability machinery
-(:func:`nfl_ats.availability.resolve_unavailability`) that already produces
-``{side}_qb_start_probability`` in the production feature table
-(``nfl_ats.players.enrich_with_player_features`` / ``_injury_unavailability``)
--- the one QB the model consumes is already scored this way; this module
-applies the identical rule to every other player on the depth chart.
-
-It adds exactly one genuinely new, honestly-labelled quantity that
-production does not compute anywhere: the **no-designation base rate** --
-the historical unavailability rate of active-roster players who do not
-appear on that week's injury report AT ALL (a healthy scratch, a coach's
-decision, a practice-squad elevation gone sideways, and so on). Without it,
-every player with no current-week injury designation would have to be
-either invented at 100% (dishonestly precise) or left blank (which is
-exactly the bug this module exists to fix). It is built with the same
-expanding-window, strictly-earlier-season discipline and the same
-Bayesian-shrinkage style as
-:func:`nfl_ats.availability.build_season_lagged_availability_rates`, over
-the same local player snapshot -- no network fetch.
-
-**Measured, not assumed: a position-only rate would be materially
-misleading for starters.** A first cut of this table (grouping only by
-position group) put every "front"/"skill"/etc. player's no-designation
-unavailability near 30-38% -- because nflverse's weekly roster ``status``
-column mixes a WR1 who plays nearly every healthy week with a WR5 who
-rarely dresses, and a flat position-group average is dragged toward the
-deep bench. (``status == "INA"`` was also, at first, folded into the
-"active roster" population; it is nflverse's OWN weekly inactive-list tag,
-so including it made "unavailable" tautological rather than empirically
-observed -- fixed by restricting to ``status == "ACT"`` only.) So each
-outcome row also carries ``recent_role``: whether that same player (any
-team) recorded a snap in their own most recent earlier ACT-roster
-appearance -- ``"returning_contributor"`` (yes), ``"no_recent_role"`` (no),
-or ``"unknown_no_history"`` (no earlier ACT appearance at all, e.g. a
-rookie). This is a simple, leakage-safe proxy for "currently a rotation
-piece" that needs no historical depth-chart data (which the local player
-snapshot does not carry): it only ever looks at a player's OWN strictly
-earlier appearances, never the target week's own outcome.
-
-**Documented simplification:** ``build_no_designation_outcomes`` determines
-"listed" from the FINAL weekly injury record, not a decision-time-filtered
-view (``nfl_ats.availability.build_availability_outcomes`` filters injuries
-to revisions visible >=24h before kickoff for exactly this reason). A player
-whose only injury-report appearance that week lands after that cutoff --
-name added right before kickoff -- is therefore counted as "listed" here and
-excluded from the not-listed pool, rather than (correctly, but at real
-engineering cost for a training-set nuance) counted as "not listed as of
-decision time". This only shrinks the historical training pool slightly; it
-introduces no leakage into any live decision, because the pool is built
-exclusively from seasons strictly earlier than the season being served.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -109,8 +48,6 @@ _DEPTH_CHART_POSITION_ALIASES: dict[str, str] = {
 
 
 def depth_chart_position_group(position: object) -> str:
-    """``nfl_ats.availability.position_group``, tolerant of side-specific
-    depth-chart position tags (see ``_DEPTH_CHART_POSITION_ALIASES``)."""
 
     normalized = str(position).strip().upper()
     generic = _DEPTH_CHART_POSITION_ALIASES.get(normalized, normalized)
@@ -118,15 +55,6 @@ def depth_chart_position_group(position: object) -> str:
 
 
 def _active_roster_snap_timeline(rosters: pd.DataFrame, snaps: pd.DataFrame) -> pd.DataFrame:
-    """One row per (season, week, team, gsis_id, position) genuinely
-    eligible (``status == "ACT"``) roster appearance, tagging whether the
-    player recorded any snap that week and, via ``recent_role_played``,
-    whether they did so in their own most recent EARLIER ACT appearance
-    (any team, any season) -- ``True``/``False``/``pd.NA`` (no earlier ACT
-    appearance at all). Looking only at a player's own strictly earlier
-    rows keeps this leakage-safe: it never uses the target row's own
-    outcome.
-    """
 
     active = rosters.loc[rosters["status"].eq(_ELIGIBLE_ROSTER_STATUS)].copy()
     active = active.drop_duplicates(["season", "week", "team", "gsis_id"])
@@ -167,16 +95,6 @@ def _recent_role_label(value: Any) -> str:
 def build_no_designation_outcomes(
     injuries: pd.DataFrame, rosters: pd.DataFrame, snaps: pd.DataFrame
 ) -> pd.DataFrame:
-    """One row per (season, week, team, gsis_id) eligible-roster player who
-    carries NO injury-report row that week, tagging whether they recorded a
-    snap that week and their ``recent_role`` (see the module docstring's
-    "measured, not assumed" note).
-
-    ``injuries``/``rosters``/``snaps`` must already be canonicalized -- the
-    same contract ``nfl_ats.players.enrich_with_player_features`` requires
-    (``nfl_ats.players.canonicalize_injuries`` / ``canonicalize_rosters`` /
-    ``canonicalize_snaps``, or a snapshot already written through them).
-    """
 
     timeline = _active_roster_snap_timeline(rosters, snaps)
     listed = injuries.loc[:, ["season", "week", "team", "gsis_id"]].drop_duplicates().copy()
@@ -208,12 +126,6 @@ def build_no_designation_outcomes(
 def latest_recent_roles(
     rosters: pd.DataFrame, snaps: pd.DataFrame, *, before_season: int
 ) -> dict[str, str]:
-    """Serving-time counterpart of ``recent_role``: for every ``gsis_id``
-    with at least one ACT-roster appearance strictly before
-    ``before_season``, whether they recorded a snap in their OWN latest such
-    appearance. A player absent from the result has no known history and
-    should be treated as ``RECENT_ROLE_UNKNOWN_NO_HISTORY``.
-    """
 
     timeline = _active_roster_snap_timeline(rosters, snaps)
     prior = timeline.loc[pd.to_numeric(timeline["season"]).lt(before_season)]
@@ -239,16 +151,6 @@ def build_no_designation_rates(
     position_prior: float = NO_DESIGNATION_POSITION_PRIOR,
     role_prior: float = NO_DESIGNATION_ROLE_PRIOR,
 ) -> pd.DataFrame:
-    """Expanding, strictly-earlier-season no-designation base rates.
-
-    Same discipline as
-    ``nfl_ats.availability.build_season_lagged_availability_rates``: each
-    ``target_season``'s rate is trained only on seasons strictly before it.
-    Three levels, each shrunk toward its parent: global (``__all__``,
-    ``__all__``) -> per-``position_group`` (shrunk toward global by
-    ``position_prior``) -> per-(``position_group``, ``recent_role``)
-    (shrunk toward its own group's rate by ``role_prior``).
-    """
 
     if not np.isfinite(position_prior) or position_prior < 0:
         raise ValueError("position_prior must be finite and nonnegative")
@@ -364,19 +266,6 @@ def resolve_play_probability(
     no_designation_lookup: dict[tuple[int, str, str], float] | None,
     recent_role: str = RECENT_ROLE_UNKNOWN_NO_HISTORY,
 ) -> tuple[float | None, str, str]:
-    """Play probability, source tag, and a human-readable reason for one
-    player who is NOT the base-model QB (that path stays bit-identical and
-    is handled entirely by the caller before this function is reached).
-
-    ``current_injury`` is the player's own visible injury-report row for
-    this week (must expose ``report_status``/``practice_status`` and
-    optionally ``position`` via ``.get``/attribute access, e.g. a
-    ``pandas.Series``), already filtered by the caller to
-    observed-before-``generated_at``, or ``None`` when no such row is
-    visible. Never invents a number: returns ``(None, "unavailable",
-    reason)`` when there is no ``gsis_id`` to key a rate to, or when neither
-    the learned/fixed model nor the no-designation lookup can produce one.
-    """
 
     if not gsis_id:
         return None, PROBABILITY_SOURCE_UNAVAILABLE, "no gsis_id on this depth-chart row"

@@ -1,115 +1,3 @@
-"""Forecast cold-visitor tilt overlay: a parameter-free pick-level nudge built
-on the Tuesday-noon GFS-MOS temperature forecast.
-
-Research chain: ``docs/forecast_weather_screen.md`` (ENV-01 payoff screen,
-predeclared 2026-08-19 before any cell was scored) cell 4,
-``forecast_weather_temp_gap_cold_visitor``. Measured this session (read
-directly from ``registry/weak_signals.json``):
-``forecast_weather_temp_gap_cold_visitor`` -- +0.4305 accuracy points, 95%
-[-0.2239, +1.0207], ``probability_positive`` 0.9029, REG 2020-2025, n=1,582
-paired games (forecast-archive coverage). Its actual-weather sibling,
-``weather_followup_temp_gap_cold_visitor`` (the mechanism this forecast-based
-cell re-screens with the Tuesday-noon forecast substituted for the game-time
-actual, per ``docs/forecast_weather_screen.md``'s "Leakage posture" section):
-+0.3836 accuracy points, 95% [+0.0017, +0.7541], ``probability_positive``
-0.9755, REG 2009-2025 -- the strongest cell in the whole weather follow-up
-battery and the only one of the four re-screened cells whose registered
-interval already excludes zero. Forecast-vs-actual flag agreement on the
-matched 2020-2025 population: **92.72%** (0.9271523178807947,
-n_both_defined=604, both_true=62, both_false=498, forecast_only=36,
-actual_only=8 -- read from the ``notes`` field of
-``registry/weak_signals.json:forecast_weather_temp_gap_cold_visitor``).
-
-Both intervals cross zero. Per AGENTS.md that is the EXPECTED shape for a
-real small signal at this evaluator's ~2-point resolution, never grounds to
-decline a no-window-cost prospective challenger; neither admissible closing
-ground applies to either read (no resolved wrong sign, no positive-control
-bound was run), so both stay ``unresolved_below_power`` in the registry.
-
-**Flag, ported from ``scripts/nfl_forecast_weather_screen.py``'s cell 4 /
-``docs/forecast_weather_screen.md`` cell 4:** outdoor AND (away team's own
-climatological-normal outdoor home temp -- an ACTUAL-weather baseline --
-minus this game's Tuesday-noon forecast temp) ``>= 25`` degrees F.
-
-**Deliberate, disclosed adaptation for live pregame safety.** The REGISTERED
-evidence's climatological baseline is a WITHIN-SEASON aggregate over the away
-team's OTHER home games that season (``scripts/nfl_forecast_weather_screen.py``'s
-own comment: "not season-causal", a disclosed, precedented research
-convention shared with the actual-weather battery this cell mirrors) -- fine
-for a backtest that scores every 2020-2025 game at once, but NOT pregame-safe
-for a live weekly build: a Week 4 prediction cannot see the away team's
-actual home temps in Weeks 5-17 of the SAME season. This module therefore
-computes ``climate_temp`` from every STRICTLY EARLIER outdoor home game the
-away team has played, across ANY season (not just the current one) -- the
-same "prior games only" convention every other pregame-safe overlay in this
-package already uses (``coach_fade_overlay``, ``backup_qb_fade_overlay``,
-``division_revenge_tilt_overlay``). This is a conservative, disclosed
-deviation from the exact registered research construction, chosen because
-AGENTS.md requires pregame features to use only information available before
-the prediction timestamp, plus a leakage regression test for every new
-feature family -- not a bug, and not silently made: the registered
-+0.4305/P+0.9029 (forecast) and +0.3836/P+0.9755 (actual) figures above do
-NOT transfer exactly to this live arm's own climatology; a fresh, independent
-2026 measurement is what the prospective ledger accrues for this specific
-live construction.
-
-**Live data path, ported from ``scripts/ingest_forecast_archive.py``
-(``tuesday_noon`` cutoff, model ``MEX`` -- the SAME cutoff/model the
-registered forecast archive used, per ``docs/forecast_archive_build.md``).**
-Fetches the archived GFS MOS Extended bulletin issued at-or-before Tuesday
-12:00 ET of the target week from the Iowa Environmental Mesonet's public MOS
-JSON API, walked strictly BACKWARD in 12-hour steps (never forward, never a
-fresher issuance) until a non-empty bulletin is found, keyed by the ICAO
-station mapped from each game's ``stadium`` display string via
-``registry/reference/stadium_station_map.csv``.
-
-**Deliberate deviation from this task's literal instruction to use
-``registry/stadium_coordinates.json``**, disclosed here: ``docs/forecast_archive_build.md``
-("Station mapping" section, read this session) explicitly records that
-``registry/stadium_coordinates.json`` (lat/lon/tz, built for the unrelated
-ENV-03/04 travel-rest battery) was **not used** by ``scripts/ingest_forecast_archive.py`` --
-"this pipeline is station-based (ICAO codes into the MOS API), not
-grid-based, so it has no lat/lon dependency." Reusing the actual fetch logic
-therefore means reusing the actual station-mapping file it depends on,
-``registry/reference/stadium_station_map.csv``, not the lat/lon table; using
-the latter would require inventing a grid-lookup path the real pipeline does
-not have and has never validated. This is the conservative choice per this
-task's own instruction to pick the conservative option under ambiguity.
-
-**FAIL-OPEN, unconditionally.** Any failure fetching or parsing live forecast
-data -- a missing/unreadable station map, a stadium absent from it, a network
-timeout, a malformed API response, anything -- is caught by
-:func:`fetch_tuesday_noon_forecast_temps_fail_open`, logged as a
-``RuntimeWarning``, and folded into "every game gets no forecast, the flag is
-False everywhere" rather than raised. This overlay must never be able to
-block a publish; per-game fetch problems (a single station with no bulletin,
-one slow request) already fold into "not flagged" one level down, inside
-:func:`fetch_one_game_temp`, mirroring ``scripts/ingest_forecast_archive.py``'s
-own ``fetch_status`` design.
-
-**Tilt direction: HOME**, matching the cell's own predicted direction
-("predicted home_cover edge", ``docs/forecast_weather_screen.md`` cell 4) and
-mirroring ``surface_switch_tilt_overlay``'s deliberately ASYMMETRIC pattern:
-flip AWAY -> HOME only when the flag fires AND the model's own pick is
-currently on the away side; never the reverse (no measured direction exists
-for a warm-visitor or non-flagged case).
-
-This module is the no-window-cost path, built on the exact pattern of
-``surface_switch_tilt_overlay.py``, ``backup_qb_fade_overlay.py``,
-``division_revenge_tilt_overlay.py``, and ``injury_value_tilt_overlay.py``: a
-**pick-level, post-prediction transform** of the active model's own forced
-pick, dual-tracked against that same active model in the prospective
-challenger ledger (``nfl_ats.prospective_scoring``), at no rotation-registry
-window cost and with zero training-time feature changes. **Nothing in this
-module is wired into ``publishing.py`` or the production pick path** -- like
-the tilt/fade siblings, no owner decision to play this on the real card has
-been made; it is dual-tracked only.
-
-:func:`record_forecast_cold_visitor_tilt_challenger_decisions` writes the
-overlay's own arm to the prospective challenger ledger so 2026 scores it
-cleanly, independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 import json
@@ -162,12 +50,6 @@ STATION_MAP_RELATIVE_PATH = Path("reference") / "stadium_station_map.csv"
 
 
 def tuesday_noon_et_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
-    """Ported verbatim from ``scripts/ingest_forecast_archive.py``.
-
-    Most recent Tuesday <= the kickoff's ET calendar date, at 12:00 ET,
-    returned as a UTC timestamp -- the pool's own decision-lock cutoff
-    (``docs/pool_edge_plan.md`` line 80).
-    """
 
     kickoff_et = kickoff_utc.tz_convert(ET)
     et_date: date = kickoff_et.date()
@@ -180,26 +62,19 @@ def tuesday_noon_et_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
 
 
 def floor_to_12h_utc(dt: pd.Timestamp) -> datetime:
-    """Ported verbatim from ``scripts/ingest_forecast_archive.py``."""
 
     hour = 12 if dt.hour >= 12 else 0
     return datetime(dt.year, dt.month, dt.day, hour, 0, tzinfo=UTC)
 
 
 def candidate_runtimes(cutoff_utc: pd.Timestamp, max_steps: int) -> list[datetime]:
-    """Ported verbatim from ``scripts/ingest_forecast_archive.py``.
-
-    Never selects a bulletin issued after ``cutoff_utc`` -- point-in-time
-    discipline is enforced by this walk, starting from the cutoff floored to
-    the nearest 00Z/12Z MOS cycle and stepping strictly backward.
-    """
 
     start = floor_to_12h_utc(cutoff_utc)
     return [start - timedelta(hours=12 * i) for i in range(max_steps)]
 
 
 class MosFetchError(RuntimeError):
-    """Ported verbatim from ``scripts/ingest_forecast_archive.py``."""
+    pass
 
 
 def fetch_mos_bulletin(
@@ -210,15 +85,6 @@ def fetch_mos_bulletin(
     timeout: float = 20.0,
     retries: int = 2,
 ) -> list[dict[str, Any]]:
-    """Ported verbatim from ``scripts/ingest_forecast_archive.py``.
-
-    Returns the ``data`` rows for one station/runtime, or ``[]`` if IEM has
-    no bulletin for that exact runtime (a normal, expected outcome to walk
-    past, not an error). Raises :class:`MosFetchError` on a genuine
-    transport failure after retries, so the caller can distinguish "no
-    bulletin" from "IEM is down" -- callers here always catch this and fold
-    it into a "not flagged" fetch status, never propagate it.
-    """
 
     runtime_str = runtime_utc.strftime("%Y-%m-%dT%H:%MZ")
     url = f"{MOS_API}?station={station}&model={model}&runtime={runtime_str}"
@@ -238,7 +104,6 @@ def fetch_mos_bulletin(
 
 
 def nearest_row(rows: list[dict[str, Any]], kickoff_utc: pd.Timestamp) -> dict[str, Any] | None:
-    """Ported verbatim from ``scripts/ingest_forecast_archive.py``."""
 
     if not rows:
         return None
@@ -266,15 +131,6 @@ def fetch_one_game_temp(
     delay_seconds: float = DELAY_SECONDS_DEFAULT,
     fetch_bulletin: FetchBulletin = fetch_mos_bulletin,
 ) -> dict[str, Any]:
-    """Adapted from ``scripts/ingest_forecast_archive.py::fetch_one_game``,
-    trimmed to temperature only (this overlay does not use wind).
-
-    Never raises: a transport failure at any lookback step is folded into
-    ``fetch_status="transport_error"`` (per-game fail-open); the outer
-    :func:`fetch_tuesday_noon_forecast_temps_fail_open` wrapper handles
-    whole-batch failures (a missing station map, an entirely unmapped
-    stadium).
-    """
 
     for runtime_utc in candidate_runtimes(cutoff_utc, max_lookback_steps):
         try:
@@ -303,15 +159,6 @@ def _fetch_tuesday_noon_forecast_temps(
     delay_seconds: float = DELAY_SECONDS_DEFAULT,
     fetch_bulletin: FetchBulletin = fetch_mos_bulletin,
 ) -> pd.DataFrame:
-    """Fetch the Tuesday-noon-ET forecast temperature for every game.
-
-    ``games`` needs ``game_id``, ``stadium``, ``kickoff`` (tz-aware or naive
-    UTC). Raises on a whole-batch problem (missing station map file, a
-    stadium entirely absent from it) -- callers must use
-    :func:`fetch_tuesday_noon_forecast_temps_fail_open` for the fail-open
-    contract this overlay requires; this inner function stays strict so its
-    own unit tests can assert on the raise directly.
-    """
 
     required = {"game_id", "stadium", "kickoff"}
     missing = sorted(required.difference(games.columns))
@@ -367,15 +214,6 @@ def fetch_tuesday_noon_forecast_temps_fail_open(
     station_map_path: Path,
     **kwargs: Any,
 ) -> pd.DataFrame:
-    """FAIL-OPEN wrapper around :func:`_fetch_tuesday_noon_forecast_temps`.
-
-    Any exception -- a missing/unreadable station map, a stadium absent from
-    it, a network timeout, a malformed API response -- is caught, logged as
-    a ``RuntimeWarning``, and folded into "every game gets no forecast" (a
-    ``fetch_temp_f`` of NaN, ``fetch_status="fetch_failed"``) so downstream
-    flag computation naturally reads zero flags rather than raising. This
-    overlay must never be able to block a publish.
-    """
 
     try:
         return _fetch_tuesday_noon_forecast_temps(games, station_map_path, **kwargs)
@@ -400,18 +238,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 
 
 def team_climate_temp_by_away_game(schedules: pd.DataFrame) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: the AWAY team's own
-    climatological-normal outdoor home temp, ``climate_temp``.
-
-    Pregame-safe by construction: for a game where team A plays away,
-    ``climate_temp`` is the mean ACTUAL temp over every outdoor home game A
-    played STRICTLY BEFORE this game's own ``gameday`` -- across ANY season,
-    not just the current one (see the module docstring for why this departs
-    from the registered within-season research construction). ``NaN`` when A
-    has no qualifying prior outdoor home game yet (its own first such game,
-    or every prior home game was indoors) -- folds into "not flagged"
-    downstream, never an error.
-    """
 
     required = {
         "game_id",
@@ -477,17 +303,6 @@ def team_climate_temp_by_away_game(schedules: pd.DataFrame) -> pd.DataFrame:
 def forecast_cold_visitor_flag_by_game(
     schedules: pd.DataFrame, forecasts: pd.DataFrame
 ) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``forecast_cold_visitor_flag``,
-    ``climate_temp``, ``forecast_temp_f``.
-
-    ``forecasts`` needs ``game_id``, ``forecast_temp_f`` (one row per game;
-    extra columns, including a missing/NaN temp for any game, are fine --
-    they fold into "not flagged"). Mirrors
-    ``scripts/nfl_forecast_weather_screen.py`` cell 4's flag definition
-    (outdoor AND ``climate_temp - forecast_temp_f >= 25``), with
-    :func:`team_climate_temp_by_away_game`'s pregame-safe climatology in
-    place of the registered within-season aggregate.
-    """
 
     required_forecast = {"game_id", "forecast_temp_f"}
     missing = sorted(required_forecast.difference(forecasts.columns))
@@ -525,8 +340,6 @@ def forecast_cold_visitor_flag_by_game(
 
 @dataclass(frozen=True)
 class ForecastColdVisitorFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     away_team: str
@@ -538,13 +351,6 @@ class ForecastColdVisitorFlip:
 
 @dataclass(frozen=True)
 class ForecastColdVisitorResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring ``surface_switch_tilt_overlay.TiltResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[ForecastColdVisitorFlip, ...]
     enabled: bool
@@ -561,23 +367,6 @@ def apply_forecast_cold_visitor_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> ForecastColdVisitorResult:
-    """Flip the forced pick from AWAY to HOME wherever the flag fires.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present;
-    * :func:`forecast_cold_visitor_flag_by_game` fires for the game (outdoor
-      AND the away team's pregame-safe climate baseline minus the Tuesday-
-      noon forecast temp is at least 25F); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home) is
-      currently on the AWAY side.
-
-    **Deliberately ASYMMETRIC**, mirroring ``surface_switch_tilt_overlay``:
-    never flips a HOME pick to AWAY, since the cell's own predicted direction
-    is a positive home_cover edge with no measured mirror-direction support.
-    Missing climate or forecast data (including a total fetch failure
-    upstream) folds into "not flagged", never an error.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -633,12 +422,6 @@ def apply_forecast_cold_visitor_tilt_overlay(
 
 
 def overlay_disclosure_note(result: ForecastColdVisitorResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -670,25 +453,6 @@ def record_forecast_cold_visitor_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``surface_switch_tilt_overlay.record_surface_switch_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    The live forecast fetch is FAIL-OPEN (see
-    :func:`fetch_tuesday_noon_forecast_temps_fail_open`): a network or
-    station-mapping failure never raises out of this function, it simply
-    yields zero flags for the week.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

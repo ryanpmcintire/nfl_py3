@@ -1,12 +1,3 @@
-"""Shared CLI helpers used by more than one command module.
-
-These are the pieces ``nfl_ats.cli`` and every ``nfl_ats.cli_commands`` module
-need in common: repository roots, JSON printing, feature-table loading, and the
-reusable ``add_argument`` groups. They live here rather than in ``cli`` so the
-command modules can import them without importing the parser that imports
-them.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -59,15 +50,6 @@ def _load_features(path: Path) -> pd.DataFrame:
 
 
 def _injury_first_seen_index(seasons: list[int] | None = None) -> pd.DataFrame:
-    """First-seen capture index over this checkout's immutable injury captures.
-
-    ENG-39 follow-up: nflverse publishes no ``date_modified`` for the current
-    season, so an undated row's visibility otherwise falls back to an assumed
-    kickoff-minus-24h proxy. The capture archive already records when each row
-    was first readable, which is a real observation instant; passing this index
-    into ``canonicalize_injuries`` lets it use the earlier of the two. Returns
-    an empty frame in a checkout with no captures, which restores the proxy.
-    """
 
     root = _data_root()
     return injury_first_seen_index(
@@ -82,25 +64,6 @@ def _season_range(start_season: int, end_season: int) -> list[int]:
 
 
 def _repo_root_on_path() -> None:
-    """Make ``scripts.*`` importable however this process was launched.
-
-    ``scripts`` is not part of the installed package, so it resolves only when
-    the repository root happens to be on ``sys.path``. ``python -m nfl_ats``
-    puts the working directory there and the console script does NOT, so
-    ``nfl-ats ingest-player-arrests`` raised ``ModuleNotFoundError: No module
-    named 'scripts'`` while ``python -m nfl_ats ingest-player-arrests``
-    succeeded from the same directory.
-
-    That is a lock-day abort, not a cosmetic difference.
-    ``nfl_ats.weekly._cli_runner`` dispatches every step IN-PROCESS, so
-    ``weekly-run`` step 7 (``ingest-player-arrests``, fail-closed) inherits
-    whatever ``sys.path`` launched it -- and the documented Tuesday command in
-    ``docs/week1_readiness.md`` is the console script. Left alone, the real
-    2026-09-08 run would have aborted before publishing anything.
-
-    Resolved from this file's own location rather than the working directory,
-    so it holds no matter where the command is invoked from.
-    """
 
     repo_root = str(Path(__file__).resolve().parents[2])
     if repo_root not in sys.path:
@@ -147,7 +110,6 @@ def _add_features_arg(
     *,
     help_text: str | None = None,
 ) -> None:
-    """Register the shared --features feature-table flag under data/processed."""
     parser.add_argument(
         "--features",
         type=Path,
@@ -161,7 +123,6 @@ def _add_bootstrap_args(
     samples: int = 2_000,
     seed: int = 20260812,
 ) -> None:
-    """Register the shared bootstrap-uncertainty pair."""
     parser.add_argument("--bootstrap-samples", type=int, default=samples)
     parser.add_argument("--bootstrap-seed", type=int, default=seed)
 
@@ -171,13 +132,11 @@ def _add_season_range_args(
     start_default: int | None,
     end_default: int | None,
 ) -> None:
-    """Register the shared --start-season/--end-season pair."""
     parser.add_argument("--start-season", type=int, default=start_default)
     parser.add_argument("--end-season", type=int, default=end_default)
 
 
 def _add_season_week_args(parser: argparse.ArgumentParser, *, required: bool = False) -> None:
-    """Register the shared --season/--week pair (required, or prospective defaults)."""
     if required:
         parser.add_argument("--season", type=int, required=True)
         parser.add_argument("--week", type=int, required=True)
@@ -187,14 +146,6 @@ def _add_season_week_args(parser: argparse.ArgumentParser, *, required: bool = F
 
 
 def _add_active_forecast_season_week_args(parser: argparse.ArgumentParser) -> None:
-    """Register --season/--week defaulting to the active model's linked forecast.
-
-    For commands that operate on the week already locked by
-    ``publish-predictions`` (the late-week ``refresh-picks`` passes). Either
-    pass both flags or neither; ``_resolve_active_forecast_season_week``
-    fills the pair in from ``artifacts/active_ats_model.json`` and names the
-    missing piece when it cannot.
-    """
 
     help_suffix = (
         "; defaults to the active model's linked weekly forecast "
@@ -208,9 +159,6 @@ def _add_active_forecast_season_week_args(parser: argparse.ArgumentParser) -> No
 def _resolve_active_forecast_season_week(
     args: argparse.Namespace, artifacts_root: Path
 ) -> tuple[int, int]:
-    """Resolve the --season/--week pair registered by
-    ``_add_active_forecast_season_week_args``, falling back to the active
-    model's linked weekly forecast when both are omitted."""
 
     from nfl_ats.active_model import active_forecast_season_week
 
@@ -231,14 +179,12 @@ def _resolve_active_forecast_season_week(
 
 
 def _add_snapshot_args(parser: argparse.ArgumentParser, *specs: tuple[str, str]) -> None:
-    """Register "(label) snapshot ID; defaults to latest" flags as (flag, label) pairs."""
     for flag, label in specs:
         head = f"{label} snapshot ID" if label else "snapshot ID"
         parser.add_argument(flag, help=f"{head}; defaults to latest")
 
 
 def _add_include_postseason_arg(parser: argparse.ArgumentParser) -> None:
-    """Register the shared --include-postseason flag."""
     parser.add_argument(
         "--include-postseason",
         action="store_true",
@@ -247,14 +193,12 @@ def _add_include_postseason_arg(parser: argparse.ArgumentParser) -> None:
 
 
 def _add_ewm_args(parser: argparse.ArgumentParser) -> None:
-    """Register the shared EWM smoothing trio."""
     parser.add_argument("--ewm-span", type=int, default=8)
     parser.add_argument("--min-periods", type=int, default=3)
     parser.add_argument("--offseason-retention", type=float, default=DEFAULT_OFFSEASON_RETENTION)
 
 
 def _add_regressor_args(parser: argparse.ArgumentParser, *, choices: bool = True) -> None:
-    """Register the shared --regressor/--ridge-alpha pair."""
     if choices:
         parser.add_argument("--regressor", choices=("ridge", "hgb"), default="ridge")
     else:
@@ -268,7 +212,6 @@ def _add_feature_profile_arg(
     default: str | None = None,
     help_text: str | None = None,
 ) -> None:
-    """Register the shared --feature-profile choice over MARGIN_FEATURE_PROFILES."""
     parser.add_argument(
         "--feature-profile",
         choices=MARGIN_FEATURE_PROFILES,
@@ -282,7 +225,6 @@ def _add_board_destination_args(
     *,
     legacy_flag: str,
 ) -> None:
-    """Register the duplicated board/site destination pair for the publish commands."""
     parser.add_argument(
         legacy_flag,
         type=Path,
@@ -298,7 +240,6 @@ def _add_board_destination_args(
 
 
 def _add_player_feature_tuning_args(parser: argparse.ArgumentParser) -> None:
-    """Register the seven tuning flags shared by the three player-feature builders."""
     parser.add_argument("--decision-hours", type=int, default=24)
     parser.add_argument("--role-span", type=int, default=8)
     parser.add_argument("--qb-span", type=int, default=12)

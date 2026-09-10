@@ -1,7 +1,3 @@
-"""Board assistant (UI-16): retrieval-only answers over a publish-time
-corpus -- the Python reference matcher, the corpus builder, and the
-rendered panel contract (inline JSON, guardrails, no-JS fallback)."""
-
 from __future__ import annotations
 
 import json

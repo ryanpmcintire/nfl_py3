@@ -1,18 +1,3 @@
-"""Refuse the Tuesday lock in one second when the pool board was never captured.
-
-The pool grades on the Splash Sports board, whose spreads lock Tuesday at 12:00
-ET, and ``scripts/capture_splash_lines.py`` is a hand-run conversion of a board
-read -- nothing scrapes the site. Until 2026-09-09 nothing checked that the
-capture existed, so a week with no board reached the lock, spent about eight
-minutes refitting, and only then failed the ``pool_line_source`` prediction
-safety check because three served games carried whole-number nflverse lines.
-
-This is that check, standing alone: it resolves the week the next lock will
-record exactly the way ``nfl_ats.scheduled_lock.resolve_lock_target`` does,
-then exits 0 when ``data/splash/`` holds a validated capture for it and 1 with
-one line naming the week and the command that fixes it.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -42,7 +27,7 @@ BOARD_CAPTURE_WINDOW_ET = "12:00-12:05 ET Tue"
 
 
 class PoolBoardMissing(RuntimeError):
-    """No validated pool board for the week the lock is about to record."""
+    pass
 
 
 def _one_line(text: str) -> str:
@@ -50,7 +35,6 @@ def _one_line(text: str) -> str:
 
 
 def lock_tuesday(now: datetime) -> datetime:
-    """``now`` when it is already a Tuesday, else the next one."""
 
     return now + timedelta(days=(1 - now.weekday()) % 7)
 
@@ -62,13 +46,6 @@ def resolve_board_week(
     season: int | None = None,
     week: int | None = None,
 ) -> tuple[int, int]:
-    """The season/week the coming lock will record.
-
-    An explicit ``--season/--week`` is resolved against the real ``now`` so a
-    named week can be checked on any day; without one the resolver is handed
-    the lock Tuesday, because on a Monday or a Wednesday no game week has today
-    as its lock date and the question being asked is about the next lock.
-    """
 
     named = season is not None or week is not None
     target = resolve_lock_target(
@@ -78,7 +55,6 @@ def resolve_board_week(
 
 
 def capture_command(season: int, week: int) -> str:
-    """The exact command that turns a board read into a capture for this week."""
 
     return (
         ".tools\\uv.exe run --no-sync python scripts\\capture_splash_lines.py "
@@ -87,7 +63,6 @@ def capture_command(season: int, week: int) -> str:
 
 
 def require_captured_board(data_root: Path, season: int, week: int) -> SplashCapture:
-    """Return the week's validated capture, or raise :class:`PoolBoardMissing`."""
 
     where = f"{season} week {week}"
     try:
@@ -109,7 +84,7 @@ def require_captured_board(data_root: Path, season: int, week: int) -> SplashCap
 
 
 def _parse_args(argv: list[str] | None) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser = argparse.ArgumentParser(description="Check the pool board against the card")
     parser.add_argument("--season", type=int, default=None, help="check this week on any day")
     parser.add_argument("--week", type=int, default=None, help="check this week on any day")
     parser.add_argument(

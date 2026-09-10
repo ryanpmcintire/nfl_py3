@@ -1,18 +1,3 @@
-"""MOD-18 lane S: symmetric home-side location correction (docs/home_side_location.md).
-
-The active model's point forecast under-locates the HOME team on big spreads
-on both sides (lane Q's true home split of Diagnosis D). Two frozen shapes:
-
-* S1 -- one row-local ridge feature, ``max(0, |spread_line| - 7)``, so a
-  home-side location term may grow with the spread size on either side.
-* S2 -- a correction OUTSIDE the ridge: a per-spread-bucket offset added to
-  the incumbent's point forecast, equal to the shrunken mean of (actual home
-  margin minus the incumbent's out-of-time point) over PRIOR completed games
-  only, then mapped with the unchanged gaussian_median read.
-
-Both use only information available before each row's kickoff.
-"""
-
 from __future__ import annotations
 
 import json
@@ -36,7 +21,6 @@ HOME_SIDE_OFFSET_BUCKETS = ("7", "7.5-10", "10.5+")
 
 
 def attach_home_side_location(frame: pd.DataFrame) -> pd.DataFrame:
-    """Add ``home_side_hinge_7`` = max(0, |spread_line| - 7) from this row's line only."""
 
     result = frame.copy()
     line = pd.to_numeric(result["spread_line"], errors="raise")
@@ -46,8 +30,6 @@ def attach_home_side_location(frame: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class HomeSideOffsets:
-    """Per-bucket shrunken home-side offsets fitted on prior games."""
-
     offsets: dict[str, float]
     prior_games: dict[str, int]
 
@@ -57,16 +39,6 @@ class HomeSideOffsets:
 
 
 def fit_home_side_offsets(prior: pd.DataFrame, *, all_buckets: bool = False) -> HomeSideOffsets:
-    """Shrunken mean of ``result - point_incumbent`` per spread bucket.
-
-    ``prior`` carries ``spread_line`` (the line each row was scored at),
-    ``point_incumbent`` and ``result`` (actual home margin); rows without a
-    result are ignored. The prior weight is a fixed 100 games toward zero.
-
-    The SERVED policy (S3) zeroes the offset outside ``HOME_SIDE_OFFSET_BUCKETS``;
-    ``all_buckets=True`` is the research replay of lane S's S2 (every bucket
-    served), kept so the frozen experiment still reproduces its definition.
-    """
 
     completed = prior.loc[prior["result"].notna() & prior["point_incumbent"].notna()]
     error = completed["result"] - completed["point_incumbent"]
@@ -83,12 +55,6 @@ def fit_home_side_offsets(prior: pd.DataFrame, *, all_buckets: bool = False) -> 
 
 
 def prior_games_for_week(frame: pd.DataFrame, season: int, week: int) -> pd.DataFrame:
-    """Rows usable to fit the offsets for one target week.
-
-    Excludes the whole target week, every row whose gameday plus the one-day
-    completion allowance is not strictly before the target week's earliest
-    gameday, and seasons earlier than the target season minus five.
-    """
 
     gameday = pd.to_datetime(frame["gameday"])
     target = frame["season"].eq(season) & frame["week"].eq(week)
@@ -104,11 +70,6 @@ def prior_games_for_week(frame: pd.DataFrame, season: int, week: int) -> pd.Data
 
 
 def walk_forward_home_offsets(frame: pd.DataFrame, *, all_buckets: bool = False) -> pd.DataFrame:
-    """Per-row offset for every (season, week) in ``frame`` from prior rows only.
-
-    Returns a frame indexed like ``frame`` with ``bucket``, ``home_side_offset``,
-    ``prior_games_in_bucket`` and ``point_corrected``.
-    """
 
     out = pd.DataFrame(index=frame.index)
     out["bucket"] = spread_bucket(frame["spread_line"])
@@ -133,12 +94,6 @@ def gaussian_median_cover_probability(
     residual_median: pd.Series | np.ndarray | float,
     residual_std: pd.Series | np.ndarray | float,
 ) -> np.ndarray:
-    """The unchanged gaussian_median read at a (possibly corrected) point.
-
-    Mirrors ``ResidualSmoother.survival`` for ``gaussian_median``: the
-    probability that ``point + residual`` exceeds ``line`` where the residual
-    is Normal with the fitted week's median and sample standard deviation.
-    """
 
     thresholds = np.asarray(lines, dtype=float) - np.asarray(points, dtype=float)
     return np.asarray(
@@ -158,8 +113,6 @@ HOME_SIDE_OFFSET_FILENAME = "home_side_offset.json"
 
 @dataclass(frozen=True)
 class ProductionHomeSideOffsets:
-    """Offsets fitted for one target week from an archived out-of-time stream."""
-
     policy: str
     offsets: dict[str, float]
     prior_games: dict[str, int]
@@ -188,13 +141,6 @@ class ProductionHomeSideOffsets:
 
 
 def archive_prior_stream(per_game: pd.DataFrame) -> pd.DataFrame:
-    """The opener-evaluation archive as the ``fit_home_side_offsets`` frame.
-
-    ``point_incumbent`` is the archived Tuesday opener plus the model's
-    out-of-time residual at that line, the same archive points lanes L and S
-    scored, so the offset corrects the point the model actually produced
-    before each game, never a refit.
-    """
 
     required = {"game_id", "season", "week", "tue_open_home_spread", "residual_at_open", "result"}
     missing = sorted(required.difference(per_game.columns))
@@ -215,15 +161,6 @@ def archive_prior_stream(per_game: pd.DataFrame) -> pd.DataFrame:
 
 
 def prior_rows_before(stream: pd.DataFrame, season: int, week: int) -> pd.DataFrame:
-    """Archive rows strictly before (``season``, ``week``), five trailing seasons.
-
-    A superset of the exclusions ``prior_games_for_week`` applies when a
-    gameday is available: the whole target week and every later week are out,
-    seasons earlier than ``season - 5`` are out, and only rows with a result
-    count. Rows of the target season and an EARLIER week enter only once their
-    result is recorded, which is the completion allowance expressed without
-    a gameday column.
-    """
 
     earlier_season = stream["season"].lt(season)
     earlier_week = stream["season"].eq(season) & stream["week"].lt(week)
@@ -269,15 +206,6 @@ def fit_production_home_side_offsets(
     season: int,
     week: int,
 ) -> ProductionHomeSideOffsets:
-    """Fit the served offsets for one week from archived out-of-time points.
-
-    History precedence, all read-only: (a) the newest opener evaluation
-    matched to the active model; (b) otherwise the newest opener evaluation of
-    any model id, with the mismatch recorded as a warning (the Tuesday lock
-    activates a new model id BEFORE its own evaluation runs, so this is the
-    normal lock-day path); (c) otherwise zero offsets with a warning. The
-    forecast is never blocked by this layer.
-    """
 
     warnings: list[str] = []
     active_model_id = str(active.get("model_id")) if active and active.get("model_id") else None
@@ -332,7 +260,6 @@ def fit_production_home_side_offsets(
 
 
 def load_forecast_home_side_offsets(forecast_dir: Path) -> dict[str, object] | None:
-    """The sidecar a served forecast wrote, or ``None`` for pre-promotion cards."""
 
     path = forecast_dir / HOME_SIDE_OFFSET_FILENAME
     if not path.is_file():
@@ -342,14 +269,6 @@ def load_forecast_home_side_offsets(forecast_dir: Path) -> dict[str, object] | N
 
 
 def served_center_offsets(forecast_dir: Path | None) -> dict[str, float] | None:
-    """game_id -> served point offset from a forecast's sidecar; ``None`` when
-    the card was produced without the promotion (no sidecar, or not served).
-
-    Every module that REFITS the active recipe to reproduce or extend the
-    served card (spread explorer, mapping-incumbent recorders, late-week
-    refresh) applies this so its refit centre matches the point the card was
-    actually built on. Missing games get 0.0 by ``center_offset_for_frame``.
-    """
 
     if forecast_dir is None:
         return None
@@ -369,7 +288,6 @@ def served_center_offsets(forecast_dir: Path | None) -> dict[str, float] | None:
 def center_offset_for_frame(
     frame: pd.DataFrame, center_offsets: Mapping[str, float] | None
 ) -> np.ndarray | None:
-    """Row-aligned point shifts for ``frame`` (by ``game_id``), or ``None``."""
 
     if center_offsets is None:
         return None
@@ -380,14 +298,6 @@ def center_offset_for_frame(
 def center_offsets_from_metadata(
     metadata: Mapping[str, object], predictions: pd.DataFrame
 ) -> dict[str, float] | None:
-    """Per-game served offsets rebuilt from a forecast's ``metadata.json``.
-
-    ``margin-predict`` records the fitted per-bucket offsets under
-    ``home_side_offset``; each game's offset is its spread bucket's value, so
-    any module that has the card and its metadata (but not the artifact
-    directory) can reproduce the served centre without file access.
-    ``None`` for a card produced without the promotion.
-    """
 
     block = metadata.get("home_side_offset")
     if not isinstance(block, Mapping):

@@ -1,37 +1,3 @@
-"""Fast PR-speed verification tier (ENG-11).
-
-Why this exists
-----------------
-`AGENTS.md` "Required verification" names four gates -- ``ruff format
---check``, ``ruff check``, ``mypy src``, ``pytest`` -- and the full ``pytest``
-run now covers 3,700+ tests (measured 2026-09-04:
-``pytest --collect-only`` -> 3,612 tests at the start of that session, 3,729
-by its end as concurrent agents added files). Most of that time is not typing
-or lint feedback; it is a small number of tests that fit a real model, read
-real on-disk data/artifacts, or reproduce a full build bit-for-bit
-(``pytest --durations=40``, same session: top item 12.0s, next three 6-10s,
-each individually far above the sub-100ms cost of a typical unit test).
-
-This script is the FAST tier: safety, typing, lint, and the REST of the test
-suite (``-m "not full"``), so a PR check finishes quickly without dropping
-coverage of anything AGENTS.md calls release-blocking. It is deliberately NOT
-a substitute for the release gate -- see ``docs/verification_tiers.md`` and
-``scripts/verify_full.py``. The tests deselected by ``-m "not full"`` are
-tagged in the test files themselves (search for ``ENG-11`` in ``tests/``);
-none of them are safety, leakage, or point-in-time-chronology tests -- those
-stay in this fast tier deliberately, per AGENTS.md's "Required verification"
-and this project's leakage-regression-test invariant.
-
-Usage
------
-    .tools\\uv.exe run --no-sync python scripts/verify_fast.py
-
-Exit code is 0 only when every step passes. Uses ``--no-sync`` (skips the
-lockfile re-resolution ``uv run`` would otherwise do on every invocation) for
-PR-loop speed; ``scripts/verify_full.py`` runs the AGENTS.md commands
-unchanged, without ``--no-sync``, as the release gate.
-"""
-
 from __future__ import annotations
 
 import os

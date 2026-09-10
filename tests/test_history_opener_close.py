@@ -1,22 +1,3 @@
-"""UI-20(h), second pass: the History page's per-week opener-vs-close table.
-
-The section already existed, but its week table could only ever show weeks
-the paper-decision ledger had recorded -- one unsettled row, while the
-season table above it carried six finished seasons of real opener-vs-close
-pairs. A reader could see what the pool's own line was worth over a season
-and never week to week, which is the point of the section.
-
-These tests pin the second pass: the finished weeks of the opener archive
-join the recorded ones in one newest-first table; a week recorded live
-always beats the archive's replay of the same week; and -- the test that
-matters most -- summing an archived season's weeks reproduces that season's
-own row above it exactly, so the two tables on one page can never disagree.
-
-Everything is read from the evaluation run keyed to the ACTIVE model
-(AGENTS.md, "No number on the site may go stale"): a run belonging to any
-other model contributes no rows at all rather than a wrong week record.
-"""
-
 from __future__ import annotations
 
 import json
@@ -61,10 +42,6 @@ def _write_opener_evaluation(
     feature_table_sha256: str = "f" * 64,
     model_id: str = "abc123",
 ) -> Path:
-    """A minimal opener-evaluation run on disk, shaped exactly like the real
-    one: a ``metadata.json`` carrying the model identity
-    ``find_matching_opener_evaluation`` matches on, beside a per-game
-    grade table."""
 
     directory = artifacts_root / "opener_evaluation" / stamp
     directory.mkdir(parents=True)
@@ -121,9 +98,6 @@ def test_week_counter_reports_both_records_and_their_difference() -> None:
 
 
 def test_week_counter_leaves_pushes_out_of_both_records() -> None:
-    """A push is not a win and not a loss: the archive writes it as a
-    missing grade, and it must drop out of the record rather than count
-    against the pick."""
 
     graded = _archive_frame(
         [
@@ -184,9 +158,6 @@ def test_archive_week_grades_reads_every_finished_week(tmp_path: Path) -> None:
 
 
 def test_archive_week_grades_refuses_another_models_run(tmp_path: Path) -> None:
-    """AGENTS.md, "No number on the site may go stale": a run belonging to a
-    different model contributes NO weeks, never a week graded with someone
-    else's picks."""
 
     _write_opener_evaluation(
         tmp_path,
@@ -249,9 +220,6 @@ def test_combined_week_grades_puts_the_newest_week_first() -> None:
 
 
 def test_combined_week_grades_lets_the_recorded_week_win_its_slot() -> None:
-    """Once a week is in the paper ledger, those are the picks that were
-    actually written down before kickoff; the archive's replay of the same
-    week must not displace them."""
 
     recorded = (_grade(2026, 1, 12, 16),)
     archived = (_grade(2026, 1, 3, 16),)
@@ -306,9 +274,6 @@ def test_history_page_shows_both_records_week_by_week() -> None:
 
 
 def test_the_week_caption_stays_in_pool_player_words() -> None:
-    """The board is for humans (AGENTS.md): the sentence explaining where
-    the older weeks come from carries no identifier, no shorthand, and no
-    research vocabulary."""
 
     text = HISTORY_WEEK_REPLAY_CAPTION
     assert not re.search(r"\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b", text)
@@ -326,10 +291,6 @@ def _real_active() -> dict[str, object] | None:
 
 
 def test_archived_weeks_add_up_to_the_season_row_above_them() -> None:
-    """Summing an archived season's weeks must reproduce that season's own
-    opener and close accuracy exactly -- the guard against the season table
-    and the week table on the same page telling a reader two different
-    stories."""
 
     active = _real_active()
     if active is None:

@@ -77,19 +77,6 @@ def test_paired_feature_comparison_preserves_games_and_blocks() -> None:
 
 
 def test_paired_feature_comparison_flags_a_degenerate_block_count() -> None:
-    """REGRESSION TEST for D4: a low-block interval must never leave this
-    function looking like a normal one.
-
-    ``registry/weak_signals.json``'s ``player_qb_continuity_matched_alpha``
-    carries a terminal ``refuted_mechanism`` verdict next to a season-blocked
-    interval of ``[0.0, 2.2177]`` computed on exactly 4 blocks -- a lower bound
-    of exactly 0.0 being the fingerprint of a resampling distribution with 35
-    achievable values pretending to be a smooth 95% quantile. Measured coverage
-    at 4 blocks is ~0.80, not 0.95. The interval itself is unchanged (changing
-    it would rewrite history silently); what changes is that ``blocks`` and
-    ``degenerate_blocks`` now travel with it into the CSV a registry entry
-    cites, and a warning fires at the point of computation.
-    """
 
     rows = []
     for game in range(24):

@@ -1,82 +1,3 @@
-"""Immutable-snapshot ingester for official NFL game-day inactive reports.
-
-Predeclared and researched in ``docs/inactives_channel.md`` (Section 3, live-
-source survey, written 2026-09-01): primary source
-``https://www.nfl.com/inactives/`` (server-rendered HTML, 200, robots.txt
-clear under ``/inactives/``), fallback
-``https://www.rotowire.com/football/inactives.php`` (also 200, also server-
-rendered) used only when the primary fetch fails or its parse yields zero
-rows on a day the scheduler judged worth capturing at all (the scheduler jobs
-in ``scripts/capture_scheduler.py`` are ``season_guarded`` and timed at each
-slot's own T-90 window, so every SCHEDULED invocation of this module already
-runs on a plausible game day -- this module does not re-derive that).
-
-Team-name -> team-code mapping (``NICKNAME_TO_CODE``), the HTML-stripping
-helper (``strip_html``), and the current-week resolver
-(``resolve_current_reg_week``) are IMPORTED VERBATIM from
-``scripts/ingest_nflcom_injuries.py`` rather than duplicated, per this
-project's existing reuse convention for the same reason
-``src/nfl_ats/fluview_cfb_feature.py`` puts the repo root on ``sys.path`` to
-import from ``scripts/fluview_battery_screen.py``: ``scripts`` is not part of
-the installed package, and the historical parser for NFL.com's other "report"
-page (``/injuries/``) is the closest proven-real precedent for this one.
-
-**Structural parsing is INFERRED BY ANALOGY, not measured, for `/inactives/`
-specifically.** Measured this session (2026-09-01, Tuesday, preseason -- no
-REG game has posted an official inactive list yet): a live fetch of
-``https://www.nfl.com/inactives/`` returns 200 and 372,655 bytes, but the
-entire page is a static "Please check back soon for NFL Inactive Reports for
-this Season" placeholder promo card (``nfl-c-custom-promo`` component,
-``data-link_type="inactives-placeholder-promo"``) with ZERO occurrences of
-``nfl-c-matchup-strip__team-abbreviation``, ``d3-o-table``, or any
-"inactive"/"report"-named class anywhere in the DOM -- the populated template
-is not merely empty, it is a genuinely different render branch that cannot be
-inspected before Week 1 games post real inactive lists. The Wayback Machine
-(``web.archive.org``) was unreachable from this environment (connection
-timeout on both HTTP and HTTPS, measured), so no historical in-season
-snapshot could be inspected either. RotoWire's fallback page is in the same
-placeholder state (measured: "No teams have announced their inactives for
-this week yet.").
-
-Given that, the parser below guesses the populated markup follows the SAME
-design-system conventions already confirmed real and working for
-``/injuries/`` (a per-team ``<section>`` wrapping a
-``nfl-c-matchup-strip__team-abbreviation`` and a
-``d3-o-table d3-o-table--detailed d3-o-reports--detailed`` table) -- reusing
-those exact compiled regexes from ``ingest_nflcom_injuries.py`` -- with a
-small set of candidate wrapper-section class names tried in order. This is
-the best available inference, not a verified fact, and the manifest is built
-specifically so a future session can tell the difference at a glance without
-re-deriving it:
-
-- ``empty_reason="primary_offseason_placeholder"`` -- the exact known
-  placeholder text was found. Expected, exit 0.
-- ``empty_reason="unrecognized_page_structure"`` -- the placeholder text was
-  ABSENT (the page presumably has real content) but every parse attempt,
-  primary and fallback, still found zero rows. This means the guessed markup
-  is wrong and needs to be fixed against the real page the first time this
-  runs against an actual populated report -- exits non-zero on purpose so the
-  scheduler's ``FAIL(...)`` status surfaces it instead of a silently
-  "successful" empty snapshot.
-- ``empty_reason="primary_and_fallback_fetch_failed"`` -- neither source could
-  be reached or robots-allowed at all. Also exits non-zero.
-- ``empty_reason="no_schedule_snapshot"`` / ``"no_upcoming_reg_kickoff"`` --
-  no local schedule to resolve the current week from, or the season is over.
-  Both are genuine "no games to report" states, exit 0.
-
-Point-in-time contract: every run writes a FRESH UTC-stamped snapshot
-directory under ``data/players/inactives/<UTC ts>/`` (never resumes or
-mutates an older one) -- this is a living, revised-through-game-day source
-exactly like ``/injuries/``, so each capture instant must be preserved
-separately for grading and for the T-90 deadline arithmetic in
-``docs/inactives_channel.md`` Section 2. The scheduler dedupes at the JOB
-level via ``dedupe_dir="data/players/inactives"`` (see
-``scripts/capture_scheduler.py``'s ``inactives_*`` rows), matching how
-``injuries_*`` and ``player_arrests_tue`` already dedupe: a second run inside
-the dedupe window finds a recent-enough snapshot already on disk and records
-``ALREADY-CAPTURED`` instead of fetching again.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -229,12 +150,6 @@ def _parse_shared_design_system(
     source_url: str,
     fetched_at_utc: str,
 ) -> tuple[list[dict[str, Any]], list[str]]:
-    """Parse a page assumed to share `/injuries/`'s design-system markup.
-
-    See the module docstring: this structure is INFERRED, not measured, for
-    `/inactives/` specifically. Returns ``([], [])`` if no candidate section
-    wrapper matches at all (caller treats that the same as zero rows).
-    """
 
     warnings: list[str] = []
     sections: list[str] = []
@@ -305,7 +220,6 @@ def _parse_shared_design_system(
 
 
 def _schedule_lookup(repo: Path, season: int, week: int) -> dict[str, tuple[str, str, str]]:
-    """team code -> (game_id, home_team, away_team) for one REG season/week."""
 
     hits = sorted((repo / "data" / "raw").glob("*/schedules.parquet"))
     if not hits:
@@ -335,14 +249,6 @@ def run_capture(
     fetch: FetchFn | None = None,
     now: datetime | None = None,
 ) -> tuple[Path, bool]:
-    """Fetch, parse and write one immutable inactives snapshot.
-
-    Returns ``(snapshot_dir, ok)``. ``ok`` is False only for an outcome the
-    caller (``main``) should exit non-zero for: everything except the two
-    confirmed, unambiguous "no games to report" states (see module
-    docstring's ``empty_reason`` table) still writes a full manifest for
-    debugging, but is not treated as a silent success.
-    """
 
     if slot not in SLOTS:
         raise ValueError(f"unknown slot {slot!r}, expected one of {SLOTS}")

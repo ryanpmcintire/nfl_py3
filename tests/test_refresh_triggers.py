@@ -1,16 +1,3 @@
-"""Tests for ENG-08 timing-policy instrumentation (``nfl_ats.refresh_triggers``).
-
-Binding closing-grounds taxonomy (AGENTS.md), restated verbatim per this
-project's rule for any test that scores or adjudicates an experiment: an
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. Only two grounds ever close a line of work: (1) refuted
-mechanism -- a RESOLVED wrong sign (whole interval on the wrong side of
-zero) or zero split-half reliability; (2) bounded by a positive control
-proven able to detect an effect that size. Everything else is
-``unresolved_below_power``. This module is pure instrumentation: no test
-here records to a registry, and every ledger row below is synthetic.
-"""
-
 from __future__ import annotations
 
 import json
@@ -119,9 +106,6 @@ def test_deadline_validation_sunday_1pm_game(tmp_path: Path) -> None:
 
 
 def test_deadline_validation_snf_locks_at_sunday_4pm(tmp_path: Path) -> None:
-    """SNF: a capture AFTER the 4pm ET lock but well BEFORE its own 8:20pm
-    kickoff must still be a deadline violation -- the early-lock rule, not a
-    kickoff-relative one."""
 
     _write_schedule(tmp_path)
     window = next(
@@ -138,8 +122,6 @@ def test_deadline_validation_snf_locks_at_sunday_4pm(tmp_path: Path) -> None:
 
 
 def test_deadline_validation_mnf_locks_at_sunday_4pm(tmp_path: Path) -> None:
-    """MNF: a Monday-morning capture, hours before its own Monday-night
-    kickoff, is still a deadline violation -- the lock is Sunday afternoon."""
 
     _write_schedule(tmp_path)
     window = next(
@@ -199,9 +181,6 @@ def test_detect_clock_checkpoint_triggers(tmp_path: Path) -> None:
 
 
 def test_detect_clock_checkpoint_triggers_between_sunday_kickoff_and_lock(tmp_path: Path) -> None:
-    """A checkpoint that runs at 3pm ET Sunday: the 1pm-ET game's own kickoff
-    has already passed (invalid), but SNF/MNF's EARLY 4pm-ET lock has not yet
-    arrived (valid) -- the exact contrast the early-lock rule predicts."""
 
     _write_schedule(tmp_path)
     games = schedule_game_windows(tmp_path, season=SEASON, week=WEEK)
@@ -563,15 +542,6 @@ def _valid_trigger(game_id: str, week: int, *, deadline_valid: bool = True) -> R
 
 
 def test_compare_trigger_vs_checkpoint_interval_containing_zero_is_unresolved() -> None:
-    """A synthetic population built to sum to exactly zero -- 11 weeks (at
-    the estimator's own MIN_BLOCKS_FOR_INTERVAL floor, so the interval is a
-    genuine, non-degenerate one): the checkpoint always picks HOME; the
-    trigger agrees on 5 games (improvement 0 regardless of outcome) and
-    disagrees on 6, split 3-3 between the trigger being right (home does NOT
-    cover, improvement +1) and wrong (home covers, improvement -1). The
-    point estimate is exactly 0 and the bootstrap interval straddles it --
-    per AGENTS.md that is NEVER grounds to reject or close this line of
-    work: classification must stay unresolved_below_power."""
 
     specs = [
         (True, True, True),

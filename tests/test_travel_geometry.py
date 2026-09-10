@@ -1,5 +1,3 @@
-"""ENV-03 deterministic travel-geometry and leakage contracts."""
-
 from __future__ import annotations
 
 import math
@@ -127,7 +125,6 @@ def test_origin_and_prior_trip_remain_missing_until_chronologically_available() 
 
 
 def test_postgame_and_post_cutoff_mutations_cannot_change_decision_row() -> None:
-    """Required leakage regression for the ENV-03 feature family."""
 
     schedules = _schedules()
     baseline = _by_game(build_travel_geometry_features(schedules, _registry()), "g3")

@@ -1,25 +1,3 @@
-"""Tests for ``nfl_ats.spread_explorer`` -- the spread-explorer library.
-
-Owner request, 2026-08-20: "pick a spread for a game and see the odds of
-covering." Three things are load-bearing here, mirroring
-``tests/test_smooth_cdf_mapping_overlay.py``'s structure since this module
-follows the exact same refit-and-verify discipline:
-
-1. :func:`compute_spread_explorer_params` reproduces the production Gaussian
-   probability from a refit before trusting anything -- proving it reads the
-   SAME out-of-time residual sample the card was built from -- and refuses
-   (``DataContractError``) rather than silently comparing against a moved
-   target when the supplied probability does not reproduce.
-2. :func:`widget_home_cover_probability` (the Abramowitz-Stegun erf
-   approximation the browser widget also evaluates) tracks the
-   production-precision scipy-based formula
-   (``nfl_ats.calibration.smoothed_home_cover_probability``) tightly, and is
-   monotonic in the expected direction as the hypothetical line moves.
-3. :func:`load_feature_table_for_forecast` resolves the recorded absolute
-   path first, falls back to ``data_root/processed/<name>``, and raises a
-   clear error when neither exists.
-"""
-
 from __future__ import annotations
 
 import itertools
@@ -51,9 +29,6 @@ _WEEK = 4
 
 
 def _week_card(model_frame: pd.DataFrame) -> pd.DataFrame:
-    """A real card, built the same way ``compute_spread_explorer_params``
-    itself refits -- via ``fit_margin_models_for_week``, never a hand-typed
-    probability."""
 
     target, margin_models = fit_margin_models_for_week(
         model_frame,
@@ -95,8 +70,6 @@ def test_compute_params_reproduces_the_gaussian_control(model_frame: pd.DataFram
 
 
 def test_compute_params_matches_scipy_precision_gaussian(model_frame: pd.DataFrame) -> None:
-    """The returned (center, mean, std) reproduce the card's own probability
-    through the EXACT production formula (scipy-based), not an approximation."""
 
     card = _week_card(model_frame)
     params = compute_spread_explorer_params(
@@ -208,11 +181,6 @@ def test_widget_formula_tracks_scipy_closely(model_frame: pd.DataFrame) -> None:
 
 
 def test_widget_formula_is_monotonically_decreasing_in_the_line() -> None:
-    """Per this codebase's spread_line convention (a MORE positive home
-    spread means the home team is a BIGGER favorite -- see
-    ``public_board.spread_words``: ``home_spread > 0`` -> home favored),
-    a higher hypothetical line makes it harder, not easier, for home to
-    cover, so probability strictly decreases as the line increases."""
 
     center, mean, std = 1.5, 0.5, 12.0
     lines = np.arange(-20.0, 20.01, 0.5)

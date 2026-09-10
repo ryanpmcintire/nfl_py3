@@ -1,79 +1,3 @@
-"""Combined overlay-stack backtest at the opener grade.
-
-Measures what the STACK of all six pick-flipping prospective overlays would
-have scored historically, applied jointly to the frozen active model's own
-opener-graded picks (production probability rule: ``home_cover_probability
->= 0.5``). This answers a question no single challenger registration answers:
-where do the live challengers put the pool relative to the 55% goal if all of
-them fire together, not one at a time against the un-flipped card the way
-``nfl-ats prospective-score`` tracks each challenger independently
-(docs/*_overlay.md, "tracked INDEPENDENTLY ... not stacked on the other
-overlays").
-
-Baseline: ``artifacts/opener_evaluation/20260819T174244Z/per_game.parquet``,
-the tracked, real (non-scratch) run of ``nfl-ats opener-evaluation`` for the
-active `weak_stack`/ridge-alpha-10 model, 1,537 REG-season games 2020-2025,
-graded with the PRODUCTION probability rule
-(``correct_at_open_probability_rule`` / ``home_cover_probability_at_open``) --
-not the sign rule docs/opener_evaluation.md originally predeclared. See that
-document's 2026-08-19 addendum for why the probability rule is production's
-actual pick rule.
-
-Six pick-flipping overlays are applied JOINTLY (the seventh and eighth live
-challengers are excluded and the exclusion is recorded in the output, not
-silently dropped):
-
-* ``coach_fade_overlay``           -- nfl_ats.coach_fade_overlay (weeks 1-8 only)
-* ``injury_value_lost_tilt_overlay`` -- nfl_ats.injury_value_tilt_overlay
-* ``division_revenge_tilt_overlay``  -- nfl_ats.division_revenge_tilt_overlay
-* ``backup_qb_fade_overlay``         -- nfl_ats.backup_qb_fade_overlay
-* ``surface_switch_tilt_overlay``    -- nfl_ats.surface_switch_tilt_overlay
-* ``spread_gap_zone_fade_overlay``   -- nfl_ats.spread_gap_zone_fade_overlay
-
-Excluded, and why: ``mod07_weak_signal_stack`` IS the active model itself
-(this backtest already starts from its own opener-graded picks as the
-baseline -- it is not a pick-flipping overlay ON TOP of anything).
-``best_pick_nomination_v2`` only chooses which already-picked game gets the
-week's Best-Pick bonus marker; it never touches ``home_cover_probability`` or
-which side is picked, so it cannot move ATS accuracy and is out of scope for
-a pick-flipping stack.
-
-Combination rule (derived from the code, then verified empirically, not
-assumed): every one of the six overlays, when it fires, sets
-``home_cover_probability`` to exactly ``1 - baseline_probability`` -- the
-complement of the model's OWN original pick, computed independently against
-that same unflipped baseline (this mirrors exactly how each challenger is
-scored in production: independently, against the un-flipped card). Since
-there are only two sides, any two overlays that both fire on the same game
-necessarily agree on the resulting side -- there is no construction under
-which this stack can produce a genuine direction conflict. This script
-verifies that empirically (``verify_no_direction_conflicts``) rather than
-just asserting it. The combined-stack pick is therefore well-defined with a
-simple OR across the six independent flip conditions: flip a game if ANY
-overlay's condition fires on it, complementing the baseline probability.
-
-Uncertainty: ``nfl_ats.clv.week_blocked_bootstrap`` (the same block-bootstrap
-tool -- whole-week or whole-season resampling, ``probability_positive`` as
-the continuous read, not a binary "contains zero" verdict) that produced the
-reference artifact's own ``uncertainty.csv``, run at 20,000 samples with a
-fixed seed for: the combined stack vs baseline, each overlay's marginal
-(leave-one-out) contribution inside the stack, and each overlay's own solo
-(unstacked) delta vs baseline for context.
-
-Caveat, stated in the output, not just here: several of the six overlays
-were themselves screened or tuned on windows this archive re-touches (e.g.
-the surface-switch construct's NFL era split covers 2018-2025; the coach-fade
-construct's registered effect lives inside 2018-2025; several bias-battery
-cells were opener-re-screened on 2020-2025 -- the same 2020-2025 span this
-archive covers). This combined read is CONTINUOUS EVIDENCE on already-looked
--at windows, a diagnostic, not a fresh confirmation, and it spends no
-rotation-registry window.
-
-Usage (from the repo root, per AGENTS.md environment conventions)::
-
-    .\\.tools\\uv.exe run --no-sync python scripts/overlay_stack_backtest.py
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -140,16 +64,6 @@ def load_inputs(
 
 
 def build_predictions_frame(per_game: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """The 1,537-game opener archive, reshaped into the pick-level card schema
-    every overlay's ``apply_*`` function expects (``game_id``/``season``/``week``/
-    ``home_team``/``away_team``/``game_type``/``spread_line``/``home_cover_probability``).
-
-    ``home_cover_probability`` is seeded from ``home_cover_probability_at_open``
-    -- production's own probability rule at the opener, not the sign rule --
-    and ``spread_line`` from ``tue_open_home_spread``, the decision line every
-    pick in this archive was actually formed at, matching the exact field the
-    sibling overlays' own recorders read for ``decision_home_spread``.
-    """
 
     sched_cols = schedules[["game_id", "home_team", "away_team", "game_type"]].drop_duplicates(
         "game_id"
@@ -209,14 +123,6 @@ def run_overlays(
 def verify_no_direction_conflicts(
     predictions: pd.DataFrame, results: dict[str, Any], flip_sets: dict[str, set[str]]
 ) -> None:
-    """Every overlay's flip must equal ``1 - baseline`` on every game it flips.
-
-    This is the empirical check behind the module docstring's combination-rule
-    claim: if it held only "by construction", a future edit to one overlay
-    (e.g. a partial-magnitude flip instead of a full complement) would silently
-    break the OR-combination logic below without this script noticing. Raises
-    if any overlay ever disagrees with its own baseline complement.
-    """
 
     baseline = predictions.set_index("game_id")["home_cover_probability"]
     for name, result in results.items():

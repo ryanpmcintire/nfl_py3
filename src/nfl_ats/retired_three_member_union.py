@@ -1,5 +1,3 @@
-"""Track the retired three-member OR union against the nine-member played card."""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -37,7 +35,6 @@ def _record_instant(now: datetime | None) -> pd.Timestamp:
 
 
 def retired_three_member_sides(primary: pd.DataFrame) -> pd.Series:
-    """The former three-member joint OR, using decision-time ledger fields."""
 
     flip = (
         primary["coach_fade_flip"].astype(bool)
@@ -56,13 +53,6 @@ def record_retired_three_member_union_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Reconstruct the retired three-member union from the primary ledger.
-
-    The primary recorder freezes each member's own flip flag on the same
-    resolved card, so the former union is the OR of the three original member
-    columns applied once to the frozen model side. No schedule, arrest,
-    forecast or play-by-play source is loaded a second time.
-    """
 
     del data_root
     entry = find_challenger(artifacts_root, RETIRED_THREE_MEMBER_CHALLENGER_ID)

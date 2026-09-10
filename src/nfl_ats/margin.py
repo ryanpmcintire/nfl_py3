@@ -1,5 +1,3 @@
-"""Fair-margin and market-residual models with empirical predictive distributions."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
@@ -414,7 +412,6 @@ _PROFILE_SUPPRESSED_MISSING_INDICATORS: dict[MarginFeatureProfile, tuple[str, ..
 
 
 def margin_feature_set(target: MarginTarget, feature_profile: MarginFeatureProfile = "base") -> str:
-    """Return the named feature set backing a margin-profile target."""
 
     if feature_profile not in MARGIN_FEATURE_PROFILES:
         raise ValueError(f"Unknown margin feature profile: {feature_profile}")
@@ -428,7 +425,6 @@ def margin_feature_set(target: MarginTarget, feature_profile: MarginFeatureProfi
 def margin_feature_columns(
     target: MarginTarget, feature_profile: MarginFeatureProfile = "base"
 ) -> tuple[str, ...]:
-    """Return the explicit feature contract for each margin question."""
 
     return FEATURE_SETS[margin_feature_set(target, feature_profile)]
 
@@ -453,12 +449,6 @@ for _family, _columns in FEATURE_FAMILIES.items():
 
 
 def resolve_feature_groups(feature_columns: Sequence[str]) -> tuple[str, ...]:
-    """Label every feature column with the ``FEATURE_FAMILIES`` block it belongs to.
-
-    The families are the project's own declared blocks, so this introduces no
-    new taxonomy. Raises rather than guessing when a column is unclaimed: a
-    silent fallback group would hide a typo behind a plausible penalty.
-    """
 
     unknown = sorted({column for column in feature_columns if column not in _FEATURE_GROUPS})
     if unknown:
@@ -469,7 +459,6 @@ def resolve_feature_groups(feature_columns: Sequence[str]) -> tuple[str, ...]:
 def margin_feature_groups(
     target: MarginTarget, feature_profile: MarginFeatureProfile = "base"
 ) -> tuple[str, ...]:
-    """Block labels aligned with ``margin_feature_columns(target, profile)``."""
 
     return resolve_feature_groups(margin_feature_columns(target, feature_profile))
 
@@ -481,14 +470,6 @@ def column_penalty_multipliers(
     *,
     normalize: bool = True,
 ) -> dict[str, float]:
-    """Expand per-block penalty multipliers to a per-column mapping.
-
-    ``normalize`` divides through by the count-weighted geometric mean, which
-    holds the AVERAGE penalty fixed at ``ridge_alpha`` and leaves only the
-    relative allocation across blocks free. That separation matters: the global
-    penalty level is a different axis, already swept and closed by MOD-06, so a
-    group-wise screen that quietly moved it too could not attribute its result.
-    """
 
     if len(feature_columns) != len(groups):
         raise ValueError("feature_columns and groups must have the same length")
@@ -509,15 +490,6 @@ def column_penalty_multipliers(
 
 
 class SelectiveMissingnessImputer(TransformerMixin, BaseEstimator):
-    """Median-impute every value while suppressing indicators for named sources.
-
-    ``SimpleImputer`` can only add indicators for all columns or none.  MOD-13
-    needs the production behavior everywhere except its seven source-era
-    continuity columns, whose shared availability is represented by one input
-    feature instead.  This class is intentionally candidate-only; its default
-    is never reached by the active profile.
-    """
-
     def __init__(self, suppressed_indicator_columns: tuple[str, ...] = ()) -> None:
         self.suppressed_indicator_columns = suppressed_indicator_columns
 
@@ -567,17 +539,6 @@ class SelectiveMissingnessImputer(TransformerMixin, BaseEstimator):
 
 
 class GroupPenaltyScaler(TransformerMixin, BaseEstimator):
-    """Scale column ``j`` by ``1 / sqrt(m_j)`` so a plain ridge penalises it by ``alpha * m_j``.
-
-    Sits between the ``StandardScaler`` and the ``Ridge`` -- it must come after
-    standardisation, because standardising afterwards would divide the scaling
-    straight back out.
-
-    Missing-value indicator columns added by ``SimpleImputer(add_indicator=True)``
-    arrive named ``missingindicator_<source>`` and inherit their source column's
-    multiplier, so a block's missingness flags are penalised with the block.
-    """
-
     def __init__(self, column_multipliers: Mapping[str, float] | None = None) -> None:
         self.column_multipliers = column_multipliers
 
@@ -696,14 +657,6 @@ DEFAULT_LINE_SWEEP_OFFSETS: tuple[float, ...] = tuple(
 
 
 def _is_integer_line(line: float) -> bool:
-    """True when a spread cannot mathematically be pushed against.
-
-    A real NFL final margin (home score minus away score) is always an
-    integer, so a push -- the predictive distribution landing exactly on the
-    line -- is only possible when the line itself is an integer. Half-point
-    lines can never push; this is a football fact, not a modeling choice, so
-    it is enforced here rather than left to accidental floating-point ties.
-    """
 
     return bool(np.isclose(float(line) % 1.0, 0.0, atol=1e-9))
 
@@ -711,25 +664,6 @@ def _is_integer_line(line: float) -> bool:
 def _three_way_probabilities(
     distribution: npt.NDArray[np.float64], line: float
 ) -> tuple[float, float, float]:
-    """Split the empirical predictive distribution at a line into win/push/loss.
-
-    A real football margin is a whole number of points, so the question "does
-    this game land exactly on the line" can only be asked of integer outcomes.
-    The predictive sample is continuous (a float centre plus float residuals),
-    and this function previously tested it for exact equality with the line --
-    a condition that essentially never fires in floating point. Every card the
-    active model published therefore carried ``push_probability = 0.0000``
-    while roughly 4.8% of games on an integer line actually push, rising to
-    **9.0%** at a line of 3, and ``home_loss_probability`` silently absorbed
-    all of it (measured 2009-2025, n=4,431).
-
-    Rounding the sample to integers fixes that. Note the deliberate asymmetry
-    that remains: ``home_cover_probability`` still comes from
-    ``_smoothed_probability``'s continuous ``>`` test, so it is unchanged and
-    no pick moves. Only the three-way split is corrected here. Making the
-    cover probability itself push-aware would change the frozen model's
-    published probabilities and is a scored change, not a bug fix.
-    """
 
     n = len(distribution)
     if _is_integer_line(line):
@@ -769,12 +703,6 @@ class MarginModel:
     def _predicted_margin(
         self, frame: pd.DataFrame, spread: npt.NDArray[np.float64]
     ) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-        """Return (predicted_margin, predicted_market_residual) for a frame.
-
-        Shared by ``predict`` and ``line_sweep`` so the distribution center is
-        computed identically -- the center never depends on which line it is
-        later compared against.
-        """
 
         if self.target == "market":
             predicted_margin = spread.copy()
@@ -796,14 +724,6 @@ class MarginModel:
         return spread + raw, raw
 
     def distribution(self, frame: pd.DataFrame) -> npt.NDArray[np.float64]:
-        """Return the full empirical predictive sample for every row.
-
-        Shape ``(len(frame), len(self.residuals))``: row ``i`` is
-        ``predicted_margin[i] + self.residuals``. Exposed for analyses that
-        need the raw samples rather than a single summarized probability
-        (e.g. key-number mass, reliability diagrams) without duplicating the
-        center computation.
-        """
 
         spread = self._spread(frame)
         predicted_margin, _ = self._predicted_margin(frame, spread)
@@ -816,28 +736,6 @@ class MarginModel:
         probability_method: ResidualSmoothingMethod = "ecdf",
         center_offset: Sequence[float] | npt.NDArray[np.float64] | None = None,
     ) -> pd.DataFrame:
-        """Predict every game in ``frame``.
-
-        ``center_offset`` (MOD-18 lane S, promoted 2026-09-07,
-        docs/home_side_offset_promotion.md) is an optional per-row shift, in
-        points, added to the fitted point prediction BEFORE every downstream
-        quantity is formed -- the served point, the fair spread, the market
-        residual and every probability all move together, so the card stays
-        internally consistent. ``None`` (the default for every research and
-        backtest caller) reproduces the historical output bit-for-bit.
-
-        ``probability_method`` controls ONLY ``home_cover_probability`` (the
-        two-way forced-pick threshold) -- ``home_win_probability`` and the
-        push/three-way split stay on the raw ECDF unconditionally, per
-        ``docs/smooth_cdf_mapping.md``'s declared scope. The default,
-        ``"ecdf"``, reproduces every historical caller's output bit-for-bit
-        (this method is called from dozens of research/backtest call sites
-        that must never silently change). ``nfl_ats.outcomes.score_outcome_week``
-        -- the sole production weekly-forecast entry point -- passes
-        ``"gaussian"`` explicitly (MOD-08 promotion, 2026-08-19,
-        `probability_positive` 0.5536 at the opener grade, see
-        ``docs/smooth_cdf_mapping.md``); every other caller is unaffected.
-        """
 
         spread = self._spread(frame)
         predicted_margin, predicted_residual = self._predicted_margin(frame, spread)
@@ -914,22 +812,6 @@ class MarginModel:
         probability_method: ResidualSmoothingMethod = "ecdf",
         center_offset: Sequence[float] | npt.NDArray[np.float64] | None = None,
     ) -> pd.DataFrame:
-        """Evaluate the predictive distribution across alternative home spreads.
-
-        For every game, sweeps a grid of alternative home spreads built from
-        the quoted ``spread_line`` plus each offset, and reports the
-        win/push/loss split at every alternative line. The predictive margin
-        distribution is fixed once, conditioned on the actually quoted market
-        line (for ``market_residual`` the market's information enters through
-        that real quote); only the settlement threshold moves across the
-        sweep. This answers the decision question "what is our cover
-        probability if this game settles at line ``s``" — for example when a
-        pool posts a different number than the market or when shopping
-        half-points across books — not the counterfactual "what would the
-        model predict if the market itself had quoted ``s``".
-
-        Returns a tidy per-game-per-line table: one row per (game, offset).
-        """
 
         if not offsets:
             raise ValueError("line_sweep requires at least one offset")
@@ -1110,7 +992,6 @@ def margin_model_metadata(model: MarginModel) -> dict[str, Any]:
 def _validated_center_offset(
     center_offset: Sequence[float] | npt.NDArray[np.float64], rows: int
 ) -> npt.NDArray[np.float64]:
-    """A finite, row-aligned point shift; refuses silent misalignment."""
 
     shift = np.asarray(center_offset, dtype=float)
     if shift.shape != (rows,):

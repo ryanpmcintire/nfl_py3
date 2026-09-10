@@ -1,5 +1,3 @@
-"""Backtests, nested evaluation, experiments, ablations and anytime comparisons."""
-
 from __future__ import annotations
 
 import argparse
@@ -328,10 +326,6 @@ def _cmd_experiment(args: argparse.Namespace) -> None:
 
 
 def _cmd_experiment_run(args: argparse.Namespace) -> None:
-    """The declarative pipeline: spec in, screen -> bootstrap -> classify ->
-    registry record -> provenance stamp out, with zero hand-transcription.
-    See ``nfl_ats.experiment_runner`` and ``docs/experiment_pipeline.md``.
-    """
 
     outcome = run_experiment_cli(
         args.spec,
@@ -358,14 +352,6 @@ def _cmd_experiment_run(args: argparse.Namespace) -> None:
 
 
 def _cmd_experiment_verify(args: argparse.Namespace) -> None:
-    """Report which registry rows still resolve to a real artifact on disk.
-
-    Read-only audit of ``registry/experiments/``: every row's
-    ``artifact_directory`` is resolved (absolute stored paths as-is; relative
-    ones against each ``--artifacts-root`` and the repo root) and checked for
-    existence, and path/identity inconsistencies are flagged. See
-    :func:`nfl_ats.provenance.verify_experiment_links` for the flag meanings.
-    """
 
     verifications = verify_experiment_links(
         artifacts_roots=list(args.artifacts_root) if args.artifacts_root else None
@@ -607,7 +593,6 @@ def _cmd_player_ablation(args: argparse.Namespace) -> None:
 
 
 def _cmd_participation_ablation(args: argparse.Namespace) -> None:
-    """Run the predeclared one-candidate participation-value comparison."""
 
     command_started = perf_counter()
     features = _load_features(args.features)
@@ -688,7 +673,6 @@ def _cmd_participation_ablation(args: argparse.Namespace) -> None:
 
 
 def _cmd_availability_ablation(args: argparse.Namespace) -> None:
-    """Run the predeclared learned-versus-fixed availability comparison."""
 
     command_started = perf_counter()
     baseline_features = _load_features(args.baseline_features)
@@ -899,7 +883,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the evaluation, experiment and ablation commands."""
 
     backtest = subparsers.add_parser("backtest", help="run expanding weekly evaluation")
     _add_features_arg(backtest)
@@ -1121,7 +1104,6 @@ def register_anytime(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the anytime-valid comparison commands."""
 
     anytime = subparsers.add_parser(
         "anytime", help="anytime-valid (continuous-monitoring) paired comparisons"

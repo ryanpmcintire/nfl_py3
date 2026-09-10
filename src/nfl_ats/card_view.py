@@ -1,42 +1,3 @@
-"""What actually gets submitted for one weekly forecast -- the single shared
-implementation of "overlay applied, Best Pick nominated."
-
-A weekly forecast artifact (``recommendations.csv``) holds the model's OWN,
-un-overlaid picks. Two decisions change what actually gets submitted to the pool
-without ever rewriting that file:
-
-1. The frozen four-member production policy evaluates coach fade, division
-   revenge, player arrests, and spread-gap independently against the raw card,
-   unions their game ids, and complements each affected pick exactly once.
-2. Best Pick nomination (:mod:`nfl_ats.best_pick_nomination`) usually replaces
-   the incumbent ``sweep_robustness`` signal (v1) for choosing WHICH game gets
-   the week's bonus pick. The served rule is
-   :func:`~nfl_ats.best_pick_nomination.nominate_v2_small_spread` (v2's own
-   ranking, restricted to spreads of 6.5 or less, owner decision 2026-09-09).
-
-Before this module existed, that composition was implemented three times:
-``nfl_ats.publishing`` (the tracked Markdown card), ``nfl_ats.public_board``
-(the public GitHub Pages site, which had NEITHER lever wired in at all --
-2026-08-19 incident: the site showed BAL at IND while the published card had
-already flipped that pick to IND, and nominated the wrong Best Pick), and the
-internal dashboard's data layer (since deleted; it was a near-duplicate of
-``publishing``'s logic). Three copies of the same decision is mirror-drift
-waiting to happen. This module is the one place the decision is made;
-``publishing.py`` and ``public_board.py`` both call into it.
-
-Best Pick selection ALWAYS runs on the UN-overlaid predictions (both rules):
-the overlay must never influence which game is nominated, only which side a
-game's forced pick lands on. That keeps the two levers independently
-measured rather than silently composed -- see
-:mod:`nfl_ats.best_pick_nomination`'s module docstring for the same property
-stated from the other direction.
-
-Production rejects a disabled member. The arrest member may degrade only for
-explicitly non-production rendering; production publication requires a fresh,
-complete, hash-verified snapshot and fails before writing when that contract is
-unavailable.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
@@ -77,22 +38,11 @@ from nfl_ats.snapshots import latest_snapshot, load_snapshot, load_verified_snap
 
 
 def _disabled_overlay(predictions: pd.DataFrame) -> OverlayResult:
-    """A no-op overlay result, bypassing ``apply_coach_fade_overlay``'s own
-    column contract entirely -- a disabled overlay has nothing to validate,
-    and a caller that never asked for the overlay (``data_root=None``) should
-    not need overlay-specific columns on ``predictions`` just to render."""
 
     return OverlayResult(predictions.reset_index(drop=True).copy(), (), (), OVERLAY_WEEK_MAX, False)
 
 
 def resolve_overlay(predictions: pd.DataFrame, data_root: Path | None) -> OverlayResult:
-    """The year-1-coach fade overlay (docs/coach_fade_overlay.md), or a no-op.
-
-    Degrades to a disabled overlay -- never raises -- when ``data_root`` is
-    omitted, no local schedule snapshot is available, or the
-    predictions/schedule frames do not carry what the overlay needs (e.g. a
-    minimal fixture with no ``season``/``week`` columns).
-    """
 
     if data_root is None:
         return _disabled_overlay(predictions)
@@ -124,13 +74,6 @@ def resolve_player_arrests_overlay(
     now: datetime | None = None,
     require_fresh: bool = False,
 ) -> ArrestOverlayResult:
-    """Apply the promoted arrest overlay from a fresh, hash-verified snapshot.
-
-    Rendering helpers may degrade to a disabled result when local raw data is
-    unavailable. The production publish path passes ``require_fresh=True`` so
-    missing or stale source data refuses the publish instead of silently
-    changing the played policy for that week.
-    """
 
     if data_root is None:
         if require_fresh:
@@ -160,16 +103,6 @@ def resolve_player_arrests_overlay(
 
 @dataclass(frozen=True)
 class BestPickNomination:
-    """Both rules' weekly nominations, plus which one is actually played.
-
-    ``v1_game_id``/``v1_tie_note`` and ``v2_result`` are ALWAYS populated
-    when computable, regardless of the switch, so a caller can disclose both
-    nominations even when only one is played (owner decision 2026-08-18,
-    POL-09). ``active_*`` is whichever rule is actually marked: v2 when
-    :data:`nfl_ats.best_pick_nomination.NOMINATION_V2_ENABLED` is on AND v2
-    could be computed this week, the incumbent v1 rule otherwise.
-    """
-
     v1_game_id: str | None
     v1_tie_note: str
     v2_result: NominationV2Result | None
@@ -180,12 +113,6 @@ class BestPickNomination:
 
 
 def _v1_nomination(predictions: pd.DataFrame, sweep: pd.DataFrame) -> tuple[str | None, str]:
-    """The v1 (``sweep_robustness``) nomination, or ``None`` when it cannot
-    be computed, plus a disclosure sentence when that pick is an undisclosed
-    tie. Regular season only, and silent when ``sweep`` is empty/missing the
-    columns ``select_best_pick`` needs -- a missing Best Pick must degrade
-    the card, never fail the caller.
-    """
 
     if (
         "game_type" in predictions.columns
@@ -204,15 +131,6 @@ def _v1_nomination(predictions: pd.DataFrame, sweep: pd.DataFrame) -> tuple[str 
 
 @dataclass(frozen=True)
 class V2NominationInputs:
-    """Primitive, cacheable inputs for v2 nomination, extracted from a
-    weekly forecast's own ``metadata.json``.
-
-    Every field is a plain string/int/float so a caller can use them as a
-    cache key without hashing a ``Path`` or a ``dict`` -- the reason the
-    (now deleted) dashboard-side thin wrapper existed rather than callers
-    invoking :func:`compute_v2_nomination` directly.
-    """
-
     feature_table: str
     market_root: str
     season: int
@@ -225,11 +143,6 @@ class V2NominationInputs:
 def v2_nomination_inputs(
     metadata: Mapping[str, Any], data_root: Path | None
 ) -> V2NominationInputs | None:
-    """Extract v2's inputs from ``metadata``, or ``None`` when v2 cannot run
-    this week (no ``data_root``, or the forecast's metadata is missing
-    season/week/feature_profile/its own recorded feature table) -- callers
-    should treat ``None`` exactly like "no data_root": degrade to v1.
-    """
 
     if data_root is None:
         return None
@@ -260,17 +173,6 @@ def compute_v2_nomination(
     *,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
 ) -> NominationV2Result | None:
-    """The plain, uncached served computation -- what every one-shot caller
-    (publish, static-site render) wants. ``nominate_v2_fn`` is injectable so
-    a caller can swap in a cached/mocked implementation (tests patch this at
-    the CALLER's own module scope, e.g. ``publishing.nominate_v2_small_spread``,
-    and pass it through here explicitly, rather than patching this module).
-
-    Degrades to ``None`` -- never raises -- when the feature table cannot be
-    read, or ``nominate_v2_fn`` itself raises ``ValueError``/
-    ``DataContractError`` (e.g. not enough walk-forward training history
-    yet).
-    """
 
     inputs = v2_nomination_inputs(metadata, data_root)
     if inputs is None:
@@ -306,17 +208,6 @@ def resolve_nomination(
     v2_result: NominationV2Result | None = _UNSET,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
 ) -> BestPickNomination:
-    """Both rules' nominations for one week, plus which one is played.
-
-    ``sweep`` should already be filtered to the active method (every caller
-    already does this for its own plotting purposes); v1 defensively
-    re-filters to ``predictions``'s own method values in case it is not.
-
-    ``v2_result`` lets a caller supply an ALREADY-COMPUTED v2 nomination
-    (a cached cross-book dispersion scan) instead of having this function
-    compute one fresh. Omit it (the default sentinel) to compute v2 the plain,
-    uncached way via :func:`compute_v2_nomination`.
-    """
 
     v1_id, v1_tie = _v1_nomination(predictions, sweep)
     resolved_v2 = (
@@ -348,9 +239,6 @@ def resolve_nomination(
 
 @dataclass(frozen=True)
 class CardView:
-    """What actually gets submitted for one weekly forecast: overlay-applied
-    picks, the Best Pick nomination, and disclosure notes."""
-
     predictions: pd.DataFrame
     overlay: OverlayResult
     arrest_overlay: ArrestOverlayResult
@@ -372,12 +260,6 @@ def resolve_card_view(
     require_fresh_arrest_overlay: bool = True,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
 ) -> CardView:
-    """Apply the production OR-union and resolve the Best Pick nomination.
-
-    All four members are evaluated independently against the raw card, then
-    their game ids are unioned and each affected raw pick is complemented once.
-    Best Pick nomination remains computed from the raw model card.
-    """
 
     nomination = resolve_nomination(
         predictions, sweep, metadata, data_root, nominate_v2_fn=nominate_v2_fn

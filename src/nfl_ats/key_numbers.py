@@ -1,16 +1,3 @@
-"""Key-number calibration: a validation report, not a promotion claim.
-
-NFL final margins cluster on a handful of "key numbers" (3 and 7 above all,
-from a made field goal or touchdown-plus-extra-point deciding the game).
-This module checks whether ``MarginModel``'s empirical predictive
-distribution implies the right amount of probability mass on those numbers,
-and whether its cover probabilities are well calibrated across different
-line regions. Every number here comes from either an already-stored
-walk-forward artifact or a fresh leak-safe walk-forward refit -- nothing is
-scored with information from the future -- and none of it feeds back into
-model selection.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -41,16 +28,6 @@ def implied_key_number_mass(
     distribution: npt.NDArray[np.float64],
     key_numbers: Sequence[int] = DEFAULT_KEY_NUMBERS,
 ) -> pd.DataFrame:
-    """Per-game implied probability mass on each |final margin| key number.
-
-    ``distribution`` has shape ``(n_games, n_samples)`` -- see
-    ``MarginModel.distribution``. Samples are rounded to the nearest integer
-    before comparison, since a real final score margin is always an integer;
-    the continuous empirical bootstrap only approximates that support.
-    Returns one row per game and one ``key_number_{k}`` column per key
-    number, holding the fraction of that game's samples with
-    ``|round(sample)| == k`` (a home win or a home loss by exactly k).
-    """
 
     if not key_numbers:
         raise ValueError("At least one key number is required")
@@ -67,7 +44,6 @@ def implied_key_number_mass(
 def realized_key_number_frequency(
     results: pd.Series, key_numbers: Sequence[int] = DEFAULT_KEY_NUMBERS
 ) -> pd.Series:
-    """Realized frequency of ``|final margin| == k`` for each key number."""
 
     if not key_numbers:
         raise ValueError("At least one key number is required")
@@ -84,13 +60,6 @@ def summarize_key_number_calibration(
     key_number_mass: pd.DataFrame,
     key_numbers: Sequence[int] = DEFAULT_KEY_NUMBERS,
 ) -> pd.DataFrame:
-    """One row per (method, key number): implied mass vs realized frequency.
-
-    ``key_number_mass`` must have one row per (method, game) with a
-    ``method`` column, a ``result`` column (the completed game's realized
-    margin), and one ``key_number_{k}`` column per key number -- the shape
-    produced by walking ``implied_key_number_mass`` forward across weeks.
-    """
 
     required = {"method", "result", *(f"key_number_{k}" for k in key_numbers)}
     missing = sorted(required.difference(key_number_mass.columns))
@@ -115,12 +84,6 @@ def summarize_key_number_calibration(
 
 
 def line_bucket(spread_line: pd.Series) -> pd.Series:
-    """Classify each quoted line's magnitude into a key-number line region.
-
-    Buckets: ``|line| < 3``, exactly ``3``, ``3.5`` to ``6.5``, exactly
-    ``7``, and ``|line| > 7``. NFL spreads are quoted in half-point
-    increments, so these five buckets partition the space without gaps.
-    """
 
     magnitude = pd.to_numeric(spread_line, errors="coerce").abs().to_numpy(dtype=float)
     is_three = np.isclose(magnitude, 3.0, atol=1e-9)
@@ -141,14 +104,6 @@ def cover_reliability_by_line_bucket(
     *,
     probability_column: str = "home_cover_probability",
 ) -> pd.DataFrame:
-    """Reliability of cover probabilities bucketed by line region.
-
-    Compares the mean predicted probability against the realized cover rate
-    (``home_cover``, which is already null for pushes) within each line
-    bucket. ``predictions`` is expected to be a walk-forward outcome card
-    (or a subset restricted to one method); pass a subset filtered to the
-    method of interest for a single-method reliability table.
-    """
 
     required = {"spread_line", probability_column, "home_cover"}
     missing = sorted(required.difference(predictions.columns))

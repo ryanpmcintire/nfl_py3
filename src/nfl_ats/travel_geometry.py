@@ -1,17 +1,3 @@
-"""Deterministic, decision-time-safe NFL travel geometry features.
-
-This module turns the structural quantities first explored by ENV-03's
-retrospective screen into a reusable feature contract. It never reads a game
-result, betting line, observed weather value, or other postgame field.
-
-The old screen intentionally recovered each team's home stadium from the
-full-season modal schedule. This reusable builder uses a stricter rule: for
-each decision row, a team's origin is its latest same-season true-home venue
-at or before that row. Consequently, changing later schedule rows cannot
-rewrite an earlier feature. Geometry is missing until an origin is available;
-the builder does not backfill from the future.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -60,8 +46,6 @@ REQUIRED_SCHEDULE_COLUMNS = (
 
 @dataclass(frozen=True)
 class StadiumLocation:
-    """Validated physical venue metadata."""
-
     latitude: float
     longitude: float
     timezone: str
@@ -74,8 +58,6 @@ class StadiumLocation:
 
 @dataclass(frozen=True)
 class StadiumCoordinateRegistry:
-    """Immutable validated registry plus its audit provenance."""
-
     venues: Mapping[str, StadiumLocation]
     source: str
     sha256: str
@@ -96,7 +78,6 @@ def _finite_number(raw: object, *, field: str, stadium: str) -> float:
 def validate_stadium_coordinate_registry(
     raw: Mapping[str, object], *, source: str = "<memory>"
 ) -> StadiumCoordinateRegistry:
-    """Validate raw registry JSON and return an immutable typed registry."""
 
     venues: dict[str, StadiumLocation] = {}
     for stadium, payload in raw.items():
@@ -154,7 +135,6 @@ def validate_stadium_coordinate_registry(
 def load_stadium_coordinate_registry(
     path: Path = DEFAULT_STADIUM_COORDINATES_PATH,
 ) -> StadiumCoordinateRegistry:
-    """Load and validate the checked-in stadium coordinate registry."""
 
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
@@ -166,7 +146,6 @@ def load_stadium_coordinate_registry(
 
 
 def haversine_mi(origin: StadiumLocation, destination: StadiumLocation) -> float:
-    """Great-circle distance in miles between two validated venues."""
 
     phi1 = math.radians(origin.latitude)
     phi2 = math.radians(destination.latitude)
@@ -264,17 +243,6 @@ def build_travel_geometry_features(
     *,
     strict_venues: bool = True,
 ) -> pd.DataFrame:
-    """Build one deterministic, schedule-only travel row per game.
-
-    Positive time-zone change means the team moves east / advances its body
-    clock; negative means west / delays it. Body-clock direction is the sign
-    of that value (``+1`` eastbound, ``0`` unchanged, ``-1`` westbound).
-
-    A team's home origin is never learned from a later row. If no same-season
-    true-home venue exists at or before the game, its current and prior travel
-    quantities remain ``NaN``. With ``strict_venues=True`` (the default), any
-    named game venue absent from the validated registry is a contract error.
-    """
 
     frame = _validate_schedules(schedules)
     named_stadiums = frame["stadium"].dropna().astype(str).str.strip()
@@ -359,7 +327,6 @@ def add_travel_geometry_features(
     *,
     strict_venues: bool = True,
 ) -> pd.DataFrame:
-    """Attach the family to caller-selected games without changing row order."""
 
     require_columns(games, ("game_id",), "travel geometry games")
     if games["game_id"].isna().any() or games["game_id"].astype(str).duplicated().any():

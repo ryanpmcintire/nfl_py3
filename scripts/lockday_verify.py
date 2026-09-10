@@ -1,37 +1,3 @@
-"""Did every registered challenger actually record this week? One answer, one line each.
-
-Why this exists
----------------
-The prospective evidence for a week is spread across FOUR append-only
-ledgers, not one, and the recorders that fill them are deliberately
-fail-open: ``nfl_ats.cli._cmd_publish_predictions`` wraps seventeen of them in
-``try/except -> {"recorded": 0, "error": ...}`` so that a broken challenger can
-never un-publish the card. That is the right trade for the card and the wrong
-one for the evidence -- a challenger that records nothing produces a run that
-still reports success, with the failure buried in one of twenty nested JSON
-keys nobody reads.
-
-This is the aggregate nobody had. It answers, per registered
-``ACTIVE_PROSPECTIVE`` challenger, one of three things:
-
-* **recorded** -- rows landed in that challenger's own ledger.
-* **skipped** -- zero rows AND a documented gate said so (no fresh market
-  capture yet, no Friday injury page yet, no pick actually changed). Correct
-  behaviour, not a defect, but it must be visible rather than assumed.
-* **PENDING_WIRING** -- the recorder has a documented standalone or dedicated
-  ledger, but the command surface has not been wired yet. This is reported as
-  a readiness gap, not as a missing recorder.
-* **MISSING** -- a wired publish recorder produced zero rows and named no gate.
-  This is the failure the file exists to catch.
-
-Run it immediately after the Tuesday lock command, and again after each
-late-week refresh pass::
-
-    uv run --no-sync python scripts/lockday_verify.py --season 2026 --week 1
-
-Exit code is 0 only when nothing is MISSING.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -83,7 +49,6 @@ from nfl_ats.tiebreaker_shade_prospective import (  # noqa: E402
 
 
 def _parquet_ledger(relative: str) -> Any:
-    """A loader for a dedicated ledger that has no module-level load helper."""
 
     def load(artifacts_root: Path) -> pd.DataFrame:
         path = artifacts_root / relative
@@ -254,14 +219,6 @@ def _week_rows(frame: pd.DataFrame, *, season: int, week: int) -> pd.DataFrame:
 
 
 def gated_skips(run_summary: dict[str, Any] | None) -> dict[str, str]:
-    """Challenger -> the gate reason its recorder reported, from a run summary.
-
-    A recorder that returns ``{"skipped": true, "reason": ...}`` did its job:
-    the market line was not captured yet, the injury page did not exist yet.
-    That is invisible in the ledgers -- zero rows look identical either way --
-    so without the run's own JSON a correct skip reads as a defect. Nested
-    dicts are walked because ``weekly-run`` embeds each step's output.
-    """
 
     reasons: dict[str, str] = {}
     if not run_summary:
@@ -286,13 +243,6 @@ def gated_skips(run_summary: dict[str, Any] | None) -> dict[str, str]:
 
 
 def broken_recorders(run_summary: dict[str, Any] | None) -> dict[str, str]:
-    """Challenger -> the error its recorder raised, from a run summary.
-
-    An exception is not a gate. ``publish-predictions``/``refresh-picks`` now
-    emit a named ``failed_recorders`` list alongside each fail-open ledger
-    result, so a recorder that threw is reported as MISSING with the error
-    rather than passed off as a documented skip.
-    """
 
     errors: dict[str, str] = {}
     if not run_summary:
@@ -317,7 +267,6 @@ def broken_recorders(run_summary: dict[str, Any] | None) -> dict[str, str]:
 
 
 def unwired_recorders(registry_entries: dict[str, Any], active: list[str]) -> dict[str, str]:
-    """Active challengers whose declared command has no recorder behind it."""
 
     unwired: dict[str, str] = {}
     for challenger_id in active:

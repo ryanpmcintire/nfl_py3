@@ -1,24 +1,3 @@
-"""Self-contained HTML/CSS chart components for the site.
-
-Every function returns an HTML fragment written against the role tokens in
-:mod:`nfl_ats.dashboard.theme`. Pages compose fragments and prepend
-``theme.stylesheet()`` once.
-
-IMPORTANT platform constraint (verified live): the sanitizer of the original
-embedded-HTML host stripped ``<svg>`` elements entirely (and inline ``on*``
-handlers), so every chart here is pure HTML/CSS -- area and line shapes are
-drawn with ``clip-path: polygon(...)``, markers and axes are positioned
-``<div>``s, and interactivity is wired from a delegated ``<script>`` (see
-:func:`cover_curve_script`). That host is retired -- the current, and only,
-consumer of this module is the static public site (no sanitizer at all) --
-but the discipline is kept anyway so this module stays safe to embed
-anywhere again: do not reintroduce SVG.
-
-Mark specs follow the dataviz method: 2px lines, >=8px markers, soft area
-fills, recessive grid, selective direct labels, a table-view twin for every
-chart, and identity never carried by color alone.
-"""
-
 from __future__ import annotations
 
 import json
@@ -29,10 +8,6 @@ from typing import Any
 
 
 def page_header(kicker: str, title: str, sub: str = "") -> str:
-    """Page title block. The 24px title size ships as the ``page-title``
-    class (sized by the host chrome) rather than an inline style, so a page
-    can hold exactly ONE inline ``font-size:24px`` -- the picks page's
-    crowned stat (see ``public_board._PAGE_CHROME``)."""
 
     sub_html = f'<p class="sub">{escape(sub)}</p>' if sub else ""
     return (
@@ -42,8 +17,6 @@ def page_header(kicker: str, title: str, sub: str = "") -> str:
 
 
 def p_plus_text(value: float) -> str:
-    """Honest P+ display: never floor 0.995+ down to "1.00" (or <=0.005 up to
-    "0.00") -- state the bound instead. Always shown adjacent to n."""
 
     if value >= 0.995:
         return ">0.99"
@@ -53,7 +26,6 @@ def p_plus_text(value: float) -> str:
 
 
 def sweep_offset_label(offset: float) -> str:
-    """One-decimal line-offset label; zero never wears a "+" sign."""
 
     text = f"{abs(offset):.1f}"
     if offset == 0:
@@ -74,7 +46,6 @@ def stat_tile(
     delta_text: str | None = None,
     delta_good: bool | None = None,
 ) -> str:
-    """Hero number with context; delta ships with a triangle glyph, not color alone."""
 
     delta_html = ""
     if delta_text is not None:
@@ -101,7 +72,6 @@ _STATUS_GLYPHS = {"good": "&#10003;", "warning": "!", "critical": "&#215;"}
 
 
 def status_line(kind: str, text: str) -> str:
-    """Status with a glyph badge + label; never color alone."""
 
     glyph = _STATUS_GLYPHS.get(kind, _STATUS_GLYPHS["warning"])
     badge = (
@@ -122,7 +92,6 @@ def empty_state(title: str, body: str) -> str:
 
 
 def probability_meter(probability: float, *, label: str, width: int = 240) -> str:
-    """A same-ramp track from 50% outward; the coin-flip line is the anchor."""
 
     clamped = min(max(probability, 0.0), 1.0)
     fill_left = min(clamped, 0.5) * 100
@@ -158,17 +127,6 @@ def _polygon(points: Sequence[tuple[float, float]]) -> str:
 
 
 def _handle_tone(probability: float) -> tuple[str, str]:
-    """(class name, fill token) for the draggable handle at ``probability``.
-
-    The fill is set INLINE (by this function, and by the matching JS in
-    :func:`cover_curve_script`) rather than through a CSS class rule --
-    ``public_board._PAGE_CHROME`` requires every ``var(...)`` it references
-    to be declared inside that same stylesheet, and ``--div-pos``/``--div-neg``/
-    ``--div-mid`` are theme.py's own tokens, not page-chrome's, so a class
-    rule referencing them there would use an undeclared variable. The class
-    name still ships (for tests and any future CSS hook); it just is not the
-    only place the colour is set.
-    """
 
     if probability > 0.5:
         return "is-pos", "var(--div-pos)"
@@ -190,30 +148,6 @@ def cover_curve(
     width: int = 540,
     plot_height: int = 140,
 ) -> str:
-    """Pick-cover probability across alternative lines, with a draggable
-    handle that rides the curve instead of a separate slider + readout.
-
-    ``points`` is ``[(line_offset, pick_probability), ...]`` sorted by
-    offset -- REAL swept model output wherever the caller has it (this
-    project's research-integrity rule: never approximate what is already
-    measured). ``anchor_probability`` is the pick's own PUBLISHED
-    probability at ``quoted_line`` -- passed in directly rather than read
-    back out of ``points``, so the fixed market marker can never drift from
-    the number the rest of the page already shows, even if ``points`` came
-    from a Gaussian-synthesized fallback (see :func:`cover_curve_script`).
-
-    Colour carries the probability: a two-tone diverging area fill split
-    exactly at the 50% coin-flip baseline (``--div-pos`` above it, the pick
-    favoured; ``--div-neg`` below it, the pick against the odds --
-    theme.py's validated diverging pair, centred on the meaningful
-    midpoint). Colour is never the only cue -- the market's own line is a
-    square marker with its own text label, the draggable handle is a circle
-    with its own live percentage, and the collapsed table below states every
-    plotted value in text. Drawn without SVG (see the module docstring):
-    area and line shapes are ``clip-path`` polygons over the plot box, exactly
-    like the retired ``sweep_curve`` this replaces. The drag handler itself
-    ships once per page as :func:`cover_curve_script`.
-    """
 
     if not points:
         return empty_state("No line data saved", "This card predates the line-sweep artifact.")
@@ -349,12 +283,6 @@ def line_journey(
     opener_label: str = "opened",
     width: int = 250,
 ) -> str:
-    """Opener, our fair line, and the predicted close on one number line.
-
-    Identity is carried by color + shape + a labeled legend row (never color
-    alone): market opener = orange square, our fair line = blue circle,
-    predicted close = blue hollow circle.
-    """
 
     values = [value for value in (opener, fair, predicted_close) if value is not None]
     if len(values) < 2:
@@ -419,7 +347,6 @@ def season_bars(
     width: int = 520,
     format_value: str = "{:.1%}",
 ) -> str:
-    """Horizontal per-season bars anchored at a reference line."""
 
     if not rows:
         return empty_state("Nothing to chart yet", "This fills in once seasons are scored.")
@@ -464,30 +391,6 @@ def season_bars(
 
 
 def cover_curve_script(payload: Mapping[str, Mapping[str, Any]]) -> str:
-    """Wire every ``.ats-cover`` widget's slider to its handle, live sentence
-    and percentage. ``payload`` is ``{game_id: {home, away, pick, pickIsHome,
-    line, [center, mean, std]}}`` -- one shared JSON blob (built by the page,
-    not this module, since it is the caller who knows each game's teams and
-    Gaussian fit).
-
-    Two probability sources at drag time, and this is which is which:
-
-    * Games whose payload carries a Gaussian (``center``/``mean``/``std`` --
-      present only when the active model's probability method has a
-      closed-form read): the SAME erf approximation
-      ``nfl_ats.spread_explorer.widget_home_cover_probability`` mirrors, and
-      the build-time check in ``public_board._assert_spread_explorer_matches_card``
-      proves reproduces the published card at the market line. Continuous,
-      so the handle reads smoothly between the real swept points.
-    * Every other game: linear interpolation across the widget's own
-      ``data-points`` (the real swept sample :func:`cover_curve` already
-      embedded to draw the curve) -- no formula, bounded by real
-      neighbouring measurements.
-
-    The FIXED market marker never uses either path -- it is drawn once, in
-    Python, from the published card's own number, and this script never
-    touches it.
-    """
 
     if not payload:
         return ""
@@ -499,15 +402,6 @@ def cover_curve_script(payload: Mapping[str, Mapping[str, Any]]) -> str:
 
 
 def _cover_curve_js() -> str:
-    """The raw drag-handler JavaScript, for embedding into a shared script tag.
-
-    Plain text only: any tag-like sequence in this script's SOURCE (even
-    inside a string or a comment) made a previous embedded-HTML host's
-    sanitizer drop the whole script element, verified live on that host.
-    That host is retired, but the discipline is kept anyway so this module
-    stays safe to embed anywhere again -- never write a less-than sign
-    followed by a letter anywhere in this file's JS.
-    """
 
     return """
 (function () {

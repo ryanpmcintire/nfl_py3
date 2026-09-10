@@ -24,16 +24,6 @@ from nfl_ats.margin import fit_margin_model
 def test_ecdf_control_arm_reproduces_production_probabilities(
     model_frame: pd.DataFrame, target: str
 ) -> None:
-    """The opt-in path never changes the frozen model unless a caller opts in.
-
-    ``margin.py`` is untouched by this module (calibration.py owns none of
-    it and does not import it). This test proves the ``method="ecdf"``
-    control arm reads the SAME production probability
-    (``MarginModel.predict``'s ``home_cover_probability``) from the SAME
-    residual draws -- so every comparison against a smoothed method in
-    ``docs/ecdf_smoothing.md`` is genuinely "smoothed vs production", not
-    "smoothed vs a drifted reimplementation".
-    """
 
     model = fit_margin_model(model_frame, target=target, model_name="ridge")  # type: ignore[arg-type]
     rows = model_frame.tail(15)
@@ -96,13 +86,6 @@ def test_survival_is_monotone_and_bounded(method: str) -> None:
 
 @pytest.mark.parametrize("method", ["gaussian", "gaussian_kde", "skew_normal"])
 def test_smoothed_methods_broadly_agree_with_ecdf_on_a_gaussian_sample(method: str) -> None:
-    """Smoothing should not be a wild departure from the ECDF it replaces.
-
-    Draws are genuinely Gaussian here (matching this project's own measured
-    near-Gaussian ATS residual, sd ~13.1), so every method should land close
-    to the analytic normal survival function -- while still being numerically
-    distinct from the raw ECDF, since the whole point is denoising it.
-    """
 
     rng = np.random.default_rng(7)
     residuals = rng.normal(loc=0.0, scale=13.1, size=800)

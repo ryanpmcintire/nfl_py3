@@ -1,112 +1,3 @@
-"""Era-weighted (half-life 8 seasons) challenger: MOD-14's selected training-recipe arm.
-
-Research chain: ``docs/era_weighting_screen.md`` (MOD-14, predeclared
-2026-08-19 before any arm's accuracy was scored). That document screened a
-predeclared seven-arm grid (one uniform baseline plus six exponential-decay/
-rolling-window candidates) on two independent instruments -- 12,500 free CFB
-games (``nfl_ats.cfb_benchmark``) and the real production NFL recipe on 2,047
-close-graded games -- varying **only** the per-training-row sample weight fed
-to the frozen ``ridge_alpha=10.0`` fit, never the ridge penalty itself (a
-different lever from MOD-06's shrinkage-toward-zero work, which this document
-does not reopen). Both instruments independently selected the same arm,
-**exponential season-decay with an 8-season half-life**:
-
-- CFB, clean-core, week-blocked, paired vs. baseline: **+0.3470 accuracy
-  points, 95% [-0.1804, +0.8633], probability_positive 0.8987**, n=8,933
-  paired games.
-- NFL, close grade, week-blocked, paired vs. baseline: **+0.6839 accuracy
-  points, 95% [-0.5416, +1.9380], probability_positive 0.8505** (week-blocked)
-  / **0.9533** (season-blocked, 95% [-0.0961, +1.4342]), n=2,047 games.
-
-Both instruments' 95% intervals contain zero. Per AGENTS.md that is the
-EXPECTED shape for a real small signal at this evaluator's ~2-point
-resolution, never grounds to decline building a no-window-cost prospective
-challenger -- neither admissible closing ground applies (no resolved wrong
-sign, no positive-control bound was run), so both reads stay
-``unresolved_below_power`` in the registry (twelve entries,
-``era_weighting_cfb_half_life_8`` / ``era_weighting_nfl_half_life_8`` among
-them). ``half_life_8`` was selected because it is the strongest-or-co-
-strongest accuracy lean on every one of six cuts measured across both
-instruments and never resolves negative on any secondary (Brier/log-loss/
-margin-error) metric anywhere in ``docs/era_weighting_screen.md`` -- unlike
-``half_life_2`` (resolved worse on NFL Brier/log-loss) and ``rolling_6``
-(resolved worse on CFB Brier/log-loss/margin MAE/RMSE). This selection-among-
-six is disclosed here, not hidden: this challenger tests ONLY the selected
-arm, not the full grid, so its own prospective read should be understood as
-confirming (or not) the grid's already-disclosed best-of-six pick, not a
-fresh blind draw.
-
-**A third, later look reverses sign at the OPENER grade -- disclosed here in
-full, not smoothed over.** ``docs/era_weighting_screen.md`` Section 8
-("Opener-grade information read", predeclared before running, measured
-2026-08-19/20, ``registry/weak_signals.json:era_weighting_nfl_half_life_8_opener``)
-re-scored the identical ``half_life_8`` vs. ``baseline`` pair on
-``docs/opener_evaluation.md``'s 1,537-paired-game 2020-2025 archive, at the
-production probability rule -- this project's actual decision-grade protocol
-(AGENTS.md "grade the decision at the opener"), not the CLOSE grade Section 6
-above used. At the opener, ``half_life_8`` leans NEGATIVE on every cut
-measured: primary probability-rule accuracy **-0.3992 pts, 95% week-blocked
-[-1.9450, +1.1921], probability_positive 0.2990** (n=1,503); secondary sign
-rule -0.6653 pts, probability_positive 0.2031; Brier improvement -0.000238
-pts (P+ 0.3646), log-loss improvement -0.000479 (P+ 0.3658) -- the OPPOSITE
-sign from both the CFB screen and this same archive's own close-grade read
-on the identical two arms (+0.1991 pts, P+ 0.5784 at close). No interval on
-either side sits entirely below/above zero, so under the binding taxonomy
-this is exactly as ``unresolved_below_power`` as the positive-leaning reads
-above -- a negative point estimate crossing zero is not evidence of harm any
-more than a positive one crossing zero was evidence of benefit, and this
-divergence does NOT refute the mechanism or close the line. What it does
-mean: this challenger's three predecessor looks (CFB, NFL close, NFL opener)
-genuinely disagree on sign, all below power, and the 2026 prospective ledger
-this module writes to is the next, independent look, not a formality on an
-already-settled question.
-
-**This module is a genuinely different challenger shape from the other
-overlay challengers in this file's neighborhood** (``coach_fade_overlay``,
-``injury_value_tilt_overlay``, ``surface_switch_tilt_overlay``, etc., which
-all transform an already-fitted card's picks post-hoc) and from
-``smooth_cdf_mapping_overlay``/``ecdf_mapping_incumbent_overlay`` (which
-re-read the SAME fitted residual sample through a different probability
-mapping, never refitting the ridge coefficients themselves). This challenger
-actually **refits** the active recipe's ridge model every week with different
-per-row sample weights -- a training-recipe-level challenger, the first of
-its kind in this file. Mirrors ``smooth_cdf_mapping_overlay``'s
-verify-reproduction-then-swap-one-thing discipline exactly: before any
-half-life-weighted probability is trusted, the SAME leak-safe training rows
-are refit with UNIFORM weights (``sample_weight=1`` for every row) and that
-refit's Gaussian-read probability is required to reproduce the active card's
-own ``home_cover_probability`` to floating-point precision
-(``atol=1e-9``) -- proof the reimplementation is fitting the identical row
-set, in the identical order, through the identical
-``nfl_ats.margin.make_margin_estimator`` pipeline the production card used,
-not a drifted reimplementation. Only then is the half-life-8-weighted refit's
-Gaussian read trusted and swapped in.
-
-**Weighting arithmetic, ported verbatim from ``scripts/era_weighting_lib.py``**
-(a script-local module built for MOD-14's screen; per this task's environment
-rules the production fitters are reused by import
-(``nfl_ats.margin.make_margin_estimator``, ``MarginModel``) and the
-sample-weight hook is copied here rather than imported from ``scripts/``,
-which is not part of the installed package and not importable from ``src/``):
-:func:`half_life_weights` and :func:`fit_weighted_ridge_margin` below are
-byte-for-byte the same functions ``scripts/era_weighting_lib.py`` defines.
-Decay is season-granularity only (no within-season decay): every training row
-from the SAME season as the week being predicted carries weight 1.0
-regardless of which week within that season it came from -- a deliberate
-simplification stated in ``docs/era_weighting_screen.md`` Section 2, not
-hidden here.
-
-Nothing here touches ``margin.py``, ``outcomes.py``, ``pool.py``, or the
-published card. ``apply_era_weighted_half_life_8_overlay`` is a pure function
-of (predictions, features); :func:`record_era_weighted_half_life_8_challenger_decisions`
-writes the reweighted arm's picks to the SEPARATE prospective challenger
-ledger, dual-tracked against the active model, at no rotation-registry window
-cost -- it mirrors
-``smooth_cdf_mapping_overlay.record_smooth_cdf_mapping_challenger_decisions``
-for the write-path guarantees (fingerprint pin, anti-backdating, append-only,
-first-write-wins).
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -155,13 +46,6 @@ _REQUIRED_PREDICTION_COLUMNS = frozenset(
 def half_life_weights(
     seasons: npt.NDArray[np.float64], predict_season: int, half_life: float
 ) -> npt.NDArray[np.float64]:
-    """Season-granularity exponential decay: weight 1.0 for the predicted season.
-
-    ``elapsed`` is clamped at zero rather than allowed to go negative -- a
-    training row can share the predicted season (earlier weeks of the same
-    season) but never postdate it, since training is already restricted to
-    strictly-earlier gamedays upstream of this function.
-    """
 
     if half_life <= 0.0:
         raise ValueError("half_life must be positive")
@@ -182,18 +66,6 @@ def fit_weighted_ridge_margin(
     random_state: int = 42,
     model_name: str = "ridge",
 ) -> MarginModel:
-    """Generic weighted mirror of ``nfl_ats.margin.fit_margin_model``.
-
-    ``sorted_frame`` must already be chronologically sorted and filtered to
-    completed, target-notna rows by the caller. ``target``/``weights`` are
-    aligned 1:1 with ``sorted_frame``'s row order.
-
-    The weight vector is routed to the Ridge step only
-    (``regressor__sample_weight``); the imputer/scaler steps of
-    ``make_margin_estimator``'s pipeline are fit unweighted, exactly as the
-    frozen production pipeline already does for every existing (unweighted)
-    arm.
-    """
 
     if len(sorted_frame) < min_rows:
         raise ValueError(f"At least {min_rows} completed games are required to fit")
@@ -242,7 +114,6 @@ def fit_weighted_ridge_margin(
 
 
 def _target_values(frame: pd.DataFrame) -> pd.Series:
-    """Mirrors ``nfl_ats.margin._target_values(frame, "market_residual")``."""
 
     return pd.to_numeric(frame["ats_margin"], errors="coerce")
 
@@ -250,11 +121,6 @@ def _target_values(frame: pd.DataFrame) -> pd.Series:
 def _leak_safe_training_frame(
     features: pd.DataFrame, *, season: int, week: int
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Mirrors ``nfl_ats.outcomes._target_and_models_for_week``'s target/cutoff
-    logic exactly: the target week's games, and every strictly-earlier
-    completed regular-season row as the training pool (not yet sorted or
-    target-filtered -- that happens in :func:`_prepare_sorted_training`,
-    matching ``fit_margin_model``'s own internal order)."""
 
     frame = features.copy()
     frame["gameday"] = pd.to_datetime(frame["gameday"], errors="raise")
@@ -268,10 +134,6 @@ def _leak_safe_training_frame(
 
 
 def _prepare_sorted_training(training: pd.DataFrame) -> pd.DataFrame:
-    """Mirrors ``nfl_ats.margin.fit_margin_model``'s own internal prep
-    (target-notna filter, chronological sort, reset index) so the weighted
-    fit sees the identical row set/order the production (unweighted) fit
-    used."""
 
     prepared = training.loc[_target_values(training).notna()].copy()
     prepared["gameday"] = pd.to_datetime(prepared["gameday"], errors="raise")
@@ -281,8 +143,6 @@ def _prepare_sorted_training(training: pd.DataFrame) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class EraWeightedFlip:
-    """One game whose forced pick moved sides under the half-life-8 refit."""
-
     game_id: str
     matchup: str
     from_side: str
@@ -293,15 +153,6 @@ class EraWeightedFlip:
 
 @dataclass(frozen=True)
 class EraWeightedResult:
-    """The overlay's effect on one or more weeks' cards.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on every row (the half-life-8 read replaces
-    the baseline read for every game, not only flipped ones) -- every other
-    column stays byte-identical, mirroring
-    ``smooth_cdf_mapping_overlay.SmoothCdfMappingResult``.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[EraWeightedFlip, ...]
     enabled: bool
@@ -323,24 +174,6 @@ def apply_era_weighted_half_life_8_overlay(
     card_refit: CardRefit | None = None,
     enabled: bool = True,
 ) -> EraWeightedResult:
-    """Refit the active recipe with half-life-8 season-decay sample weights.
-
-    ``predictions`` may span more than one (season, week) group; each group's
-    training pool is every strictly-earlier completed regular-season row
-    (the same leak-safe cutoff ``score_outcome_week`` uses). For each group:
-
-    1. Refit with UNIFORM weights (``sample_weight=1``) and require the
-       Gaussian read off that refit to reproduce the supplied card's
-       ``home_cover_probability`` to floating-point precision
-       (``atol=1e-9``) -- proof this is fitting the identical leak-safe row
-       set the active card was built from, not a drifted reimplementation.
-       Raises :class:`~nfl_ats.data.DataContractError` rather than silently
-       comparing against a moved target if the feature table or
-       configuration has changed underneath it.
-    2. Only then, refit with :func:`half_life_weights` (half-life 8 seasons)
-       and replace ``home_cover_probability`` with THAT refit's Gaussian
-       read.
-    """
 
     missing = sorted(_REQUIRED_PREDICTION_COLUMNS.difference(predictions.columns))
     if missing:
@@ -471,13 +304,6 @@ def apply_era_weighted_half_life_8_overlay(
 
 
 def overlay_disclosure_note(result: EraWeightedResult) -> str:
-    """Plain-language provenance sentence, mirroring
-    ``smooth_cdf_mapping_overlay.overlay_disclosure_note``.
-
-    Empty when the overlay is off or changed no picks this week. Not
-    currently surfaced on the published card -- this challenger is dual-
-    tracked only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -507,20 +333,6 @@ def record_era_weighted_half_life_8_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the half-life-8 refit's picks to the prospective challenger ledger.
-
-    Mirrors ``smooth_cdf_mapping_overlay.record_smooth_cdf_mapping_challenger_decisions``
-    exactly for the write-path guarantees: this is not a pre-generated
-    ``margin-predict`` artifact under its own configuration fingerprint --
-    its "model" IS the active model's own recipe, refit weekly with
-    different sample weights -- so it reads the active model's own
-    synchronized weekly forecast rather than searching
-    ``artifacts/margin_predictions/``, and it refuses to record if the
-    active model's live fingerprint no longer matches the snapshot this
-    challenger was registered against (a promotion under this challenger's
-    feet must not silently convert into "prospective evidence" for a
-    different base model).
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

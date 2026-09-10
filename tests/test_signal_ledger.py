@@ -284,9 +284,6 @@ def test_every_css_variable_the_ledger_chrome_references_is_defined() -> None:
 
 
 def test_filter_chip_groups_match_the_owner_spec_counts() -> None:
-    """Status (5 incl. All -- no dead 'Candidates' chip), Subject (11 incl.
-    All + Uncategorised), Evidence (5 incl. All): the owner's chip-count
-    budget after the 2026-08-26 fix dropped the undeliverable status."""
 
     body, _script = build_signal_ledger_body(_edge_case_registry())
     status_group = re.search(r'<span class="lbl">Status</span>(.*?)</div>', body, re.DOTALL)
@@ -299,9 +296,6 @@ def test_filter_chip_groups_match_the_owner_spec_counts() -> None:
 
 
 def test_candidate_status_and_chip_were_dropped_not_shipped_empty() -> None:
-    """No code in this project distinguishes a 'candidate' from a merely
-    recorded row, so the chip was removed entirely rather than rendered
-    permanently empty (owner, 2026-08-26)."""
 
     body, _script = build_signal_ledger_body(_edge_case_registry())
     assert 'data-value="candidate"' not in body
@@ -312,11 +306,6 @@ def test_candidate_status_and_chip_were_dropped_not_shipped_empty() -> None:
 
 
 def test_on_the_card_is_derived_from_the_policy_composition_mapping() -> None:
-    """A row whose name is one of
-    ``four_overlay_composition.MEMBER_REGISTRY_EVIDENCE``'s registry names
-    resolves to ``on_the_card`` -- the fix for the 2026-08-26 report that
-    this chip matched zero rows. All four names (three members, with
-    division-revenge's two grades both counted) must resolve."""
 
     names = sorted(on_the_card_registry_names())
     assert names == [
@@ -351,10 +340,6 @@ def test_on_the_card_is_derived_from_the_policy_composition_mapping() -> None:
 
 
 def test_closed_and_control_status_outrank_on_the_card_membership() -> None:
-    """A definitive registry verdict (or a declared control arm) is a more
-    important fact than "shares a name with a live policy member" -- even
-    though no current row actually has both, the precedence must hold if one
-    ever does."""
 
     registry = _registry(
         hc_year_one_fade=_signal_payload(

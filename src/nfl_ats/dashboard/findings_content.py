@@ -1,24 +1,3 @@
-"""The content model behind "What we've learned" -- every finding, in plain words.
-
-This module is the *text*; :mod:`nfl_ats.public_board` is the layout. Nothing
-here imports a web framework and nothing here formats HTML, so the wording can
-be reviewed, diffed, and argued about on its own.
-
-The rules the wording follows, because the owner asked for them explicitly:
-
-- No jargon survives contact with this page. "EPA" becomes "how many points a
-  play was worth on average"; "Brier score" becomes "how often the picks
-  actually landed"; "walk-forward" becomes "scored only on games it had never
-  seen". A term is allowed only when the sentence that uses it also explains it
-  in football terms.
-- Every claim traces to a committed record (``source``). No number is invented,
-  softened, or rounded in our favour.
-- Negative results are stated proudly. They are the most trustworthy part of
-  the record, and there are more of them than positives.
-- Untested leads are labelled untested, every time, even when they are
-  exciting.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -38,46 +17,12 @@ ChipKind = Literal["good", "warning", "muted", "plain"]
 
 
 def _humanize_probability_positive(value: float) -> str:
-    """Plain-English rendering of a weak-signal registry's
-    ``probability_positive`` -- the chance the effect is genuinely
-    positive, not a certainty about its SIZE, and never "contains zero" --
-    see AGENTS.md's closing-grounds taxonomy. Replaces the registry's own
-    "P+ 0.79" shorthand, which is machine notation, not football (owner
-    mandate, 2026-09-05: this page's own rule above already says "no jargon
-    survives contact with this page"; the "P+" leftovers below were a
-    violation of that rule, not an exception to it)."""
 
     return f"{value:.0%} likely real"
 
 
 @dataclass(frozen=True)
 class HeadlineNumbers:
-    """The active model's grades, in ONE place.
-
-    These used to be typed directly into the prose below, which is exactly how
-    they went stale: promoting ``weak_stack`` over ``player`` on 2026-08-18
-    changed every one of them and the page kept quoting the old model for
-    several commits. Anything that would have to change when the active model
-    changes belongs here and nowhere else.
-
-    Update these together with the active model, from the artifact named in
-    ``source``.
-
-    Guard, stated accurately (corrected 2026-08-18): the real test is
-    ``tests/test_findings_headline.py::test_active_model_grades_are_never_typed_into_the_prose``.
-    It asserts that the two literals ``HEADLINE.opener_accuracy`` and
-    ``HEADLINE.close_accuracy`` never appear as typed strings in the prose --
-    it does NOT check "any bare percentage", and dozens of other bare
-    percentages in ``FINDINGS`` carry only a document-level ``source``. This
-    docstring previously cited ``tests/test_findings_content.py``, which has
-    never existed; do not restore that claim.
-
-    Every field here must come from the run whose
-    ``active_model_config.feature_profile`` matches the active model. Mixing a
-    point estimate from one run with an interval from another is how
-    ``season_low``/``season_high`` went wrong below.
-    """
-
     opener_accuracy: float
     close_accuracy: float
     protocol_opener_accuracy: float
@@ -128,7 +73,6 @@ class HeadlineNumbers:
 
     @property
     def opener_close_gap(self) -> str:
-        """The production-rule opener-minus-close gap, in points."""
 
         return f"{self.opener_accuracy - self.close_accuracy:.2f}"
 
@@ -142,7 +86,6 @@ class HeadlineNumbers:
 
     @property
     def extra_correct_per_season(self) -> int:
-        """Extra correct picks over a coin flip across a 285-game pool season."""
 
         return round((self.opener_accuracy - 50.0) / 100.0 * 285)
 
@@ -271,20 +214,6 @@ PINNED_NUMBER_REGION_END = "End of the pinned-number region"
 
 
 def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
-    """The picks-page ceiling-ladder rungs, in FIXED order, as plain text.
-
-    2026-08-23 consolidation law (owner): the index page's DEFAULT view
-    carries exactly two accuracy statistics -- the ``≈55%`` planning hero
-    and the measured chain history -- so every OTHER accuracy percentage
-    lives inside the ONE collapsed ladder ``<details>``. These rungs ARE
-    that ladder's entire content, one sentence per rung, in this order and
-    no others; :mod:`nfl_ats.public_board` only wraps them in ``<p>`` tags.
-
-    Planning numbers use the named constants above; current baseline grades
-    live on The Model page, and the played-chain rung appears only
-    when a chain artifact was actually read (``played_chain_accuracy`` is
-    not ``None``) -- a missing artifact omits the rung rather than guessing.
-    """
 
     played = f"{played_chain_accuracy:.1%}" if played_chain_accuracy is not None else None
     rungs = [
@@ -328,22 +257,6 @@ def ladder_rungs(played_chain_accuracy: float | None) -> tuple[str, ...]:
 
 @dataclass(frozen=True)
 class Finding:
-    """One question a person might ask, and the honest answer to it.
-
-    Curation metadata, added so the page can never silently go stale again
-    (see :mod:`nfl_ats.findings_registry`): every finding either names the
-    live registry entries its numbers were verified against
-    (``registry_keys``, with a parallel ``registry_fingerprints`` snapshot
-    taken on ``curated_as_of``) or declares itself ``evergreen`` -- a
-    methodology explainer with no single number that could go stale. A build
-    fails loudly, naming the finding and the key, the moment either drifts:
-    a key that stops existing, or one whose recorded content moves out from
-    under the prose. Fingerprints are opaque on purpose -- they are never
-    hand-computed; see ``scratchpad`` tooling notes in
-    ``docs/findings_generation.md`` for how to regenerate them after a real
-    correction.
-    """
-
     question: str
     verdict: Verdict
     plain_answer: str
@@ -357,27 +270,6 @@ class Finding:
 
 @dataclass(frozen=True)
 class LeadBlurb:
-    """A hand-picked plain-English one-liner for one of the highest-ranked
-    entries in findings.html's "What we're watching" section (the open,
-    ``unresolved_below_power`` leads auto-rendered straight from
-    ``registry/weak_signals.json`` -- see ``nfl_ats.findings_registry.top_open_leads``).
-
-    Most leads need no curation at all: the registry's own ``description``
-    field is already a written sentence, if a research-toned one, and
-    rendering it verbatim is the whole point of that section (zero prose to
-    write, zero key to wire -- see ``docs/site_content_pipeline.md``). This
-    exists only for the small number of leads worth a hand-written, plainer
-    sentence instead.
-
-    It carries the EXACT SAME freshness contract as a curated ``Finding``,
-    and is validated by the SAME function
-    (``nfl_ats.findings_registry.validate_curation``, which only reads
-    ``question``/``evergreen``/``registry_keys``/``registry_fingerprints`` off
-    whatever it is given -- seeing this dataclass as `Finding`-shaped is the
-    intended reuse, not a workaround). Never hand-curate a lead without going
-    through that same validation call in ``public_board.render_findings_page``.
-    """
-
     weak_signal_name: str
     text: str
     curated_as_of: str
@@ -390,15 +282,12 @@ class LeadBlurb:
 
     @property
     def question(self) -> str:
-        """Read only by ``validate_curation``'s error messages -- never rendered."""
 
         return f"lead blurb for weak_signal:{self.weak_signal_name}"
 
 
 @dataclass(frozen=True)
 class VerdictGroup:
-    """A section of the page: one verdict, its framing, and its chip."""
-
     verdict: Verdict
     kicker: str
     title: str
@@ -410,8 +299,6 @@ class VerdictGroup:
 
 @dataclass(frozen=True)
 class HeadlineTile:
-    """One hero statistic."""
-
     kicker: str
     value: str
     context: str
@@ -421,8 +308,6 @@ class HeadlineTile:
 
 @dataclass(frozen=True)
 class HonestyRule:
-    """One rule we hold ourselves to when reporting a number."""
-
     title: str
     body: str
 
@@ -437,7 +322,6 @@ HERO_SUB = (
 
 
 def baseline_hero_tiles(value: str, context: str) -> tuple[HeadlineTile, ...]:
-    """Render the validated board baseline without keeping a second measurement."""
     return (
         HeadlineTile(kicker="Model baseline at the pool's line", value=value, context=context),
         HeadlineTile(
@@ -1649,6 +1533,5 @@ LEAD_BLURBS: tuple[LeadBlurb, ...] = (
 
 
 def findings_for(verdict: Verdict) -> tuple[Finding, ...]:
-    """Every finding carrying ``verdict``, in declaration order."""
 
     return tuple(finding for finding in FINDINGS if finding.verdict == verdict)

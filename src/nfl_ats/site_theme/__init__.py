@@ -1,10 +1,3 @@
-"""Alternate "Gridiron Observatory" skin assets for the generated public site.
-
-Nothing here changes default rendering: the integrator lane injects
-:func:`render_theme_toggle_head` output and ships the two asset files; until
-then this package is inert. String constants only -- no I/O at import time.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -24,7 +17,6 @@ _JS_NAME = "toggle.js"
 
 
 def render_theme_toggle_head(asset_prefix: str = ".") -> str:
-    """The exact snippets the integrator injects: link + deferred script + mount."""
 
     return (
         f'<link rel="stylesheet" href="{asset_prefix}/{_CSS_NAME}">\n'

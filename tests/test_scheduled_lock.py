@@ -135,7 +135,9 @@ def test_scheduler_waits_for_successful_same_day_opener() -> None:
     assert not capture_scheduler.prerequisites_satisfied(job, start, state)
 
     key = f"odds_tue_open@{start.date().isoformat()}"
+    board_key = f"splash_board_tue@{start.date().isoformat()}"
     state["runs"][key] = {"status": "FAIL(1)"}
+    state["runs"][board_key] = {"status": "OK"}
     assert not capture_scheduler.prerequisites_satisfied(job, start, state)
     state["runs"][key] = {"status": "OK"}
     assert capture_scheduler.prerequisites_satisfied(job, start, state)
@@ -155,17 +157,17 @@ def test_failed_opener_becomes_durable_missed_alarm_after_grace(
 
     record = state["runs"][f"weekly_lock@{start.date().isoformat()}"]
     assert record["status"] == "MISSED"
-    assert record["blocked_by"] == ["odds_tue_open"]
-    assert "prerequisites not successful: odds_tue_open" in (tmp_path / "scheduler.log").read_text(
-        encoding="utf-8"
-    )
+    assert record["blocked_by"] == ["odds_tue_open", "splash_board_tue"]
+    assert "prerequisites not successful: odds_tue_open, splash_board_tue" in (
+        tmp_path / "scheduler.log"
+    ).read_text(encoding="utf-8")
 
 
 def test_real_job_has_no_backdate_flags_and_closes_by_1420() -> None:
     job = {job.name: job for job in capture_scheduler.SCHEDULE}["weekly_lock"]
 
     assert (job.day, job.at, job.grace_minutes) == ("tue", "12:20", 120)
-    assert job.requires == ("odds_tue_open",)
+    assert job.requires == ("odds_tue_open", "splash_board_tue")
     assert not job.catch_up
     assert "--season" not in job.command
     assert "--week" not in job.command
@@ -173,10 +175,6 @@ def test_real_job_has_no_backdate_flags_and_closes_by_1420() -> None:
 
 
 def test_lock_scripts_weekly_run_argv_parses_against_the_real_parser() -> None:
-    """2026-09-07: the scheduled lock spawns `nfl-ats weekly-run ...` from a
-    hard-coded argv that no scheduled run had ever exercised (the refresh
-    jobs' identical gap took down every Sunday pass the day before). Pin
-    that the argv the script builds is accepted by the real parser."""
     import subprocess
     from unittest import mock
 
@@ -217,10 +215,6 @@ error: the reason the lock actually failed
 def test_failed_weekly_run_persists_its_whole_output_and_names_the_file(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """2026-09-08: the lock aborted and the record kept was 200 characters of a
-    step-4 warning. The child's stderr had been cut to its last 500 characters
-    here, then the scheduler kept the first 200 of the JSON line carrying it,
-    so the reason was gone twice over. Everything must now land on disk."""
     import subprocess
     from unittest import mock
 
@@ -257,9 +251,6 @@ def test_failed_weekly_run_persists_its_whole_output_and_names_the_file(
 def test_failed_lock_reports_the_log_path_inside_the_scheduler_200_char_cut(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """capture_scheduler records only the first 200 characters of this line, so
-    the path has to come before the message, and a failure raised before
-    weekly-run ever starts still has to leave a full traceback behind."""
 
     import scripts.scheduled_weekly_lock as lock_script
 
@@ -288,7 +279,6 @@ def test_failed_lock_reports_the_log_path_inside_the_scheduler_200_char_cut(
 
 
 def test_override_locks_a_named_week_on_any_day() -> None:
-    """Owner, 2026-09-09: a missed lock is recorded late, not preserved."""
     wednesday = datetime.fromisoformat("2026-09-09T16:30:00-04:00")
     with pytest.raises(DataContractError, match="Pass --season/--week"):
         resolve_lock_target(schedule(), now=wednesday)

@@ -1,5 +1,3 @@
-"""Snapshot ingest commands for every raw data source."""
-
 from __future__ import annotations
 
 import argparse
@@ -26,7 +24,6 @@ from nfl_ats.snapshots import describe_snapshot
 
 
 def _cmd_ingest_player_arrests(args: argparse.Namespace) -> None:
-    """Refresh the production arrest snapshot through the audited ingester."""
 
     _repo_root_on_path()
     from scripts.ingest_player_arrests import (
@@ -234,7 +231,6 @@ def register_player_arrests(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the player-arrests ingest command."""
 
     arrests_ingest = subparsers.add_parser(
         "ingest-player-arrests",
@@ -250,7 +246,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the nflverse and role-action ingest commands."""
 
     ingest = subparsers.add_parser("ingest", help="download an immutable nflverse snapshot")
     _add_season_range_args(ingest, 2009, current_year)

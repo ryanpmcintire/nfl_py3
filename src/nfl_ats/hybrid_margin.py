@@ -1,5 +1,3 @@
-"""Predeclared prior-only Brier fits for key-distance mixtures (lane L)."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -23,8 +21,6 @@ def size_cell(lines: npt.ArrayLike) -> npt.NDArray[np.int64]:
 
 @dataclass(frozen=True)
 class HybridWeights:
-    """Fitted grid parameters; caller supplies only completed prior OOS pairs."""
-
     global_pair: tuple[float, float]
     size_pairs: tuple[tuple[float, float], ...] = ()
     history_rows: int = 0
@@ -71,11 +67,6 @@ def fit_hybrid_weights(
 def predict_hybrid_margin(
     history: pd.DataFrame, targets: pd.DataFrame, *, method: str = "hybrid_key_distance"
 ) -> pd.DataFrame:
-    """Fit a whole week before its first game, with a one-day completion allowance.
-
-    p_lattice and p_smooth must be OOS forecasts made before each row's outcome.
-    The component histories are constructed separately by the experiment driver.
-    """
     prior = history.copy()
     prior["gameday"] = pd.to_datetime(prior.gameday)
     if prior.game_id.duplicated().any():

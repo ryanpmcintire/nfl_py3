@@ -1,23 +1,3 @@
-"""Surface-switch tilt overlay (docs/surface_switch_tilt_overlay.md).
-
-Four things are load-bearing here, mirroring
-``tests/test_division_revenge_tilt_overlay.py``'s structure and AGENTS.md's
-"add a leakage regression test for every new feature family" spirit:
-
-1. :func:`surface_switch_flag_by_game`'s flag is derived from data, not
-   hand-typed, reads only structural surface columns (never an outcome
-   column -- it is not even in the required set), and respects the frozen
-   surface-normalization sets ported verbatim from
-   ``scripts/nfl_weather_battery_screen.py``.
-2. :func:`apply_surface_switch_tilt_overlay` flips ONLY an AWAY pick on the
-   flagged side (the deliberately asymmetric design -- a flagged HOME pick
-   is left untouched), respects the REG-only gate, and is parameter-free.
-3. :func:`overlay_disclosure_note` states the flip count and matchups.
-4. :func:`record_surface_switch_tilt_challenger_decisions` writes the
-   overlay's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -121,7 +101,6 @@ def test_surface_switch_flag_is_false_when_surfaces_match() -> None:
 
 
 def test_surface_switch_flag_is_false_without_a_turf_venue() -> None:
-    """A grass-modal visitor playing on grass is not a switch."""
 
     flags = surface_switch_flag_by_game(_surface_schedule()).set_index("game_id")
     assert bool(flags.loc["2026_04_GRASSHOST_GRASSAWAY", "surface_switch_flag"]) is False
@@ -143,14 +122,6 @@ def test_surface_switch_flag_requires_its_schedule_columns() -> None:
 
 
 def test_surface_switch_flag_never_reads_outcome_columns() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    ``surface_switch_flag_by_game`` does not even require/read
-    ``result``/``spread_line`` -- adding them (with arbitrary values) and
-    mutating them must never change the already-computed flags, proving the
-    derivation is purely structural (surface/team/season), never outcome-
-    based.
-    """
 
     schedule = _surface_schedule()
     schedule["result"] = 0.0
@@ -166,8 +137,6 @@ def test_surface_switch_flag_never_reads_outcome_columns() -> None:
 
 
 def test_surface_switch_flag_is_leak_safe_across_the_season_boundary() -> None:
-    """A future season's surface data (even for the same team) must never
-    change an earlier season's already-computed flags."""
 
     schedule = _surface_schedule()
     baseline = surface_switch_flag_by_game(schedule)
@@ -204,9 +173,6 @@ def test_overlay_flips_an_away_pick_on_the_flagged_side() -> None:
 
 
 def test_overlay_does_not_flip_a_home_pick_even_when_flagged() -> None:
-    """The deliberately asymmetric design: a flagged game where the model
-    already picks HOME is left untouched -- there is no measured direction
-    to fade INTO the flagged side (the grass-venue mirror is null)."""
 
     result = apply_surface_switch_tilt_overlay(_predictions(), _surface_schedule())
     assert all(flip.game_id != "2026_07_TURFHOST4_GRASSAWAY2" for flip in result.flips)
@@ -235,8 +201,6 @@ def test_overlay_does_not_flip_without_a_turf_venue() -> None:
 
 
 def test_overlay_leaves_postseason_games_untouched() -> None:
-    """Same shape as the flipped clean case, but POST season -- the REG-only
-    gate blocks it."""
 
     result = apply_surface_switch_tilt_overlay(_predictions(), _surface_schedule())
     assert all(flip.game_id != "2026_20_POSTHOST_GRASSAWAY" for flip in result.flips)
@@ -266,8 +230,6 @@ def test_overlay_disabled_is_a_no_op() -> None:
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows() -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical -- the pick-level design's whole point."""
 
     predictions = _predictions()
     result = apply_surface_switch_tilt_overlay(predictions, _surface_schedule())
@@ -304,9 +266,6 @@ def test_overlay_requires_its_prediction_columns() -> None:
 
 
 def test_overlay_survives_predictions_that_already_carry_the_flag_column() -> None:
-    """The exact production crash shape: recommendations.csv now contains
-    ``surface_switch_flag``, so the old bare left-merge suffixed both copies
-    to _x/_y and reading merged["surface_switch_flag"] raised KeyError."""
 
     predictions = _predictions()
     predictions["surface_switch_flag"] = False
@@ -324,8 +283,6 @@ def test_overlay_survives_predictions_that_already_carry_the_flag_column() -> No
 
 
 def test_overlay_ignores_a_misleading_preexisting_flag_column() -> None:
-    """A foreign same-named column must not drive flips: flags the unflagged
-    game, clears the flagged one -- the schedules derivation wins over both."""
 
     predictions = _predictions()
     predictions["surface_switch_flag"] = [
@@ -346,9 +303,6 @@ def test_overlay_ignores_a_misleading_preexisting_flag_column() -> None:
 def test_record_surface_switch_challenger_survives_a_card_carrying_the_flag_column(
     tmp_path: Path,
 ) -> None:
-    """Call site (publish path): cli.py's challenger recorder reads the SAME
-    recommendations.csv, so the recorded arm must work with the flag column
-    present exactly as it does without it."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -520,7 +474,6 @@ def test_record_surface_switch_challenger_refuses_an_inactive_registration(
 
 
 def test_surface_switch_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

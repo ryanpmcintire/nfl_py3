@@ -1,13 +1,3 @@
-"""Tests for :mod:`nfl_ats.board_content`'s cover-curve / spread-explorer
-fallback (2026-08-31 full-site conversion, item 4: "keep the spread
-explorer's exact published-card math and guard").
-
-``_build_cover_curve`` prefers REAL swept ``line_sweep`` rows wherever they
-exist; these tests exercise the Gaussian closed-form fallback path used when
-they do not, and the build-time guard that must fire before that fallback is
-ever trusted.
-"""
-
 from __future__ import annotations
 
 import json
@@ -312,12 +302,6 @@ def test_load_spread_explorer_params_skips_empty_predictions() -> None:
 
 
 def test_assert_spread_explorer_matches_card_guard_fires_on_mismatch() -> None:
-    """The REQUIRED build-time guard (preserved verbatim from
-    ``public_board._assert_spread_explorer_matches_card`` via the public
-    wrapper) must raise when the widget formula disagrees with the
-    published card -- proving board_content.py cannot silently trust a
-    Gaussian read that would show a different number than the one already
-    on the page."""
 
     params = {"2026_01_TEST": _params()}
     predictions = pd.DataFrame({"game_id": ["2026_01_TEST"], "home_cover_probability": [0.999]})
@@ -338,10 +322,6 @@ def test_assert_spread_explorer_matches_card_guard_passes_on_match() -> None:
 
 
 def test_guard_fires_for_any_game_in_a_multi_game_week() -> None:
-    """2026-08-31 owner redirect: the line-offset adjuster now covers EVERY
-    game's deep dive, not only the Best Pick's -- so the guard must catch a
-    mismatch on ANY game in the week, not just the first/only one a
-    single-game test would exercise."""
 
     good_game_params = _params("2026_01_GOOD")
     bad_game_params = SpreadExplorerGameParams(
@@ -369,10 +349,6 @@ def test_guard_fires_for_any_game_in_a_multi_game_week() -> None:
 
 
 def test_cover_curve_fallback_offsets_match_sweep_half_width_and_step() -> None:
-    """Regression guard: the fallback grid must span the SAME domain as a
-    real sweep (``SWEEP_HALF_WIDTH``), never wider or coarser -- otherwise a
-    chart built from the fallback would look different from one built from
-    real rows for no real reason."""
 
     offsets = board_content._COVER_CURVE_FALLBACK_OFFSETS
     assert math.isclose(min(offsets), -board_content.SWEEP_HALF_WIDTH)
@@ -381,10 +357,6 @@ def test_cover_curve_fallback_offsets_match_sweep_half_width_and_step() -> None:
 
 
 def test_load_source_policy_view_absent_block_is_not_recorded() -> None:
-    """Every forecast in this repo today has no ``source_policy`` key at all
-    (measured 2026-09-04: ``publishing.py`` computes the report but only
-    returns it from ``publish_active_predictions``'s result dict) -- this
-    must degrade to the explicit not-recorded view, never raise."""
 
     view = board_content._load_source_policy_view({"season": 2026, "week": 1}, None)
     assert view.recorded is False
@@ -395,7 +367,6 @@ def test_load_source_policy_view_absent_block_is_not_recorded() -> None:
 
 
 def test_load_source_policy_view_reads_full_block() -> None:
-    """Shaped exactly as ``SourcePolicyReport.to_metadata()`` writes it."""
 
     metadata = {
         "source_policy": {
@@ -438,9 +409,6 @@ def test_load_source_policy_view_reads_full_block() -> None:
 
 
 def test_load_source_policy_view_malformed_state_falls_back_to_not_recorded() -> None:
-    """A block IS present (``recorded`` stays ``True``, matching what's
-    literally on disk) but its ``state`` is not one of the three real
-    values -- never invent or display an unknown card state."""
 
     metadata = {"source_policy": {"state": "not-a-real-state", "sources": {}}}
     view = board_content._load_source_policy_view(metadata, None)
@@ -451,11 +419,6 @@ def test_load_source_policy_view_malformed_state_falls_back_to_not_recorded() ->
 def test_load_source_policy_view_prefers_the_persisted_file_over_metadata(
     tmp_path: Path,
 ) -> None:
-    """ENG-34 follow-up: ``publishing.py`` now persists the block as
-    ``source_policy.json`` beside the forecast artifact (additive; the
-    forecast's own ``metadata.json`` is never rewritten). That file must win
-    over a ``metadata["source_policy"]`` key when both are present, and be
-    read at all when ``metadata`` itself has no such key."""
 
     (tmp_path / "source_policy.json").write_text(
         json.dumps(
@@ -495,10 +458,6 @@ def test_load_source_policy_view_prefers_the_persisted_file_over_metadata(
 
 
 def test_load_source_policy_view_without_data_root_stays_not_recorded(tmp_path: Path) -> None:
-    """Every existing caller that omits ``data_root``/``artifacts_root``
-    (both keyword-only, both default ``None``) must see EXACTLY the prior
-    behaviour -- this is the regression guard for the additive signature
-    change."""
 
     empty_dir = tmp_path / "no_file_here"
     empty_dir.mkdir()
@@ -512,10 +471,6 @@ def test_load_source_policy_view_computes_live_report_when_nothing_persisted(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Nothing persisted (no ``source_policy.json``, no metadata key) but a
-    ``data_root``/``artifacts_root`` is supplied: a REAL live report, not
-    the placeholder -- every source in this fixture's empty tree is
-    "absent", which every non-fail-closed source's policy degrades to."""
 
     monkeypatch.delenv("SPORTRADAR_API_KEY", raising=False)
     data_root = tmp_path / "data"
@@ -540,9 +495,6 @@ def test_load_source_policy_view_computes_live_report_when_nothing_persisted(
 
 
 def test_load_source_policy_view_prefers_persisted_over_live(tmp_path: Path) -> None:
-    """A real persisted block still wins even when a data_root/artifacts_root
-    is also supplied -- the live computation is a fallback, never a
-    replacement for the real recorded state."""
 
     (tmp_path / "source_policy.json").write_text(
         json.dumps({"state": "complete", "sources": {}, "unobserved": []}), encoding="utf-8"
@@ -574,8 +526,6 @@ def test_load_pick_explanations_returns_empty_on_malformed_json(tmp_path: Path) 
 
 
 def test_load_pick_explanations_skips_a_row_with_a_malformed_nested_field(tmp_path: Path) -> None:
-    """A row whose nested component is the WRONG TYPE (a string where a
-    mapping is expected) must be skipped, not crash the whole page build."""
 
     (tmp_path / "explanations.json").write_text(
         json.dumps(
@@ -663,8 +613,6 @@ def test_load_tiebreaker_view_reads_the_persisted_sidecar(tmp_path: Path) -> Non
 
 
 def test_load_tiebreaker_view_falls_back_to_a_metadata_block(tmp_path: Path) -> None:
-    """No sidecar file at all -- a future writer that instead adds a
-    ``tiebreaker`` block to ``metadata.json`` must still be read."""
 
     metadata = {
         "active_model_id": "test-model",
@@ -724,8 +672,6 @@ def test_load_tiebreaker_view_prefers_the_persisted_file_over_metadata(tmp_path:
 def test_load_tiebreaker_view_incomplete_block_falls_back_to_not_published(
     tmp_path: Path,
 ) -> None:
-    """A block missing a required field (here: no ``blended_total``) must
-    degrade to not-published rather than render a half-filled guess."""
 
     (tmp_path / "tiebreaker.json").write_text(
         json.dumps({"home": "KC", "away": "DEN", "market_total": 43.0}), encoding="utf-8"
@@ -857,9 +803,6 @@ def _week1_kickoffs() -> pd.DataFrame:
 
 
 def test_pick_lock_label_applies_min_of_kickoff_and_sunday_four_pm() -> None:
-    """Owner rule (2026-08-20, re-confirmed 2026-09-01): a pick locks at the
-    earlier of its own kickoff and Sunday 4:00 PM ET, so the Sunday late
-    window, the night game and Monday all lock at 4:00 PM ET."""
     from nfl_ats.board_content import _week_sunday_lock, pick_lock_label
 
     frame = _week1_kickoffs()
@@ -943,15 +886,6 @@ def test_scoreboard_pairs_new_played_policy_with_retired_union() -> None:
 
 
 def test_injury_report_state_covers_every_sentence_injury_pick_note_can_produce() -> None:
-    """The chip is keyed off the sentence, so a reworded sentence must not
-    silently fall through to NOT RECORDED.
-
-    Every branch of ``injury_pick_note`` is driven here from real-shaped
-    inputs (never from the constants), and each one must land on a specific
-    state -- so rewriting a sentence without updating ``_INJURY_STATES``
-    fails here rather than shipping a grey "NOT RECORDED" chip beside a
-    sentence that plainly says otherwise.
-    """
 
     from nfl_ats.board_content import (
         SourcePolicyRow,
@@ -997,8 +931,6 @@ def test_injury_report_state_covers_every_sentence_injury_pick_note_can_produce(
 
 
 def test_board_content_injury_chip_reads_off_its_own_sentence() -> None:
-    """``injury_note`` stays the single source: both chip properties derive
-    from it, so the page can never show a state the sentence denies."""
 
     from dataclasses import replace
 
@@ -1086,8 +1018,6 @@ def test_build_rival_rules_counts_disagreements_and_names_the_contested_game() -
 
 
 def test_build_rival_rules_is_dormant_until_the_week_has_rows() -> None:
-    """Before the week's lock both ledgers are empty by design, and a week
-    with no rival rows must not render an empty table."""
 
     from nfl_ats.board_content import RIVAL_RULES_NONE_RECORDED
 
@@ -1102,10 +1032,6 @@ def test_build_rival_rules_is_dormant_until_the_week_has_rows() -> None:
 
 
 def test_build_rival_rules_pairs_the_two_ledgers_not_the_live_forecast() -> None:
-    """A late-week refresh can move a played pick after the lock (measured
-    2026-09-08: two of sixteen had moved). The panel keeps comparing the rows
-    that were written down together, so a rival row with no played
-    counterpart is simply not paired rather than counted as a disagreement."""
 
     played, rivals = _rival_ledgers()
     unpaired = pd.DataFrame(

@@ -1,10 +1,3 @@
-"""Tests for the LEAD-61 per-event half/quarter-game market capture.
-
-No network calls anywhere in this file: ``capture_half_markets`` accepts a
-``fetch`` callable exactly like ``nfl_ats.odds_backfill.execute_backfill``
-does, and every test here supplies a stub.
-"""
-
 from __future__ import annotations
 
 import json
@@ -74,9 +67,6 @@ def test_filter_events_to_week_keeps_only_the_current_cycle() -> None:
 
 
 def test_filter_events_to_week_never_selects_the_whole_272_event_board() -> None:
-    """The regression this exists to prevent: iterating the whole remaining
-    season instead of one week multiplies the measured per-event cost ~17x
-    for nothing (docs/half_game_markets.md)."""
 
     now = datetime(2026, 9, 9, 15, 0, tzinfo=UTC)
     start, _end = current_week_kickoff_window(now)
@@ -440,11 +430,6 @@ def test_past_events_and_unparseable_times_are_never_requested():
 def test_cli_treats_empty_slate_as_logged_noop(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """An empty upcoming-week slate exits 0 with a logged no-op, never FAIL.
-
-    The 2026-09-05 Saturday scheduler run failed on exactly this before Week 1
-    had any game inside the window; the scheduler counted it as FAIL(2).
-    """
 
     import argparse
 

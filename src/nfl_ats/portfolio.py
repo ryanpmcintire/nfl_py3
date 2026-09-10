@@ -1,5 +1,3 @@
-"""Paper-only bankroll sizing and settlement analytics."""
-
 from __future__ import annotations
 
 import math
@@ -31,8 +29,6 @@ class BankrollSimulation:
 
 @dataclass(frozen=True)
 class CorrelatedPortfolioSizing:
-    """A deterministic, paper-only allocation and its risk inputs."""
-
     allocations: pd.DataFrame
     covariance: pd.DataFrame
     factor_exposures: pd.DataFrame
@@ -40,7 +36,6 @@ class CorrelatedPortfolioSizing:
 
 
 def kelly_fraction(win_probability: float, american_odds: float | int | None) -> float:
-    """Return the full-Kelly bankroll fraction for a two-outcome wager."""
 
     if not 0.0 <= win_probability <= 1.0:
         raise ValueError("win_probability must be between 0 and 1")
@@ -55,7 +50,6 @@ def _validate_labeled_covariance(
     *,
     tolerance: float = 1e-10,
 ) -> np.ndarray:
-    """Validate and order a covariance matrix without positional guesswork."""
 
     if not isinstance(covariance, pd.DataFrame):
         raise TypeError("covariance must be a labeled pandas DataFrame")
@@ -174,7 +168,6 @@ def _project_feasible(
     tolerance: float,
     max_iterations: int = 5_000,
 ) -> np.ndarray:
-    """Project onto box/halfspace intersections with deterministic Dykstra iterations."""
 
     projections = 1 + len(halfspaces)
     corrections = [np.zeros_like(point) for _ in range(projections)]
@@ -248,225 +241,6 @@ def _quadratic_kelly_allocation(
     raise RuntimeError("correlated portfolio optimizer did not converge")
 
 
-def size_correlated_paper_portfolio(
-    candidates: pd.DataFrame,
-    *,
-    covariance: pd.DataFrame | None = None,
-    factor_exposures: pd.DataFrame | None = None,
-    factor_strengths: Mapping[str, float] | None = None,
-    factor_limits: Mapping[str, float] | None = None,
-    team_factor_strength: float = 0.10,
-    kelly_multiplier: float = 0.25,
-    max_bet_fraction: float = 0.02,
-    max_total_fraction: float = 0.10,
-    probability_haircut: float = 0.0,
-    probability_uncertainty: pd.DataFrame | None = None,
-    posterior_z: float = 1.645,
-    tolerance: float = 1e-10,
-) -> CorrelatedPortfolioSizing:
-    """Allocate one simultaneous slate with a correlated fractional-Kelly approximation.
-
-    This function only returns paper fractions: it performs no settlement, I/O,
-    or external action. Shared-team exposures are derived from HOME/AWAY sides.
-    Optional ``total:``, ``weather:``, and ``market:`` exposure columns let a
-    caller make other common risk channels explicit. The quadratic objective is
-    deterministic and subject to per-candidate, aggregate, and optional absolute
-    factor-exposure limits.
-    """
-
-    if not 0.0 <= kelly_multiplier <= 1.0:
-        raise ValueError("kelly_multiplier must be between 0 and 1")
-    if not 0.0 < max_bet_fraction <= 1.0:
-        raise ValueError("max_bet_fraction must be in (0, 1]")
-    if not 0.0 < max_total_fraction <= 1.0:
-        raise ValueError("max_total_fraction must be in (0, 1]")
-    if not 0.0 <= probability_haircut < 0.5:
-        raise ValueError("probability_haircut must be in [0, 0.5)")
-    if not math.isfinite(team_factor_strength) or team_factor_strength < 0.0:
-        raise ValueError("team_factor_strength must be finite and non-negative")
-    if not math.isfinite(tolerance) or tolerance <= 0.0:
-        raise ValueError("tolerance must be finite and positive")
-    required = {
-        "game_id",
-        "bet_side",
-        "bet_odds",
-        "home_cover_probability",
-        "home_team",
-        "away_team",
-    }
-    missing = sorted(required.difference(candidates.columns))
-    if missing:
-        raise ValueError(
-            f"Candidates are missing correlated portfolio columns: {', '.join(missing)}"
-        )
-    if candidates["game_id"].astype(str).duplicated().any():
-        raise ValueError("candidate game_id values must be unique")
-    if (
-        candidates["game_id"].isna().any()
-        or candidates["game_id"].astype(str).str.strip().eq("").any()
-    ):
-        raise ValueError("candidate game_id values must be non-empty")
-    sides = set(candidates["bet_side"].astype(str))
-    invalid_sides = sorted(sides.difference({"HOME", "AWAY", "PASS"}))
-    if invalid_sides:
-        raise ValueError("bet_side must be HOME, AWAY, or PASS")
-    for column in ("home_team", "away_team"):
-        if (
-            candidates[column].isna().any()
-            or candidates[column].astype(str).str.strip().eq("").any()
-        ):
-            raise ValueError(f"{column} values must be non-empty")
-    if candidates["home_team"].astype(str).eq(candidates["away_team"].astype(str)).any():
-        raise ValueError("home_team and away_team must differ")
-
-    allocations = candidates.copy().reset_index(drop=True)
-    probability_audit = conservative_probability_audit(
-        allocations,
-        probability_haircut=probability_haircut,
-        probability_uncertainty=probability_uncertainty,
-        posterior_z=posterior_z,
-    )
-    for column in AUDIT_COLUMNS:
-        allocations[column] = probability_audit[column]
-    allocations["candidate_expected_return"] = 0.0
-    allocations["independent_kelly_fraction"] = 0.0
-    allocations["stake_fraction"] = 0.0
-    active = allocations.loc[allocations["bet_side"].ne("PASS")].copy()
-    candidate_ids = active["game_id"].astype(str).tolist()
-    if not candidate_ids:
-        empty = pd.DataFrame(index=pd.Index([], name="game_id"), dtype=float)
-        return CorrelatedPortfolioSizing(
-            allocations=allocations,
-            covariance=empty,
-            factor_exposures=empty,
-            metrics={
-                "paper_only": True,
-                "method": "quadratic_fractional_kelly",
-                "active_candidates": 0,
-                "total_stake_fraction": 0.0,
-                "expected_profit_fraction": 0.0,
-                "portfolio_variance": 0.0,
-                "probability_uncertainty_methods": [],
-                "posterior_z": posterior_z,
-                "iterations": 0,
-            },
-        )
-
-    raw_home_probability = pd.to_numeric(active["home_cover_probability"], errors="raise").to_numpy(
-        dtype=float
-    )
-    if not np.isfinite(raw_home_probability).all() or np.any(
-        (raw_home_probability <= 0.0) | (raw_home_probability >= 1.0)
-    ):
-        raise ValueError("home_cover_probability must be finite and strictly between 0 and 1")
-    probability = active["conservative_bet_probability"].to_numpy(dtype=float)
-    odds = pd.to_numeric(active["bet_odds"], errors="raise").to_numpy(dtype=float)
-    if not np.isfinite(odds).all() or np.any(odds == 0.0):
-        raise ValueError("bet_odds must be finite, non-zero American odds")
-    win_return = np.asarray([profit_per_unit(value) for value in odds], dtype=float)
-    expected_return = probability * win_return - (1.0 - probability)
-    payoff_variance = (
-        probability * (win_return - expected_return) ** 2
-        + (1.0 - probability) * (-1.0 - expected_return) ** 2
-    )
-    independent_kelly = np.asarray(
-        [kelly_fraction(float(p), float(price)) for p, price in zip(probability, odds, strict=True)]
-    )
-    upper_bounds = np.minimum(max_bet_fraction, kelly_multiplier * independent_kelly)
-
-    team_exposures = _team_factor_exposures(active)
-    optional_exposures = _validate_optional_exposures(factor_exposures, candidate_ids)
-    exposures = pd.concat([team_exposures, optional_exposures], axis="columns")
-    if covariance is None:
-        optional_strengths = dict(factor_strengths or {})
-        expected_optional = set(optional_exposures.columns)
-        if set(optional_strengths) != expected_optional:
-            missing_strengths = sorted(expected_optional.difference(optional_strengths))
-            extra_strengths = sorted(set(optional_strengths).difference(expected_optional))
-            detail = []
-            if missing_strengths:
-                detail.append("missing " + ", ".join(missing_strengths))
-            if extra_strengths:
-                detail.append("unknown " + ", ".join(extra_strengths))
-            raise ValueError(
-                "factor_strengths must name each optional factor exactly ("
-                + "; ".join(detail)
-                + ")"
-            )
-        strengths = dict.fromkeys(team_exposures.columns, team_factor_strength)
-        strengths.update(optional_strengths)
-        covariance_matrix = _factor_covariance(payoff_variance, exposures, strengths)
-    else:
-        if factor_strengths:
-            raise ValueError("factor_strengths cannot be combined with an explicit covariance")
-        covariance_matrix = _validate_labeled_covariance(covariance, candidate_ids)
-
-    limits = dict(factor_limits or {})
-    fractions, iterations = _quadratic_kelly_allocation(
-        expected_return,
-        covariance_matrix,
-        upper_bounds,
-        exposures,
-        limits,
-        max_total_fraction=max_total_fraction,
-        kelly_multiplier=kelly_multiplier,
-        tolerance=tolerance,
-    )
-    active_positions = active.index.to_numpy()
-    allocations.loc[active_positions, "candidate_expected_return"] = expected_return
-    allocations.loc[active_positions, "independent_kelly_fraction"] = independent_kelly
-    allocations.loc[active_positions, "stake_fraction"] = fractions
-    covariance_frame = pd.DataFrame(
-        covariance_matrix,
-        index=pd.Index(candidate_ids, name="game_id"),
-        columns=candidate_ids,
-    )
-    portfolio_variance = float(fractions @ covariance_matrix @ fractions)
-    realized_factor_exposure = {
-        column: float(exposures[column].to_numpy(dtype=float) @ fractions)
-        for column in exposures.columns
-        if np.any(exposures[column].to_numpy(dtype=float))
-    }
-    if float(fractions.sum()) > max_total_fraction + tolerance * 10.0:
-        raise RuntimeError("correlated portfolio optimizer violated the aggregate exposure cap")
-    for factor, limit in limits.items():
-        if abs(realized_factor_exposure.get(factor, 0.0)) > float(limit) + tolerance * 10.0:
-            raise RuntimeError(f"correlated portfolio optimizer violated factor cap: {factor}")
-    metrics = {
-        "paper_only": True,
-        "method": "quadratic_fractional_kelly",
-        "active_candidates": len(candidate_ids),
-        "total_stake_fraction": float(fractions.sum()),
-        "expected_profit_fraction": float(expected_return @ fractions),
-        "portfolio_variance": portfolio_variance,
-        "portfolio_standard_deviation": math.sqrt(max(0.0, portfolio_variance)),
-        "quadratic_objective": float(
-            expected_return @ fractions - 0.5 * portfolio_variance / kelly_multiplier
-            if kelly_multiplier > 0.0
-            else 0.0
-        ),
-        "kelly_multiplier": kelly_multiplier,
-        "max_bet_fraction": max_bet_fraction,
-        "max_total_fraction": max_total_fraction,
-        "probability_haircut": probability_haircut,
-        "probability_uncertainty_methods": sorted(
-            active["probability_uncertainty_method"].astype(str).unique().tolist()
-        ),
-        "posterior_z": posterior_z,
-        "team_factor_strength": team_factor_strength,
-        "factor_limits": limits,
-        "realized_factor_exposure": realized_factor_exposure,
-        "covariance_source": "explicit" if covariance is not None else "factor_scenario",
-        "iterations": iterations,
-    }
-    return CorrelatedPortfolioSizing(
-        allocations=allocations,
-        covariance=covariance_frame,
-        factor_exposures=exposures,
-        metrics=metrics,
-    )
-
-
 def _drawdown(bankroll: pd.Series) -> pd.Series:
     peaks = bankroll.cummax()
     return bankroll / peaks - 1.0
@@ -482,12 +256,6 @@ def simulate_paper_bankroll(
     probability_uncertainty: pd.DataFrame | None = None,
     posterior_z: float = 1.645,
 ) -> PortfolioResult:
-    """Size simultaneous weekly paper bets from the same starting bankroll.
-
-    Desired fractional-Kelly stakes are capped per game, then scaled pro rata
-    if aggregate risk exceeds the weekly cap. No result from one game changes a
-    different stake in the same NFL week.
-    """
 
     if initial_bankroll <= 0:
         raise ValueError("initial_bankroll must be positive")
@@ -634,11 +402,6 @@ def simulate_bankroll_paths(
     posterior_z: float = 1.645,
     ruin_fraction: float = 0.50,
 ) -> BankrollSimulation:
-    """Simulate bankroll paths conditional on the model's stated probabilities.
-
-    This quantifies the risk implied by the probabilities; it does not validate
-    that those probabilities are correct.
-    """
 
     if paths < 100:
         raise ValueError("paths must be at least 100")

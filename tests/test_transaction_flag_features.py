@@ -1,13 +1,3 @@
-"""Construction, sign-convention, semantic-trap regression, and leakage
-contracts for the three LEAD-12/23/14 transaction-wire flags.
-
-Predeclared in ``docs/schedule_flag_battery.md`` "Wave 6". Every fixture is
-built in memory: these tests must pass in a fresh clone with no local data
-snapshots (no PFR transaction-wire index, no snap_counts, no schedules
-snapshot is ever read from disk except via an explicit ``tmp_path`` parquet
-this test suite writes itself).
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -116,8 +106,6 @@ def test_distinct_player_slugs_sorted_longest_first_and_deduped() -> None:
 
 
 def test_find_player_in_segment_is_token_anchored_not_substring() -> None:
-    """A short name must never match across a token boundary (e.g. "ryan"
-    must not match inside "bryant")."""
 
     snaps = _snaps([_snap_row("Ryan Fake", "AAA", 2020, 1, 0.5)])
     slugs = distinct_player_slugs(snaps)
@@ -224,8 +212,6 @@ def test_holdout_end_regex_positive_matches() -> None:
 
 
 def test_holdout_end_regex_rejects_measured_false_positives() -> None:
-    """Regression for two real semantic traps measured against the PFR
-    corpus: naive substring matching would wrongly fire on both."""
 
     assert HOLDOUT_END_RE.search("chiefs-dt-chris-jones-hints-at-extended-holdout") is None
     assert (
@@ -292,9 +278,6 @@ def test_holdout_slow_start_unresolved_snap_history_never_guessed() -> None:
 
 
 def test_holdout_slow_start_leakage_guard_per_week() -> None:
-    """A report whose latest-possible date is NOT strictly before a given
-    week's own kickoff must not flag that week, even though it may still
-    flag a later week."""
 
     late_index = _transactions(
         [_txn_row("commanders-wr-terry-mclaurin-reports-to-camp-x", 2025, 9)]
@@ -316,7 +299,6 @@ def test_holdout_slow_start_leakage_guard_per_week() -> None:
 
 
 def test_holdout_slow_start_only_one_team_resolution_required() -> None:
-    """A slug matching zero or more than one team is never guessed."""
 
     index = _transactions([_txn_row("bills-and-jets-terry-mclaurin-reports-to-camp-x", 2025, 7)])
     derived = derive_holdout_slow_start_features(
@@ -401,8 +383,6 @@ def test_deadline_integration_drag_sign_and_window() -> None:
 
 
 def test_deadline_integration_drag_high_snap_gate() -> None:
-    """A low-snap acquisition (trailing share < 0.5) is excluded from the
-    population -- never a fade candidate."""
 
     low_snap = _snaps([_snap_row("Fake Player", "OLD", 2020, w, 0.20) for w in range(1, 9)])
     index = _transactions([_txn_row("eagles-acquire-fake-player-from-old", 2020, 10)])
@@ -414,8 +394,6 @@ def test_deadline_integration_drag_high_snap_gate() -> None:
 
 
 def test_deadline_integration_drag_no_prior_team_history_never_guessed() -> None:
-    """A player with no snap-count rows for any OTHER team this season
-    cannot resolve a "previous team" and must be excluded, never guessed."""
 
     only_phi_team = _snaps([_snap_row("Fake Player", "PHI", 2020, w, 0.90) for w in range(1, 9)])
     index = _transactions([_txn_row("eagles-acquire-fake-player-from-old", 2020, 10)])
@@ -427,8 +405,6 @@ def test_deadline_integration_drag_no_prior_team_history_never_guessed() -> None
 
 
 def test_deadline_integration_drag_leakage_guard() -> None:
-    """A flagged game must kick off strictly after the report's own
-    latest-possible (month-end) date."""
 
     index = _transactions([_txn_row("eagles-acquire-fake-player-from-old", 2020, 10)])
     schedule = _schedule([_game("d9", 2020, 9, "2020-10-15", "OPP", "PHI")])
@@ -473,14 +449,6 @@ def _suspension_snap_counts() -> pd.DataFrame:
 
 
 def _suspension_schedule() -> pd.DataFrame:
-    """STL plays one game a month, March 2020 through December 2020.
-
-    The imposed report is month 3 (March), the reinstated report is month
-    10 (October): the half-open interval ``[month 3, month 10)`` covers
-    months 4-9 inclusive -- exactly 6 team games -- satisfying the >= 6
-    threshold. Months 11-12 (November, December) are the "return game plus
-    one" candidates (both strictly after October's own month-end).
-    """
 
     rows = []
     for i, month in enumerate(range(3, 13)):
@@ -506,7 +474,6 @@ def test_suspension_return_rust_measures_duration_and_flags_return_plus_one() ->
 
 
 def test_suspension_return_rust_below_six_games_excluded() -> None:
-    """A bracket measuring fewer than 6 team games must not qualify."""
 
     index = _transactions(
         [
@@ -545,8 +512,6 @@ def test_suspension_return_rust_unresolved_team_never_guessed() -> None:
 
 
 def test_suspension_return_rust_leakage_guard() -> None:
-    """A flagged game must kick off strictly after the reinstatement
-    report's own latest-possible (month-end) date."""
 
     index = _transactions(
         [

@@ -1,5 +1,3 @@
-"""LEAD-53: one frozen Tuesday/Sunday nomination pair per regular-season week."""
-
 from __future__ import annotations
 
 import json
@@ -40,7 +38,6 @@ def load_decisions(artifacts_root: Path) -> pd.DataFrame:
 
 
 def settle_decisions(decisions: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """Use the existing recorded-line ATS grader separately for both frozen arms."""
     result = decisions.copy()
     if result.empty:
         return result
@@ -86,7 +83,6 @@ def record_best_pick_tuesday(
     now: datetime | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Freeze publication probabilities and eligibility only after paper recording."""
     try:
         existing = settle_ledger(artifacts_root, data_root)
         season, week = int(publication["season"]), int(publication["week"])
@@ -178,7 +174,6 @@ def record_best_pick_refresh(
     *,
     record_decisions: bool = False,
 ) -> dict[str, Any]:
-    """Record the first Sunday-morning pair, including no-change refreshes."""
     if not record_decisions:
         return skip("pass --record-decisions for the Best Pick pair")
     try:

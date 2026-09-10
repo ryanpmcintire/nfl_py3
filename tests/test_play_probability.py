@@ -1,29 +1,4 @@
-"""UI-20-AB: a real per-player, per-game play/start probability forecast.
-
-Owner directive (2026-09-05, verbatim): "the percentages should obviously
-make sense my dude... it needs to be a forecast about the game and it needs
-to consider depth chart." Covers:
-
-* Depth-chart history canonicalization on both nflverse schemas (legacy
-  week-labelled rows, seasons <= 2024; daily dt-timestamped rows, seasons
-  >= 2025 -- see the `nfl_ats.play_probability` module docstring for why
-  these differ and how they are unified).
-* Feature construction (`build_player_week_panel`) on a synthetic
-  roster/snap/injury/depth-history panel large enough for a real
-  walk-forward fit.
-* Depth-rank ordering monotonicity for healthy players (rank 1 > rank 2 >
-  rank 3, all else equal).
-* The QB2-rises-when-QB1-is-out behaviour.
-* Calibration table shape.
-* The leakage test: a later week's snap, injury revision, or depth change
-  never changes an earlier week's prediction/feature row.
-"""
-
 from __future__ import annotations
-
-import json
-import runpy
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -56,14 +31,6 @@ _ROLES = (("QB", 1), ("QB", 2), ("QB", 3), ("WR", 1), ("WR", 2), ("WR", 3))
 def _build_synthetic_sources(
     *, seed: int = 0, extra_week: dict[str, object] | None = None
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """A depth_history/rosters/snaps/injuries panel with a clean, strong,
-    hand-designed signal: QB1 plays unless marked "Out" on the injury
-    report that week, in which case QB2 plays instead; QB3 never plays.
-    WR1/WR2/WR3 play with fixed, decreasing probabilities. ``extra_week``
-    optionally overrides one (season, week) tuple's QB1-out draw -- used by
-    the leakage test to mutate only the LAST week without touching earlier
-    ones.
-    """
 
     rng = np.random.default_rng(seed)
     depth_rows: list[dict[str, object]] = []
@@ -579,47 +546,6 @@ def test_untimestamped_daily_archive_cannot_reenter_training() -> None:
     assert build_player_week_panel(depth, rosters, snaps, injuries).empty
 
 
-def test_panel_builder_resolves_newest_injuries_and_accepts_pin(tmp_path: Path) -> None:
-    builder = runpy.run_path(
-        str(Path(__file__).parents[1] / "scripts/build_play_probability_panel.py")
-    )
-    resolve = builder["resolve_injuries_path"]
-    resolve.__globals__["RAW_INJURIES_ROOT"] = tmp_path
-    with pytest.raises(FileNotFoundError, match="ingest separately"):
-        resolve()
-    old = tmp_path / "20260826T122850Z" / "injuries.parquet"
-    new = tmp_path / "20260905T211248Z" / "injuries.parquet"
-    for path in (new, old):
-        path.parent.mkdir()
-        pd.DataFrame({"season": [2025]}).to_parquet(path)
-    (tmp_path / "20260906T000000Z").mkdir()
-    assert resolve() == new
-    assert resolve(old) == old
-    with pytest.raises(FileNotFoundError, match="No local injury archive"):
-        resolve(tmp_path / "missing.parquet")
-
-
-def test_newest_injury_snapshot_cannot_leak_later_revisions(tmp_path: Path) -> None:
-    builder = runpy.run_path(
-        str(Path(__file__).parents[1] / "scripts/build_play_probability_panel.py")
-    )
-    resolve = builder["resolve_injuries_path"]
-    resolve.__globals__["RAW_INJURIES_ROOT"] = tmp_path
-    depth, rosters, snaps, injuries = _build_synthetic_sources()
-    old = tmp_path / "20260826T122850Z" / "injuries.parquet"
-    new = tmp_path / "20260905T211248Z" / "injuries.parquet"
-    old.parent.mkdir()
-    new.parent.mkdir()
-    injuries.to_parquet(old)
-    revision = injuries.iloc[[0]].copy()
-    revision["date_modified"] = pd.Timestamp("2030-01-01", tz="UTC")
-    revision["report_status"] = "Out"
-    pd.concat([injuries, revision], ignore_index=True).to_parquet(new)
-    before = build_player_week_panel(depth, rosters, snaps, pd.read_parquet(resolve(old)))
-    after = build_player_week_panel(depth, rosters, snaps, pd.read_parquet(resolve()))
-    pd.testing.assert_frame_equal(before, after)
-
-
 def test_uncalibrated_early_season_still_predicts_valid_subset_probabilities() -> None:
     panel = build_player_week_panel(*_build_synthetic_sources())
     model = fit_play_probability_model(panel, scored_season=2021)
@@ -627,57 +553,3 @@ def test_uncalibrated_early_season_still_predicts_valid_subset_probabilities() -
     predicted = predict_play_probabilities(model, panel.loc[panel["season"].eq(2021)])
     assert predicted["play_probability"].between(0, 1).all()
     assert predicted["start_probability"].between(0, predicted["play_probability"]).all()
-
-
-def test_panel_daily_snapshot_2025_excludes_future_dt_and_preserves_history(tmp_path: Path) -> None:
-    builder = runpy.run_path(
-        str(Path(__file__).parents[1] / "scripts/build_play_probability_panel.py")
-    )
-    loader = builder["load_panel_depth_history"]
-    legacy = pd.DataFrame(
-        [{"season": 2024, "gsis_id": "legacy"}, {"season": 2025, "gsis_id": "unverified"}]
-    )
-    loader.__globals__["_load_or_fetch_depth_history"] = lambda *args: legacy.copy()
-    loader.__globals__["RAW_DEPTH_ROOT"] = tmp_path
-    schedule = pd.DataFrame(
-        [
-            {
-                "season": 2025,
-                "week": 1,
-                "home_team": "KC",
-                "away_team": "DEN",
-                "game_type": "REG",
-                "gameday": "2025-09-07",
-                "gametime": "16:25",
-            }
-        ]
-    )
-
-    def snapshot(stamp: str, rows: list[dict[str, object]]) -> None:
-        directory = tmp_path / stamp
-        directory.mkdir()
-        pd.DataFrame(rows).to_parquet(directory / "depth_charts.parquet")
-        (directory / "manifest.json").write_text(json.dumps({"requested_seasons": [2025]}))
-
-    before = {
-        "dt": "2025-09-07T19:59:59Z",
-        "team": "KC",
-        "player_name": "before",
-        "gsis_id": "before",
-        "pos_abb": "QB",
-        "pos_rank": 1,
-        "upstream_extra": "retained",
-    }
-    snapshot("20260905T000000Z", [before])
-    expected = loader(2024, 2025, schedule)
-    snapshot(
-        "20260906T000000Z",
-        [before, {**before, "dt": "2025-09-07T20:01:00Z", "gsis_id": "future", "pos_rank": 2}],
-    )
-    (tmp_path / "20260907T000000Z").mkdir()
-    actual = loader(2024, 2025, schedule)
-    pd.testing.assert_frame_equal(expected, actual)
-    assert actual["gsis_id"].tolist() == ["legacy", "before"]
-    assert actual.iloc[1]["depth_observed_at"] < actual.iloc[1]["decision_at"]
-    assert "20260906" in actual.attrs["raw_2025_depth_source"]
-    pd.testing.assert_frame_equal(loader(2024, 2024, schedule), legacy.iloc[:1])

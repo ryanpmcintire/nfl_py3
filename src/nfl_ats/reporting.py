@@ -1,5 +1,3 @@
-"""Read-only artifact discovery and dashboard-ready summaries."""
-
 from __future__ import annotations
 
 import json
@@ -116,26 +114,6 @@ def _clv_per_season(
     market_capture_root: Path | None,
     decision_label: str,
 ) -> tuple[dict[Any, float], dict[Any, str], dict[Any, int]]:
-    """Per-season mean signed CLV via the real market-capture pipeline.
-
-    Uses :func:`nfl_ats.clv.build_pairing_table` (against the point-in-time
-    capture ARCHIVE directory), :func:`nfl_ats.clv.close_reference_table`,
-    and :func:`nfl_ats.clv.score_clv` exactly as that module documents them.
-    The pick side is the model's own forced pick implied by
-    ``home_cover_probability >= 0.5``; the decision line is read at
-    ``decision_label``.
-
-    Missing capture data is never reported as a bare NaN: when no archive is
-    supplied or found, every season gets ``capture_unavailable``; when an
-    archive exists but pairs none of a season's games, that season gets
-    ``no_paired_games``. Both statuses travel with the row so partial archive
-    coverage stays visible instead of collapsing into NaN.
-
-    Raises ``nfl_ats.data.DataContractError`` if ``predictions`` lacks the
-    columns the clv pipeline contracts require (``game_id``/``season``/
-    ``week``/``spread_line``); that is a caller contract error, not missing
-    capture data, and is reported as an exception rather than a marker.
-    """
 
     seasons = list(evaluated["season"].unique())
     unavailable_points = {season: float("nan") for season in seasons}
@@ -285,19 +263,6 @@ def block_bootstrap_intervals(
     on_degenerate: OnDegenerate = "warn",
     min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
-    """Estimate metric uncertainty by resampling whole NFL weeks or seasons.
-
-    Games within a block stay together, preserving much more of the schedule
-    dependence than an ordinary row bootstrap. The interval is descriptive of
-    this historical sample; it is not a guarantee about a future season.
-
-    Every row carries ``blocks`` and ``degenerate_blocks``. Below the measured
-    floor (``estimation_variance.MIN_BLOCKS_FOR_INTERVAL``) the percentile
-    bootstrap's coverage is nowhere near nominal, so ``lower``/``upper`` on a
-    flagged row are not a 95% interval and must not be read as one; report
-    ``estimate`` instead. See ``experiments.paired_feature_comparisons`` for
-    the same guard on paired deltas.
-    """
 
     if samples < 10:
         raise ValueError("samples must be at least 10")

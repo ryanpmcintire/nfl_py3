@@ -1,60 +1,3 @@
-"""ENV-01: point-in-time PREGAME weather-FORECAST archive.
-
-Fetches the archived GFS MOS extended ("MEX") text bulletin that existed at
-Tuesday 12:00 ET of each NFL REG game's week, from the Iowa Environmental
-Mesonet (IEM) MOS archive, and extracts the forecast temperature + wind speed
-valid nearest to that game's actual kickoff hour.
-
-Why MOS instead of NDFD GRIB2 (the route ``docs/weather_forecast_sourcing.md``
-scouted first): **measured** this session, the IEM MOS JSON API
-(``https://mesonet.agron.iastate.edu/api/1/mos.json``) serves plain station
-bulletins with an explicit ``runtime`` (issuance) and ``ftime`` (forecast
-valid time) on every row -- point-in-time by construction, no GRIB2 decoder
-needed, no gridded lat/lon lookup needed (station-based). The GFS extended
-model (``model=MEX``) issues at 00Z and 12Z, reaches +192h, and is archived
-at IEM from **2020-07-12 onward** (measured: ``runtime=2020-09-08T00:00Z``
-returns data; ``runtime=2018-12-04T00:00Z`` returns "no results" for the
-same station) -- this is why ingestion is scoped to 2020-2025, not because
-2020 was an arbitrary choice: it is exactly where this free archive starts,
-matching the AWS NDFD 2020+ boundary independently found in the GRIB2 route.
-
-Point-in-time discipline: every stored row carries the ACTUAL issuance
-timestamp used (``issuance_runtime_utc``), which is walked strictly
-BACKWARD from the Tuesday-noon-ET cutoff in 12-hour steps until a bulletin
-with data is found -- never forward, never substituted with a later,
-fresher issuance. A game whose cutoff has no bulletin within
-``--max-lookback-steps`` steps is recorded with ``fetch_status`` describing
-why, not silently dropped.
-
-Station mapping: ``registry/reference/stadium_station_map.csv`` (built this
-session), keyed on the schedules parquet's own ``stadium`` display-name
-string (not ``stadium_id``, which is measurably unreliable for neutral-site
-international games -- e.g. "Bernabeu" in Madrid is stamped with Atlanta's
-own domestic stadium_id in the source data). International stadiums
-(Wembley, Tottenham, Munich, Frankfurt, Mexico City, Sao Paulo, etc.) are
-marked ``mappable=false``: **measured**, the GFS MOS network has zero
-non-US-domestic stations (EGLL/EDDF/EDDM/MMMX/SBGR/CYYZ all return "no
-results" for any runtime).
-
-Usage (from repo root, locked env):
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_forecast_archive.py \\
-        --start-season 2020 --end-season 2025
-
-    # Resume an interrupted run (skips game_ids already fetched):
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_forecast_archive.py \\
-        --start-season 2020 --end-season 2025 \\
-        --resume-from data/raw/forecast_archive/<timestamp>
-
-    # Pool-decision cutoff: min(kickoff, Sunday 16:00 America/New_York).
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_forecast_archive.py \\
-        --start-season 2009 --end-season 2025 --cutoff-mode pool_decision
-
-Writes ``data/raw/forecast_archive/<UTC timestamp>/forecasts.parquet`` (one
-row per REG game in range) plus a gitignored ``manifest.json`` (coverage
-counts, source, delay policy, elapsed time -- ``data/raw/**`` is gitignored
-per .gitignore, verified).
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -153,9 +96,6 @@ def load_population(
 
 
 def tuesday_noon_et_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
-    """Most recent Tuesday <= the kickoff's ET calendar date, at 12:00 ET,
-    returned as a UTC timestamp. Monday=0 ... Tuesday=1 ... Sunday=6.
-    """
 
     kickoff_et = kickoff_utc.tz_convert(ET)
     et_date: date = kickoff_et.date()
@@ -168,25 +108,16 @@ def tuesday_noon_et_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
 
 
 def kickoff_nearest_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
-    """The decision timestamp for the "closest-before-kickoff" cutoff mode:
-    kickoff itself. ``candidate_runtimes`` floors this to the most recent
-    00Z/12Z MOS issuance cycle at or before kickoff and walks strictly
-    backward from there, so this never selects a bulletin issued after
-    kickoff -- point-in-time discipline is enforced by the walk, not by this
-    function.
-    """
 
     return kickoff_utc
 
 
 def pool_decision_cutoff_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
-    """Actual pool deadline: kickoff or Sunday 16:00 ET, whichever is first."""
 
     return pd.Timestamp(pool_decision_cutoff(kickoff_utc.to_pydatetime()))
 
 
 def decision_cutoff_utc(kickoff_utc: pd.Timestamp, cutoff_mode: str) -> pd.Timestamp:
-    """Resolve a declared archive mode to its decision timestamp."""
 
     if cutoff_mode == "tuesday_noon":
         return tuesday_noon_et_cutoff_utc(kickoff_utc)
@@ -219,11 +150,6 @@ def fetch_mos_bulletin(
     timeout: float = 20.0,
     retries: int = 2,
 ) -> list[dict[str, Any]]:
-    """Return the ``data`` rows for one station/runtime, or [] if IEM has no
-    bulletin for that exact runtime (a normal, expected outcome to walk past,
-    not an error). Raises MosFetchError on a genuine transport failure after
-    retries (so the caller can distinguish "no bulletin" from "IEM is down").
-    """
 
     runtime_str = runtime_utc.strftime("%Y-%m-%dT%H:%MZ")
     url = f"{MOS_API}?station={station}&model={model}&runtime={runtime_str}"
@@ -264,19 +190,6 @@ def nearest_row(rows: list[dict[str, Any]], kickoff_utc: pd.Timestamp) -> dict[s
 def nearest_row_with_field(
     rows: list[dict[str, Any]], kickoff_utc: pd.Timestamp, field: str
 ) -> dict[str, Any] | None:
-    """Like ``nearest_row``, restricted to rows where ``field`` is non-null.
-
-    Added for the 2009-2019 backward extension (2026-08-20 session): GFS MOS
-    precipitation-probability fields (``p06``/``p12``) are only populated on a
-    subset of rows within a bulletin (measured: every OTHER 3h row, i.e. the
-    6h-boundary rows), so the plain ``nearest_row`` pick (nearest by valid time
-    to kickoff, ANY field) frequently lands on a row where ``p06``/``p12`` are
-    both null even though a nearby row in the SAME already-fetched bulletin has
-    them. This does a second, field-restricted nearest-by-valid-time pick over
-    the SAME rows already returned by ``fetch_mos_bulletin`` -- no extra HTTP
-    call, no relaxation of the point-in-time issuance walk (that discipline is
-    still enforced by the caller's bulletin selection, unchanged).
-    """
 
     candidates = [row for row in rows if row.get(field) is not None]
     return nearest_row(candidates, kickoff_utc)
@@ -403,7 +316,6 @@ def load_resume_cache(
 
 
 def rewrite_resume_cache(jsonl_path: Path, cache: dict[str, dict[str, Any]]) -> None:
-    """Replace an attempt log with its validated one-row-per-game terminal cache."""
 
     with jsonl_path.open("w", encoding="utf-8") as handle:
         for record in cache.values():

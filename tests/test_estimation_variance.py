@@ -80,11 +80,6 @@ def test_refit_predicted_values_shape() -> None:
 
 
 def test_near_noiseless_linear_fit_has_low_flip_rate() -> None:
-    """With almost no noise and a light penalty, resampling training rows should
-    barely move the fitted direction, so the model's own picks should almost
-    never flip. This is the low-variance end of the phenomenon the module
-    measures; the audit itself found the opposite end (15-22% flip) on real,
-    noisy, thin-training CFB data."""
 
     train = _synthetic_frame(2_000, seed=20, noise=0.01)
     test = _synthetic_frame(100, seed=21, noise=0.01)
@@ -191,9 +186,6 @@ def test_naive_interval_matches_paired_feature_comparisons() -> None:
 
 
 def test_refit_aware_interval_with_zero_refit_variance_matches_naive_exactly() -> None:
-    """With no refit variance (every draw's arrays identical), the honest
-    interval degenerates to exactly the same algorithm as the naive one: one
-    block resample per outer iteration, same rng sequence."""
 
     _, actual, baseline_prob, candidate_prob, seasons, weeks = _paired_predictions_frame(80, seed=6)
     block_ids = seasons.astype(np.int64) * 1000 + weeks.astype(np.int64)
@@ -212,9 +204,6 @@ def test_refit_aware_interval_with_zero_refit_variance_matches_naive_exactly() -
 
 
 def test_refit_aware_interval_widens_with_real_refit_variance() -> None:
-    """Adding genuine training-refit variance to the candidate arm must widen
-    the interval relative to a naive interval built from the same point
-    estimate -- the central empirical claim this module exists to check."""
 
     rng = np.random.default_rng(2026)
     n_games = 150
@@ -303,12 +292,6 @@ def test_paired_interval_is_frozen_dataclass_with_kind_tag() -> None:
 
 
 def test_distinct_block_resamples_counts_multisets_not_ordered_tuples() -> None:
-    """``C(2k-1, k-1)``: 1, 3, 10, 35 -- not ``k**k`` (1, 4, 27, 256).
-
-    ``docs/anytime_valid.md`` sec 6 quotes both, which is where the "~4 blocks
-    is enough" reading came from; the ordered count makes 4 blocks look 7x
-    richer than it is.
-    """
 
     assert [distinct_block_resamples(k) for k in (1, 2, 3, 4, 5)] == [1, 3, 10, 35, 126]
     with pytest.raises(ValueError, match="block_count must be at least 1"):
@@ -336,10 +319,6 @@ def test_guard_block_count_raises_warns_or_ignores() -> None:
 
 
 def test_one_block_bootstrap_collapses_to_a_point_and_is_flagged() -> None:
-    """The D4 pathology, reproduced: one block means one achievable resample,
-    so the 'interval' has zero width and excludes zero unless the estimate is
-    exactly zero. This is the shape ``player_qb_continuity_matched_alpha``'s
-    recorded ``[0.0, 2.2177]`` is a milder version of."""
 
     actual = np.array([1.0, 1.0, 0.0, 1.0, 0.0, 1.0])
     baseline = np.array([0.4, 0.4, 0.6, 0.4, 0.6, 0.4])
@@ -357,10 +336,6 @@ def test_one_block_bootstrap_collapses_to_a_point_and_is_flagged() -> None:
 
 @pytest.mark.parametrize("blocks", [1, 2, 3, 4, 5, 6, 8, 9])
 def test_low_block_interval_is_never_reported_as_valid(blocks: int) -> None:
-    """REGRESSION TEST for D4. A guard with no test is how this defect survived
-    a whole audit: the recorded ``[0.0, 2.2177]`` interval on 4 blocks was read,
-    quoted and used to close a line. Every path that can hand back an interval
-    must either refuse or stamp ``degenerate=True`` below the measured floor."""
 
     rng = np.random.default_rng(4242)
     per_block = 12
@@ -404,7 +379,6 @@ def test_interval_at_the_floor_is_not_flagged_degenerate() -> None:
 
 @pytest.mark.parametrize("paired", [True, False])
 def test_paired_refits_match_original_dataframe_algorithm_exactly(paired: bool) -> None:
-    """Preselecting numpy matrices must not change any bootstrap prediction."""
 
     train = _synthetic_frame(60, seed=81, noise=3.0)
     test = _synthetic_frame(11, seed=82, noise=3.0)
@@ -450,9 +424,6 @@ def test_paired_refits_match_original_dataframe_algorithm_exactly(paired: bool) 
 
 
 def test_paired_refits_fit_both_arms_on_the_same_resampled_rows() -> None:
-    """Pairing is structural, not a seed coincidence: the returned row indices
-    are the ones BOTH arms were fit on, and each arm reproduces
-    ``refit_predicted_values`` called with that same seed."""
 
     train = _synthetic_frame(300, seed=1, noise=5.0)
     test = _synthetic_frame(40, seed=2, noise=5.0)
@@ -497,10 +468,6 @@ def test_paired_refits_fit_both_arms_on_the_same_resampled_rows() -> None:
 
 @pytest.mark.full
 def test_unpaired_refits_overstate_the_refit_variance() -> None:
-    """Refitting each arm on its OWN resample breaks the pairing and adds noise
-    that would have cancelled, which inflates the interval in the opposite
-    direction to the D2 defect. Measured on real CFB at 0.446 -> 0.553 points of
-    refit SD (docs/estimation_variance.md); this pins the direction."""
 
     train = _synthetic_frame(400, seed=11, noise=8.0)
     test = _synthetic_frame(240, seed=12, noise=8.0)
@@ -534,9 +501,6 @@ def test_unpaired_refits_overstate_the_refit_variance() -> None:
 
 
 def test_block_bootstrap_means_matches_the_explicit_loop_distributionally() -> None:
-    """The vectorized multinomial draw is the same resampling scheme as the
-    concatenate-and-average loop in ``naive_block_bootstrap_interval`` and
-    ``experiments.paired_feature_comparisons``, only cheaper."""
 
     rng = np.random.default_rng(5)
     values = rng.normal(size=600)
@@ -570,10 +534,6 @@ def test_block_bootstrap_means_matches_the_explicit_loop_distributionally() -> N
 
 
 def test_refit_common_variance_recovers_a_planted_common_component() -> None:
-    """The estimator must return Var(a) -- the part of the refit spread that is
-    common across games -- and NOT Var(a) + Var(e), which is what both
-    2026-08-18 estimators added on top of a game bootstrap that already carried
-    Var(e). Planted here so the truth is known exactly."""
 
     rng = np.random.default_rng(7)
     n_boot, n_games = 600, 400
@@ -592,8 +552,6 @@ def test_refit_common_variance_recovers_a_planted_common_component() -> None:
 
 
 def test_refit_common_variance_returns_near_zero_for_pure_interaction() -> None:
-    """Per-game refit noise with no common component must NOT be counted: it is
-    already inside the conditional game bootstrap."""
 
     rng = np.random.default_rng(11)
     interaction = rng.normal(scale=0.5, size=(300, 600))
@@ -605,16 +563,6 @@ def test_refit_common_variance_returns_near_zero_for_pure_interaction() -> None:
 def _honest_inputs(
     n_boot: int, *, common_skill: float = 0.0, refit_noise: float = 0.0, seed: int = 20260818
 ):
-    """Refit probability draws with separately controlled variance sources.
-
-    ``common_skill`` gives each draw its own SKILL level -- it moves every
-    game's probability toward (or away from) that game's actual outcome, so it
-    changes accuracy in the same direction everywhere. That is a genuine
-    ``a(T)``. ``refit_noise`` is independent per game per draw, so it flips
-    picks in random directions and contributes only ``e(T, G)``. A common shift
-    in probability SPACE would not do: it moves every game the same way but
-    helps on half of them and hurts on the other half, which is interaction.
-    """
 
     rng = np.random.default_rng(seed)
     n_games = 600
@@ -649,10 +597,6 @@ def test_refit_aware_interval_reduces_to_the_naive_one_without_refit_variance() 
 
 
 def test_refit_aware_interval_ignores_pure_interaction_noise() -> None:
-    """REGRESSION for the over-coverage defect. Per-game refit noise with no
-    common component is already carried by the conditional game bootstrap, so
-    it must not widen the interval. The 2026-08-18 estimators widened on it and
-    over-covered (0.987-1.000 against nominal 0.95)."""
 
     actual, block_ids, baseline, candidate, refits = _honest_inputs(200, refit_noise=0.12)
     result = refit_aware_interval(
@@ -714,10 +658,6 @@ def test_normal_helpers_round_trip() -> None:
 
 
 def test_inflate_recorded_interval_agrees_from_interval_or_from_probability() -> None:
-    """``groupwise_ridge_block_penalties`` as recorded: +0.537 pts on
-    [-0.419, +1.532] with probability_positive 0.8735. Widening from the
-    interval and widening from the probability must land in the same place,
-    because both encode the same conditional SD."""
 
     from_interval = inflate_recorded_interval(0.537, -0.419, 1.532, inflation_factor=1.326)
     implied = inflate_recorded_interval(

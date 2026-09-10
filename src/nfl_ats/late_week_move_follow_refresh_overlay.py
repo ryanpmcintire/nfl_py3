@@ -1,20 +1,3 @@
-"""MKT-15: paired Tuesday/late-week movement picks at the frozen Tuesday line.
-
-Reuse the CX18 Wednesday-Saturday increments and twelve-book universe exactly.
-Sunday refreshes consume Saturday evidence; Sunday moves are outside this rule.
-Only live captures are prospective inputs, never historical backfills.
-Since 2026-09-09 the SERVED arm is the leading books' median move
-(``late_week_leader_median_follow_v1``) and this ledger's own challenger id
-records the equal-book arm it replaced; both are on every row. Since
-2026-09-10 the served gate is a FULL point below a 10.5-point line and half a
-point at or above it, so three more OFF arms record beside it on every row:
-the flat full-point gate
-(``late_week_leader_median_follow_flat_1_0_off_incumbent``), the retired
-half-point gate (``late_week_leader_median_follow_0_5_off_incumbent``) and
-following every move without the injury-news veto
-(``late_week_follow_no_news_veto_off_incumbent``).
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -46,7 +29,6 @@ LEDGER_NAME = "late_week_move_follow_refresh_decisions.parquet"
 def build_late_week_move_follow_refresh_rows(
     plan: RefreshResult, *, original: pd.DataFrame, quotes: pd.DataFrame
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Compute both arms without mutating the refresh plan or original card."""
     empty = pd.DataFrame()
     if original.empty or quotes.empty:
         return empty, {
@@ -166,7 +148,6 @@ def build_late_week_move_follow_refresh_rows(
 def record_late_week_move_follow_refresh_overlay(
     artifacts_root: Path, data_root: Path, plan: RefreshResult, *, record_decisions: bool = False
 ) -> dict[str, Any]:
-    """Append paired arms in a separate ledger, once per game and refresh run."""
     result: dict[str, Any] = {
         "challenger_id": CHALLENGER_ID,
         "served_challenger_id": SERVED_CHALLENGER_ID,

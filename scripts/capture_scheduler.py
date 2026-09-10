@@ -1,42 +1,3 @@
-"""In-repo scheduler for the recurring point-in-time captures.
-
-Why this exists
----------------
-The captures used to live in eight Windows Task Scheduler entries, all pointing
-at the same two .ps1 files. Every property that matters -- when each runs, what
-ran last, whether anything failed -- lived in opaque per-machine config outside
-version control, and a failed run was silent. The owner ruled that mechanism
-out. GitHub Actions was considered and ruled out too: this repository is public
-and the odds feed is purchased, so captured quotes cannot land in it or in its
-(publicly downloadable) workflow artifact store, and `odds-ingest` also needs
-a local feature table that a fresh runner does not have.
-
-So the schedule lives HERE, in `SCHEDULE` below: readable, diffable, reviewable,
-and changed by editing code rather than by clicking through a GUI.
-
-Windows, not instants
----------------------
-Each job declares a target local time and a grace period, and the loop polls.
-A job runs if now is inside [target, target + grace] and that occurrence has
-not run yet. This is deliberately more forgiving than cron: a machine asleep at
-the target instant still captures a few minutes late instead of losing the week,
-and a job whose window closed unrun is recorded as **MISSED** rather than
-vanishing. Cron cannot tell you what it failed to do; this can.
-
-`grace` is therefore a real decision per job, not padding. `odds_sun_close`
-targets 12:30 against 13:00 ET kickoffs, so its grace is short on purpose --
-running it late would mislabel a post-kickoff quote as a closing line.
-
-Usage
------
-    python scripts/capture_scheduler.py --status   # what is scheduled/ran/missed
-    python scripts/capture_scheduler.py --once     # run whatever is due, exit
-    python scripts/capture_scheduler.py            # poll forever (the daemon)
-
-`--once` is what a Claude session or any ad-hoc invocation should call; it is
-idempotent, so running it repeatedly costs nothing.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -314,7 +275,6 @@ def _player_snapshot_job(day: str) -> Job:
 
 
 def _injury_news_job(day: str) -> Job:
-    """PFT injury-news headline refresh feeding follow_news_for_game's live veto."""
 
     return Job(
         f"injury_news_{day}",
@@ -1185,13 +1145,6 @@ SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}Z)$")
 
 
 def newest_snapshot_age_minutes(relative_dir: str, now: datetime) -> float | None:
-    """Age of the newest UTC-stamped snapshot directory, in minutes.
-
-    Reads the directory NAME rather than filesystem mtime: the name is the
-    capture instant the rest of the project treats as authoritative, and mtime
-    changes for reasons that have nothing to do with when data was captured
-    (a backup restore, a file copy, an antivirus touch).
-    """
 
     root = REPO / relative_dir
     if not root.is_dir():
@@ -1224,13 +1177,6 @@ def already_captured(job: Job, now: datetime) -> tuple[bool, float | None]:
 
 
 def predates_job(job: Job, start: datetime) -> bool:
-    """Did this window close before the job was added to the schedule?
-
-    Kept separate from `snapshot_in_window` because it answers a different
-    question: not "did something else capture this?" but "was there anything
-    here to capture it?". A window older than the job is not a gap in coverage,
-    and must never be reported as one.
-    """
 
     if not job.added_on:
         return False
@@ -1238,14 +1184,6 @@ def predates_job(job: Job, start: datetime) -> bool:
 
 
 def snapshot_in_window(job: Job, start: datetime) -> bool:
-    """Did a snapshot land inside this job's window, whoever produced it?
-
-    Used before declaring a past window MISSED. Without it, the first run of
-    this scheduler would brand every window that the (still-live) Windows tasks
-    captured perfectly well as MISSED -- and since a MISSED row is the signal
-    that captures are being LOST, a wall of false ones on day one would train
-    every future reader to ignore the one alarm that matters.
-    """
 
     if not job.dedupe_dir:
         return False
@@ -1272,22 +1210,6 @@ _SEASON_CACHE: list[Any] = []
 
 
 def season_active(when: datetime) -> bool:
-    """Is ``when`` inside the playing season?
-
-    Every job here exists to capture something about a nearby game, so outside
-    the season they must neither fire nor accumulate MISSED noise -- a
-    scheduler that cries wolf all summer gets ignored in November.
-
-    True when an in-contract game (REG/WC/DIV/CON/SB) falls anywhere in the
-    span from ten days before to three days after ``when``. In season that is
-    always satisfied by the
-    PREVIOUS week's games (never more than seven days back), so mid-season
-    jobs are unconditionally live; the three-day lookahead is what switches
-    the scheduler on for the run-up to week 1, and the ten-day lookback is
-    what keeps it on through the last week's aftermath before it goes quiet.
-    Verified at the boundaries (measured 2026-08-25): off on 2026-09-02, on
-    from 2026-09-08 through 2027-01-20, off again by 2027-02-15.
-    """
 
     if not _SEASON_CACHE:
         hits = sorted((REPO / "data" / "raw").glob("*/schedules.parquet"))
@@ -1332,21 +1254,6 @@ def write_heartbeat(
     code_sha256: str | None = None,
     schedule_digest: str | None = None,
 ) -> None:
-    """Written on every daemon poll (ENG-03), regardless of whether any job was
-    due. A SEPARATE file from STATE_PATH (see HEARTBEAT_PATH's own comment):
-    state["runs"] only changes when a job runs or a window closes, so it
-    cannot show a daemon that is alive but has nothing to do this week. Not
-    called from --once -- that command's behaviour must stay byte-for-byte
-    unchanged; only the long-running loop has a "poll" to report.
-
-    ENG-26: ``code_sha256``/``schedule_digest`` are the values the DAEMON
-    STARTED with (computed once in ``main``'s loop setup and passed in
-    unchanged on every poll thereafter) -- that is the whole point of the
-    version guard, so a file edited on disk after the daemon started must
-    keep reporting the stale, started-with hash rather than silently
-    tracking disk. Both default to a fresh computation when omitted, purely
-    so callers that do not care about code identity (the pre-ENG-26 tests, a
-    one-off inspection) keep working unchanged."""
 
     HEARTBEAT_PATH.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -1376,7 +1283,6 @@ def start_heartbeat_keepalive(
     schedule_digest: str,
     stop: threading.Event,
 ) -> threading.Thread:
-    """Rewrite the heartbeat every ``POLL_SECONDS`` until ``stop`` is set."""
 
     def _beat() -> None:
         while not stop.wait(POLL_SECONDS):
@@ -1406,31 +1312,11 @@ def read_heartbeat() -> dict[str, Any] | None:
 
 
 def compute_code_sha256() -> str:
-    """sha256 of this script's own source file, as currently on disk.
-
-    ENG-26: called once at daemon startup (the result is frozen into a pair
-    of call-site locals the running loop reuses on every poll -- see
-    ``write_heartbeat``'s docstring) and again, fresh, by ``--health`` -- the
-    same function answers both "what did the daemon start with" and "what is
-    on disk right now" depending only on when it is called. Reads
-    ``Path(__file__)`` rather than anything under ``REPO`` so it is immune to
-    tests monkeypatching ``REPO`` to a scratch directory: the code identity
-    this guards is always this literal running file.
-    """
 
     return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
 
 def compute_schedule_digest() -> str:
-    """sha256 over a canonical JSON dump of ``SCHEDULE`` (ENG-26).
-
-    Deliberately a narrow projection -- name/weekday/time/grace/enabled/
-    command/added_on -- rather than every ``Job`` field, so a change to a
-    ``why`` comment or a dedupe threshold (neither of which changes what or
-    when a job runs) does not spuriously flag a live daemon as running a
-    stale schedule. ``sort_keys``+compact separators make the digest stable
-    across dict-construction order and whitespace.
-    """
 
     canonical = [
         {
@@ -1449,8 +1335,6 @@ def compute_schedule_digest() -> str:
 
 
 def _short_hash(value: str | None) -> str:
-    """First 12 hex chars of a hash for display, or ``"unknown"`` when the
-    running daemon's heartbeat predates ENG-26 and never recorded one."""
 
     return value[:12] if value else "unknown"
 
@@ -1480,7 +1364,6 @@ def log(message: str) -> None:
 
 
 def occurrence(job: Job, now: datetime) -> datetime:
-    """The most recent scheduled instant for this job at or before ``now``."""
 
     target_h, target_m = (int(part) for part in job.at.split(":"))
     days_back = (now.weekday() - DAYS[job.day]) % 7
@@ -1494,12 +1377,6 @@ def occurrence(job: Job, now: datetime) -> datetime:
 
 
 def retry_eligible(job: Job, record: dict[str, Any], now: datetime) -> bool:
-    """True when a FAILED occurrence may be attempted again right now.
-
-    Opt-in per job (``retry_backoff_minutes`` and ``max_retries`` both > 0);
-    every pre-existing job leaves both at 0, so this is always False for them
-    and a FAIL record blocks a second attempt exactly as it always has.
-    """
 
     if job.retry_backoff_minutes <= 0 or job.max_retries <= 0:
         return False
@@ -1543,7 +1420,6 @@ def due_jobs(now: datetime, state: dict[str, Any]) -> list[tuple[Job, datetime]]
 
 
 def unsatisfied_prerequisites(job: Job, start: datetime, state: dict[str, Any]) -> list[str]:
-    """Declared dependencies with no successful same-date record, as ``name=status``."""
 
     accepted = {"OK", "ALREADY-CAPTURED"}
     blocked = []
@@ -1555,20 +1431,11 @@ def unsatisfied_prerequisites(job: Job, start: datetime, state: dict[str, Any]) 
 
 
 def prerequisites_satisfied(job: Job, start: datetime, state: dict[str, Any]) -> bool:
-    """Require successful same-date scheduler records for declared dependencies."""
 
     return not unsatisfied_prerequisites(job, start, state)
 
 
 def note_blocked(job: Job, start: datetime, blocked: list[str], state: dict[str, Any]) -> None:
-    """Log ONCE per occurrence that a prerequisite is holding this job back.
-
-    Added 2026-09-09: a blocked job used to be skipped in silence for its whole
-    window and only surfaced as MISSED once the window closed -- for
-    ``weekly_lock`` that is two hours after the fact, on the one day of the
-    week the card is recorded. The notice is remembered on the job's health
-    entry so the daemon's per-minute poll cannot turn one alarm into 120.
-    """
 
     entry = _job_health_entry(state, job.name)
     key = f"{job.name}@{start.date().isoformat()}"
@@ -1583,7 +1450,6 @@ def note_blocked(job: Job, start: datetime, blocked: list[str], state: dict[str,
 
 
 def record_already_captured(job: Job, start: datetime, age: float, state: dict[str, Any]) -> None:
-    """Mark this occurrence satisfied by a capture something else already took."""
 
     state["runs"][f"{job.name}@{start.date().isoformat()}"] = {
         "status": "ALREADY-CAPTURED",
@@ -1597,16 +1463,6 @@ def record_already_captured(job: Job, start: datetime, age: float, state: dict[s
 
 
 def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
-    """Record windows that closed without running, so a gap is visible.
-
-    A `catch_up` job never gets the MISSED verdict: its window closing unrun
-    triggers a run right here, on whichever tick first notices it (the next
-    `--once` or the next poll of the daemon), and the occurrence is recorded
-    CAUGHT_UP instead. `run_job` still writes the state key either way, so
-    the `key in state["runs"]` check above makes a second sweep a no-op --
-    the same mechanism that already stops every other status from re-firing
-    guarantees this can never run twice for one occurrence.
-    """
 
     for job in SCHEDULE:
         if not job.enabled:
@@ -1646,27 +1502,12 @@ def sweep_missed(now: datetime, state: dict[str, Any]) -> None:
 
 
 def failure_detail(stderr: str | None, stdout_tail: str, *, limit: int = 300) -> str:
-    """The END of a failed job's stderr, not its start.
-
-    A multi-step child (``weekly-run``) prints one progress line per step
-    before the traceback, so the first 300 characters are "step 2 ... step 3
-    ..." and the actual error is cut off -- exactly what happened to
-    ``lineups_sun`` on 2026-09-06, whose recorded error was a
-    BootstrapDegeneracyWarning prefix and nothing else. Keep the last
-    ``limit`` characters of the trimmed stderr instead.
-    """
 
     text = (stderr or "").strip() or stdout_tail
     return text[-limit:]
 
 
 def execute_job(command: list[str]) -> tuple[str, str]:
-    """Run one job command to completion; return ``(status, detail)``.
-
-    Shared by the scheduled path (``run_job``) and the on-demand path
-    (``run_job_manually``) so a job exercised by hand runs EXACTLY what the
-    daemon will run -- same argv, same cwd, same timeout, same capture.
-    """
 
     try:
         no_window = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
@@ -1699,9 +1540,6 @@ def dry_command(command: list[str]) -> list[str]:
 
 
 def has_ever_executed(state: dict[str, Any], job_name: str) -> bool:
-    """``True`` once the job's command has run at least once -- scheduled,
-    caught up, or by hand -- regardless of outcome. A job that has never
-    executed is unverified by definition; ``--status`` says so."""
 
     entry = state.get("job_health", {}).get(job_name) or {}
     if any(
@@ -1717,30 +1555,21 @@ def has_ever_executed(state: dict[str, Any], job_name: str) -> bool:
 
 
 def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> int:
-    """Execute one job NOW, ignoring its window -- the ``--run-job`` path.
-
-    Added 2026-09-07 after the first in-season fire of every refresh job
-    failed on an argparse usage line: jobs had been added to ``SCHEDULE`` as
-    argv lists and verified only for their timing, never executed once. This
-    is the mechanism the AGENTS.md rule now requires -- run a new or edited
-    job in the session that writes it. Records ``last_manual_run_at`` /
-    ``last_manual_status`` on the job's health entry (never a dated
-    ``runs`` row, so it can neither satisfy nor fabricate a scheduled
-    window) and logs ``MANUAL-RUN``/``MANUAL-DRY-RUN``.
-    """
 
     command = dry_command(list(job.command)) if dry else list(job.command)
     label = "MANUAL-DRY-RUN" if dry else "MANUAL-RUN"
     log(f"{label} {job.name}: {' '.join(command)}")
     status, detail = execute_job(command)
     log(f"{label} {status} {job.name}: {detail}")
-    entry = _job_health_entry(state, job.name)
+    fresh = load_state()
+    entry = _job_health_entry(fresh, job.name)
     entry["last_manual_run_at"] = datetime.now(tz=ET).isoformat(timespec="seconds")
     entry["last_manual_status"] = f"{status}{' (dry)' if dry else ''}"
     entry["last_manual_detail"] = detail[:300]
     if status != "OK":
         entry["last_error"] = detail[:300]
-    save_state(state)
+    save_state(fresh)
+    _job_health_entry(state, job.name).update(entry)
     print(f"{label} {job.name}: {status}")
     if detail:
         print(detail)
@@ -1753,13 +1582,6 @@ REHEARSE_EXPECTED_FAILURES: frozenset[str] = frozenset({"weekly_lock"})
 
 
 def _last_nonempty_line(text: str, *, limit: int = 120) -> str:
-    """The last non-blank line of ``text``, truncated to ``limit`` chars.
-
-    ``execute_job``'s ``detail`` can itself span several lines (a multi-line
-    stderr tail); the LAST one is the one most likely to name the actual
-    failure, matching ``failure_detail``'s own "keep the end, not the
-    start" reasoning one level up.
-    """
 
     for line in reversed(text.splitlines()):
         stripped = line.strip()
@@ -1821,30 +1643,6 @@ def rehearse_all(
     only_prefix: str = "",
     stop_on_fail: bool = False,
 ) -> int:
-    """Execute every ENABLED job's real argv once, via the exact ``--run-job
-    NAME --dry`` code path (``run_job_manually(job, state, dry=True)``),
-    sequentially in ``SCHEDULE`` order.
-
-    Built 2026-09-09 to replace the ad-hoc loop a session used to hand-run
-    every enabled non-lineup job one at a time: that loop's own pass/fail
-    column regex-matched the wrong token, so the scheduler log had to be
-    read separately to find the truth. Every verdict here instead comes
-    from ``run_job_manually``'s own return code and the
-    ``last_manual_status``/``last_manual_detail`` fields it just wrote into
-    ``state["job_health"][job.name]`` -- never from parsing this function's
-    own printed table.
-
-    ``skip_prefix`` (default ``DEFAULT_REHEARSE_SKIP_PREFIX``) and
-    ``only_prefix`` are comma-separated job-name prefixes; a job is included
-    only when it is enabled, does not start with any ``skip_prefix`` entry,
-    and (when ``only_prefix`` is non-empty) starts with one of its entries.
-    ``stop_on_fail`` halts after the first non-OK job instead of continuing
-    through the full list (default: keep going, matching the manual loop
-    this replaces).
-
-    See ``REHEARSE_EXPECTED_FAILURES`` for the one named, by-design
-    exception to "every non-OK job is a defect".
-    """
 
     jobs = _rehearsal_jobs(skip_prefix=skip_prefix, only_prefix=only_prefix)
     log(
@@ -1901,17 +1699,26 @@ def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool 
         record["caught_up"] = True
     if retries:
         record["retries"] = retries
-    state["runs"][key] = record
-    entry = _job_health_entry(state, job.name)
-    if status in {"OK", "CAUGHT_UP"}:
-        entry["last_success_at"] = record["ran_at"]
-        entry["consecutive_failures"] = 0
-    else:
-        entry["last_failure_at"] = record["ran_at"]
-        entry["last_error"] = detail[:300]
-        entry["consecutive_failures"] = int(entry.get("consecutive_failures", 0)) + 1
-    save_state(state)
+    fresh = load_state()
+    for target in (fresh, state):
+        target.setdefault("runs", {})[key] = record
+        entry = _job_health_entry(target, job.name)
+        if status in {"OK", "CAUGHT_UP"}:
+            entry["last_success_at"] = record["ran_at"]
+            entry["consecutive_failures"] = 0
+        else:
+            entry["last_failure_at"] = record["ran_at"]
+            entry["last_error"] = detail[:300]
+            entry["consecutive_failures"] = int(entry.get("consecutive_failures", 0)) + 1
+    save_state(fresh)
+    _merge_health(state, fresh)
     log(f"{status} {job.name}: {detail}")
+
+
+def _merge_health(state: dict[str, Any], fresh: dict[str, Any]) -> None:
+    for name, entry in (fresh.get("job_health") or {}).items():
+        _job_health_entry(state, name).update(entry)
+    state.setdefault("runs", {}).update(fresh.get("runs") or {})
 
 
 def prune(state: dict[str, Any], keep_days: int = 60) -> None:
@@ -1922,16 +1729,6 @@ def prune(state: dict[str, Any], keep_days: int = 60) -> None:
 
 
 def build_health_report(now: datetime, state: dict[str, Any]) -> dict[str, Any]:
-    """The fail-visible summary for ENG-03: heartbeat age, daemon alive/dead,
-    every currently-recorded MISSED window, and per-source freshness.
-
-    ``report["ok"]`` is False (and the CLI exits non-zero) when the daemon is
-    dead, any enabled job has an unacknowledged MISSED row still in state, any
-    source that should currently be producing data is `missing`
-    (`nfl_ats.capture_freshness.any_unexpected_missing`), or the daemon's code
-    / SCHEDULE (ENG-26) no longer matches disk -- the ENG-03 spec's three
-    conditions plus the ENG-26 version guard.
-    """
 
     heartbeat = read_heartbeat()
     heartbeat_age_seconds: float | None = None
@@ -2006,7 +1803,6 @@ def build_health_report(now: datetime, state: dict[str, Any]) -> dict[str, Any]:
 
 
 def _health_report_json(report: dict[str, Any]) -> dict[str, Any]:
-    """`build_health_report`'s dict, with `sources` converted to plain dicts."""
 
     out = dict(report)
     out["sources"] = [source.as_dict() for source in report["sources"]]
@@ -2086,9 +1882,6 @@ def render_health(report: dict[str, Any]) -> str:
 
 
 def describe_daemon(now: datetime) -> str:
-    """One line a session can act on without guessing: alive (pid, last poll
-    age) or not. Added 2026-09-09 after --status showed nothing about the
-    daemon itself and sessions "restarted" a live one mid-job."""
     heartbeat = read_heartbeat()
     if heartbeat is None:
         return "NOT RUNNING (no heartbeat file) -- start scripts/start_capture_scheduler.cmd"
@@ -2144,18 +1937,6 @@ def show_status(now: datetime, state: dict[str, Any]) -> None:
 
 
 def acknowledge_missed(key: str, reason: str, state: dict[str, Any]) -> int:
-    """ENG-26: record an acknowledgement for an existing MISSED row.
-
-    Never deletes or overwrites the MISSED status -- a MISSED row is real
-    history (the window closed with nothing captured), and the module
-    docstring's whole design is that this one alarm must stay trustworthy.
-    Acknowledging only adds an `"acknowledged": {"reason", "at"}` sub-record
-    that `build_health_report`/`render_health` read to stop counting THIS
-    occurrence toward the non-zero `--health` exit, while still showing it
-    (as `MISSED (acknowledged: <reason>)`) rather than hiding it. Requires
-    the row to exist and currently be MISSED, so a typo'd key or a row that
-    is not actually MISSED cannot silently no-op.
-    """
 
     record = state.get("runs", {}).get(key)
     if record is None:
@@ -2177,13 +1958,6 @@ def acknowledge_missed(key: str, reason: str, state: dict[str, Any]) -> int:
 
 
 def pid_is_alive(pid: int) -> bool:
-    """True if a process with this pid currently exists.
-
-    Windows has no `os.kill(pid, 0)` signal-0 probe the way POSIX does;
-    `OpenProcess` is the standard alternative and needs no elevated rights
-    for a query-only handle. Tests monkeypatch this function directly rather
-    than spawning or killing real processes.
-    """
 
     if sys.platform == "win32":
         import ctypes
@@ -2208,15 +1982,6 @@ def pid_is_alive(pid: int) -> bool:
 
 
 def daemon_is_running(now: datetime) -> tuple[bool, int | None]:
-    """ENG-26: is a daemon that wrote the current heartbeat still alive?
-
-    True only when a heartbeat file exists, is fresh (same
-    `HEARTBEAT_STALE_AFTER_SECONDS` threshold `--health` uses), and its pid
-    still resolves to a live process -- catches both a daemon that quietly
-    stopped polling and a heartbeat file that survived a hard crash the
-    daemon never got to overwrite. Returns the pid alongside the verdict
-    (whether or not it is alive) so a caller can print it either way.
-    """
 
     heartbeat = read_heartbeat()
     if heartbeat is None:
@@ -2404,6 +2169,7 @@ def main(argv: list[str] | None = None) -> int:
                 state = load_state()
                 for job, start in due_jobs(now, state):
                     run_job(job, start, state)
+                _merge_health(state, load_state())
                 sweep_missed(now, state)
                 prune(state)
                 save_state(state)

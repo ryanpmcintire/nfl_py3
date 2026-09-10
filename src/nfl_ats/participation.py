@@ -1,5 +1,3 @@
-"""Immutable play-participation data and season-lagged player ratings."""
-
 from __future__ import annotations
 
 import hashlib
@@ -77,8 +75,6 @@ PARTICIPATION_RATING_COLUMNS = (
 
 @dataclass(frozen=True)
 class ParticipationSnapshot:
-    """An immutable, season-partitioned nflverse participation snapshot."""
-
     snapshot_id: str
     root: Path
     seasons: tuple[int, ...]
@@ -114,7 +110,6 @@ def canonicalize_participation(
     *,
     season: int | None = None,
 ) -> pd.DataFrame:
-    """Normalize the stable play-participation storage contract."""
 
     result = frame.copy()
     if "nflverse_game_id" in result.columns:
@@ -184,7 +179,6 @@ def write_participation_snapshot(
     raw_root: Path,
     snapshot_id: str | None = None,
 ) -> ParticipationSnapshot:
-    """Write season partitions and publish their manifest last."""
 
     seasons = tuple(sorted(season_frames))
     if not seasons:
@@ -238,7 +232,6 @@ def fetch_participation_snapshot(
     seasons: list[int],
     raw_root: Path,
 ) -> ParticipationSnapshot:
-    """Download participation one season at a time to bound peak memory."""
 
     if not seasons or seasons != sorted(set(seasons)):
         raise ValueError("Participation seasons must be non-empty, unique, and sorted")
@@ -330,7 +323,6 @@ def build_participation_play_table(
     participation: pd.DataFrame,
     pbp: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Join valid competitive 11-on-11 participation to canonical PBP EPA."""
 
     canonical = canonicalize_participation(participation)
     plays = analysis_plays(pbp)
@@ -399,7 +391,6 @@ def _rating_feature_rows(
 
 
 def canonicalize_participation_ratings(frame: pd.DataFrame) -> pd.DataFrame:
-    """Validate ratings as season-lagged inputs rather than current-game outcomes."""
 
     require_columns(frame, PARTICIPATION_RATING_COLUMNS, "participation_ratings")
     result = frame.loc[:, list(PARTICIPATION_RATING_COLUMNS)].copy()
@@ -460,7 +451,6 @@ def build_season_lagged_player_ratings(
     reliability_prior_plays: float = PARTICIPATION_RATING_RELIABILITY_PRIOR_PLAYS,
     epa_clip: float = PARTICIPATION_RATING_EPA_CLIP,
 ) -> pd.DataFrame:
-    """Estimate regularized player effects using only seasons before each target."""
 
     if lookback_seasons < 1:
         raise ValueError("lookback_seasons must be positive")

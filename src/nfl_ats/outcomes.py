@@ -1,5 +1,3 @@
-"""Walk-forward comparison of straight-up, ATS, and margin forecasts."""
-
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
@@ -146,7 +144,6 @@ def _fit_week_models(
 
 
 def normalize_outcome_methods(methods: tuple[str, ...]) -> tuple[OutcomeMethod, ...]:
-    """Validate and canonicalize an outcome-method subset."""
 
     if not methods:
         raise ValueError("At least one outcome method is required")
@@ -467,13 +464,6 @@ def _target_and_models_for_week(
     ridge_alpha: float,
     methods: tuple[OutcomeMethod, ...],
 ) -> tuple[pd.DataFrame, dict[str, MarginModel], CoverModel | None, CoverModel | None]:
-    """Leak-safe target games and models trained strictly before the target week.
-
-    Shared by ``score_outcome_week`` and ``score_outcome_week_line_sweep`` so
-    both use the exact same training cutoff and fitted models -- the line
-    sweep is a re-evaluation of the same walk-forward fit at alternative
-    lines, never a fresh fit with a different (potentially leaky) cutoff.
-    """
 
     if feature_profile not in MARGIN_FEATURE_PROFILES:
         raise ValueError(f"Unknown outcome feature profile: {feature_profile}")
@@ -519,27 +509,6 @@ def score_outcome_week(
     key_line_pick_read: KeyLinePickRead | None = None,
     key_line_pick_read_log: dict[str, ServedKeyLineRead] | None = None,
 ) -> pd.DataFrame:
-    """Score one week. ``center_offsets`` (game_id -> points) is the promoted
-    home-side location correction for the served ``market_residual`` method
-    only (docs/home_side_offset_promotion.md); ``None`` keeps every caller's
-    historical output unchanged.
-
-    ``discrete_read`` (docs/discrete_push_read.md) is the served week's
-    mass-preserving lattice: when given, the ``market_residual`` rows'
-    ``push_probability`` / ``home_cover_probability_excluding_push`` /
-    ``home_loss_probability`` are read off it instead of the rounded
-    residual sample. Every other column -- the pick-deciding
-    ``home_cover_probability`` above all -- is bit-for-bit what ``None``
-    returns. ``discrete_read_log`` (game_id -> both reads) lets the caller
-    record the replaced smooth split without a second fit.
-
-    ``key_line_pick_read`` (docs/key_line_pick_read.md) is the served
-    key-line policy: on ``market_residual`` rows whose quoted line sits
-    exactly on one of its atoms (3 or 7), ``home_cover_probability`` -- and
-    so the pick -- is read off the same lattice at the same served point.
-    Applied after the offset and the push split; ``None`` leaves every
-    caller's output bit-for-bit unchanged. ``key_line_pick_read_log``
-    receives both two-way reads per game."""
 
     target, margin_models, straight_up, direct_ats = _target_and_models_for_week(
         features,
@@ -583,12 +552,6 @@ MARGIN_DISTRIBUTION_METHODS: tuple[str, ...] = ("market", "fair_margin", "market
 def center_offset_for_games(
     games: pd.DataFrame, center_offsets: Mapping[str, float]
 ) -> npt.NDArray[np.float64]:
-    """Row-aligned point shifts for ``games`` from a game_id -> points map.
-
-    A game missing from the map gets 0.0 (no correction), never an error: the
-    correction is a served policy layered on the model, and a gap in it must
-    degrade to the uncorrected forecast rather than block the lock.
-    """
 
     ids = games["game_id"].astype(str)
     return np.asarray([float(center_offsets.get(game_id, 0.0)) for game_id in ids], dtype=float)
@@ -605,13 +568,6 @@ def fit_margin_models_for_week(
     ridge_alpha: float = 10.0,
     methods: tuple[str, ...] = MARGIN_DISTRIBUTION_METHODS,
 ) -> tuple[pd.DataFrame, dict[str, MarginModel]]:
-    """Target games and fitted margin-distribution models for one week.
-
-    A thin, public entry point over the same leak-safe cutoff logic
-    ``score_outcome_week`` uses, for callers (such as re-scoring at
-    externally supplied lines) that need the fitted ``MarginModel`` objects
-    themselves rather than a pre-summarized prediction card.
-    """
 
     unknown = sorted(set(methods).difference(MARGIN_DISTRIBUTION_METHODS))
     if unknown:
@@ -648,29 +604,6 @@ def score_outcome_week_line_sweep(
     discrete_read: DiscretePushReader | None = None,
     key_line_pick_read: KeyLinePickRead | None = None,
 ) -> pd.DataFrame:
-    """Line-sweep confidence curves for one week's margin-distribution methods.
-
-    Fits the same walk-forward models ``score_outcome_week`` would (cutoff
-    strictly before the target week's earliest kickoff) and evaluates each
-    margin-based method's predictive distribution across a grid of
-    alternative home spreads. Straight-up and direct-ATS methods have no
-    margin distribution to sweep and are excluded even if requested.
-
-    ``discrete_read`` (docs/discrete_push_read.md) replaces the served
-    ``market_residual`` method's three-way split at EVERY alternative line
-    with the mass-preserving lattice read at that line; the two-way
-    ``home_cover_probability`` / ``pick_probability`` / ``confidence``
-    columns stay on the smooth read, so the sweep's side never disagrees
-    with the card's.
-
-    ``key_line_pick_read`` (docs/key_line_pick_read.md) then applies the
-    served key-line policy at every ALTERNATIVE line that sits on an atom:
-    the two-way read there is the lattice's, so the line-0 row equals the
-    card's served number on a touched game and the flip-line scan reads the
-    served policy at each hypothetical line.
-
-    Returns a tidy table with one row per (method, game, alternative line).
-    """
 
     target, margin_models = fit_margin_models_for_week(
         features,
@@ -747,15 +680,6 @@ def walk_forward_key_number_mass(
     key_numbers: Sequence[int] = DEFAULT_KEY_NUMBERS,
     ridge_alpha: float = 10.0,
 ) -> pd.DataFrame:
-    """Leak-safe walk-forward implied key-number mass, one row per game/method.
-
-    Mirrors ``walk_forward_outcomes``'s weekly cutoff exactly -- each week's
-    models are trained strictly on games before that week's earliest
-    kickoff -- but additionally records each game's implied probability mass
-    on the key numbers, which the summarized outcome card does not retain.
-    Intended for ``key_numbers.summarize_key_number_calibration``, a
-    validation report rather than a model-selection signal.
-    """
 
     unknown = sorted(set(methods).difference(MARGIN_DISTRIBUTION_METHODS))
     if unknown:
@@ -820,20 +744,6 @@ def outcome_bootstrap_intervals(
     on_degenerate: OnDegenerate = "warn",
     min_blocks: int = MIN_BLOCKS_FOR_INTERVAL,
 ) -> pd.DataFrame:
-    """Block-bootstrap methods and market deltas from sufficient statistics.
-
-    Every reported metric is reducible to sums and counts inside a week or
-    season. Aggregating those contributions once and matrix-multiplying sampled
-    block counts is exactly equivalent to repeatedly materializing sampled
-    pandas frames, while avoiding thousands of groupby/metric passes.
-
-    Every row carries ``blocks`` and ``degenerate_blocks``. Below the measured
-    floor (``estimation_variance.MIN_BLOCKS_FOR_INTERVAL``) the percentile
-    bootstrap's coverage is nowhere near nominal, so ``lower``/``upper`` (and
-    ``delta_lower``/``delta_upper``) on a flagged row are not a 95% interval
-    and must not be read as one. See ``experiments.paired_feature_comparisons``
-    for the same guard on paired deltas.
-    """
 
     if samples < 10:
         raise ValueError("samples must be at least 10")
@@ -917,7 +827,6 @@ def outcome_bootstrap_intervals(
 def _outcome_bootstrap_contributions(
     predictions: pd.DataFrame, group_columns: list[str]
 ) -> pd.DataFrame:
-    """Aggregate additive metric components once per block and method."""
 
     working = predictions.copy()
     if len(group_columns) == 1:
@@ -993,7 +902,6 @@ def _outcome_bootstrap_contributions(
 
 
 def _metrics_from_bootstrap_totals(totals: np.ndarray) -> dict[str, np.ndarray]:
-    """Convert sampled sufficient-statistic totals to reported metrics."""
 
     index = {name: position for position, name in enumerate(_OUTCOME_BOOTSTRAP_STATS)}
 

@@ -1,5 +1,3 @@
-"""Generate a tracked, human-readable session handoff from authoritative state."""
-
 from __future__ import annotations
 
 import re
@@ -29,8 +27,6 @@ HANDOFF_VERSION = 1
 
 @dataclass(frozen=True)
 class RepositoryState:
-    """Small Git snapshot captured immediately before the handoff is written."""
-
     branch: str
     commit: str
     subject: str
@@ -56,7 +52,6 @@ def _git(repo_root: Path, *arguments: str) -> str:
 
 
 def inspect_repository(repo_root: Path) -> RepositoryState:
-    """Read the current branch, commit, and worktree without changing Git state."""
 
     branch = _git(repo_root, "branch", "--show-current") or "DETACHED"
     commit = _git(repo_root, "rev-parse", "--short=12", "HEAD")
@@ -240,14 +235,6 @@ def _model_markdown(artifacts_root: Path) -> tuple[str, dict[str, Any] | None]:
 
 
 def _accuracy_disclaimer(active: dict[str, Any] | None) -> str:
-    """Derive the historical-accuracy disclaimer from the active model, not a literal.
-
-    A hardcoded figure here drifts from reality the moment the active model
-    changes (it once read "52.05%" while the model evidence above it reported
-    51.57%). The number is now read from `historical_evaluation` every render;
-    the disclaimer's WARNING never changes (AGENTS.md forbids describing this
-    accuracy as proof of a profitable or stable market edge).
-    """
 
     if active is None:
         return (
@@ -279,7 +266,6 @@ def check_session_handoff(
     handoff_path: Path,
     registry_root: Path | None = None,
 ) -> dict[str, Any]:
-    """Fail when the tracked handoff or README generated blocks are stale."""
 
     path = handoff_path if handoff_path.is_absolute() else repo_root / handoff_path
     if not path.is_file():
@@ -350,7 +336,6 @@ def render_handoff(
     *,
     generated_at: datetime,
 ) -> tuple[str, dict[str, Any]]:
-    """Render the handoff and return machine-readable headline facts."""
 
     model_text, active = _model_markdown(artifacts_root)
     accuracy_disclaimer = _accuracy_disclaimer(active)
@@ -488,14 +473,6 @@ def write_session_handoff(
     state: RepositoryState | None = None,
     registry_root: Path | None = None,
 ) -> dict[str, Any]:
-    """Inspect current state and atomically refresh the tracked handoff.
-
-    Also refreshes the README's own generated state blocks (see
-    ``nfl_ats.readme_state``) when a README exists at the repo root -- the
-    tracked pre-commit hook already runs this command and stages HANDOFF.md
-    before every commit, so wiring the README refresh here extends that same
-    protection instead of requiring a second hook.
-    """
 
     root = repo_root.resolve()
     git_state = state or inspect_repository(root)

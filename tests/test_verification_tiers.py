@@ -1,17 +1,3 @@
-"""Contract tests for the fast/full verification tiers (ENG-11).
-
-Why this exists
-----------------
-``scripts/verify_fast.py`` (PR-speed: safety/typing/lint + ``-m "not full"``)
-and ``scripts/verify_full.py`` (the unchanged AGENTS.md release gate) only do
-their job if the ``full`` marker is actually declared (``--strict-markers`` is
-on, so an undeclared marker is a hard collection error, not a silent no-op)
-and if ``-m "not full"`` really does deselect the slow/model-fitting/
-real-data/determinism tests tagged with it. These tests pin both, plus that
-the two scripts are present and syntactically valid, without re-running either
-tier's (multi-second to multi-minute) actual pytest step.
-"""
-
 from __future__ import annotations
 
 import ast
@@ -37,10 +23,6 @@ def _pytest_ini_options() -> dict[str, object]:
 
 
 def _collected_count(output: str) -> int:
-    """Parse pytest's ``--collect-only -q`` trailer.
-
-    E.g. "31/3765 tests collected (3734 deselected)".
-    """
 
     for line in reversed(output.splitlines()):
         stripped = line.strip()
@@ -75,6 +57,7 @@ def test_full_marker_selects_a_nonempty_tagged_set(tmp_path: Path) -> None:
             "-q",
             "-m",
             "full",
+            "-n0",
             "-p",
             "no:cacheprovider",
             "--basetemp",
@@ -90,9 +73,6 @@ def test_full_marker_selects_a_nonempty_tagged_set(tmp_path: Path) -> None:
 
 
 def test_not_full_deselects_a_known_tagged_test(tmp_path: Path) -> None:
-    """One representative ENG-11-tagged node (a real HGB model fit) must be
-    absent from the ``-m "not full"`` collection -- the fast tier's whole
-    reason to exist."""
 
     completed = subprocess.run(
         [
@@ -104,6 +84,7 @@ def test_not_full_deselects_a_known_tagged_test(tmp_path: Path) -> None:
             "-m",
             "not full",
             "tests/test_margin.py",
+            "-n0",
             "-p",
             "no:cacheprovider",
             "--basetemp",

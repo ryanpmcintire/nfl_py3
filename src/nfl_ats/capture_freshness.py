@@ -1,85 +1,3 @@
-"""Per-source on-disk freshness for the recurring point-in-time captures (ENG-03).
-
-Why this exists
-----------------
-``scripts/capture_scheduler.py --status`` answers "did each SCHEDULED
-occurrence run" -- it says nothing about whether the DATA those jobs are
-supposed to produce actually exists and is recent. A job can show ``OK`` in
-scheduler state while its output directory is empty (a bug in the underlying
-capture script, an API outage that still exits 0, a wrong path) and
-``--status`` would never notice. This module answers the complementary
-question directly from disk: for each capture SOURCE, what is the newest
-artifact, how old is it, and is that age inside or outside what the schedule
-itself implies is normal.
-
-Cadence derivation (not a magic number)
-----------------------------------------
-Every capture ``Job`` in ``scripts/capture_scheduler.SCHEDULE`` already
-declares ``dedupe_dir`` -- the directory its own command writes timestamped
-snapshots into, used by the scheduler's own ``already_captured`` /
-``snapshot_in_window`` checks. This module groups jobs by that SAME field to
-build one "source" per directory (so a schedule edit that adds, removes, or
-retimes a job updates the freshness budget for free instead of drifting out
-of sync with a hand-maintained table), and derives each source's expected
-cadence as::
-
-    budget_minutes = (largest gap, in minutes, between any two of that
-                       source's ENABLED job occurrences over one full
-                       calendar week, wrapping from the week's last
-                       occurrence back to its first the following week)
-                      + (the largest grace_minutes among those same jobs)
-
-The gap term is the worst-case time the schedule itself expects this source
-to go without a fresh capture if every job runs exactly on time -- the same
-arithmetic the ``SCHEDULE`` docstrings already do by hand to justify each
-job's own ``dedupe_minutes`` (e.g. "odds: 225 min at Sun 12:30 -> 16:15");
-this module just does it once, generally, for every source, from the
-schedule itself. The grace term is a lateness buffer: a job still inside its
-own declared grace window is not yet a scheduling failure, so flagging its
-source stale before that grace closes would be a false alarm.
-
-A source with only one weekly job gets a 7-day gap plus its own grace --
-correct, and loose on purpose: a tighter number would false-alarm at the end
-of every cycle, and a false "stale" is exactly as corrosive to a monitoring
-signal as a missed real one (the same trade `snapshot_in_window`'s docstring
-makes in ``capture_scheduler.py`` for ``MISSED``).
-
-Two locators, not one
-----------------------
-Most sources write a fresh ``YYYYMMDDTHHMMSSZ``-named snapshot directory per
-capture; ``newest_snapshot_instant`` reads the newest directory NAME (never
-filesystem mtime -- mtime moves for reasons that have nothing to do with
-capture time: a backup restore, a file copy, an antivirus touch). One source
-today, ``lineups`` (``artifacts/lineups``), instead overwrites one stable
-file in place on every run (read: ``src/nfl_ats/lineup_view.py``'s
-``STABLE_LINEUP_PATH`` docstring, "REPLACED on every refresh, not
-accumulated") and stamps its own ``generated_at`` field inside the JSON
-payload; ``newest_json_field_instant`` reads that instead, for the same
-directory-name-not-mtime reason. ``JSON_FIELD_LOCATORS`` declares which
-sources use which.
-
-No dependency on ``scripts.capture_scheduler``
-------------------------------------------------
-This module never imports ``scripts.capture_scheduler``: a ``src/nfl_ats``
-package reaching into ``scripts/`` would invert the project's layout, and
-risks an import cycle the day ``capture_scheduler.py`` imports this module
-back (which it does, for ``--health``). Callers pass the schedule data in,
-duck-typed against ``ScheduleJob``, instead.
-
-Consumed by ENG-14 (``nfl_ats.source_freshness_policy``)
------------------------------------------------------------
-That module's docstring names this one as its future join point: it computes
-its own budgets independently today (mirroring the same gap+grace algorithm
-above against a hand-copied ``SCHEDULE`` excerpt) and reads snapshots via
-private ``_newest_snapshot_instant`` / ``_json_field_instant`` helpers with
-the same directory-name and JSON-field semantics as this module's
-``newest_snapshot_instant`` / ``newest_json_field_instant`` below -- those two
-are kept public specifically so that module can import them directly instead
-of keeping its own private copies, without needing anything else from this
-file. This module does not modify that one; wiring is left to that module's
-own owner.
-"""
-
 from __future__ import annotations
 
 import json
@@ -118,18 +36,6 @@ JSON_FIELD_LOCATORS: dict[str, tuple[str, str]] = {
 
 
 class ScheduleJob(Protocol):
-    """The subset of ``scripts.capture_scheduler.Job`` this module reads.
-
-    A ``Protocol``, not an import of the concrete ``Job`` dataclass -- see the
-    module docstring for why this module never imports
-    ``scripts.capture_scheduler``. ``Job`` satisfies this structurally.
-
-    Declared as read-only ``@property`` members, not plain annotations: mypy
-    treats a plain Protocol attribute as requiring a SETTABLE variable, which
-    a ``@dataclass(frozen=True)`` (``Job`` is one) never provides -- this
-    module only ever reads these fields, so the Protocol should say so.
-    """
-
     @property
     def name(self) -> str: ...
     @property
@@ -148,8 +54,6 @@ class ScheduleJob(Protocol):
 
 @dataclass(frozen=True)
 class SourceFreshness:
-    """One source's freshness verdict: newest artifact, age, and budget status."""
-
     name: str
     dedupe_dir: str
     enabled_job_count: int
@@ -186,13 +90,6 @@ def _friendly_name(dedupe_dir: str) -> str:
 
 
 def group_by_source(entries: Iterable[ScheduleJob]) -> dict[str, list[ScheduleJob]]:
-    """Group schedule jobs by the on-disk directory their output shares.
-
-    Jobs with an empty ``dedupe_dir`` (e.g. ``weekly_lock``, the ``refresh_*``
-    passes, ``backup_data``) produce no artifact directory of their own and
-    are excluded -- they are orchestration/derivation steps, not capture
-    sources.
-    """
 
     groups: dict[str, list[ScheduleJob]] = {}
     for job in entries:
@@ -203,12 +100,6 @@ def group_by_source(entries: Iterable[ScheduleJob]) -> dict[str, list[ScheduleJo
 
 
 def derive_budget_minutes(jobs: Iterable[ScheduleJob]) -> float | None:
-    """The expected-cadence budget for one source; see the module docstring.
-
-    Returns ``None`` when no job in ``jobs`` is enabled -- there is nothing to
-    derive a cadence from, and the caller should treat the source as
-    ``disabled`` rather than compute a meaningless budget.
-    """
 
     enabled = [job for job in jobs if job.enabled]
     if not enabled:
@@ -225,9 +116,6 @@ def derive_budget_minutes(jobs: Iterable[ScheduleJob]) -> float | None:
 
 
 def _parse_timestamp(value: str) -> datetime | None:
-    """Parse the project's compact UTC stamp (``YYYYMMDDThhmmssZ``, used both
-    by snapshot directory names and by the lineup payload's ``generated_at``),
-    falling back to standard ISO 8601 for any other JSON-field locator."""
 
     match = _SNAPSHOT_NAME.match(value)
     if match:
@@ -243,14 +131,6 @@ def _parse_timestamp(value: str) -> datetime | None:
 
 
 def newest_snapshot_instant(root: Path) -> datetime | None:
-    """Newest ``YYYYMMDDTHHMMSSZ``-named subdirectory instant under ``root``.
-
-    Reads the directory NAME, never filesystem mtime -- see the module
-    docstring's "Two locators" section for why. Public: this is the ENG-03
-    equivalent of ``nfl_ats.source_freshness_policy``'s private
-    ``_newest_snapshot_instant``, kept importable for that module's own future
-    join point (see this module's docstring).
-    """
 
     if not root.is_dir():
         return None
@@ -268,12 +148,6 @@ def newest_snapshot_instant(root: Path) -> datetime | None:
 
 
 def newest_json_field_instant(path: Path, field: str) -> datetime | None:
-    """The timestamp in ``field`` of the JSON file at ``path``, or ``None``.
-
-    Public for the same reason as ``newest_snapshot_instant`` -- the ENG-03
-    equivalent of ``nfl_ats.source_freshness_policy``'s private
-    ``_json_field_instant``.
-    """
 
     if not path.is_file():
         return None
@@ -288,7 +162,6 @@ def newest_json_field_instant(path: Path, field: str) -> datetime | None:
 
 
 def newest_artifact_at(repo_root: Path, dedupe_dir: str) -> datetime | None:
-    """The newest artifact instant for one source, whichever locator it uses."""
 
     if dedupe_dir in JSON_FIELD_LOCATORS:
         relative_path, field = JSON_FIELD_LOCATORS[dedupe_dir]
@@ -303,16 +176,6 @@ def compute_freshness(
     now: datetime,
     season_active: Callable[[datetime], bool] | None = None,
 ) -> list[SourceFreshness]:
-    """One ``SourceFreshness`` row per distinct ``dedupe_dir`` in ``entries``.
-
-    ``season_active``, if given, is called with ``now`` to decide
-    ``expected_active`` for a source whose jobs are ALL season-guarded (e.g.
-    the seven ``inactives_*`` jobs) -- a season-guarded source with nothing on
-    disk during the offseason is not a scheduling failure, and the caller
-    (``capture_scheduler.py``'s ``--health``) should not exit non-zero over it.
-    A source with at least one non-season-guarded job (e.g. the six odds
-    captures) is always ``expected_active``.
-    """
 
     now_utc = now.astimezone(UTC)
     results: list[SourceFreshness] = []
@@ -379,13 +242,11 @@ def compute_freshness(
 
 
 def any_unexpected_missing(sources: Iterable[SourceFreshness]) -> bool:
-    """True if a source that should currently be producing data has nothing."""
 
     return any(source.status == "missing" and source.expected_active for source in sources)
 
 
 def render_table(sources: Iterable[SourceFreshness]) -> str:
-    """A fixed-width text table, used by ``capture_scheduler.py --health``."""
 
     rows = list(sources)
     if not rows:

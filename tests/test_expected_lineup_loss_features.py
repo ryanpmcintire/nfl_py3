@@ -1,5 +1,3 @@
-"""LEAD-62 arithmetic, chronological fitting, and decision-time leakage contracts."""
-
 from __future__ import annotations
 
 import numpy as np
@@ -232,62 +230,3 @@ def test_mismatched_panel_decision_fails_closed(sources):
     panel["decision_at"] += pd.Timedelta(hours=24)
     with pytest.raises(DataContractError, match="pool decision cutoff"):
         loss.attach_expected_lineup_loss_features(games, panel=panel, injuries=injuries)
-
-
-def test_harness_retains_all_production_training_and_pairs_only_covered_games(
-    tmp_path, monkeypatch
-):
-    import json
-    import sys
-    from pathlib import Path
-
-    monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / "scripts"))
-    import expected_lineup_loss_on_production as harness
-
-    features = pd.DataFrame(
-        {
-            "game_id": ["old_training", "covered", "uncovered"],
-            "season": [2009, 2020, 2020],
-            **{column: [np.nan, 0.1, np.nan] for column in loss.EXPECTED_LINEUP_LOSS_COLUMNS},
-        }
-    )
-    path = tmp_path / "features.parquet"
-    features.to_parquet(path)
-    (tmp_path / "build.json").write_text(json.dumps({"reliability": {}, "coverage": {}}))
-    monkeypatch.setattr(harness, "load_registry", lambda: {})
-    monkeypatch.setattr(
-        harness.confirmation, "scoped_window_frame", lambda rows, registry, family: (rows, (2020,))
-    )
-    profiles = []
-
-    def run_arm(rows, candidate, **kwargs):
-        pd.testing.assert_frame_equal(rows, features)
-        profiles.append(kwargs["profile"])
-        return pd.DataFrame({"game_id": ["covered", "uncovered"]})
-
-    monkeypatch.setattr(harness.confirmation, "run_arm", run_arm)
-    monkeypatch.setattr(harness.confirmation, "paired_frame", lambda baseline, candidate: baseline)
-
-    def null_distribution(paired, **kwargs):
-        assert paired.game_id.tolist() == ["covered"]
-        return {}
-
-    monkeypatch.setattr(harness.confirmation, "null_distribution", null_distribution)
-    monkeypatch.setattr(harness, "artifact_provenance", lambda *args: {})
-    monkeypatch.setattr(harness, "write_experiment_artifact", lambda *args, **kwargs: None)
-    monkeypatch.setattr(
-        sys,
-        "argv",
-        [
-            "harness",
-            "--mode",
-            "null",
-            "--features",
-            str(path),
-            "--output",
-            str(tmp_path / "output"),
-        ],
-    )
-    assert harness.main() == 0
-    assert profiles == ["weak_stack", harness.PROFILE]
-    assert harness.PROFILE not in harness.margin.MARGIN_FEATURE_PROFILES

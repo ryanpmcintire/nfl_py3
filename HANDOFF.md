@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T11:08:59.436303+00:00`
+Refreshed at: `2026-09-10T16:41:44.439577+00:00`
 
 ## Start here
 
@@ -20,22 +20,29 @@ Refreshed at: `2026-09-10T11:08:59.436303+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `92227fe287e8` — Reduced model at 10.5+: a walk-forward family pair is +0.13 through the card (P+ 0.70) but its chosen pair leans on the least reliable block; the sharper finding is that the served 90-column model's own prediction stream has zero split-half reliability (-0.02 overall, -0.14 at 10.5+) while results+elo alone is +0.50
-- Pending change set: 14 paths
+- Baseline commit: `1edcfe5f3761` — Freeze every published number at the pick deadline: the card and the history page now show what the site said when the pick locked, never a later refit
+- Pending change set: 1041 paths
+  - `M  .githooks/pre-commit`
+  - `M  .gitignore`
+  - `M  AGENTS.md`
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  docs/audit_20260908.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
+  - `M  docs/mod17_joint_residual_model.md`
   - `M  docs/model.html`
-  - `M  registry/weak_signals.json`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_site_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `A  src/nfl_ats/published_picks.py`
-  - `M  src/nfl_ats/publishing.py`
-  - `M  tiebreaker.json`
+  - `M  docs/play_probability_model.md`
+  - `M  docs/site_content_pipeline.md`
+  - `M  docs/tiebreaker.md`
+  - `M  pyproject.toml`
+  - `A  registry/experiments/margin-backtest/20260910T154130Z.json`
+  - `A  registry/experiments/margin-backtest/20260910T155650Z.json`
+  - `A  registry/experiments/margin-backtest/20260910T161359Z.json`
+  - ...and 1021 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -44,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `2e8c616b476dd0d2`
+- Model ID: `fc235cf96cf86086`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260910T005854Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260910T163000Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-10T00:54:52.334326+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-10T16:14:48.443646+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T10:56:11.432360+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `fc235cf96cf86086`, published `2026-09-10T16:19:14.089314+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

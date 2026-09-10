@@ -1,17 +1,3 @@
-"""Construction, sign-convention, censoring and leakage contracts for the
-officiating-crew leads (LEAD-31/32/34; LEAD-33 is skipped for a documented
-source gap -- see ``docs/officials_crew_leads.md``).
-
-Most tests inject an already-built ``home_away_penalty_game_table``-shaped
-(or ``rookie_crew_table``-shaped) DataFrame directly via each function's
-``table``/``trait`` keyword, so no real ``data/raw/officials/*`` snapshot is
-read. One integration test
-(``test_home_away_penalty_game_table_crosswalks_officials_to_game_penalties``)
-builds a tiny on-disk fixture tree mirroring
-``tests/test_experiment_runner.py``'s own officials/game_penalties/schedules
-fixture convention, to pin the crosswalk join itself.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -124,14 +110,6 @@ def test_home_away_penalty_game_table_crosswalks_officials_to_game_penalties(
 
 
 def _trailing_bias_fixture() -> pd.DataFrame:
-    """One crew-season (REF_A, 2020) with 5 games, ``home_minus_away``
-    strictly increasing (1, 2, 3, 4, 100) so the trailing mean of the first 3
-    games (1,2,3 -> avg 2.0) is a small value while later games' trailing
-    means rise. A second crew-season (REF_B, 2021, 5 games, diffs
-    10/20/30/40/50) supplies two MORE distinct eligible trailing values (20,
-    25) so the combined eligible population has >= 4 distinct values and
-    ``pd.qcut(4)`` can form real quartiles rather than skipping (this
-    module's own ``>= 4`` guard)."""
 
     rows = [
         _game_row("gA1", "REF_A", 2020, 1, "H", "A", 5.0, 4.0),
@@ -158,10 +136,6 @@ def test_trailing_home_bias_requires_minimum_prior_games() -> None:
 
 
 def test_trailing_home_bias_never_uses_this_games_own_penalty_count() -> None:
-    """Mutating game gA4's OWN penalty counts must not change gA4's own
-    trailing value, but legitimately DOES change gA5's (a later game in the
-    same crew-season) -- both directions asserted, matching the schedule-flag
-    battery's own leakage-test shape."""
 
     table = _trailing_bias_fixture()
     baseline = trailing_home_bias_table(table=table).set_index("game_id")["trailing_home_bias"]
@@ -353,9 +327,6 @@ def test_rookie_crew_table_returns_only_the_four_columns() -> None:
 
 
 def _reliability_fixture() -> pd.DataFrame:
-    """Several referees whose home_minus_away is a season-and-official
-    fixed constant plus small week-level noise, so a real, positive
-    odd/even split-half correlation is present and testable end to end."""
 
     rows: list[dict] = []
     base = {"REF_1": 5.0, "REF_2": -3.0, "REF_3": 1.0, "REF_4": -1.0, "REF_5": 4.0}

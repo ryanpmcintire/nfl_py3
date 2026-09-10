@@ -1,82 +1,3 @@
-"""Per-source freshness budgets and degraded-mode policy for the played card (ENG-14).
-
-Why this module is named ``source_freshness_policy`` and not ``source_policy``
------------------------------------------------------------------------------
-``nfl_ats.source_policy`` already exists and answers a different question: may
-we ACQUIRE, retain, and republish this source at all (terms, risk colour,
-quota -- MKT-09, backed by ``config/source_policies.json``). This module answers
-the operational question that sits on top of it: given that a source is allowed,
-is the snapshot we actually hold FRESH ENOUGH to publish a card from, and if it
-is not, does the card degrade onto a documented fallback or refuse to publish?
-Two different registries, two different failure modes, deliberately not merged.
-
-What this layer does NOT do
----------------------------
-It invents no new fail-closed behaviour. Every source below already has a
-documented behaviour on missing/stale data, scattered across the module that
-consumes it; this table names that behaviour in one place, gives it a budget
-derived from the capture cadence, and makes the resulting state visible on the
-card. A source whose current consumer degrades keeps degrading here
-(``degraded`` is the strongest state it can reach), and only a source whose
-consumer ALREADY refuses -- player arrests, and any anti-backdating gate --
-can reach ``blocked``. Turning a permitted publish path into a blocked one is
-a policy decision for the owner, not a side effect of writing this file.
-
-Where the budgets come from
----------------------------
-Every budget is DERIVED, not chosen. Each source declares the
-``scripts/capture_scheduler.py`` ``SCHEDULE`` jobs that feed it, as
-``(day, "HH:MM", grace_minutes)`` triples copied from that file, and
-:func:`_derive_budget` computes
-
-    budget = (longest gap between consecutive scheduled captures, over one
-              weekly cycle including the Sunday->Monday wrap)
-             + (the grace of the job that CLOSES that longest gap)
-
-which is exactly the oldest a HEALTHY source can be at an arbitrary evaluation
-instant. Anything older means a scheduled capture did not land. A single weekly
-job therefore gets a 7-day budget plus its own grace -- correct, and loose on
-purpose: a tighter number would false-alarm at the end of every cycle, and a
-false ``degraded`` on the card is exactly as corrosive as a missed real one.
-
-One source overrides the derived number DOWNWARD, and only because a stricter
-gate is already enforced in production code:
-:data:`nfl_ats.player_arrests_back_side_overlay.MAX_SNAPSHOT_AGE` (36 hours).
-That constant is imported, never re-declared, so the two can never drift.
-
-Prior art this extends rather than duplicates
----------------------------------------------
-* ``nfl_ats.player_arrests_back_side_overlay.load_latest_complete_arrest_snapshot``
-  -- manifest completeness, hash verification, future-dated rejection, and the
-  36-hour staleness ceiling. Fail-closed at publish
-  (``nfl_ats.card_view.resolve_player_arrests_overlay(require_fresh=True)``).
-* ``nfl_ats.prediction_safety._prospective_checks`` -- ``market_timing`` FAILS
-  on a market observation after freeze time or kickoff, and only WARNS when the
-  timestamp is absent. That asymmetry is reproduced exactly below: odds are
-  ``blocked`` when future-dated, ``degraded`` when merely stale or absent.
-* ``nfl_ats.nflcom_refresh_overlay`` / ``nfl_ats.inactives_refresh_overlay`` /
-  ``nfl_ats.crew_tilt_refresh_overlay`` -- an absent, stale, or post-deadline
-  snapshot is a DOCUMENTED NO-OP: the Tuesday pick stands, the row is tagged.
-* ``nfl_ats.capture_freshness`` (ENG-03) -- ``newest_snapshot_instant`` and
-  ``newest_json_field_instant``, both read from the UTC-stamped directory NAME
-  or payload field, never filesystem mtime, matching
-  ``scripts/capture_scheduler.py.newest_snapshot_age_minutes``. This module
-  IMPORTS them rather than carrying a second copy; see the join point below.
-
-Join point with ENG-03
-----------------------
-``nfl_ats.capture_freshness`` answers "is each capture SOURCE producing data on
-schedule", grouping jobs by their ``SCHEDULE`` ``dedupe_dir``. This module
-answers "may this CARD publish", and its rows are deliberately finer-grained
-than a directory: ``odds_opener`` and ``odds_refresh`` share
-``data/market/raw`` but carry different budgets, and ``injuries_nflverse`` is
-fed by ``weekly-run`` step 1 rather than by a capture job at all. So the
-POLICY table stays here and only the two on-disk locators are shared -- ENG-03
-made them public for exactly this. A future consolidation would move
-:attr:`SourceFreshnessPolicy.location` onto that module's locator registry;
-the policy table, the state machine and every caller stay unchanged either way.
-"""
-
 from __future__ import annotations
 
 import os
@@ -119,25 +40,16 @@ POLICY_DOC = "docs/source_freshness_policy.md"
 
 
 class SourceFreshnessError(RuntimeError):
-    """A fail-closed source breached its budget; publication is refused."""
+    pass
 
 
 def _cycle_minutes(day: str, at: str) -> int:
-    """Minutes from Monday 00:00 local, for one ``SCHEDULE`` job clock time."""
 
     hour, minute = (int(part) for part in at.split(":", maxsplit=1))
     return _DAY_OFFSETS[day] * 24 * 60 + hour * 60 + minute
 
 
 def _derive_budget(jobs: tuple[tuple[str, str, int], ...]) -> tuple[int, int, int, str]:
-    """``(recurrence_minutes, grace_minutes, budget_minutes, derivation)``.
-
-    ``jobs`` are ``(day, "HH:MM", grace_minutes)`` triples read from
-    ``scripts/capture_scheduler.py``'s ``SCHEDULE``. The longest gap over one
-    weekly cycle (wrapping Sunday -> Monday) is the recurrence; the grace of
-    the job that closes that gap is added, because a capture is not late until
-    its own grace window has also closed.
-    """
 
     if not jobs:
         raise ValueError("a freshness budget needs at least one scheduled job")
@@ -162,13 +74,6 @@ def _derive_budget(jobs: tuple[tuple[str, str, int], ...]) -> tuple[int, int, in
 
 @dataclass(frozen=True)
 class SourceLocation:
-    """Where the newest capture instant for a source is read from.
-
-    ``kind`` is ``"snapshot_dir"`` (newest ``YYYYMMDDTHHMMSSZ`` subdirectory
-    name) or ``"json_timestamp"`` (a UTC stamp under ``json_key`` in a JSON
-    file). ``root`` is ``"data"`` or ``"artifacts"``.
-    """
-
     kind: str
     root: str
     relative_path: str
@@ -177,9 +82,6 @@ class SourceLocation:
 
 @dataclass(frozen=True)
 class SourceFreshnessPolicy:
-    """One row of the declarative table. Every field is auditable against
-    ``scripts/capture_scheduler.py`` or the named consumer module."""
-
     source_id: str
     label: str
     schedule_jobs: tuple[tuple[str, str, int], ...]
@@ -223,7 +125,6 @@ class SourceFreshnessPolicy:
 
     @property
     def fail_closed(self) -> bool:
-        """True when any breach of this source refuses a publish."""
 
         return BLOCKED in (self.on_absent, self.on_stale, self.on_future_dated)
 
@@ -493,14 +394,6 @@ SOURCE_FRESHNESS_POLICIES: dict[str, SourceFreshnessPolicy] = {
 
 @dataclass(frozen=True)
 class SourceObservation:
-    """What we actually hold for one source at evaluation time.
-
-    ``observed_at=None`` means "we looked and there is nothing there" (absent).
-    A source with NO observation at all is *unobserved*: it never appears in
-    :attr:`SourcePolicyReport.sources` and never contributes to the roll-up,
-    because "we did not look" is not evidence about the source.
-    """
-
     source_id: str
     observed_at: datetime | None
     detail: str = ""
@@ -508,8 +401,6 @@ class SourceObservation:
 
 @dataclass(frozen=True)
 class SourceState:
-    """One source's adjudicated state."""
-
     source_id: str
     state: str
     reason: str
@@ -533,8 +424,6 @@ class SourceState:
 
 @dataclass(frozen=True)
 class SourcePolicyReport:
-    """Per-source states plus the overall card state."""
-
     state: str
     evaluated_at_utc: str
     sources: tuple[SourceState, ...]
@@ -557,7 +446,6 @@ class SourcePolicyReport:
 
     @property
     def blocking_reasons(self) -> tuple[str, ...]:
-        """One sentence per blocking source: which source, and which rule."""
 
         reasons = []
         for row in self.sources:
@@ -575,7 +463,6 @@ class SourcePolicyReport:
         return "publication refused by source policy -- " + "; ".join(self.blocking_reasons)
 
     def summary_line(self) -> str:
-        """The single line the published Markdown card carries."""
 
         def _names(ids: tuple[str, ...]) -> str:
             return ", ".join(humanize_identifier(i) for i in ids) if ids else "none"
@@ -689,17 +576,6 @@ def evaluate_sources(
     *,
     first_kickoff: datetime | None = None,
 ) -> SourcePolicyReport:
-    """Adjudicate every observed source against its budget and roll the card up.
-
-    ``observations`` is either :class:`SourceObservation` values or a plain
-    ``{source_id: instant_or_None}`` mapping. An unknown ``source_id`` raises:
-    a typo must never silently become "no evidence about a source".
-
-    The roll-up is worst-wins: ``blocked`` if any source is blocked,
-    ``degraded`` if any is degraded, ``complete`` otherwise. An EMPTY report
-    is ``degraded``, not ``complete`` -- nothing was looked at, so nothing can
-    be claimed.
-    """
 
     now_utc = _as_utc(now)
     if isinstance(observations, Mapping):
@@ -745,19 +621,6 @@ def observe_from_disk(
     source_ids: Iterable[str] | None = None,
     overrides: Mapping[str, SourceObservation] | None = None,
 ) -> tuple[SourceObservation, ...]:
-    """Observe each source's newest capture instant from the local tree.
-
-    A source whose root is unavailable (``data_root=None`` for a data source)
-    is left UNOBSERVED rather than reported absent -- "we could not look" is
-    not "there is nothing there", and conflating them is how a fail-closed
-    source would start blocking rendering paths that never required it.
-
-    ``overrides`` lets a caller supply an observation it already computed
-    through the source's own verified loader; that always wins over the naive
-    directory scan. The publish path does exactly this for ``player_arrests``,
-    whose real freshness comes from ``load_latest_complete_arrest_snapshot``'s
-    manifest (complete + hash-verified), not from a directory name.
-    """
 
     wanted = tuple(source_ids) if source_ids is not None else tuple(SOURCE_FRESHNESS_POLICIES)
     supplied = dict(overrides or {})
@@ -791,25 +654,6 @@ def player_snapshot_injury_timestamp_observation(
     season: int,
     source_id: str = "injuries_nflverse_timestamps",
 ) -> SourceObservation:
-    """ENG-39: does the player snapshot actually CONSUMED by feature-building
-    have a real (non-proxy) injury revision timestamp for ``season``?
-
-    ``injuries_nflverse`` watches the raw capture directory
-    (``data/raw/nflverse_injuries``), which ``nfl_ats.players`` does not
-    read (M7, ``docs/injury_timestamp_fallback.md``): the source actually
-    consumed is the pinned snapshot under ``data/players/raw/<id>``. This
-    reads that snapshot's own manifest and ``injuries.parquet`` directly and
-    reports ``observed_at=None`` (absent -- this policy's ``on_absent`` is
-    ``DEGRADED``, never ``BLOCKED``) when ``season`` has zero rows with a
-    real ``date_modified``, exactly the nflverse 2025 release dropping that
-    column entirely. A snapshot canonicalized with
-    ``timestamp_fallback="week_proxy"`` carries an ``observed_at_basis``
-    column; only rows basis-tagged ``"date_modified"`` count as real here,
-    so a fully-proxied season still reports absent rather than borrowing the
-    proxy's own manufactured credibility. Never raises on a missing/corrupt
-    snapshot -- reports absent instead, consistent with every other
-    observation in this module.
-    """
 
     manifest_path = player_snapshot_root / "manifest.json"
     injuries_path = player_snapshot_root / "injuries.parquet"
@@ -870,32 +714,6 @@ def report_for_publication(
     player_snapshot_root: Path | None = None,
     player_snapshot_season: int | None = None,
 ) -> SourcePolicyReport:
-    """The report the publish path attaches to the card, in one call.
-
-    ``player_arrests`` is the one source NOT read by directory scan. Its real
-    freshness is whatever
-    ``load_latest_complete_arrest_snapshot`` accepted -- a manifest that is
-    complete, hash-verified, and neither future-dated nor over
-    :data:`~nfl_ats.player_arrests_back_side_overlay.MAX_SNAPSHOT_AGE`. The
-    caller passes that instant through (``ArrestOverlayResult.
-    snapshot_fetched_at_utc``) so this layer can never disagree with the gate
-    that already ran. When the caller has no verified instant (a rendering
-    path that deliberately disabled the overlay), the source is left
-    UNOBSERVED rather than absent -- a fail-closed source must not start
-    blocking a path that never required it.
-
-    ``arrest_snapshot_at`` is typed ``Any`` because callers pass a
-    ``pandas.Timestamp``; anything with ``to_pydatetime`` or a ``datetime`` is
-    accepted, so this module keeps no pandas import of its own.
-
-    ``player_snapshot_root`` / ``player_snapshot_season`` (ENG-39, both
-    optional and additive -- omitting either leaves
-    ``injuries_nflverse_timestamps`` on the generic snapshot-dir scan, so no
-    existing caller's report changes): when both are given, this overrides
-    that source with :func:`player_snapshot_injury_timestamp_observation`
-    read from the player snapshot actually consumed for the card, rather
-    than the generic newest-directory scan.
-    """
 
     overrides: dict[str, SourceObservation] = {}
     source_ids = list(SOURCE_FRESHNESS_POLICIES)
@@ -930,12 +748,6 @@ def report_for_publication(
 
 
 def _first_week_kickoff(data_root: Path | None, now: datetime) -> datetime | None:
-    """Read the current (or preseason's next) slate using the scheduler's ET clock.
-
-    Keep the entire NFL week, including games already kicked off: choosing only
-    remaining games would incorrectly reset a missed window to not-due. A missing
-    or unreadable schedule supplies no exemption. Future snapshots are excluded.
-    """
     if data_root is None:
         return None
     import pandas as pd
@@ -983,7 +795,6 @@ def _first_week_kickoff(data_root: Path | None, now: datetime) -> datetime | Non
 
 
 def policy_table() -> tuple[dict[str, Any], ...]:
-    """The table as plain rows, for docs/tests to assert against."""
 
     return tuple(
         {

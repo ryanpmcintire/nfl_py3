@@ -1,25 +1,3 @@
-"""POL-09 2026-08-18: the measured v2 Best Pick nomination rule.
-
-Four things are load-bearing here:
-
-1. :func:`week_dispersion_pool`'s predeclared fallback rule (missing data OR
-   an empty strict filter falls back to the FULL week, both triggers
-   distinguished) -- ``nfl_ats.best_pick_nomination``'s module docstring.
-2. :func:`select_nominee`'s pure ranking/tie-break rule (candidate_dist desc,
-   then lower dispersion, then ascending game_id) -- isolated from model
-   fitting so it can be pinned exactly, the same way
-   ``nfl_ats.best_pick.sweep_robustness`` isolates its own ranking rule.
-3. Disclosure text, including the owner's VERBATIM method sentence.
-4. :func:`record_nomination_challenger_decisions` writes the SAME
-   anti-backdating guarantees the other two challengers (mod07, coach fade)
-   already have, and records exactly one row: v2's own weekly nominee.
-
-The independence property (overlay and nomination don't interfere) is
-structural here -- :func:`nominate_v2` never reads ``home_cover_probability``
-at all, so an overlay that flips it cannot possibly change the nomination;
-pinned directly below and end-to-end in ``tests/test_publishing.py``.
-"""
-
 from __future__ import annotations
 
 import json
@@ -82,13 +60,6 @@ _QUOTE_COLUMNS = [
 
 
 def _quotes(per_game: dict[str, list[float]]) -> pd.DataFrame:
-    """Synthetic Tuesday cross-book quotes: {game_id: [book_1_line, ...]}.
-
-    Always carries the full column set, even when empty -- mirroring
-    ``nfl_ats.market_data.load_quote_history``'s own empty-store contract
-    (an empty, columnless frame is not what production ever hands
-    ``tuesday_opener_quotes``).
-    """
 
     rows = []
     for game_id, lines in per_game.items():
@@ -130,7 +101,6 @@ def test_dispersion_pool_filters_to_below_median_spread_std(
 
 
 def test_dispersion_pool_falls_back_on_missing_spread_std(monkeypatch: pytest.MonkeyPatch) -> None:
-    """g3 has NO local capture at all -- the whole week falls back."""
 
     monkeypatch.setattr(
         bpn, "load_quote_history", lambda root: _quotes({"g1": [1.0, 1.0], "g2": [1.0, 2.0]})
@@ -147,8 +117,6 @@ def test_dispersion_pool_falls_back_on_missing_spread_std(monkeypatch: pytest.Mo
 def test_dispersion_pool_falls_back_when_strict_filter_is_empty(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Every game ties at the population minimum (std=0) -- nothing sits
-    STRICTLY below the median, so the empty-filter fallback fires."""
 
     monkeypatch.setattr(
         bpn,
@@ -169,7 +137,6 @@ def test_dispersion_pool_requires_at_least_one_game() -> None:
 
 
 def _candidates(**rows: tuple[float, float | None]) -> pd.DataFrame:
-    """rows: game_id -> (candidate_dist, spread_std)."""
 
     return pd.DataFrame(
         [
@@ -204,10 +171,6 @@ def test_select_nominee_falls_through_to_game_id_when_dispersion_is_missing_for_
 
 
 def test_select_nominee_a_missing_dispersion_candidate_loses_the_tiebreak() -> None:
-    """na_position='last': a game with no measurable dispersion is never
-    treated as the "lowest" -- it loses to any game with a real number, even
-    when it would otherwise win the alphabetical game_id fallback (a_game
-    sorts before z_game, but still loses here)."""
 
     candidates = _candidates(a_game=(0.20, np.nan), z_game=(0.20, 4.5))
     game_id, n_tied, tie_break = select_nominee(candidates)
@@ -228,9 +191,6 @@ def test_select_nominee_v3_takes_the_unambiguous_max() -> None:
 
 
 def test_select_nominee_v3_breaks_a_tie_by_game_id_even_when_dispersion_differs() -> None:
-    """Unlike select_nominee, v3 never looks at spread_std at all: "noisy"
-    has the lowest dispersion here and would win select_nominee's tie-break,
-    but v3 must still pick the alphabetically-first game_id."""
 
     candidates = _candidates(z_quiet=(0.20, 1.0), a_noisy=(0.20, 9.0))
     game_id, n_tied, tie_break = select_nominee_v3(candidates)
@@ -307,8 +267,6 @@ def test_nomination_v3_tie_note_is_empty_for_an_unambiguous_nomination() -> None
 
 
 def test_nomination_v3_tie_note_always_reports_the_tie_as_arbitrary() -> None:
-    """v3 never attempts a dispersion tie-break, so unlike v2 there is no
-    'resolved by dispersion' branch -- every multi-way tie reads the same."""
 
     note = nomination_v3_tie_note(_v3_result(n_tied=3, tie_break="game_id"))
     assert "3 games tie at the top" in note
@@ -441,10 +399,6 @@ def test_nominate_v2_raises_when_a_carded_game_has_no_candidate_probability(
 def test_nominate_v2_ignores_home_cover_probability_entirely(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Independence property, structural half: nothing in this rule ever
-    reads a game's ``home_cover_probability`` -- an overlay that flips it
-    (nfl_ats.coach_fade_overlay) therefore cannot influence the nomination.
-    """
 
     monkeypatch.setattr(
         bpn,
@@ -483,9 +437,6 @@ def test_nominate_v2_ignores_home_cover_probability_entirely(
 def test_nominate_v3_restricts_the_winner_to_the_eligible_pool(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Same fixture as test_nominate_v2_restricts_the_winner_to_the_eligible_pool
-    -- v3 reuses the identical fitting and dispersion-pool machinery, so the
-    eligible-pool answer must match v2's exactly."""
 
     monkeypatch.setattr(
         bpn,
@@ -516,14 +467,6 @@ def test_nominate_v3_restricts_the_winner_to_the_eligible_pool(
 def test_nominate_v3_and_v2_can_disagree_only_via_the_tie_break(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Two eligible games tie on candidate_dist; v2 breaks the tie by lower
-    dispersion (g_noisy has none, g_quiet does -- v2 picks g_quiet), v3
-    ignores dispersion and picks the alphabetically-first game_id
-    (g_noisy). Four games total: with an ODD candidate count, the middle
-    value IS the median and is never strictly below it, so a 2-game tie
-    could never both survive the below-median filter -- g_extra1/g_extra2
-    exist purely to let both tied games clear the filter, and are excluded
-    from it themselves (highest dispersion, lowest candidate_dist)."""
 
     monkeypatch.setattr(
         bpn,
@@ -641,9 +584,6 @@ def test_fit_candidate_probabilities_runs_the_real_walk_forward_pipeline() -> No
 
 
 def test_fit_candidate_probabilities_never_leaks_the_target_weeks_own_outcome() -> None:
-    """A target-week game's own (not-yet-known-pregame) result must never
-    change ANY game's probability that week -- training is strictly before
-    the target week's earliest kickoff, so mutating it must be a no-op."""
 
     baseline = _walk_forward_features()
     leaked = baseline.copy()
@@ -801,9 +741,6 @@ def test_record_nomination_challenger_decisions_skips_when_no_nomination_applies
 def test_record_nomination_challenger_decisions_requires_the_whole_week_pre_kickoff(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Mirrors record_paper_decisions' Best Pick rule 1: a backdated
-    nomination (one game already kicked off) must never be recorded, even
-    if the nominee itself is still in the future."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -911,8 +848,6 @@ def test_record_nomination_v3_challenger_decisions_records_one_nominee_row(
 def test_record_nomination_v3_and_v2_ledger_rows_coexist(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Both challengers write to the SAME parquet, distinguished only by
-    challenger_id -- registering/recording v3 must never clobber v2's rows."""
 
     artifacts = tmp_path / "artifacts"
     payload = {

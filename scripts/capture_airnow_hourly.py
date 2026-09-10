@@ -1,22 +1,3 @@
-"""Capture EPA AirNow's public, no-auth hourly observation file.
-
-AirNow publishes ``HourlyAQObs_yyyymmddhh.dat`` at approximately 35 minutes
-past each UTC hour under ``https://files.airnowtech.org/airnow/YYYY/YYYYMMDD/``.
-The file is site-level CSV and includes AQS IDs.  For US sites, the nine-digit
-local AQS ID begins with state (2 digits) + county (3 digits), so this capture
-uses that source-owned county key to join active NFL stadium counties.  It does
-not guess from geographic proximity.
-
-Every run creates an immutable UTC-stamped directory.  ``source.dat`` is the
-verbatim response, ``stadium_aqi.parquet`` contains the maximum active-site AQI
-in each required stadium county, and ``manifest.json`` is written last with
-the exact URL, capture timestamp, and SHA-256 hashes.  A stale file, malformed
-schema, or missing required current-stadium county fails the capture closed.
-
-Official format documentation:
-https://docs.airnowapi.org/docs/HourlyAQObsFactSheet.pdf
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -82,7 +63,7 @@ EXPECTED_COLUMNS = (
 
 
 class AirNowCaptureError(RuntimeError):
-    """The public file could not produce a complete, safe stadium capture."""
+    pass
 
 
 def source_url(observed_at_utc: datetime) -> str:
@@ -91,7 +72,6 @@ def source_url(observed_at_utc: datetime) -> str:
 
 
 def candidate_hours(captured_at_utc: datetime) -> list[datetime]:
-    """Newest likely published hours, allowing five minutes after the stated ~:35."""
 
     instant = captured_at_utc.astimezone(UTC)
     hour = instant.replace(minute=0, second=0, microsecond=0)

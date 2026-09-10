@@ -1,42 +1,3 @@
-"""PBP-08 protection-mismatch tilt overlay -- dual-tracked challenger only.
-
-What it plays
--------------
-When one team's offense has allowed pressure at a top-quartile rate over its
-last four games AND the defense it is about to face generates pressure at a
-top-quartile rate, back the DEFENSE. See
-:mod:`nfl_ats.pbp08_matchup_flags` for the frozen flag construction and
-``docs/pbp08_matchup_screen.md`` for the predeclaration and results.
-
-Why it is a challenger and not a promotion
-------------------------------------------
-The screen measured +0.336 accuracy points full-slate, week-blocked 95%
-[+0.014, +0.658], ``probability_positive`` 0.9785 (season-blocked 0.9797),
-direction as predeclared, era-consistent (+0.445 / +0.225), with both
-bottom-vs-bottom mirror controls landing near null (+0.019 / +0.033, P+
-~0.56). That is the strongest mined mean-edge cell the project has, and P+
-0.979 is far above the 0.5 that makes playing it the favoured side of the
-bet -- but it is a MINED family with uncorrected multiplicity across four
-cells plus two era splits, so it earns prospective evidence, not a claim on
-the published card.
-
-It is deliberately NOT run as a rotation-registry confirmation look. Measured
-2026-08-25 (``nfl-ats rotation status``): the opener-graded pool has exactly
-one unspent window left, ``[2024, 2025]``. Sizing that window against the
-screen's own numbers -- the 2018-2025 era arm scored n_total 4,174 team-games
-with a week-blocked half-width of ~0.48 points, and two opener seasons are
-about 1,024 team-games -- puts the confirmation half-width near +/-0.97
-points around a +0.23 effect, an interval roughly four times the effect it
-would be testing. Spending the last virgin opener window on a test that
-cannot resolve is the worse trade; the challenger route costs no window and
-starts accruing 2026 evidence at the Week 1 lock.
-
-Fail-open, like the sibling data-dependent overlays: a missing PBP snapshot,
-a schedule that cannot reach back far enough for a four-game window, or a
-week whose quartile pool never filled all fold into ZERO flags and a
-documented no-op -- never an exception that could un-publish the card.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -72,8 +33,6 @@ SCREEN_SEASON_START = 2009
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     original_pick_team: str
@@ -83,12 +42,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows, mirroring every sibling tilt.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     enabled: bool
@@ -113,12 +66,6 @@ def latest_schedules(data_root: Path) -> Path | None:
 
 
 def flags_for_week_fail_open(data_root: Path, *, season: int, week: int) -> pd.DataFrame:
-    """The flag table for one week, or an EMPTY frame on any missing input.
-
-    Never raises. Same posture as the forecast and interim-coach overlays:
-    an absent snapshot is a no-op week, not a broken publish. The reason is
-    surfaced as a warning so a silent zero is at least noisy.
-    """
 
     try:
         snapshot = latest_pbp_snapshot(data_root)
@@ -153,18 +100,6 @@ def apply_pbp08_protection_mismatch_tilt(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip a pick that sits on the badly-protected offense, and only that.
-
-    **Deliberately ASYMMETRIC**, like the sibling tilts: the measured
-    construct is that the FLAGGED offense under-covers (45.19% against a
-    50.45% complement in 2009-2017), so the overlay moves picks OFF that side.
-    It never moves a pick ONTO a flagged offense, and it does nothing at all
-    when the model already has the defense.
-
-    A game with no lean -- neither side flagged, both flagged (a mutual
-    mismatch, which is not the measured construct), or an incomplete window --
-    is untouched.
-    """
 
     required = {"game_id", "home_team", "away_team", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -210,7 +145,6 @@ def apply_pbp08_protection_mismatch_tilt(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence. Empty when nothing moved."""
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -240,19 +174,6 @@ def record_pbp08_protection_mismatch_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt's picks to the prospective challenger ledger.
-
-    Mirrors ``spread_gap_zone_fade_overlay``'s recorder exactly: this
-    challenger's "model" IS the active model transformed post-prediction, so
-    it reads the active model's own synchronized weekly forecast rather than
-    searching ``artifacts/margin_predictions/`` by fingerprint, and refuses to
-    record if the active model's live fingerprint no longer matches the
-    snapshot this challenger was registered against.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this tracks
-    forced-pick accuracy at the decision line, never a fabricated paper-bet
-    edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

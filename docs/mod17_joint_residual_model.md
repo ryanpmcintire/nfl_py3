@@ -20,10 +20,9 @@ the OPENER.
 
 ## The owner's question
 
-2026-09-05, verbatim: "if our spread prediction disagrees with the total
-prediction, we need to understand why we dont have a unified model" and
-"wouldn't [separate models looking fine] only be true because we have
-significant errors in both of those models?"
+2026-09-05: if the spread prediction disagrees with the total prediction,
+why is there no unified model, and would two separate models only look fine
+because both carry significant errors?
 
 This is the research half of ROADMAP MOD-17 (the served-numbers-are-one-
 lattice contract is the other half, already landed). The question here is

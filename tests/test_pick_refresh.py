@@ -59,7 +59,6 @@ SUNDAY_LOCK = pd.Timestamp("2026-09-20T20:00:00+00:00")
 
 
 def _target_frame(model_frame: pd.DataFrame, games: list[dict]) -> pd.DataFrame:
-    """Append unplayed target-week rows onto ``model_frame``'s training history."""
 
     feature_columns = [c for c in model_frame.columns if c not in _NON_FEATURE_COLUMNS]
     template = model_frame.iloc[0]
@@ -155,11 +154,6 @@ def _write_live_quote(
     commence_time: pd.Timestamp,
     bookmaker_key: str = "draftkings",
 ) -> None:
-    """One single-book HOME spread quote, matching a scheduled `odds-ingest`
-    capture's `quotes.parquet` shape closely enough for
-    `nfl_ats.market_data.load_quote_history` / `spread_consensus` to read it.
-    A single book means the cross-book median equals `home_spread_line`
-    exactly, keeping assertions exact."""
 
     row = {
         "observed_at_utc": observed_at,
@@ -197,8 +191,6 @@ def _reference_probability(
     season: int,
     week: int,
 ) -> dict[str, float]:
-    """Independently reproduce the frozen-line prediction, bypassing pick_refresh
-    entirely, so tests assert against a ground truth computed a different way."""
 
     features = _target_frame(model_frame, games)
     target, margin_models = fit_margin_models_for_week(
@@ -283,9 +275,6 @@ ORIGINAL_LINES = {
 
 
 def _original_rows(reference: dict[str, float], *, flip: bool = True) -> list[dict]:
-    """One paper-decision row per game. ``flip=True`` sets pick_side OPPOSITE
-    the reference probability's side, so a refresh is guaranteed to change
-    it; ``flip=False`` matches it, guaranteeing a no-op."""
 
     rows = []
     for game in GAMES:
@@ -605,10 +594,6 @@ def test_plan_refresh_fails_closed_on_a_game_missing_its_original_line(
 def test_plan_refresh_accepts_a_new_model_id_with_the_same_configuration(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """A daily player-data refresh mints a new model_id (the id hashes the
-    feature-table digest) without touching the configuration the pool's
-    lines were locked against; measured 2026-09-09, that alone had left
-    refresh-picks refusing for the rest of Week 1."""
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(model_frame, GAMES, ORIGINAL_LINES, season=SEASON, week=WEEK)
     rows = _original_rows(reference, flip=True)
@@ -848,11 +833,6 @@ def _write_movement_original_card(artifacts_root: Path, *, pick_side: str) -> No
 
 
 def test_movement_side_sign_convention_matches_the_measurement_script() -> None:
-    """`_movement_side` reuses `scripts/observed_movement_channel.py`'s
-    `_threshold_pick` sign logic verbatim: positive delta (home spread rose,
-    market moved toward home) picks HOME; negative, or an exact tie, picks
-    AWAY (the tie case is never actually selected by `plan_refresh` -- it is
-    only reached below the 1.0 threshold, where the model pick governs)."""
 
     assert _movement_side(2.0) == "HOME"
     assert _movement_side(0.5) == "HOME"
@@ -865,9 +845,6 @@ def test_movement_side_sign_convention_matches_the_measurement_script() -> None:
 def test_movement_policy_overrides_the_pick_when_the_market_moves_at_least_one_point(
     refresh_env: tuple[Path, Path, pd.DataFrame], delta_sign: int
 ) -> None:
-    """A >=1.0 point consensus move in EITHER direction is recorded as the
-    retired rule's arm and never governs the served pick -- both signs, as
-    required, in one fixture."""
 
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(
@@ -918,9 +895,6 @@ def test_movement_policy_overrides_the_pick_when_the_market_moves_at_least_one_p
 def test_movement_policy_overrides_a_disagreeing_model_pick(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """The consensus side is deliberately forced OPPOSITE the model's own
-    recompute, and since the rule was retired the model still wins the played
-    pick while the retired rule's arm keeps the market side."""
 
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(
@@ -1011,8 +985,6 @@ def test_movement_policy_keeps_the_model_pick_below_threshold(
 def test_movement_policy_is_a_no_op_with_no_market_snapshots(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """Fail-open: no `data/market/raw` store at all -- the model-pick refresh
-    still proceeds, unaffected, exactly like before this feature existed."""
 
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(model_frame, GAMES, ORIGINAL_LINES, season=SEASON, week=WEEK)
@@ -1085,9 +1057,6 @@ def test_movement_policy_is_a_no_op_when_the_latest_capture_is_stale(
 def test_movement_policy_is_a_no_op_per_game_when_that_games_line_is_not_captured(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """The overall capture can be fresh (today) while a SPECIFIC game's line
-    was never matched/captured this pass -- that one game still fails open,
-    even though `current_line_metadata["fresh"]` is True for the run."""
 
     artifacts_root, data_root, model_frame = refresh_env
     games = [
@@ -1217,19 +1186,6 @@ def test_ledger_records_movement_policy_delta_and_both_candidate_picks(
 def test_movement_policy_never_bypasses_the_kickoff_deadline_guard(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """A threshold-clearing captured line for a game whose OWN kickoff has
-    already passed must not revive it -- the deadline guard runs
-    independently of, and after, the movement-policy computation.
-
-    Needs its OWN game (not `MOVEMENT_GAME`, whose TNF kickoff is a full
-    calendar day before any `now` that could follow it): a captured quote
-    must be BOTH pregame (before that game's own kickoff, the market
-    store's own pregame filter) AND from the same America/New_York calendar
-    date as `now` (the movement policy's freshness gate) to exist at all --
-    which requires a game whose kickoff and the test's "now" fall on the
-    same day. A Sunday-early game with "now" later that same Sunday
-    (after kickoff, so ineligible) is the realistic shape: e.g. a Sunday
-    9am ET capture, still valid for a Sunday-afternoon "now"."""
 
     deadline_game = {
         "game_id": "2026_02_SUN_TST",
@@ -1371,9 +1327,6 @@ def test_legacy_revision_rows_read_back_with_unknown_trigger(
 
 
 def test_current_captured_home_spread_reads_the_local_store_only(tmp_path: Path) -> None:
-    """Direct unit coverage of the read-only adapter, independent of
-    `plan_refresh`: fresh data returns a populated mapping, and an empty
-    store fails open with a named reason -- never raises."""
 
     data_root = tmp_path / "data"
     now = pd.Timestamp("2026-09-16T00:00:00Z")
@@ -1535,9 +1488,6 @@ def _write_live_intraday_archive(
     move: float,
     books: tuple[str, ...] = LATE_WEEK_BOOKS,
 ) -> None:
-    """Two manifest-indexed live snapshots in full quote shape: a Tuesday
-    anchor and a Friday move of ``move`` home-oriented points, identical on
-    every listed book so the equal-book net move is exactly ``move``."""
 
     for index, (at, line) in enumerate(
         ((LATE_WEEK_ANCHOR_AT, anchor_line), (LATE_WEEK_MOVE_AT, anchor_line + move))
@@ -1586,8 +1536,6 @@ def _write_live_intraday_archive(
 
 
 def _write_late_week_consensus_quote(data_root: Path, *, line: float) -> None:
-    """A manifest-less same-day quote only the consensus arm reads, so the
-    consensus counterfactual is populated exactly like a live pass sees it."""
 
     _write_live_quote(
         data_root,
@@ -1601,8 +1549,6 @@ def _write_late_week_consensus_quote(data_root: Path, *, line: float) -> None:
 
 
 def _late_week_setup(refresh_env):
-    """A one-game refresh where the Tuesday pick equals the model's own
-    recompute, isolating the market arms: only they can move the served pick."""
 
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(
@@ -1636,9 +1582,6 @@ def _late_week_plan(artifacts_root, data_root, features_path):
 def test_late_week_follow_governs_the_served_pick(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """A genuine override: the Wednesday move points opposite the model's own
-    recompute and the served pick follows the market at the full-point
-    threshold, with both arms' evidence on the row."""
 
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
     move = -1.25 if model_only_side == "HOME" else 1.25
@@ -1671,9 +1614,6 @@ def test_late_week_follow_governs_the_served_pick(
 def test_late_week_follow_keeps_the_model_pick_below_threshold(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """A half-point Wednesday move -- the band the served gate stopped buying
-    on 2026-09-10 -- is recorded as evidence but does not govern: the model's
-    own recompute stands (and the consensus arm stays quiet too)."""
 
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
     move = -0.5 if model_only_side == "HOME" else 0.5
@@ -1698,8 +1638,6 @@ def test_late_week_follow_keeps_the_model_pick_below_threshold(
 def test_late_week_follow_takes_precedence_over_the_consensus_arm(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """Both market arms fire in opposite directions: the served pick follows
-    the promoted late-week arm while the consensus arm stays recorded."""
 
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
     late_move = -1.25 if model_only_side == "HOME" else 1.25
@@ -1733,8 +1671,6 @@ def test_late_week_follow_takes_precedence_over_the_consensus_arm(
 def test_late_week_served_pick_matches_the_paired_challenger_module(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """Served/challenger parity by construction: the served side equals the
-    paired module's movement decision on the same live archive."""
 
     import nfl_ats.late_week_move_follow_refresh_overlay as movement
     from nfl_ats.clv import LIVE_CAPTURE_KIND, load_decision_quotes
@@ -1763,8 +1699,6 @@ def test_late_week_served_pick_matches_the_paired_challenger_module(
 def test_late_week_summary_ledger_and_card_carry_the_new_arm(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """The summary buckets, the append-only ledger, and the published card
-    section all name the governing late-week arm."""
 
     from nfl_ats.pick_refresh import append_refresh_to_card, load_pick_revisions, refresh_summary
 
@@ -1813,8 +1747,6 @@ def test_late_week_summary_ledger_and_card_carry_the_new_arm(
 def test_late_week_arm_unavailable_without_a_live_archive(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """Fail-open: with no manifest-indexed live snapshots the arm reports
-    itself unavailable and the existing logic stands exactly as before."""
 
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
     plan = _late_week_plan(artifacts_root, data_root, features_path)

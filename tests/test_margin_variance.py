@@ -47,8 +47,6 @@ def test_variance_model_requires_features(cfb_features_frame: pd.DataFrame) -> N
 
 
 class _ConstantEstimator:
-    """Predicts a constant log-scale, forcing every ratio to exactly 1."""
-
     def __init__(self, constant: float) -> None:
         self._constant = constant
 

@@ -1,47 +1,3 @@
-"""End-to-end dress rehearsal of the lock-day RECORDING chain.
-
-Why this exists
----------------
-Week 1 2026 locks Tuesday 2026-09-08. On that one day, every registered
-``ACTIVE_PROSPECTIVE`` challenger gets its only chance to write a prospective
-2026 row. The write happens through three different commands and roughly
-twenty independent recorder functions, and -- deliberately, so a broken
-challenger can never un-publish the card -- almost every one of them is
-wrapped in ``try/except -> {"recorded": 0, "error": ...}``. A challenger that
-silently records nothing therefore looks *exactly* like a successful run
-unless somebody reads twenty nested JSON keys.
-
-That failure mode is not hypothetical here. It has already happened three
-times (the 2026-08-18 ledger refill, the structurally-unsatisfiable NFL.com
-Friday gate, and the ``refresh-picks`` cadence nobody was going to remember),
-each time discovered only after the fact.
-
-The recording guards make this chain untestable at ordinary wall-clock time:
-``nfl_ats.clv.refuse_if_outside_recording_lock_window`` refuses any write
-whose week's earliest kickoff is more than ``RECORDING_LOCK_WINDOW`` (7 days)
-away, so before 2026-09-03 the whole chain is a documented no-op. This script
-shifts the CLOCK rather than the data -- every recorder here accepts a ``now``
-override -- so the real code paths, the real guards and the real registry run
-against a real card at a simulated lock instant.
-
-Nothing here can touch production evidence: the artifacts root is an isolated
-copy, and the real ``artifacts/`` tree is only ever read.
-
-Usage
------
-    uv run --no-sync python scripts/lockday_rehearsal.py
-    uv run --no-sync python scripts/lockday_rehearsal.py --season 2026 --week 1
-    uv run --no-sync python scripts/lockday_rehearsal.py --full-replay
-
-The default is a millisecond-scale static wiring audit: it does not import the
-model stack, mirror ``data/``, execute a recorder, or touch a ledger.
-``--full-replay`` opts into the older isolated end-to-end recorder run; each
-recorder reports start/end and fails fast after the bounded per-recorder budget.
-
-Exit code is 0 only when every ACTIVE_PROSPECTIVE challenger recorded at
-least one row.
-"""
-
 from __future__ import annotations
 
 # ruff: noqa: F821
@@ -65,7 +21,6 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _load_full_replay_dependencies() -> None:
-    """Load the model/data stack only for the explicit slow replay mode."""
 
     bindings = {
         "record_expected_lineup_loss_challenger_decisions": (
@@ -242,12 +197,6 @@ ALWAYS_COPY_DIRS = ("prospective", "clv_ledger", "player_arrests_policy_eval")
 
 
 def build_isolated_root(real_artifacts: Path, destination: Path) -> dict[str, Any]:
-    """Copy the minimum artifact set a lock-day recording needs.
-
-    The linked weekly forecast and the evaluation it is synchronized against
-    are resolved from the manifest rather than hardcoded, so this keeps
-    working after the next promotion.
-    """
 
     if destination.exists():
         shutil.rmtree(destination)
@@ -307,29 +256,6 @@ ARRESTS_RELATIVE = Path("raw") / "player_arrests"
 def build_shadow_data_root(
     real_data: Path, destination: Path, *, lock_instant: datetime
 ) -> dict[str, Any]:
-    """Mirror the data root, with one player-arrests snapshot restamped fresh.
-
-    Two guards make the lock-day chain unrehearsable at wall-clock time and
-    they pull in opposite directions:
-    ``clv.refuse_if_outside_recording_lock_window`` needs a simulated ``now``
-    inside the real lock week, while
-    ``player_arrests_back_side_overlay.MAX_SNAPSHOT_AGE`` needs a snapshot no
-    more than 36 hours before that same instant. Nothing fetched today can
-    satisfy both.
-
-    On the real lock day weekly-run step 7 (``ingest-player-arrests``, fatal)
-    resolves this by fetching minutes before step 8 publishes. This reproduces
-    that condition without writing a fabricated future-dated snapshot into the
-    production data root: the mirror is built from hard links (no extra disk,
-    and removing the mirror never touches the originals), and only the small
-    arrests tree is copied for real so the restamped manifest cannot alias a
-    production file.
-
-    Skipping this and passing ``--assume-fresh-arrests`` instead yields a
-    ledger whose ``decision_policy`` is missing its arrests member, which the
-    four-overlay incumbent and the whole refresh path then reject -- the
-    rehearsal blocks on its own scaffolding rather than on a real defect.
-    """
 
     if destination.exists():
         shutil.rmtree(destination)
@@ -388,24 +314,6 @@ def build_shadow_data_root(
 
 
 def probe_command_surface(repo_root: Path) -> dict[str, Any]:
-    """Prove the lock-day commands DISPATCH through the real console script.
-
-    Added 2026-08-25 after this rehearsal returned a clean "0 MISSING" while
-    ``weekly-run`` step 7 was in fact broken. The rehearsal drove the recorder
-    FUNCTIONS directly, so it never touched the entry point the documented
-    Tuesday command actually uses -- and ``nfl-ats ingest-player-arrests``
-    was raising ``ModuleNotFoundError: No module named 'scripts'`` because the
-    console script does not put the repository root on ``sys.path`` the way
-    ``python -m nfl_ats`` does.
-
-    A rehearsal that cannot fail the way production fails is worse than no
-    rehearsal, because it produces confidence. This stage runs the console
-    script in a subprocess -- the same binary, the same ``sys.path`` -- so the
-    entry point itself is under test.
-
-    Read-only probes only: ``doctor`` touches nothing and ``weekly-run
-    --dry-run`` resolves the full step plan without executing a step.
-    """
 
     console = repo_root / ".venv" / "Scripts" / "nfl-ats.exe"
     if not console.is_file():
@@ -471,12 +379,6 @@ def _call(
     *,
     timeout_seconds: float = FULL_REPLAY_RECORDER_TIMEOUT_SECONDS,
 ) -> dict[str, Any]:
-    """Run one recorder, capturing the failure the same way production does.
-
-    Production swallows these into ``{"recorded": 0, "error": ...}`` so the
-    card still publishes. The rehearsal keeps the same shape but also keeps
-    the traceback, because here the failure IS the finding.
-    """
 
     started_at = datetime.now(UTC)
     started = time.perf_counter()
@@ -527,18 +429,6 @@ def run_publish_recorders(
     lock_instant: datetime,
     assume_fresh_arrests: bool = False,
 ) -> dict[str, dict[str, Any]]:
-    """Every recorder ``publish-predictions --record-decisions`` fires, in order.
-
-    The order matches ``nfl_ats.cli._cmd_publish_predictions`` because several
-    challengers read the primary ledger this sequence writes first (the
-    four-overlay incumbent reads ``former_policy_pick_side``; the movement
-    rule composes onto the recorded chain pick).
-
-    Every recorder is passed ``now=lock_instant`` explicitly. Production
-    passes it to four of them and lets the other thirteen read the wall
-    clock, which agrees to within seconds on the real lock day -- see
-    ``report`` for the note this rehearsal emits about that.
-    """
 
     results: dict[str, dict[str, Any]] = {}
 
@@ -648,13 +538,6 @@ def run_publish_recorders(
 def run_weekly_run_step_11(
     artifacts: Path, real_artifacts: Path, *, season: int, week: int, lock_instant: datetime
 ) -> dict[str, Any]:
-    """``weekly-run`` step 11 (``prospective-record``), the MOD-07 arm.
-
-    A bare ``publish-predictions --record-decisions`` never reaches this, which
-    is why the lock-day command has to be ``weekly-run``. The challenger's card
-    is matched by configuration fingerprint, so this also surfaces the case
-    where the challenger has drifted into being the active model's own card.
-    """
 
     entry = find_challenger(real_artifacts, WEAK_STACK_CHALLENGER_ID)
     source = find_challenger_artifact(real_artifacts, entry, season=season, week=week)
@@ -691,11 +574,6 @@ def run_weekly_run_step_11(
 def run_refresh_recorders(
     artifacts: Path, data: Path, *, season: int, week: int, refresh_instant: datetime
 ) -> dict[str, dict[str, Any]]:
-    """The late-week pass: ``refresh-picks --record-decisions``.
-
-    Imported lazily so a rehearsal can still report the publish half when the
-    refresh module itself fails to import.
-    """
 
     from nfl_ats.injury_signal_refresh_tilt import record_injury_signal_refresh_tilt
     from nfl_ats.nflcom_refresh_overlay import record_nflcom_refresh_overlay
@@ -755,14 +633,6 @@ def run_refresh_recorders(
 def ledger_coverage(
     artifacts: Path, *, season: int, week: int, report: dict[str, Any]
 ) -> dict[str, Any]:
-    """Score coverage with the SAME verifier that will run on the real lock day.
-
-    Deliberately not a second implementation: an audit that disagrees with the
-    tool the lock day actually uses is worse than no audit. The rehearsal's own
-    recorder outputs are handed over as the run summary, so a recorder that
-    reported a gate ("no fresh captured line yet") is scored ``skipped`` rather
-    than ``MISSING`` -- the same way it will be in production.
-    """
 
     return lockday_verify.verify(artifacts, season=season, week=week, run_summary=report)
 
@@ -788,7 +658,6 @@ def _file_sha256(path: Path) -> str:
 
 
 def snapshot_live_ledgers(artifacts: Path) -> dict[str, str]:
-    """Hash known live ledgers without opening any model or historical input."""
 
     relative_paths = (
         Path("clv_ledger/decisions.parquet"),
@@ -809,7 +678,6 @@ def snapshot_live_ledgers(artifacts: Path) -> dict[str, str]:
 
 
 def _recording_path(command: str) -> tuple[str, str | None]:
-    """Return the documented command family and its CLI result key."""
 
     if "publish-predictions --record-decisions" in command:
         return "publish", None
@@ -823,12 +691,6 @@ def _recording_path(command: str) -> tuple[str, str | None]:
 
 
 def probe_recorder_wiring(artifacts: Path) -> dict[str, Any]:
-    """Audit every active registry path against the real CLI result channels.
-
-    This is intentionally structural. Importing the command module and reading
-    the registry proves dispatch wiring in milliseconds; calling each recorder
-    would refit/re-read production inputs and belongs only to ``--full-replay``.
-    """
 
     from nfl_ats import cli
 
@@ -891,7 +753,6 @@ def probe_recorder_wiring(artifacts: Path) -> dict[str, Any]:
 
 
 def _build_contract_fixture(root: Path) -> tuple[Path, str]:
-    """Build one tiny card/registry fixture for the real append implementation."""
 
     artifacts = root / "artifacts"
     artifacts.mkdir(parents=True)
@@ -958,7 +819,6 @@ def _build_contract_fixture(root: Path) -> tuple[Path, str]:
 
 
 def run_fast_contract(artifacts: Path, *, season: int, week: int) -> dict[str, Any]:
-    """Run the seconds-scale, non-production lock-day readiness rehearsal."""
 
     started = time.perf_counter()
     report: dict[str, Any] = {"mode": "contract", "season": season, "week": week}

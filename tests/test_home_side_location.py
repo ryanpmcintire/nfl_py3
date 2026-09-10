@@ -1,5 +1,3 @@
-"""MOD-18 lane S: symmetric home-side location arms, leakage and additive-profile contracts."""
-
 import numpy as np
 import pandas as pd
 import pytest

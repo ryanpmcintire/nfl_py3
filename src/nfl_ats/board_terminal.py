@@ -1,43 +1,3 @@
-"""The "ATS Terminal" design: a pure renderer over :mod:`nfl_ats.board_content`
-and :mod:`nfl_ats.board_site_content`.
-
-This module owns STRUCTURE and STYLE only -- the mockup's DOM, its class
-names, and its stylesheet, transplanted verbatim (see ``board_terminal_style
-.css``, loaded below as a module constant). It must never contain a content
-literal: no number, no sentence, no policy id. Every fact rendered here is a
-field read off a content dataclass -- built once, upstream, by
-:mod:`nfl_ats.board_content` / :mod:`nfl_ats.board_site_content`. A future
-number change (a new experiment, a refreshed interval, updated findings)
-touches those modules exactly once and this page picks it up automatically;
-see ``tests/test_board_content_coverage.py`` for the coverage test that
-guarantees it.
-
-Site (2026-09-02): exactly FOUR pages, at the site root (no
-skin subdirectory, no toggle -- the Cover Desk skin was dropped entirely).
-``index.html`` (This Week) is the approved mockup, restructured 2026-09-05
-into UI-20 layout A ("board + inspector", owner: "layout A is definitely
-the best. lets go with that.") -- see :func:`render`'s docstring for the
-two-column shape and :func:`_inspector_section`'s docstring for why the
-old standalone "Why this pick" tab-strip section is gone (its content, the
-old per-game deep dive -- attribution, cover curve, the folded-in
-"spread explorer" line-offset adjuster, and the projected lineups -- now
-lives in that column, selected by the board's own rows instead of a
-second, redundant selector). ``model.html`` (The Model) and
-``findings.html`` (What We've Learned) are original extensions of the same
-visual system -- see each ``render_*_page`` function's docstring for what
-it merges and why.
-
-The only markup here that is NOT part of the approved mockup is (a) the
-small degraded-state blocks the mockup's own CSS sheet reserves space for
-(delimited in ``board_terminal_style.css`` with a
-``/* degraded states -- ... */`` comment), (b) the game-selector/adjuster
-markup in the inspector, plus its own inline script, (c) the
-retrieval-only board-assistant panel (UI-16, :mod:`nfl_ats.board_assistant`),
-plus its own inline script, and (d) the ``.week-grid`` two-column layout
-(2026-09-05, layout A) -- none changes the mockup's own DOM elsewhere, all
-are additive.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -282,9 +242,6 @@ _TICKER_SCRIPT = """
 
 
 def _nav_links(page: str) -> str:
-    """Real links to every SITE_PAGES page, in nav order, as bare
-    filenames. The current page is marked both with ``.is-active`` and
-    ``aria-current="page"``."""
 
     links = []
     for filename, label, _title in SITE_PAGES:
@@ -299,16 +256,6 @@ def _nav_links(page: str) -> str:
 
 
 def _ticker(chrome: TickerChrome) -> str:
-    """The scrolling ticker, shared on every page (owner-approved
-    improvement batch, item 7). Each tick is a real link to
-    ``index.html#<game_id>`` (item 6): on This Week itself, the shared
-    ``_TICKER_SCRIPT`` intercepts the click and selects/scrolls to that
-    game's dive in place; on The Model/Findings, the browser's ordinary
-    anchor navigation takes over and This Week's own selector script reads
-    the hash on load. The whole track also gets ``tabindex`` via its own
-    focusable ticks, so keyboard focus (not just hover) pauses the
-    animation -- see the ``.ticker:hover, .ticker:focus-within`` CSS rule.
-    """
 
     def tick(game: GameRow) -> str:
         href = f"index.html#{escape(game.game_id)}"
@@ -359,9 +306,6 @@ def _header(
 
 
 def _cmd_row(chrome: TickerChrome) -> str:
-    """The command row, shared on every page (item 7). ``page_command_suffix``
-    is the one field that varies per page (item 7: "vary the command row
-    text per page ... via the content layer") -- e.g. ``--page model``."""
 
     method_arg = escape(chrome.model_method_label.split(" ", 1)[0])
     suffix = f" {escape(chrome.page_command_suffix)}" if chrome.page_command_suffix else ""
@@ -374,7 +318,6 @@ def _cmd_row(chrome: TickerChrome) -> str:
 
 
 def _motion_status_rail(chrome: TickerChrome) -> str:
-    """Rotate only facts already present in the rendered board snapshot."""
 
     game_count = len(chrome.games)
     strong_count = sum(game.confidence_word == "strong" for game in chrome.games)
@@ -428,7 +371,6 @@ def _terminal_chrome(
     game_type: str = "REG",
     week_label: str = "",
 ) -> str:
-    """Render the shared ticker/nav/command/status stack as one sticky unit."""
 
     return (
         '<div class="terminal-chrome">'
@@ -458,10 +400,6 @@ def _season_shape_html(headline: HeadlineStats) -> str:
 
 
 def _prospective_scoreboard_html(headline: HeadlineStats) -> str:
-    """The paired prospective record beside the "tracked prospectively"
-    caveat (owner-approved improvement batch, item 3). Renders the designed
-    dormant state ("prospective tracking begins Week 1") until either
-    ledger holds a row -- never a raise, never an invented number."""
 
     scoreboard = headline.prospective_scoreboard
     classes = "prospective-scoreboard dormant" if scoreboard.dormant else "prospective-scoreboard"
@@ -477,10 +415,6 @@ def _prospective_scoreboard_html(headline: HeadlineStats) -> str:
 
 
 def _headline_section(headline: HeadlineStats) -> str:
-    """The four-stat headline block. Shared verbatim by the This Week page
-    and The Model page -- see :class:`~nfl_ats.board_site_content
-    .ModelPageContent`'s docstring for why this is the one deliberate
-    cross-page dedup exception rather than two copies."""
 
     raw_model_ci = (
         f"95% CI <b>[{headline.raw_model_ci[0]:.2f}%, {headline.raw_model_ci[1]:.2f}%]</b>"
@@ -543,10 +477,6 @@ def _confidence_meter_html(game: GameRow) -> str:
 
 
 def _final_outcome_html(game: GameRow) -> str:
-    """Replaces the confidence meter for a FINAL game (season mode, item 4):
-    the played pick's own final score and cover result, never the raw
-    model's meter -- the meter measured a forecast, this reports what
-    happened."""
 
     return (
         f'<div class="outcome outcome-{escape(game.cover_result or "")}">'
@@ -556,10 +486,6 @@ def _final_outcome_html(game: GameRow) -> str:
 
 
 def _flip_pill_html(game: GameRow) -> str:
-    """The flip pill (owner-approved improvement batch, item 1): the swap
-    glyph "⇄" -- never the word "FLIPPED", per the owner's explicit
-    instruction -- plus the member name(s) that fired. Empty when the game
-    was not flipped."""
 
     if not game.flip_member_labels:
         return ""
@@ -567,8 +493,6 @@ def _flip_pill_html(game: GameRow) -> str:
 
 
 def _lock_html(lock_text: str | None) -> str:
-    """The muted second line of a board row's Kickoff cell: when the pick
-    stops being changeable (``GameRow.lock_text``); empty when unknown."""
 
     if not lock_text:
         return ""
@@ -582,19 +506,6 @@ def _lock_sub_html(lock_text: str | None) -> str:
 
 
 def _flip_line_html(game: GameRow) -> str:
-    """The "Flips at" cell (owner request, 2026-09-01): the pick's own
-    handicap at the first half-point line that changes the mind, then the
-    team it switches to -- ``NYJ +2.5 → TEN`` (see
-    ``GameRow.flip_line_text`` for why the pick's orientation, not the
-    flipped-to team's). Policy members are re-evaluated at the hypothetical
-    line through the model crossing; a pick nothing
-    switches inside the adjuster's own ±4 span names that span in the pick's
-    own orientation ("IND holds from +7.5 to -0.5") -- a bounded claim on
-    purpose, never "at any line" (owner catches, 2026-09-01, both rounds;
-    wording fixed 2026-09-07 after "flips at +-4 ... what does that even
-    mean"). An em-dash only when the game is final (a
-    flip line on a settled row is stale noise) or no source exists
-    (degraded artifacts)."""
 
     if game.final or not game.flip_line_text:
         return "<span class='flip-none'>&mdash;</span>"
@@ -625,10 +536,6 @@ def _flip_line_html(game: GameRow) -> str:
 
 
 def _board_sort_toggle_html() -> str:
-    """The KICKOFF | CONFIDENCE sort toggle (item 5) -- vanilla JS,
-    static-safe (see :data:`_SORT_SCRIPT`), 44px touch targets via the
-    ``.sort-btn`` CSS, and native ``<button>``s so keyboard users get the
-    toggle for free."""
 
     return (
         '<div class="sort-toggle" role="group" aria-label="Sort the board">'
@@ -641,20 +548,6 @@ def _board_sort_toggle_html() -> str:
 
 
 def _source_policy_panel_html(view: SourcePolicyView) -> str:
-    """The SOURCES panel (ENG-34): the worst-wins card state in the panel's
-    own header line, one dot-leader line per source, and the plain-English
-    legend -- after the board's picks and supporting notes (see
-    :func:`_board_section`). Reuses ``.policy-note`` for the panel frame and
-    only the small ``.src-*`` rules added to ``board_terminal_style.css`` for
-    the per-source rows; pure HTML/CSS, no script, so it renders identically
-    with JS disabled like the rest of the board.
-
-    UI-20(c): when nothing was persisted for this forecast, ``view.rows`` may
-    still carry a REAL, just-computed report (``view.computed_live``) rather
-    than being empty -- rendered exactly like a recorded report, plus one
-    extra disclosure sentence so a reader never mistakes "computed now" for
-    "locked at Tuesday's publish".
-    """
 
     header = (
         '<div class="sources-panel policy-note" aria-labelledby="sources-h">'
@@ -694,13 +587,6 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
 
 
 def _tiebreaker_panel_html(view: TiebreakerView) -> str:
-    """UI-20(g): the pool's tiebreaker guess for the week's last game.
-    Collapsed by default (a ``<details>`` block, matching the "Why this
-    pick" disclosure) so its point totals never inflate This Week's
-    default-visible-percentage budget -- not that a point total is a
-    percentage, but the same de-firehose discipline applies to every
-    numeric block on this board. Reuses ``.policy-note``/``.micro``/
-    ``.game-sub``; zero new CSS."""
 
     if not view.recorded:
         body = f'<p class="game-sub">{escape(view.note)}</p>'
@@ -720,22 +606,6 @@ def _tiebreaker_panel_html(view: TiebreakerView) -> str:
 
 
 def _injury_state_html(content: BoardContent) -> str:
-    """UI-20(f): the injury sentence under the board, now led by a scannable
-    state.
-
-    The sentence alone was not readable as a STATE -- and the SOURCES panel
-    below it says ``injuries_nflverse_timestamps: COMPLETE`` even in the week
-    measured 2026-09-08, where no injury report existed at all (the league
-    publishes Week 1's first report on Wednesday; the pool locks Tuesday).
-    A fresh feed and a published report are different facts, so the chip
-    names which one the picks actually had.
-
-    Built entirely from ``board_content`` (the label, the state class, and
-    the sentence), and rendered in the same ``<b>label</b> &mdash; text``
-    idiom the Policy overlay line one row down already uses, so it needs no
-    new CSS: the chip's ink comes from the SOURCES panel's own
-    ``.src-state`` classes.
-    """
 
     return (
         f'<p class="policy-note"><b>{escape(INJURY_STATE_NAME)}</b> '
@@ -746,21 +616,6 @@ def _injury_state_html(content: BoardContent) -> str:
 
 
 def _why_this_pick_html(explanation_text: str) -> str:
-    """ "Why this pick" (dashboard queue, ROADMAP.md UI-20(a); relocated
-    2026-09-05 for layout A, "board + inspector"): the ENG-12 explanation
-    text (market line, this game's own model probability, fired overlays,
-    per-source freshness, and Tuesday-to-refresh status -- already composed
-    and language-contract-checked by ``nfl_ats.card_explanation``) or the
-    explicit not-recorded sentence, rendered once, inside the game's own
-    inspector panel (see :func:`_dive_panel_html`). This used to be a
-    collapsed disclosure printed under EVERY board row; it now prints once
-    per game, inside that game's own mostly-hidden ``.dive-panel`` (only the
-    selected game's panel lacks the ``hidden`` attribute), which is the same
-    "adds nothing to the default-visible count for any other game"
-    discipline the old collapsed-by-default row followed, applied through
-    panel visibility instead of ``<details>``. Reuses the existing
-    ``.policy-note`` boxed-fact styling already used for the policy-overlay
-    note directly above the board; no new CSS."""
 
     return (
         '<div class="policy-note" style="margin:0 18px 14px;">'
@@ -780,20 +635,11 @@ def _humanize_classification(value: str) -> str:
 
 
 def _humanize_probability_positive(value: float) -> str:
-    """Plain-English rendering of a weak-signal registry's
-    ``probability_positive`` -- the chance the effect is genuinely
-    positive, not a certainty about its SIZE, and not "contains zero" --
-    see AGENTS.md's closing-grounds taxonomy. Replaces the registry's own
-    "P+ 0.79" shorthand, which is machine notation, not football."""
 
     return f"{value:.0%} likely real"
 
 
 def _humanize_artifact_ref(ref: str) -> str:
-    """An artifact reference like ``"margins/20260905T133348Z"`` -- kind
-    plus a bare reader-facing date, never the raw stamp (owner mandate,
-    2026-09-05). Falls back to the raw text when it doesn't parse as
-    ``<kind>/<stamp>`` -- never hides real data behind a formatting bug."""
 
     kind, _, stamp = ref.rpartition("/")
     if not kind or not stamp:
@@ -833,7 +679,6 @@ def _relative_update(raw: str | None, evaluated_at: str | None) -> str:
 
 
 def _humanize_timestamp(raw: str | None) -> str:
-    """Render a source instant as a weekday and part of day, with no raw stamp."""
 
     parsed = _parse_render_time(raw)
     if parsed is None:
@@ -843,11 +688,6 @@ def _humanize_timestamp(raw: str | None) -> str:
 
 
 def _default_game_id(content: BoardContent) -> str:
-    """The game the board pre-selects: the Best Pick when one exists, else
-    the week's first game (chronological, matching ``content.games``'
-    own order) -- shared by the board table (which row is ``is-selected``)
-    and the inspector (which panel is visible without ``hidden``), so the
-    two never disagree about which game is "current"."""
 
     if content.best_pick_game_id is not None:
         return content.best_pick_game_id
@@ -859,17 +699,6 @@ def _default_game_id(content: BoardContent) -> str:
 
 
 def _board_section(content: BoardContent) -> str:
-    """UI-20 layout A (2026-09-05 owner-approved mockup, "board + inspector"):
-    the LEFT column of the This Week two-column grid. Every row's matchup
-    cell is now a real ``href="#<game_id>"`` anchor into the matching
-    ``.dive-panel`` in the RIGHT column's inspector (see
-    :func:`_inspector_section`) -- a plain in-page link with JavaScript off,
-    and the same click the shared selector script (``_DIVE_SCRIPT``) wires
-    to a no-scroll panel swap plus the ``is-selected`` row highlight when
-    JavaScript runs. The per-row "Why this pick" disclosure this section
-    used to render directly under each pick row is gone from here -- its
-    content (``GameRow.explanation_text``) now lives once, in the selected
-    game's own inspector panel, never printed twice on the page."""
 
     policy = content.policy
     if policy.rich_narrative:
@@ -960,12 +789,6 @@ def _board_section(content: BoardContent) -> str:
 def _adjuster_html(
     dive: GameDive, *, x_min: float, x_max: float, y_min: float, y_max: float
 ) -> str:
-    """The restored spread-explorer widget, folded into this game's deep
-    dive: a line-offset slider driven by the SAME published-fields-only
-    Gaussian read :func:`nfl_ats.spread_explorer.widget_home_cover_probability`
-    computes in Python, mirrored in :data:`_DIVE_SCRIPT`'s JS. ``None``
-    only when this build's active model has no closed-form probability
-    method for this game -- never an invented formula."""
 
     if dive.adjuster is None:
         return (
@@ -998,9 +821,6 @@ def _adjuster_html(
 
 
 def _game_dive_chart_html(dive: GameDive) -> str:
-    """The cover-probability curve plus (when available) its line-offset
-    adjuster, for one game. Real swept model output wherever the build has
-    it; a designed empty state when it does not."""
 
     if not dive.cover_curve:
         return (
@@ -1221,17 +1041,6 @@ def _dive_panel_html(
     explanation_text: str,
     is_last_game: bool,
 ) -> str:
-    """One game's inspector panel (layout A, "board + inspector"): header
-    (Best Pick tag when applicable, matchup, kickoff, pick + cover prob),
-    why this pick, attribution, the cover-probability curve plus its
-    line-offset spread explorer, and the two lineup blocks -- everything
-    the RIGHT column shows for whichever game the LEFT column's board rows
-    select (see :func:`_board_section`/:func:`_inspector_section`). All 16
-    panels render unconditionally; every panel but ``default_game_id``'s
-    carries ``hidden`` so only the selected game is visible at load --
-    :data:`_DIVE_SCRIPT` toggles that attribute with no page reload, and
-    ``:target`` in the stylesheet shows the right one when JavaScript
-    cannot run at all (see the board row's own ``.row-link`` anchor)."""
 
     hidden_attr = "" if dive.game_id == default_game_id else " hidden"
     note_html = ""
@@ -1282,19 +1091,6 @@ def _dive_panel_html(
 
 
 def _inspector_section(content: BoardContent) -> str:
-    """UI-20 layout A: the RIGHT column of the This Week two-column grid --
-    one inspector panel per game (see :func:`_dive_panel_html`), all
-    present in the markup, selected by the LEFT column's board rows (see
-    :func:`_board_section`) rather than by a second, redundant selector of
-    its own. This replaces the old standalone "Why this pick" section,
-    which carried its own tab-strip selector (``.dive-selector``/
-    ``.dive-tab``) below the board -- a second control for the exact same
-    choice the board rows already make, and (via that section's 16 panels)
-    a second full-width block for content that now belongs beside the
-    board instead of under it. Nothing here is rendered a second time
-    elsewhere: the explanation text this function feeds each panel used to
-    print under every board row (see :func:`_why_this_pick_html`'s
-    docstring); it prints once now, inside the matching game's own panel."""
 
     if not content.dives:
         return ""
@@ -1340,28 +1136,12 @@ def _findings_teaser_section(content: BoardContent) -> str:
 
 
 def _week_change_side_html(team: str, best: bool) -> str:
-    """One Was/Now cell: the side, with the board's own star when it held it."""
 
     star = '<span class="star">&#9733;</span>' if best else ""
     return f"{star}{escape(team)}"
 
 
 def _week_changes_section(content: BoardContent) -> str:
-    """Which of my picks changed since Tuesday, and why -- the question a pool
-    player asks midweek, which the board could not answer.
-
-    One line per game whose side or star is no longer Tuesday's, in the order
-    the changes happened, each saying the old side, the new side, when it
-    moved and why. When nothing moved it is a single sentence, which is the
-    honest and far more common state; the section never disappears, because a
-    reader who has to wonder whether it ran is back where he started.
-    Reuses ``.section-head``/``.policy-note``/``.board-scroll``/
-    ``table.board`` and the board's own ``td.pick``/``.star`` ink. Its rows
-    carry ``.change-row`` rather than the board's ``.game`` so the picks
-    board's row-click, keyboard walk and sort control never treat a change
-    line as a game; the stylesheet's appended block gives that class the same
-    stacked-card treatment on a phone.
-    """
 
     panel = content.week_changes
     count = f'<span class="sub">{escape(panel.count_text)}</span>' if panel.count_text else ""
@@ -1393,16 +1173,6 @@ def _week_changes_section(content: BoardContent) -> str:
 
 
 def _rival_rules_section(content: BoardContent) -> str:
-    """UI-20(e): the alternative pick rules recorded beside this week's card.
-
-    Volume discipline (owner, 2026-09-08, on the forty-line schedule wall
-    struck off the top of this same page: "nothing short of a mistake"): a
-    heading, two sentences, and a collapsed table. The per-rule detail --
-    eleven rows of names and matchups -- earns no default-visible space, so
-    it lives behind one ``<details>``, matching the tiebreaker disclosure.
-    Reuses ``.section-head``/``.policy-note``/``.board-scroll``/
-    ``table.board``; zero new CSS.
-    """
 
     panel: RivalRulesPanel = content.rivals
     if not panel.recorded:
@@ -1441,12 +1211,6 @@ def _rival_rules_section(content: BoardContent) -> str:
 
 
 def _footer_html(generated_at_text: str, *, model_bit: str) -> str:
-    """2026-09-05 (owner, verbatim: "ive told you repeatedly to drop these
-    fucking legal bullshit words"): the compliance disclaimer block and the
-    gambling-helpline line are REMOVED from every page's footer. The footer
-    states only plain, honest facts: when the page was generated and the
-    pool's own lock cadence."""
-
     tail = f" &middot; {escape(model_bit)}" if model_bit else ""
     return (
         "<footer>"
@@ -1457,24 +1221,17 @@ def _footer_html(generated_at_text: str, *, model_bit: str) -> str:
 
 
 def _generic_footer(generated_at_text: str, *, model_bit: str = "") -> str:
-    """Footer for the two pages that have no per-page fact of their own to
-    add beyond the generated-at stamp and model id."""
 
     return _footer_html(generated_at_text, model_bit=model_bit)
 
 
 def _footer(content: BoardContent) -> str:
-    """The This Week page's own footer."""
 
     model_bit = f"source model {content.headline.model_method_label}"
     return _footer_html(content.generated_at_text, model_bit=model_bit)
 
 
 def _link_preview_meta_html(link_preview: LinkPreview) -> str:
-    """``og:title``/``og:description``/``og:site_name``/``twitter:card``
-    (owner-approved improvement batch, item 10) -- every value but the site
-    name (this site's own, already-literal brand, see ``_page_shell``'s
-    ``title`` logic) comes off ``link_preview``, the content layer."""
 
     return (
         f'<meta property="og:title" content="{escape(link_preview.title)}">\n'
@@ -1508,8 +1265,6 @@ def _page_shell(*, page: str, body: str, link_preview: LinkPreview, extra_script
 
 
 def _page_lead(kicker: str, title: str, sub: str) -> str:
-    """The top-of-``<main>`` block every non-index page opens with, since
-    these pages are not part of the This Week page's one continuous scroll."""
 
     return (
         '<div class="page-lead">'
@@ -1521,10 +1276,6 @@ def _page_lead(kicker: str, title: str, sub: str) -> str:
 
 
 def _season_record_strip_html(content: BoardContent) -> str:
-    """The hero's running record strip (season mode, item 4): this week,
-    season to date, and the Best Pick tracked separately. Renders nothing
-    until at least one graded game exists this season -- matches today's
-    all-upcoming rendering exactly until then."""
 
     record = content.season_record
     if record is None:
@@ -1544,17 +1295,6 @@ def _season_record_strip_html(content: BoardContent) -> str:
 
 
 def _week_timeline_panel(content: BoardContent) -> str:
-    """One line: when the lines locked, when picks are due, when they may move.
-
-    This was a full-width section listing every scheduled refresh time and
-    every game's deadline -- roughly forty lines above the board. The owner
-    struck it on 2026-09-08 ("nothing short of a mistake"), and he is right:
-    a pool player needs three facts, not an itinerary. The itinerary itself
-    is still built (``WeekTimeline.groups``/``deadlines``) and the assistant
-    answers "when is my pick due for X" from it, so nothing was lost -- it
-    just stopped being the first thing on the page. The ``week-timeline-h``
-    id stays because the assistant's answers anchor to it.
-    """
 
     return (
         '<p class="policy-note week-line" id="week-timeline-h">'
@@ -1563,18 +1303,6 @@ def _week_timeline_panel(content: BoardContent) -> str:
 
 
 def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
-    """Render the full This Week page for ``content``.
-
-    UI-20 layout A (owner, 2026-09-05, choosing it over two other mockups:
-    "layout A is definitely the best. lets go with that."): under the
-    pinned chrome and the headline strip, the board (:func:`_board_section`)
-    and the selected game's inspector (:func:`_inspector_section`) sit side
-    by side in one ``.week-grid`` -- at least 700px for the board at
-    >=1100px, stacked board-then-inspector below that width (see the
-    ``.week-grid`` rules appended to ``board_terminal_style.css``). Below the
-    grid: the rival rules recorded beside this week's card (UI-20(e)), then
-    findings and the assistant panel, exactly as they were.
-    """
 
     body = (
         _terminal_chrome(
@@ -1621,18 +1349,6 @@ def _grading_rule_kpi(label: str, value: float | None) -> str:
 
 
 def _ledger_evidence_html(row: ModelLedgerRowView) -> str:
-    """Every arm's evidence cell -- fixed to address two 2026-08-31
-    browser-QA findings: (1) a promoted row (which never cites outside
-    registry evidence -- its own track record above IS its evidence, see
-    ``model_ledger._promoted_row``) rendered ``NO CITED EVIDENCE`` in the
-    ``.micro`` class's forced uppercase, which read like an indictment
-    rather than a fact about the row shape; (2) a challenger row with many
-    evidence entries rendered every one of them inline with no cap, so that
-    row's height was driven by column-width squeeze rather than its own
-    content -- several times taller than any other row on the same table.
-    Both are fixed here: a promoted row gets a real provenance line instead,
-    and any row with more than :data:`_LEDGER_EVIDENCE_INLINE_LIMIT`
-    entries collapses the rest behind a ``<details>`` toggle."""
 
     if not row.evidence:
         if row.is_promoted:
@@ -1676,14 +1392,6 @@ _LEDGER_EVIDENCE_INLINE_LIMIT = 3
 
 
 def _ledger_interval_text(row: ModelLedgerRowView) -> str:
-    """The ledger's interval cell, unit-aware (2026-08-31 browser-QA fix):
-    ``row.interval_unit`` names which of the two units this row's interval
-    actually is -- never guessed from the numbers' magnitude. A rate (the
-    promoted row's season accuracy-proportion CI) is percent-formatted; an
-    accuracy-points effect delta (every challenger row) is rendered as
-    signed points, e.g. ``+0.29 to +2.04 pts``, never with a ``%`` sign --
-    the bug this guards against rendered that same interval as
-    ``[29.0%, 203.8%]``."""
 
     if row.interval_low is None or row.interval_high is None:
         return "--"
@@ -1748,12 +1456,6 @@ def _season_honesty_sentence(content: ModelPageContent) -> str:
 
 
 def _season_dot_chart_svg(content: ModelPageContent) -> str:
-    """Six seasons' opener-graded accuracy as direct-labeled dots on a
-    shared axis, with the 50% coin-flip line and the season-blocked
-    interval band -- "all six above the coin flip" in one glance (item 8).
-    Never hue-only: every dot's own value is printed beside it regardless
-    of the tone color, and the season label sits directly under its dot.
-    ``""`` when there are no season rows to plot."""
 
     seasons = content.seasons
     if not seasons:
@@ -1820,9 +1522,6 @@ def _ledger_table_body_html(rows: tuple[ModelLedgerRowView, ...]) -> str:
 
 
 def _grouped_ledger_group_html(title: str, rows: tuple[ModelLedgerRowView, ...]) -> str:
-    """One "graded" or "waiting on the season" ledger group (item 9) --
-    ``""`` when the group is empty (e.g. a very early season with nothing
-    graded yet)."""
 
     if not rows:
         return ""
@@ -1835,15 +1534,6 @@ def _grouped_ledger_group_html(title: str, rows: tuple[ModelLedgerRowView, ...])
 
 
 def _number_provenance_html(content: ModelPageContent) -> str:
-    """The model page's "where these numbers come from" fine print (owner
-    mandate, 2026-09-05: "please do not let those percentages get out of
-    date anymore") -- one row per headline number
-    ``verify_number_provenance`` checked, each dated and model-labeled,
-    never fingerprinted (no hashes, per the same mandate). Collapsed by
-    default like every other technical aside on this page (the selection
-    discount, the model ledger's evidence chips) -- de-firehose discipline,
-    not concealment: a reader who wants to check the numbers match opens
-    it, everyone else never sees a hash."""
 
     if content.number_provenance:
         rows_html = "".join(
@@ -1871,13 +1561,6 @@ def _number_provenance_html(content: ModelPageContent) -> str:
 
 
 def render_model_page(content: ModelPageContent) -> str:
-    """Render ``model.html``: what we play (the headline strip, reused
-    verbatim from the This Week page), how it's done (season-by-season
-    record and grading-rule comparison), and what's challenging it (the
-    model ledger and family-weight explanation) -- see
-    :class:`~nfl_ats.board_site_content.ModelPageContent`'s docstring for
-    exactly which duplicate facts this merge dropped.
-    """
 
     long_run_html = ""
     if content.long_run_range is not None:
@@ -2146,10 +1829,6 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
 
 
 def _history_season_grade_row_html(row: SeasonGradeRow) -> str:
-    """UI-20(h): one season's opener-vs-close grading. ``row.note`` (only
-    set for the archive-gap sentinel row -- see
-    ``board_site_content._season_grade_rows``) spans the grade columns with
-    an explicit sentence instead of leaving them blank."""
 
     lead_cells = (
         f'<td data-label="Season">{escape(row.season_label)}</td>'
@@ -2170,10 +1849,6 @@ def _history_season_grade_row_html(row: SeasonGradeRow) -> str:
 
 
 def _history_week_grade_row_html(row: HistoryWeekGrade) -> str:
-    """UI-20(h): one recorded week's opener-vs-close grading. ``row.note``
-    (set whenever one grade -- or, for an unplayed week, neither -- could
-    not be computed) spans the grade columns rather than leaving them
-    blank."""
 
     lead_cells = (
         f'<td data-label="Season / week">{row.season} / W{row.week}</td>'
@@ -2195,11 +1870,6 @@ def _history_week_grade_row_html(row: HistoryWeekGrade) -> str:
 
 
 def _history_grading_section_html(content: HistoryPageContent) -> str:
-    """UI-20(h): season- and week-level opener-vs-close grading, side by
-    side, with the caption explaining why the two differ and which one the
-    pool settles on. Empty (no section at all) until at least one of the
-    two tables has a row -- the same dormant-until-real-data discipline
-    every other season-mode field on this site already follows."""
 
     if not content.season_grades and not content.week_grades:
         return ""
@@ -2260,11 +1930,6 @@ def _history_assessment_html(row: ChallengerAssessment) -> str:
 
 
 def render_history_page(content: HistoryPageContent) -> str:
-    """Render ``history.html`` from the primary and prospective ledgers.
-
-    The primary ledger is deliberately allowed to be empty.  Pending rows
-    render no scores or result detail; only settled rows can expose outcomes.
-    """
 
     if content.picks:
         picks_body = "".join(_history_pick_row_html(row) for row in content.picks)
@@ -2336,12 +2001,6 @@ def render_history_page(content: HistoryPageContent) -> str:
 
 
 def _trace_chip_html(finding: FindingItemView) -> str:
-    """The findings trace chip (owner-approved improvement batch, item 2):
-    the registry signal a finding traces to, plus its recorded P+ -- e.g.
-    ``injury_value_lost · P+ 0.98``. ``""`` when the finding carries no
-    trace (evergreen, or no cited key has a measured P+). Deliberately
-    isolated to this one helper plus the ``.trace-chip`` CSS block so the
-    whole feature can be deleted in one commit if the owner vetoes it."""
 
     if finding.trace_signal_name is None or finding.trace_probability_positive is None:
         return ""
@@ -2387,20 +2046,6 @@ def _watching_lead_html(lead: WatchingLeadView) -> str:
 
 
 def _recent_activity_category_html(group: RecentActivityCategoryView) -> str:
-    """One category's worth of "Research this week" lines (dashboard queue
-    UI-20(b)), collapsed behind a ``<details>`` toggle -- de-firehose
-    discipline again: 100+ entries can land in a single week's window, so
-    the category header states the count and the reader opens what they
-    want to read, rather than the page dumping every line by default.
-
-    ``entry.plain_summary`` is ALREADY a genuine plain-English summary (or
-    the PLAIN_SUMMARY_PENDING placeholder) by the time it reaches this view
-    -- ``board_site_content._recent_activity_entry_view`` never falls back
-    to the registry's raw description any more (2026-09-05 fix, dashboard
-    humanising follow-up to lane AH's audit: AH's own fix wrapped that raw
-    text in ``<code>`` rather than replacing it). Rendered as plain prose,
-    not ``<code>``, like the other two research-log sections on this page
-    (Signal registry, Watching leads)."""
 
     lines = "".join(
         '<p class="game-sub" style="margin:6px 0;">'
@@ -2419,11 +2064,6 @@ def _recent_activity_category_html(group: RecentActivityCategoryView) -> str:
 
 
 def _recent_activity_section_html(activity: RecentActivityView) -> str:
-    """ "Research this week" (dashboard queue UI-20(b)): everything recorded
-    or screened in the registries' own last-``window_days``-days window,
-    grouped by category, with the count of entries screened and how many
-    resolved. Renders a plain "no new screens" line when the window is
-    empty -- never an empty section with nothing to explain."""
 
     header = (
         '<section aria-labelledby="recentactivity-h"><div class="section-head">'
@@ -2481,9 +2121,6 @@ def _ledger_summary_section_html(content: FindingsPageContent) -> str:
 
 
 def render_findings_page(content: FindingsPageContent) -> str:
-    """Render ``findings.html``: hero tiles, curated findings by verdict,
-    open leads, honesty rules, and a compact signal-registry summary --
-    all off :class:`~nfl_ats.board_site_content.FindingsPageContent`."""
 
     tiles = "".join(
         '<div class="kpi"><span class="label">'

@@ -1,12 +1,3 @@
-"""Tests for the ENG-07 read-only registry/overlap explorer.
-
-``nfl_ats.registry_explorer`` never writes to either registry; every test
-here either builds small synthetic registries in ``tmp_path`` (covering each
-view's behaviour precisely) or runs the module against the real tracked
-registries and asserts only structural properties plus byte-for-byte
-file-unchanged, matching the module's own read-only contract.
-"""
-
 from __future__ import annotations
 
 import json
@@ -325,7 +316,6 @@ def test_source_availability_cites_rules_and_falls_back_honestly(tmp_path: Path)
 
 
 def test_family_source_rules_all_carry_a_citation() -> None:
-    """Every hardcoded rule must be traceable back to something read this session."""
 
     for rule in registry_explorer.FAMILY_SOURCE_RULES:
         assert rule.citation.strip()
@@ -430,7 +420,6 @@ def test_views_run_against_live_registries_and_write_nothing() -> None:
 
 
 def test_json_serializable_against_live_registries() -> None:
-    """Every view's output must round-trip through JSON for the CLI's --json flag."""
 
     weak_registry = weak_signals.load_registry(LIVE_WEAK_SIGNALS)
     rot_registry = rotation.load_registry(LIVE_ROTATION)

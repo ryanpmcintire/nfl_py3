@@ -1,29 +1,10 @@
-"""Construction, sign-convention and leakage contracts for the three
-LEAD-21/22/40 schedule flags, plus the on-production confirmation wrapper's
-duck-typed reuse of ``scripts/on_production_opener_confirmation.py``.
-
-Predeclared in ``docs/schedule_flag_battery.md``. Every fixture is built in
-memory: these tests must pass in a fresh clone with no local data snapshots
-(no schedules.parquet snapshot is ever read).
-"""
-
 from __future__ import annotations
-
-import sys
-from pathlib import Path
 
 import pandas as pd
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
-if str(ROOT / "scripts") not in sys.path:
-    sys.path.insert(0, str(ROOT / "scripts"))
-
-import schedule_flag_on_production as sfop  # noqa: E402
-
-from nfl_ats.data import DataContractError  # noqa: E402
-from nfl_ats.margin import margin_feature_columns  # noqa: E402
-from nfl_ats.schedule_flag_features import (  # noqa: E402
+from nfl_ats.data import DataContractError
+from nfl_ats.schedule_flag_features import (
     HOME_THURSDAY_COLUMN,
     MNF_ROAD_SHORT_WEEK_COLUMN,
     POST_OT_FATIGUE_COLUMN,
@@ -78,7 +59,6 @@ def test_post_ot_sign_convention_covers_all_states() -> None:
 
 
 def test_post_ot_week_one_has_no_prior_game_and_is_zero_not_nan() -> None:
-    """A team's first in-season game cannot follow an in-season OT game."""
 
     derived = derive_post_ot_fatigue_features(_post_ot_schedule()).set_index("game_id")
     assert derived.loc["g0", POST_OT_FATIGUE_COLUMN] == 0.0
@@ -86,7 +66,6 @@ def test_post_ot_week_one_has_no_prior_game_and_is_zero_not_nan() -> None:
 
 
 def test_post_ot_never_crosses_a_season_boundary() -> None:
-    """A team's week-1 game next season is not "post-OT" from last season's finale."""
 
     schedule = _schedule(
         [
@@ -124,14 +103,12 @@ def test_mnf_road_away_qualifies_is_positive() -> None:
 
 
 def test_mnf_road_home_game_after_monday_does_not_qualify() -> None:
-    """Playing at HOME on Monday is not "on the road" -- must not qualify."""
 
     derived = derive_mnf_road_short_week_features(_mnf_road_schedule()).set_index("game_id")
     assert derived.loc["m6", MNF_ROAD_SHORT_WEEK_COLUMN] == 0.0
 
 
 def test_mnf_road_requires_exactly_six_days_not_just_monday_then_sunday() -> None:
-    """A Monday road game followed by a much-later Sunday (bye in between) must not qualify."""
 
     derived = derive_mnf_road_short_week_features(_mnf_road_schedule()).set_index("game_id")
     assert derived.loc["m8", MNF_ROAD_SHORT_WEEK_COLUMN] == 0.0
@@ -150,13 +127,6 @@ def test_home_thursday_flags_every_thursday_game_unsigned() -> None:
 
 
 def test_flags_are_invariant_to_a_games_own_outcome() -> None:
-    """Mutating game X's own ``overtime`` value (its own outcome) must never
-    change game X's own flag, for all three constructs -- no flag reads
-    anything about the CURRENT game other than its schedule facts (weekday,
-    home/away, gameday). It legitimately MAY change a LATER game's flag
-    (that is pregame-known history, not leakage); this test checks only the
-    mutated game's own value.
-    """
 
     schedule = _post_ot_schedule()
     baseline = {
@@ -191,9 +161,6 @@ def test_flags_are_invariant_to_a_games_own_outcome() -> None:
 
 
 def test_a_later_games_flag_may_legitimately_depend_on_an_earlier_result() -> None:
-    """The converse of the leakage test: mutating an EARLIER game's overtime
-    outcome legitimately changes a LATER game's post-OT flag, since that is
-    pregame-known history for the later game, not leakage."""
 
     schedule = _post_ot_schedule()
     before = derive_post_ot_fatigue_features(schedule).set_index("game_id")
@@ -246,25 +213,3 @@ def test_derive_requires_every_schedule_column() -> None:
     schedule = _post_ot_schedule().drop(columns=["overtime"])
     with pytest.raises(DataContractError, match="overtime"):
         derive_post_ot_fatigue_features(schedule)
-
-
-@pytest.mark.parametrize("key", sorted(sfop.CANDIDATES))
-def test_registered_profile_is_production_plus_the_declared_one_column(key: str) -> None:
-    candidate = sfop.CANDIDATES[key]
-    baseline = set(margin_feature_columns("market_residual", sfop.BASELINE_PROFILE))
-    treatment = set(margin_feature_columns("market_residual", candidate.profile))
-    assert treatment - baseline == {candidate.column}
-    assert baseline - treatment == set()
-
-
-@pytest.mark.parametrize("key", sorted(sfop.CANDIDATES))
-def test_candidate_duck_types_with_the_template_profile_identity(key: str) -> None:
-    """``on_production_opener_confirmation.profile_identity`` is reused
-    unmodified: our ``ScheduleCandidate`` need only carry the same
-    ``profile``/``column`` attribute names."""
-
-    candidate = sfop.CANDIDATES[key]
-    columns = margin_feature_columns("market_residual", candidate.profile)
-    frame = pd.DataFrame({column: [0.0] for column in columns})
-    observed = sfop.confirmation.profile_identity(candidate, frame)
-    assert observed["only_added_column"] == candidate.column

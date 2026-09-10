@@ -1,27 +1,3 @@
-"""Forecast (kickoff-nearest) warm-team-cold-late tilt overlay
-(docs/forecast_weather_screen.md, "Wiring recommendations" #1).
-
-Mirrors ``tests/test_forecast_cold_visitor_tilt_overlay.py``'s structure.
-Load-bearing here:
-
-1. :func:`warm_team_cold_late_flag_by_game` -- the frozen flag definition
-   (warm-metro away team AND outdoor AND kickoff-nearest forecast temp<=35F
-   AND week>=13), missing-data-safe.
-2. :func:`apply_warm_team_cold_late_tilt_overlay` -- flips ONLY the clean
-   case (away pick, flag fires), REG-only, parameter-free, asymmetric.
-3. The live-fetch layer is FAIL-OPEN and captures BOTH temperature and
-   precipitation from the same bulletin (shared with the precip-high-total
-   sibling challenger): no real network call is made in any test here
-   (every ``fetch_bulletin`` is a local stub), and a total fetch failure
-   (missing station map) is proven to fold into zero flags with a logged
-   warning, never an exception.
-4. :func:`record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions`
-   writes the overlay's own picks to the prospective challenger ledger,
-   dual-tracked and at no rotation-registry window cost, and honors a
-   pre-fetched ``forecasts=`` override (the "one fetch, several consumers"
-   path) without making its own network call.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -180,7 +156,6 @@ def test_overlay_leaves_postseason_games_untouched() -> None:
 
 
 def test_overlay_never_flips_a_home_pick() -> None:
-    """Deliberately asymmetric: a HOME pick on a flagged game is untouched."""
 
     predictions = _predictions()
     predictions.loc[predictions["game_id"].eq("2025_15_FROST_WARM"), "home_cover_probability"] = (
@@ -368,9 +343,6 @@ def test_live_snf_fetch_rejects_a_bulletin_labeled_after_the_lock() -> None:
 
 
 def test_fetch_fail_open_returns_zero_flags_on_a_missing_station_map(tmp_path: Path) -> None:
-    """THE no-network unit test: a total fetch failure must fold into zero
-    flags with a logged warning, never an exception, and the resulting
-    forecasts frame must make the overlay a complete no-op."""
 
     games = pd.DataFrame(
         {
@@ -575,8 +547,6 @@ def test_record_challenger_decisions_is_fail_open_on_a_missing_station_map(tmp_p
 
 
 def test_record_challenger_uses_a_supplied_forecasts_frame_without_fetching(tmp_path: Path) -> None:
-    """The "one fetch, several consumers" path: when ``forecasts`` is
-    supplied, the recorder must not call ``fetch_bulletin`` at all."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)

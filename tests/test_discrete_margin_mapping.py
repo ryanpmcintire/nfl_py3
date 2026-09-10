@@ -1,12 +1,3 @@
-"""MOD-18 C2: the discrete conditional side read at every line.
-
-Predeclaration: ``docs/mod18_discrete_margin_mapping.md``. These tests pin the
-neighbourhood predicate, the arm nesting, the untouched-game invariant, the
-walk-forward window (a leakage regression, per AGENTS.md's rule that every new
-feature family carries one), the key-number mass the owner's binding rule is
-about, and the fact that the incumbent smooth read is untouched.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -70,7 +61,6 @@ LINE_GRID = np.array(
 
 
 def _pool(seed: int = 11, rows: int = 900) -> tuple[np.ndarray, np.ndarray]:
-    """A prior pool with realistic key-number lumps at 3 and 7."""
 
     rng = np.random.default_rng(seed)
     lines = rng.choice(np.arange(-14.0, 14.5, 0.5), size=rows)
@@ -143,11 +133,6 @@ def test_push_falls_out_of_the_same_object_and_is_empty_at_a_half_point() -> Non
 
 
 def test_the_read_keeps_key_number_mass_a_gaussian_would_smooth_away() -> None:
-    """AGENTS.md: margins are discrete and multimodal, never a smooth Gaussian.
-
-    The lattice's modelled mass on a final margin of exactly +/-3 must exceed
-    what a normal centred on the same point puts on the same unit interval.
-    """
 
     lines, margins = _pool()
     read = discrete_side_read(lines, margins, 3.0, 1.0)
@@ -314,7 +299,6 @@ def test_the_incumbent_smooth_read_is_untouched_by_this_family() -> None:
 
 
 def _reference_family() -> list[tuple[float, int]]:
-    """An honest family: standard error scaling as sigma / sqrt(n)."""
 
     sigma = 28.0
     return [(sigma / np.sqrt(n), n) for n in (1503, 758, 745, 342, 266, 179, 156, 70)]
@@ -341,13 +325,6 @@ def test_an_admissible_cell_is_returned_untouched() -> None:
 
 
 def test_a_degenerate_cell_keeps_its_point_estimate_and_gains_a_floored_band() -> None:
-    """The PC-small touched slice: 15 games, every paired difference +1.
-
-    The slice is defined BY the leak, so the bootstrap returns the same
-    number on every resample. Nothing is dropped and the measurement is not
-    altered; only the band is widened to what 15 games support, and clipped
-    at the metric's own ceiling.
-    """
 
     metrics = {
         "delta": 100.0,
@@ -370,12 +347,6 @@ def test_a_degenerate_cell_keeps_its_point_estimate_and_gains_a_floored_band() -
 
 
 def test_a_floored_cell_satisfies_the_registry_contract(tmp_path: Path) -> None:
-    """The regression: a zero-width band took the public site down once.
-
-    `weak_signals` refuses a non-positive standard error, and `publish-board`
-    reads this registry, so an inadmissible row is a site outage rather than a
-    bad number in a file. This asserts the floored row round-trips.
-    """
 
     metrics = {"delta": 100.0, "lower": 100.0, "upper": 100.0, "standard_error": 0.0, "n": 15}
     floored, _ = floor_degenerate_cell(metrics, _reference_family())

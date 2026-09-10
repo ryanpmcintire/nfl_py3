@@ -415,13 +415,6 @@ def test_validate_three_way_split_standalone() -> None:
 def test_served_pool_lines_fail_closed_on_a_whole_number(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A whole-number decision line on the served card is a provenance defect.
-
-    The owner's pool posts only half points (measured 2026-09-08 on all
-    sixteen Week 1 games), so a whole number proves the line came from the
-    schedule feed rather than the pool -- and on it the key-number pick read
-    fires and a push is treated as a live outcome. It must be loud.
-    """
 
     from nfl_ats import prediction_safety
     from nfl_ats.prediction_safety import validate_pool_lines
@@ -460,13 +453,6 @@ def test_served_pool_lines_fail_closed_on_a_whole_number(
 
 
 def test_served_pool_line_check_is_scoped_to_the_served_card() -> None:
-    """Historical grading must NOT go through the pool-line check.
-
-    The opener archive and every backtest are graded on whole-number-capable
-    lines where the push is real; the check would reject all of them. It is
-    reachable only from the served card path, and the three-way split
-    validator every historical path shares still accepts whole numbers.
-    """
 
     import inspect
 

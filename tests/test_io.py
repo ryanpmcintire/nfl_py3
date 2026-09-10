@@ -47,7 +47,6 @@ def test_run_id_is_utc() -> None:
 
 
 def test_json_default_serialises_summary_value_types(tmp_path) -> None:
-    """ENG-35 (2026-09-04): the first --full-replay crashed on a pandas Timestamp."""
 
     import json
     from datetime import UTC, datetime
@@ -129,7 +128,6 @@ def test_file_lock_is_exclusive_and_breaks_stale_locks(tmp_path: Path) -> None:
 def test_weak_signal_record_command_serialises_under_the_lock(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Two record commands started together both land: no lost update."""
 
     import threading
     from types import SimpleNamespace

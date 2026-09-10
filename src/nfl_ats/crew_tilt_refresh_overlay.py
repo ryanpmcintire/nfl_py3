@@ -1,70 +1,3 @@
-"""Late-week officiating-crew tilt as a refresh-path prospective challenger.
-
-**Binding closing-grounds taxonomy (AGENTS.md), restated verbatim per this
-project's rule for any module that scores or adjudicates an experiment:** an
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. At this evaluator's ~2-point resolution, "contains zero" is
-the EXPECTED outcome for a real small signal. Only two grounds ever close a
-line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval
-on the wrong side of zero) or zero split-half reliability; (2) bounded by a
-positive control proven able to detect an effect that size. Everything else
-is ``unresolved_below_power``: record it with ``nfl-ats weak-signals
-record``, report ``probability_positive``, never the binary "contains zero."
-
-What this module is
--------------------
-
-The frozen rule text lives in ``docs/referee_assignments_capture.md`` section
-"Late-week crew-tilt challenger predeclaration (2026-09-01, WP47)", written
-BEFORE this file existed and before any number was computed. This module
-implements exactly that rule and nothing else.
-
-``docs/referee_assignments_capture.md`` section 2 measured that Football
-Zebras never publishes a week's crew assignments before Tuesday afternoon, so
-the capture (``referee_assignments_wed``) can only ever feed a LATE-WEEK
-refresh -- never the Tuesday-lock card. Section 5 of that document listed
-what was still missing to make the two ``penalty_crew_tendencies`` cells
-prospectively playable. This module supplies items 1, 2 and 4 of that list;
-item 3 (the family declaration) is the predeclaration section itself.
-
-* **It never alters the played pick.** Every ``RefreshedGame`` is consumed
-  read-only. The would-be pick exists only in a SEPARATE append-only ledger
-  (``artifacts/prospective/crew_tilt_refresh_decisions.parquet``), never in
-  ``pick_revisions.parquet``, never in the published card.
-* **A prospective challenger is paper evidence at zero window cost**, not a
-  promotion and not a claim that either cell is resolved. Both remain
-  ``unresolved_below_power`` in ``registry/weak_signals.json``.
-
-Signal construction -- imported, not reimplemented
---------------------------------------------------
-
-The two cells' flags come from the screen's own builders
-(``nfl_ats.experiment_runner._build_referee_type_trait_data``,
-``._build_referee_trait_data``, ``._merge_home_pass_rate_quartile``,
-``._HEAVY_UNDERDOG_THRESHOLD_DEFAULT``). Those builders key entirely off
-completed games' ``officials.parquet`` join, so they are structurally
-incapable of scoring a game that has not been played. The ONE thing added
-here is that forward hop: :func:`build_crew_trait_lookup` re-derives the
-per-(referee, season) mean rate and the lagged population's own qcut
-cutpoints so a referee's PRIOR completed season can be bucketed for a future
-game. ``tests/test_crew_tilt_refresh_overlay.py`` MEASURES that this adapter
-reproduces the builders' own ``lag_type_quartile`` /
-``lag_penalty_rate_quartile`` exactly on every historical (referee, season)
-pair -- a pinned second path, never a second definition.
-
-Leakage discipline (pinned in tests)
-------------------------------------
-
-A crew snapshot may only be consumed for a game whose own pick deadline
-``min(kickoff, Sunday 16:00 ET)`` (``nfl_ats.pick_refresh.pick_deadline``) is
-strictly AFTER the snapshot's ``captured_at_utc``. A snapshot at or after a
-game's kickoff, or at or after that week's Sunday 16:00 ET lock, can never
-apply to it. A Wednesday capture IS before the Sunday lock, so SNF and MNF
-are playable for this channel -- verified per game against ``pick_deadline``,
-never assumed. A missing, stale, or post-deadline snapshot is a DOCUMENTED
-NO-OP: zero tilt, the incumbent Tuesday pick stands, the row is tagged.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -162,7 +95,6 @@ def crew_tilt_refresh_ledger_path(artifacts_root: Path) -> Path:
 
 
 def load_crew_tilt_refresh_decisions(artifacts_root: Path) -> pd.DataFrame:
-    """The append-only refresh-time overlay ledger (empty frame when none)."""
 
     path = crew_tilt_refresh_ledger_path(artifacts_root)
     if not path.is_file():
@@ -178,45 +110,18 @@ def load_crew_tilt_refresh_decisions(artifacts_root: Path) -> pd.DataFrame:
 
 @dataclass(frozen=True)
 class _LaggedTrait:
-    """One trait's per-(referee, season) mean plus the frozen lagged cutpoints.
-
-    ``name_season`` has columns ``official_name``/``season``/``mean_total``.
-    ``interior_cutpoints`` are the three interior boundaries of the builder's
-    own ``pd.qcut(lagged["prev_total"], 4)`` over every (official, season)
-    pair carrying a valid one-season lag -- the population Section 5 item 2
-    of ``docs/referee_assignments_capture.md`` requires be FROZEN rather than
-    recomputed for a future game.
-    """
-
     name_season: pd.DataFrame
     interior_cutpoints: tuple[float, float, float]
     historical_quartile: dict[tuple[str, int], int]
 
 
 def _lagged_quartile_bucket(value: float, cutpoints: tuple[float, float, float]) -> int:
-    """``pd.qcut``'s own right-closed bucketing, applied to one value.
-
-    ``pd.qcut`` produces right-closed intervals ``(a, b]``, so a value equal
-    to an interior cutpoint belongs to the LOWER bucket. ``searchsorted``
-    with ``side="left"`` reproduces exactly that.
-    """
 
     index = int(np.searchsorted(np.asarray(cutpoints, dtype=float), float(value), side="left"))
     return index + 1
 
 
 def _build_lagged_trait(name_season: pd.DataFrame) -> _LaggedTrait:
-    """The builders' own lag/qcut, with the cutpoints kept instead of discarded.
-
-    This repeats the three lines
-    ``nfl_ats.experiment_runner._build_referee_trait_data`` /
-    ``._build_referee_type_trait_data`` run internally (shift by one season,
-    keep pairs exactly one season apart, ``pd.qcut(prev_total, 4)``). It is
-    repeated rather than imported ONLY because those functions return the
-    per-game join and discard both ``prev_total`` and the bin edges, which is
-    precisely what a not-yet-played game needs. Equality with the builders is
-    MEASURED, not assumed -- see the module docstring.
-    """
 
     lag = name_season.sort_values(["official_name", "season"]).copy()
     lag["prev_total"] = lag.groupby("official_name")["mean_total"].shift(1)
@@ -238,13 +143,6 @@ def _build_lagged_trait(name_season: pd.DataFrame) -> _LaggedTrait:
 
 @dataclass(frozen=True)
 class CrewTraitLookup:
-    """Both cells' season-lagged crew traits, usable for a FUTURE game.
-
-    ``holding`` is the Offensive-Holding-rate trait cell C keys on;
-    ``flag_rate`` is the overall ``mean_total`` penalty-rate trait cell A
-    reuses from ``docs/referee_battery.md``.
-    """
-
     holding: _LaggedTrait
     flag_rate: _LaggedTrait
     officials_snapshot_id: str
@@ -264,25 +162,15 @@ class CrewTraitLookup:
         return _lagged_quartile_bucket(float(prior.iloc[0]), trait.interior_cutpoints)
 
     def holding_quartile(self, referee: str, season: int) -> int | None:
-        """Quartile of ``referee``'s PRIOR-season Offensive Holding rate."""
 
         return self._quartile(self.holding, referee, season)
 
     def flag_rate_quartile(self, referee: str, season: int) -> int | None:
-        """Quartile of ``referee``'s PRIOR-season overall ``mean_total`` rate."""
 
         return self._quartile(self.flag_rate, referee, season)
 
 
 def _referee_name_season(repo_root: Path, *, penalty_type: str | None) -> pd.DataFrame:
-    """Per-(referee, season) mean penalty rate, the builders' own aggregation.
-
-    ``penalty_type=None`` reproduces ``_build_referee_trait_data``'s
-    ``mean_total`` (every penalty, from ``game_penalties.parquet``); a
-    ``penalty_type`` string reproduces ``_build_referee_type_trait_data``'s
-    single-type rate (from ``game_penalty_types.parquet``, absent games
-    filled to 0.0 because a game with none of that type is a genuine zero).
-    """
 
     officials_path, game_penalties_path, _snapshot = _latest_officials_snapshot(repo_root)
     officials = load_officials_for_prospective_channel(
@@ -320,7 +208,6 @@ def _referee_name_season(repo_root: Path, *, penalty_type: str | None) -> pd.Dat
 
 
 def build_crew_trait_lookup(repo_root: Path) -> CrewTraitLookup:
-    """Both season-lagged crew traits, with frozen cutpoints for a future game."""
 
     _officials_path, _penalties_path, officials_snapshot_id = _latest_officials_snapshot(repo_root)
     _penalty_type_path, penalty_type_snapshot_id = _latest_penalty_type_snapshot(repo_root)
@@ -336,8 +223,6 @@ def build_crew_trait_lookup(repo_root: Path) -> CrewTraitLookup:
 
 @dataclass(frozen=True)
 class CrewTiltFlags:
-    """One game's two cell flags and the additive tilt they compose to."""
-
     referee: str | None
     holding_crew_top_quartile: bool
     home_run_heavy_bottom_quartile: bool
@@ -357,15 +242,6 @@ def crew_tilt_flags(
     decision_home_spread: float | None,
     lookup: CrewTraitLookup,
 ) -> CrewTiltFlags:
-    """The frozen per-game rule (docs/referee_assignments_capture.md, WP47 §2.3).
-
-    Cell C fires when the home team's prior-rolling pass-rate quartile is the
-    BOTTOM one (run-heavy) AND the referee's PRIOR-season Offensive Holding
-    rate is in the TOP quartile. Cell A fires when the referee's PRIOR-season
-    ``mean_total`` rate is in the TOP quartile AND the home team is getting
-    >= 7 points at the FROZEN Tuesday line. They compose ADDITIVELY -- a
-    composition that was never measured, disclosed in the predeclaration.
-    """
 
     if referee is None or not str(referee).strip():
         return CrewTiltFlags(
@@ -428,7 +304,6 @@ def crew_tilt_flags(
 
 
 def tilted_probability(production_probability: float, tilt_points: float) -> float:
-    """``clip(p + tilt, 0, 1)`` -- the frozen additive composition."""
 
     return float(min(1.0, max(0.0, float(production_probability) + float(tilt_points))))
 
@@ -443,8 +318,6 @@ def _opposite(side: str) -> str:
 
 @dataclass(frozen=True)
 class CrewSnapshot:
-    """One captured crew-assignment snapshot, already filtered to a week."""
-
     snapshot_id: str
     captured_at_utc: pd.Timestamp
     referee_by_game_id: dict[str, str]
@@ -455,13 +328,6 @@ class CrewSnapshot:
 def latest_crew_snapshot(
     data_root: Path, *, season: int, week: int, before: pd.Timestamp | None = None
 ) -> CrewSnapshot | None:
-    """The newest ``referee_assignments`` snapshot covering ``(season, week)``.
-
-    ``before``, when given, restricts to snapshots captured strictly before
-    that instant -- the week-wide pre-filter. The binding per-GAME check is
-    still made against each game's own ``pick_deadline`` by the caller; this
-    argument only avoids loading a snapshot no game could use.
-    """
 
     root = data_root / "players" / "referee_assignments"
     if not root.is_dir():
@@ -508,14 +374,6 @@ def latest_crew_snapshot(
 
 
 def home_pass_rate_quartiles(repo_root: Path, game_ids: list[str]) -> dict[str, int]:
-    """The screen's own ``home_pbp_off_pass_rate`` quartile, per game_id.
-
-    Calls ``_merge_home_pass_rate_quartile`` verbatim (the same helper cell C
-    uses), so the cutpoint population is identical to the screen's. A game
-    absent from ``game_features_pbp.parquet`` -- or carrying a null pass rate
-    -- simply has no entry, which the caller treats as "no flag", never as an
-    error.
-    """
 
     if not game_ids:
         return {}
@@ -533,13 +391,6 @@ def home_pass_rate_quartiles(repo_root: Path, game_ids: list[str]) -> dict[str, 
 def build_crew_tilt_refresh_rows(
     plan: RefreshResult, *, data_root: Path, repo_root: Path
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """Pure computation: one row per ELIGIBLE game in ``plan``.
-
-    FAIL-OPEN everywhere: no crew snapshot for the week, or a snapshot no
-    game's deadline can accept, returns an EMPTY frame plus
-    ``{"skipped": True, "reason": ...}`` -- a documented NO-OP, never an
-    exception and never a flip. Never writes anything.
-    """
 
     empty = pd.DataFrame(columns=list(CREW_TILT_REFRESH_COLUMNS))
     eligible_games = [game for game in plan.games if game.eligible]
@@ -663,20 +514,6 @@ def record_crew_tilt_refresh_overlay(
     repo_root: Path,
     record_decisions: bool = False,
 ) -> dict[str, Any]:
-    """Append this pass's would-be picks to the crew-tilt overlay ledger.
-
-    Mirrors ``nfl_ats.nflcom_refresh_overlay.record_nflcom_refresh_overlay``'s
-    opt-in ``record_decisions`` contract and reuses
-    ``refuse_if_outside_recording_lock_window`` against the week's ORIGINAL
-    card kickoffs unchanged. The PLAYED pipeline cannot see this function's
-    output: it writes only its own separate ledger, and the ``RefreshResult``
-    handed in is consumed strictly read-only.
-
-    Repeated passes across a week legitimately append MULTIPLE rows per game
-    (not deduped), mirroring the sibling refresh ledgers: how the flag
-    evolves across passes is part of what prospective scoring reads. Scoring
-    consumes the LATEST pre-kickoff row per game.
-    """
 
     if not record_decisions:
         return {
@@ -719,8 +556,6 @@ def record_crew_tilt_refresh_overlay(
 
 @dataclass(frozen=True)
 class CrewTiltOverlayResult:
-    """The overlay applied to a card-shaped predictions frame."""
-
     predictions: pd.DataFrame
     flip_game_ids: tuple[str, ...]
     holding_flag_game_ids: tuple[str, ...]
@@ -730,14 +565,6 @@ class CrewTiltOverlayResult:
 
 
 def historical_crew_by_game(repo_root: Path) -> pd.DataFrame:
-    """The screen's own per-game referee/quartile table, from the builders.
-
-    Point-in-time-EQUIVALENT stand-in for the capture: a week's crew
-    assignment is public by Wednesday (docs/referee_assignments_capture.md
-    section 2), so knowing who refereed a completed game is not knowing
-    anything a Wednesday forecaster could not have known. It is used ONLY by
-    the back-test path; the live path reads the captured snapshot.
-    """
 
     holding = _build_referee_type_trait_data(repo_root, _HOLDING_PENALTY_TYPE).game_trait
     flag_rate = _build_referee_trait_data(repo_root).game_trait
@@ -751,13 +578,6 @@ def historical_crew_by_game(repo_root: Path) -> pd.DataFrame:
 def apply_crew_tilt_refresh_overlay(
     predictions: pd.DataFrame, repo_root: Path
 ) -> CrewTiltOverlayResult:
-    """Apply the frozen tilt to a card-shaped frame, historical-crew path.
-
-    ``predictions`` must carry ``game_id``/``season``/``spread_line``/
-    ``home_cover_probability`` (the schema every sibling overlay's ``apply_*``
-    consumes). The returned frame's ``home_cover_probability`` is the TILTED
-    probability; ``flip_game_ids`` are the games whose 0.5 side changed.
-    """
 
     required = {"game_id", "season", "spread_line", "home_cover_probability"}
     missing = sorted(required.difference(predictions.columns))
@@ -828,14 +648,6 @@ def preview_week(
     week: int,
     now: pd.Timestamp | None = None,
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
-    """What the overlay WOULD do for one week, read-only, no ledger write.
-
-    Works without a published card: the incumbent pick is whatever the
-    Tuesday card says, and this preview reports only whether the overlay
-    would leave it alone (``tilt_points == 0`` -> ``keeps_incumbent_pick``).
-    It exists so a lock-day rehearsal can show the challenger equals the
-    incumbent before any real row is ever written.
-    """
 
     del now
     schedules = pd.read_parquet(_latest_schedules_snapshot(repo_root))
@@ -951,13 +763,6 @@ def preview_week(
 
 
 def _load_script_module(repo_root: Path, name: str) -> Any:
-    """Load a ``scripts/*.py`` helper by path.
-
-    Loaded dynamically rather than imported so ``mypy src`` is not dragged
-    into the ``scripts`` package (which it was never configured to gate) --
-    the same isolation ``pyproject.toml``'s per-script ``ignore_errors``
-    overrides buy for the modules that DO import scripts statically.
-    """
 
     path = repo_root / "scripts" / f"{name}.py"
     scripts_dir = str(repo_root / "scripts")
@@ -1017,12 +822,6 @@ def run_stacked_backtest(
     samples: int,
     seed: int,
 ) -> dict[str, Any]:
-    """The overlay on top of the played four-overlay chain, opener grade.
-
-    MINED-SEASONS context, declared NOT a gate in
-    ``docs/referee_assignments_capture.md`` (WP47 section 5) before it was
-    ever run. Spends no rotation-registry window.
-    """
 
     stack = _load_script_module(repo_root, "overlay_stack_backtest")
     from nfl_ats.four_overlay_composition import COMPOSITION_ORDER, POLICY_ID
@@ -1168,11 +967,6 @@ DEFAULT_SEED = 20260901
 
 
 def main(argv: list[str] | None = None) -> int:
-    """``python -m nfl_ats.crew_tilt_refresh_overlay`` entry point.
-
-    Two modes: ``backtest`` (the stacked-on-production context run) and
-    ``preview`` (one week, read-only, never a ledger write).
-    """
 
     repo_root = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(description=__doc__)

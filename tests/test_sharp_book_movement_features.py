@@ -1,8 +1,3 @@
-"""Leakage and direction contracts for the MKT-15 refresh screen."""
-
-import importlib.util
-from pathlib import Path
-
 import pandas as pd
 import pytest
 
@@ -130,36 +125,3 @@ def test_threshold_missing_and_negative_direction() -> None:
         pd.Series([False, True, True, False]), pd.Series([0.5, -0.5, float("nan"), 0.49])
     )
     assert pick.tolist() == [True, False, True, False]
-
-
-def test_block_sum_bootstrap_matches_existing_row_resampling(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    from nfl_ats.clv import week_blocked_bootstrap
-
-    path = Path(__file__).resolve().parents[1] / "scripts/sharp_book_movement_on_production.py"
-    spec = importlib.util.spec_from_file_location("sharp_screen", path)
-    assert spec is not None and spec.loader is not None
-    screen = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(screen)
-    monkeypatch.setattr(screen, "SAMPLES", 100)
-    frame = pd.DataFrame(
-        {
-            "season": [2023] * 4,
-            "week": [1, 1, 2, 3],
-            "candidate": [1.0, 0.0, 1.0, float("nan")],
-            "baseline": [0.0, 1.0, 0.0, float("nan")],
-        }
-    )
-    actual = screen.summarize(frame, "candidate", "baseline")
-    expected = week_blocked_bootstrap(
-        frame.dropna(),
-        lambda rows: {"delta": float((rows.candidate - rows.baseline).mean() * 100)},
-        samples=100,
-        seed=screen.SEED,
-    ).iloc[0]
-    assert actual["games"] == 3 and actual["weeks"] == 2
-    assert actual["effect"] == pytest.approx(expected.estimate)
-    assert actual["interval_low"] == pytest.approx(expected.lower)
-    assert actual["interval_high"] == pytest.approx(expected.upper)
-    assert actual["probability_positive"] == expected.probability_positive

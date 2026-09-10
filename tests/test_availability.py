@@ -197,11 +197,6 @@ def _2025_shaped_injury_row(**overrides: object) -> dict[str, object]:
 
 
 def test_availability_outcomes_plain_frame_is_byte_identical_to_pre_eng39() -> None:
-    """A frame with no ``effective_observed_at`` column (every snapshot built
-    before this change, and any frame canonicalized with the default
-    ``timestamp_fallback="drop"``) must keep filtering on ``date_modified``
-    exactly as before -- pinned with a hash so an accidental regression on
-    this path fails loudly here."""
 
     games = pd.DataFrame(
         {
@@ -251,9 +246,6 @@ def test_availability_outcomes_plain_frame_is_byte_identical_to_pre_eng39() -> N
 
 
 def test_availability_outcomes_prefers_effective_observed_at_for_a_proxied_2025_row() -> None:
-    """THE GAP (lane S2, docs/injury_timestamp_fallback.md 'separate, unfixed
-    gap'): a season made visible only via the week_proxy fallback must still
-    produce an availability outcome, not be silently excluded."""
 
     schedule = _proxy_schedule()
     games = _proxy_games()
@@ -288,11 +280,6 @@ def test_availability_outcomes_prefers_effective_observed_at_for_a_proxied_2025_
 
 
 def test_availability_outcomes_leakage_proxied_row_invisible_before_its_proxy_time() -> None:
-    """AGENTS.md: a proxied row must never become an outcome before its own
-    effective_observed_at. The proxy here is exactly kickoff-24h; a cutoff
-    computed from decision_hours_before_kickoff=48 sits BEFORE that proxy
-    time and must see nothing, while decision_hours_before_kickoff=1 sits
-    AFTER it and must see the row."""
 
     schedule = _proxy_schedule()
     games = _proxy_games()
@@ -326,15 +313,6 @@ def test_availability_outcomes_leakage_proxied_row_invisible_before_its_proxy_ti
 
 
 def test_availability_outcomes_never_overwrites_a_real_date_modified() -> None:
-    """A row with a real ``date_modified`` (``observed_at_basis ==
-    "date_modified"``) must keep using that real timestamp, not the proxy
-    machinery, even when ``effective_observed_at`` is present on the frame.
-
-    Chosen so the real timestamp and the would-be proxy time
-    (``kickoff - 24h == 2025-09-14T17:00:00Z``) fall on opposite sides of
-    the cutoff below: visible only if the real ``date_modified`` -- not a
-    proxy -- is what actually gates visibility.
-    """
 
     schedule = _proxy_schedule()
     games = _proxy_games()
@@ -376,9 +354,6 @@ def test_availability_rate_contract_rejects_leakage() -> None:
 
 
 def test_fixed_unavailability_is_bit_faithful_to_the_original_heuristic() -> None:
-    """The frozen active model's injury prior: legacy strings must keep their
-    original (substring-matched) meanings. Routing this through the
-    categorized parser silently changed 18 historical games in 2010-2015."""
 
     assert fixed_unavailability("Out", "Full Participation in Practice") == 1.0
     assert fixed_unavailability("Doubtful", None) == 0.85

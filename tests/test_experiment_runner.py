@@ -1693,9 +1693,6 @@ def _referee_game(
 
 
 def _referee_quartile_games() -> list[dict[str, Any]]:
-    """REF_A/B/C/D only -- exactly 4 lagged (official, season) pairs, so
-    qcut(4) assigns each cleanly to its own quartile with no ties/contamination.
-    """
 
     return [
         _referee_game(
@@ -1774,8 +1771,6 @@ def _referee_quartile_games() -> list[dict[str, Any]]:
 
 
 def _referee_battery_games() -> list[dict[str, Any]]:
-    """The quartile officials plus REF_ROOKIE/REF_VETERAN, for the
-    experience-based tests (which don't assert on quartile assignment)."""
 
     return [
         *_referee_quartile_games(),
@@ -1946,14 +1941,6 @@ def test_flag_referee_veteran_and_rookie_home_cover_match_hand_computation(tmp_p
 
 
 def test_referee_flags_do_not_use_this_games_own_penalty_count(tmp_path: Path) -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    REF_D's 2021 flag must be driven by REF_D's 2020 (PRIOR-season) penalty
-    total (19, the top quartile), never by REF_D's OWN 2021 game penalty
-    count. Mutating the 2021 game's own penalty numbers to values that would
-    put it in the BOTTOM quartile if (incorrectly) read directly must not
-    change the flag.
-    """
 
     games = _referee_quartile_games()
     features_path = _write_referee_battery_repo(tmp_path, games)
@@ -1985,12 +1972,6 @@ def test_referee_flags_do_not_use_this_games_own_penalty_count(tmp_path: Path) -
 def _write_game_penalty_types_fixture(
     officials_dir: Path, games: list[dict[str, Any]], penalty_type: str
 ) -> None:
-    """Write data/raw/officials/<snapshot>/game_penalty_types.parquet alongside an
-    already-written officials.parquet/game_penalties.parquet snapshot (same dir).
-    Reuses each game's ``penalties_total``/``penalties_on_home``/``penalties_on_away``
-    verbatim as the counts for a single ``penalty_type`` -- sufficient to reproduce
-    the exact same quartile ranking the totals-based tests above already verified.
-    """
 
     game_penalty_types = pd.DataFrame(
         [
@@ -2008,12 +1989,6 @@ def _write_game_penalty_types_fixture(
 
 
 def test_referee_type_trait_uses_the_prior_season_lag(tmp_path: Path) -> None:
-    """Penalty-TYPE crew tendency (docs/penalty_crew_tendencies.md): the per-type
-    trait must reproduce the SAME quartile ranking as the already-verified
-    mean_total trait when the type counts are identical to the totals (REF_D's
-    2020 total of 19 is the top quartile -- see
-    test_flag_referee_penalty_rate_quartiles_use_the_prior_season_lag above).
-    """
 
     games = _referee_quartile_games()
     _write_referee_battery_repo(tmp_path, games)
@@ -2032,14 +2007,6 @@ def test_referee_type_trait_uses_the_prior_season_lag(tmp_path: Path) -> None:
 def test_referee_type_trait_does_not_use_this_games_own_penalty_type_count(
     tmp_path: Path,
 ) -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    REF_D's 2021 lag_type_quartile must be driven by REF_D's 2020
-    (PRIOR-season) penalty-TYPE count (19, the top quartile), never by REF_D's
-    OWN 2021 game penalty-type count. Mutating the 2021 game's own type count
-    to a value that would put it in the BOTTOM quartile if (incorrectly) read
-    directly must not change the lagged quartile.
-    """
 
     games = _referee_quartile_games()
     _write_referee_battery_repo(tmp_path, games)
@@ -2166,10 +2133,6 @@ def test_opener_graded_features_overwrites_spread_line_and_home_cover(
 def test_run_subset_bias_experiment_opener_grade_matches_close_when_lines_agree(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """When every game's opener line equals its close line, opener grading must
-    reproduce close grading exactly -- a mechanical identity, not a remembered
-    number, so it needs no real market snapshot archive to check against.
-    """
 
     features = _deterministic_features()
     features = features.copy()
@@ -2302,18 +2265,6 @@ def test_run_experiment_dispatches_feature_arm_through_run_experiment(
 
 
 def _deterministic_features(n_weeks: int = 10) -> pd.DataFrame:
-    """One home-underdog game per week that covers 80% of the time; the rest
-    of the slate (three games/week, both non-favoured directions) covers
-    exactly 50% overall.
-
-    Built so ``effect``/``fraction_of_slate`` are hand-checkable exactly (they
-    are deterministic point arithmetic, independent of the bootstrap), while
-    the bootstrap-derived interval is only sanity-checked (matching this
-    project's own testing convention -- see ``tests/test_experiments.py``).
-    Recall ``_flag_home_underdog``'s convention (matching
-    ``scripts/nfl_bias_battery_screen.py``): ``spread_line < 0`` on the home
-    side is what makes a team the home underdog, not ``> 0``.
-    """
 
     rows = []
     game = 0
@@ -2368,14 +2319,6 @@ def test_run_subset_bias_experiment_end_to_end_on_synthetic_data(tmp_path: Path)
 def test_run_feature_arm_experiment_end_to_end_on_synthetic_data(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """``walk_forward_outcomes`` is mocked (a full weekly-refit ridge walk is
-    slow and is not what this test exists to check -- see the real-data
-    identity anchor below for that); this test exists to prove
-    ``run_feature_arm_experiment``'s OWN glue -- feature_set tagging, pairing
-    via ``paired_feature_comparisons``, the 100x accuracy scaling (unscaled
-    for brier/log_loss), and which metrics get computed under
-    ``endpoints.secondary`` -- is correct, by hand-computable arithmetic.
-    """
 
     features_path = tmp_path / "features.parquet"
     pd.DataFrame({"game_id": [f"g{i}" for i in range(1, 9)]}).to_parquet(features_path)
@@ -2533,21 +2476,6 @@ _LOCAL_DATA_AVAILABLE = _PBP_ROOT.is_dir() and _FEATURES_PATH.is_file()
 )
 @pytest.mark.full
 def test_penalty_discipline_reproduces_the_recorded_registry_entry() -> None:
-    """Full fidelity (samples=20000, seed=20260818) against
-    ``registry/weak_signals.json``'s ``penalty_discipline`` entry (effect
-    +0.3288, week-blocked interval [-1.0389, +1.6849], P+ 0.6828, reliability
-    0.261, sample_games 4085, sample_blocks 277).
-
-    This reproduction is measured, not merely toleranced: the runner's
-    ``penalty_rate_quartile`` builder and generic bootstrap are a faithful
-    port of ``scripts/penalty_discipline_interval.py``'s own construct and
-    joint block bootstrap (same seed, same block-id derivation order, same
-    single ``rng.multinomial`` call shape), so re-running that script
-    (``.tools/uv.exe run --no-sync python scripts/penalty_discipline_interval.py``,
-    ~3 seconds) reproduces these exact floats to more digits than are
-    asserted here. Full samples, not reduced -- this runs in a few seconds,
-    so there was no need to trade fidelity for test runtime.
-    """
 
     spec = experiment_spec_from_payload(
         {
@@ -2742,19 +2670,6 @@ def test_run_experiment_cli_writes_artifact_and_registry_then_enforces_single_wr
 def test_experiment_run_cli_writes_only_under_the_env_isolated_registry(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Regression for the leak this test module caused: `run_experiment_cli`
-    called directly (as every other test above does) can be pinned to
-    `tmp_path` via its explicit `registry_root`/`registry_path` arguments, but
-    `nfl-ats experiment run` -- the actual command a session runs -- resolves
-    its own roots from `NFL_ATS_REGISTRY_DIR`/`NFL_ATS_ARTIFACTS_DIR`
-    (``cli._registry_root``/``cli._artifacts_root``), and nothing above
-    exercises that path. This drives the real CLI entry point (`cli.main`)
-    the way `tests/test_cli.py` does everywhere else, and asserts the
-    isolated override actually received both writes -- proof the override was
-    respected -- rather than asserting the real repo's `registry/` tree is
-    untouched, which a background writer or a parallel test worker could
-    falsify or race regardless of whether this fix works.
-    """
 
     registry_root = tmp_path / "registry"
     artifacts_root = tmp_path / "artifacts"

@@ -1,78 +1,3 @@
-"""Timing-policy instrumentation (ENG-08): detect real, non-clock refresh
-triggers and score them prospectively against the fixed-clock checkpoints.
-
-**Binding closing-grounds taxonomy (AGENTS.md), restated verbatim per this
-project's rule for any module that scores or adjudicates an experiment:** an
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. At this evaluator's ~2-point resolution, "contains zero" is
-the EXPECTED outcome for a real small signal. Only two grounds ever close a
-line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval
-on the wrong side of zero) or zero split-half reliability; (2) bounded by a
-positive control proven able to detect an effect that size. Everything else
-is ``unresolved_below_power``: record it with ``nfl-ats weak-signals
-record``, report ``probability_positive``, never the binary "contains zero."
-Within-week correlation is ZERO by owner mandate -- pairing below blocks by
-WEEK, never estimates or pads a within-week correlation, and this module
-never computes "games needed".
-
-This module is INSTRUMENTATION ONLY. It does not adjudicate anything today
-and never writes to ``registry/`` -- :func:`compare_trigger_vs_checkpoint`
-is a scaffold callers run once real ledger rows exist; it accepts rows and
-triggers as plain arguments and never reads or writes a registry file
-itself.
-
-What this is, and what it is not
----------------------------------
-The project already has one refresh-trigger mechanism: MKT-08's
-``trigger_type``/``trigger_source``/``trigger_observed_at_utc`` columns on
-``nfl_ats.pick_refresh``'s pick-revision ledger
-(``PICK_REVISION_COLUMNS``, ``TRIGGER_CLOCK_DISPATCH`` /
-``TRIGGER_NEWS_EVENT`` / ``TRIGGER_UNKNOWN``). That mechanism records
-provenance for a refresh pass a human or the scheduler actually RAN, tagged
-by whoever invoked ``refresh-picks --trigger-type ... --trigger-source
-...``. It has no automatic detector: nothing notices, on its own, that an
-inactives list posted, an injury report revised, a projected lineup changed,
-or the market moved.
-
-This module is that detector. It reads the capture directories already on
-disk (WP17's ``nfl_ats.inactives_capture`` snapshots, the nflverse/Sportradar
-injury archives, the lineup-forecast artifact, the market-quote store) and
-reconstructs :class:`RefreshTrigger` rows for the four REAL non-clock events
-this project can observe pregame, plus the fixed clock checkpoints
-themselves (read from the scheduler's own state file, never re-derived from
-wall-clock math) -- so the two can be compared on equal footing. Every
-timestamp on a :class:`RefreshTrigger` other than ``observation_time`` (the
-instant THIS SCAN ran) comes from the underlying snapshot's own manifest or
-payload, never from the scanning process's clock -- this is what makes a
-"trigger" a fact about the world rather than a fact about when someone
-happened to look.
-
-``trigger_source`` here is deliberately more granular than MKT-08's
-``trigger_type``: every non-clock value below
-(``inactives_posted``/``injury_report_posted``/``lineup_change``/
-``line_move``) is a species of MKT-08's coarser ``TRIGGER_NEWS_EVENT``.
-:func:`mkt08_trigger_type` maps between the two vocabularies using MKT-08's
-own constants (imported, never redefined) so a future step that DOES record
-to the pick-revision ledger can carry this module's finer detail through
-MKT-08's existing ``trigger_source`` free-text field without inventing a
-second one.
-
-Deadline validation
---------------------
-Owner rule (binding, restated from ``AGENTS.md``/memory): a game's pick
-deadline is ``min(own kickoff, Sunday 16:00 ET of that week)`` -- Sunday
-night and Monday games lock EARLY, at the same Sunday-afternoon instant as
-the rest of the week, not at their own kickoff. This module never redefines
-that arithmetic: every deadline here is
-``nfl_ats.pick_refresh.pick_deadline(kickoff, nfl_ats.pick_refresh.sunday_pick_lock(...))``,
-imported directly. A trigger whose ``source_capture_time`` is at or after
-its game's deadline is ``deadline_valid=False``, tagged ``deadline_violation``
-in :attr:`RefreshTrigger.deadline_reason`, and excluded from
-:func:`compare_trigger_vs_checkpoint`'s paired population -- a refresh this
-project could never actually have acted on must never contribute evidence
-for or against acting on it.
-"""
-
 from __future__ import annotations
 
 import itertools
@@ -135,13 +60,6 @@ _SUCCESS_STATUSES = frozenset({"OK", "CAUGHT_UP", "ALREADY-CAPTURED"})
 
 
 def mkt08_trigger_type(trigger_source: str) -> str:
-    """Map this module's granular ``trigger_source`` onto MKT-08's coarser
-    ``trigger_type`` vocabulary (``nfl_ats.pick_refresh.TRIGGER_*``), reusing
-    those constants rather than redefining them. A future step that records
-    a detected trigger onto the pick-revision ledger should pass this
-    module's ``trigger_source`` value through ``--trigger-source`` unchanged
-    and this function's output through ``--trigger-type``.
-    """
 
     if trigger_source == TRIGGER_CLOCK_CHECKPOINT:
         return TRIGGER_CLOCK_DISPATCH
@@ -153,15 +71,6 @@ def mkt08_trigger_type(trigger_source: str) -> str:
 
 
 def _as_utc(value: Any) -> pd.Timestamp | None:
-    """Parse a manifest/payload timestamp field to a tz-aware UTC Timestamp.
-
-    Every source this module reads writes an offset-bearing ISO string
-    (``+00:00``/``-04:00``) or a bare ``YYYYMMDDTHHMMSSZ`` capture stamp;
-    both parse tz-aware under ``pandas.Timestamp`` directly (measured this
-    session), so this only needs to convert, never guess a zone for a naive
-    value found. Returns ``None`` on anything unparseable -- fail-open,
-    matching every sibling snapshot reader in this codebase.
-    """
 
     if value is None:
         return None
@@ -194,13 +103,6 @@ def _iso(value: pd.Timestamp | None) -> str:
 def _validate_deadline(
     source_capture_time: pd.Timestamp | None, deadline: pd.Timestamp
 ) -> tuple[bool, str]:
-    """Strictly-before check against a game's own ``pick_refresh.pick_deadline``.
-
-    Strict, matching ``inactives_refresh_overlay.newest_snapshot_before``'s
-    anti-backdating convention: a source captured exactly AT the deadline
-    could not have informed a pick made before it, so it is a violation, not
-    an edge case.
-    """
 
     if source_capture_time is None or pd.isna(source_capture_time):
         return False, "deadline_violation: source_capture_time is unknown"
@@ -218,14 +120,6 @@ def _validate_deadline(
 
 @dataclass(frozen=True)
 class RefreshTrigger:
-    """One reconstructed refresh-trigger event for one game.
-
-    Every field is populated from a snapshot manifest, a scheduler state
-    record, or a market-quote store -- never invented -- except
-    ``observation_time``, which is honestly the scan's own clock (when this
-    trigger was RECONSTRUCTED, not when the underlying event happened).
-    """
-
     trigger_source: str
     game_id: str
     season: int
@@ -247,13 +141,10 @@ class RefreshTrigger:
 
     @property
     def dedupe_key(self) -> tuple[str, str, str]:
-        """``(trigger_source, source_capture_time, game_id)`` -- the JSONL
-        evidence log's append-only de-duplication key."""
 
         return (self.trigger_source, _iso(self.source_capture_time), self.game_id)
 
     def to_record(self) -> dict[str, Any]:
-        """A flat, JSON-safe dict for the append-only evidence artifact."""
 
         return {
             "trigger_source": self.trigger_source,
@@ -280,14 +171,6 @@ class GameWindow:
 
 
 def schedule_game_windows(repo_root: Path, *, season: int, week: int) -> tuple[GameWindow, ...]:
-    """One (season, week)'s REG games, each with its own ``pick_deadline``.
-
-    Reads the newest local ``schedules.parquet`` the same way every sibling
-    refresh-time overlay does (``crew_tilt_refresh_overlay.preview_week``,
-    ``inactives_capture._schedule_lookup``); returns ``()`` when no schedule
-    snapshot or no matching games are present, fail-open like every detector
-    below.
-    """
 
     hits = sorted((repo_root / "data" / "raw").glob("*/schedules.parquet"))
     if not hits:
@@ -342,17 +225,6 @@ def detect_clock_checkpoint_triggers(
     checkpoint_names: Sequence[str] = CLOCK_CHECKPOINT_NAMES,
     observation_time: pd.Timestamp | None = None,
 ) -> tuple[RefreshTrigger, ...]:
-    """Every successfully-run clock checkpoint, one trigger per eligible game.
-
-    ``scheduler_state`` is ``json.loads(data/scheduler_state.json)`` --
-    passed in rather than read here, so this stays pure and testable on a
-    synthetic dict. A checkpoint's own ``source_capture_time`` is its
-    scheduler record's ``ran_at`` (when it actually ran) falling back to
-    ``window_start`` (its target instant) for a state shape that lacks
-    ``ran_at`` -- both are scheduler-clock facts, never this scan's own
-    clock, which is the honest sense in which a clock checkpoint's "source"
-    IS the clock.
-    """
 
     observed = _now(observation_time)
     runs = scheduler_state.get("runs", {}) if isinstance(scheduler_state, dict) else {}
@@ -397,14 +269,6 @@ def detect_inactives_triggers(
     week: int,
     observation_time: pd.Timestamp | None = None,
 ) -> tuple[RefreshTrigger, ...]:
-    """A real, per-game inactives-posted trigger for every reporting snapshot.
-
-    Reuses ``nfl_ats.inactives_refresh_overlay.load_inactives_snapshots`` /
-    ``inactives_rows_for_game`` verbatim -- the exact reader WP41's overlay
-    already trusts to distinguish "no report yet" from "nobody is inactive"
-    -- rather than re-parsing manifests here. A snapshot only produces a
-    trigger for a game it actually names rows for.
-    """
 
     observed = _now(observation_time)
     snapshots = load_inactives_snapshots(data_root)
@@ -446,14 +310,6 @@ def detect_inactives_triggers(
 
 
 def _nflverse_injury_snapshots(data_root: Path) -> tuple[tuple[str, pd.Timestamp], ...]:
-    """Every readable ``data/players/raw/<snapshot>/manifest.json``.
-
-    This archive is season-wide, not week-specific (``PlayerSnapshot``'s own
-    ``injury_seasons`` tuple), so a new snapshot here is treated as relevant
-    to whichever (season, week) the caller is scanning -- a fresh pull of the
-    official injury archive is itself the event, independent of whether that
-    particular week already has rows in it.
-    """
 
     root = data_root / "players" / "raw"
     found: list[tuple[str, pd.Timestamp]] = []
@@ -476,11 +332,6 @@ def _nflverse_injury_snapshots(data_root: Path) -> tuple[tuple[str, pd.Timestamp
 def _sportradar_injury_snapshots(
     data_root: Path, *, season: int, week: int
 ) -> tuple[tuple[str, pd.Timestamp], ...]:
-    """Every complete ``data/raw/sportradar_injuries/<snapshot>/manifest.json``
-    matching ``(season, week)``. Mirrors the acceptance rule
-    ``scripts/capture_sportradar_injuries.py``'s own reader applies (schema
-    tag, ``status == "complete"``) without importing that script (src/nfl_ats
-    never imports scripts/)."""
 
     root = data_root / "raw" / "sportradar_injuries"
     found: list[tuple[str, pd.Timestamp]] = []
@@ -519,8 +370,6 @@ def detect_injury_report_triggers(
     week: int,
     observation_time: pd.Timestamp | None = None,
 ) -> tuple[RefreshTrigger, ...]:
-    """A real injury-report-posted trigger for every new nflverse/Sportradar
-    snapshot found, one row per game in ``games``."""
 
     observed = _now(observation_time)
     sources: list[tuple[str, str, pd.Timestamp]] = [
@@ -574,26 +423,6 @@ def detect_lineup_change_triggers(
     week: int,
     observation_time: pd.Timestamp | None = None,
 ) -> tuple[RefreshTrigger, ...]:
-    """A per-game trigger for every roster change between two consecutive
-    archived lineup-forecast captures.
-
-    ``scripts/build_week_lineups.py`` writes a REPLACEMENT artifact
-    (``artifacts/lineups/current/lineups.json``, one stable path every
-    refresh overwrites -- measured this session, confirmed by its own
-    ``_remove_legacy_stamped_runs`` cleanup), so there is no on-disk history
-    of consecutive captures to diff directly. ``scripts/refresh_trigger_log.py``
-    is responsible for archiving a dated copy of that stable file into
-    ``archive_dir`` on every scan (keyed by the payload's own
-    ``generated_at``, so re-archiving an unchanged file never duplicates);
-    this function only reads whatever archive already exists there, which
-    keeps it independently testable against a synthetic ``tmp_path`` archive
-    with no dependency on the live capture pipeline.
-
-    Each archived file is expected to carry the same shape
-    ``build_week_lineups.py`` writes: ``season``, ``week``, ``generated_at``
-    (a bare UTC capture stamp, NOT this function's own clock), and
-    ``games -> {game_id: {"home": {"players": [...]}, "away": {...}}}``.
-    """
 
     observed = _now(observation_time)
     if not archive_dir.is_dir():
@@ -662,15 +491,6 @@ def detect_lineup_change_triggers(
 
 
 def archive_lineup_snapshot(source: Path, archive_dir: Path) -> Path | None:
-    """Copy ``source`` (a ``lineups.json``-shaped payload) into ``archive_dir``,
-    keyed by its own ``generated_at`` so an unchanged file is never re-archived.
-
-    Returns the archived path, or ``None`` when ``source`` is missing,
-    unreadable, or already archived under the same ``generated_at``. Pure
-    file I/O, no ledger write, no registry touch -- this is the scan script's
-    own bookkeeping for :func:`detect_lineup_change_triggers`, not a new
-    capture mechanism.
-    """
 
     if not source.is_file():
         return None
@@ -704,26 +524,6 @@ def detect_line_move_triggers(
     threshold: float = MOVEMENT_POLICY_THRESHOLD,
     observation_time: pd.Timestamp | None = None,
 ) -> tuple[RefreshTrigger, ...]:
-    """A line-move trigger for every game whose opener-to-current move meets
-    ``MOVEMENT_POLICY_THRESHOLD`` (imported from ``nfl_ats.pick_refresh``,
-    never redefined here).
-
-    Reuses ``pick_refresh.original_card`` for the "opener" (the frozen
-    Tuesday-recorded ``decision_home_spread``, the same anchor every other
-    refresh-time module in this codebase uses) and
-    ``pick_refresh.current_captured_home_spread`` for the "current" read --
-    a read-only local-store lookup, never a live fetch. Fails open (no
-    triggers) when either side is unavailable, matching both reused
-    functions' own documented fail-open contracts.
-
-    ``source_capture_time`` is the newest quote's ``latest_observed_at_utc``
-    across the WHOLE local market store (the same field
-    ``current_captured_home_spread``'s own metadata already reports for its
-    "fresh" gate) -- a store-wide, not strictly per-game, capture instant.
-    This is a disclosed simplification: production's own freshness check is
-    equally store-wide, so this does not understate what the live pipeline
-    itself already treats as "the current line's capture time".
-    """
 
     observed = _now(observation_time)
     original = original_card(artifacts_root, season=season, week=week)
@@ -770,9 +570,6 @@ def detect_line_move_triggers(
 
 @dataclass(frozen=True)
 class TriggerScanRoots:
-    """Every path a full scan needs, gathered once so callers (and tests)
-    only have to construct one object."""
-
     repo_root: Path
     data_root: Path
     artifacts_root: Path
@@ -787,10 +584,6 @@ def detect_all_triggers(
     week: int,
     now: pd.Timestamp | None = None,
 ) -> tuple[RefreshTrigger, ...]:
-    """Every trigger every detector above can currently reconstruct for one
-    (season, week), including the fixed clock checkpoints. Returns ``()``
-    when the target week has no local schedule coverage at all -- every
-    individual detector already fails open on a missing source of its own."""
 
     observed = _now(now)
     games = schedule_game_windows(roots.repo_root, season=season, week=week)
@@ -838,18 +631,6 @@ def evidence_log_path(artifacts_root: Path, *, season: int, week: int) -> Path:
 def append_triggers_to_evidence_log(
     path: Path, triggers: Sequence[RefreshTrigger]
 ) -> tuple[int, int]:
-    """Append new trigger records to ``path``, idempotently.
-
-    De-duplicates by :attr:`RefreshTrigger.dedupe_key`
-    (``trigger_source``, ``source_capture_time``, ``game_id``) against BOTH
-    every line already on disk and every other trigger in this same call, so
-    re-running a scan over the same capture directories -- the normal,
-    expected way this is used -- never appends a second copy of the same
-    event. Existing lines are never rewritten, reordered, or removed; this
-    function only ever opens the file in append mode.
-
-    Returns ``(written, skipped_as_duplicate)``.
-    """
 
     existing_keys: set[tuple[str, str, str]] = set()
     if path.is_file():
@@ -901,13 +682,6 @@ COMPARISON_REQUIRED_COLUMNS: tuple[str, ...] = (
 
 @dataclass(frozen=True)
 class TriggerComparisonResult:
-    """Paired trigger-vs-checkpoint forced-pick accuracy, week-blocked.
-
-    ``estimate``/``lower``/``upper``/``probability_positive`` are
-    ``trigger`` MINUS ``checkpoint`` -- positive favours acting on the
-    non-clock trigger over waiting for the next fixed checkpoint.
-    """
-
     n_games: int
     n_weeks: int
     estimate: float
@@ -929,60 +703,6 @@ def compare_trigger_vs_checkpoint(
     seed: int = 20260904,
     on_degenerate: OnDegenerate = "warn",
 ) -> TriggerComparisonResult:
-    """Pair the fixed-checkpoint pick against the trigger-time pick, per game.
-
-    **Binding closing-grounds taxonomy (AGENTS.md), restated verbatim:** an
-    interval or CI that contains zero is NEVER grounds to reject, fail, or
-    close an experiment. At this evaluator's ~2-point resolution, "contains
-    zero" is the EXPECTED outcome for a real small signal. Only two grounds
-    ever close a line of work: (1) refuted mechanism -- a RESOLVED wrong sign
-    (whole interval on the wrong side of zero) or zero split-half
-    reliability; (2) bounded by a positive control proven able to detect an
-    effect that size. Everything else is ``unresolved_below_power``: record
-    it with ``nfl-ats weak-signals record``, report ``probability_positive``,
-    never the binary "contains zero." This function never calls
-    ``weak-signals record`` itself -- it is a read-only scaffold; recording
-    is a separate, deliberate step once real rows exist.
-
-    ``ledger_rows`` contract (one row per paired game; callers assemble this
-    from whatever future step joins the fixed-checkpoint pick-revision
-    ledger against a trigger-time refresh's own pick -- neither exists for
-    2026 yet, and this function creates nothing):
-
-    - ``game_id``, ``season``, ``week``
-    - ``checkpoint_pick_home`` (bool): the pick taken at the fixed clock
-      checkpoint (HOME when True).
-    - ``trigger_pick_home`` (bool): the pick a trigger-time refresh took.
-    - ``settle_margin`` (float): ``result - decision_line``, the SAME frozen
-      grading line and result for both arms (``nfl_ats.clv.pick_correct``'s
-      own convention: strictly positive is a home cover, exactly zero is a
-      push and is excluded here, matching FND-04).
-
-    Only games with a corresponding trigger in ``triggers`` whose
-    ``deadline_valid`` is True are paired -- a trigger this project could
-    never actually have acted on before its deadline contributes no
-    evidence, in either direction. Excluded game ids are reported in
-    ``excluded_deadline_violations`` rather than silently dropped.
-
-    ``naive_block_bootstrap_interval`` (``nfl_ats.estimation_variance``) is
-    the SAME estimator every other paired comparison in this project already
-    reports from; this function does not define a second one.
-    Within-week correlation is mandated exactly zero (``AGENTS.md``), so
-    blocking is by WEEK, matching every sibling estimator's convention --
-    never estimated, never padded, and this function never computes "games
-    needed".
-
-    Classification defaults to ``unresolved_below_power``
-    (``nfl_ats.weak_signals.POOLABLE_CLASSIFICATION``) and is only
-    reclassified ``refuted_mechanism`` with ``closing_ground
-    ="wrong_sign_resolved"`` when the WHOLE interval sits strictly below
-    zero AND the interval is not itself degenerate (too few week-blocks to
-    trust its bounds at all, in which case the honest answer is
-    ``unresolved_below_power`` regardless of the point estimate's sign).
-    ``bounded_by_control`` is never applied automatically here -- it requires
-    an external positive-control result this scaffold is not given, and
-    fabricating one would be exactly the violation ``AGENTS.md`` forbids.
-    """
 
     missing = sorted(set(COMPARISON_REQUIRED_COLUMNS).difference(ledger_rows.columns))
     if missing:

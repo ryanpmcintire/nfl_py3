@@ -1,12 +1,3 @@
-"""`refresh-picks` defaults --season/--week to the active model's linked forecast.
-
-Measured 2026-09-06 (data/scheduler_log.txt): every scheduled Sunday refresh
-pass failed on the argparse usage line because the pair was required and the
-schedule never passed it. The week a refresh operates on is not a choice --
-it is the week ``publish-predictions`` locked, recorded on the active
-manifest -- so the CLI reads it from there when the flags are omitted.
-"""
-
 from __future__ import annotations
 
 import argparse

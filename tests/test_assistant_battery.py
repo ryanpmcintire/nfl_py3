@@ -1,12 +1,3 @@
-"""Anticipated-question battery for the board assistant (static path).
-
-Every row is a question type a reader could plausibly ask, written BEFORE
-looking at engine output: (question, expected topic, required substring).
-The engine parses meaning (entities + intent) and composes answers from
-corpus data -- it retrieves no canned rows. The same battery runs against
-the shipped inline JS for parity (see parity harness, outside the repo).
-"""
-
 from __future__ import annotations
 
 import json

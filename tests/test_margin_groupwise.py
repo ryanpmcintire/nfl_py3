@@ -1,18 +1,3 @@
-"""Group-wise (block-wise) ridge penalties.
-
-Three things are pinned here, in order of importance:
-
-1. **The frozen path is untouched when penalties are unused.** Group-wise
-   penalties are opt-in; the default estimator must be the same three-step
-   pipeline it has always been, and must predict bit-identically.
-2. **The column-scaling trick is exact.** Scaling column ``j`` by
-   ``1/sqrt(m_j)`` under a plain ``Ridge(alpha)`` is generalized ridge with
-   penalty ``alpha * m_j``, not an approximation of it.
-3. **It escapes the MOD-06 corollary.** Differential shrinkage changes the
-   direction of the coefficient vector, so ``sign(prediction)`` can flip --
-   unlike a positive rescale, which never can.
-"""
-
 from __future__ import annotations
 
 import numpy as np
@@ -171,7 +156,6 @@ def test_feature_groups_cover_the_active_model_contract() -> None:
 @pytest.mark.parametrize("target", MARGIN_TARGETS)
 @pytest.mark.parametrize("profile", MARGIN_FEATURE_PROFILES)
 def test_every_margin_profile_resolves_to_blocks(target: str, profile: str) -> None:
-    """No profile may hit the raise; a new feature family must declare a block."""
 
     columns = margin_feature_columns(target, profile)  # type: ignore[arg-type]
     groups = margin_feature_groups(target, profile)  # type: ignore[arg-type]
@@ -206,12 +190,6 @@ def test_non_positive_multipliers_are_rejected() -> None:
 
 
 def test_differential_penalties_flip_prediction_signs() -> None:
-    """A positive rescale can never flip a sign; differential shrinkage can.
-
-    Two blocks that disagree about the answer. Penalising one of them harder
-    moves the crossing point, so a set of rows changes side -- the property
-    MOD-06's corollary denies to any pure-rescale method.
-    """
 
     generator = np.random.default_rng(3)
     rows = 800
@@ -243,7 +221,6 @@ def test_differential_penalties_flip_prediction_signs() -> None:
 
 
 def test_a_positive_rescale_flips_nothing() -> None:
-    """The control the claim above is measured against."""
 
     frame, target = _design()
     fitted = make_margin_estimator("ridge", ridge_alpha=10.0).fit(frame, target)

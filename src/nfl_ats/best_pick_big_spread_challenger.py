@@ -1,33 +1,3 @@
-"""Prospective-only Best-Pick challenger that excludes 10+ point spreads.
-
-``docs/opener_error_analysis.md`` measured the active production-rule read
-against the opener and found its largest spread bucket (absolute opener spread
-at least 10 points) below the unfiltered baseline.  The result remains
-``unresolved_below_power``; this module does not claim otherwise.  It implements
-the document's direct policy lead at no rotation-window cost by recording an
-alternative weekly Best Pick prospectively.
-
-This challenger composes one additional eligibility rule with v2, after v2's
-below-median-dispersion pool is built: exclude candidates whose absolute
-decision spread is at least ``BIG_SPREAD_THRESHOLD``.  Candidate probabilities,
-primary ranking, and tie breaks are otherwise v2 byte-for-byte.  If every
-v2-eligible game is a big spread, fall back to the unmodified v2 pool so the
-forced weekly nomination is never dropped.
-
-**Superseded on the played card, 2026-09-09.** The same mechanism at the
-boundary ``docs/spread_hole_diagnosis.md`` actually locates -- exclude 7 points
-and up -- is now the SERVED nomination rule
-(``nfl_ats.best_pick_nomination.nominate_v2_small_spread``,
-``docs/best_pick_bucket_confidence.md``), and both rules share this module's
-former screen, now ``nfl_ats.best_pick_nomination.apply_spread_eligibility``.
-This 10-point arm keeps recording unchanged so its prospective history is not
-lost; it is no longer the only spread-screened nominator.
-
-Only the separate prospective challenger ledger is written here.  No published
-prediction, side, probability, or ``is_best_pick`` flag is changed by this
-module.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -73,7 +43,6 @@ def apply_big_spread_eligibility(
     *,
     threshold: float = BIG_SPREAD_THRESHOLD,
 ) -> BigSpreadNominationResult:
-    """This challenger's 10-point screen, on the shared eligibility primitive."""
 
     return apply_spread_eligibility(predictions, base, threshold=threshold)
 
@@ -89,7 +58,6 @@ def nominate_big_spread_challenger(
     feature_profile: MarginFeatureProfile,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> BigSpreadNominationResult | None:
-    """Nominate from v2's pool after excluding absolute spreads of 10+."""
 
     base = nominate_v2(
         predictions,
@@ -119,13 +87,6 @@ def record_big_spread_nomination_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append exactly one prospective-only challenger nominee for the week.
-
-    This mirrors the established v2/v3 Best-Pick recorder contracts: active
-    registration and configuration fingerprint required, whole week must be
-    pre-kickoff, recording must be within ``RECORDING_LOCK_WINDOW``, and an
-    existing challenger/game row is never rewritten.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

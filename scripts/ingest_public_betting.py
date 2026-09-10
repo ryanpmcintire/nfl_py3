@@ -1,124 +1,3 @@
-"""Wayback Machine backfill of NFL public-betting-percentage pages.
-
-Follow-up to `docs/archive/data_source_scout_v3.md`'s rank-2 candidate
-("actionnetwork.com free public betting-percentage archive" -- read that
-document's section 2 for the mechanism case: bet%/money% splits by side are
-the direct "fade/follow the public" signal). Clones the proven
-sitemap/CDX-then-per-page-fetch structure of `scripts/ingest_injury_news.py`
-and `scripts/ingest_transaction_news.py` (rate limiter, timestamped-snapshot-
-directory convention, manifest.json), adapted for the Wayback Machine's CDX
-API instead of a live sitemap, since these are historical percentages that
-only exist as archived captures.
-
-Two sources, per the scout doc's plan:
-
-1. `actionnetwork.com/nfl/public-betting` -- the primary source, 2018-2025+.
-   **Measured** this session: the page is a Next.js app whose server-rendered
-   `__NEXT_DATA__` script tag carries real per-game bet%/money% data from
-   Action Network's own "Consensus" book (book_id resolved dynamically per
-   snapshot, not hardcoded, though it has been id 15 in every snapshot
-   sampled this session). Two template eras were found, both parsed by this
-   script:
-     - **era1** (`initial_state`, 2018 through Oct/Nov 2022, exact cutover
-       not pinned down -- boundary measured to sit between 2022-10-07
-       [era1] and 2022-11-04 [era2]): `pageProps.initialState.gamesReducer
-       .games`, a dict of per-game records; the Consensus book's `game`-period
-       odds carry `{market}_{side}_public` integer fields. **Only bet
-       (ticket) percentages exist in this era's schema -- there is no
-       money-percentage field at all**, not a parsing gap: sampled directly
-       across 2019/2020/2022 snapshots and confirmed absent structurally.
-     - **era2** (`scoreboard_response`, ~Nov 2022 onward): `pageProps
-       .scoreboardResponse.games`, a list of per-game records with an
-       explicit `week` field (era1 has none) and a `markets.{book_id}.event
-       .{market_type}` structure where each outcome carries
-       `bet_info.tickets.percent` (bet%) AND `bet_info.money.percent`
-       (money%) -- both present starting this era, confirmed in 2024 and
-       2025 in-season snapshots (era2's earliest snapshots, e.g. one sampled
-       from 2022-11-04 and 2022-12-29, had an empty `markets` dict for every
-       game on the page -- a genuine per-capture completeness gap, not a
-       template problem; see the coverage doc for the measured rate).
-   The 2018 snapshot uses an older inline `__NEXT_DATA__ = {...};` assignment
-   (no `<script id="__NEXT_DATA__">` wrapper) rather than the JSON script-tag
-   form used from 2019 on; both forms are matched. Some Wayback `id_` raw
-   fetches return gzip bytes with no `Content-Encoding` header (a Wayback
-   storage quirk, not a real HTTP response) -- this script sniffs the gzip
-   magic number and decompresses regardless of headers.
-
-2. `covers.com/picks/nfl` -- named in the scout doc as a "cleaner, denser"
-   2023+ complement. **Measured this session, and this is a correction to
-   the scout doc**: this URL is Covers' community/handicapper PICKS page
-   (individual authors' win-loss records, e.g. "100%"), not a sportsbook
-   bet%/money% consensus page, and its real content (including the linked
-   `contests.covers.com/consensus/topconsensus/nfl/overall` page, checked
-   back to a 2016 archive as a secondary candidate) is populated by
-   client-side AJAX after page load -- the archived static HTML's `<body>`
-   contains essentially no real percentage data (a body-only regex scan of 5
-   sampled snapshots spanning 2016/2023/2024/2025/2026 found zero genuine
-   per-game percentages; every apparent hit traced back to Bootstrap grid CSS
-   column widths or CSS keyframe `background-position` percentages embedded
-   in a `<style>` tag placed inside `<body>` by the page's component
-   framework). This script still fetches and stores a small verification
-   sample (raw HTML on disk + a CDX inventory) so a future session does not
-   have to re-derive this finding from scratch, but does not claim to parse
-   percentages from it. `--covers-sample-n 0` skips even that.
-
-Robots.txt for both origin sites was fetched and read this session before
-building anything:
-- `actionnetwork.com/robots.txt`: no `Crawl-delay`, no `Disallow` covering
-  `/nfl/public-betting`.
-- `covers.com/robots.txt`: no `Crawl-delay`, no `Disallow` covering
-  `/picks/nfl`.
-Neither is actually hit directly by this script, though -- every fetch here
-goes through `web.archive.org` (the Wayback Machine), never the origin
-sites, so the operative rate limit is the ~1 req/sec this script enforces
-against `web.archive.org` itself (task instruction), not either site's own
-policy. The robots.txt check is recorded for transparency/provenance, not
-because it gates anything this script actually does.
-
-Private-research use only, matching this project's existing CFBD/PFT/PFR
-precedent (`docs/data_feasibility.md` License item 6: "private
-caching/retention" permitted, raw tables "must never be republished").
-Neither Action Network's nor Covers' terms of use were independently
-reviewed this session (label: inferred policy stance, not a verified legal
-fact).
-
-Usage::
-
-    # Full actionnetwork.com backfill (CDX index + every capture's HTML +
-    # parse), 2018 through the current year, plus a small covers.com sample:
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_public_betting.py \\
-        --out data/raw/public_betting
-
-    # actionnetwork.com only, explicit year range, skip covers.com entirely:
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_public_betting.py \\
-        --out data/raw/public_betting --an-start-year 2018 --an-end-year 2026 \\
-        --covers-sample-n 0
-
-    # Coverage report only, against an already-ingested snapshot (no fetch):
-    .\\.tools\\uv.exe run --no-sync python scripts/ingest_public_betting.py \\
-        --out data/raw/public_betting --coverage-only \\
-        --schedule-path data/processed/game_features.parquet
-
-Writes under --out/<snapshot>/ (default data/raw/public_betting/<UTC
-timestamp>) -- gitignored by the repository's existing `data/raw/**` rule.
-Matches this repo's snapshot convention (`nfl_ats.snapshots.latest_snapshot()`
-treats any directory directly under `data/raw/` with a `manifest.json` as a
-candidate schedules snapshot, so `manifest.json` is nested one level down,
-never directly at `data/raw/public_betting/manifest.json`).
-
-    <snapshot>/actionnetwork/cdx_index.parquet    every CDX row found
-    <snapshot>/actionnetwork/yearly/<YYYY>.parquet  parsed rows, capture year
-    <snapshot>/actionnetwork/index.parquet        concatenation of all years
-    <snapshot>/actionnetwork/raw_html/<ts>.html   raw fetched HTML (debug/audit)
-    <snapshot>/covers/cdx_index.parquet           CDX inventory only
-    <snapshot>/covers/sample_html/<ts>.html       small verification sample
-    <snapshot>/covers/verification_summary.json   the negative-finding writeup
-    <snapshot>/index.parquet                      == actionnetwork/index.parquet
-                                                   (covers contributes no rows)
-    <snapshot>/coverage_report.json               per-season join vs. schedule
-    <snapshot>/manifest.json                      run metadata
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -164,8 +43,6 @@ def normalize_team(abbr: str | None) -> str | None:
 
 @dataclass
 class RateLimiter:
-    """Enforces a fixed delay between requests to web.archive.org."""
-
     delay_seconds: float
     _last_request: float | None = field(default=None, init=False)
 
@@ -179,11 +56,6 @@ class RateLimiter:
 
 
 def resolve_snapshot_dir(out_dir: Path, snapshot: str | None) -> Path:
-    """Return the timestamped snapshot subdirectory to write/resume into.
-
-    Same convention as ingest_injury_news.py / ingest_transaction_news.py:
-    a manifest.json must never sit directly at `out_dir`.
-    """
 
     if snapshot is not None:
         snapshot_dir = out_dir / snapshot
@@ -219,10 +91,6 @@ def _fetch_bytes(url: str, limiter: RateLimiter, *, timeout: int = 30, retries: 
 
 
 def _fetch_text(url: str, limiter: RateLimiter, *, timeout: int = 30) -> str:
-    """Fetch a URL and return decoded text, transparently handling Wayback
-    `id_` raw captures that are gzip-compressed with no Content-Encoding
-    header (measured this session: this is a real, recurring Wayback storage
-    quirk, not an edge case)."""
 
     raw = _fetch_bytes(url, limiter, timeout=timeout)
     if raw[:2] == b"\x1f\x8b":
@@ -233,11 +101,6 @@ def _fetch_text(url: str, limiter: RateLimiter, *, timeout: int = 30) -> str:
 def fetch_cdx(
     url_pattern: str, start_year: int, end_year: int, limiter: RateLimiter
 ) -> pd.DataFrame:
-    """Query the Wayback CDX API for day-collapsed captures of `url_pattern`
-    in [start_year, end_year]. Day-collapse (collapse=timestamp:8) keeps the
-    first capture of each day -- this project's own scout doc used the same
-    collapse when it measured "~15-45 captures/season", so this stays
-    directly comparable."""
 
     query = (
         f"{CDX_ENDPOINT}?url={url_pattern}&output=json&from={start_year}&to={end_year}"
@@ -264,18 +127,6 @@ _NEXT_DATA_INLINE_START_RE = re.compile(r"__NEXT_DATA__\s*=\s*")
 
 
 def _extract_balanced_json(text: str, open_brace_idx: int) -> str | None:
-    """Return the substring from `open_brace_idx` (must point at '{') through
-    its matching closing brace, respecting quoted strings/escapes.
-
-    Needed because a naive non-greedy regex (`\\{.*?\\}`) under-matches: the
-    2018-era inline `__NEXT_DATA__ = {...}</script>` form is immediately
-    followed by ANOTHER `<script>...</script>` block with no separating
-    whitespace pattern a regex can anchor on, so `.*?` stops at the first
-    `}` that happens to precede some later `</script>` -- measured this
-    session on a 2019-01-03 snapshot, silently truncating the real JSON and
-    producing a `json.JSONDecodeError` ("Extra data"). A brace counter that
-    is string/escape-aware finds the true matching close reliably.
-    """
 
     if open_brace_idx >= len(text) or text[open_brace_idx] != "{":
         return None
@@ -498,8 +349,6 @@ def parse_actionnetwork_era2(next_data: dict[str, Any], capture_ts: pd.Timestamp
 def parse_actionnetwork_snapshot(
     html: str, capture_ts: pd.Timestamp
 ) -> tuple[str, list[dict], str | None]:
-    """Return (era_label, rows, error). era_label is 'no_next_data',
-    'unrecognized_shape', 'era1_initial_state', or 'era2_scoreboard_response'."""
 
     next_data = extract_next_data(html)
     if next_data is None:

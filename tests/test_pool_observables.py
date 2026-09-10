@@ -1,5 +1,3 @@
-"""LEAD-52 capture path: manual pool observables, fail-closed validation."""
-
 from __future__ import annotations
 
 import json

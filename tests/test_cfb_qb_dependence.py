@@ -62,8 +62,6 @@ def _team_game_plays(
     n_rushes: int,
     dropback_epa: float,
 ) -> list[dict[str, object]]:
-    """``n_dropbacks`` pass plays (credited to ``passer_id`` if not None) plus
-    ``n_rushes`` rush plays (never credited -- rush identity is out of scope)."""
 
     rows: list[dict[str, object]] = []
     for _ in range(n_dropbacks):
@@ -102,17 +100,6 @@ def _canonical_games(rows: list[dict[str, object]]) -> pd.DataFrame:
 
 
 def _base_universe() -> tuple[pd.DataFrame, pd.DataFrame]:
-    """QB1 (home team 1) crosses the career gate by game 4; QB3 (team 3) never does.
-
-    Six games, one per week, home team 1 hosts every game against a rotating
-    opponent so QB1's career dropbacks accumulate across games. QB1 throws 8
-    dropbacks/game at EPA 0.30/dropback (well above the per-game floor of 5),
-    crossing the 20-dropback career gate partway through game 3 (8+8=16 after
-    game 2, 24 after game 3) -- so ``state_qb_epa_per_dropback`` should first
-    be non-NaN on game 3's own qb_games row and every game after. Team 3's QB3
-    plays exactly two low-volume games (6 dropbacks each, 12 career total),
-    always below the 20-dropback gate, so its state must stay NaN throughout.
-    """
 
     games = []
     plays: list[dict[str, object]] = []

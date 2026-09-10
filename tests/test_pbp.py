@@ -106,7 +106,6 @@ def _recorded_scope(manifest_path: Path) -> bool:
 
 
 def _postseason_plays() -> pd.DataFrame:
-    """A wild-card game in the same season, spelled POST as nflverse PBP does."""
 
     frame = _pbp_frame(1)
     frame["season_type"] = "POST"

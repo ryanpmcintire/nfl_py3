@@ -1,5 +1,3 @@
-"""NFL against-the-spread research and prediction tools."""
-
 from importlib.metadata import PackageNotFoundError, version
 
 try:

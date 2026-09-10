@@ -1,5 +1,3 @@
-"""Shared NFL calendar anchors."""
-
 from __future__ import annotations
 
 from datetime import UTC, date, datetime, time, timedelta
@@ -9,7 +7,6 @@ _EASTERN = ZoneInfo("America/New_York")
 
 
 def week_cycle_sunday(game_day: date) -> date:
-    """Sunday of the Tuesday-through-Monday NFL week containing ``game_day``."""
 
     weekday = game_day.weekday()
     if weekday == 0:
@@ -18,13 +15,6 @@ def week_cycle_sunday(game_day: date) -> date:
 
 
 def pool_decision_cutoff(kickoff: datetime) -> datetime:
-    """Return the pool's real pick deadline as an aware UTC datetime.
-
-    A game locks at its kickoff or at 16:00 America/New_York on the Sunday
-    in its Tuesday-through-Monday NFL week, whichever comes first.  Building
-    the Sunday wall-clock time in the named zone keeps the UTC conversion
-    correct on both sides of daylight-saving transitions.
-    """
 
     if kickoff.tzinfo is None or kickoff.utcoffset() is None:
         raise ValueError("kickoff must carry an explicit timezone")

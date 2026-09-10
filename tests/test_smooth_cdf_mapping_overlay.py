@@ -1,22 +1,3 @@
-"""Smooth CDF mapping overlay (docs/smooth_cdf_mapping.md, MOD-08).
-
-Three things are load-bearing here, mirroring
-``tests/test_injury_value_tilt_overlay.py``'s structure:
-
-1. :func:`apply_smooth_cdf_mapping_overlay` reproduces the production ECDF
-   from a refit before trusting anything -- proving it reads the SAME
-   out-of-time residual sample, not a drifted reimplementation -- then
-   replaces every game's ``home_cover_probability`` with a Gaussian read of
-   that same sample, touching no other column.
-2. Flip detection is self-consistent: a game is reported as flipped if and
-   only if the mapped probability sits on the other side of the 0.5 forced-
-   pick boundary from the supplied one.
-3. :func:`record_smooth_cdf_mapping_challenger_decisions` writes the
-   mapping's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost, with the same anti-backdating
-   and fingerprint-pin guarantees every other overlay challenger has.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -54,8 +35,6 @@ def _week_card(
     week: int = _WEEK,
     ridge_alpha: float = _RIDGE_ALPHA,
 ) -> pd.DataFrame:
-    """Build a real card the same way the overlay itself refits: via
-    ``fit_margin_models_for_week``, never a hand-typed probability."""
 
     target, margin_models = fit_margin_models_for_week(
         model_frame,
@@ -76,8 +55,6 @@ def _week_card(
 
 
 def test_overlay_reproduces_the_ecdf_control_before_mapping(model_frame: pd.DataFrame) -> None:
-    """The load-bearing proof: the refit ECDF check passes silently -- this
-    really is reading the SAME residual draws the card was built from."""
 
     card = _week_card(model_frame)
     result = apply_smooth_cdf_mapping_overlay(
@@ -116,10 +93,6 @@ def test_overlay_changes_every_probability_and_only_that_column(model_frame: pd.
 
 
 def test_overlay_flip_consistency(model_frame: pd.DataFrame) -> None:
-    """Every reported flip is a genuine side-crossing and every non-flip
-    stayed on the same side -- checked against the overlay's own output, not
-    hardcoded numbers, since the exact flip set is a property of a Ridge fit
-    on synthetic data, not something to pin by hand."""
 
     card = _week_card(model_frame)
     result = apply_smooth_cdf_mapping_overlay(
@@ -160,9 +133,6 @@ def test_overlay_requires_its_prediction_columns(model_frame: pd.DataFrame) -> N
 
 
 def test_overlay_refuses_a_drifted_probability(model_frame: pd.DataFrame) -> None:
-    """If the supplied card's ECDF probability does not reproduce from a
-    refit on the same features/config, the overlay refuses rather than
-    silently compare against a moved target (e.g. a rebuilt feature table)."""
 
     card = _week_card(model_frame).copy()
     card.iloc[0, card.columns.get_loc("home_cover_probability")] = 0.999999
@@ -200,8 +170,6 @@ def test_disclosure_note_is_empty_when_disabled(model_frame: pd.DataFrame) -> No
 
 
 def test_disclosure_note_formats_a_flip() -> None:
-    """A pure formatting check on a hand-built result, independent of whether
-    the real fixture happens to produce a flip this run."""
 
     result = SmoothCdfMappingResult(
         overlaid_predictions=pd.DataFrame({"game_id": ["G1"]}),

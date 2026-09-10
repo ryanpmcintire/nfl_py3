@@ -19,12 +19,6 @@ from nfl_ats.data import DataContractError
 
 
 def _dropback_history() -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Team A: P1 starts G1-G3, then P2 takes over G4-G8; P2 returns in 2023.
-
-    P1 qualifies (3 appearances, share 1.0) entering G4 and then never
-    appears again. P2 accumulates appearances from G4 and qualifies entering
-    G7. The 2023 season opens with nobody yet appeared that season.
-    """
 
     games = [
         ("G1", 2022, 1),

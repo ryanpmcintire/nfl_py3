@@ -1,18 +1,3 @@
-"""Thin CLI wrapper for ``nfl_ats.referee_assignments_capture`` (WP22).
-
-Mirrors ``scripts/capture_inactives.py``'s own precedent (2026-09-01,
-WP17): the scheduler invokes a plain script directly as a subprocess rather
-than through a ``nfl-ats`` subcommand, so the actual fetch/parse/write logic
-(``run_capture`` and friends) lives in the importable, testable package
-module ``src/nfl_ats/referee_assignments_capture.py`` and this file exists
-only to give the scheduler a stable entry point -- ``src/nfl_ats/cli.py`` is
-out of scope for this work package.
-
-Usage:
-    .\\.tools\\uv.exe run --no-sync python scripts/capture_referee_assignments.py \\
-        --current
-"""
-
 from __future__ import annotations
 
 import sys

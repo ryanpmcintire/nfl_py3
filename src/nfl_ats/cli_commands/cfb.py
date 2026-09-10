@@ -1,5 +1,3 @@
-"""College-football ingest, feature build, benchmark and role commands."""
-
 from __future__ import annotations
 
 import argparse
@@ -317,13 +315,6 @@ def _cmd_cfb_role_replication(args: argparse.Namespace) -> None:
 def _load_cfb_role_inputs(
     cfb_features_path: Path,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-    """CFB actions/team-games plus the pbp team-id map (shared loader).
-
-    The team-id map exists because pbp names teams by display name
-    ("Minnesota Golden Gophers") while the canonical table uses schedule
-    names ("Minnesota"): joining continuity onto games must go through
-    ESPN team ids, never names.
-    """
 
     seasons = list(range(FROZEN_ROLE_SEASONS[0], FROZEN_ROLE_SEASONS[1] + 1))
     cfb_pbp = load_cfb_seasons(
@@ -476,7 +467,6 @@ def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
 ) -> None:
-    """Register the ``cfb-*`` commands."""
 
     cfb_ingest = subparsers.add_parser(
         "cfb-ingest",

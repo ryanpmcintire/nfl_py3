@@ -1,12 +1,3 @@
-"""ENG-14: per-source freshness budgets, degraded-mode fallbacks, and the
-card-level roll-up.
-
-One test per state (complete / degraded-via-allowed-fallback / blocked) per
-source class, the overall roll-up, and a test that the published card metadata
-carries the block. Every fixture is synthetic and written under ``tmp_path``;
-nothing here reads or writes the real ``data/`` or ``artifacts/`` trees.
-"""
-
 from __future__ import annotations
 
 import json
@@ -163,10 +154,6 @@ def _stamp(instant: datetime) -> str:
 
 
 def test_every_budget_matches_the_capture_schedule_arithmetic() -> None:
-    """Hand-computed from ``scripts/capture_scheduler.py``'s ``SCHEDULE``:
-    longest gap over one weekly cycle plus the grace of the job that closes it.
-    A cadence change in that file must fail here rather than silently move a
-    freshness budget."""
 
     expected = {
         "odds_opener": (10080, 180, 10260),
@@ -207,8 +194,6 @@ def test_the_only_tightened_budget_is_the_constant_production_already_enforces()
 
 
 def test_no_currently_permitted_publish_path_becomes_newly_blockable() -> None:
-    """The binding constraint on this module: only a source whose consumer is
-    already fail-closed may reach ``blocked``."""
 
     blocking_on_absence = {
         policy.source_id
@@ -242,8 +227,6 @@ def test_state_complete_when_the_snapshot_is_inside_budget(source_id: str) -> No
 
 @pytest.mark.parametrize("source_id", SOURCE_IDS)
 def test_state_on_a_stale_snapshot_matches_the_declared_fallback(source_id: str) -> None:
-    """Degraded sources fall back; the fail-closed source blocks. The boundary
-    is exclusive: exactly-at-budget is still complete."""
 
     policy = SOURCE_FRESHNESS_POLICIES[source_id]
     at_budget = NOW - timedelta(minutes=policy.budget_minutes)
@@ -338,7 +321,6 @@ def test_rollup_blocks_when_the_fail_closed_source_breaches() -> None:
 
 
 def test_an_empty_report_is_degraded_not_complete() -> None:
-    """Nothing was looked at, so nothing may be claimed complete."""
 
     report = evaluate_sources([], NOW)
     assert report.state == DEGRADED
@@ -423,8 +405,6 @@ def test_observe_from_disk_reads_the_lineups_json_timestamp(tmp_path: Path) -> N
 
 
 def test_a_missing_root_leaves_a_source_unobserved_rather_than_absent(tmp_path: Path) -> None:
-    """'We could not look' is not 'there is nothing there' -- conflating them
-    is how a fail-closed source would start blocking a rendering path."""
 
     observed = observe_from_disk(data_root=None, artifacts_root=tmp_path)
     ids = {observation.source_id for observation in observed}
@@ -433,9 +413,6 @@ def test_a_missing_root_leaves_a_source_unobserved_rather_than_absent(tmp_path: 
 
 
 def test_report_for_publication_uses_the_verified_arrest_instant(tmp_path: Path) -> None:
-    """The arrest observation comes from the loader's manifest, never from a
-    directory scan: a newer but UNVERIFIED directory must not make it look
-    fresher than the gate accepted."""
 
     data_root = tmp_path / "data"
     (data_root / "raw" / "player_arrests" / _stamp(NOW)).mkdir(parents=True)
@@ -488,9 +465,6 @@ def test_published_card_metadata_and_markdown_carry_the_source_policy(tmp_path: 
 def test_publish_refuses_when_a_fail_closed_source_blocks(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The refusal names the source and the rule. Reached here by forcing a
-    blocked report -- the arrest gate ordinarily raises first, which is exactly
-    why this layer adds no newly blockable path."""
 
     _, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
@@ -521,8 +495,6 @@ def test_publish_refuses_when_a_fail_closed_source_blocks(
 
 
 def test_weekly_run_summary_lifts_the_publish_steps_source_policy(tmp_path: Path) -> None:
-    """weekly-run answers "which sources fed this card" without re-walking the
-    step records. It copies the publish step's block and never re-evaluates."""
 
     data_root = _write_data_root(tmp_path)
     artifacts_root = tmp_path / "artifacts"
@@ -554,8 +526,6 @@ def test_weekly_run_summary_lifts_the_publish_steps_source_policy(tmp_path: Path
 def test_weekly_run_summary_omits_the_block_when_publish_did_not_report_one(
     tmp_path: Path,
 ) -> None:
-    """No fabricated block: a publish step that returned nothing leaves the key
-    absent rather than asserting a state nobody measured."""
 
     data_root = _write_data_root(tmp_path)
     artifacts_root = tmp_path / "artifacts"

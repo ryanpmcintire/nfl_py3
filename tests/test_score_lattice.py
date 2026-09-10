@@ -1,21 +1,6 @@
-"""Tests for the MOD-05 correct-score lattice (WP23).
-
-The parts most worth pinning are the ones a silent change would corrupt
-invisibly: the feasible score set must come from the DATA (a hand list would
-quietly re-admit impossible finals like 1 or 4), the interpolation onto the
-lattice must preserve mass (a wrong bandwidth would invent or destroy
-probability), the neighborhood must be the SAME one the shipped tiebreaker
-uses (two arms that drift apart stop being a paired comparison), and the
-walk-forward evaluator must never see the target week.
-"""
-
 from __future__ import annotations
 
-import importlib.util
 import math
-import sys
-from pathlib import Path
-from types import ModuleType
 
 import numpy as np
 import pandas as pd
@@ -35,24 +20,8 @@ from nfl_ats.score_lattice import (
 )
 from nfl_ats.tiebreaker import _neighborhood, weighted_score_counts
 
-REPO = Path(__file__).resolve().parents[1]
-
-
-def _load_eval_script() -> ModuleType:
-    scripts_root = REPO / "scripts"
-    if str(scripts_root) not in sys.path:
-        sys.path.insert(0, str(scripts_root))
-    spec = importlib.util.spec_from_file_location(
-        "score_lattice_eval", scripts_root / "score_lattice_eval.py"
-    )
-    assert spec is not None and spec.loader is not None
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
 
 def _finals(rows: list[tuple[float, float, int, int]]) -> pd.DataFrame:
-    """A minimal ``lined_finals``-shaped frame: (spread, total, home, away)."""
 
     return pd.DataFrame(
         {
@@ -83,7 +52,6 @@ def test_feasible_scores_reject_an_empty_history() -> None:
 
 
 def test_a_single_game_at_the_target_market_lands_entirely_on_its_own_final() -> None:
-    """Zero residual offset => the recentred point IS an integer final."""
 
     finals = _finals([(3.0, 43.0, 24, 21)])
     built = score_lattice(finals, 3.0, 43.0)
@@ -92,14 +60,6 @@ def test_a_single_game_at_the_target_market_lands_entirely_on_its_own_final() ->
 
 
 def test_a_half_point_offset_splits_mass_over_exactly_four_cells() -> None:
-    """Known answer, computed by hand from the mass-preserving triangle.
-
-    Target market (4, 43) implies (23.5, 19.5); the training game's own market
-    (3, 43) implied (23, 20) and it finished 24-21, so its residual recentres
-    to (24.5, 20.5) -- exactly half a point off the lattice in both
-    coordinates, which the bandwidth-1 triangular kernel splits into four
-    equal quarters.
-    """
 
     finals = _finals([(3.0, 43.0, 24, 21), (0.0, 40.0, 20, 20), (0.0, 40.0, 25, 25)])
     neighborhood = _neighborhood(finals, 4.0, 43.0)
@@ -131,8 +91,6 @@ def test_probabilities_sum_to_one_on_real_shaped_input() -> None:
 
 
 def test_interpolation_preserves_mass_when_every_cell_is_feasible() -> None:
-    """``sum over integers n of max(0, 1 - |n - x|) == 1`` is the whole reason
-    the bandwidth is 1 and not a tuned parameter."""
 
     support = np.arange(0, 61, dtype=np.int64)
     grid = lattice_module._lattice_weights(
@@ -185,9 +143,6 @@ def test_conditioning_on_a_total_keeps_only_that_total() -> None:
 
 
 def test_the_lattice_reuses_the_shipped_tiebreaker_neighborhood(monkeypatch) -> None:  # type: ignore[no-untyped-def]
-    """Kernel reuse is structural, not a copy: patching the tiebreaker's
-    neighborhood changes the lattice, which it could not do if this module had
-    reimplemented the kernel."""
 
     finals = _finals([(0.0, 40.0, 20, 20), (0.0, 40.0, 24, 17)])
     calls: list[tuple[float, float]] = []
@@ -203,11 +158,6 @@ def test_the_lattice_reuses_the_shipped_tiebreaker_neighborhood(monkeypatch) -> 
 
 
 def test_without_recentring_the_lattice_is_exactly_the_shipped_mode_list() -> None:
-    """The declared secondary arm has an analytic answer: with no residual
-    offset every point is already an integer final, so the mass-preserving
-    triangle is the identity and the lattice reproduces
-    ``weighted_score_counts`` cell for cell. This is what makes "smoothing"
-    and "recentring" separable in the evaluation."""
 
     rng = np.random.default_rng(4)
     finals = _finals(
@@ -245,67 +195,6 @@ def test_ranked_modes_breaks_ties_by_score_like_the_shipped_report() -> None:
     assert ranked_modes(counts, 3) == ((13, 10, 3.0), (20, 17, 3.0), (24, 21, 3.0))
 
 
-def test_walk_forward_training_is_a_strict_chronological_prefix() -> None:
-    module = _load_eval_script()
-    seasons, weeks = [], []
-    for season in (2020, 2021):
-        for week in (1, 2, 3):
-            seasons += [season] * 4
-            weeks += [week] * 4
-    size = len(seasons)
-    rng = np.random.default_rng(11)
-    finals = pd.DataFrame(
-        {
-            "game_id": [f"g{index}" for index in range(size)],
-            "season": seasons,
-            "week": weeks,
-            "gameday": [
-                f"{season}-09-{week:02d}" for season, week in zip(seasons, weeks, strict=True)
-            ],
-            "game_type": ["REG"] * size,
-            "home_team": ["AAA"] * size,
-            "away_team": ["BBB"] * size,
-            "spread_line": rng.integers(-7, 8, size).astype(float),
-            "total_line": rng.integers(40, 48, size).astype(float),
-            "home_score": rng.integers(3, 35, size),
-            "away_score": rng.integers(3, 35, size),
-        }
-    )
-    scored = module.walk_forward(finals, 2021, 2021, with_oracle=False)
-    assert len(scored) == 12
-    expected = {1: 12, 2: 16, 3: 20}
-    for week, games in scored.groupby("week"):
-        assert set(games["training_games"]) == {expected[int(week)]}
-    assert scored["training_games"].max() < len(finals)
-
-
-def test_walk_forward_support_never_uses_a_future_score() -> None:
-    """The feasible score set is rebuilt from the training prefix at every
-    week, so a score that only ever happens later is not in the support."""
-
-    module = _load_eval_script()
-    finals = pd.DataFrame(
-        {
-            "game_id": ["a", "b", "c", "d"],
-            "season": [2020, 2020, 2021, 2021],
-            "week": [1, 2, 1, 2],
-            "gameday": ["2020-09-01", "2020-09-08", "2021-09-01", "2021-09-08"],
-            "game_type": ["REG"] * 4,
-            "home_team": ["AAA"] * 4,
-            "away_team": ["BBB"] * 4,
-            "spread_line": [0.0, 0.0, 0.0, 0.0],
-            "total_line": [40.0, 40.0, 40.0, 40.0],
-            "home_score": [20, 24, 62, 20],
-            "away_score": [20, 17, 3, 20],
-        }
-    )
-    scored = module.walk_forward(finals, 2021, 2021, with_oracle=False)
-    first, second = scored.iloc[0], scored.iloc[1]
-    assert first["support_scores"] == 3
-    assert first["realised_in_support"] == 0
-    assert second["support_scores"] == 5
-
-
 def _hand_lattice(scores: list[int], probabilities: np.ndarray) -> ScoreLattice:
     scores_arr = np.array(scores, dtype=np.int64)
     probs_arr = np.array(probabilities, dtype=float)
@@ -320,12 +209,6 @@ def _hand_lattice(scores: list[int], probabilities: np.ndarray) -> ScoreLattice:
 
 
 def test_pick_consistent_top_score_never_selects_a_push_even_when_nearest_and_heaviest() -> None:
-    """Push-avoidance case (2026-09-05 second fix, one of the three
-    required regression cases): a push cell (home margin EXACTLY equal to
-    the spread line) sits exactly at the centre and carries all the
-    lattice's mass -- the best possible cell on both the geometric AND the
-    old mass criterion -- and must still never be chosen for either side,
-    because a push is neither ``>`` nor ``<`` the spread line."""
 
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
@@ -346,10 +229,6 @@ def test_pick_consistent_top_score_never_selects_a_push_even_when_nearest_and_he
 
 
 def test_pick_consistent_top_score_excludes_a_final_too_far_from_the_served_total() -> None:
-    """The only side-admissible cell (23, 17: margin 6, total 40) sits more
-    than 2 points from the served total (44) -- 2026-09-05 fix: a candidate
-    outside every tolerance in the widening schedule must never be chosen,
-    regardless of geometric closeness or mass."""
 
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
@@ -371,13 +250,6 @@ def test_pick_consistent_top_score_excludes_a_final_too_far_from_the_served_tota
 
 
 def test_pick_consistent_top_score_dog_pick_picks_the_nearest_candidate_not_the_most_mass() -> None:
-    """Dog-pick case (2026-09-05 second fix, one of the three required
-    regression cases): mirrors the KC regression below with the pick on
-    the AWAY side. A concentrated, unrelated low-scoring outlier (10-16,
-    total 26) carries more raw mass than the real near-centre cluster, and
-    an even bigger vote sits on the wrong (HOME) side entirely -- neither
-    should matter. The AWAY-admissible, total-admissible candidate
-    GEOMETRICALLY nearest the centre (-3.19, 43.62) must win."""
 
     guess_margin, guess_total_line = -3.19, 43.62
     home = [20.0, 20.0, 20.0, 19.0, 10.0, 10.0, 10.0, 10.0, 10.0, 24.0]
@@ -402,20 +274,6 @@ def test_pick_consistent_top_score_dog_pick_picks_the_nearest_candidate_not_the_
 
 
 def test_pick_consistent_top_score_kc_regression_matches_the_real_centre_exactly() -> None:
-    """Regression for the real 2026-09-05 Week 1 selection bug (one of the
-    three required regression cases): the FIRST fix (total-proximity
-    filtering alone) still let a scattered, unrelated historical outlier
-    win by raw mass -- the published guess was KC 38 - DEN 6. This
-    reproduces the exact failure shape on a synthetic cloud centred at the
-    real production ``(guess_margin, guess_total_line) = (3.19, 43.62)``
-    (KC favored by the forecast's 3.0 line): a handful of scattered,
-    unrelated low-scoring games (16-10, total 26) all land on the SAME
-    exact cell and so concentrate more raw weight there than the real
-    cluster near the centre, which is fragmented across (24, 20) and
-    (25, 19); an even bigger vote sits on the wrong (AWAY) side. With
-    geometric closeness to the centre as the PRIMARY criterion (mass only
-    breaking a genuine near-tie), the result must be exactly KC 24 - DEN 20
-    -- the coordinator's own worked answer for this centre and pick."""
 
     guess_margin, guess_total_line = 3.19, 43.62
     home = [24.0, 24.0, 24.0, 25.0, 16.0, 16.0, 16.0, 16.0, 16.0, 20.0]
@@ -440,10 +298,6 @@ def test_pick_consistent_top_score_kc_regression_matches_the_real_centre_exactly
 
 
 def test_pick_consistent_top_score_near_tie_broken_by_lattice_mass() -> None:
-    """Once geometry has narrowed the field to candidates that are already
-    about equally close to the centre, real lattice mass decides between
-    them -- (24, 20) and (25, 19) both sit exactly distance 1.0 from the
-    centre (5.0, 44.0); (25, 19) carries triple the mass and must win."""
 
     scores = [17, 19, 20, 24, 25]
     probs = np.zeros((5, 5))
@@ -466,11 +320,6 @@ def test_pick_consistent_top_score_near_tie_broken_by_lattice_mass() -> None:
 
 
 def test_pick_consistent_top_score_can_select_a_zero_mass_candidate() -> None:
-    """2026-09-05 second fix: lattice mass is no longer a REQUIREMENT for
-    candidacy, only a near-tie breaker -- a feasible, side-and-total-
-    admissible final with literally zero interpolated mass is legitimately
-    chosen when it is the one nearest the centre (contrast the OLD
-    contract, which refused any zero-mass cell outright)."""
 
     scores = [17, 20, 23]
     probs = np.zeros((3, 3))
@@ -489,11 +338,6 @@ def test_pick_consistent_top_score_can_select_a_zero_mass_candidate() -> None:
 
 
 def test_pick_consistent_top_score_hard_guard_refuses_a_final_too_far_from_the_centre() -> None:
-    """Hard guard (2026-09-05 second fix): even the geometrically NEAREST
-    admissible candidate is refused -- ``None``, never a tail score -- when
-    it still sits more than 3 points from the centre on the margin axis,
-    even though it clears the (separate, looser) total-proximity
-    tolerance."""
 
     scores = [17, 20, 30]
     probs = np.zeros((3, 3))
@@ -512,9 +356,6 @@ def test_pick_consistent_top_score_hard_guard_refuses_a_final_too_far_from_the_c
 
 
 def test_pick_consistent_top_score_returns_none_when_no_admissible_cell_exists() -> None:
-    """Every feasible final sits at margin 0 -- neither strictly above nor
-    below a spread_line of 0 -- so a pick on either side has nothing to
-    choose from, regardless of the served total."""
 
     scores = [20]
     probs = np.array([[1.0]])

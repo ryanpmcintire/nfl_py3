@@ -1,5 +1,3 @@
-"""Shared active-model manifest linking evaluation and weekly forecast artifacts."""
-
 from __future__ import annotations
 
 import hashlib
@@ -29,13 +27,6 @@ def _feature_table_sha256(metadata: dict[str, Any]) -> str | None:
 
 
 def _feature_table_contract_fields(metadata: dict[str, Any]) -> dict[str, Any]:
-    """ENG-09: the feature table's own stamped contract, if the manifest has one.
-
-    Additive: read-only, never raises. Returns an empty dict for a feature
-    table built before ``artifact_contracts.stamp()`` existed, so
-    ``check_compatible`` sees the same ``legacy_unversioned`` shape it
-    reports for any other pre-ENG-09 artifact rather than a KeyError.
-    """
 
     provenance = metadata.get("provenance")
     if not isinstance(provenance, dict):
@@ -66,20 +57,6 @@ def _calibration_method(metadata: dict[str, Any]) -> str:
 
 
 def _probability_method(metadata: dict[str, Any]) -> str:
-    """The residual-distribution probability read (MOD-08, 2026-08-19).
-
-    Defaults to ``"ecdf"`` when absent -- true both for every historical
-    ``margins/`` evaluation directory recorded before this field existed and
-    for the raw empirical CDF those evaluations actually used, so old
-    artifacts keep matching correctly. Part of the model identity so a
-    ``margin-predict`` run's OWN probability method must match the
-    evaluation it activates against: without this, a
-    ``--probability-method ecdf`` forecast (e.g. an incumbent-tracking
-    challenger built the naive way) could silently re-synchronize the active
-    manifest against the pre-promotion evaluation and revert the promotion
-    -- see docs/smooth_cdf_mapping.md and HANDOFF.md item 6 / the "Known
-    divergence" incident this guards against.
-    """
 
     return str(metadata.get("probability_method", "ecdf"))
 
@@ -138,7 +115,6 @@ def activate_matching_ats_model(
     forecast_directory: Path,
     forecast_metadata: dict[str, Any],
 ) -> dict[str, Any] | None:
-    """Atomically activate a forecast only when an exact evaluation match exists."""
 
     method = str(forecast_metadata.get("ats_method", "market_residual"))
     evaluation = _matching_evaluation(artifacts_root, forecast_metadata)
@@ -211,16 +187,6 @@ def load_active_ats_model(artifacts_root: Path) -> dict[str, Any] | None:
 def matching_opener_evaluation(
     artifacts_root: Path, manifest: dict[str, Any]
 ) -> tuple[Path, dict[str, Any]] | None:
-    """Return the newest ``opener_evaluation/`` run matching ``manifest``'s recipe.
-
-    ``active_ats_model.json`` only links a close-graded ``historical_evaluation``
-    (see above); the pool-relevant opener-graded probability-rule accuracy lives
-    in a separate ``opener_evaluation/`` artifact that is not part of the atomic
-    activation manifest and must be located by matching feature profile,
-    regressor, alpha, and target. Shared by ``nfl_ats.handoff`` (session
-    handoff) and ``nfl_ats.readme_state`` (the README's generated active-model
-    block) so both surfaces report the same number from the same lookup.
-    """
 
     from nfl_ats.public_board import load_baseline_measurement
 
@@ -249,15 +215,6 @@ def active_artifact_path(
 
 
 def active_forecast_season_week(artifacts_root: Path) -> tuple[int, int] | None:
-    """Return ``(season, week)`` of the active model's linked weekly forecast.
-
-    This is the week the late-week ``refresh-picks`` passes operate on: the
-    forecast ``publish-predictions`` locked on Tuesday is the one whose frozen
-    grading lines a refresh re-scores against. ``None`` when there is no
-    synchronized active model or it has no linked forecast, so callers can
-    fail with a message that names the missing piece instead of a bare
-    argparse usage line (the scheduler's 2026-09-06 failure mode).
-    """
 
     manifest = load_active_ats_model(artifacts_root)
     if manifest is None:

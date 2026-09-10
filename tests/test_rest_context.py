@@ -1,5 +1,3 @@
-"""ENV-04 deterministic rest-context and leakage contracts."""
-
 from __future__ import annotations
 
 import math
@@ -86,7 +84,6 @@ def test_neutral_game_breaks_true_road_streak_and_season_resets_history() -> Non
 
 
 def test_postgame_and_future_row_mutations_cannot_change_decision_row() -> None:
-    """Required leakage regression for the ENV-04 feature family."""
 
     schedules = _schedules()
     baseline = _by_game(build_rest_context_features(schedules), "g4")

@@ -1,26 +1,3 @@
-"""ECDF-mapping-incumbent overlay (docs/smooth_cdf_mapping.md, MOD-08
-promotion, 2026-08-19).
-
-Mirrors ``tests/test_smooth_cdf_mapping_overlay.py``'s structure exactly,
-flipped: the fixture card here is built with the GAUSSIAN read (what the
-active model produces post-promotion, ``score_outcome_week``'s new default),
-and the overlay under test verifies against THAT and maps to the ECDF read
--- the former production incumbent, now tracked as the challenger.
-
-1. :func:`apply_ecdf_mapping_incumbent_overlay` reproduces the (now
-   production) Gaussian probability from a refit before trusting anything --
-   proving it reads the SAME out-of-time residual sample, not a drifted
-   reimplementation -- then replaces every game's ``home_cover_probability``
-   with the ECDF read of that same sample, touching no other column.
-2. Flip detection is self-consistent: a game is reported as flipped if and
-   only if the mapped probability sits on the other side of the 0.5 forced-
-   pick boundary from the supplied one.
-3. :func:`record_ecdf_mapping_incumbent_challenger_decisions` writes the
-   mapping's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost, with the same anti-backdating
-   and fingerprint-pin guarantees every other overlay challenger has.
-"""
-
 from __future__ import annotations
 
 import json
@@ -59,9 +36,6 @@ def _week_card(
     week: int = _WEEK,
     ridge_alpha: float = _RIDGE_ALPHA,
 ) -> pd.DataFrame:
-    """Build a real card the same way the promoted production default does:
-    via ``fit_margin_models_for_week`` + ``model.predict(..., probability_method="gaussian")``,
-    never a hand-typed probability."""
 
     target, margin_models = fit_margin_models_for_week(
         model_frame,
@@ -82,9 +56,6 @@ def _week_card(
 
 
 def test_overlay_reproduces_the_gaussian_control_before_mapping(model_frame: pd.DataFrame) -> None:
-    """The load-bearing proof: the refit Gaussian check passes silently --
-    this really is reading the SAME residual draws the (post-promotion)
-    card was built from."""
 
     card = _week_card(model_frame)
     result = apply_ecdf_mapping_incumbent_overlay(
@@ -123,10 +94,6 @@ def test_overlay_changes_every_probability_and_only_that_column(model_frame: pd.
 
 
 def test_overlay_flip_consistency(model_frame: pd.DataFrame) -> None:
-    """Every reported flip is a genuine side-crossing and every non-flip
-    stayed on the same side -- checked against the overlay's own output, not
-    hardcoded numbers, since the exact flip set is a property of a Ridge fit
-    on synthetic data, not something to pin by hand."""
 
     card = _week_card(model_frame)
     result = apply_ecdf_mapping_incumbent_overlay(
@@ -169,9 +136,6 @@ def test_overlay_requires_its_prediction_columns(model_frame: pd.DataFrame) -> N
 def test_overlay_refuses_a_card_that_is_not_the_gaussian_mapping(
     model_frame: pd.DataFrame,
 ) -> None:
-    """If the supplied card's probability is the pre-promotion ECDF read (or
-    any other drift), the refit Gaussian reproduction fails and the overlay
-    refuses rather than silently comparing against a moved target."""
 
     target, margin_models = fit_margin_models_for_week(
         model_frame,
@@ -222,8 +186,6 @@ def test_disclosure_note_is_empty_when_disabled(model_frame: pd.DataFrame) -> No
 
 
 def test_disclosure_note_formats_a_flip() -> None:
-    """A pure formatting check on a hand-built result, independent of whether
-    the real fixture happens to produce a flip this run."""
 
     result = EcdfMappingIncumbentResult(
         overlaid_predictions=pd.DataFrame({"game_id": ["G1"]}),

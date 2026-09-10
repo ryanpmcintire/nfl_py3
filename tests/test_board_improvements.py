@@ -1,24 +1,3 @@
-"""Tests for the remaining pieces of the owner-approved improvement batch
-that are not covered by ``tests/test_board_content_season_and_flips.py``
-(pure content-layer functions) or ``tests/test_board_season_mode.py``
-(season-mode board-row fixtures):
-
-* item 1 -- the flip pill on the board row and the deep-dive flip note;
-* item 2 -- findings trace chips;
-* item 3 -- the prospective scoreboard's rendered dormant and live states;
-* item 5 -- the sortable board's toggle markup and JS;
-* item 6/7 -- the clickable, shared ticker + command row on every page;
-* item 8 -- the six-season dot chart;
-* item 9 -- the grouped challenger ledger;
-* item 10 -- link-preview meta tags and the footer's cadence line.
-
-The hand-built ``_board_content_fixtures`` fixture covers items 1 and 3 (it
-already carries one flipped game and a dormant scoreboard); the other items
-are exercised against real repo artifacts via ``board_site_content
-.load_site_content``, exactly like ``tests/test_board_terminal.py`` already
-does for the Model/Findings pages.
-"""
-
 from __future__ import annotations
 
 from dataclasses import replace
@@ -37,10 +16,6 @@ _REPO_ROOT = Path(__file__).resolve().parents[1]
 
 @pytest.fixture(scope="module")
 def site_content(_shared_real_site_content: SiteContent) -> SiteContent:
-    """Real repo artifacts -- shared session-scoped load, see
-    ``tests/conftest.py::_shared_real_site_content`` (WP51, test-suite
-    speed). Every test using this fixture only reads it or calls
-    ``dataclasses.replace`` on a hand-built fixture, never on this one."""
 
     return _shared_real_site_content
 
@@ -94,8 +69,6 @@ def test_findings_trace_chip_renders_signal_name_and_probability_positive(
 
 
 def test_findings_without_a_trace_render_no_chip() -> None:
-    """A finding whose registry keys carry no measured P+ (or none at all)
-    must render nothing for the trace chip -- never a guessed number."""
 
     from nfl_ats.board_site_content import FindingItemView
 
@@ -195,10 +168,6 @@ def test_motion_status_uses_real_board_values_and_no_network_feed() -> None:
 
 
 def test_motion_status_honors_reduced_motion() -> None:
-    """The compact status rail's own always-on ambient accents (the beacon
-    dot, the bar meter) are unrelated to the removed scroll-gated reveal
-    (see :func:`test_no_scroll_gated_visibility_classes_remain`) and keep
-    their reduced-motion carve-out."""
 
     css = board_terminal.TERMINAL_STYLE_CSS
 
@@ -208,12 +177,6 @@ def test_motion_status_honors_reduced_motion() -> None:
 
 
 def test_no_scroll_gated_visibility_classes_remain(site_content: SiteContent) -> None:
-    """UI-20 (2026-09-05, owner: "i absolutely hate this dynamic page load
-    thing where elements only appear once you scroll down far enough").
-    Every rendered page must be visible at load with no scroll dependency:
-    no ``content-motion-*``/``motion-item`` class, no ``--motion-delay``
-    custom property, and no ``IntersectionObserver`` anywhere in the
-    stylesheet or any of the four real pages this build renders."""
 
     css = board_terminal.TERMINAL_STYLE_CSS
     for token in ("content-motion-ready", "content-motion-visible", "content-motion-active"):
@@ -240,11 +203,6 @@ def test_no_scroll_gated_visibility_classes_remain(site_content: SiteContent) ->
 
 
 def test_actual_page_content_has_ambient_compositor_only_telemetry() -> None:
-    """The header status rail's ambient trace/beacon keyframes stay
-    declared (dormant, never toggled to running now that the removed
-    scroll observer no longer sets any ``content-motion-active`` class --
-    see ``test_no_scroll_gated_visibility_classes_remain``), harmless dead
-    weight rather than something actively firing on scroll."""
 
     css = board_terminal.TERMINAL_STYLE_CSS
 

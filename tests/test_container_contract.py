@@ -1,9 +1,3 @@
-"""Static deployment contract for the public dashboard container.
-
-These checks run on CI hosts without a Docker daemon. An actual image build is
-still the strongest integration check when Docker is available.
-"""
-
 from __future__ import annotations
 
 import re

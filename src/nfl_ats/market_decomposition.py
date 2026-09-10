@@ -1,94 +1,3 @@
-"""Market decomposition: what the betting market prices vs. what reality prices.
-
-Three ridge regressions are fit on **identical** games, features, and
-preprocessing (the active model's ``player`` feature profile, median
-imputation with missingness indicators, standardization, ridge alpha 10 --
-see :mod:`nfl_ats.margin`), refit on the same weekly walk-forward cadence as
-:func:`nfl_ats.outcomes.walk_forward_outcomes`:
-
-    (a) margin ~ X                    -- reality's weights
-    (b) spread_line ~ X               -- the market's weights (the close)
-    (c) (margin - spread_line) ~ X    -- the residual model
-
-``X`` deliberately excludes the market feature family (``spread_line``,
-``total_line``) -- see :func:`decomposition_feature_columns` -- both because
-a market feature predicting the market target would be degenerate, and
-because it is what makes the reconciliation identity ``(a) - (b) == (c)``
-meaningful: for a fixed ``X`` and ridge alpha, the ridge closed-form solution
-is linear in the target, and ``(margin) - (spread_line) == (margin -
-spread_line)`` exactly, so the fitted coefficients and predictions of (c)
-must equal (a) minus (b) up to floating-point error. :func:`
-walk_forward_decomposition` asserts this every refit window.
-
-Coefficients are standardized (the fitted ``StandardScaler`` sits between
-imputation and the ridge regressor, exactly as in
-:func:`nfl_ats.margin.make_margin_estimator`) and are aggregated to feature
-**families** -- the named groups in ``nfl_ats.constants.FEATURE_FAMILIES``,
-the project's honest attribution unit; ridge smears weight across correlated
-features, so only family-level aggregates are meaningful, never individual
-feature coefficients. See :func:`family_weights_table` and
-:func:`classify_families` for the four-bucket classification (``priced``,
-``unpriced_predictive``, ``overpriced``, ``noise``) and its declared,
-non-magic thresholds.
-
-Honesty notes (also written into every artifact this module produces):
-
-- ``unpriced_predictive`` is a hypothesis-generating diagnostic, not evidence
-  of edge. The outer-season record is the only adjudicator of edge in this
-  project; see the 2014-2017 replication closure of the QB+continuity
-  profile for what an actual adjudicated result looks like.
-- Ridge regression smears correlated features together, so only family-level
-  aggregates are read here -- never an individual feature's coefficient.
-- This fits on 2018-2025 outcomes the project has already viewed and scored
-  repeatedly elsewhere. It is explanatory, not confirmatory, and scores no
-  new pick stream -- it does not count as a new candidate stream under this
-  project's multiplicity accounting.
-
-Per-game attribution schema
-----------------------------
-:func:`attribute_predictions` returns (and the CLI writes as
-``attribution.parquet``) a tidy, long frame with one row per
-``(game_id, family)``:
-
-============================  =======  ================================================
-column                        dtype    meaning
-============================  =======  ================================================
-``game_id``                   str      nflverse game id
-``season``                    int      season of the target week
-``week``                      int      week of the target week
-``home_team``                 str      home team abbreviation
-``away_team``                 str      away team abbreviation
-``family``                    str      a feature family name, or the sentinel
-                                        ``"intercept"`` for the fitted model's constant
-``contribution``               float   points of the predicted residual attributable to
-                                        that family (coefficient x standardized value,
-                                        summed over the family's design columns) for that
-                                        game; for ``family == "intercept"`` this is the
-                                        ridge intercept, unchanged across games
-``predicted_residual``         float   the model's total predicted
-                                        ``margin - spread_line`` for that game; identical
-                                        on every row for the same ``game_id``; equals the
-                                        sum of ``contribution`` across that game's rows
-                                        within :data:`ATTRIBUTION_ATOL` (asserted at
-                                        build time)
-``actual_residual``            float   ``result - spread_line`` if the game has been
-                                        played, else ``NaN``
-``explanation``                str     a plain-English, pick-side-oriented sentence from
-                                        :func:`explain_game`; identical on every row for
-                                        the same ``game_id``
-============================  =======  ================================================
-
-This residual model is refit for :func:`attribute_predictions` using the
-*same* ``X`` as the matched-regression suite above (excluding the market
-family), so it is directly comparable to the family weights this module
-reports elsewhere. It is therefore **not** numerically identical to the
-deployed ``market_residual`` production model (see
-``nfl_ats.margin.MARGIN_FEATURE_PROFILES``), which also conditions on
-``spread_line`` itself -- that asymmetric feature contract is what makes the
-production model well-calibrated, but it would make this decomposition's
-"what does the market not see" framing circular.
-"""
-
 from __future__ import annotations
 
 import json
@@ -135,15 +44,6 @@ def build_family_map(
     feature_columns: Sequence[str],
     families: Mapping[str, Sequence[str]] | None = None,
 ) -> dict[str, str]:
-    """Invert a feature-family registry into a feature -> family lookup.
-
-    Every element of ``feature_columns`` must be covered by exactly one
-    family in ``families`` (default: ``nfl_ats.constants.FEATURE_FAMILIES``,
-    the project's honest attribution unit). Raising on an uncovered or
-    doubly-covered feature keeps the registry authoritative: a raw feature
-    added to a feature set without a family assignment fails loudly here
-    instead of silently vanishing from every downstream weight table.
-    """
 
     registry = FEATURE_FAMILIES if families is None else families
     lookup: dict[str, str] = {}
@@ -161,15 +61,6 @@ def build_family_map(
 
 
 def _family_for_design_column(name: str, family_map: Mapping[str, str]) -> str:
-    """Resolve a fitted pipeline's design-column name to its feature family.
-
-    ``SimpleImputer(add_indicator=True)`` appends ``missing:<feature>``
-    indicator columns after the original features (see
-    :func:`nfl_ats.modeling.logistic_coefficients` for the same convention).
-    An indicator is attributed to its source feature's family: "we don't
-    observe this family's inputs for this game" is itself part of that
-    family's signal.
-    """
 
     base = name[len("missing:") :] if name.startswith("missing:") else name
     return family_map[base]
@@ -178,16 +69,6 @@ def _family_for_design_column(name: str, family_map: Mapping[str, str]) -> str:
 def decomposition_feature_columns(
     feature_profile: MarginFeatureProfile = DEFAULT_FEATURE_PROFILE,
 ) -> tuple[str, ...]:
-    """The single, shared ``X`` for the three matched regressions.
-
-    Uses the *margin*-target feature contract for ``feature_profile`` (e.g.
-    ``football_player`` for the active ``"player"`` profile) rather than the
-    market-residual contract, because it deliberately excludes the market
-    family (``spread_line``, ``total_line``). All three matched regressions
-    must share identical inputs for the reconciliation identity in
-    :func:`walk_forward_decomposition` to hold, and a market feature
-    predicting the market target directly would be a degenerate fit.
-    """
 
     return margin_feature_columns("margin", feature_profile)
 
@@ -217,12 +98,6 @@ def _design_column_names(estimator: Pipeline, feature_columns: Sequence[str]) ->
 def _standardized_design(
     estimator: Pipeline, frame: pd.DataFrame, feature_columns: Sequence[str]
 ) -> tuple[npt.NDArray[np.float64], list[str]]:
-    """Standardized design matrix and column names for a fitted margin-style pipeline.
-
-    Mirrors the fitted pipeline's ``imputer -> scaler`` steps exactly, so the
-    returned columns line up 1:1 with
-    ``estimator.named_steps["regressor"].coef_``.
-    """
 
     imputer = estimator.named_steps["imputer"]
     scaler = estimator.named_steps["scaler"]
@@ -263,21 +138,6 @@ def walk_forward_decomposition(
     reconciliation_atol: float = RECONCILIATION_ATOL,
     families: Mapping[str, Sequence[str]] | None = None,
 ) -> WalkForwardDecomposition:
-    """Fit matched margin/spread/residual ridge regressions on weekly refits.
-
-    Mirrors :func:`nfl_ats.outcomes.walk_forward_outcomes`'s cadence exactly:
-    for every ``(season, week)`` in ``[start_season, end_season]``, training
-    is every completed game strictly before that week's earliest kickoff,
-    refit before every week. Coefficients from every refit window are
-    retained (long format) so callers can report both the mean standardized
-    coefficient and its variability across refits, not just a single
-    full-history fit.
-
-    ``families`` overrides the default ``nfl_ats.constants.FEATURE_FAMILIES``
-    registry (see :func:`build_family_map`) -- production callers should
-    leave it unset; it exists so tests can exercise the classification logic
-    against a small, fully controlled synthetic family map.
-    """
 
     feature_columns = tuple(feature_columns)
     if not feature_columns:
@@ -403,24 +263,6 @@ def walk_forward_decomposition(
 
 
 def family_weights_table(coefficients: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate a walk-forward coefficient table to family-level weights.
-
-    Returns one row per ``(target, family)`` with:
-
-    - ``mean_abs_weight`` / ``share``: the family's mean per-refit L1
-      (sum of ``|coefficient|``) weight, and that weight's share of the
-      target's total mean weight across every family -- the quantity the
-      four-bucket classification thresholds are defined on.
-    - ``mean_signed_weight``: mean per-refit signed sum, informative only
-      when a family's features do not cancel each other out (ridge smears
-      correlated features, so a near-zero signed weight can still hide real,
-      offsetting predictive content -- read family-level only, never as a
-      "this family doesn't matter" conclusion on its own).
-    - ``refit_std_abs_weight``: standard deviation of the per-refit weight
-      across every weekly refit window (fine-grained variability).
-    - ``season_std_abs_weight``: standard deviation of each season's *mean*
-      per-refit weight across seasons (season-level stability).
-    """
 
     if coefficients.empty:
         raise ValueError("Coefficient table is empty")
@@ -457,19 +299,6 @@ def classify_family(
     noise_share_threshold: float = DEFAULT_NOISE_SHARE_THRESHOLD,
     overpriced_ratio_threshold: float = DEFAULT_OVERPRICED_RATIO_THRESHOLD,
 ) -> str:
-    """Four-bucket classification of one family's spread vs. margin share.
-
-    - ``noise``: both shares are at or below ``noise_share_threshold``.
-    - ``unpriced_predictive``: spread share is at or below the noise
-      threshold, but margin share is not -- the market gives this family
-      approximately zero weight, reality does not.
-    - ``overpriced``: spread share is not noise, and either margin share is
-      noise, or ``spread_share / margin_share >= overpriced_ratio_threshold``
-      -- the market weights this family meaningfully more than reality
-      warrants.
-    - ``priced``: everything else -- both shares are non-trivial and roughly
-      proportionate.
-    """
 
     if not 0.0 <= spread_share <= 1.0 or not 0.0 <= margin_share <= 1.0:
         raise ValueError("shares must be between 0 and 1")
@@ -492,14 +321,6 @@ def classify_families(
     noise_share_threshold: float = DEFAULT_NOISE_SHARE_THRESHOLD,
     overpriced_ratio_threshold: float = DEFAULT_OVERPRICED_RATIO_THRESHOLD,
 ) -> pd.DataFrame:
-    """Pivot :func:`family_weights_table`'s output to one row per family.
-
-    Columns: ``family``, and for each of ``margin``/``spread``/``residual``:
-    ``weight_in_<target>``, ``<target>_share``, ``net_signed_in_<target>``,
-    ``refit_std_in_<target>``, ``season_std_in_<target>`` (the "stability
-    across seasons (per-season refit spread)" the BUILD spec asks for), plus
-    a final ``classification`` column from :func:`classify_family`.
-    """
 
     required_targets = set(DECOMPOSITION_TARGETS)
     missing_targets = required_targets.difference(family_weights["target"].unique())
@@ -541,18 +362,6 @@ def classify_families(
 
 
 def r_squared_table(predictions: pd.DataFrame) -> pd.DataFrame:
-    """Out-of-sample, walk-forward R^2 per target, pooling every held-out week.
-
-    Every prediction is genuinely out of sample (scored by the refit whose
-    training cutoff strictly precedes that week), so this is explanatory
-    bookkeeping on a real leak-safe evaluation -- not a new prospective
-    claim; see the module docstring's multiplicity note. The spread target's
-    R^2 measures how much of the market's own line is reconstructable from
-    non-market features (expect high); the margin target's R^2 measures how
-    much of the actual outcome those same features explain (expect low --
-    football is noisy). The gap between them is, by construction,
-    information the market has that these features do not.
-    """
 
     rows: list[dict[str, Any]] = []
     for target, group in predictions.groupby("target"):
@@ -573,7 +382,6 @@ def r_squared_table(predictions: pd.DataFrame) -> pd.DataFrame:
 
 
 def reconciliation_summary(reconciliation: pd.DataFrame) -> dict[str, float]:
-    """Summarize the per-game reconciliation errors from a walk-forward run."""
 
     if reconciliation.empty:
         raise ValueError("Reconciliation table is empty")
@@ -607,14 +415,6 @@ def _opener_unavailable(reason: str, *, games: int = 0) -> OpenerVariantResult:
 
 
 def latest_open_close_games_path(root: Path) -> Path | None:
-    """Feature-detect the most recent open/close snapshot's ``games.parquet``.
-
-    Mirrors ``nfl_ats.cli._cmd_market_open_close_backfill``'s destination
-    (``data/market/historical/open_close/raw``): each snapshot is a
-    timestamp-named directory, so the lexicographically last one containing
-    a ``games.parquet`` is the most recent. Returns ``None`` if no snapshot
-    has been fetched yet -- this module performs no network I/O itself.
-    """
 
     if not root.is_dir():
         return None
@@ -635,18 +435,6 @@ def opener_variant_decomposition(
     min_games: int = OPENER_MIN_GAMES_DEFAULT,
     families: Mapping[str, Sequence[str]] | None = None,
 ) -> OpenerVariantResult:
-    """Fit ``spread_open ~ X`` and ``(close - open) ~ X`` on the opener sample.
-
-    A single in-sample ridge fit (no walk-forward: the sample is small,
-    roughly 270 games from one season) -- report as directional only, per
-    the BUILD spec. ``opener_games`` is
-    ``nfl_ats.open_close_market.summarize_open_close_games``'s output
-    (``nflverse_game_id``, ``opening_home_spread``,
-    ``consensus_closing_home_spread``); rows with an inconsistent or
-    unmatched opener/close are already ``NaN`` there and are dropped here.
-    ``families`` overrides the default family registry; see
-    :func:`walk_forward_decomposition`.
-    """
 
     feature_columns = tuple(feature_columns)
     required = {"nflverse_game_id", "opening_home_spread", "consensus_closing_home_spread"}
@@ -934,25 +722,6 @@ def explain_game_structured(
     max_drivers: int = DEFAULT_MAX_DRIVERS,
     max_offsets: int = DEFAULT_MAX_OFFSETS,
 ) -> GameExplanation:
-    """Plain-English, pick-side-oriented explanation of one game's model-vs-market gap.
-
-    ``family_contributions`` must be home-oriented points (the same sign
-    convention as ``predicted_residual = predicted_margin - spread_line``;
-    positive favors the home team), exactly as :func:`attribute_predictions`
-    produces. This function re-orients every contribution to the *pick
-    side* -- the side the model favors more than the market does -- so a
-    positive ``points`` value always means "supports the pick" regardless of
-    whether the model leans home or away. That re-orientation is the one
-    piece of sign logic every caller must get right, so it lives here, once,
-    rather than at each call site.
-
-    Only contributors with ``|points| >= materiality_threshold`` are named,
-    capped at ``max_drivers`` supporting drivers (highest first) and
-    ``max_offsets`` opposing drivers (lowest first). When the total gap is
-    below ``negligible_gap_threshold``, the sentence degrades to "the model
-    essentially agrees with the market" regardless of any individual
-    family's size.
-    """
 
     if materiality_threshold < 0:
         raise ValueError("materiality_threshold must be non-negative")
@@ -1051,7 +820,6 @@ def explain_game(
     max_drivers: int = DEFAULT_MAX_DRIVERS,
     max_offsets: int = DEFAULT_MAX_OFFSETS,
 ) -> str:
-    """The rendered sentence from :func:`explain_game_structured`."""
 
     return explain_game_structured(
         game_id=game_id,
@@ -1081,20 +849,6 @@ def attribute_predictions(
     max_offsets: int = DEFAULT_MAX_OFFSETS,
     families: Mapping[str, Sequence[str]] | None = None,
 ) -> pd.DataFrame:
-    """Exact per-game, per-family decomposition of the predicted residual.
-
-    Refits ``(result - spread_line) ~ X`` -- the same matched-regression
-    design :func:`walk_forward_decomposition` uses for its ``"residual"``
-    target -- on every completed game strictly before ``season``/``week``'s
-    earliest kickoff (leak-safe walk-forward, consistent with the rest of
-    this module), then decomposes each target game's prediction into
-    coefficient x standardized-value contributions summed per feature
-    family, plus one ``"intercept"`` row for the fitted model's constant
-    term. See the module docstring for the returned schema. Raises if the
-    additive identity does not hold within :data:`ATTRIBUTION_ATOL`.
-    ``families`` overrides the default family registry; see
-    :func:`walk_forward_decomposition`.
-    """
 
     feature_columns = tuple(feature_columns)
     frame = features.copy()
@@ -1222,7 +976,6 @@ def run_market_decomposition(
     opener_games: pd.DataFrame | None = None,
     opener_min_games: int = OPENER_MIN_GAMES_DEFAULT,
 ) -> MarketDecompositionResult:
-    """Run the full market decomposition: matched regressions through classification."""
 
     feature_columns = decomposition_feature_columns(feature_profile)
     walk_forward = walk_forward_decomposition(
@@ -1284,7 +1037,6 @@ def market_decomposition_markdown(
     *,
     attribution: pd.DataFrame | None = None,
 ) -> str:
-    """Human-readable markdown summary of a :func:`run_market_decomposition` result."""
 
     lines: list[str] = ["# Market decomposition", ""]
     lines.append(

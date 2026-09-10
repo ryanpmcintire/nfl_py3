@@ -1,30 +1,3 @@
-"""Tests for the third-down mean-reversion fade overlay
-(docs/third_down_reversion_fade_overlay.md).
-
-Mirrors ``tests/test_tank_zone_fade_tilt_overlay.py``'s structure and
-AGENTS.md's "add a leakage regression test for every new feature family"
-mandate. Six things are load-bearing:
-
-1. :func:`third_down_over_flag_by_game` reproduces the registered cell's
-   flag -- a team's PRIOR-season centered 3rd-down conversion rate at or
-   above the registry cell's own FROZEN, GLOBAL top-quartile cutoff
-   (:data:`THIRD_DOWN_TOP_QUARTILE_CENTERED`) -- and is DATA-DERIVED from a
-   synthetic PBP fixture, never a hardcoded team list.
-2. The threshold is proven GLOBAL/frozen, not a locally recomputed
-   within-sample quantile.
-3. It is PREGAME-SAFE: a game's own current-season PBP/outcome and any
-   LATER season's PBP can never move an earlier season's flag. Two explicit
-   leakage regression tests.
-4. Missing prior-season data means ``flag=False``, never an exception.
-5. :func:`apply_third_down_reversion_fade_overlay` fades the flagged side
-   ONLY in the "clean case" (exactly one side flagged), ONLY when the
-   model's own pick is that side, and ONLY in REG-season games.
-6. :func:`record_third_down_reversion_fade_challenger_decisions` writes the
-   overlay's own picks to the prospective challenger ledger, refuses a
-   retuned/foreign model configuration (fingerprint stability), and refuses
-   a non-``ACTIVE_PROSPECTIVE`` registration.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -78,7 +51,6 @@ def _pbp_row(**overrides: object) -> dict[str, object]:
 def _third_down_plays(
     *, season: int, team: str, opponent: str, n_total: int, n_conversions: int, prefix: str
 ) -> list[dict[str, object]]:
-    """``n_total`` third-down plays for ``team``, ``n_conversions`` of them converted."""
 
     rows = []
     for index in range(n_total):
@@ -224,23 +196,11 @@ def test_flag_requires_its_schedule_columns() -> None:
 
 
 def test_threshold_constant_matches_the_measured_registry_cell_value() -> None:
-    """The frozen constant is the cell's own measured number, transcribed.
-
-    Read: artifacts/redzone_reversion_screen/20260821T181025Z/results.json:349
-    (thresholds.third_down_q75), the same value
-    scripts/redzone_reversion_screen.py:383 computed.
-    """
 
     assert pytest.approx(0.03392624406886406, abs=1e-15) == THIRD_DOWN_TOP_QUARTILE_CENTERED
 
 
 def test_flag_uses_the_frozen_global_threshold_not_a_locally_recomputed_quantile() -> None:
-    """QQQ's centered rate (+0.03) is below the frozen +0.033926 cutoff, so
-    it must NOT be flagged -- even though it is the top of its own 4-team
-    local sample and a locally recomputed quantile(0.75) (~0.015) would
-    flag it. This is the fixture that proves the threshold is the
-    registry cell's own GLOBAL, pooled-across-2009-2025 number, not
-    something recomputed within a season or within a sample."""
 
     flags = _flags()
     assert bool(flags.loc[_GAME_GLOBAL_VS_LOCAL, "third_down_over_home"]) is False
@@ -251,10 +211,6 @@ def test_flag_uses_the_frozen_global_threshold_not_a_locally_recomputed_quantile
 
 
 def test_flag_is_leak_safe_against_the_current_seasons_own_pbp() -> None:
-    """A team's CURRENT-season (2026) PBP data must never move a 2026 game's
-    flag -- only the PRIOR season (2025) is ever read. Simulate AAA posting
-    a perfect (10/10) current-season third-down rate; the 2026 flags,
-    which depend only on 2025, must be byte-identical either way."""
 
     baseline = _flags()
     current_season_noise = _third_down_plays(
@@ -271,8 +227,6 @@ def test_flag_is_leak_safe_against_the_current_seasons_own_pbp() -> None:
 
 
 def test_flag_is_leak_safe_against_a_later_seasons_pbp() -> None:
-    """A LATER season's (2027) PBP data must never change an earlier
-    season's (2026, which reads only 2025) already-computed flags."""
 
     baseline = _flags()
     later_season_noise = _third_down_plays(
@@ -289,9 +243,6 @@ def test_flag_is_leak_safe_against_a_later_seasons_pbp() -> None:
 
 
 def test_missing_prior_season_data_means_unflagged_never_an_error() -> None:
-    """GGG and HHH never appear in the 2025 PBP fixture at all -- a team
-    with no observed prior season (first year in the data, an expansion
-    team, a gap year) is simply unflagged, never a crash."""
 
     flags = _flags()
     assert bool(flags.loc[_GAME_MISSING_PRIOR, "third_down_over_home"]) is False
@@ -336,8 +287,6 @@ def test_overlay_does_not_flip_a_game_with_no_flagged_side() -> None:
 
 
 def test_overlay_never_flips_outside_the_flagged_population() -> None:
-    """No effect outside the flagged population: every untouched row keeps
-    its exact original probability, not just "not in flips"."""
 
     predictions = _predictions()
     result = apply_third_down_reversion_fade_overlay(predictions, _schedule(), _pbp_frame())
@@ -523,8 +472,6 @@ def test_record_third_down_reversion_fade_challenger_refuses_outside_recording_l
 def test_record_third_down_reversion_fade_challenger_refuses_a_fingerprint_mismatch(
     tmp_path: Path,
 ) -> None:
-    """Fingerprint stability: a retuned or foreign active model configuration
-    must refuse to record, never silently switch base models under this id."""
 
     artifacts = tmp_path / "artifacts"
     _write_registry(artifacts)
@@ -551,7 +498,6 @@ def test_record_third_down_reversion_fade_challenger_refuses_an_inactive_registr
 def test_third_down_reversion_fade_fingerprint_helper_agrees_with_the_registered_model_block() -> (
     None
 ):
-    """The fixture's config really does match CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

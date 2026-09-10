@@ -1,13 +1,3 @@
-"""Tests for the MOD-17 served-total provider (``nfl_ats.served_total``).
-
-Covers the task's required surface: both named methods on a synthetic frame,
-the ``blend_k01`` hash pin, the ``joint_residual`` walk-forward cutoff
-leakage guard (built, like ``tests/test_totals.py`` and
-``tests/test_joint_residual_model.py``, so VIOLATING the guard changes the
-answer), the dispatcher's fall-back contract, and that ``tiebreaker.json``
-carries both totals plus the method that served.
-"""
-
 from __future__ import annotations
 
 import hashlib
@@ -39,9 +29,6 @@ def test_served_total_method_defaults_to_joint_residual() -> None:
 
 
 def test_blend_k01_weight_matches_tiebreakers_totals_residual_weight() -> None:
-    """The two constants are DUPLICATED (not imported, to avoid a circular
-    import -- see ``served_total.py``'s module docstring) and must never
-    silently diverge."""
 
     assert pytest.approx(TOTALS_RESIDUAL_WEIGHT) == BLEND_K01_WEIGHT
 
@@ -64,9 +51,6 @@ def test_apply_blend_is_the_one_formula_both_named_methods_share() -> None:
 
 
 def test_served_total_blend_k01_is_hash_pinned() -> None:
-    """Guards against silent arithmetic drift in the arm that is now the
-    COMPARISON side rather than the default -- a formula this simple should
-    never need to change, and if it ever does this test must fail loudly."""
 
     fixture: list[tuple[float, float | None]] = [
         (43.0, None),
@@ -108,13 +92,6 @@ def test_served_total_joint_residual_blends_at_its_own_weight() -> None:
 def _synthetic_features(
     *, weeks: int = 8, games_per_week: int = 40, flip_week: int = 5, season: int = 2000
 ) -> pd.DataFrame:
-    """Duplicated (not imported) from ``tests/test_joint_residual_model.py``'s
-    own fixture of the same name -- the same cross-file duplication
-    convention every copy of a synthetic fixture already follows in this
-    repository. A game table whose margin/total residuals REVERSE at
-    ``flip_week``, so a walk-forward fit that honours the cutoff when
-    predicting the flip week has seen only the pre-flip regime, and one that
-    leaked even a single later row gives a visibly different prediction."""
 
     generator = np.random.default_rng(20260905)
     rows = []
@@ -155,9 +132,6 @@ def _synthetic_features(
 def _write_joint_features_fixture(
     tmp_path: Path, *, target_id: str, weeks: int = 8, games_per_week: int = 40, flip_week: int = 5
 ) -> pd.DataFrame:
-    """The full synthetic table, with ``target_id`` stripped of its outcome
-    (unplayed -- the game ``joint_residual_total_view`` is asked to price),
-    written to the default weak-stack path under ``tmp_path``."""
 
     features = _synthetic_features(weeks=weeks, games_per_week=games_per_week, flip_week=flip_week)
     served = features.copy()

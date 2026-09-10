@@ -1,5 +1,3 @@
-"""LEAD-54 paired totals; frozen protocol in docs/prospective_bestpick_tiebreaker.md."""
-
 from __future__ import annotations
 
 import json
@@ -38,7 +36,6 @@ def load_decisions(artifacts_root: Path) -> pd.DataFrame:
 
 
 def settle_decisions(decisions: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """Backfill totals and paired absolute errors without replacing frozen arms."""
     if decisions.empty:
         return decisions.copy()
     result = decisions.copy()
@@ -65,7 +62,6 @@ def settle_decisions(decisions: pd.DataFrame, schedules: pd.DataFrame) -> pd.Dat
 
 
 def shaded_score(payload: dict[str, Any], schedules: pd.DataFrame) -> tuple[int, int]:
-    """Move only the total centre; preserve production margin and side constraint."""
     target = float(payload["market_total"]) - 1.0
     margin = float(payload["lattice_centre_margin"])
     spread = float(payload["pick_spread_line"])
@@ -103,7 +99,6 @@ def record_tiebreaker_shade_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Publication recorder; every pass settles prior rows before checking new inputs."""
     try:
         instant = pd.Timestamp(now or datetime.now(UTC))
         if instant.tzinfo is None:

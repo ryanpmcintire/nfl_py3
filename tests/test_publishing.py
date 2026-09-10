@@ -24,12 +24,6 @@ from nfl_ats.snapshots import latest_snapshot, write_snapshot
 
 
 def _write_line_sweep(forecast: Path, widths: dict[str, float]) -> None:
-    """A sweep where each game's pick holds >= 0.50 across ``2 * width`` points.
-
-    Both fixture games are AWAY picks (``home_cover_probability`` below 0.5), and
-    the sweep always reports the HOME probability, so the run is written as the
-    complement.
-    """
 
     offsets = np.arange(-4.0, 4.5, 0.5)
     pd.concat(
@@ -154,12 +148,6 @@ def test_publish_active_predictions_updates_github_markdown_idempotently(tmp_pat
 
 
 def test_publish_active_predictions_persists_source_policy_json(tmp_path: Path) -> None:
-    """ENG-34 follow-up: the ENG-14 ``source_policy`` block is persisted
-    additively as ``source_policy.json`` beside the forecast artifact (next
-    to ``explanations.json``) AND beside the published card (next to
-    ``lineage.json``) -- and the forecast's own ``metadata.json`` is left
-    byte-identical, since its digest is pinned by the lock-day package and
-    replay."""
 
     forecast, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
@@ -186,8 +174,6 @@ def test_publish_active_predictions_persists_source_policy_json(tmp_path: Path) 
 
 
 def test_publish_active_predictions_also_refreshes_readme_state_blocks(tmp_path: Path) -> None:
-    """publish-predictions owns the README, so it must refresh ALL of its
-    generated blocks in the same write, not just CURRENT_PREDICTIONS."""
 
     _, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
@@ -209,11 +195,6 @@ def test_publish_active_predictions_also_refreshes_readme_state_blocks(tmp_path:
 
 
 def test_published_card_marks_the_week_best_pick(tmp_path: Path) -> None:
-    """POL-10: the card the user reads at pick time must name the Best Pick.
-
-    The ledger answers "what did we choose?" months later; only the card
-    answers "which one do I enter today?".
-    """
 
     forecast, readme = _write_active_publication_fixture(tmp_path)
     _write_line_sweep(forecast, {"later": 3.0, "earlier": 1.0})
@@ -235,11 +216,6 @@ def test_published_card_marks_the_week_best_pick(tmp_path: Path) -> None:
 
 
 def test_published_card_discloses_a_tied_best_pick(tmp_path: Path) -> None:
-    """POL-09/POL-10: an undisclosed tie is not a lean. The published card and the
-    public site must show the identical sentence via the same
-    nfl_ats.best_pick.best_pick_tie_note, so the surfaces cannot silently
-    disagree about whether a nomination is arbitrary.
-    """
 
     forecast, readme = _write_active_publication_fixture(tmp_path)
     _write_line_sweep(forecast, {"later": 3.0, "earlier": 3.0})
@@ -320,11 +296,6 @@ def _tenure_schedules_for_overlay() -> pd.DataFrame:
 
 
 def _write_overlay_publication_fixture(root: Path) -> tuple[Path, Path, Path]:
-    """Like ``_write_active_publication_fixture``, plus the season/week/
-    game_type columns and a local schedule snapshot the overlay needs. One
-    game (KEEP hosting YR1, a year-1 coach's team) is the clean flip
-    candidate; the other is an unrelated control game the overlay must not
-    touch."""
 
     forecast = root / "margin_predictions" / "forecast"
     forecast.mkdir(parents=True)
@@ -419,7 +390,6 @@ def _publish_with_fresh_empty_arrest(
     published_at: datetime | None = None,
     registry_root: Path | None = None,
 ) -> dict[str, object]:
-    """Exercise production publishing with an explicit no-incident snapshot."""
 
     instant = published_at or datetime.now(UTC)
     resolved_data_root = data_root or artifacts_root / "test-data"
@@ -462,9 +432,6 @@ def _publish_with_fresh_empty_arrest(
 
 
 def test_published_card_applies_and_discloses_the_coach_fade_overlay(tmp_path: Path) -> None:
-    """The overlay (docs/coach_fade_overlay.md) flips the clean-case pick and
-    discloses it in the card's provenance, the same plain way Best Pick ties
-    are disclosed."""
 
     _, readme, data_root = _write_overlay_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
@@ -652,10 +619,6 @@ def test_publish_rejects_weekly_model_id_mismatch(tmp_path: Path) -> None:
 
 
 def _write_v2_capable_fixture(root: Path) -> tuple[Path, Path, Path, list[str]]:
-    """A real, walk-forward-fittable feature table plus a matching card and
-    a local Tuesday-opener market snapshot with genuinely DIFFERENT
-    cross-book dispersion per game -- everything ``_nomination_v2`` needs to
-    compute v2 for real, end to end, no mocking of the model fit itself."""
 
     forecast = root / "margin_predictions" / "forecast"
     forecast.mkdir(parents=True)
@@ -770,8 +733,6 @@ def _write_v2_capable_fixture(root: Path) -> tuple[Path, Path, Path, list[str]]:
 
 
 def test_published_card_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
-    """The real thing: a real walk-forward alpha=2000 fit, a real dispersion
-    pool from a local market snapshot, no mocking anywhere in the chain."""
 
     _, readme, data_root, game_ids = _write_v2_capable_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
@@ -797,7 +758,6 @@ def test_published_card_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
 def test_published_card_falls_back_to_v1_when_v2_infrastructure_is_absent(
     tmp_path: Path,
 ) -> None:
-    """No data_root at all -- the same degrade contract the overlay uses."""
 
     _, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
@@ -816,11 +776,6 @@ def test_published_card_falls_back_to_v1_when_v2_infrastructure_is_absent(
 def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Independence property, end to end: the overlay flips a DIFFERENT
-    game's side while v2 (mocked here to a fixed nominee, since the ranking
-    rule itself is pinned unit-by-unit in test_best_pick_nomination.py)
-    nominates its own game -- neither lever's output moves because the other
-    exists. Best Pick selection runs on the UN-overlaid card either way."""
 
     forecast, readme, data_root, game_ids = _write_v2_capable_fixture(tmp_path)
     predictions = pd.read_csv(forecast / "recommendations.csv")
@@ -986,8 +941,6 @@ def test_publish_active_predictions_writes_tiebreaker_json_and_card_line(
 def test_publish_active_predictions_refuses_tiebreaker_artifacts_on_consistency_error(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """A ``TiebreakerConsistencyError`` refuses ``tiebreaker.json``/the card
-    line ONLY -- the pool's card must still publish regardless."""
 
     from nfl_ats.tiebreaker import TiebreakerConsistencyError
 
@@ -1035,11 +988,6 @@ def test_publish_active_predictions_refuses_tiebreaker_artifacts_on_consistency_
 def test_publish_active_predictions_degrades_gracefully_without_tiebreaker_data(
     tmp_path: Path,
 ) -> None:
-    """The real (unmocked) path: the fixture's local schedule snapshot has
-    no spread_line/total_line/score columns at all, so the real
-    ``tiebreaker_report`` degrades to "unavailable" the same fail-open way
-    every other optional artifact on this publish path already does --
-    never a crash, never a half-written tiebreaker.json."""
 
     forecast, readme = _write_active_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"

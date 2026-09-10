@@ -1,67 +1,3 @@
-"""Render-contract test: no reader-visible surface may leak the research
-machinery's own vocabulary.
-
-Owner, verbatim, on a live panel (2026-09-05), reacting to the picks page's
-policy-overlay panel showing a raw slug and hash: "whats the point of
-showing this anywhere? ... remember when i said this is for humans not the
-opus autist... theres lots of other shit like this on the dashboard...".
-Also that day, on the same theme: "please do not let those percentages get
-out of date anymore" (the number-provenance contract this suite's sibling
-work wired into ``board_content.verify_number_provenance``).
-
-This is the ONE shared scan: every rendered page (This Week, The Model,
-History, What We've Learned) plus the published card
-(``CURRENT_PREDICTIONS.md``'s own generator), checked for:
-
-- a hex-looking token 8+ characters long (a fingerprint/hash/model id)
-- a ``..._v1``/``..._v2`` style versioned slug
-- a raw ``YYYYMMDDTHHMMSSZ`` artifact-directory stamp
-- a raw ISO datetime (``YYYY-MM-DDTHH:MM``)
-- the literal "P+" notation (the registry's own probability-positive
-  shorthand -- plain-English "68% likely real" is required instead)
-- the literal phrase "week-blocked" (a bootstrap-method name, not football)
-- every phrase in :data:`nfl_ats.board_content.BANNED_BOILERPLATE` (the
-  same constant :mod:`nfl_ats.card_explanation`'s own per-pick language
-  contract already enforces on ``explain_pick``'s text -- shared, not
-  duplicated, so the two checks can never quietly disagree)
-- a bare snake_case identifier (a registry/policy/challenger slug)
-
-Two narrow, DELIBERATE exemptions, matching the render-contract's own
-stated carve-out for literal/technical text (``<script>``/``<style>``/
-``<code>``, extended here to backtick-quoted spans, which render as plain
-backtick characters rather than an HTML ``<code>`` tag but carry the exact
-same "this is literal, not prose" meaning -- e.g. a CLI example like
-`` `nfl-ats weak-signals pool --effect-units accuracy_points` ``, which
-would be a WRONG example if "accuracy_points" were rewritten with a
-space) and file-path citations (``docs/opener_evaluation.md``,
-``scripts/overlay_subset_composition.py``) -- footnote-style references
-to the codebase, not registry identifiers, and not something this project
-could stop doing without gutting its own "label how you know it" culture.
-
-**2026-09-05 correction (lane AQ):** an earlier version of this docstring
-said the Watching Leads'/Signal Registry's/Research-this-week's own
-registry-sourced free-form research prose was "marked up in ``<code>`` at
-the render layer for exactly this reason" and that this test "relies on
-that markup" -- true when lane AH wrote it, but wrapping raw research prose
-in ``<code>`` still reads as machine text to the owner ("this is for
-humans not the opus autist"), not a fix. That render-layer ``<code>``
-wrapping is gone: ``board_site_content._watching_lead_view`` /
-``_recent_activity_entry_view`` / ``_load_signal_ledger_summary`` now
-ALWAYS use a genuine, recorded ``plain_summary`` (or a hand-curated blurb),
-and show :data:`nfl_ats.board_site_content.PLAIN_SUMMARY_PENDING` instead
-of the raw description on any row that has none yet -- see
-``test_findings_page_has_no_plain_summary_backlog`` below, which fails
-loudly the day a new row reaches this page without one, and
-``scripts/backfill_plain_summaries.py --missing-plain-summary`` for the
-live backlog listing. The board assistant's embedded knowledge base (inside
-a ``<script class="assistant-data">`` block, and so invisible to the scan
-above by the same ``<script>`` exemption) had its own, separately
-hand-built "watching:" sentence full of the same jargon
-(``board_assistant.build_knowledge``'s loop over ``watching_items``); fixed
-the same way, and checked separately below since it never appears in the
-page's static HTML.
-"""
-
 from __future__ import annotations
 
 import json
@@ -96,15 +32,6 @@ _FILE_PATH_RE = re.compile(
 
 
 def _visible_text(markup: str) -> str:
-    """Reduce HTML (or the plain-text markdown card) to the words a reader
-    actually sees flow past: script/style/code blocks, backtick-quoted code
-    spans, and file-path citations are removed FIRST (so a slug living only
-    inside one of those never reaches the checks below); every remaining
-    tag is then replaced with a single space (never concatenated bare --
-    two adjacent table cells must not glue into one false hex/snake-case
-    token) and HTML entities are left as-is (``escape()`` already turned
-    every literal ``<``/``>``/``&`` in real content into entities, so a
-    banned phrase hiding behind ``&amp;`` would still read as one word)."""
 
     text = _EXEMPT_TAG_BLOCK_RE.sub(" ", markup)
     text = _BACKTICK_SPAN_RE.sub(" ", text)
@@ -148,11 +75,6 @@ def _assert_humanised(label: str, markup: str) -> None:
 
 @pytest.fixture(scope="module")
 def site_content(_shared_real_site_content: SiteContent) -> SiteContent:
-    """Real repo artifacts, loaded once for the whole test session -- see
-    ``tests/conftest.py::_shared_real_site_content`` and
-    ``tests/test_board_terminal.py``'s identically-named fixture, which
-    this one deliberately mirrors so both modules share the same cached
-    object rather than paying the ~44-54s real-I/O cost twice."""
 
     return _shared_real_site_content
 
@@ -185,9 +107,6 @@ _MISSING_PLAIN_SUMMARY_HINT = (
 
 
 def test_watching_leads_have_no_plain_summary_backlog(site_content: SiteContent) -> None:
-    """What we're watching is entirely weak-signal-sourced
-    (``findings_registry.top_open_leads`` never draws from rotation), so
-    every row here CAN carry a genuine plain_summary."""
 
     for lead in site_content.findings.watching_leads:
         assert lead.description != PLAIN_SUMMARY_PENDING, (
@@ -198,8 +117,6 @@ def test_watching_leads_have_no_plain_summary_backlog(site_content: SiteContent)
 def test_signal_registry_notable_rows_have_no_plain_summary_backlog(
     site_content: SiteContent,
 ) -> None:
-    """The Signal registry's notable rows (``signal_ledger.build_ledger_rows``)
-    are also entirely weak-signal-sourced."""
 
     for row in site_content.findings.ledger_summary.notable:
         assert row.idea != PLAIN_SUMMARY_PENDING, (
@@ -208,11 +125,6 @@ def test_signal_registry_notable_rows_have_no_plain_summary_backlog(
 
 
 def test_recent_activity_weak_signal_entries_have_no_plain_summary_backlog() -> None:
-    """Research this week's WEAK-SIGNAL entries only -- reads the live
-    registries directly (rather than ``site_content``'s already-resolved
-    View layer, which has both substituted the pending placeholder and
-    dropped which store each entry came from) so this test can apply the
-    weak-signal/rotation distinction precisely."""
 
     from nfl_ats.findings_registry import (
         STORE_WEAK_SIGNAL,
@@ -242,10 +154,6 @@ _ASSISTANT_DATA_RE = re.compile(
 
 
 def _assistant_watching_bodies(markup: str) -> list[str]:
-    """Every ``watching:*`` entry's answer body from the page's embedded
-    assistant knowledge-base JSON, if the page has one (This Week and
-    Findings do; The Model and History do not carry watching-lead
-    entries)."""
 
     match = _ASSISTANT_DATA_RE.search(markup)
     if match is None:
@@ -276,12 +184,6 @@ def test_findings_page_assistant_watching_answers_are_humanised(
 
 
 def test_published_card_is_humanised(tmp_path: Path) -> None:
-    """The same scan against ``publishing.py``'s own generated card text --
-    reuses ``tests/test_publishing.py``'s overlay-composition fixture (not
-    duplicated here) specifically because it is the ONE existing fixture
-    that exercises ``_composition_note`` (the "Production policy active"
-    paragraph the owner's complaint was literally about), so this is the
-    branch of card-generation code most likely to regress."""
 
     _, readme, data_root = _write_overlay_publication_fixture(tmp_path)
     destination = tmp_path / "CURRENT_PREDICTIONS.md"

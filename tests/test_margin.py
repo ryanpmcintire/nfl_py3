@@ -99,12 +99,6 @@ def test_margin_hgb_and_guards(model_frame: pd.DataFrame) -> None:
 def _reference_smoothed_cover_probability(
     center: float, residuals: np.ndarray, line: float
 ) -> float:
-    """Independent re-implementation of the pre-existing smoothed formula.
-
-    Deliberately duplicated rather than imported, so this test fails if the
-    ``home_cover_probability`` column's values or semantics ever drift --
-    the regression guard required for the three-way split to be additive.
-    """
 
     distribution = center + residuals
     successes = np.count_nonzero(distribution > line)
@@ -179,16 +173,6 @@ def test_push_probability_is_nonzero_only_at_integer_lines() -> None:
 
 
 def test_push_probability_survives_continuous_residuals() -> None:
-    """The realistic case, and the one that was silently broken.
-
-    The test above uses the ``market`` target, whose residuals are exact
-    half-integers, so an equality test against the line fires by luck. Every
-    fitted model -- including the active ``market_residual`` one -- carries
-    CONTINUOUS residuals, where exact float equality essentially never holds.
-    Push probability was therefore 0.0000 on every published card while ~4.8%
-    of integer-line games really push (9.0% at a line of 3). Pin the realistic
-    case so the branch cannot quietly die again.
-    """
 
     rng = np.random.default_rng(20260817)
     model = MarginModel(

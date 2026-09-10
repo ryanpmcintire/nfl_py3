@@ -1,38 +1,3 @@
-"""MOD-18 C2: the discrete conditional side read, at every line and near the key numbers.
-
-Predeclaration: ``docs/mod18_discrete_margin_mapping.md``.
-
-The construction is NOT new here. Lane K built it
-(``nfl_ats.mass_preserving_lattice.band_read``: the empirical integer-margin
-atoms of prior games quoted near the line, kept at their ABSOLUTE positions,
-with the model's point entering only as an exponential tilt) and lane S
-productionised it as the served push and alternative-line source. What is new
-is WHERE the resulting two-way number is allowed to decide the SIDE:
-
-* lane K served it on every game and lost the played card (-0.399 accuracy
-  points, ``probability_positive`` 0.311);
-* lane T served it only where ``abs(line)`` is exactly 3 or 7 and won it
-  (+0.200, 0.7426) -- that arm is what production plays today;
-* nothing had measured the middle, and the middle is the only part of the
-  axis the owner's pool quotes. Every Splash Sports line is a half point, so
-  lane T's exact-match test can never fire on a served card.
-
-The mechanism, named, and measured before this module existed
-(``docs/key_line_pick_read.md``): 14.58% of finals land exactly on ``abs(3)``.
-On a whole-number line that block is the push; on a half-point line it falls
-WHOLLY on one side of the number. Crossing the 3 atom from 2.5 to 3.5 the
-empirical home-cover rate drops 7.81 points where the smooth read says 2.72,
-and the two reads err in opposite directions on the two sides of the atom. So
-the key-number mass matters MORE at the pool's lines, not less, and the
-neighbourhood predicate below is a statement about that mass -- never a spread
-value chosen because accuracy dipped there (AGENTS.md, "No unexplained
-threshold flips on the played card").
-
-Nothing in this module is served. It is the research arm plus two additive
-``probability_method`` values; the served card changes only if the
-coordinator promotes an arm.
-"""
-
 from __future__ import annotations
 
 import math
@@ -70,7 +35,6 @@ _TOLERANCE = 1e-9
 def distance_to_nearest_atom(
     lines: Sequence[float] | FloatArray | pd.Series, atoms: Iterable[float] = SERVED_ATOMS
 ) -> FloatArray:
-    """Distance from ``abs(line)`` to the nearest declared atom, per row."""
 
     values = np.abs(np.asarray(pd.to_numeric(pd.Series(lines), errors="raise"), dtype=float))
     keys = np.asarray(tuple(atoms), dtype=float)
@@ -86,13 +50,6 @@ def key_neighbourhood_mask(
     *,
     half_point_only: bool = False,
 ) -> BoolArray:
-    """True where the quoted line sits ON, or one half point either side of,
-    a declared key number.
-
-    ``half_point_only`` keeps ONLY the adjacent half points and drops the
-    atom itself, which makes the mask disjoint from lane T's served
-    exact-match read -- the arm that measures the new territory alone.
-    """
 
     distance = distance_to_nearest_atom(lines, atoms)
     if half_point_only:
@@ -102,8 +59,6 @@ def key_neighbourhood_mask(
 
 @dataclass(frozen=True)
 class ArmSpec:
-    """One frozen arm: which games the discrete read is allowed to decide."""
-
     name: str
     atoms: tuple[float, ...] | None
     half_width: float = NEIGHBOURHOOD_HALF_WIDTH
@@ -152,12 +107,6 @@ def apply_arm(
     discrete_push: FloatArray,
     arm: ArmSpec | str,
 ) -> dict[str, np.ndarray]:
-    """The whole arm: the discrete read where the arm applies, the baseline
-    everywhere else, bit for bit.
-
-    Returns ``touched`` / ``probability`` / ``push``. An untouched game's
-    probability is the baseline object itself, never a recomputation of it.
-    """
 
     spec = ARMS[arm] if isinstance(arm, str) else arm
     touched = spec.mask(lines)
@@ -184,13 +133,6 @@ def discrete_side_read(
     half_width: float = BAND_HALF_WIDTH,
     min_band_games: int = MIN_BAND_GAMES,
 ) -> MassPreservingRead:
-    """One game's discrete read, straight through lane K's core.
-
-    Kept as a named entry point so a reader of this module can see that the
-    distribution is the served one: ``band_read`` is the same function the
-    card's push probability and the line sweep already go through, so an arm
-    promoted from here can never disagree with the served push on the lattice.
-    """
 
     return band_read(
         np.asarray(pool_line, dtype=float),
@@ -205,13 +147,6 @@ def discrete_side_read(
 def walk_forward_side_reads(
     pool: pd.DataFrame, targets: pd.DataFrame, half_width: float = BAND_HALF_WIDTH
 ) -> pd.DataFrame:
-    """Lane K's walk-forward mapping for every target row, imported not copied.
-
-    ``pool`` is :func:`nfl_ats.mass_preserving_lattice.prior_pool`'s frame;
-    ``targets`` carries ``game_id``, ``season``, ``week``, ``gameday``,
-    ``line`` and ``point``. The window is applied inside, per (season, week),
-    so a caller cannot hand this a leaky frame.
-    """
 
     return walk_forward_reads(pool, targets, float(half_width))
 
@@ -219,30 +154,6 @@ def walk_forward_side_reads(
 def plausible_standard_error_floor(
     reference: Iterable[tuple[float, int]], sample_games: int
 ) -> float | None:
-    """The narrowest standard error a cell of this size can honestly claim.
-
-    This is `docs/weak_signal_pooling.md`'s defect-4 remedy, applied at
-    RECORD time instead of at pool time, and it is deliberately the same
-    arithmetic as ``nfl_ats.weak_signals._plausibility_curve``: an honest
-    estimator's standard error scales as ``sigma / sqrt(n)``, so ``SE^2 * n``
-    is roughly constant across a commensurable family. The scale is the
-    MEDIAN of ``SE^2 * n`` so a handful of degenerate bands cannot set it,
-    and the cutoff is the log-ratios' median minus three MAD-based standard
-    deviations -- derived from the family, never picked in advance.
-
-    ``reference`` is the family's own (standard error, sample games) pairs;
-    a lane's cells share units, archive, bootstrap and seed, so they are the
-    most commensurable pool available. Returns ``None`` when the family is
-    too thin to fit a curve, in which case the caller must say so rather
-    than invent a band.
-
-    Why this and not a re-measurement: a block bootstrap cannot rescue a cell
-    whose paired difference is identical on every game -- every resample
-    returns the same number, so the zero width is structural, not sampling
-    noise. Flooring keeps the cell in the record at the weakest precision its
-    sample supports, which is what the rule asks for. Nothing is dropped and
-    nothing is widened to taste.
-    """
 
     positive = [
         (float(error), float(games)) for error, games in reference if error > 0.0 and games > 0
@@ -270,19 +181,6 @@ def floor_degenerate_cell(
     *,
     ceiling: float | None = ACCURACY_POINT_CEILING,
 ) -> tuple[dict[str, float], str | None]:
-    """Return ``metrics`` with a floored band when its own band has no width.
-
-    A cell is degenerate when its bootstrap standard error is zero or its
-    interval has zero width -- which happens when the paired difference is
-    identical on every game in the slice, so the registry's
-    ``standard_error > 0`` contract refuses it. The point estimate,
-    ``probability_positive``, sample size and block count are NEVER touched:
-    only the band is widened, to ``+/- 1.96`` floored standard errors around
-    the measured effect, clipped at ``ceiling`` where the metric has one.
-
-    The second element names what happened, for the row's notes; it is
-    ``None`` when the cell was already admissible.
-    """
 
     error = float(metrics.get("standard_error", 0.0))
     lower, upper = float(metrics["lower"]), float(metrics["upper"])
@@ -328,23 +226,6 @@ def discrete_conditional_cover_probability(
     min_band_games: int = MIN_BAND_GAMES,
     smooth: FloatArray | None = None,
 ) -> FloatArray:
-    """``home_cover_probability`` under the discrete conditional distribution.
-
-    ``history`` is the caller's already cutoff-filtered prior stream -- the
-    same contract ``nfl_ats.conditional_margin.fit_conditional_margin``
-    states, and the same responsibility: at THIS entry point leak-safety
-    belongs to the caller, and the walk-forward window helper above is what
-    a caller should use to build it. Only ``spread_line`` and integer
-    ``result`` are read from it; the atoms are those games' realised margins.
-
-    The point the atoms are tilted to is ``center`` plus the served
-    ``gaussian_median`` residual location, which is exactly the served point
-    the card's push read already tilts to.
-
-    ``discrete_conditional_key_neighbourhood`` restricts the discrete read to
-    lines on, or one half point either side of, ``atoms`` and needs
-    ``smooth`` -- the incumbent probability for the untouched games.
-    """
 
     if method not in DISCRETE_MARGIN_METHODS:
         raise ValueError(f"Unknown discrete margin method: {method}")

@@ -1,10 +1,3 @@
-"""Leakage regression tests for the weak_stack_v3 gap-feature families
-(docs/weak_stack_v3.md), one per AGENTS.md's "a leakage regression test for
-every new feature family" rule: gap_v3_bias (division revenge, sandwich
-spot, post-blowout letdown/bounce), gap_v3_penalty (penalty rate), and
-gap_v3_travel (thursday-pure, return-trip hangover).
-"""
-
 from __future__ import annotations
 
 import pandas as pd
@@ -44,19 +37,6 @@ def test_weak_stack_v3_profile_is_registered_and_disjoint_from_production_sets()
 
 
 def _bias_schedule() -> pd.DataFrame:
-    """Season 2021, one division (A/B), teams A, B, C, D.
-
-    week1 2021_01_A_B: A hosts B, div_game=1, A wins by 20 (blowout).
-    week2 2021_02_A_C: A hosts C, div_game=0 -- sandwiched between two div
-      games for A (week1, week3).
-    week2 2021_02_D_B: D hosts B, div_game=0 -- also sandwiched for B
-      (week1, week3 below are both div games for B too).
-    week3 2021_03_A_B: A hosts B again, div_game=1 -- the DIVISION REVENGE
-      rematch; B lost the first meeting, A did not.
-    week4 2021_04_A_D: A hosts D, div_game=0, Thursday -- A's prior game
-      (week3) was only a 3-point win, so post_blowout should NOT fire here;
-      doubles as the thursday_pure worked example.
-    """
 
     rows = [
         ("2021_01_A_B", 2021, 1, "REG", "Sunday", "A", "B", 20, 1, 7, 7),
@@ -133,12 +113,6 @@ def test_post_blowout_letdown_and_bounce_use_the_strictly_prior_game_only() -> N
 
 
 def test_gap_bias_flags_never_read_this_games_own_outcome_columns() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    Mutating a game's own ``result``/``spread_line`` must never change ITS
-    OWN flags -- every derivation reads a strictly earlier game (or, for
-    sandwich_spot, the surrounding schedule structure only).
-    """
 
     schedule = _bias_schedule()
     baseline = build_gap_bias_features(schedule).set_index("game_id")
@@ -160,8 +134,6 @@ def test_gap_bias_flags_never_read_this_games_own_outcome_columns() -> None:
 
 
 def test_gap_bias_flags_are_leak_safe_across_the_season_boundary() -> None:
-    """A future season's games (even for the SAME team/opponent) must never
-    change an earlier season's already-computed flags."""
 
     schedule = _bias_schedule()
     baseline = build_gap_bias_features(schedule).set_index("game_id")
@@ -222,11 +194,6 @@ def test_penalty_rate_prior_is_strictly_lagged_one_season() -> None:
 
 
 def test_penalty_rate_lag_can_never_self_match_or_look_forward() -> None:
-    """Leak-safety self-check, promoted from
-    ``scripts/weak_stack_v2_eval.py._leak_safety_selfcheck`` into a real
-    assertion: the join key is ``prev_season = rate_season + 1``, so a
-    team-season's plays can only ever be pulled by a STRICTLY LATER season,
-    never its own or an earlier one."""
 
     rate = team_season_penalty_rate(_penalty_pbp())
     lag = rate.copy()
@@ -315,12 +282,6 @@ def test_haversine_matches_a_known_city_pair_distance() -> None:
 
 
 def test_gap_travel_features_never_read_result_or_spread_line() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    ``build_gap_travel_rest_features`` does not even require/read
-    ``result``/``spread_line``; both columns are absent from the fixture
-    entirely, matching ``add_surface_switch_features``'s own precedent test
-    for a structural, schedule-only construct."""
 
     schedule = _travel_schedule(week2_home_rest=6)
     assert "result" not in schedule.columns
@@ -332,8 +293,6 @@ def test_gap_travel_features_never_read_result_or_spread_line() -> None:
 def test_attach_weak_stack_v3_gap_features_is_purely_additive(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The orchestrator must not move any pre-existing column, and every new
-    column it adds must be exactly one of the 15 declared gap_v3 columns."""
 
     import nfl_ats.weak_stack_v3_features as module
 

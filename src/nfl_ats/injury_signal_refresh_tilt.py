@@ -1,130 +1,3 @@
-"""Injury-signal refresh tilt (POL-11 follow-on): front-run the market's own
-injury-driven moves, instead of waiting for the observed-movement policy to
-confirm them after the fact.
-
-**Binding closing-grounds taxonomy (AGENTS.md), restated verbatim per this
-project's rule for any module that scores or adjudicates an experiment:** an
-interval or CI that contains zero is NEVER grounds to reject, fail, or close
-an experiment. At this evaluator's ~2-point resolution, "contains zero" is
-the EXPECTED outcome for a real small signal. Only two grounds ever close a
-line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval
-on the wrong side of zero) or zero split-half reliability; (2) bounded by a
-positive control proven able to detect an effect that size. Everything else
-is ``unresolved_below_power``: record it with ``nfl-ats weak-signals
-record``, report ``probability_positive``, never the binary "contains zero."
-
-Evidence chain motivating this challenger (read this session from
-``docs/movement_attribution.md`` and ``docs/injury_news_sourcing.md``
-section 5.1, both already-recorded registry results, not re-measured here):
-
-* Flipping to the market's side on an adverse Tuesday-to-close move is worth
-  **+5.26 accuracy points** across the whole disagreement population
-  (n=494, week-blocked 95% [-2.86, +14.12], ``probability_positive`` 0.880),
-  and that value **concentrates in moves attributed to injury news**:
-  **+17.07 points** at ``|open_move| >= 1.0`` (n=123, interval
-  [+0.79, +31.67], ``probability_positive`` 0.976) -- ``docs/movement_attribution.md``'s
-  ``pop_threshold_injury`` cell, itself a **correlated decomposition** of the
-  already-recorded ``observed_movement_*`` family, not an independent
-  sample.
-* Independently, the Tuesday-to-Saturday injury-news channel itself (a
-  *different* construct -- ``injury_value_lost``'s ``value_lost_diff``, not
-  this module's ``net_injury_score``) reads **+1.32 to +1.54 accuracy
-  points** between what is knowable at Tuesday-publish time and a
-  Saturday-ish decision cutoff (``docs/injury_news_sourcing.md`` section
-  5.1, ``probability_positive`` 0.90/0.92).
-
-Both readings say the same thing from different angles: post-Tuesday injury
-news is real, ingestible, pregame-safe information the market prices before
-this project's Tuesday-locked card does. ``docs/movement_attribution.md``'s
-own "Front-running sketch" section predeclares the natural next question --
-"does acting on the injury signal itself, at a refresh pass, beat waiting for
-the market to move" -- and explicitly defers testing it (see that section's
-item 5: "This document does not test the lag... the natural next study").
-This module is that follow-on, wired as a dual-tracked challenger exactly
-the way ``model_only_refresh_incumbent`` tracks its own counterfactual arm
-inside ``nfl_ats.pick_refresh`` -- **nothing here changes the production
-observed-movement >=1.0 policy**, which stays exactly as
-``nfl_ats.pick_refresh.plan_refresh`` already wires it.
-
-Two honest caveats, stated up front rather than discovered later:
-
-1. **Timing mismatch.** The backtested +17.07-point figure is graded
-   Tuesday-to-CLOSE (the whole week's eventual move). This challenger's live
-   arm acts at whatever instant a ``refresh-picks`` pass actually runs
-   (Thursday afternoon, Saturday, Sunday morning...), which may be well
-   before the line has finished moving. The two are not the same
-   measurement, and this challenger's own prospective evidence is what
-   settles whether front-running captures comparable value or less.
-2. **Correlated decomposition, not independent confirmation.** The
-   +17.07-point figure and the whole ``movement_attribution_*`` family it
-   belongs to are subcuts of the ALREADY-RECORDED ``observed_movement_*``
-   entries (same archive, same population) -- evidence for a mechanism, not
-   a second independent replication of it. See
-   ``docs/movement_attribution.md``'s own commensurability note.
-
-The construction below is a LIVE port of ``docs/movement_attribution.md``'s
-(a) INJURY class, reused verbatim wherever the backtest's "final" cutoff
-(that game's own kickoff) becomes this module's live decision instant
-(``now``, the refresh pass's own clock):
-
-* Severity scale (predeclared there, reused here unchanged): ``Out=4,
-  Doubtful=3, Questionable=2, Probable=1, not on report=0``.
-* Skill positions only (``QB``/``RB``/``WR``/``TE``) -- the same disclosed
-  proxy for "market-relevant player" (offensive-line/defensive-front
-  injuries are invisible to this construction, a likely undercount, not an
-  overcount).
-* ``player_delta = current_severity - tuesday_severity`` (own-week Tuesday
-  noon ET, computed the same way as
-  ``scripts/injury_tuesday_cutoff_experiment.py``'s
-  ``team_week_tuesday_noon``), ``team_injury_delta = sum(player_delta)``
-  over that team's skill-position players, ``net_injury_score =
-  team_injury_delta(picked_team) - team_injury_delta(opponent_team)``.
-  ``net_injury_score >= 2`` fires (the identical predeclared bar).
-* **Official-report path** whenever the target season's official rows carry
-  an observation timestamp ``_severity_asof`` can actually read -- a non-null
-  ``date_modified`` that is not a week proxy (checked dynamically, not
-  hardcoded to a season boundary, since the whole point of a live challenger
-  is to pick up 2026's own official reports once they are ingested). Presence
-  of rows is NOT enough: a season whose rows are all ``observed_at_basis =
-  week_proxy`` (measured 2026-09-09: every 2025 and 2026 row of snapshot
-  ``20260909T223500Z``) admits nothing through the ``date_modified <= cutoff``
-  filter, so the official path would return a guaranteed ``net_score = 0.0``
-  while reporting ``source = "official"`` -- a silent no-op presented as a
-  reading (``docs/injury_news_vs_level.md``, part 4).
-  **PFT-headline fallback** otherwise (``net_pft_score >= 1``,
-  the identical predeclared bar), reading whatever local
-  ``data/raw/injury_news/<snapshot>/index.parquet`` bulk-scrape happens to
-  exist -- a manually re-run, private research archive
-  (``scripts/ingest_injury_news.py``), not something ``weekly-run``
-  refreshes automatically. **FAIL-OPEN everywhere**: no official coverage
-  and no PFT snapshot -> zero signal, the hold pick plays, never a raised
-  error and never a blocked recording.
-
-One live-only caveat that has no backtest analog: the official-report path
-is only as fresh as the LOCAL ``injuries.parquet`` snapshot. A refresh pass
-run before that week's player-ingest has been re-run will see only
-Tuesday-dated rows (so ``current_severity == tuesday_severity`` for every
-player, net score 0, quietly no-op) even if real Wednesday/Thursday/Friday
-filings already exist upstream -- an operational freshness gap, not a
-mechanism failure, and not distinguishable from "no post-Tuesday news
-happened" without re-running player-ingest first. Disclosed here and in
-``artifacts/prospective/challengers.json``.
-
-Trigger, precisely: at each ``nfl-ats refresh-picks`` pass, for every game
-not yet at its own deadline (``RefreshedGame.eligible``, the SAME
-kickoff-or-Sunday-4pm-ET rule the production refresh already uses), compute
-the injury signal for the model's own current-week pick (``model_only_pick_side``
--- the "hold" arm, untouched by any overlay or the movement policy) against
-its opponent. When the signal fires, the "flip" arm (``injury_tilt_pick_side``)
-takes the other side; otherwise it equals the hold arm. BOTH arms are
-recorded on every eligible row of the append-only injury-signal ledger,
-alongside that SAME pass's observed-movement-policy diagnostics
-(``movement_policy``/``movement_delta``/``movement_pick_side``) and a
-``disagreement_type`` classification -- the exact population that adjudicates
-front-running value: cases where this signal wants to flip a game the
-market-movement policy has NOT (yet) confirmed.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -198,11 +71,6 @@ TEAM_NICKNAMES: dict[str, tuple[str, ...]] = {
 
 
 def own_week_tuesday_noon_utc(kickoff_utc: pd.Series) -> pd.Series:
-    """Own-week Tuesday noon ET, in UTC. Duplicated (not imported) from
-    ``scripts/movement_attribution.py``'s identical helper (itself
-    duplicated from ``scripts/injury_tuesday_cutoff_experiment.py``'s
-    ``team_week_tuesday_noon``), per this repo's convention of not importing
-    across ``scripts/*.py`` files or from ``scripts/`` into ``src/nfl_ats``."""
 
     kickoff_et = kickoff_utc.dt.tz_convert("US/Eastern")
     days_since_tuesday = (kickoff_et.dt.weekday - 1) % 7
@@ -216,11 +84,6 @@ def _canonical_team(code: str) -> str:
 
 
 def _latest_official_injuries_fail_open(data_root: Path) -> pd.DataFrame | None:
-    """The newest locally ingested official injury-report snapshot, or
-    ``None`` on ANY failure (no snapshot fetched yet, a malformed source, a
-    missing sibling file ``load_player_snapshot`` also requires) -- never
-    raises. Mirrors ``interim_hc_first_game_tilt_overlay``'s fail-open
-    contract for its own local-snapshot join."""
 
     from nfl_ats.players import latest_player_snapshot, load_player_snapshot
 
@@ -239,12 +102,6 @@ def _latest_official_injuries_fail_open(data_root: Path) -> pd.DataFrame | None:
 
 
 def _latest_pft_index_fail_open(data_root: Path) -> pd.DataFrame | None:
-    """The newest local ``scripts/ingest_injury_news.py`` bulk-scrape
-    snapshot's ``index.parquet``, restricted to ``injury_relevant`` rows, or
-    ``None`` on ANY failure -- never raises. This archive is a manually
-    re-run private research pull, not something ``weekly-run`` refreshes
-    automatically; a stale or absent snapshot is the expected common case,
-    not an error."""
 
     root = data_root / "raw" / "injury_news"
     try:
@@ -278,7 +135,6 @@ def _latest_pft_index_fail_open(data_root: Path) -> pd.DataFrame | None:
 
 
 def _season_has_readable_official_rows(injuries: pd.DataFrame, season: int) -> bool:
-    """Whether that season's official rows carry a timestamp ``_severity_asof`` can read."""
 
     scoped = injuries.loc[injuries["season"].eq(season)]
     if scoped.empty:
@@ -307,12 +163,6 @@ def _official_team_delta(
     tuesday_noon_utc: pd.Timestamp,
     now: pd.Timestamp,
 ) -> float:
-    """Sum of (current - Tuesday-noon) skill-position injury severity for one
-    team/week -- ``now`` stands in for ``docs/movement_attribution.md``'s
-    ``kickoff_utc``/"final" cutoff, since this is a LIVE decision input, not
-    a backward-looking attribution. A team/week with no matching rows scores
-    0.0 (healthy), not missing -- identical convention to the backtest's
-    ``fillna(0.0)`` on ``team_injury_delta``."""
 
     scoped = injuries.loc[
         injuries["season"].eq(season)
@@ -344,8 +194,6 @@ def _pft_team_hits(pft: pd.DataFrame, team: str, start: pd.Timestamp, end: pd.Ti
 
 @dataclass(frozen=True)
 class InjurySignalReading:
-    """One game's injury-signal read, whether or not it fires."""
-
     game_id: str
     picked_team: str
     opponent_team: str
@@ -367,9 +215,6 @@ def injury_signal_for_game(
     injuries: pd.DataFrame | None,
     pft: pd.DataFrame | None,
 ) -> InjurySignalReading:
-    """The live asymmetric injury signal for one game's currently-picked
-    side vs its opponent. FAIL-OPEN: no official coverage for this season
-    AND no PFT snapshot -> zero signal, source ``"none"``, never fires."""
 
     picked = _canonical_team(picked_team)
     opponent = _canonical_team(opponent_team)
@@ -435,8 +280,6 @@ FOLLOW_NEWS_NEITHER = "neither"
 
 @dataclass(frozen=True)
 class FollowNewsReading:
-    """One game's post-Tuesday injury news, oriented on the market's own move."""
-
     game_id: str
     source: str
     net_toward_market: float
@@ -455,7 +298,6 @@ class FollowNewsReading:
 
 
 def load_news_sources(data_root: Path) -> tuple[pd.DataFrame | None, pd.DataFrame | None]:
-    """The official injury snapshot and the PFT headline index, both fail-open."""
 
     return _latest_official_injuries_fail_open(data_root), _latest_pft_index_fail_open(data_root)
 
@@ -469,13 +311,6 @@ def _news_team_delta(
     tuesday_noon_utc: pd.Timestamp,
     end: pd.Timestamp,
 ) -> float:
-    """Post-Tuesday severity change for one team's skill positions against a
-    CROSS-WEEK prior baseline -- that player's latest designation filed at or
-    before this week's Tuesday noon, searched across the whole season, which
-    ``docs/injury_news_vs_level.md`` measured to be the only baseline that is
-    not identically zero. Only players with at least one own-week row filed
-    inside ``(tuesday noon, end]`` contribute, so a player who simply never
-    reappears on this week's report cannot be credited as a recovery."""
 
     season_rows = injuries.loc[
         injuries["season"].eq(season)
@@ -512,15 +347,6 @@ def follow_news_for_game(
     injuries: pd.DataFrame | None,
     pft: pd.DataFrame | None,
 ) -> FollowNewsReading:
-    """Whether injury news filed since Tuesday noon agrees with the leading
-    books' own move, defined WITHOUT reference to the pick.
-
-    ``net_toward_market = news(the team the market moved against) - news(the
-    team it moved toward)``: at or above the threshold the news CONFIRMS the
-    move, at or below its negative the news CONTRADICTS it. FAIL-OPEN: an
-    unreadable official season falls through to the ProFootballTalk headline
-    path, and no reader at all returns ``source = "none"``, which never
-    confirms and never contradicts."""
 
     home = _canonical_team(home_team)
     away = _canonical_team(away_team)
@@ -598,10 +424,6 @@ def classify_disagreement(
     movement_policy: str,
     movement_pick_side: str,
 ) -> str:
-    """Where the injury signal and the observed-movement policy agree,
-    disagree, or fire alone on the SAME game at the SAME refresh pass --
-    the exact population that adjudicates front-running value (see module
-    docstring)."""
 
     movement_fires = movement_policy in MOVEMENT_GOVERNED_POLICIES
     if injury_fires and not movement_fires:
@@ -648,7 +470,6 @@ def injury_signal_ledger_path(artifacts_root: Path) -> Path:
 
 
 def load_injury_signal_decisions(artifacts_root: Path) -> pd.DataFrame:
-    """The append-only injury-signal ledger (empty frame when none exists)."""
 
     path = injury_signal_ledger_path(artifacts_root)
     if not path.is_file():
@@ -663,15 +484,6 @@ def load_injury_signal_decisions(artifacts_root: Path) -> pd.DataFrame:
 
 
 def build_injury_signal_rows(plan: RefreshResult, *, data_root: Path) -> pd.DataFrame:
-    """Pure computation: one row per ELIGIBLE game in ``plan`` (not yet at
-    its own deadline), regardless of whether the PLAYED pick changed this
-    pass. Unlike ``pick_revisions.parquet``'s ``changed``-only gate, this
-    challenger needs the full disagreement population
-    (``docs/movement_attribution.md``'s front-running sketch): games where
-    the injury signal fires but the production pick has not (yet) moved are
-    exactly the rows this challenger exists to measure, and they are
-    invisible under a ``changed``-only gate. Never writes anything -- see
-    :func:`record_injury_signal_refresh_tilt` for the append-only write."""
 
     eligible_games = [game for game in plan.games if game.eligible]
     if not eligible_games:
@@ -743,35 +555,6 @@ def record_injury_signal_refresh_tilt(
     *,
     record_decisions: bool = False,
 ) -> dict[str, Any]:
-    """Append this pass's injury-signal reading -- BOTH arms, plus the
-    disagreement classification against the SAME pass's observed-movement
-    policy -- for every eligible game to the append-only injury-signal
-    ledger.
-
-    Mirrors ``pick_refresh.record_plan``'s opt-in ``record_decisions``
-    contract and its ``refuse_if_outside_recording_lock_window`` guard
-    (checked against the ORIGINAL card's kickoffs, exactly like
-    ``record_plan``) -- but, unlike ``record_plan``, records EVERY eligible
-    game each pass, not only games where the PLAYED pick changed, because
-    the disagreement population this challenger exists to measure lives
-    disproportionately in games the production pick never touches.
-
-    Model identity is NOT re-checked here: ``plan_refresh`` already raises
-    if the active model has changed since the week's original card was
-    recorded, before a ``RefreshResult`` can even exist -- the same
-    reasoning ``model_only_refresh_incumbent``'s own registration states for
-    why it needs no separate fingerprint guard.
-
-    Repeated passes across a week legitimately append MULTIPLE rows per
-    game -- deliberately not deduped, because how the signal evolves hour to
-    hour is itself part of what this challenger measures
-    (``docs/movement_attribution.md``'s front-running sketch, item 5, "does
-    not test the lag"). A later settlement pass should read the LATEST row
-    per game before kickoff, mirroring ``pick_refresh.final_pick_per_game``;
-    no such settlement command exists yet (see
-    ``artifacts/prospective/challengers.json``'s ``known_gap`` for this
-    challenger, matching ``model_only_refresh_incumbent``'s identical gap).
-    """
 
     if not record_decisions:
         return {

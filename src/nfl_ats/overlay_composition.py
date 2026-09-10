@@ -1,11 +1,3 @@
-"""Recompute opener-graded overlay subsets using the original frozen policies.
-
-Extracted from scripts/overlay_subset_composition.py. The input adapters and
-arrest policy preserve the sibling research scripts' algorithms so this module
-works independently of the repository's scripts directory. The 127-subset
-ranking remains archive attribution, not a new policy selection.
-"""
-
 from __future__ import annotations
 
 import json
@@ -54,16 +46,6 @@ def load_inputs(
 
 
 def build_predictions_frame(per_game: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """The 1,537-game opener archive, reshaped into the pick-level card schema
-    every overlay's ``apply_*`` function expects (``game_id``/``season``/``week``/
-    ``home_team``/``away_team``/``game_type``/``spread_line``/``home_cover_probability``).
-
-    ``home_cover_probability`` is seeded from ``home_cover_probability_at_open``
-    -- production's own probability rule at the opener, not the sign rule --
-    and ``spread_line`` from ``tue_open_home_spread``, the decision line every
-    pick in this archive was actually formed at, matching the exact field the
-    sibling overlays' own recorders read for ``decision_home_spread``.
-    """
 
     sched_cols = schedules[["game_id", "home_team", "away_team", "game_type"]].drop_duplicates(
         "game_id"
@@ -123,14 +105,6 @@ def run_overlays(
 def verify_no_direction_conflicts(
     predictions: pd.DataFrame, results: dict[str, Any], flip_sets: dict[str, set[str]]
 ) -> None:
-    """Every overlay's flip must equal ``1 - baseline`` on every game it flips.
-
-    This is the empirical check behind the module docstring's combination-rule
-    claim: if it held only "by construction", a future edit to one overlay
-    (e.g. a partial-magnitude flip instead of a full complement) would silently
-    break the OR-combination logic below without this script noticing. Raises
-    if any overlay ever disagrees with its own baseline complement.
-    """
 
     baseline = predictions.set_index("game_id")["home_cover_probability"]
     for name, result in results.items():
@@ -159,7 +133,7 @@ TEAM_ALIASES = {
 
 
 class PolicyEvaluationError(ValueError):
-    """Frozen input or policy contract was violated."""
+    pass
 
 
 def _require_columns(frame: pd.DataFrame, required: set[str], label: str) -> None:
@@ -174,7 +148,6 @@ def broad_incident_game_flags(
     *,
     window_days: int = WINDOW_DAYS,
 ) -> tuple[pd.DataFrame, dict[str, int]]:
-    """Return one broad, point-in-time incident flag for each game side."""
 
     if window_days != WINDOW_DAYS:
         raise PolicyEvaluationError(
@@ -249,7 +222,6 @@ def broad_incident_game_flags(
 
 
 def apply_frozen_policy(opener: pd.DataFrame, flags: pd.DataFrame) -> pd.DataFrame:
-    """Apply the predeclared flip rule and grade both arms at the opener."""
 
     _require_columns(
         opener,
@@ -459,7 +431,6 @@ def run_overlay_composition(
     samples: int = DEFAULT_SAMPLES,
     seed: int = DEFAULT_SEED,
 ) -> dict[str, Any]:
-    """Recompute archive composition without selecting a new policy."""
     started = perf_counter()
     if samples < 2:
         raise ValueError("samples must be at least 2")

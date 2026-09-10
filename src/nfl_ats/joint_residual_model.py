@@ -1,25 +1,3 @@
-"""MOD-17 research half: does one joint margin/total residual model beat two.
-
-Executes the frozen predeclaration in ``docs/mod17_joint_residual_model.md``
-(written 2026-09-05, before any number below was computed). Pure functions
-only -- no filesystem I/O -- so every step here is independently testable;
-``scripts/mod17_joint_residual_screen.py`` is the thin I/O layer that loads
-the production feature table, calls these functions, and writes the artifact.
-
-The predeclared, load-bearing fact this module is built around: an ordinary
-:class:`sklearn.linear_model.Ridge` fit against a two-column target is
-mathematically IDENTICAL, column by column, to fitting two independent
-single-target ridges on the same design matrix -- ridge regression's
-closed-form solution for output column ``j`` is
-``beta_j = (X'X + alpha*I)^-1 X'y_j``, which never references any other
-column of ``y``. ``tests/test_joint_residual_model.py`` pins this identity.
-So the "joint model" (:func:`walk_forward_joint_predictions`) measures the
-effect of the WIDER union feature set, not of joint estimation as such; the
-one arm that can show real cross-target coupling is the second-stage
-regression in :func:`second_stage_predictions`, which regresses each target
-on the OTHER target's stage-1 out-of-fold prediction.
-"""
-
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -58,13 +36,6 @@ _TARGET_COLUMNS: tuple[str, str] = ("margin_residual", "total_residual")
 
 
 def make_joint_estimator(*, ridge_alpha: float = JOINT_RIDGE_ALPHA) -> BaseEstimator:
-    """Production's exact pipeline, reused so no arm can win or lose on plumbing.
-
-    Identical to ``nfl_ats.totals.make_totals_estimator`` -- re-exported under
-    this module's own name because the caller here fits it against a 2-D
-    target, and ``SimpleImputer``/``StandardScaler`` are agnostic to ``y``
-    shape so nothing about the recipe needs to change.
-    """
 
     return make_totals_estimator(ridge_alpha=ridge_alpha)
 
@@ -72,15 +43,6 @@ def make_joint_estimator(*, ridge_alpha: float = JOINT_RIDGE_ALPHA) -> BaseEstim
 def realised_residual_frame(
     features: pd.DataFrame, *, feature_columns: Sequence[str] = UNION_FEATURES
 ) -> pd.DataFrame:
-    """Regular-season games with both residual targets defined, one row each.
-
-    ``margin_residual`` is ``ats_margin`` (production's own margin target);
-    ``total_residual`` is ``(home_score + away_score) - total_line``,
-    identical to ``nfl_ats.totals``'s target. Also carries ``market_total``
-    and ``actual_total`` under those names so the resulting frame can feed
-    ``nfl_ats.totals``/``nfl_ats.totals_wave2``'s blend/pairing helpers
-    without renaming at each call site.
-    """
 
     required = {
         "game_id",
@@ -127,16 +89,6 @@ def walk_forward_joint_predictions(
     ridge_alpha: float = JOINT_RIDGE_ALPHA,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> pd.DataFrame:
-    """Expanding-window walk-forward, one fit per ``(season, week)`` block.
-
-    Generalizes ``nfl_ats.totals.walk_forward_predictions`` to an arbitrary
-    number of target columns (one or many): a single-column ``target_columns``
-    reproduces a single-target ridge bit-for-bit; a two-column one is the
-    "joint model" this module exists to measure. Reuses
-    ``nfl_ats.totals.chronological_blocks``/``design_matrix`` unmodified so
-    the block calendar and column-selection contract are identical to the
-    already-run totals regime.
-    """
 
     if not target_columns:
         raise ValueError("walk_forward_joint_predictions requires at least one target column")
@@ -180,15 +132,6 @@ def walk_forward_joint_predictions(
 def totals_shaped_predictions(
     predictions: pd.DataFrame, *, target_column: str = "total_residual"
 ) -> pd.DataFrame:
-    """Alias ``predicted_<target_column>`` to ``predicted_residual``.
-
-    ``nfl_ats.totals``/``nfl_ats.totals_wave2``'s blend and pairing helpers
-    (``blend_sweep``, ``paired_error_frame``, ``per_season_deltas``,
-    ``wave_vs_wave_paired_frame``) all read a fixed ``predicted_residual``
-    column name. Rather than reimplementing that math, this renames in place
-    so the joint model's total-side output can be handed to those functions
-    unmodified.
-    """
 
     column = f"predicted_{target_column}"
     if column not in predictions.columns:
@@ -197,17 +140,6 @@ def totals_shaped_predictions(
 
 
 def out_of_sample_r2(actual: pd.Series, predicted: pd.Series) -> float:
-    """R-squared against the "trust the market fully" (predict-zero) baseline.
-
-    Both ``actual`` and ``predicted`` are already residuals against the
-    market's own number, so predicting exactly 0 for every game IS the
-    market baseline. ``1 - SS_res / SS_tot`` under that baseline reduces to
-    ``1 - sum((actual - predicted)**2) / sum(actual**2)``, which is negative
-    whenever the model's residual predictions are worse than trusting the
-    market outright -- the same shape the margin and totals sides have both
-    already measured (production margin MAE 10.00 vs market 9.91; total
-    wave-1 raw-model MAE 10.5495 vs market 10.4249).
-    """
 
     actual_values = pd.to_numeric(actual, errors="coerce").to_numpy(dtype=float)
     predicted_values = pd.to_numeric(predicted, errors="coerce").to_numpy(dtype=float)
@@ -224,7 +156,6 @@ def out_of_sample_r2(actual: pd.Series, predicted: pd.Series) -> float:
 
 
 def pearson_correlation(a: pd.Series, b: pd.Series) -> float:
-    """Pearson correlation with a guard for degenerate (zero-variance) input."""
 
     left = pd.to_numeric(a, errors="coerce").to_numpy(dtype=float)
     right = pd.to_numeric(b, errors="coerce").to_numpy(dtype=float)
@@ -239,7 +170,6 @@ def pearson_correlation(a: pd.Series, b: pd.Series) -> float:
 
 
 def per_season_correlation(frame: pd.DataFrame, column_a: str, column_b: str) -> pd.DataFrame:
-    """Season-by-season Pearson correlation of two columns, plus game counts."""
 
     rows: list[dict[str, Any]] = []
     for season, group in frame.groupby("season", sort=True):
@@ -260,13 +190,6 @@ def blocked_correlation(
     samples: int = 2_000,
     seed: int = 20260905,
 ) -> dict[str, Any]:
-    """Season- (or week-) blocked bootstrap of the Pearson correlation of two columns.
-
-    Reuses ``nfl_ats.clv.week_blocked_bootstrap`` unmodified -- the same
-    resampling machinery every arm of this project already reports through --
-    with a metric function that recomputes the correlation on each blocked
-    resample rather than a mean.
-    """
 
     def metric(sample: pd.DataFrame) -> dict[str, float]:
         try:
@@ -297,16 +220,6 @@ def second_stage_predictions(
     ridge_alpha: float = JOINT_RIDGE_ALPHA,
     min_train_games: int = 200,
 ) -> pd.DataFrame:
-    """The cheap SUR-lite variant: regress each target on BOTH stage-1 predictions.
-
-    Walk-forward over stage 1's own ``(season, week)`` block calendar: a
-    block's stage-2 fit uses only stage-1 predictions from STRICTLY EARLIER
-    blocks, so a stage-1 prediction is never used to help predict the very
-    residual it was itself trained to predict. This is the one arm in this
-    module that can show a real cross-target coupling effect, because
-    ordinary multi-output ridge (:func:`walk_forward_joint_predictions`)
-    cannot -- see the module docstring.
-    """
 
     predictor_columns = tuple(predictor_columns or (f"predicted_{name}" for name in target_columns))
     missing = sorted(set(predictor_columns).difference(stage1_predictions.columns))
@@ -348,12 +261,6 @@ def second_stage_predictions(
 def leak_target_into_feature(
     frame: pd.DataFrame, *, feature_column: str = POSITIVE_CONTROL_COLUMN, target_column: str
 ) -> pd.DataFrame:
-    """Positive-control contamination: replace one feature with its row's own target value.
-
-    Unit slope, zero noise -- identical method to
-    ``nfl_ats.totals_wave2.run_positive_control``. Returns a copy; the input
-    frame is never mutated.
-    """
 
     if feature_column not in frame.columns:
         raise DataContractError(f"{feature_column!r} is not a column of the given frame")
@@ -372,19 +279,6 @@ def joint_opener_pick_evaluation(
     ridge_alpha: float = JOINT_RIDGE_ALPHA,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> pd.DataFrame:
-    """The joint model's opener/close margin (and total) prediction, on
-    EXACTLY the game/week set ``nfl_ats.clv.opener_pick_evaluation`` already
-    produced for ``baseline``.
-
-    Reuses ``baseline``'s own ``(season, week)`` grouping and its already
-    -computed ``tue_open_home_spread``/``close_home_spread`` columns rather
-    than re-deriving the Tuesday-opener archive a second time from the odds
-    snapshots -- ``opener_pick_evaluation`` already did that work once. Only
-    ``spread_line`` is swapped between the open and close scoring passes,
-    the same declared approximation ``opener_pick_evaluation`` itself uses
-    (every other feature, including ``total_line``, stays at its close-era
-    value).
-    """
 
     required_baseline = {
         "game_id",
@@ -455,15 +349,6 @@ def joint_opener_pick_evaluation(
 
 
 def paired_opener_accuracy(baseline: pd.DataFrame, joint: pd.DataFrame) -> pd.DataFrame:
-    """Per-game paired sign-rule correctness, baseline vs the joint model's margin output.
-
-    Both arms are graded by the SAME sign rule (``predicted_residual > 0``,
-    ``docs/opener_evaluation.md``'s predeclared historical record) so the
-    comparison isolates the feature-set/estimator change, not a rule choice.
-    Positive ``delta`` = the joint arm is correct where the baseline is not
-    (net of the reverse), matching this project's "positive favours the
-    candidate" convention.
-    """
 
     required = {"game_id", "season", "week", "correct_at_open", "margin_vs_open"}
     missing = sorted(required.difference(baseline.columns))
@@ -488,12 +373,6 @@ def paired_opener_accuracy(baseline: pd.DataFrame, joint: pd.DataFrame) -> pd.Da
 def opener_accuracy_bootstrap(
     paired: pd.DataFrame, *, samples: int = 20_000, seed: int = 20260905
 ) -> dict[str, float]:
-    """Week-blocked bootstrap of the paired opener sign-rule accuracy delta.
-
-    Reports the delta in ACCURACY POINTS (percentage points, matching
-    ``weak_signals.py``'s ``accuracy_points`` unit convention) rather than a
-    bare fraction.
-    """
 
     def metric(sample: pd.DataFrame) -> dict[str, float]:
         return {"accuracy_points": float(sample["delta"].mean()) * 100.0}

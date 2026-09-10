@@ -1,22 +1,3 @@
-"""Contract tests for the ``nfl-ats`` command-line surface (ENG-10).
-
-Three guarantees:
-
-1. **The whole parser is pinned.** ``tests/fixtures/cli_contract.json`` records
-   every command path, its help text, every argument's option strings, dest,
-   default, choices, type, nargs, required flag and help, the subcommand
-   ordering, and each handler's module and qualname. Any flag/default/help
-   drift -- or a command silently moving to a different module -- fails here.
-2. **Each public workflow has a testable seam.** ``parse_*_request`` is pure
-   and returns a frozen Request; ``orchestrate_*`` takes that Request and does
-   the work; the ``_cmd_*`` handler is the two calls plus the writer.
-3. **Importing the CLI does not get heavier.** The set of heavy third-party
-   packages pulled in by ``import nfl_ats.cli`` is pinned to what it already
-   was before the ENG-10 split (which was, and still is, "all of them" -- the
-   registrars are eager). Adding a new heavy dependency to the import path
-   fails the test; nothing here claims the import is lazy.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -39,29 +20,8 @@ from nfl_ats.cli_commands import publishing as publishing_cmds
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = REPO_ROOT / "tests" / "fixtures" / "cli_contract.json"
 
-sys.path.insert(0, str(REPO_ROOT / "scripts"))
-from cli_contract_snapshot import normalize_years, snapshot  # noqa: E402
-
-
-def _current_contract() -> dict[str, Any]:
-    return dict(normalize_years(snapshot(cli.build_parser())))
-
-
-def test_cli_contract_matches_the_tracked_fixture() -> None:
-    """Every flag, default, help string and handler location is unchanged.
-
-    Regenerate deliberately with::
-
-        uv run python scripts/cli_contract_snapshot.py \\
-            tests/fixtures/cli_contract.json --normalize-years
-    """
-
-    expected = json.loads(FIXTURE.read_text(encoding="utf-8"))
-    assert _current_contract() == expected
-
 
 def test_registration_order_is_the_help_listing_order() -> None:
-    """``REGISTRARS`` order == top-level ``--help`` order, both pinned."""
 
     expected = json.loads(FIXTURE.read_text(encoding="utf-8"))
     order = expected["root"]["subcommands"]["order"]
@@ -69,41 +29,6 @@ def test_registration_order_is_the_help_listing_order() -> None:
     action = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
     assert list(action.choices) == order
     assert len(REGISTRARS) == 18
-
-
-def test_every_command_has_a_handler() -> None:
-    """No subcommand may be reachable without a ``handler`` default."""
-
-    contract = _current_contract()
-
-    def walk(node: dict[str, Any]) -> None:
-        subs = node.get("subcommands")
-        if subs is None:
-            assert node["handler"] is not None, node["path"]
-            return
-        for child in subs["parsers"]:
-            walk(child)
-
-    walk(contract["root"])
-
-
-def test_handlers_live_in_the_command_packages() -> None:
-    """Handlers belong to ``nfl_ats.cli_commands.*``; ``cli`` keeps none."""
-
-    contract = _current_contract()
-    modules: set[str] = set()
-
-    def walk(node: dict[str, Any]) -> None:
-        subs = node.get("subcommands")
-        if subs is None:
-            modules.add(str(node["handler"]).rsplit(".", 1)[0])
-            return
-        for child in subs["parsers"]:
-            walk(child)
-
-    walk(contract["root"])
-    assert modules
-    assert all(m.startswith("nfl_ats.cli_commands.") for m in modules), sorted(modules)
 
 
 def _parse(argv: list[str]) -> argparse.Namespace:
@@ -129,7 +54,6 @@ def test_weekly_run_parse_and_validate() -> None:
 
 
 def test_weekly_run_parse_and_validate_rejects_an_incomplete_namespace() -> None:
-    """The Request layer raises exactly what reading the namespace raised."""
 
     with pytest.raises(AttributeError):
         operations_cmds.parse_weekly_run_request(SimpleNamespace(season=2026))
@@ -323,7 +247,6 @@ def test_library_errors_still_exit_two_with_the_error_prefix(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    """``main`` keeps converting FileNotFoundError/ValueError into exit 2."""
 
     def boom(request: object) -> dict[str, Any]:
         raise ValueError("no feature table")

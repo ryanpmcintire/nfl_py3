@@ -1,16 +1,3 @@
-"""The board's "Flips at" column (owner request, 2026-09-01): the first
-half-point line at which the PLAYED pick would switch to the other team.
-
-Semantics under test: the three-member played policy uses the model crossing
-and fired pick-conditioned rules. The retired spread-gap thresholds never
-change the played side. The scan stays within the displayed four-point span.
-
-Cell format (owner feedback, same day, replacing a first draft that printed
-the flipped-to team's handicap in the opposite orientation from the Pick
-column): the CURRENT pick's own handicap at the flip line, then the team it
-switches to -- ``NYJ +2.5 → TEN``; the held state reads ``IND holds from +7.5 to -0.5``.
-"""
-
 from __future__ import annotations
 
 import math

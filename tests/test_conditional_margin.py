@@ -1,5 +1,3 @@
-"""Conditional margin atoms, support fallbacks, and future-week leakage contracts."""
-
 import numpy as np
 import pandas as pd
 import pytest

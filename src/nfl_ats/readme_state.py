@@ -1,23 +1,3 @@
-"""Generated README sections for state that goes stale between sessions.
-
-``nfl_ats.publishing`` already owns one self-updating README region -- the
-``<!-- CURRENT_PREDICTIONS:START -->`` / ``:END`` block that
-``publish_active_predictions`` rewrites from the active weekly forecast. This
-module extends that exact marked-block pattern to two more numbers that were
-observed drifting silently in hand-written prose: which model is active and
-what it actually grades at, and how big the weak-signal/rotation/prospective
-research registries are. Both blocks are rendered from the artifacts and
-registries that are already each subsystem's single source of truth, so the
-README can never again quote a number that contradicts them.
-
-``artifacts/`` is gitignored (only ``active_ats_model.json`` and the linked
-``opener_evaluation/`` run back the active-model block), so a fresh clone has
-none of it. Every render function here is required to degrade to an honest
-"not built in this clone" sentence rather than raise or print a stale number;
-only a genuinely malformed manifest (already-active-in-production behaviour
-in :mod:`nfl_ats.handoff`) is allowed to propagate as an error.
-"""
-
 from __future__ import annotations
 
 from collections import Counter
@@ -51,14 +31,6 @@ def _uncertainty_interval(
 
 
 def render_active_model_block(artifacts_root: Path) -> str:
-    """The active model's identity and its two accuracy grades.
-
-    A manifest that fails to load (unsupported version, ``status`` not
-    ``SYNCHRONIZED``) raises -- matching the existing, unguarded
-    ``load_active_ats_model`` call in ``nfl_ats.handoff._model_markdown`` --
-    because that is a real data-integrity defect, not the expected
-    fresh-clone absence.
-    """
 
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -206,7 +178,6 @@ def _challenger_summary_line(artifacts_root: Path) -> str:
 
 
 def render_research_state_block(registry_root: Path | None, artifacts_root: Path) -> str:
-    """A few-line summary of how large the research registries are right now."""
 
     if registry_root is None:
         return (
@@ -223,14 +194,6 @@ def render_research_state_block(registry_root: Path | None, artifacts_root: Path
 
 
 def _replace_marked_section(text: str, start: str, end: str, content: str) -> str:
-    """Rewrite the text between ``start``/``end``, matching ``publishing``'s pattern.
-
-    Mirrors ``nfl_ats.publishing._replace_readme_section``: an existing pair is
-    replaced in place; a first-time-setup README missing the pair gets the
-    section appended rather than the render failing outright. A malformed
-    README (the pair present more than once, or only one of the two markers)
-    is a real structural defect and raises.
-    """
 
     block = f"{start}\n{content.rstrip()}\n{end}"
     if start in text or end in text:
@@ -256,7 +219,6 @@ def apply_generated_state_blocks(
     artifacts_root: Path,
     registry_root: Path | None,
 ) -> str:
-    """Return ``text`` with both generated blocks replaced by fresh renders."""
 
     text = _replace_marked_section(
         text,
@@ -278,7 +240,6 @@ def regenerate_readme_state(
     registry_root: Path | None,
     readme_path: Path,
 ) -> dict[str, Any]:
-    """Rewrite the README's two generated blocks in place from current state."""
 
     current = readme_path.read_text(encoding="utf-8")
     updated = apply_generated_state_blocks(
@@ -296,11 +257,6 @@ def readme_state_failures(
     artifacts_root: Path,
     registry_root: Path | None,
 ) -> list[str]:
-    """Return human-readable descriptions of any stale/missing generated block.
-
-    Used by ``nfl_ats.handoff.check_session_handoff`` to report README drift
-    the same way it already reports a stale ``HANDOFF.md``.
-    """
 
     failures: list[str] = []
     active_current = _extract_marked_section(

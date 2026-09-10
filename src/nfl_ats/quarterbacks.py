@@ -1,5 +1,3 @@
-"""Point-in-time quarterback depth charts and prior-performance states."""
-
 from __future__ import annotations
 
 import hashlib
@@ -107,7 +105,6 @@ def _sha256(path: Path) -> str:
 
 
 def canonicalize_depth_charts(frame: pd.DataFrame) -> pd.DataFrame:
-    """Keep timestamped quarterback depth rows and normalize the as-of contract."""
 
     require_columns(frame, DEPTH_REQUIRED_COLUMNS, "depth_charts")
     result = frame.copy()
@@ -137,13 +134,6 @@ def canonicalize_depth_charts(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def canonicalize_historical_depth_charts(frame: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
-    """Convert legacy week-level rows to a conservative prior-week timeline.
-
-    The source has no publication timestamp. A source-week row therefore
-    becomes effective only one microsecond after the final kickoff in that NFL
-    week. It can describe later games, never a game in its own labeled week.
-    ``observed_at_utc`` remains explicitly null rather than inventing a time.
-    """
 
     require_columns(frame, LEGACY_DEPTH_REQUIRED_COLUMNS, "historical depth charts")
     require_columns(
@@ -281,7 +271,6 @@ def write_historical_depth_snapshot(
     games_source: Path | None = None,
     snapshot_id: str | None = None,
 ) -> DepthSnapshot:
-    """Write an immutable legacy archive with explicit conservative visibility."""
 
     if not requested_seasons or requested_seasons != sorted(set(requested_seasons)):
         raise ValueError("Requested seasons must be non-empty, unique, and sorted")
@@ -421,7 +410,6 @@ def latest_starting_qbs(
     *,
     max_age_days: int = 14,
 ) -> pd.DataFrame:
-    """Return rank-one QBs from the latest team observation before a decision."""
 
     if max_age_days < 1:
         raise ValueError("max_age_days must be positive")
@@ -440,7 +428,6 @@ def latest_starting_qbs(
 
 
 def build_qb_game_metrics(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate meaningful quarterback appearances from PBP."""
 
     require_columns(pbp, PBP_SNAPSHOT_COLUMNS, "play_by_play snapshot")
     plays = analysis_plays(pbp)
@@ -520,7 +507,6 @@ def build_qb_states(
     min_dropbacks: int = 50,
     offseason_retention: float = 0.75,
 ) -> pd.DataFrame:
-    """Build player states after each appearance, regressing across offseasons."""
 
     if span < 2 or min_dropbacks < 1:
         raise ValueError("span must be at least 2 and min_dropbacks must be positive")
@@ -559,12 +545,6 @@ def build_qb_states(
 
 
 def _qb_injury_week_tuesday_floor_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
-    """00:00 America/New_York on the Tuesday that starts ``kickoff_utc``'s NFL week.
-
-    Duplicated (not imported) from
-    ``nfl_ats.players._injury_week_tuesday_floor_utc`` -- see
-    ``QB_INJURY_PROXY_HOURS_BEFORE_KICKOFF`` for why.
-    """
 
     kickoff_eastern = kickoff_utc.tz_convert(_QB_EASTERN)
     sunday = week_cycle_sunday(kickoff_eastern.date())
@@ -574,12 +554,6 @@ def _qb_injury_week_tuesday_floor_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp
 
 
 def _qb_injury_proxy_times(schedule: pd.DataFrame) -> pd.DataFrame:
-    """Kickoff-derived per-(season, week, team) injury visibility proxy time.
-
-    Duplicated (not imported) from ``nfl_ats.players._injury_proxy_times``
-    -- see ``QB_INJURY_PROXY_HOURS_BEFORE_KICKOFF`` for why. Requires
-    ``season``, ``week``, ``home_team``, ``away_team``, ``kickoff``.
-    """
 
     required = {"season", "week", "home_team", "away_team", "kickoff"}
     missing = sorted(required.difference(schedule.columns))
@@ -622,27 +596,6 @@ def _canonicalize_qb_availability(
     timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
     schedule: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Normalize only the injury fields needed by the named-QB state builder.
-
-    ``timestamp_fallback`` (ENG-39, default ``"drop"``) mirrors
-    ``nfl_ats.players.canonicalize_injuries``: ``"drop"`` is byte-identical
-    to the pre-ENG-39 behaviour -- no new columns, no schedule dependency.
-    ``"week_proxy"`` tolerates a missing/unparsable ``date_modified`` by
-    substituting a kickoff-derived, leakage-safe proxy (that function's
-    docstring has the exact visibility rule) and requires ``schedule``
-    (``season``, ``week``, ``home_team``, ``away_team``, ``kickoff``).
-    Output then also carries ``effective_observed_at`` and
-    ``observed_at_basis``; a real ``date_modified`` is never overwritten.
-
-    **Idempotency (ENG-39 follow-up, mirrors
-    ``nfl_ats.players.canonicalize_injuries``):** if ``injuries`` already
-    carries ``effective_observed_at`` / ``observed_at_basis`` -- i.e. it is
-    itself the output of an earlier ``"week_proxy"`` canonicalization, such
-    as a snapshot's own ``injuries.parquet`` read back off disk -- those
-    columns are kept as the authoritative visibility timestamp regardless
-    of ``timestamp_fallback``, so a re-canonicalization here can never
-    silently drop rows the snapshot already proxied.
-    """
 
     if timestamp_fallback not in ("drop", "week_proxy"):
         raise ValueError("timestamp_fallback must be 'drop' or 'week_proxy'")
@@ -737,7 +690,6 @@ def _canonicalize_qb_availability(
 
 
 def _expected_value(starter: float, backup: float, start_probability: float) -> float:
-    """Mix named-player states without requiring a zero-weight missing state."""
 
     if not np.isfinite(start_probability):
         return math.nan
@@ -775,25 +727,6 @@ def enrich_with_qb_features(
     offseason_retention: float = 0.75,
     injury_timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
 ) -> pd.DataFrame:
-    """Attach named starter/backup states from information visible at decision time.
-
-    Depth identity is selected from the latest observation no later than the
-    configured decision timestamp.  Player performance comes only from games
-    before the target game's date.  When an injury source covers the target
-    season, the latest visible starter report supplies the existing fixed or
-    season-lagged start probability; the expected state mixes that named
-    starter with the named QB2 instead of a generic replacement constant.
-    Uncovered injury seasons and missing player histories remain null rather
-    than being silently treated as healthy or replacement-level.
-
-    ``injury_timestamp_fallback`` (ENG-39, default ``"drop"``): forwarded to
-    ``_canonicalize_qb_availability``. ``"drop"`` needs no schedule and is
-    byte-identical to the pre-ENG-39 behaviour. ``"week_proxy"`` derives
-    each team-game's own kickoff from ``games`` itself (already required
-    above) to resolve a leakage-safe proxy for a row with no real
-    ``date_modified`` -- see ``nfl_ats.players.canonicalize_injuries`` for
-    the exact rule this mirrors.
-    """
 
     if injury_timestamp_fallback not in ("drop", "week_proxy"):
         raise ValueError("injury_timestamp_fallback must be 'drop' or 'week_proxy'")

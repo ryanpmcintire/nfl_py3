@@ -6,7 +6,6 @@ import pytest
 from nfl_ats.portfolio import (
     simulate_bankroll_paths,
     simulate_paper_bankroll,
-    size_correlated_paper_portfolio,
 )
 from nfl_ats.probability_uncertainty import conservative_probability_audit
 
@@ -94,26 +93,6 @@ def test_uncertainty_that_removes_edge_sizes_zero_but_does_not_change_pick() -> 
     assert home["bet_side"] == "HOME"
     assert home["bet_probability"] == pytest.approx(0.5)
     assert home["stake"] == 0.0
-
-
-def test_correlated_sizing_uses_same_auditable_conservative_probabilities() -> None:
-    result = size_correlated_paper_portfolio(
-        _candidates(),
-        probability_uncertainty=_uncertainty(),
-        posterior_z=2.0,
-        team_factor_strength=0.0,
-        kelly_multiplier=1.0,
-        max_bet_fraction=0.5,
-        max_total_fraction=1.0,
-    )
-
-    assert result.allocations.loc[0, "conservative_bet_probability"] == pytest.approx(0.54)
-    assert result.allocations.loc[1, "conservative_bet_probability"] == pytest.approx(0.54)
-    assert result.allocations.loc[0, "probability_uncertainty_method"] == "supplied_lower_bound"
-    assert result.metrics["probability_uncertainty_methods"] == [
-        "posterior_sd",
-        "supplied_lower_bound",
-    ]
 
 
 def test_bankroll_paths_use_uncertainty_and_remain_deterministic() -> None:

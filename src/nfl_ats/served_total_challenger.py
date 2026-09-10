@@ -1,32 +1,3 @@
-"""MOD-17 side-ledger challenger: track both served-total methods weekly.
-
-Lane AC's research half promoted the joint residual model's total output to
-:data:`nfl_ats.served_total.SERVED_TOTAL_METHOD` on a single, already-spent
-Tuesday-opener/full-population screen (``docs/mod17_joint_residual_model.md``,
-``probability_positive`` 0.791). That measurement does not need a second
-opener window to keep accruing evidence -- the pool computes a tiebreaker
-guess every week regardless, so this challenger records BOTH served-total
-candidates (:func:`nfl_ats.served_total.served_total_blend_k01` and
-:func:`nfl_ats.served_total.served_total_joint_residual`) for the week's
-tiebreaker game, pre-kickoff, and backfills the realised total once the game
-finishes -- one row per week, no rotation-registry cost, mirroring
-``nfl_ats.best_pick_nomination``'s v3 side-ledger-only registration pattern
-(``docs/best_pick_ranker.md`` "v3 audit"): registered ``ACTIVE_PROSPECTIVE``
-in ``artifacts/prospective/challengers.json``, recorded from
-``publish-predictions --record-decisions``, never read back into the
-published card.
-
-Unlike every other challenger ledger in this project, the two arms compared
-here are NUMERIC TOTALS, not side picks, so this uses its OWN small ledger
-(:data:`LEDGER_COLUMNS`) rather than
-``nfl_ats.prospective_scoring.CHALLENGER_DECISION_COLUMNS`` (which is shaped
-around ``pick_side``/``decision_home_spread`` and has no field for a
-continuous prediction). The registry-membership check
-(:func:`nfl_ats.prospective_scoring.find_challenger`) and the anti-backdating
-recording-lock-window guard (:func:`nfl_ats.clv.refuse_if_outside_recording_lock_window`)
-are reused unmodified -- only the row shape differs.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -66,7 +37,6 @@ def ledger_path(artifacts_root: Path) -> Path:
 
 
 def load_decisions(artifacts_root: Path) -> pd.DataFrame:
-    """The append-only ledger (empty frame when none exists)."""
 
     path = ledger_path(artifacts_root)
     if not path.is_file():
@@ -88,13 +58,6 @@ def _record_instant(now: datetime | None) -> pd.Timestamp:
 
 
 def _schedule_kickoff_utc(schedules: pd.DataFrame) -> pd.Series:
-    """Combine nflverse ``gameday`` + Eastern ``gametime`` into UTC.
-
-    Duplicated (not imported) from ``nfl_ats.play_probability._schedule_kickoff_utc``
-    / ``nfl_ats.players._schedule_kickoff_utc`` -- the same cross-module
-    duplication convention every copy of this helper already follows in this
-    repository.
-    """
 
     if "gametime" not in schedules:
         return pd.Series(pd.NaT, index=schedules.index, dtype="datetime64[ns, UTC]")
@@ -107,12 +70,6 @@ def _schedule_kickoff_utc(schedules: pd.DataFrame) -> pd.Series:
 
 
 def settle_realised_totals(decisions: pd.DataFrame, schedules: pd.DataFrame) -> pd.DataFrame:
-    """Fill in ``realised_total`` for any pending row whose game has a final score.
-
-    Never overwrites an already-settled value (an existing non-NaN
-    ``realised_total`` is left exactly as recorded) and never touches any
-    other column -- this is purely a backfill, not a re-grade.
-    """
 
     if decisions.empty:
         return decisions
@@ -139,21 +96,6 @@ def record_totals_served_method_decisions(
     now: datetime | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Record this week's tiebreaker game under both served-total methods.
-
-    Computes the SAME :class:`~nfl_ats.tiebreaker.TiebreakerReport`
-    ``nfl-ats tiebreaker`` would (:func:`nfl_ats.tiebreaker.tiebreaker_report`),
-    so both candidates are read straight off the production pipeline rather
-    than re-derived. Records exactly one row per week -- the tiebreaker
-    game, never every game on the card, since only that one game's total is
-    served anywhere. Whole-game-pre-kickoff anti-backdating: refuses via
-    :func:`nfl_ats.clv.refuse_if_outside_recording_lock_window` when called
-    more than ``RECORDING_LOCK_WINDOW`` before kickoff, and silently skips
-    (rather than recording a hindsight row) once kickoff has passed. Every
-    call also backfills ``realised_total`` on any prior pending rows whose
-    games have since finished, so evidence keeps accruing without a second
-    recording pass.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

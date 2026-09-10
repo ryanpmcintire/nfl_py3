@@ -1,42 +1,3 @@
-"""One-click refresh: spreads, lineups and injury reports, then the picks and the board.
-
-Owner, 2026-09-08: "it would be awesome if i had a button to refresh the
-lineups/injuryreports/spreads all at once". This is that button's engine;
-``scripts/refresh_now.cmd`` is the double-clickable face of it.
-
-It runs, in order, the SAME commands the scheduler already runs on its own
-clock -- nothing here is a new code path:
-
-1. ``odds_capture.ps1`` -- a fresh point-in-time spread capture (The Odds
-   API, 3 requests). Skipped on a Tuesday (Eastern time, the pool's own
-   clock and the day the opener rule keys on) before the pool's spread
-   lock (``nfl_ats.market_data.POOL_SPREAD_LOCK_ET``, 12:00 ET): the card's
-   opener (``nfl_ats.market_data.tuesday_opener_quotes``) prefers the
-   earliest Tuesday quote AT OR AFTER that lock, but falls back to the
-   earliest pre-lock Tuesday quote when no post-lock quote exists, so a
-   button press at 10:30 on a day the 12:05 capture then fails would become
-   the week's opener line. After the lock a press is harmless: it IS the
-   locked line. A Monday-evening press is Monday to the opener rule
-   (``nfl_ats.market_data.pool_calendar_day``: days are Eastern calendar
-   days, never UTC ones), so it can never become an opener and is allowed.
-2. ``refresh_lineup_forecast.py`` -- current depth charts, then a
-   ``weekly-run`` with ``--refresh-player-data`` (the nflverse player
-   snapshot, which is where the injury reports the model reads come from),
-   regenerating the forecast and the board. About fifteen minutes. The
-   NFL.com injury-page capture is not run: it is paused by the MKT-09 source
-   policy (``injuries_*`` jobs in ``capture_scheduler.py``).
-3. ``refresh-picks --record-decisions --publish-card --note manual_refresh``
-   -- the served late-week rule against the frozen Tuesday line, appending
-   to the pick-revision ledger and labelling changed picks on the card. It
-   refuses to write outside the recording window; that refusal is reported,
-   not hidden.
-4. ``publish-board`` -- the site pages, so the dashboard shows the result.
-
-Each step's outcome is printed in plain words and the exit code is non-zero
-if any step failed. Steps run even when an earlier one failed: a dead odds
-key must not stop the lineups from refreshing.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -68,7 +29,6 @@ class Step:
 
 
 def plan(now: datetime) -> tuple[Step, ...]:
-    """The four steps, with the Tuesday-opener guard applied for ``now`` (ET)."""
 
     local = now.astimezone(ET)
     et_tuesday = local.weekday() == 1
@@ -132,7 +92,7 @@ def run(steps: tuple[Step, ...], *, dry: bool = False) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    parser = argparse.ArgumentParser(description="Refresh the card now")
     parser.add_argument("--dry", action="store_true", help="print the commands, run nothing")
     args = parser.parse_args(argv)
     return run(plan(datetime.now(tz=ET)), dry=args.dry)

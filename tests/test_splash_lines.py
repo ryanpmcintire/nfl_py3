@@ -1,9 +1,3 @@
-"""Contract tests for the Splash Sports board capture (the lines the pool grades).
-
-The whole point of ``nfl_ats.splash_lines`` is to fail closed, so most of these
-tests assert that a malformed capture raises rather than that a good one loads.
-"""
-
 from __future__ import annotations
 
 import json

@@ -1,5 +1,3 @@
-"""Frozen MOD-18 row-local spread features and chronological cell calibration."""
-
 from __future__ import annotations
 
 import numpy as np
@@ -19,7 +17,6 @@ BUCKETS = ("0-3", "3.5-6.5", "7", "7.5-10", "10.5+")
 
 
 def spread_bucket(spread: pd.Series) -> pd.Series:
-    """Disjoint half-point line buckets; 7.5 belongs to the fade zone."""
     size = pd.to_numeric(spread, errors="raise").abs()
     return pd.Series(
         np.select(
@@ -32,7 +29,6 @@ def spread_bucket(spread: pd.Series) -> pd.Series:
 
 
 def attach_spread_regime(frame: pd.DataFrame) -> pd.DataFrame:
-    """Use only this row's available line, never other games or outcomes."""
     result = frame.copy()
     line = pd.to_numeric(result["spread_line"], errors="raise")
     size, sign = line.abs(), np.sign(line)
@@ -49,12 +45,6 @@ def attach_spread_regime(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def calibrate_spread_stream(predictions: pd.DataFrame) -> pd.DataFrame:
-    """Shrink prior cell correctness toward stated p with 20 fixed pseudo-games.
-
-    Input probabilities must be out-of-sample. A game's result becomes usable
-    the next day; no result from the target season-week enters its calibration.
-    The returned home probability may cross 0.5; input rows are never mutated.
-    """
     frame = predictions.copy()
     if frame.game_id.duplicated().any():
         raise ValueError("One prediction per game is required")

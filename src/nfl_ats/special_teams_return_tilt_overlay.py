@@ -1,121 +1,3 @@
-"""Special-teams return top-quartile tilt overlay: a parameter-free pick-level nudge.
-
-Research chain (mined lineage, PBP-06 special-teams battery, all measured
-2026-08-19, read from ``registry/weak_signals.json`` and
-``artifacts/special_teams_battery/20260819T232856Z/results.json`` before this
-module was built): ``special_teams_return_top_quartile`` -- one of 8
-predeclared cells in the special-teams battery (``scripts/special_teams_screen.py``,
-predeclaration ``docs/special_teams_battery.md``, mined, uncorrected
-multiplicity across the 8 cells) -- flags teams whose PRIOR-season
-``return_composite`` (mean z of punt-return and kickoff-return yards) ranks
-in the top quartile league-wide. Week-blocked, REG 2009-2025, n=8,634
-team-games (2,016 flagged, 496 with no trailing prior-season data): full-slate
-effect **+0.4986 accuracy points**, 95% **[-0.0742, +1.0797]**,
-``probability_positive`` **0.9547** (season-blocked secondary 95%
-[-0.0229, +1.0225], ``probability_positive`` 0.9690).
-
-**The interval crosses zero. Per AGENTS.md, at this evaluator's ~2-point
-resolution that is the EXPECTED shape for a real small signal, never grounds
-to decline building a no-window-cost prospective challenger.** Neither
-admissible closing ground applies (no resolved wrong sign -- the interval is
-not entirely below zero; no positive-control bound), so this stays
-``unresolved_below_power`` in the registry. Wiring it here is an EV-positive
-dual-tracked play (P+ 0.9547 far above the 0.5 that makes playing it the
-favoured side of the bet), not a claim of a proven edge (AGENTS.md "a
-promotion bar is not a decision bar").
-
-**The reliability is LOW, and that is stated plainly, not hidden.**
-Componentwise year-over-year Pearson reliability: punt_return_yards +0.109
-[+0.019, +0.196] n=512 team-season pairs; kickoff_return_yards +0.158
-[+0.073, +0.243] n=508 (``docs/special_teams_battery.md``). Both are
-positive and both intervals exclude zero -- the trait persists across
-seasons, weakly. A low-but-positive, interval-excluding-zero reliability
-attenuates a real effect toward zero; it does not refute the mechanism (that
-would require a reliability whose interval includes or sits at zero, which is
-not what was measured here). No promotion is implied by either number; both
-travel with every use of this overlay.
-
-**Battery-multiplicity caveat.** ``special_teams_return_top_quartile`` is one
-of 8 cells (4 raw dimensions x top/bottom quartile) predeclared together in
-the same battery. The bottom-quartile mirror
-(``special_teams_return_bottom_quartile``) and the other three raw-dimension
-cells (``fg_oe``, ``punt_net_yards``, and the four-dimension
-``special_teams_composite_edge``) are correlated siblings sharing overlapping
-windows and legs, not independent votes -- multiplicity across the battery is
-uncorrected, exactly as the PBP-08 protection-mismatch battery documents for
-its own four cells (``src/nfl_ats/pbp08_protection_mismatch_tilt_overlay.py``).
-
-This module is the no-window-cost path, built on the exact pattern of
-``interim_hc_first_game_tilt_overlay.py`` (a "flip TOWARD the flagged team"
-rule -- this overlay's own direction) and
-``pbp08_protection_mismatch_tilt_overlay.py`` (a PBP-battery-derived team
-trait read from a stored snapshot, fail-open on a missing source): a
-**pick-level, post-prediction transform** of the active model's own forced
-pick, dual-tracked against that same active model in the prospective
-challenger ledger (``nfl_ats.prospective_scoring``), at no rotation-registry
-window cost and with zero training-time feature changes. **Nothing in this
-module is wired into ``publishing.py`` or the production pick path** -- like
-the tilt siblings, no owner decision to play this on the real card has been
-made; it is dual-tracked only.
-
-**The rule is parameter-free and frozen, REG season only**: build the
-prior-season top-quartile ``return_composite`` flag for both teams in a game.
-If EXACTLY ONE of the two teams is flagged AND the active model's own forced
-pick is NOT that team, flip the pick ONTO that team. Both-flagged games are
-NEVER touched -- mirroring ``interim_hc_first_game_tilt_overlay``'s
-``both_first_game_games`` handling and ``coach_fade_overlay``'s
-``both_year_one_games`` handling: a mutual case has no measured direction to
-pick between and is reported separately, never flipped. Direction is
-PREDECLARED positive on ``team_covered`` -- back the elite return unit -- so
-this overlay only ever flips ONTO the flagged side, never off it (unlike the
-asymmetric-the-other-way PBP-08 protection overlay, which flips OFF a
-flagged offense).
-
-**Pregame-safe by construction.** The trait is a PRIOR-SEASON team-season
-aggregate (``scripts/special_teams_features.py`` -> ``team_season.parquet``),
-looked up for a game by shifting each team-season row forward exactly one
-season (ported from ``scripts/special_teams_screen.py::_prior``, line 148) --
-a season's own row is NEVER used as that season's own prior, only as the
-PRIOR for the season immediately after it. This function never reads
-``result``/``spread_line``/any outcome column at all. Two leakage regression
-tests (``tests/test_special_teams_return_tilt_overlay.py``) prove this
-empirically: mutating a team's CURRENT-season row never changes that same
-season's already-computed flag, and a future season's team-season row never
-changes an earlier season's already-computed flag.
-
-**One accepted, stated dilution, mirroring ``fg_oe``'s own documented
-convention** (``scripts/special_teams_features.py`` module docstring): the
-top-quartile threshold is the ``return_composite_z`` quantile over the WHOLE
-available team-season panel (544 rows in the 2009-2025 snapshot this module
-reads by default), so a team's own most-recent season contributes a small
-amount to the very threshold its PRIOR season is compared against. With
-17+ seasons and 32 teams pooled into one global quantile, one row's
-contribution is a small fraction of the panel -- the same "minor dilution"
-argument ``special_teams_features.py`` already makes for ``fg_oe``'s
-season-local baseline, and a materially SMALLER dilution ratio here because
-the pool is the whole panel, not one season.
-
-Two things live here, mirroring the sibling overlays exactly:
-
-1. :func:`special_teams_return_flag_by_game` -- the pregame-safe,
-   DATA-DERIVED signal, built from an already-loaded ``team_season`` frame
-   (see :func:`return_composite_z_with_threshold` for the ported composite
-   and quartile-cut construction) and the REG schedule, never hand-typed.
-   :func:`special_teams_return_flag_by_game_fail_open` wraps it with the
-   latest-snapshot loader and a FAIL-OPEN contract (a missing
-   ``data/raw/special_teams/*/team_season.parquet`` snapshot yields zero
-   flags and a ``RuntimeWarning``, never an exception -- mirrors
-   ``pbp08_protection_mismatch_tilt_overlay.flags_for_week_fail_open`` and
-   ``interim_hc_first_game_tilt_overlay.interim_first_game_flag_by_game_fail_open``).
-2. :func:`apply_special_teams_return_tilt_overlay` -- the pick-level
-   transform, plus :func:`overlay_disclosure_note` for the plain-English
-   provenance sentence.
-
-:func:`record_special_teams_return_tilt_challenger_decisions` writes the
-overlay's own arm to the prospective challenger ledger so 2026 scores it
-cleanly, independent of whether it is ever played on the real card.
-"""
-
 from __future__ import annotations
 
 import warnings
@@ -160,25 +42,6 @@ REQUIRED_TEAM_SEASON_COLUMNS = {
 
 
 def return_composite_z_with_threshold(team_season: pd.DataFrame) -> tuple[pd.DataFrame, float]:
-    """Ported verbatim from ``scripts/special_teams_screen.py``.
-
-    Z-scores each return leg's league-centered dimension against the WHOLE
-    panel's own pooled standard deviation (``add_composites``, lines
-    126-145: ``sd = float(result[centered].std(ddof=1))``,
-    ``result[f"{dim}_z"] = result[centered] / sd if sd > 0 else np.nan``),
-    then averages the two legs (line 139:
-    ``result[["punt_return_yards_z", "kickoff_return_yards_z"]].mean(axis=1)``
-    -- ``pandas.DataFrame.mean`` skips NaN by default, so a team missing one
-    leg's centered value still gets a composite from the other leg alone,
-    exactly as the source does). The top-quartile threshold is the
-    ``QUARTILE_TOP`` quantile of ``return_composite_z`` over this WHOLE
-    frame (``main()``, lines 322-333), never within-season.
-
-    ``team_season`` must carry ``punt_return_yards_centered`` and
-    ``kickoff_return_yards_centered`` -- the league-centered dimensions
-    ``scripts/special_teams_features.py::add_league_centered`` (lines
-    351-358) produces on its ``team_season.parquet`` output.
-    """
 
     missing = REQUIRED_TEAM_SEASON_COLUMNS.difference(team_season.columns)
     if missing:
@@ -206,28 +69,6 @@ def _canonical_team(team: pd.Series) -> pd.Series:
 def special_teams_return_flag_by_game(
     schedules: pd.DataFrame, team_season: pd.DataFrame
 ) -> pd.DataFrame:
-    """One row per REG-season ``game_id``: ``home_return_top_quartile`` /
-    ``away_return_top_quartile``, pregame-safe.
-
-    A side is flagged when its PRIOR season's ``return_composite_z`` (see
-    :func:`return_composite_z_with_threshold`) is at or above the top-quartile
-    threshold computed over the whole ``team_season`` panel handed in --
-    ported from ``scripts/special_teams_screen.py``'s own join
-    (``_prior``, line 148: shift each team-season row's ``season`` forward by
-    exactly one before joining on ``(team, season)``, so a row is only ever
-    consulted as the PRIOR value for the season immediately after the one it
-    describes) and flag rule (``flag = long_df[col] >= cutoff`` for the top
-    quartile, line ~381).
-
-    Team codes are canonicalized (``TEAM_ABBREVIATION_ALIASES``) before the
-    join, mirroring every sibling overlay's merge-safety convention.
-
-    A side with no prior-season row (the team's first tracked season, an
-    expansion team, or any gap year) gets ``NaN`` for its prior composite,
-    which compares False against the threshold and is folded into "not
-    flagged" -- never an error, matching the screen's own
-    ``n_missing_required_data`` handling (``score_cell``, ``flag.fillna(False)``).
-    """
 
     required = {"game_id", "season", "game_type", "home_team", "away_team"}
     missing = required.difference(schedules.columns)
@@ -283,8 +124,6 @@ _EMPTY_FLAGS_COLUMNS = ("game_id", "season", "home_return_top_quartile", "away_r
 
 
 def latest_special_teams_team_season(data_root: Path) -> Path | None:
-    """Newest ``data_root/raw/special_teams/*/team_season.parquet`` snapshot,
-    or ``None`` if the directory or every snapshot is absent."""
 
     root = data_root / "raw" / "special_teams"
     if not root.is_dir():
@@ -296,17 +135,6 @@ def latest_special_teams_team_season(data_root: Path) -> Path | None:
 def special_teams_return_flag_by_game_fail_open(
     data_root: Path, schedules: pd.DataFrame
 ) -> pd.DataFrame:
-    """The flag table for every REG game in ``schedules``, or an EMPTY frame
-    on any missing/malformed input.
-
-    **FAIL-OPEN**: any exception from locating or reading the team-season
-    snapshot, or from :func:`special_teams_return_flag_by_game` itself, is
-    caught, surfaced as a ``RuntimeWarning``, and folded into "zero games
-    flagged" -- mirrors
-    ``pbp08_protection_mismatch_tilt_overlay.flags_for_week_fail_open`` and
-    ``interim_hc_first_game_tilt_overlay.interim_first_game_flag_by_game_fail_open``
-    exactly: this overlay must never be able to block a publish.
-    """
 
     try:
         team_season_path = latest_special_teams_team_season(data_root)
@@ -330,8 +158,6 @@ def special_teams_return_flag_by_game_fail_open(
 
 @dataclass(frozen=True)
 class TiltFlip:
-    """One game the overlay flipped, for provenance and ledger recording."""
-
     game_id: str
     matchup: str
     flagged_team: str
@@ -340,18 +166,6 @@ class TiltFlip:
 
 @dataclass(frozen=True)
 class TiltResult:
-    """The overlay's effect on one week's card.
-
-    ``overlaid_predictions`` is ``predictions`` unchanged except for
-    ``home_cover_probability`` on flipped rows -- every other column stays
-    byte-identical, mirroring every sibling tilt overlay.
-    ``both_flagged_games`` lists games where BOTH teams are top-quartile by
-    the prior-season return composite simultaneously -- no measured
-    direction for that case (mirrors ``coach_fade_overlay``'s
-    ``both_year_one_games`` and ``interim_hc_first_game_tilt_overlay``'s
-    ``both_first_game_games``), so those games are flagged, never flipped.
-    """
-
     overlaid_predictions: pd.DataFrame
     flips: tuple[TiltFlip, ...]
     both_flagged_games: tuple[str, ...]
@@ -369,22 +183,6 @@ def apply_special_teams_return_tilt_overlay(
     *,
     enabled: bool = True,
 ) -> TiltResult:
-    """Flip the forced pick ONTO the flagged team's side.
-
-    A game flips only when ALL hold:
-
-    * ``game_type == "REG"`` when that column is present (the registered
-      measurement -- 8,634 REG team-games -- is a regular-season read);
-    * exactly ONE side is top-quartile by prior-season ``return_composite``
-      (a simultaneous both-flagged case is left untouched -- see
-      ``both_flagged_games``); and
-    * the model's own pick (``home_cover_probability >= 0.5`` picks home)
-      is NOT already on the flagged side.
-
-    Flipping sets ``home_cover_probability`` to its complement, exactly as
-    the sibling overlays do, so every existing reader of the column needs no
-    overlay-aware branch.
-    """
 
     required = {"game_id", "season", "home_team", "away_team", "home_cover_probability"}
     missing = required.difference(predictions.columns)
@@ -444,12 +242,6 @@ def apply_special_teams_return_tilt_overlay(
 
 
 def overlay_disclosure_note(result: TiltResult) -> str:
-    """Plain-language provenance sentence, mirroring the sibling overlays'.
-
-    Empty when the overlay is off or changed nothing this week. Not
-    currently surfaced on the published card -- this overlay is dual-tracked
-    only.
-    """
 
     if not result.enabled or result.flip_count == 0:
         return ""
@@ -480,25 +272,6 @@ def record_special_teams_return_tilt_challenger_decisions(
     forecast_artifact: str | None = None,
     replace_week: bool = False,
 ) -> dict[str, Any]:
-    """Append the tilt overlay's picks to the prospective challenger ledger.
-
-    Mirrors ``surface_switch_tilt_overlay.record_surface_switch_tilt_challenger_decisions``
-    exactly: this is not a retrained model with its own ``margin-predict``
-    artifact -- its "model" IS the active model, transformed post-prediction
-    -- so it reads the active model's own synchronized weekly forecast rather
-    than searching ``artifacts/margin_predictions/`` by fingerprint, and it
-    refuses to record if the active model's live fingerprint no longer
-    matches the snapshot this challenger was registered against.
-
-    The special-teams team-season lookup is FAIL-OPEN (see
-    :func:`special_teams_return_flag_by_game_fail_open`): a missing source
-    snapshot never raises out of this function, it simply yields zero flags
-    for the week.
-
-    ``bet_side`` is always ``"PASS"`` and ``edge`` is always NaN: this
-    challenger tracks the tilt's forced-pick (``decision_line``) accuracy
-    only, never a fabricated paper-bet edge for the post-tilt side.
-    """
 
     entry = find_challenger(artifacts_root, CHALLENGER_ID)
     status = str(entry.get("status"))

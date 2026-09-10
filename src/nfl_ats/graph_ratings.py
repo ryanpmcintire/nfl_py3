@@ -1,5 +1,3 @@
-"""Leak-safe temporal graph and regularized schedule-strength ratings."""
-
 from __future__ import annotations
 
 import math
@@ -17,8 +15,6 @@ FloatArray = NDArray[np.float64]
 
 @dataclass(frozen=True)
 class GraphRatingConfig:
-    """Fixed research configuration for schedule-strength features."""
-
     half_life_weeks: float = 8.0
     offseason_retention: float = DEFAULT_OFFSEASON_RETENTION
     damping: float = 0.85
@@ -104,7 +100,6 @@ def _page_rank(
 
 
 def _hits(adjacency: FloatArray, *, iterations: int = 500) -> tuple[FloatArray, FloatArray]:
-    """Return hub and authority vectors from a nonnegative weighted graph."""
 
     size = adjacency.shape[0]
     if size == 0:
@@ -166,13 +161,6 @@ def add_schedule_strength_features(
     games: pd.DataFrame,
     config: GraphRatingConfig | None = None,
 ) -> pd.DataFrame:
-    """Add pregame PageRank, HITS, and ridge schedule ratings.
-
-    Ratings for every game in an NFL week are computed before any result from
-    that week is incorporated. Graph edges decay weekly, and prior seasons are
-    additionally shrunk toward a symmetric graph. The ridge comparator uses
-    the same historical games and an equivalent time-decay policy.
-    """
 
     settings = config or GraphRatingConfig()
     settings.validate()

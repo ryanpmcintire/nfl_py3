@@ -1,41 +1,3 @@
-"""How the model decides -- the model-explanation view (ROADMAP UI-08).
-
-The public-site completion of the explanation view started 2026-08-18 as a
-Streamlit page and re-homed here after the Streamlit strip (the GitHub Pages
-site is THE dashboard per ROADMAP UI-15). It reads the latest
-``nfl-ats market-decomposition`` run -- the RWB-lineage explanation artifact
-whose ``classification.csv`` aggregates the walk-forward ridge coefficients to
-feature families with stability spreads -- and renders one section for
-``docs/models.html``:
-
-1. **What the model weighs, family by family** -- reality's share of
-   standardized coefficient weight vs. the market's own share, a plain-English
-   caveat caption per four-bucket classification, and a refit-to-refit
-   **stability label** ("steady across refits" / "jumps around between
-   refits") computed from ``refit_std_in_spread`` against
-   :data:`STABILITY_JUMPY_RATIO`. Individual feature-level coefficients are
-   deliberately NOT rendered: ridge smears weight across correlated features,
-   so a single feature's number would not mean what it looks like it means
-   (see the honesty notes below). The full named-coefficient table ships in
-   the artifact's own ``coefficients.csv`` for anyone who wants the raw math.
-2. **Honesty notes** -- the caveats that keep this page from reading as a
-   discovered edge. The ``unpriced_predictive`` bucket is the one families
-   most resembling "a lead" fall into; its caption says "unconfirmed" out loud,
-   and nothing anywhere on the page implies profit or a stable edge.
-
-Sync/staleness discipline mirrors every other optional artifact on the public
-site: the run's ``provenance.feature_table.sha256`` is compared against the
-active model manifest's ``feature_table_sha256``. On a mismatch the numbers
-still render (they are real measurements) under a visible stale-inputs
-warning. A missing run omits the whole section quietly -- market-decomposition
-is optional and manual, so a fresh clone legitimately has nothing to show. A
-run that EXISTS but cannot be parsed renders a visible warning box instead of
-raising, because site generation must never break on an explanation artifact.
-
-Like :mod:`nfl_ats.model_ledger`, everything here is a pure reader/builder:
-this module never writes an artifact and never runs a scoring look.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -91,8 +53,6 @@ HONESTY_NOTES: tuple[tuple[str, str], ...] = (
 
 @dataclass(frozen=True)
 class FamilyExplanation:
-    """One row of the family-weight table, straight from ``classification.csv``."""
-
     family: str
     label: str
     margin_share: float
@@ -103,7 +63,6 @@ class FamilyExplanation:
 
     @property
     def stability_word(self) -> str:
-        """ "steady across refits" or "jumps around between refits"."""
 
         ratio = self._stability_ratio()
         return (
@@ -114,7 +73,6 @@ class FamilyExplanation:
 
     @property
     def stability_detail(self) -> str:
-        """Exact numbers behind the stability word, for the small print."""
 
         ratio = self._stability_ratio()
         return (
@@ -133,8 +91,6 @@ class FamilyExplanation:
 
 @dataclass(frozen=True)
 class ModelExplanation:
-    """Everything the section needs from one market-decomposition run."""
-
     run_directory: str
     created_at_utc: str | None
     feature_profile: str | None
@@ -148,7 +104,6 @@ class ModelExplanation:
 
 
 def _number(value: Any) -> float:
-    """Coerce an artifact cell to a float, treating NaN the same as missing."""
 
     try:
         result = float(value)
@@ -169,11 +124,6 @@ def _metadata_feature_table_sha256(metadata: dict[str, Any]) -> str | None:
 
 
 def _active_feature_table_sha256(artifacts_root: Path) -> str | None:
-    """The active manifest's feature-table hash, or ``None`` when unreadable.
-
-    An unreadable manifest is NOT a mismatch: no claim either way keeps the
-    section honest without inventing a staleness warning.
-    """
 
     path = artifacts_root / "active_ats_model.json"
     if not path.is_file():
@@ -200,14 +150,6 @@ def _parse_family_row(row: pd.Series) -> FamilyExplanation:
 
 
 def load_model_explanation(artifacts_root: Path) -> ModelExplanation | None:
-    """Newest parseable market-decomposition run, or ``None`` when absent.
-
-    Runs are tried newest-first; the first whose ``classification.csv`` parses
-    wins, so a torn newest write falls back to the previous complete run rather
-    than blanking the section. Callers distinguish "no run saved yet" (quiet
-    omission) from "a run exists but none parse" (visible warning) via
-    :func:`market_decomposition_run_count`.
-    """
 
     root = artifacts_root / "market_decomposition"
     directories = artifact_directories(root, "classification.csv")
@@ -264,13 +206,11 @@ def load_model_explanation(artifacts_root: Path) -> ModelExplanation | None:
 
 
 def market_decomposition_run_count(artifacts_root: Path) -> int:
-    """How many market-decomposition run directories exist at all."""
 
     return len(artifact_directories(artifacts_root / "market_decomposition", "classification.csv"))
 
 
 def render_model_explanation_section(explanation: ModelExplanation) -> str:
-    """The complete ``docs/models.html`` section HTML for one loaded run."""
 
     out = [
         '<div style="margin-top:40px;max-width:80ch;">',
@@ -372,13 +312,6 @@ _EXPLANATION_EMPTY_HTML = (
 
 
 def load_model_explanation_html(artifacts_root: Path) -> str:
-    """The rendered explanation section, FAIL-OPEN, for ``render_models_page``.
-
-    A missing run omits itself quietly (an honest empty-state note, since the
-    command is manual); a run that exists but never parses renders a visible
-    warning box instead of raising, mirroring
-    :func:`nfl_ats.public_board.load_model_ledger_html`.
-    """
 
     count = market_decomposition_run_count(artifacts_root)
     if count == 0:

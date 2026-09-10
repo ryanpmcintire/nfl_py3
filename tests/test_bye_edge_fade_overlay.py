@@ -1,24 +1,3 @@
-"""Bye-edge fade overlay (docs/bye_edge_fade_overlay.md).
-
-Four things are load-bearing here, mirroring
-``tests/test_surface_switch_tilt_overlay.py``'s structure and AGENTS.md's
-"add a leakage regression test for every new feature family" spirit:
-
-1. :func:`bye_edge_flag_by_game`'s flags are derived from data, not
-   hand-typed, read only structural schedule columns (never an outcome
-   column -- neither ``result`` nor ``spread_line`` is even in the required
-   set), and respect the frozen strict-bye threshold (``POST_BYE_GAP_DAYS =
-   12``) ported verbatim from ``scripts/bye_overvaluation_screen.py``.
-2. :func:`apply_bye_edge_fade_overlay` flips ONLY a pick that sits on the
-   strict-bye-holding side of a game where EXACTLY ONE team is off a strict
-   bye (both-off-bye and neither-off-bye games are never touched), respects
-   the REG-only gate, and is parameter-free.
-3. :func:`overlay_disclosure_note` states the flip count and matchups.
-4. :func:`record_bye_edge_fade_challenger_decisions` writes the overlay's
-   own picks to the prospective challenger ledger, dual-tracked and at no
-   rotation-registry window cost.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -95,7 +74,6 @@ def test_flag_fires_for_a_strict_12_day_gap() -> None:
 
 
 def test_flag_does_not_fire_for_an_11_day_gap() -> None:
-    """The strict threshold is >=12 days -- 11 days must NOT count."""
 
     flags = bye_edge_flag_by_game(_bye_schedule()).set_index("game_id")
     row = flags.loc["2026_04_ELEVENHOST_BYETEAM"]
@@ -110,7 +88,6 @@ def test_flag_fires_for_both_teams_off_a_strict_bye_simultaneously() -> None:
 
 
 def test_flag_is_false_for_a_teams_first_game_of_the_season() -> None:
-    """No preceding game this season -- gap is undefined (NaN) -- never a bye."""
 
     flags = bye_edge_flag_by_game(_bye_schedule()).set_index("game_id")
     row = flags.loc["2026_01_BYETEAM_OPP1"]
@@ -124,14 +101,6 @@ def test_flag_requires_its_schedule_columns() -> None:
 
 
 def test_flag_never_reads_outcome_columns() -> None:
-    """AGENTS.md: a leakage regression test for every new feature family.
-
-    ``bye_edge_flag_by_game`` does not even require/read
-    ``result``/``spread_line`` -- adding them (with arbitrary values) and
-    mutating them must never change the already-computed flags, proving the
-    derivation is purely structural (gameday gaps within each team's own
-    season), never outcome-based.
-    """
 
     schedule = _bye_schedule()
     schedule["result"] = 0.0
@@ -147,10 +116,6 @@ def test_flag_never_reads_outcome_columns() -> None:
 
 
 def test_flag_is_leak_safe_across_the_season_boundary() -> None:
-    """A future season's schedule data (even for the same team) must never
-    change an earlier season's already-computed flags -- and must never
-    reintroduce the fixed cross-season bug (docs/bye_overvaluation_screen.md,
-    "Correction 2026-08-22")."""
 
     schedule = _bye_schedule()
     baseline = bye_edge_flag_by_game(schedule)
@@ -189,7 +154,6 @@ def test_overlay_flips_a_pick_on_the_strict_bye_holding_side() -> None:
 
 
 def test_overlay_does_not_flip_a_both_off_bye_game() -> None:
-    """Both-off-bye games are never touched -- the null-control case."""
 
     result = apply_bye_edge_fade_overlay(_predictions(), _bye_schedule())
     assert all(flip.game_id != "2026_03_TWELVEHOST_BYETEAM" for flip in result.flips)
@@ -200,7 +164,6 @@ def test_overlay_does_not_flip_a_both_off_bye_game() -> None:
 
 
 def test_overlay_does_not_flip_when_neither_side_is_off_a_strict_bye() -> None:
-    """An 11-day gap is not a strict bye -- neither side is flagged."""
 
     result = apply_bye_edge_fade_overlay(_predictions(), _bye_schedule())
     assert all(flip.game_id != "2026_04_ELEVENHOST_BYETEAM" for flip in result.flips)
@@ -211,8 +174,6 @@ def test_overlay_does_not_flip_when_neither_side_is_off_a_strict_bye() -> None:
 
 
 def test_overlay_does_not_flip_when_the_pick_is_not_on_the_bye_side() -> None:
-    """The flip only fires when the model's own pick sits on the bye-holding
-    side -- a pick already on the non-bye side is left untouched."""
 
     predictions = _predictions()
     predictions.loc[
@@ -228,8 +189,6 @@ def test_overlay_does_not_flip_when_the_pick_is_not_on_the_bye_side() -> None:
 
 
 def test_overlay_leaves_postseason_games_untouched() -> None:
-    """Same flagged shape as the flipped clean case, but POST season -- the
-    REG-only gate blocks it."""
 
     result = apply_bye_edge_fade_overlay(_predictions(), _bye_schedule())
     assert all(flip.game_id != "2026_20_POSTHOST_BYETEAM" for flip in result.flips)
@@ -257,10 +216,6 @@ def test_overlay_disabled_is_a_no_op() -> None:
 
 
 def test_overlay_changes_only_home_cover_probability_on_flipped_rows() -> None:
-    """Additivity: every other column, and every untouched row, stays
-    byte-identical -- the pick-level design's whole point. Also proves 'no
-    effect outside the flagged population': only the one XOR-flagged,
-    pick-on-bye-side game moves."""
 
     predictions = _predictions()
     result = apply_bye_edge_fade_overlay(predictions, _bye_schedule())
@@ -447,9 +402,6 @@ def test_record_bye_edge_fade_challenger_refuses_an_inactive_registration(
 
 
 def test_bye_edge_fade_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS,
-    and (via the FINGERPRINT block quoted in the task brief) the real active
-    model's own configuration."""
 
     metadata = {
         "ats_method": "market_residual",

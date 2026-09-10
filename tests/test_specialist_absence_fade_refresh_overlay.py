@@ -1,25 +1,3 @@
-"""Specialist (long-snapper/punter) absence fade refresh-path challenger
-(LEAD-17, docs/schedule_flag_battery.md "Wave 7").
-
-Mirrors ``tests/test_crew_tilt_refresh_overlay.py``'s structure (the refresh-
-path precedent this module follows): a pure ``RefreshResult`` -> rows
-computation, FAIL-OPEN on every missing-data path, opt-in recording, and a
-registration self-consistency check against the TRACKED registry.
-
-Load-bearing here:
-
-1. :func:`live_specialist_out_qualifying` -- the deliberate, disclosed
-   deviation from ``roster_availability_flag_features.weekly_specialist_out_qualifying``:
-   no season cap.
-2. :func:`build_specialist_absence_fade_refresh_rows` -- fades the team
-   missing its LS/P (backs the opponent), leaves a both-out or neither-out
-   game at the incumbent pick, and is FAIL-OPEN when no injury snapshot
-   exists or none resolves for the exact (season, week).
-3. :func:`record_specialist_absence_fade_refresh_overlay` -- opt-in
-   recording, anti-backdating via the week's ORIGINAL card kickoffs, never
-   touches ``pick_revisions.parquet`` or the published card.
-"""
-
 from __future__ import annotations
 
 import json
@@ -461,8 +439,6 @@ def test_registered_challenger_fingerprint_is_stable() -> None:
 
 
 def test_registration_names_the_refresh_recording_path() -> None:
-    """The specialist-fade arm is late-refresh only, never a Tuesday publish
-    recorder -- its source postdates the Tuesday lock."""
 
     entry = _registered_entry()
     assert "publish-predictions --record-decisions" not in entry["weekly_recording_command"]

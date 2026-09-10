@@ -2,11 +2,10 @@
 
 The pool breaks ties on the final score of the week's last game
 (`src/nfl_ats/tiebreaker.py`'s module docstring; owner, 2026-09-01). This
-document covers the 2026-09-05 consistency fix, prompted by the owner
-verbatim: "our project over/under total needs to line up with our spread
-prediction. otherwise something is clearly wrong/out of sync" -- and, once
-the fix was under way, "if our spread prediction disagrees with the total
-prediction, we need to understand why we dont have a unified model."
+document covers the 2026-09-05 consistency fix, prompted by the owner:
+the projected over/under total has to line up with the spread prediction,
+otherwise something is out of sync -- and, once the fix was under way, the
+question of why there is no unified model when the two disagree.
 
 ## The bug
 

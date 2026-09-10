@@ -140,9 +140,6 @@ def test_official_path_nets_against_the_opponents_own_injury_news() -> None:
 
 
 def test_official_path_a_preexisting_designation_with_no_update_contributes_zero() -> None:
-    """A player already on the Tuesday-noon report, with no NEWER row, is not
-    double-counted as fresh news -- the outer-merge finds the SAME row on
-    both sides of the cutoff."""
 
     injuries = _injuries_frame(
         [
@@ -167,9 +164,6 @@ def test_official_path_a_preexisting_designation_with_no_update_contributes_zero
 
 
 def test_official_path_a_genuine_midweek_worsening_is_captured() -> None:
-    """Same player, two rows: Probable before Tuesday noon, Doubtful after --
-    the as-of-cutoff logic must pick up the LATER row for the "now" read and
-    the EARLIER row for the Tuesday read."""
 
     injuries = _injuries_frame(
         [
@@ -197,10 +191,6 @@ def test_official_path_a_genuine_midweek_worsening_is_captured() -> None:
 
 
 def test_official_path_signal_is_zero_before_any_post_tuesday_filing_lands() -> None:
-    """A refresh pass run AT Tuesday noon itself (before Wed-Fri filings
-    exist) must read zero signal -- the front-running sketch's core premise:
-    quiet until real news lands, never a false positive from the frozen
-    baseline itself."""
 
     injuries = _injuries_frame(
         [_injury_row(team="TST", gsis_id="p1", report_status="Out", date_modified=WED_MORNING)]
@@ -627,8 +617,6 @@ def test_record_appends_both_arms_and_disagreement_metadata(
 def test_record_is_append_only_across_multiple_refresh_passes(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """Repeated passes across a week legitimately append MULTIPLE rows per
-    game -- deliberately not deduped (see module docstring)."""
 
     artifacts_root = tmp_path / "artifacts"
     data_root = tmp_path / "data"

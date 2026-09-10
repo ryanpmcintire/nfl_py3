@@ -33,7 +33,6 @@ def _last_json(output: str) -> dict[str, Any]:
 
 
 def _write_data_root(tmp_path: Path) -> Path:
-    """A data root with a raw snapshot manifest and the two production manifests."""
 
     data_root = tmp_path / "data"
     raw = data_root / "raw" / "20260812T130036Z"
@@ -84,8 +83,6 @@ def _write_active_model(artifacts_root: Path, *, season: int, week: int, status:
 
 
 class _Recorder:
-    """Step runner that records argv and returns canned per-command payloads."""
-
     def __init__(self, **outputs: dict[str, Any]) -> None:
         self.commands: list[list[str]] = []
         self.outputs = outputs
@@ -382,7 +379,6 @@ def test_player_arrests_ingest_failure_aborts_before_publish(tmp_path: Path) -> 
 
 
 def test_abort_on_desync_never_publishes(tmp_path: Path) -> None:
-    """The manifest still says SYNCHRONIZED, but it points at last week's card."""
 
     data_root = _write_data_root(tmp_path)
     artifacts_root = tmp_path / "artifacts"
@@ -474,12 +470,6 @@ def test_step_failure_names_the_step_and_stops_the_run(tmp_path: Path) -> None:
 
 
 def test_an_aborted_run_carries_its_partial_summary_on_the_error(tmp_path: Path) -> None:
-    """The lock-day decision package is written from a ``finally`` and takes
-    whatever ``summary`` the caller holds, which on an abort was the empty
-    dict initialised before the run. The 2026-09-08 lock therefore left a
-    package with ``run_summary: null``: the one artifact that exists to
-    explain a lock day could not name the step that failed. The partial
-    summary now travels on the exception."""
 
     data_root = _write_data_root(tmp_path)
 
@@ -517,13 +507,6 @@ def test_an_aborted_run_carries_its_partial_summary_on_the_error(tmp_path: Path)
 def test_the_card_path_follows_the_active_profile_instead_of_reverting_it(
     tmp_path: Path,
 ) -> None:
-    """A promotion made outside weekly-run must not be silently undone.
-
-    ``margin-predict`` activates whatever profile step 4 just evaluated, and
-    ``assert-synchronized`` cannot catch a revert because the reverted model
-    still points at the right season/week. So the card path reads the ACTIVE
-    profile and builds that, rather than a hardcoded one.
-    """
 
     data_root = _write_data_root(tmp_path)
     artifacts_root = tmp_path / "artifacts"
@@ -561,7 +544,6 @@ def test_the_card_path_follows_the_active_profile_instead_of_reverting_it(
 def test_an_unknown_active_profile_is_fatal_rather_than_guessed(
     tmp_path: Path,
 ) -> None:
-    """Guessing a feature table would reintroduce the revert this prevents."""
 
     data_root = _write_data_root(tmp_path)
     artifacts_root = tmp_path / "artifacts"
@@ -704,10 +686,6 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
 def test_record_decisions_defaults_to_false_and_does_not_reach_either_ledger(
     tmp_path: Path,
 ) -> None:
-    """The safe default: neither step 7's publish nor step 10's challenger
-    record is told to write anywhere. This is the guard for the 2026-08-18
-    incident (docs/prospective_evidence.md, 'Known divergence') -- an
-    ordinary/rehearsal weekly-run must not be able to reach either ledger."""
 
     data_root = _write_data_root(tmp_path)
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
@@ -799,8 +777,6 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
 def test_an_optional_step_failure_is_reported_but_never_aborts_the_run(
     tmp_path: Path,
 ) -> None:
-    """The card is already published by step 8; losing a week of research
-    evidence must not take the published card's run down with it."""
 
     data_root = _write_data_root(tmp_path)
     artifacts_root = tmp_path / "artifacts"
@@ -834,9 +810,6 @@ def test_an_optional_step_failure_is_reported_but_never_aborts_the_run(
 
 
 def test_final_json_document_parses_a_summary_prefixed_by_progress_lines() -> None:
-    """The exact production shape that aborted the rehearsal:
-    scripts/ingest_player_arrests.py prints ``Fetched page N/M`` and a
-    snapshot-dir line to stdout, THEN its manifest as indent=2 JSON."""
 
     manifest = {"snapshot_id": "20260824T110928Z", "pages": 56}
     stdout = (
@@ -864,8 +837,6 @@ def test_final_json_document_takes_the_last_of_several_documents() -> None:
 def test_cli_runner_survives_a_handler_that_prints_progress_before_its_json(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """End-to-end through the captured-stdout path: an ingester handler whose
-    fresh fetch prints progress lines must still yield one parseable summary."""
 
     class _Args:
         @staticmethod
@@ -884,8 +855,6 @@ def test_cli_runner_survives_a_handler_that_prints_progress_before_its_json(
 
 
 def test_cli_runner_fails_loudly_when_stdout_has_no_json_at_all() -> None:
-    """Progress output with NO trailing JSON document is fatal with a clear
-    error naming the capture -- never a silent {} success."""
 
     stdout = "Fetched page 1/56\nFetched page 2/56\n"
 

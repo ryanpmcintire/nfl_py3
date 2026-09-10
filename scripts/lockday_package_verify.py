@@ -1,27 +1,3 @@
-"""Recompute every digest a lock-day decision package claims (ENG-01).
-
-This is the "independently readable" half of the package contract. Point it at
-a package folder (or its ``manifest.json``) and it re-hashes the manifest
-against its sibling ``manifest.sha256`` and every entry in ``hashed_files``::
-
-    uv run --no-sync python scripts/lockday_package_verify.py \\
-        artifacts/lockday_packages/2026_wk01_20260908T160000Z
-
-Ledger entries are marked ``mutable`` in the manifest: the ledgers are
-append-only and later in-week refresh passes legitimately add rows to them, so
-a changed ledger is REPORTED and is never a failure. Every other file must
-match byte for byte.
-
-``artifacts/`` is gitignored and local-disk-only, so a file that has since been
-cleaned away is reported as ``missing`` without failing the check. Pass
-``--strict`` to require every file that WAS hashed at write time to still
-exist. Entries with no digest at all -- a ledger this lock never wrote, a file
-over the size cap -- are listed under ``unhashed`` and are fatal in neither
-mode: the package claimed nothing about them.
-
-Exit code is 0 only when the package verifies.
-"""
-
 from __future__ import annotations
 
 import argparse

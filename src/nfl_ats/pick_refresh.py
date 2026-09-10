@@ -1,200 +1,3 @@
-"""Late-week pick-refresh flow (POL-11): editable picks, frozen grading lines.
-
-The pool's rule, confirmed by the owner 2026-08-20, is simpler than the
-project had been assuming: **pool picks are editable up to each game's own
-kickoff; only the grading LINES freeze at the Tuesday lock.** That is a real,
-previously-unused edge -- a Friday injury designation or a kickoff-nearest
-weather forecast can inform a pick that the frozen Tuesday line never had a
-chance to price -- and this module is the second, opt-in step that spends it.
-
-Two invariants make this safe rather than a way to quietly rewrite history:
-
-1. **Grading is always against the frozen Tuesday line.** ``refresh-picks``
-   recomputes the active model's probability with CURRENT features (current
-   injury designations, current weather, current everything upstream of the
-   spread), but always scores that recompute at the ORIGINAL card's spread
-   line -- never at whatever the line has since become. The "original card"
-   is read from the paper-decision ledger
-   (:func:`nfl_ats.clv.load_paper_decisions`), not from a re-read of the
-   linked weekly-forecast artifact, because the ledger is the one place in
-   this codebase already proven to survive a same-week republish without its
-   anchor moving (``nfl_ats.clv.record_paper_decisions``: "a republished card
-   with a moved line never rewrites the CLV anchor"). A game with no recorded
-   original line can never be refreshed -- fail closed for that game, not a
-   silent fallback to whatever line the current feature table happens to
-   carry.
-2. **Every revision is an append-only, timestamped, kickoff-guarded row.**
-   Nothing already written -- the Tuesday card, an earlier revision -- is
-   ever rewritten in place. A game whose deadline has passed (see below) is
-   never revised, enforced here in code, not left to caller discipline.
-
-Per-game deadline, not one weekly pass
----------------------------------------
-Thursday games exist, so "the week's refresh" cannot be a single Tuesday-to-
-Sunday pass with one shared cutoff. Two owner directives (2026-08-20) pin the
-exact rule:
-
-* A pick may change up until its OWN game's kickoff.
-* But nothing may change after **Sunday 4:00 PM ET** of that week, even for
-  games that kick off later (SNF, MNF) -- so Sunday/Monday-night picks lock
-  early, at the same moment as the rest of the week, not at their own
-  kickoff.
-
-Both hold at once, so the real per-game deadline is
-``min(game_kickoff, sunday_16_00_et_of_that_week)`` (:func:`pick_deadline`,
-:func:`sunday_pick_lock`). One consequence worth remembering whenever this
-channel's evidence gets read later: a Thursday-night pick gets at most a
-Tuesday-to-Thursday information window, while a Sunday or Monday pick can use
-everything through Sunday afternoon -- the channel's information depth is not
-uniform across a week's games.
-
-Overlays
---------
-Tuesday's paper ledger stores the final played side and the four production
-members' frozen flags. A refresh refits the raw model at the frozen Tuesday
-line, complements it once when any frozen member fired, and only then applies
-the observed-movement policy. It never reloads or recomputes coach, division
-revenge, player-arrest, or spread-gap inputs, so a later source revision cannot
-retroactively change the Tuesday information set. See
-``docs/late_week_refresh.md`` for the reasoning.
-
-Lattice reads at the frozen line (MOD-18, 2026-09-08)
------------------------------------------------------
-The Tuesday card reads two quantities off the week's key-number lattice
-(``docs/discrete_push_read.md``, ``docs/key_line_pick_read.md``): the
-cover / push / loss split on every served game, and, on a game whose line
-sits exactly on an atom (3 or 7), the pick-deciding two-way probability.
-``margin-predict`` applies them in a fixed order -- home-side offset, then
-the discrete split, then the key-line pick read, then the decision columns
-(``nfl_ats.outcomes._score_methods``) -- and the refresh frame reproduces
-that order exactly (:func:`_served_lattice_reads`), so the frame a refresh
-plans from never carries a lattice pick beside a smooth split.
-
-**The atom test is keyed to the FROZEN Tuesday line, never the current
-one.** The refit replaces the feature table's current ``spread_line`` with
-the ledger's ``decision_home_spread`` before any lattice read runs, so a
-game quoted 3 on Tuesday stays touched on Sunday even if the market has
-since moved it to 3.5, and a game that has since drifted ONTO 3 stays
-untouched. That is the only reading consistent with invariant 1 above: the
-pool grades at the frozen line, so the line the read conditions on is the
-frozen line.
-
-A pre-promotion card (no served sidecar) refits with the smooth split and
-the smooth pick, byte-identical to the historical refit. When the sidecars
-say the lattice served the card but it cannot be rebuilt now, the served
-split and the served pick are restored verbatim from the sidecars (the
-policy degrades to "keep Tuesday's numbers", never to "silently drop
-them").
-
-Consensus-movement rule, retired from the served chain (2026-09-10)
--------------------------------------------------------------------
-``MOVEMENT_POLICY_MOVEMENT`` -- follow the pool's own captured consensus
-line once it has moved at least ``MOVEMENT_POLICY_THRESHOLD`` since the
-frozen Tuesday number -- no longer governs any served pick. Measured on the
-whole served chain over 2023-2025, 799 opener-graded games in 54 weeks
-(``docs/served_refresh_card.md``), it costs -1.627 accuracy points through
-the chain (``probability_positive`` 0.041), and dropping it while keeping
-every other step scores 57.947%, +2.003 over the served chain, week-blocked
-[+0.126, +3.865], ``probability_positive`` 0.9816.
-
-The mechanism, which is what retires it: on the picks each rule changes the
-leader-median follow goes 38-26 while this one goes 30-43; both fire on 179
-of the same games and disagree on 21, so it is largely a diluted, later echo
-of the move the three leading books already priced, and reading the same
-money twice is what costs the points. Nothing is closed -- the cell stays
-``unresolved_below_power`` -- and the rule keeps recording as the paired
-challenger ``consensus_movement_1_0_off_incumbent``
-(:mod:`nfl_ats.consensus_movement_refresh_overlay`), whose arm is the served
-pick with the rule still applied. :func:`current_captured_home_spread` still
-runs on every pass and ``consensus_delta`` / ``consensus_pick_side`` stay on
-every ledger row.
-
-Promoted late-week follow (MKT-15, leader median at a full point, 2026-09-09)
-----------------------------------------------------------------------------
-A second, separately predeclared market arm takes precedence over the
-1.0-point rule above: the MEDIAN Wednesday-to-deadline net move across the
-three leading books (``sharp_book_movement_features.LEADER_BOOKS``: Bovada,
-William Hill, MyBookie) follows the market at
->=``leader_follow_threshold(decision_home_spread)`` points -- 1.0 below a
-10.5-point line and 0.5 at or above it
-(``LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY``). The gate moved from 0.5 to 1.0
-on the evidence in ``docs/follow_threshold_live_card.md``: on the played
-nine-member card the leaders' sub-point drift LOSES the picks it reverses
-(the market side wins 42-46% of them) while moves of a full point or more
-WIN them (52-59%), and the leader median lives on a half-point lattice, so
-the retired 0.5 gate bought only the losing band. On spreads of 10.5 or more
-the gate is half a point again since 2026-09-10
-(``docs/follow_threshold_by_line.md``'s T3 arm: +0.25
-accuracy points over the flat 1.0 through the played card,
-``probability_positive`` 0.79 week-blocked and 0.98 season-blocked, positive
-or level in all three seasons, 6 picks changed in 799), because a big-spread
-market move is the strongest single signal on the board while the same half
-point on a pick'em is noise. The flat 1.0 arm and the half-point arm both keep
-recording as paired OFF challengers on the follow ledger; the equal-book
-arm stays at its own ``sharp_book_movement_features.THRESHOLD`` so the two
-challengers remain comparable game for game. It runs on the live intraday
-archive only (read-only, fail-open), shares its exact computation with the
-paired equal-book arm the ``late_week_move_follow_refresh_v1`` challenger
-ledger records (one call to ``late_week_follow_frame`` returns all three),
-and every ledger row keeps both arms' evidence (``late_week_*`` and
-``consensus_*``) beside the governing ``movement_policy`` and the
-``model_only_pick_side`` counterfactual. Since 2026-09-10 it is the only
-market rule that can govern a served pick. See
-``docs/late_week_refresh.md``'s promotion section.
-
-Injury-news veto on the follow (F3p, docs/follow_news_gate.md)
--------------------------------------------------------------
-Inside the follow branch, and never below it: when the leaders' move fires
-but injury news first observable after that week's Tuesday noon and before
-the pick deadline points AGAINST the move -- the team the market moved
-TOWARD is the one whose skill-position injury situation just got worse --
-the market side is discarded and the Tuesday pick stands
-(``LATE_WEEK_FOLLOW_NEWS_VETO_POLICY``). Measured on the played card, the
-veto is worth +1.13 accuracy points over following every move
-(``probability_positive`` 0.83): confirmed moves are worth +3.2 and
-contradicted ones -4.4. The reader is
-``injury_signal_refresh_tilt.follow_news_for_game`` -- the official report
-when that season's rows carry a real timestamp, the ProFootballTalk headline
-archive when they do not -- and it is fail-open everywhere: no reading is
-never a veto. A vetoed game counts as "the follow fired" for precedence, so
-it never falls through to the handle or rookie-crew steps, which is how it
-was measured. The un-vetoed side stays on every row as
-``movement_pick_side``, the paired OFF challenger.
-
-Heavy-handle follow (H1, owner order 2026-09-09)
-------------------------------------------------
-A third served step sits STRICTLY BELOW the follow rule above: from
-Saturday 12:00 ET of that week, when the follow rule did not fire and the
-latest pre-pass public-betting capture puts at least
-``HANDLE_FOLLOW_MONEY_THRESHOLD`` percent of a game's spread money on the
-side the pick is NOT on, the pick switches to the money's side. Heavy handle
-is largely the cause of the line move the follow rule already read, so
-applying it on top would count the same money twice; it may only apply where
-the follow rule was silent. The reading comes from
-:func:`nfl_ats.public_betting_live.load_latest_public_handle` (read-only,
-fail-open: no store, no capture before this pass, or no row for this game
-keeps the pick), and Thursday and Wednesday games never see one, because
-both weekend captures land after their kickoffs. Every revision row keeps the
-pre-rule pick and the money/ticket numbers the decision was made on
-(``handle_*``). See ``docs/handle_follow_on_card.md`` for the measurement and
-``docs/late_week_refresh.md``'s handle section for the served rule.
-
-Served rookie-crew step (2026-09-09, docs/rookie_crew_reconciliation.md)
------------------------------------------------------------------------
-Below the follow rule sits ``ROOKIE_CREW_POLICY``: on a game whose published
-Wednesday crew assignment names a head referee with at most one prior season in
-the archive-extended officials table, the served side comes from a refresh-time
-refit on profile ``weak_stack_rookie_crew_underdog`` -- the exact feature build
-that measured +0.133 accuracy points on the played nine-member card,
-``probability_positive`` 0.790, six changed picks over 2020-2025. It governs
-only when the follow rule is silent and only when the refit's side differs
-from the model-only side; the OFF arm is the ``model_only_pick_side`` column that
-every ledger row already carries, registered as the paired challenger
-``rookie_crew_underdog_off_incumbent``. Fails open to the model-only side on a
-missing assignment, a snapshot past every game's deadline, a week with no
-rookie crew, or an unavailable refit.
-"""
-
 from __future__ import annotations
 
 import json
@@ -263,13 +66,6 @@ SUNDAY_PICK_LOCK_LOCAL_TIME = time(16, 0)
 
 
 def sunday_pick_lock(kickoffs: pd.Series) -> pd.Timestamp:
-    """The week-wide Sunday 4:00 PM ET pick-lock instant, in UTC.
-
-    Anchored on the MODE Tue..Mon cycle Sunday among the supplied kickoffs
-    (mirrors ``nfl_ats.odds_backfill.plan_backfill``'s own anchor selection),
-    so one isolated Tuesday/Wednesday reschedule cannot shift the week's
-    lock instant.
-    """
 
     valid = pd.to_datetime(kickoffs, utc=True, errors="coerce").dropna()
     if valid.empty:
@@ -289,10 +85,6 @@ PRODUCTION_COMPOSITION_POLICY_IDS: tuple[str, ...] = (
 
 
 def pick_deadline(kickoff: pd.Timestamp, sunday_lock: pd.Timestamp) -> pd.Timestamp:
-    """One game's real pick deadline: the earlier of its own kickoff and the
-    week-wide Sunday 4:00 PM ET lock -- so SNF/MNF picks lock early, and a
-    Thursday game's own kickoff (always earlier than that Sunday) is
-    untouched by the Sunday rule."""
 
     return min(kickoff, sunday_lock)
 
@@ -325,13 +117,6 @@ HANDLE_READING_LOCAL_TIME = time(12, 0)
 
 
 def handle_reading_opens(sunday_lock: pd.Timestamp) -> pd.Timestamp:
-    """Saturday 12:00 ET of the week whose Sunday 4:00 PM ET lock is given.
-
-    The two capture jobs run Saturday and Sunday at noon ET, so no pass
-    before this instant can hold a reading for its own week; gating on the
-    clock as well as on the data keeps a Thursday or Saturday-morning pass
-    from silently reusing the previous week's capture.
-    """
 
     saturday = sunday_lock.tz_convert(PICK_LOCK_TIMEZONE).date() - timedelta(days=1)
     local = datetime.combine(saturday, HANDLE_READING_LOCAL_TIME, tzinfo=PICK_LOCK_TIMEZONE)
@@ -345,15 +130,6 @@ ROOKIE_CREW_REASON = "The officiating crew is new this season."
 
 
 def _movement_side(delta: float) -> str:
-    """The side the market moved toward: HOME if the home spread rose, else AWAY.
-
-    Reuses ``scripts/observed_movement_channel.py``'s ``_threshold_pick`` sign
-    logic verbatim: ``delta > 0`` (the home-oriented spread number increased,
-    i.e. the market moved toward home) picks HOME, everything else (including
-    an exact tie) picks AWAY. Since 2026-09-10 its answer reaches no served
-    pick: it labels the recorded ``consensus_pick_side`` evidence and the
-    retired rule's paired challenger arm.
-    """
 
     return "HOME" if delta > 0.0 else "AWAY"
 
@@ -361,53 +137,6 @@ def _movement_side(delta: float) -> str:
 def current_captured_home_spread(
     data_root: Path, *, now: pd.Timestamp
 ) -> tuple[dict[str, float], dict[str, Any]]:
-    """The latest LOCALLY CAPTURED market home spread per game, read-only.
-
-    Reuses the exact adapter this project's scheduled capture already
-    populates -- ``scripts/odds_capture.ps1`` (Task Scheduler) runs
-    ``nfl-ats odds-ingest`` several times each morning
-    (``docs/ops_runbook.md``: "the scheduled live odds captures land"
-    ~06:00-09:00 ET), which writes through
-    ``nfl_ats.market_data.write_market_snapshot`` into
-    ``data_root/market/raw`` -- the SAME directory the historical
-    ``odds-backfill`` executor also writes into. This function never
-    triggers a live fetch itself: it only reads what is already committed
-    there, via ``nfl_ats.market_data.load_quote_history`` /
-    ``spread_consensus`` -- the IDENTICAL "current line" read
-    ``nfl_ats.best_pick_nomination.week_dispersion_pool`` already uses for
-    exactly the reason stated there ("never calls the odds API"), and the
-    same one the ``odds-summary`` CLI command surfaces to a human. This
-    mirrors ``nfl_ats.clv.predict_close_for_week``'s own read-only design
-    (it raises ``ClosePredictionUnavailable`` rather than fetching on
-    demand) -- ``refresh-picks`` is a scheduled/on-demand pipeline step, not
-    a place that should spend API quota or make a network call on every
-    invocation.
-
-    Sign convention: the returned home spread is read from the SAME
-    ``home_spread_line`` column (median across books, latest pre-kickoff
-    quote per book) that ``tue_open_home_spread`` / ``close_home_spread``
-    are built from throughout ``nfl_ats.clv`` -- the identical home-favorite-
-    negative convention ``nfl_ats.clv.opener_pick_evaluation`` already
-    relies on when it compares those columns directly against nflverse-
-    sourced results. Subtracting this value from ``decision_home_spread``
-    (also that same convention -- see :func:`original_card`) reuses that
-    established pairing rather than a new one.
-
-    "Fresh" means the newest quote's ``observed_at_utc`` across the WHOLE
-    local store falls on the same America/New_York calendar date as ``now``.
-    Historical-backfill snapshots (written under the same
-    ``data_root/market/raw`` tree) carry the REQUESTED historical timestamp
-    as ``observed_at_utc``, not the time they were actually fetched
-    (``nfl_ats.odds_backfill``), so they can never masquerade as "today" --
-    this simple, store-wide check is equivalent in practice to filtering for
-    the scheduled live captures specifically, without a second read path.
-
-    Returns ``({}, metadata)`` -- an EMPTY mapping, never a partial or stale
-    one -- whenever the store is empty or its newest quote is not from today;
-    ``metadata["fresh"]`` is ``False`` and ``metadata["reason"]`` names why.
-    Callers MUST fail open on an empty mapping (recompute with the model
-    only), never raise.
-    """
 
     market_root = data_root / "market" / "raw"
     quotes = load_quote_history(market_root)
@@ -511,7 +240,6 @@ def pick_revision_ledger_path(artifacts_root: Path) -> Path:
 
 
 def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
-    """The append-only pick-revision ledger (empty frame when none exists)."""
 
     path = pick_revision_ledger_path(artifacts_root)
     if not path.is_file():
@@ -562,15 +290,6 @@ def describe_week_revisions(
     season: int | None,
     week: int | None,
 ) -> tuple[str, ...]:
-    """One plain sentence per late-week-refreshed game (UI-17).
-
-    ``games`` is ``(game_id, away_team, home_team)`` triples for the
-    published card. Only the latest revision per game in THIS
-    season/week is reported; revisions for other weeks or unknown games
-    are skipped, never interpolated. Every number below comes straight
-    off the ledger row, so the assistant's numeric guard holds by
-    construction.
-    """
 
     if revisions.empty or season is None or week is None:
         return ()
@@ -625,17 +344,6 @@ def describe_week_revisions(
 
 
 def original_card(artifacts_root: Path, *, season: int, week: int) -> pd.DataFrame:
-    """The frozen Tuesday card for one week: recorded lines, picks, kickoffs.
-
-    Sourced from :func:`nfl_ats.clv.load_paper_decisions` -- the append-only
-    paper-decision ledger written by ``publish-predictions
-    --record-decisions`` -- rather than the active model's linked weekly-
-    forecast artifact, because the ledger is what already survives a
-    same-week republish without its ``decision_home_spread`` anchor moving.
-    Empty when this week was never recorded (no ``--record-decisions`` run
-    happened yet); callers must treat that as "nothing to refresh," not fill
-    in a substitute line.
-    """
 
     ledger = load_paper_decisions(artifacts_root)
     if ledger.empty:
@@ -655,11 +363,6 @@ MODEL_CONFIGURATION_KEYS = (
 
 
 def model_configuration(manifest: Mapping[str, Any]) -> dict[str, Any]:
-    """The configuration half of a model identity: everything in
-    ``activate_matching_ats_model``'s ``model_identity`` except the feature
-    table digest and the evaluation configuration, which change whenever the
-    data is refreshed. Accepts both the active manifest (``method``) and a
-    forecast's ``metadata.json`` (``ats_method``)."""
     method = manifest.get("method", manifest.get("ats_method"))
     ridge_alpha = manifest.get("ridge_alpha")
     return {
@@ -681,9 +384,6 @@ def model_configuration(manifest: Mapping[str, Any]) -> dict[str, Any]:
 def recorded_card_configuration(
     artifacts_root: Path, original: pd.DataFrame
 ) -> dict[str, Any] | None:
-    """The model configuration the recorded Tuesday card was produced under,
-    read from each recorded row's ``forecast_artifact`` metadata. ``None``
-    (fail closed) when any artifact is missing or the rows disagree."""
     if "forecast_artifact" not in original.columns:
         return None
     configurations: list[dict[str, Any]] = []
@@ -709,15 +409,12 @@ def _utc(instant: datetime | None) -> pd.Timestamp:
 
 
 def _published_pick_side(original: pd.DataFrame) -> pd.Series:
-    """The final Tuesday-published side already frozen in the paper ledger."""
 
     return original.set_index("game_id")["pick_side"].astype(str)
 
 
 @dataclass(frozen=True)
 class RefreshedGame:
-    """One game's refreshed read, whether or not it ends up changing."""
-
     game_id: str
     home_team: str
     away_team: str
@@ -766,8 +463,6 @@ class RefreshedGame:
 
 @dataclass(frozen=True)
 class RefreshResult:
-    """Everything one ``refresh-picks`` computation produced, unwritten."""
-
     season: int
     week: int
     refresh_run_id: str
@@ -796,21 +491,6 @@ class RefreshResult:
 def _active_model_config(
     artifacts_root: Path,
 ) -> tuple[dict[str, Any], str, MarginFeatureProfile, str, float, ResidualSmoothingMethod]:
-    """Load and validate the active model identity, or fail closed.
-
-    Mirrors ``nfl_ats.weekly.assert_synchronized``'s spirit: refresh-picks
-    must recompute under the EXACT model identity the Tuesday card (and the
-    lines it froze) were produced under, never a silently different one.
-    Validates ``feature_profile`` against the full
-    ``nfl_ats.margin.MARGIN_FEATURE_PROFILES`` set (what
-    ``fit_margin_models_for_week`` actually accepts), NOT against
-    ``nfl_ats.weekly.CARD_PATH_TABLES``'s narrower "player"/"weak_stack"
-    allowlist -- that allowlist exists so weekly-run knows which BUILD
-    command produces a profile's table, which is irrelevant here: this
-    module only ever READS an already-built table, and consults
-    ``CARD_PATH_TABLES`` in :func:`plan_refresh` purely as a default-path
-    convenience when ``--features`` is not given explicitly.
-    """
 
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -848,20 +528,6 @@ def _late_week_follow_lookup(
     sunday_lock: pd.Timestamp,
     now: pd.Timestamp,
 ) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
-    """The served MKT-15 leader-median follow arm's per-game evidence, fail-open.
-
-    Runs :func:`late_week_follow_frame` -- the one call that returns both the
-    served leader-median arm (Wednesday-to-deadline net increments across the
-    three leading books, followed at that game's own
-    :func:`leader_follow_threshold`, Tuesday-anchored, Sunday evidence
-    excluded) and the equal-book arm the paired
-    ``late_week_move_follow_refresh_v1`` challenger records -- against the same
-    Tuesday card, so the served pick and the challenger ledger agree by
-    construction. Anything missing or unusable -- no live intraday archive,
-    no pre-deadline book changes, an unreadable store -- returns an empty
-    lookup (the arm is unavailable and the existing consensus/model-only
-    logic stands), never raises into the refresh pass.
-    """
 
     def _unavailable(reason: str, refused: int = 0) -> tuple[dict, dict[str, Any]]:
         return {}, {
@@ -975,13 +641,6 @@ def _follow_news_veto_lookup(
     week: int,
     now: pd.Timestamp,
 ) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
-    """The F3p injury-news reading on every game the served follow fires, fail-open.
-
-    Only firing games are read, because the veto can only ever discard a move
-    the follow rule is about to make. Anything missing -- no injury snapshot,
-    no headline archive, an unreadable store -- returns an empty lookup, and
-    an empty lookup never vetoes anything.
-    """
 
     from nfl_ats.injury_signal_refresh_tilt import follow_news_for_game, load_news_sources
 
@@ -1060,13 +719,6 @@ def _handle_follow_lookup(
     sunday_lock: pd.Timestamp,
     now: pd.Timestamp,
 ) -> tuple[dict[str, HandleReading], dict[str, Any]]:
-    """This week's money split per game, gated to weekend passes, fail-open.
-
-    Returns an empty lookup before Saturday 12:00 ET of that week -- the
-    first instant a capture for this slate can exist -- and whenever the
-    store cannot answer, so the pass proceeds exactly as it did before this
-    rule existed.
-    """
 
     opens = handle_reading_opens(sunday_lock)
     if now < opens:
@@ -1111,21 +763,6 @@ def _rookie_crew_lookup(
     probability_method: ResidualSmoothingMethod,
     center_offset: np.ndarray | None,
 ) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
-    """The reconciled rookie-crew rule's would-be side per game, fail-open.
-
-    The rule is ``docs/rookie_crew_reconciliation.md`` Part 2 verbatim: a head
-    referee with at most ``ROOKIE_PRIOR_EXPERIENCE_MAX`` prior seasons in the
-    archive-extended officials table (2009-2025, so the season floor is that
-    population's own first season plus one), the flag signed by the UNDERDOG
-    side of the frozen Tuesday line, entering as a FEATURE column of the ridge
-    on profile ``weak_stack_rookie_crew_underdog`` -- never a hand-set flip, so
-    the fitted coefficient decides the direction. Serving it needs the
-    refresh-time refit that measurement was taken on, restricted to games whose
-    own ``pick_deadline`` is still open when the Wednesday crew snapshot lands.
-    Anything missing -- no published assignment, a snapshot past every deadline,
-    no rookie crew this week, an unreadable officials history, a refit that will
-    not fit -- returns an empty lookup and the reason, never an exception.
-    """
 
     def _unavailable(reason: str, **extra: Any) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
         return {}, {
@@ -1308,11 +945,6 @@ def plan_refresh(
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     now: datetime | None = None,
 ) -> RefreshResult:
-    """Recompute this week's picks with current data at the frozen Tuesday lines.
-
-    Read-only: never touches ``active_ats_model.json``, the linked weekly-
-    forecast artifact, or any ledger. ``record_refresh`` is the write path.
-    """
 
     active, method, feature_profile, regressor, ridge_alpha, probability_method = (
         _active_model_config(artifacts_root)
@@ -1705,12 +1337,6 @@ def plan_refresh(
 
 
 def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str, Any]:
-    """The JSON-printable summary of an already-computed plan, minus the
-    ``"ledger"`` key -- callers that need the ``RefreshResult`` itself for a
-    SECOND purpose (e.g. ``--publish-card``'s section render) should call
-    :func:`plan_refresh` once and build both from the same object, rather
-    than calling :func:`record_refresh` and re-planning (which would refit
-    the model twice and risk two calls disagreeing on "now")."""
 
     return {
         "season": plan.season,
@@ -1875,24 +1501,6 @@ def record_plan(
     trigger_source: str = "",
     trigger_observed_at_utc: datetime | None = None,
 ) -> dict[str, Any]:
-    """Append ``plan``'s changed, eligible picks to the ledger, or not.
-
-    ``record_decisions`` defaults to ``False`` -- mirrors
-    ``publish-predictions --record-decisions``: an ordinary or rehearsal call
-    never reaches the ledger. When true, this additionally reuses
-    ``nfl_ats.clv.refuse_if_outside_recording_lock_window`` unchanged against
-    the week's ORIGINAL kickoffs, so a refresh invoked weeks before a real
-    lock week still cannot backdate anything; the per-game kickoff/Sunday-
-    lock guard already computed inside :func:`plan_refresh` is what actually
-    decided which games may be revised at all -- only ``changed`` (already
-    eligibility-filtered) games are ever appended here.
-
-    Every appended row carries MKT-08 trigger provenance: ``trigger_type`` is
-    ``clock_dispatch`` for the scheduled passes (a future news-driven pass
-    records ``news_event``), ``trigger_source`` names the scheduler job or
-    invoking context, and ``trigger_observed_at_utc`` defaults to the plan's
-    own computation time.
-    """
 
     if not record_decisions:
         return {
@@ -2004,15 +1612,6 @@ def record_refresh(
     trigger_source: str = "",
     trigger_observed_at_utc: datetime | None = None,
 ) -> dict[str, Any]:
-    """Plan a refresh and, when ``record_decisions``, append changed picks.
-
-    A convenience one-shot wrapper around :func:`plan_refresh`,
-    :func:`refresh_summary` and :func:`record_plan` for callers (tests, a
-    one-shot CLI invocation) that do not need the ``RefreshResult`` for a
-    second purpose. ``--publish-card`` on the ``refresh-picks`` CLI command
-    needs the plan object itself, so it calls the three pieces directly
-    instead of this wrapper -- see ``nfl_ats.cli._cmd_refresh_picks``.
-    """
 
     plan = plan_refresh(
         artifacts_root,
@@ -2042,11 +1641,6 @@ def record_refresh(
 
 
 def final_pick_per_game(artifacts_root: Path, *, season: int, week: int) -> pd.DataFrame:
-    """The FINAL pre-kickoff pick per game: the latest revision if any, else
-    the Tuesday-published pick. Recovers both the Tuesday and final pick for
-    scoring -- callers that want the Tuesday pick alone should read
-    :func:`original_card` directly.
-    """
 
     original = original_card(artifacts_root, season=season, week=week)
     if original.empty:
@@ -2143,13 +1737,6 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
 
 
 def append_refresh_to_card(destination: Path, result: RefreshResult, *, note: str = "") -> None:
-    """Additively label a "Late-week refresh" section onto a published card.
-
-    Never rewrites anything above the marker pair -- the Tuesday section
-    publish-predictions wrote stays exactly as published. Re-running this
-    against the same card replaces only its own section (idempotent), so
-    repeated refresh passes across a week never pile up duplicate blocks.
-    """
 
     if not destination.is_file():
         raise ValueError(
@@ -2173,13 +1760,6 @@ def append_refresh_to_card(destination: Path, result: RefreshResult, *, note: st
 def _served_home_side_center_offset(
     artifacts_root: Path, active: Mapping[str, Any], frame: pd.DataFrame
 ) -> np.ndarray | None:
-    """Per-row point shift the served Tuesday card used, by game id.
-
-    ``None`` when the linked forecast carries no ``home_side_offset.json``
-    (a card produced before the promotion), so the refit reproduces the
-    pre-promotion behaviour bit-for-bit. A game absent from the sidecar gets
-    0.0: the correction degrades to nothing rather than blocking a refresh.
-    """
 
     forecast = active_artifact_path(artifacts_root, dict(active), "weekly_forecast")
     if forecast is None:
@@ -2211,31 +1791,6 @@ def _served_lattice_reads(
     season: int,
     week: int,
 ) -> pd.DataFrame:
-    """``forecasts`` with the served lattice reads applied at the frozen lines.
-
-    ``frame`` carries the FROZEN Tuesday ``spread_line`` per game (the
-    ledger's ``decision_home_spread``, substituted by :func:`plan_refresh`
-    before ``predict``), so every read here -- the atom test included -- is
-    keyed to the frozen line, never to the feature table's current one.
-
-    ``forecasts`` is returned unchanged (the same object) when the linked
-    forecast carries neither a served ``discrete_push_read.json`` nor a
-    served ``key_line_pick_read.json`` (a card produced before the
-    promotions), so the refit reproduces the pre-promotion behaviour
-    bit-for-bit. Otherwise the week's walk-forward lattice is rebuilt
-    exactly as ``margin-predict`` built it and the reads are re-applied at
-    the refit's own point in ``margin-predict``'s order: the three-way
-    split on every game (:func:`serve_discrete_three_way`), then the
-    key-line pick read on the touched games (:func:`apply_key_line_pick_read`,
-    only when that sidecar says it served), so new information moves a
-    touched game's chance the same way it moves every other game's and the
-    pick beside a game's split is the lattice's own on both. Should that
-    rebuild fail, the served numbers recorded in the sidecars are
-    substituted verbatim -- the split on every game from the discrete push
-    sidecar, the split and the pick on the touched games from the key-line
-    sidecar -- so the policy degrades to "keep Tuesday's numbers", never to
-    "silently drop them".
-    """
 
     forecast = active_artifact_path(artifacts_root, dict(active), "weekly_forecast")
     if forecast is None:
@@ -2285,8 +1840,6 @@ def _served_lattice_reads(
 
 
 def _sidecar_split(row: Mapping[str, Any], source: Mapping[str, Any]) -> tuple[float, ...] | None:
-    """One game's recorded ``(cover, push, loss)`` from a sidecar row, or
-    ``None`` when any of the three is missing or not a finite number."""
 
     split: list[float] = []
     for key in ("cover", "push", "loss"):
@@ -2310,15 +1863,6 @@ def _restore_served_lattice_reads(
     key_sidecar: Mapping[str, Any] | None,
     pick_overrides: Mapping[str, float] | None,
 ) -> pd.DataFrame:
-    """``forecasts`` with Tuesday's served numbers substituted verbatim.
-
-    The three-way split on every game comes from the discrete push
-    sidecar's ``games[].served``; on the games the key-line read touched,
-    the split and the pick come from the key-line sidecar's own rows (the
-    two agree on Tuesday by construction -- same reader, same point -- and
-    the key-line row is the one the served pick was read from). A game
-    absent from both keeps the refit's own smooth numbers.
-    """
 
     splits: dict[str, tuple[float, ...]] = {}
     if push_sidecar is not None:

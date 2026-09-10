@@ -1,23 +1,3 @@
-"""Fixture tests for the 2026-09-05 dashboard-improvement wave 2 (ROADMAP.md
-UI-20, items (g)/(h)):
-
-(g) the pool's tiebreaker guess on This Week, shown beside the market total
-    it was built from, the blended total, and the implied margin
-    (``board_content.TiebreakerView`` / ``board_terminal._tiebreaker_panel_html``);
-(h) per-season and per-week opener-vs-close grading, side by side, on the
-    History page (``board_site_content.SeasonGradeRow`` /
-    ``board_site_content.HistoryWeekGrade`` /
-    ``board_terminal._history_grading_section_html``).
-
-These are pure-renderer tests over hand-built content objects (the same
-discipline ``tests/test_public_board_wave1.py`` already uses) -- no real
-artifact tree, so they are immune to a concurrent ``data/processed``
-rewrite in the shared tree. Loader-level unit tests for
-``board_content._load_tiebreaker_view`` live in ``tests/test_board_content.py``;
-``board_site_content._season_grade_rows``/``_history_week_grades`` live in
-``tests/test_board_site_content.py``.
-"""
-
 from __future__ import annotations
 
 import re
@@ -43,8 +23,6 @@ from nfl_ats.board_site_content import (
 
 
 def test_tiebreaker_panel_shows_not_published_by_default() -> None:
-    """The shared fixture never sets ``tiebreaker`` -- ``BoardContent``'s
-    own default (not-published) must render, never an empty panel."""
 
     content = build_fixture_content()
     assert content.tiebreaker.recorded is False
@@ -76,9 +54,6 @@ def test_tiebreaker_panel_renders_a_real_guess() -> None:
 
 
 def test_tiebreaker_panel_numbers_stay_collapsed_inside_details() -> None:
-    """A real guess's numbers must not inflate This Week's default-visible
-    content -- the same de-firehose discipline "Why this pick" already
-    follows."""
 
     view = TiebreakerView(
         recorded=True,

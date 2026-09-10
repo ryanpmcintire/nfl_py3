@@ -1,12 +1,3 @@
-"""Home-side-conditioned probability shapes around the incumbent point (MOD-18 lane T).
-
-Both mappings leave the served point prediction alone and condition only the
-cover probability on which side of the line the home team is: a home
-favourite (positive home spread), a home underdog (negative) or a pick'em.
-Predeclared in ``docs/home_side_mapping.md``; the shrinkage weight and the
-support floor below are declared regularisation, not fitted parameters.
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -31,7 +22,6 @@ HOME_SIDES = ("home_favourite", "home_underdog", "pickem")
 
 
 def home_side(lines: npt.ArrayLike) -> npt.NDArray[np.str_]:
-    """Positive home spread means the home team is favoured (nflverse sign)."""
     values = np.atleast_1d(np.asarray(lines, dtype=float))
     return np.asarray(
         np.where(values > 0, HOME_SIDES[0], np.where(values < 0, HOME_SIDES[1], HOME_SIDES[2])),
@@ -40,7 +30,6 @@ def home_side(lines: npt.ArrayLike) -> npt.NDArray[np.str_]:
 
 
 def shift_cell(lines: pd.Series) -> pd.Series:
-    """Home side crossed with the lane-J spread band, e.g. ``home_underdog/7.5-10``."""
     numeric = pd.to_numeric(lines, errors="raise")
     sides = pd.Series(home_side(numeric.to_numpy()), index=numeric.index)
     return sides + "/" + spread_bucket(numeric).astype(str)
@@ -48,8 +37,6 @@ def shift_cell(lines: pd.Series) -> pd.Series:
 
 @dataclass(frozen=True)
 class HomeSideShift:
-    """Shrunken mean residual per home-side/spread-band cell from prior games only."""
-
     shifts: dict[str, float]
     counts: dict[str, int]
     history_rows: int
@@ -64,7 +51,6 @@ class HomeSideShift:
 
 
 def fit_home_side_shift(history: pd.DataFrame) -> HomeSideShift:
-    """``predicted_margin`` must be the incumbent mapping centre of an OOS forecast."""
     values = history[["spread_line", "result", "predicted_margin"]].apply(
         pd.to_numeric, errors="raise"
     )
@@ -82,12 +68,6 @@ def fit_home_side_shift(history: pd.DataFrame) -> HomeSideShift:
 def shifted_probability(
     smooth_probability: npt.ArrayLike, shift: npt.ArrayLike, scale: npt.ArrayLike
 ) -> npt.NDArray[np.float64]:
-    """Re-read a Gaussian cover probability after moving its centre by ``shift``.
-
-    Identical to evaluating the Gaussian at ``centre + shift`` with the same
-    ``scale``; expressed on the probability so an archived read can be shifted
-    without reconstructing the residual sample.
-    """
     p = np.clip(np.asarray(smooth_probability, dtype=float), 1e-12, 1 - 1e-12)
     z = stats.norm.ppf(p) + np.asarray(shift, dtype=float) / np.asarray(scale, dtype=float)
     return np.asarray(stats.norm.cdf(z), dtype=np.float64)
@@ -95,8 +75,6 @@ def shifted_probability(
 
 @dataclass(frozen=True)
 class HomeSideLattice:
-    """K1 lattice fitted on same-side prior games, or on all of them as fallback."""
-
     lattice: ConditionalMarginLattice
     used_side: bool
     side_support: int
@@ -109,7 +87,6 @@ class HomeSideLattice:
 
 
 def fit_lattice_home_side(history: pd.DataFrame, center: float, line: float) -> HomeSideLattice:
-    """Fit an already cutoff-filtered OOS history; no outcomes from target rows."""
     if not np.isfinite([center, line]).all():
         raise ValueError("Center and line must be finite")
     sides = home_side(history.spread_line.to_numpy(dtype=float))
@@ -134,14 +111,6 @@ def _eligible(prior: pd.DataFrame, batch: pd.DataFrame, season: int, week: int) 
 def predict_home_side_mapping(
     history: pd.DataFrame, targets: pd.DataFrame, *, method: str = "smooth_home_side_shift"
 ) -> pd.DataFrame:
-    """Fit a whole week before its first game, with a one-day completion allowance.
-
-    ``history`` rows carry ``game_id, season, week, gameday, spread_line, result,
-    predicted_margin`` (the mapping centre of an out-of-time forecast).
-    ``smooth_home_side_shift`` targets also need ``p_smooth`` (the incumbent
-    read) and ``smooth_scale`` (its Gaussian scale); ``lattice_home_side``
-    targets need ``predicted_margin``.
-    """
     if method not in HOME_SIDE_MAPPING_METHODS:
         raise ValueError(f"Unknown home-side mapping method: {method}")
     prior = history.copy()

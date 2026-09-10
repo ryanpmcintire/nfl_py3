@@ -1,15 +1,3 @@
-"""Tests for the wave-2 totals screen (``docs/totals_model_wave2.md``, WP18).
-
-Four groups, mirroring ``tests/test_totals.py``'s structure: allowlist
-enforcement for the extended 65-column list, the point-in-time join, the
-wave-vs-wave paired comparison math, and a light-weight positive-control
-shape check. The PBP drive family's own leakage safety is already covered by
-``tests/test_pbp.py::test_current_game_plays_cannot_change_current_pregame_features``
-(exercises ``enrich_with_pbp_features`` generically over
-``PBP_ENRICHMENT_STATE_METRICS``, which includes every ``DRIVE_STATE_METRICS``
-entry) -- not re-tested here, per the predeclaration.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -63,8 +51,6 @@ def test_wave2_features_is_wave1_plus_the_24_drive_columns_nothing_else() -> Non
 def _wave2_synthetic_population(
     *, weeks: int = 6, games_per_week: int = 40, flip_week: int = 4, season: int = 2000
 ) -> pd.DataFrame:
-    """Like ``test_totals.py``'s fixture, but the signal rides a DRIVE column
-    instead of ``wind`` -- proves the guard holds for the extended list too."""
 
     rows = []
     generator = np.random.default_rng(20260901)
@@ -110,10 +96,6 @@ def test_a_renamed_drive_column_is_a_hard_error_not_a_substitution() -> None:
 
 
 def test_walk_forward_guard_holds_when_a_drive_column_drives_the_signal() -> None:
-    """The decisive comparison from ``test_totals.py``, replayed with a drive
-    column as the flip-week driver and the full 65-column allowlist: the
-    guarded prediction at the flip week must equal a model trained on weeks
-    1-3 only, and must DIFFER from one that also saw week 4."""
 
     population = _wave2_synthetic_population()
     predictions = walk_forward_predictions(population, min_train_games=40, features=WAVE2_FEATURES)
@@ -203,8 +185,6 @@ def test_load_population_wave2_matches_wave1s_game_set_and_pulls_drive_values(
 
 
 def test_load_population_wave2_on_real_data_matches_wave1_game_set() -> None:
-    """Real-file join integrity: the production ``game_features_pbp.parquet``
-    scores the identical population wave 1's ``game_features.parquet`` does."""
 
     from nfl_ats.totals import load_population as load_population_wave1
 
@@ -376,11 +356,6 @@ def test_model_total_view_wave2_trains_only_on_games_before_the_target_week(
 def test_model_total_view_wave2_with_no_pbp_row_falls_back_to_market_only(
     tmp_path: Path,
 ) -> None:
-    """The design choice this test pins: a PBP table that EXISTS but carries
-    no row for this particular game_id (a game the PBP pipeline has not
-    enriched) yields None -- market-only -- rather than an internal
-    substitution of wave 1's number. See the module docstring for why that
-    substitution belongs one level up instead."""
 
     _wave1_path, wave2_path = _write_wave2_population_fixture(tmp_path)
     assert (
@@ -417,12 +392,6 @@ def test_model_total_view_wave2_serving_enforces_the_65_column_allowlist(
 def test_model_total_view_wave2_fails_closed_for_a_stale_or_misaligned_table(
     tmp_path: Path,
 ) -> None:
-    """A table from a different schedule snapshot must not serve a residual.
-
-    The target row can still be present in a stale build, so checking only for
-    that row is insufficient.  The serving guard compares the complete game
-    identity and market-line columns before fitting anything.
-    """
 
     _wave1_path, wave2_path = _write_wave2_population_fixture(tmp_path)
     baseline = model_total_view_wave2("2026_01_X_Y", tmp_path, wave2_path, min_train_games=3)
@@ -448,13 +417,6 @@ def test_model_total_view_wave2_fails_closed_for_a_stale_or_misaligned_table(
 
 
 def _write_walk_forward_guard_fixture(root: Path) -> Path:
-    """20 no-signal week-1 games, 20 STRONG-signal week-3 games, and one
-    unplayed week-3 TARGET game. If ``model_total_view_wave2``'s own prior
-    filter used ``<=`` instead of ``<`` on the target's week, the week-3
-    non-target games (strong signal, slope 20 on ``home_drive_points_per_drive``)
-    would leak into the target's training pool and move its prediction by a
-    large, unambiguous margin relative to a fit that honestly saw only the
-    no-signal week-1 games."""
 
     generator = np.random.default_rng(20260901)
     driver_week1 = generator.uniform(-1.0, 1.0, size=20)

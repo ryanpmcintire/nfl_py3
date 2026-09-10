@@ -1,39 +1,3 @@
-"""The Tuesday weekly-ops sequence as one fail-closed command (SPEC-3).
-
-Every regular-season Tuesday the same seven steps have to happen, in order,
-before the pool locks: refresh the nflverse snapshot, rebuild the canonical and
-enriched feature tables, re-run the walk-forward evaluation, score the week,
-prove the weekly card and the evaluation behind it are the *same* model, and
-only then publish. Doing that by hand is seven commands with easy-to-miss
-flags, and the expensive mistake is publishing a card whose historical number
-came from a different model.
-
-So the sequence lives here instead of in a crib sheet. Steps run in order, any
-failure aborts the whole run naming the step, and ``publish-predictions`` sits
-strictly behind the synchronization assertion -- there is no path where a
-desynchronized card reaches the public site.
-
-Steps are described declaratively (``plan_weekly_run``) so ``--dry-run`` can
-print exactly the commands a human would run as the manual fallback, and so the
-ordering is testable without touching production data.
-
-Steps 9-12 (POL-10) collect prospective 2026 evidence: they rebuild the MOD-07
-weak-stack table, score the challenger's own card, record its pre-kickoff picks,
-and settle everything recorded so far. They run AFTER the publish and are
-``optional``: a failure is reported loudly and does not abort the run, because
-the pool card is the deliverable and a missed week of research evidence must
-never take the card down with it. They must still run *weekly*, before the
-Tuesday lock -- a challenger pick invented after kickoff is worthless, and the
-recording path refuses it (``nfl_ats.prospective_scoring``).
-
-Step 13 (RWB-12) is drift monitoring: a read-only telemetry report comparing
-this week's features, missingness, published probabilities and settled
-calibration against recent history. Like steps 9-12 it runs after the publish
-and never blocks the card; unlike them it adjudicates nothing, so it is
-neither an experiment look nor evidence about any signal
-(``nfl_ats.drift``).
-"""
-
 from __future__ import annotations
 
 import io
@@ -74,13 +38,6 @@ StepRunner = Callable[[Sequence[str]], dict[str, Any]]
 
 
 def _weak_stack_build_command(processed: Path, *, refresh_player_data: bool) -> tuple[str, ...]:
-    """The command that builds the learned-availability (``weak_stack``) table.
-
-    Shared by the card path and the challenger path so the two can never build
-    the same table from different snapshots. Raises ``WeeklyRunError`` when the
-    pinned manifest is unreadable; the card path treats that as fatal and the
-    challenger path downgrades it to a skipped optional step.
-    """
 
     command = [
         "build-learned-availability-features",
@@ -107,13 +64,6 @@ def _weak_stack_build_command(processed: Path, *, refresh_player_data: bool) -> 
 
 
 def active_card_profile(artifacts_root: Path) -> str:
-    """The feature profile ``weekly-run``'s card path must build and score.
-
-    Read from the active manifest rather than hardcoded, so a promotion cannot
-    leave the weekly card silently rebuilding and republishing the model it
-    replaced. An unrecognised profile is fatal: guessing a feature table for it
-    would reintroduce exactly the mismatch this function exists to prevent.
-    """
 
     path = artifacts_root / "active_ats_model.json"
     if not path.is_file():
@@ -137,19 +87,6 @@ def active_card_profile(artifacts_root: Path) -> str:
 
 
 class WeeklyRunError(ValueError):
-    """Raised when the weekly sequence cannot proceed.
-
-    A ``ValueError`` subclass so the CLI reports it as a user-facing error
-    rather than a traceback.
-
-    ``summary`` carries the PARTIAL run summary when the sequence aborts
-    part-way through: which step failed, with what error, and every step that
-    had already run. The lock-day decision package is written from a
-    ``finally`` block, so without this the one artifact that exists to explain
-    a lock day records ``run_summary: null`` -- measured on the 2026-09-08
-    abort, whose package could not name the failing step.
-    """
-
     def __init__(self, message: str, *, summary: dict[str, Any] | None = None) -> None:
         super().__init__(message)
         self.summary = summary
@@ -157,17 +94,6 @@ class WeeklyRunError(ValueError):
 
 @dataclass(frozen=True)
 class WeeklyStep:
-    """One entry in the Tuesday sequence.
-
-    ``command`` is the full ``nfl-ats`` argv for a step that shells out to an
-    existing subcommand, or empty for an in-process check (step 6). ``number``
-    is the step's number in SPEC-3, which is why two steps share number 3.
-
-    ``optional`` marks a step whose failure is recorded and reported but does
-    not abort the run. Only the POL-10 evidence-collection steps use it; every
-    step on the path to a published card stays fail-closed.
-    """
-
     number: int
     name: str
     description: str
@@ -192,11 +118,6 @@ class WeeklyStep:
 
 
 def _manifest_snapshot(manifest_path: Path, key: str) -> str:
-    """Read one snapshot id out of a production feature manifest.
-
-    Fail closed: a weekly run that silently fell back to "latest" would rebuild
-    the frozen table from different player data without anybody asking for it.
-    """
 
     if not manifest_path.is_file():
         raise WeeklyRunError(
@@ -211,12 +132,6 @@ def _manifest_snapshot(manifest_path: Path, key: str) -> str:
 
 
 def _ingest_step(data_root: Path, season: int, *, skip: bool) -> WeeklyStep:
-    """Step 1: refresh the nflverse snapshot over the seasons already covered.
-
-    The season span is copied from the latest snapshot's manifest rather than
-    from argparse defaults, and the requested prediction season must already be
-    in it -- a snapshot that stops at last season cannot serve this week.
-    """
 
     snapshot = latest_snapshot(data_root / "raw")
     manifest = read_json(snapshot.manifest_path)
@@ -256,21 +171,6 @@ def _prospective_steps(
     refresh_player_data: bool,
     record_decisions: bool,
 ) -> list[WeeklyStep]:
-    """Steps 9-12: produce and preserve this week's prospective challenger evidence.
-
-    The weak-stack table is rebuilt from the freshly refreshed PBP table so the
-    challenger sees the same week the active model does, pinned to the same
-    snapshots unless ``--refresh-player-data`` was asked for. ``margin-predict``
-    on this profile can never disturb the published card: no evaluation matches
-    its configuration, so ``activate_matching_ats_model`` returns ``None`` and
-    leaves the active manifest exactly where the publish left it.
-
-    Step 10 (``prospective-record``) is the one step in this tail that writes
-    to a ledger, so -- like step 7's own ledger write -- it only runs when
-    ``record_decisions`` is true. Steps 8, 9 and 11 build and score the
-    challenger's card without recording anything, so they stay informative
-    even on a rehearsal run.
-    """
 
     processed = data_root / "processed"
     try:
@@ -367,24 +267,6 @@ def plan_weekly_run(
     record_decisions: bool = False,
     replace_week: bool = False,
 ) -> list[WeeklyStep]:
-    """The Tuesday sequence, in order, resolved against local manifests.
-
-    ``artifacts_root`` selects the card path's feature profile from the ACTIVE
-    model manifest. Omit it and the plan falls back to ``player``, which is
-    only correct for callers that have no artifacts tree (tests, docs).
-
-    ``record_decisions`` gates every ledger *write* in the sequence (step 7's
-    paper-decision recording and step 10's challenger recording) -- off by
-    default, so an ordinary or rehearsal run of this plan never reaches
-    either ledger. Pass it only for the real weekly lock. Both underlying
-    recorders (``nfl_ats.clv.record_paper_decisions``,
-    ``nfl_ats.prospective_scoring.record_challenger_decisions``) also refuse
-    to write when the week being recorded is not close to its own kickoff
-    (``nfl_ats.clv.RECORDING_LOCK_WINDOW``), so this flag alone cannot put a
-    rehearsal's picks on a real ledger either -- see
-    ``docs/prospective_evidence.md``, "Known divergence", for the incident
-    both guards exist to prevent from recurring.
-    """
 
     processed = data_root / "processed"
     card_profile = (
@@ -605,14 +487,6 @@ def assert_synchronized(
     week: int,
     predict_output: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Step 6: prove the card about to be published is the activated model.
-
-    ``margin-predict`` writes the active manifest only when an evaluation with
-    byte-identical configuration and feature-table hash exists; when it does
-    not, it reports ``UNLINKED`` and leaves LAST week's manifest in place, still
-    reading ``SYNCHRONIZED``. So checking the status alone is not enough -- the
-    manifest's weekly forecast must also be this season and week.
-    """
 
     if predict_output is not None:
         status = predict_output.get("synchronization_status")
@@ -636,21 +510,6 @@ def assert_synchronized(
 
 
 def _final_json_document(text: str) -> dict[str, Any]:
-    """Parse only the FINAL JSON object out of one subcommand's captured stdout.
-
-    Ingesters print human-readable progress lines ("Fetched page N/M",
-    "Snapshot dir: ...") to stdout BEFORE their closing
-    ``json.dumps(payload, indent=2)`` summary, so parsing the whole capture
-    fails with "Expecting value" whenever a fresh fetch actually ran -- the
-    deterministic lock-day abort measured at step ``ingest-player-arrests``
-    in docs/week1_readiness.md's 2026-08-24 rehearsal. Strategy: try the
-    whole text first, then re-parse from each column-0 ``{`` line, last
-    candidate first, so the trailing -- final -- document wins no matter how
-    much prose precedes it (``indent=2`` output puts nested objects on
-    indented lines, so a column-0 brace can only start a top-level
-    document). A capture with NO JSON object at all is fatal and loud: a
-    silent ``{}`` here would fabricate a successful step output.
-    """
 
     try:
         payload = json.loads(text)
@@ -674,13 +533,6 @@ def _final_json_document(text: str) -> dict[str, Any]:
 
 
 def _cli_runner(command: Sequence[str]) -> dict[str, Any]:
-    """Run one subcommand in-process and return its JSON payload.
-
-    Imported lazily: ``cli`` imports this module to wire the subcommand up.
-    Stdout is captured so the weekly run emits exactly one JSON document;
-    see :func:`_final_json_document` for why only the final JSON object is
-    parsed rather than the whole capture.
-    """
 
     from nfl_ats import cli
 
@@ -708,12 +560,6 @@ def run_weekly(
     runner: StepRunner | None = None,
     progress: bool = True,
 ) -> dict[str, Any]:
-    """Run the Tuesday sequence and return the single JSON summary payload.
-
-    ``record_decisions`` defaults to ``False``: the real weekly lock passes
-    it explicitly, everything else (rehearsals, dry runs, tests) does not.
-    See ``plan_weekly_run`` for what it gates and why.
-    """
 
     started = perf_counter()
     steps = plan_weekly_run(

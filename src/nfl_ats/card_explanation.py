@@ -1,60 +1,3 @@
-"""Card-level explanation contract (ENG-12).
-
-A published pick is a lot of machinery collapsed into three cells of a
-table: a team, a number, a decision score. This module builds the
-DESCRIPTIVE record behind one pick -- the market line it was read against,
-this game's own model probability, which overlays fired and what tripped
-them, how fresh each input source was, and whether anything has changed
-since the Tuesday card -- and renders it as one plain paragraph, without
-ever implying causal certainty or a proven, profitable edge (AGENTS.md:
-"Never describe the current historical forced-pick accuracy as proof of a
-profitable or stable edge. Keep historical accuracy distinct from each
-game's model probability.").
-
-:func:`explain_pick` is the single entry point. It is deliberately
-duck-typed and side-effect free: ``row`` is any ``Mapping`` with at least
-``game_id``/``home_team``/``away_team``/``spread_line``/
-``home_cover_probability`` (a plain ``dict``, a ``pandas.Series``, or one
-record of a forecast/recommendations frame all satisfy it), ``lineage`` is
-an optional :class:`nfl_ats.lineage.CardLineage` (ENG-16) supplying the
-market line's source snapshot and capture instant, ``source_report`` is an
-optional :class:`nfl_ats.source_freshness_policy.SourcePolicyReport`
-(ENG-14) supplying per-source freshness, ``overlays`` is a pre-normalized
-sequence of :class:`OverlayFiring` (build one with the adapters below from
-whichever overlay result objects the caller already has), and
-``refresh_changes`` is an optional :class:`RefreshChangeInput` (or an
-equivalent mapping) describing the latest Tuesday-to-refresh delta for this
-game.
-
-Every field the caller does not supply degrades to an explicit ``no_data``
-state -- never a guess, never silence -- matching the fail-open, explicit-
-absence discipline :mod:`nfl_ats.lineage` and
-:mod:`nfl_ats.source_freshness_policy` already established (a
-``CardLineageEntry`` may carry ``lineage=None`` only with a stated
-``reason``; an unobserved source is reported, never folded into "healthy").
-
-Join point with ENG-18 (``nfl_ats.snapshot_diff``, Tuesday-vs-refresh diff)
-----------------------------------------------------------------------------
-That module did not exist yet when this one was built. When it lands, its
-per-game refresh-change summary should be adapted into a
-:class:`RefreshChangeInput` (or passed as an equivalent mapping) and handed
-to ``refresh_changes`` directly. Until then, :func:`refresh_change_from_pick_revision`
-reads `nfl_ats.pick_refresh`'s append-only pick-revision ledger directly --
-the exact fallback this task's own instructions name -- so a real refresh
-already shows up here without waiting on that module.
-
-Language contract
-------------------
-:data:`LANGUAGE_CONTRACT` is a literal, case-insensitive substring blocklist
-(not a semantic classifier); :func:`check_language` raises
-:class:`LanguageContractError` when any phrase appears anywhere in the text,
-including inside an otherwise-safe negation, so the template itself is
-written to avoid every phrase outright rather than negate it.
-:func:`explain_pick` runs this check on its own generated text before
-returning, so a caller never receives a :class:`PickExplanation` whose
-``text`` violates the contract.
-"""
-
 from __future__ import annotations
 
 import json
@@ -126,16 +69,10 @@ _BANNED_PLUMBING_WORDS: tuple[str, ...] = ("snapshot", "artifact", "lineage")
 
 
 class LanguageContractError(ValueError):
-    """``text`` uses a phrase :data:`LANGUAGE_CONTRACT` forbids, or a
-    structural id/timestamp/hash/plumbing word (see the module's hard
-    structural rules)."""
+    pass
 
 
 def check_language(text: str) -> None:
-    """Raise :class:`LanguageContractError` if ``text`` uses a forbidden
-    phrase, a snapshot id (``\\d{8}T\\d{6}Z``), an ISO timestamp, a
-    sha-like hex token, or the words "snapshot"/"artifact"/"lineage" --
-    reader text must never carry the machinery's own bookkeeping."""
 
     if _SNAPSHOT_ID_RE.search(text):
         raise LanguageContractError("text contains a snapshot id (YYYYMMDDTHHMMSSZ pattern)")
@@ -181,15 +118,6 @@ def _parse_iso(value: str | None) -> datetime | None:
 
 
 def _pick_oriented_line(home_line: float, pick_is_home: bool) -> float:
-    """The market line restated as the PICK's own handicap.
-
-    Mirrors ``nfl_ats.publishing._published_card``'s own
-    ``pick_line = (-spread_line) if home_pick else spread_line`` exactly,
-    duplicated here (not imported) to avoid a publishing->card_explanation->
-    publishing cycle -- the same "duplicate a tiny private formula rather
-    than couple modules" discipline ``nfl_ats.board_content`` already uses
-    for ``_CONFIDENCE_FILL``.
-    """
 
     return -home_line if pick_is_home else home_line
 
@@ -201,16 +129,6 @@ def _format_line(value: float | None) -> str:
 
 
 def _pick_side_and_probability(row: Mapping[str, Any]) -> tuple[str | None, float | None]:
-    """The picked team and the score DISPLAYED for that side.
-
-    ``row`` may supply an explicit ``pick_team`` (e.g. an already-rendered
-    card row); otherwise the pick is derived the same way
-    ``publishing._published_card`` derives it: home when
-    ``home_cover_probability >= 0.5``, away otherwise. The number prefers
-    ``displayed_pick_probability`` when the row carries it
-    (``nfl_ats.displayed_confidence``), so the sentence and the card's own
-    score can never disagree.
-    """
 
     home_team = _optional_str(row.get("home_team"))
     away_team = _optional_str(row.get("away_team"))
@@ -231,8 +149,6 @@ def _pick_side_and_probability(row: Mapping[str, Any]) -> tuple[str | None, floa
 
 @dataclass(frozen=True)
 class MarketLineComponent:
-    """The market line used for this pick: which snapshot, and when."""
-
     home_spread_line: float | None
     pick_spread_line: float | None
     snapshot_id: str | None
@@ -261,16 +177,6 @@ class MarketLineComponent:
 
 @dataclass(frozen=True)
 class ModelProbabilityComponent:
-    """This game's probability for the pick side -- never an accuracy figure
-    (AGENTS.md: keep historical accuracy distinct from each game's model
-    probability).
-
-    ``probability`` is the DISPLAYED score, which is the model's own number
-    calibrated to its record at that line size when
-    ``nfl_ats.displayed_confidence`` is served. ``stated_probability`` keeps
-    the model's raw output beside it, so the sidecar always carries both.
-    """
-
     pick_side: str
     probability: float | None
     provenance: str
@@ -297,17 +203,6 @@ class ModelProbabilityComponent:
 
 @dataclass(frozen=True)
 class OverlayFiring:
-    """One overlay that fired on this pick.
-
-    Only FIRED overlays are represented (mirrors
-    ``nfl_ats.lineage``'s own rule: "an overlay that did not fire changed
-    nothing, so it has nothing to justify"). ``changed_pick`` is carried
-    explicitly rather than implied, because the three-member production
-    policy's OR/complement-once semantics mean every listed firing is
-    independently sufficient to have caused the flip, even when another
-    member also fired on the same game.
-    """
-
     name: str
     direction: str
     input_value: str
@@ -353,10 +248,6 @@ class OverlaysComponent:
 
 @dataclass(frozen=True)
 class SourceFreshnessEntry:
-    """One source's state as of this pick's explanation, per
-    :mod:`nfl_ats.source_freshness_policy`'s three-state vocabulary plus this
-    module's own ``no_data`` (a source the report never observed at all)."""
-
     source_id: str
     as_of: str | None
     state: str
@@ -427,13 +318,6 @@ class RefreshComponent:
 
 @dataclass(frozen=True)
 class RefreshChangeInput:
-    """Generic, source-agnostic Tuesday-to-refresh delta for one game.
-
-    Either ENG-18's ``snapshot_diff`` summary or
-    :func:`refresh_change_from_pick_revision` (this module's own fallback
-    reading `nfl_ats.pick_refresh`'s ledger) can populate one of these.
-    """
-
     previous_pick_side: str | None = None
     new_pick_side: str | None = None
     movement_delta: float | None = None
@@ -443,8 +327,6 @@ class RefreshChangeInput:
 
 
 def _classify_refresh(change: RefreshChangeInput) -> tuple[str, str]:
-    """Precedence: a pick flip is the most decision-relevant change, then a
-    line move, then an overlay change, else no change at all."""
 
     if (
         change.previous_pick_side
@@ -492,14 +374,6 @@ def _refresh_component(change: RefreshChangeInput | Mapping[str, Any] | None) ->
 def refresh_change_from_pick_revision(
     revision: Mapping[str, Any] | None,
 ) -> RefreshChangeInput | None:
-    """Adapt one row of ``nfl_ats.pick_refresh``'s append-only pick-revision
-    ledger (``load_pick_revisions``) into a :class:`RefreshChangeInput`.
-
-    This is the fallback path this task's own instructions name: ENG-18's
-    ``nfl_ats.snapshot_diff`` did not exist yet when this module was built.
-    When it lands, prefer its per-game summary directly; this function keeps
-    working unchanged as the direct-ledger read either way.
-    """
 
     if revision is None:
         return None
@@ -554,12 +428,6 @@ def overlay_firing_from_spread_gap_flip(flip: SpreadGapFlip) -> OverlayFiring:
 def overlay_firings_from_composition(
     composition: FourOverlayCompositionResult, game_id: str
 ) -> tuple[OverlayFiring, ...]:
-    """Generic fallback built from the composed policy's own provenance
-    (member id plus raw/final probability), for members whose rich,
-    team-level flip record (e.g. division revenge, spread-gap zone) is not
-    separately available to the caller. Prefer the specific
-    ``overlay_firing_from_*`` adapters above when the caller already holds
-    the richer flip record (coach fade, player arrests)."""
 
     target = str(game_id)
     game_row = next((row for row in composition.games if row.game_id == target), None)
@@ -595,8 +463,6 @@ def _freshness_component(source_report: SourcePolicyReport | None) -> FreshnessC
 
 @dataclass(frozen=True)
 class PickExplanation:
-    """One pick's fixed-shape, descriptive explanation."""
-
     game_id: str
     matchup: str
     market_line: MarketLineComponent
@@ -698,12 +564,6 @@ def _lead_sentence(
 
 
 def _what_tips_it_sentence(game_explanation: GameExplanation | None) -> str:
-    """Plain, football-terms account of the biggest factors behind the
-    model-vs-market gap -- built from :func:`nfl_ats.market_decomposition
-    .explain_game_structured`'s STRUCTURED ``drivers``/``offsets``, never
-    its own ``.sentence`` (which uses "because of", forbidden by the
-    language contract here). ``""`` when no attribution was supplied at
-    all (never a guess)."""
 
     if game_explanation is None:
         return ""
@@ -783,13 +643,6 @@ def _render_text(
     push_probability: float | None = None,
     key_line_read: bool = False,
 ) -> str:
-    """One short, human paragraph: the pick and the model's own read on it,
-    the two or three biggest football-terms factors behind any gap from
-    the market, whether a situational adjustment fired, one plain clause
-    on source freshness (naming only lines/injuries/weather -- the
-    categories a fan would ask about), and one short refresh clause. No
-    snapshot ids, timestamps, hashes, or compliance boilerplate -- see
-    :data:`LANGUAGE_CONTRACT` and :func:`check_language`."""
 
     sentences = [
         _lead_sentence(market_line, model_probability, matchup),
@@ -814,24 +667,6 @@ _KEY_NUMBER_LINES: frozenset[int] = frozenset({3, 7, 10, 14})
 
 
 def _no_push_sentence(home_spread_line: float | None) -> str:
-    """One plain sentence for a half-point line: this game cannot tie the number.
-
-    The pool posts every line at a half point (measured 2026-09-08 on all
-    sixteen Week 1 games of the owner's contest), and a final score is a
-    whole number of points, so landing exactly on the line is impossible.
-    Before this, such a game simply said nothing about ties while the card
-    still carried a push chance of 0% beside it, which reads as a measured
-    near-zero rather than an impossibility. Saying it plainly is the honest
-    version, and it is the ONLY thing that changes for a reader here.
-
-    This is a statement about ties, and about nothing else. The cover
-    chance beside it is still read off the discrete margin distribution
-    conditional on the line -- which matters MORE at a half point, because
-    the roughly 14.6 in 100 games that finish exactly on 3 all land on one
-    side of a 2.5 or 3.5 number instead of tying it
-    (docs/key_line_pick_read.md). Never rewrite this into "the key numbers
-    do not apply here".
-    """
 
     if home_spread_line is None or not is_half_point_line(home_spread_line):
         return ""
@@ -842,11 +677,6 @@ def _no_push_sentence(home_spread_line: float | None) -> str:
 
 
 def _push_sentence(home_spread_line: float | None, push_probability: float | None) -> str:
-    """One plain sentence on the push chance at a whole-number line, read
-    from the card's own served ``push_probability`` (the discrete read of
-    prior games at this number -- docs/discrete_push_read.md). Empty at a
-    half-point line (no push is possible), when no push chance is recorded,
-    or when it rounds to nothing."""
 
     if home_spread_line is None or push_probability is None:
         return ""
@@ -868,13 +698,6 @@ def _push_sentence(home_spread_line: float | None, push_probability: float | Non
 
 
 def _key_line_sentence(home_spread_line: float | None, push_probability: float | None) -> str:
-    """The pool-player sentence for a game whose side was read off the
-    key-number lattice (docs/key_line_pick_read.md): the line sits right on
-    3 or 7, games land there a lot, and the pick is read off how games with
-    lines like this actually finished -- with the push chance folded in when
-    the card recorded one. Replaces :func:`_push_sentence` on such a game
-    so the reader hears one sentence about the number, not two. Empty when
-    no line is known."""
 
     if home_spread_line is None or not float(home_spread_line).is_integer():
         return ""
@@ -895,17 +718,6 @@ def _key_line_sentence(home_spread_line: float | None, push_probability: float |
 def family_contributions_from_waterfall_entry(
     entry: Mapping[str, Any] | None,
 ) -> dict[str, float] | None:
-    """Home-oriented ``{family: points}`` extracted from one game's real
-    attribution-waterfall feed entry (``nfl_ats.public_board
-    .load_waterfall_feed``) -- the SAME per-family "family"-kind steps
-    ``nfl_ats.board_content._build_attribution`` reads, duplicated here
-    (not imported -- ``board_content.py`` already imports THIS module, so
-    the reverse import would cycle) rather than reached into privately.
-
-    ``None`` when ``entry`` carries no usable family-kind step at all, so a
-    caller degrades to omitting the "what tips it" sentence instead of
-    inventing a zero-contribution explanation.
-    """
 
     if not isinstance(entry, Mapping):
         return None
@@ -951,24 +763,6 @@ def explain_pick(
     waterfall_entry: Mapping[str, Any] | None = None,
     key_line_read: bool = False,
 ) -> PickExplanation:
-    """Build one pick's fixed-shape, descriptive explanation.
-
-    ``key_line_read`` (docs/key_line_pick_read.md) says this game's side was
-    read off the key-number lattice because its line sits exactly on 3 or 7;
-    the rendered text then says so in pool-player words in place of the
-    plain push sentence.
-
-    See the module docstring for what ``row``/``lineage``/``source_report``/
-    ``overlays``/``refresh_changes`` accept. ``waterfall_entry`` is one game's
-    entry from ``nfl_ats.public_board.load_waterfall_feed`` (optional; see
-    :func:`family_contributions_from_waterfall_entry`) -- it names the two or
-    three biggest football-terms factors behind the model-vs-market gap in
-    the rendered text, and is never itself persisted onto
-    :class:`PickExplanation` (the structured components stay exactly as
-    before this text rewrite). Runs :func:`check_language` on its own
-    generated text before returning -- a caller can never receive a
-    :class:`PickExplanation` whose ``text`` violates the language contract.
-    """
 
     game_id = str(row.get("game_id") or "")
     home_team = _optional_str(row.get("home_team")) or ""
@@ -1059,12 +853,6 @@ def explain_card(
     waterfall_by_game: Mapping[str, Mapping[str, Any]] | None = None,
     key_line_games: Iterable[str] | None = None,
 ) -> list[PickExplanation]:
-    """:func:`explain_pick` for every row of a card, keyed by ``game_id``.
-
-    ``key_line_games`` names the games whose side the key-line lattice read
-    served (``nfl_ats.key_line_pick_read.key_line_touched_games`` off the
-    forecast's metadata); empty or ``None`` for a pre-promotion card.
-    """
 
     overlays_map = overlays_by_game or {}
     refresh_map = refresh_changes_by_game or {}
@@ -1109,7 +897,6 @@ def from_json(payload: str | bytes) -> list[PickExplanation]:
 
 
 def render_markdown(explanations: Sequence[PickExplanation]) -> str:
-    """One short line per pick, for an additive Markdown card section."""
 
     lines = ["### Pick explanations", ""]
     for explanation in explanations:

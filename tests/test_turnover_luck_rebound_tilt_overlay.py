@@ -1,40 +1,3 @@
-"""Tests for the turnover-luck rebound tilt overlay (docs/close_game_luck_screen.md,
-cell ``turnover_under_rebound`` / registry ``close_game_luck_turnover_under_rebound``).
-
-Four things are load-bearing here, mirroring
-``tests/test_interim_hc_first_game_tilt_overlay.py``'s structure and
-AGENTS.md's "add a leakage regression test for every new feature family":
-
-1. :func:`turnover_under_flag_by_game` fires ONLY when a team's PRIOR-season
-   centered turnover differential is at/below the frozen bottom-quartile
-   threshold, is derived from data (ported from
-   ``scripts/close_game_luck_screen.py``'s giveaways/team-game/panel
-   construction), and never reads the current season's or the target game's
-   own outcome.
-2. :func:`apply_turnover_luck_rebound_tilt_overlay` flips ONTO the flagged
-   team whenever the model's own pick is not already on that side, respects
-   the REG-only gate, leaves a both-flagged game untouched, and is
-   parameter-free (the threshold is frozen, not tuned).
-3. :func:`overlay_disclosure_note` states the flip count and matchups.
-4. :func:`record_turnover_luck_rebound_tilt_challenger_decisions` writes the
-   overlay's own picks to the prospective challenger ledger, dual-tracked
-   and at no rotation-registry window cost, and refuses on a fingerprint
-   mismatch or an inactive registration.
-
-Fixture design (see ``_pbp_2025`` / ``_schedule`` below): season 2025 (the
-PRIOR season for every 2026 test game) is built so exactly TWO teams,
-TEAMA and TEAME, land comfortably below the frozen threshold
-(``TURNOVER_UNDER_Q25_THRESHOLD`` = -0.4026832217261905) while every other
-team in the fixture lands comfortably above it -- TEAMA/TEAME each give away
-the ball repeatedly against a shared two-team opponent pool (OPPX/OPPY) with
-zero takeaways of their own, and a separate neutral pair (TEAMB/TEAMC) never
-turns the ball over at all. The opponent pool's inflated takeaway rate is
-matched in size to TEAMA+TEAME's combined giveaways, which keeps the
-season's league mean at exactly 0 -- so the fixture does not accidentally
-drag a neutral team across the frozen cutoff the way an unbalanced giveaway/
-takeaway fixture would.
-"""
-
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -74,12 +37,6 @@ def _pbp_row(
 
 
 def _pbp_2025(*, extra_2026_rows: list[dict[str, object]] | None = None) -> pd.DataFrame:
-    """Season 2025 play-by-play: TEAMA and TEAME are heavy prior-season
-    giveaway teams (5 and 6 giveaways per game, twice each, zero takeaways);
-    OPPX and OPPY absorb all of those takeaways with zero giveaways of their
-    own; TEAMB and TEAMC never turn the ball over. See module docstring for
-    why this keeps the league mean at 0.
-    """
 
     rows = [
         *[_pbp_row("2025_01_TEAMA_OPPX", "TEAMA", interception=1.0) for _ in range(3)],
@@ -149,11 +106,6 @@ def test_flag_fires_on_the_bottom_quartile_prior_season_teams() -> None:
 
 
 def test_flag_reproduces_the_screens_quartile_cut_on_this_fixture() -> None:
-    """TEAMA's prior-season centered turnover differential is -5 (well below
-    the frozen -0.4027 cutoff); OPPX's is +5.5, comfortably above it -- so
-    the SAME arithmetic the screen uses (giveaways/takeaways per game, minus
-    the season's own mean) reproduces the expected flag split on this
-    fixture, not just a hand-picked boolean."""
 
     flags = turnover_under_flag_by_game(_schedule(), _pbp_2025())
     both = flags.set_index("game_id").loc["2026_01_TEAMA_TEAME"]
@@ -166,8 +118,6 @@ def test_flag_reproduces_the_screens_quartile_cut_on_this_fixture() -> None:
 
 
 def test_flag_is_false_when_the_team_has_no_prior_season_data() -> None:
-    """TEAMD never appears in the 2025 fixture at all -- missing prior data
-    must resolve to False, never raise."""
 
     flags = turnover_under_flag_by_game(_schedule(), _pbp_2025())
     row = flags.set_index("game_id").loc["2026_01_TEAMD_TEAMA"]
@@ -185,11 +135,6 @@ def test_flag_requires_its_play_by_play_columns() -> None:
 
 
 def test_flag_is_unchanged_by_the_current_seasons_own_turnover_events() -> None:
-    """A leakage regression test proving the trait uses only the PRIOR
-    season: adding a pile of 2026 turnover events for TEAMA in ITS OWN
-    target game (interceptions thrown in 2026_01_TEAMD_TEAMA) must not move
-    the flag at all -- the function never even loads current-season
-    play-by-play into the panel the flag is looked up from."""
 
     baseline = turnover_under_flag_by_game(_schedule(), _pbp_2025())
 
@@ -207,10 +152,6 @@ def test_flag_is_unchanged_by_the_current_seasons_own_turnover_events() -> None:
 
 
 def test_flag_is_unchanged_by_a_flipped_outcome_in_the_current_seasons_other_games() -> None:
-    """A second current-season game (not the target game) getting a pile of
-    NEW turnover events must also leave every 2026 flag untouched -- proving
-    the panel this function reads from never incorporates ANY current-season
-    play, not just the target game's own."""
 
     baseline = turnover_under_flag_by_game(_schedule(), _pbp_2025())
 
@@ -400,12 +341,6 @@ def _write_active_model_and_card(artifacts: Path, *, ridge_alpha: float = 10.0) 
 
 
 def _full_pbp_2025() -> pd.DataFrame:
-    """The same 2025 turnover events as :func:`_pbp_2025`, widened to every
-    column ``nfl_ats.pbp.PBP_REQUIRED_COLUMNS`` demands so it can round-trip
-    through :func:`nfl_ats.pbp.write_pbp_snapshot` -> ``canonicalize_pbp`` ->
-    ``validate_pbp`` -- the recorder loads its play-by-play from a real
-    snapshot on disk, unlike the flag-level tests above which pass a
-    DataFrame straight to :func:`turnover_under_flag_by_game`."""
 
     schedule_2025 = _schedule().loc[lambda f: f["season"].eq(2025)].set_index("game_id")
     rows: list[dict[str, object]] = []
@@ -445,8 +380,6 @@ def _full_pbp_2025() -> pd.DataFrame:
 
 
 def _write_data_root(tmp_path: Path) -> Path:
-    """Write a schedules snapshot (nfl_ats.snapshots) and a play-by-play
-    snapshot (nfl_ats.pbp) under ``<tmp>/data``, as the recorder expects."""
 
     from nfl_ats.pbp import write_pbp_snapshot
     from nfl_ats.snapshots import write_snapshot
@@ -535,7 +468,6 @@ def test_record_turnover_luck_rebound_challenger_refuses_an_inactive_registratio
 
 
 def test_turnover_luck_rebound_fingerprint_helper_agrees_with_the_registered_model_block() -> None:
-    """Sanity check that the fixture's config really matches CONFIG_FINGERPRINT_KEYS."""
 
     metadata = {
         "ats_method": "market_residual",

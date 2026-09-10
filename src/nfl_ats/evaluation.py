@@ -1,5 +1,3 @@
-"""Nested chronological model selection and outer-fold evaluation."""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -52,7 +50,6 @@ class NestedEvaluationResult:
 
 
 def parse_candidates(value: str) -> tuple[EvaluationCandidate, ...]:
-    """Parse ``model:feature_set`` candidates from a comma-separated CLI value."""
 
     candidates: list[EvaluationCandidate] = []
     for item in value.split(","):
@@ -103,7 +100,6 @@ def _slice_candidate_result(
     min_edge: float,
     min_train_games: int,
 ) -> BacktestResult:
-    """Summarize a season range from a precomputed chronological stream."""
 
     predictions = stream.predictions.loc[
         stream.predictions["season"].between(start_season, end_season)
@@ -137,13 +133,6 @@ def nested_walk_forward_evaluation(
     min_edge: float = 0.02,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
 ) -> NestedEvaluationResult:
-    """Select on prior seasons, then score each outer season exactly once.
-
-    For outer season ``Y``, candidate configurations are compared only on
-    ``Y-validation_seasons`` through ``Y-1``. The winner is frozen before any
-    rows from season ``Y`` are scored. Weekly refitting inside the outer season
-    may use results from earlier weeks, matching the intended deployment loop.
-    """
 
     if last_test_season < first_test_season:
         raise ValueError("last_test_season cannot be earlier than first_test_season")

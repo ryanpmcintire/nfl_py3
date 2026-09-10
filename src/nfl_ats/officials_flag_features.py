@@ -1,39 +1,3 @@
-"""Officiating-crew leads: LEAD-31 (rookie-referee underdog), LEAD-32
-(directional home-cooking reliability + on-production flag), LEAD-34
-(crew-familiarity second meetings). LEAD-33 (all-star crews) has no local
-marker and is SKIPPED -- see ``docs/officials_crew_leads.md``.
-
-Predeclared in ``docs/officials_crew_leads.md`` BEFORE any outcome in this
-family was computed: population, thresholds, seed, and sample counts are
-all fixed there.
-
-Reuses, never rebuilds:
-
-- ``nfl_ats.experiment_runner._latest_officials_snapshot`` /
-  ``._build_referee_trait_data`` / ``._REFEREE_POSITION`` /
-  ``._REFEREE_SEASON_TYPE`` -- the referee battery's own
-  officials/game_penalties crosswalk join (``docs/referee_battery.md``) and
-  per-(official, season) tenure/trait builder. The same reuse pattern
-  ``nfl_ats.crew_tilt_refresh_overlay`` already established for this exact
-  module.
-- ``nfl_ats.pbp_coaching_traits.build_odd_even_halves`` /
-  ``.build_season_to_season_pairs`` / ``.paired_split_half_reliability`` --
-  Wave 4's split-half reliability harness (season-blocked bootstrap,
-  Spearman-Brown correction, within-season label-shuffle null). Generic
-  over the grouping column's NAME, not its meaning: this module renames
-  ``official_name`` to the literal column ``"team"`` before calling it, a
-  column-name compatibility shim, not a claim that a crew is a team.
-- ``nfl_ats.schedule_flag_features.default_opener_lines`` / ``.default_schedule``
-  / ``._attach`` -- the Tuesday-opener consensus spread store and the
-  additive-merge helper every sibling on-production candidate already uses.
-
-**Penalty YARDS, home/away split, are NOT available locally** (see
-``docs/officials_crew_leads.md`` section "Data sources"): the local trimmed
-PBP snapshot carries ``penalty``/``penalty_yards`` but not ``penalty_team``,
-and ``game_penalties.parquet`` itself only ever persisted COUNTS. LEAD-32 is
-built on penalty counts only, disclosed rather than silently narrowed.
-"""
-
 from __future__ import annotations
 
 from pathlib import Path
@@ -91,16 +55,6 @@ def _require_penalty_table_columns(table: pd.DataFrame) -> None:
 
 
 def home_away_penalty_game_table(repo_root: Path | None = None) -> pd.DataFrame:
-    """One row per (official_name, REG game with a matched head referee).
-
-    Columns: ``game_id`` (standard format), ``official_name``, ``season``,
-    ``week``, ``home_team``, ``away_team``, ``penalties_total``,
-    ``penalties_on_home``, ``penalties_on_away``, ``home_minus_away`` (=
-    ``penalties_on_home - penalties_on_away``, sign-flipped from
-    ``docs/referee_battery.md``'s own ``mean_diff`` which is
-    ``away - home``; see that doc for why this is a labelling choice, not a
-    new measurement).
-    """
 
     root = repo_root or REPO_ROOT
     officials_path, game_penalties_path, _snapshot_id = _latest_officials_snapshot(root)
@@ -149,15 +103,6 @@ def officials_home_bias_reliability(
     n_boot: int = PBP_TRAIT_N_BOOT,
     n_null: int = PBP_TRAIT_N_NULL,
 ) -> dict[str, Any]:
-    """Both reliability reads for the ``home_minus_away`` directional trait.
-
-    ``within_season_odd_even_week`` is the NEW measurement (Spearman-Brown
-    corrected); ``season_to_season_same_referee`` reproduces
-    ``docs/referee_battery.md``'s own ``mean_diff`` season-to-season Pearson
-    r up to a global sign flip, now with a season-blocked bootstrap CI the
-    original point-estimate-only read never had. ``table``, when given
-    (tests), is used instead of loading real snapshots via ``repo_root``.
-    """
 
     table = table if table is not None else home_away_penalty_game_table(repo_root or REPO_ROOT)
 
@@ -204,18 +149,6 @@ def officials_home_bias_reliability(
 def trailing_home_bias_table(
     repo_root: Path | None = None, *, table: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Per (official_name, season) crew-game, the trailing mean
-    ``home_minus_away`` over that crew's own PRIOR games THIS SEASON ONLY.
-
-    ``trailing_home_bias`` is NaN until the crew has officiated at least
-    :data:`TRAILING_HOME_BIAS_MIN_GAMES` prior games this season -- an
-    ``expanding().mean().shift(1)`` over the crew's own within-season game
-    order, so game *k*'s own penalty count can never reach its own value,
-    but legitimately changes every LATER game's value in the same
-    crew-season (both directions are asserted in
-    ``tests/test_officials_flag_features.py``). ``table``, when given
-    (tests), is used instead of loading real snapshots via ``repo_root``.
-    """
 
     table = table if table is not None else home_away_penalty_game_table(repo_root or REPO_ROOT)
     _require_penalty_table_columns(table)
@@ -236,18 +169,6 @@ def trailing_home_bias_table(
 def derive_crew_home_bias_features(
     repo_root: Path | None = None, *, table: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Return ``(game_id, crew_home_bias_flag)`` for every matched-referee game.
-
-    ``1.0`` when the home team's crew's trailing within-season home-bias
-    sits in the GLOBAL top quartile (``pd.qcut(4)`` over every eligible
-    trailing value, matching every other quartile-cut trait in this repo);
-    ``0.0`` otherwise, including "not yet
-    :data:`TRAILING_HOME_BIAS_MIN_GAMES` prior games this season."
-    Unsigned, single-sided (BACK home): the same crew officiates both
-    sides, so this is not a home/away comparison. ``table``, when given
-    (tests), is ``home_away_penalty_game_table``-shaped and used instead of
-    loading real snapshots.
-    """
 
     table = trailing_home_bias_table(repo_root, table=table)
     valid_mask = table["trailing_home_bias"].notna()
@@ -266,12 +187,6 @@ def derive_crew_home_bias_features(
 def attach_crew_home_bias_features(
     features: pd.DataFrame, *, repo_root: Path | None = None, schedule: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """Additively join ``crew_home_bias_flag`` onto ``features`` by ``game_id``.
-
-    Games with no matched referee (e.g. outside 2015-2025, or an unmatched
-    crosswalk row) default to ``0.0`` -- a documented "no signal" default,
-    matching every sibling on-production candidate's convention.
-    """
 
     root = repo_root or REPO_ROOT
 
@@ -287,15 +202,6 @@ def attach_crew_home_bias_features(
 def crew_familiarity_table(
     repo_root: Path | None = None, *, table: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """``home_away_penalty_game_table`` plus a ``second_meeting`` boolean.
-
-    ``second_meeting`` is ``True`` when the SAME ``official_name`` has
-    already officiated, EARLIER in the same season (by week order), a game
-    involving the home team OR the away team of the current game. Purely a
-    function of team identity and week order -- never reads any game's own
-    penalty count or outcome. ``table``, when given (tests), is used
-    instead of loading real snapshots via ``repo_root``.
-    """
 
     table = table if table is not None else home_away_penalty_game_table(repo_root or REPO_ROOT)
     _require_penalty_table_columns(table)
@@ -316,7 +222,6 @@ def crew_familiarity_table(
 def describe_crew_familiarity(
     repo_root: Path | None = None, *, table: pd.DataFrame | None = None
 ) -> dict[str, Any]:
-    """Descriptive frequency and penalty-count gap (task: descriptive only)."""
 
     table = crew_familiarity_table(repo_root, table=table)
     flagged = table.loc[table["second_meeting"]]
@@ -345,15 +250,6 @@ def derive_second_meeting_favorite_features(
     *,
     table: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Return ``(game_id, crew_second_meeting_favorite_flag)`` for every matched game.
-
-    ``+1`` when ``second_meeting`` AND the home team is favored at the
-    Tuesday opener; ``-1`` when ``second_meeting`` AND the away team is
-    favored; ``0`` otherwise (not a second meeting, an exact opener
-    pick'em, or a missing opener line). ``table``, when given (tests), is
-    ``home_away_penalty_game_table``-shaped and used instead of loading
-    real snapshots.
-    """
 
     if "game_id" not in opener_lines.columns:
         raise DataContractError("opener_lines is missing the game_id join key")
@@ -381,7 +277,6 @@ def attach_second_meeting_favorite_features(
     opener_lines: pd.DataFrame | None = None,
     market_root: Path | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``crew_second_meeting_favorite_flag`` onto ``features``."""
 
     root = repo_root or REPO_ROOT
 
@@ -399,8 +294,6 @@ def attach_second_meeting_favorite_features(
 
 
 def describe_referee_left_censoring(repo_root: Path | None = None) -> dict[str, Any]:
-    """Count of officials whose first dataset-visible season is 2015
-    (censored -- unknown true tenure) vs. a genuine 2016-2025 debut."""
 
     root = repo_root or REPO_ROOT
     officials_path, _game_penalties_path, _snapshot_id = _latest_officials_snapshot(root)
@@ -422,12 +315,6 @@ def describe_referee_left_censoring(repo_root: Path | None = None) -> dict[str, 
 def rookie_crew_table(
     repo_root: Path | None = None, *, trait: pd.DataFrame | None = None
 ) -> pd.DataFrame:
-    """``(game_id, official_name, season, prior_seasons_experience)`` --
-    reused verbatim from ``_build_referee_trait_data``'s own game_trait.
-
-    ``trait``, when given (tests), must already carry those four columns
-    and is used instead of loading real snapshots via ``repo_root``.
-    """
 
     if trait is not None:
         return trait[["game_id", "official_name", "season", "prior_seasons_experience"]].copy()
@@ -442,15 +329,6 @@ def derive_rookie_crew_underdog_features(
     *,
     trait: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
-    """Return ``(game_id, rookie_crew_underdog_flag)`` for every matched game.
-
-    ``+1`` when the crew is a rookie crew (``prior_seasons_experience`` in
-    ``{0, 1}``, restricted to ``season >= ROOKIE_ELIGIBLE_SEASON_FLOOR``) AND
-    the home team is the underdog at the Tuesday opener; ``-1`` when rookie
-    crew AND the away team is the underdog; ``0`` otherwise. ``trait``, when
-    given (tests), is ``rookie_crew_table``-shaped and used instead of
-    loading real snapshots.
-    """
 
     if "game_id" not in opener_lines.columns:
         raise DataContractError("opener_lines is missing the game_id join key")
@@ -480,7 +358,6 @@ def attach_rookie_crew_underdog_features(
     opener_lines: pd.DataFrame | None = None,
     market_root: Path | None = None,
 ) -> pd.DataFrame:
-    """Additively join ``rookie_crew_underdog_flag`` onto ``features``."""
 
     root = repo_root or REPO_ROOT
 

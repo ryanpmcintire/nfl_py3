@@ -1,22 +1,3 @@
-"""Static guided board assistant (UI-16).
-
-A chat panel over publish-time-generated knowledge: every answer is
-RETRIEVED from the page's own embedded corpus, never generated. There is
-no LLM, no backend, no network call -- the corpus ships inline in each
-page as ``<script type="application/json">`` (a separate
-``assistant_knowledge.json`` file is NOT written: the hosted dashboard's
-nginx allowlist serves only the four HTML pages, and its
-``connect-src 'none'`` CSP bans ``fetch``, so a sidecar file would be
-unreachable exactly where it matters; see ``docs/board_assistant_scout.md``).
-
-The ranking rule below is the port contract shared by the Python
-reference matcher (:func:`answer`, fully tested) and the thin inline-JS
-port in :data:`ASSISTANT_SCRIPT` (which only ranks the same embedded
-entries with the same embedded synonym table and returns the winning
-entry's own body -- it cannot compose new text, so by construction it
-cannot emit a probability, pick, or record absent from the corpus).
-"""
-
 from __future__ import annotations
 
 import json
@@ -188,7 +169,6 @@ GLOSSARY_ALIASES: dict[str, tuple[str, ...]] = {
 
 
 def _team_synonyms() -> dict[str, tuple[str, ...]]:
-    """Canonical team code -> query aliases (code, city, nickname)."""
 
     synonyms: dict[str, tuple[str, ...]] = {}
     for full_name, code in NFL_TEAM_NAMES.items():
@@ -266,10 +246,6 @@ SYNONYMS: dict[str, tuple[str, ...]] = {
 
 @dataclass(frozen=True)
 class _Entry:
-    """One fixed answer: a precomputed body plus its anchor. Routing no
-    longer scores keywords — the intent parser in :func:`answer` decides,
-    and these entries are looked up by id."""
-
     entry_id: str
     body: str
     anchor: str
@@ -291,12 +267,6 @@ def _tokens(text: str) -> tuple[str, ...]:
 
 
 def _team_hits(tokens: frozenset[str]) -> tuple[str, ...]:
-    """Team codes whose every alias-word is present as a query token.
-
-    Multi-word aliases ("new england") match word-wise, so word order
-    and extra words never matter; shared fragments ("la") can only
-    match the literal token, never a substring of another word.
-    """
 
     hits = []
     for code, aliases in _TEAM_SYNONYMS.items():
@@ -497,16 +467,6 @@ class _Parsed:
 
 
 def _glossary_term_match(ordered: tuple[str, ...], glossary_terms: Any) -> str | None:
-    """Longest-match-first phrase lookup for :func:`_parse`'s ``term``
-    field (ENG-36): every glossary term name and alias is re-tokenised
-    with :func:`_tokens` -- the SAME normalisation already applied to the
-    query -- into an n-gram of words, then the longest n-gram of
-    ``ordered`` equal to a candidate's word tuple wins. This makes
-    multi-word terms ("cover probability", "closing line", "Best Pick")
-    and multi-word aliases ("against the spread") reachable, while a
-    single-word term still matches exactly as the old set-membership
-    check did (a 1-token "n-gram" is just token-in-``ordered``).
-    """
 
     candidates: list[tuple[tuple[str, ...], str]] = []
     longest = 0
@@ -526,9 +486,6 @@ def _glossary_term_match(ordered: tuple[str, ...], glossary_terms: Any) -> str |
 
 
 def _parse(question: str, knowledge: Mapping[str, Any]) -> _Parsed:
-    """Parse meaning, not keywords: entities (teams, days, glossary
-    terms, counts) plus intent signals. Pure function of the query and
-    the corpus team/glossary tables."""
 
     ordered = _tokens(question)
     tokens = frozenset(ordered)
@@ -558,10 +515,6 @@ def _parse(question: str, knowledge: Mapping[str, Any]) -> _Parsed:
 
 
 def _deflect_entries(season: int, week: int) -> tuple[_Entry, ...]:
-    """The must-deflect set, in the exact order of
-    :func:`_deflect_rule_sets` (rule *i* fires entry *i*): each rule is
-    an AND of OR-groups, so ``best bet`` still routes to the Best Pick
-    while ``should I bet`` deflects."""
 
     wager = _Entry(
         entry_id="deflect:wager",
@@ -662,9 +615,6 @@ def _deflect_rule_sets() -> tuple[tuple[frozenset[str], ...], ...]:
 
 
 def _deflect_words(query: str) -> tuple[set[str], str]:
-    """Word set plus order-preserving flat string, punctuation stripped
-    (so a trailing ``?`` cannot defeat the must-deflect set). No length
-    filter here: single-digit weeks (``week 2``) must stay matchable."""
 
     flat = " ".join("".join(char.lower() if char.isalnum() else " " for char in query).split())
     return set(flat.split()), flat
@@ -731,13 +681,6 @@ def build_knowledge(
     weak_spots: WeakSpots | None = None,
     season_record_text: str | None = None,
 ) -> dict[str, Any]:
-    """Build the deterministic retrieval corpus for one page.
-
-    Every answer body is composed verbatim from the inputs -- this
-    function invents no number and no claim, so the numeric-guard test
-    (every number in an answer also occurs in the corpus) holds by
-    construction.
-    """
 
     entries: list[_Entry] = list(_deflect_entries(int(season or 0), int(week or 0)))
     home_correction = (weak_spots or WeakSpots()).home_correction or HomeCorrection()
@@ -1026,9 +969,6 @@ def build_knowledge(
 
 
 def _source_policy_body(view: SourcePolicyView) -> str:
-    """ENG-34: one retrievable sentence for the "sources" corpus entry --
-    verbatim off :class:`~nfl_ats.board_content.SourcePolicyView`, never a
-    second source-freshness read."""
 
     if not view.recorded:
         return (
@@ -1047,10 +987,6 @@ def _source_policy_body(view: SourcePolicyView) -> str:
 
 
 def _tiebreaker_body(view: TiebreakerView) -> str:
-    """UI-20(g) extension (2026-09-05): one retrievable sentence for the
-    "tiebreaker" corpus entry -- verbatim off :class:`~nfl_ats.board_content
-    .TiebreakerView`, itself read straight from ``nfl_ats.publishing``'s
-    persisted ``tiebreaker.json``. Never recomputes the guess."""
 
     if not view.recorded:
         return view.note
@@ -1069,7 +1005,6 @@ def build_knowledge_for_board(
     weak_spots: WeakSpots | None = None,
     page: str = "index.html",
 ) -> dict[str, Any]:
-    """Full corpus for the This Week page."""
 
     headline = board.headline
     record_lines = (
@@ -1146,9 +1081,6 @@ def _record_lines_for_headline(headline: Any) -> tuple[str, ...]:
 
 
 def build_knowledge_for_model(model: ModelPageContent) -> dict[str, Any]:
-    """Corpus for The Model page: games (via the ticker), the shared
-    headline record, and vocabulary -- no policy or findings, which live
-    on their own pages."""
 
     return build_knowledge(
         page="model.html",
@@ -1170,7 +1102,6 @@ def build_knowledge_for_model(model: ModelPageContent) -> dict[str, Any]:
 
 
 def build_knowledge_for_history(history: HistoryPageContent) -> dict[str, Any]:
-    """Corpus for History, including its settled current-season record."""
 
     headline = (
         headline_with_season_record(history.headline, history)
@@ -1196,8 +1127,6 @@ def build_knowledge_for_history(history: HistoryPageContent) -> dict[str, Any]:
 
 
 def build_knowledge_for_findings(findings: FindingsPageContent) -> dict[str, Any]:
-    """Corpus for What We've Learned: verdict groups, open leads, and
-    the honesty rules -- the page's own prose, retrievable."""
 
     finding_items = tuple(
         (f"{group.verdict}: {item.question}", f"{item.plain_answer} {item.detail}".strip())
@@ -1235,8 +1164,6 @@ _LIKE_NOUNS = frozenset({"pick", "picks", "game", "games", "call", "team", "team
 
 
 def _best_words(tokens: frozenset[str]) -> bool:
-    """Best-pick phrasing: every word of a known alias is present, or a
-    liking verb beside a pick/game noun."""
 
     for alias in SYNONYMS["best_pick"]:
         if all(word in tokens for word in alias.replace("-", " ").split()):
@@ -1423,9 +1350,6 @@ def _count_games(knowledge: Mapping[str, Any]) -> int:
 
 
 def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
-    """Reference engine: deflect set first, then intent parse with
-    composed answers, else the fallback. Pure function of the query and
-    the corpus — every number returned already occurs in the corpus."""
 
     query = question.strip()
     if not query:
@@ -1691,7 +1615,6 @@ def answer(question: str, knowledge: Mapping[str, Any]) -> AssistantAnswer:
 
 
 def _js_string_array(items: tuple[str, ...], *, per_line: int = 8) -> str:
-    """A wrapped JS string-array literal, aliases sorted for determinism."""
 
     quoted = [f'"{item}"' for item in sorted(items)]
     lines = [
@@ -1725,23 +1648,6 @@ _INTENT_WORDS: dict[str, frozenset[str]] = {
 
 
 def assistant_script() -> str:
-    """Render the inline-JS port of :func:`answer`.
-
-    STOP, the deflect rules, and the intent vocabulary are GENERATED
-    from :data:`STOPWORDS`, :func:`_deflect_rule_sets`, and
-    :data:`_INTENT_WORDS` -- the JS can never drift from the tested
-    Python engine on any of them. The port only ever returns corpus
-    strings composed exactly the way Python composes them (verified by
-    executing the shipped script against the full question battery). Ports
-    the four ENG-04 lineup intents too (``lineupQbStarterAnswer`` and
-    siblings), reading the 48h staleness budget from the corpus's own
-    ``lineups.stale_budget_hours`` rather than a second hardcoded constant.
-
-    The IIFE exposes a pure, DOM-free ``answerQuestion(question, corpus)``
-    via a guarded ``module.exports`` (ENG-25) so
-    ``tests/parity/assistant_parity.mjs`` can evaluate the SAME engine
-    under Node -- a no-op in the browser, where ``module`` is undefined.
-    """
 
     stop_js = _js_string_array(tuple(STOPWORDS))
     rule_js_lines = []
@@ -2519,10 +2425,6 @@ _ASSISTANT_SCRIPT_TEMPLATE = """
 
 
 def _corpus_json(corpus: Mapping[str, Any]) -> str:
-    """Corpus JSON safe to inline: ``<``, ``>``, and ``&`` ride as
-    unicode escapes (plain ``json.loads`` decodes them back), so no
-    payload text can break out of its ``<script
-    type="application/json">`` block or read as markup."""
 
     return (
         json.dumps(corpus, sort_keys=True)
@@ -2533,11 +2435,6 @@ def _corpus_json(corpus: Mapping[str, Any]) -> str:
 
 
 def assistant_section(corpus: Mapping[str, Any]) -> str:
-    """The chat panel for one page: ``<details>``-native (keyboard
-    operable, mobile-collapsed by default), honest without JS (topic
-    links to the existing anchor-linked sections), answering from the
-    embedded corpus with JS. No animation anywhere, so
-    ``prefers-reduced-motion`` is honored by having nothing to reduce."""
 
     teams = [
         {"code": code, "aliases": list(aliases)} for code, aliases in sorted(_TEAM_SYNONYMS.items())

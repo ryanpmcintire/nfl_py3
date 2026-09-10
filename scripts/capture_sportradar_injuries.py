@@ -1,16 +1,3 @@
-"""Capture Sportradar's credentialed NFL Weekly Injuries feed immutably.
-
-The provider documents this endpoint as a weekly team/player injury report
-including practice and game statuses, with a four-hour cache TTL:
-https://developer.sportradar.com/football/reference/nfl-weekly-injuries
-
-Every successful run writes the verbatim response and a canonical parquet to
-a new UTC-stamped private snapshot. ``manifest.json`` is written last and pins
-the capture time, source URL, response SHA-256, requested week, and coverage.
-Missing credentials fail before I/O; stale, malformed, wrong-week, or
-incomplete responses leave only a failed manifest and cannot be consumed.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -40,7 +27,7 @@ VALID_ACCESS_LEVELS = frozenset({"trial", "production"})
 
 
 class SportradarInjuryCaptureError(RuntimeError):
-    """A response cannot be retained as a safe injury-report snapshot."""
+    pass
 
 
 def source_url(season: int, week: int, season_type: str, access_level: str) -> str:
@@ -264,7 +251,6 @@ def capture(
 
 
 def load_for_decision(root: Path, decision_at: datetime) -> tuple[Path, pd.DataFrame]:
-    """Load the newest verified snapshot that existed by ``decision_at``."""
 
     cutoff = pd.Timestamp(decision_at)
     if cutoff.tzinfo is None:

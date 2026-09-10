@@ -1,15 +1,3 @@
-"""Fixture tests for season mode (owner-approved improvement batch, item 4):
-board rows for FINAL games (final score, cover result, a quiet row tint,
-meters replaced by the outcome), the hero's running record strip, and every
-required state -- all-upcoming (must render exactly as today), mixed week,
-fully-graded week, pushes, and a Best Pick win/loss.
-
-Every fixture here is built by ``dataclasses.replace`` off the shared
-``_board_content_fixtures.build_fixture_content()`` 16-game board, so these
-tests exercise the SAME renderer real weekly content flows through -- no
-new content path exists just for tests.
-"""
-
 from __future__ import annotations
 
 from dataclasses import replace

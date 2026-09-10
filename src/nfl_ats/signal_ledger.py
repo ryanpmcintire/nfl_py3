@@ -1,49 +1,3 @@
-"""The public Signal Ledger page: every recorded weak-signal experiment, in
-plain language, sortable/filterable/searchable, regenerated fresh from
-``registry/weak_signals.json`` on every ``publish-board``.
-
-ROADMAP item (Signal Ledger). This module owns the SCHEMA-to-page mapping and
-the rendering; a separate process owns the WORDS
-(``registry/reference/signal_summaries.json``, applied onto the registry by
-``scripts/apply_signal_summaries.py`` -- see that script's docstring). Nothing
-here writes to the registry.
-
-Status derivation (see :func:`_status`): three things are DERIVED from the
-record, in precedence order, never guessed:
-
-* ``classification`` of ``refuted_mechanism`` or ``bounded_by_control`` ->
-  ``closed`` (an admissible closing ground is already enforced at record
-  time, see :mod:`nfl_ats.weak_signals`).
-* ``category == "control"`` -> ``control`` (a deliberately unplayable
-  instrument check, oracle, or placebo).
-* ``name`` in :func:`nfl_ats.four_overlay_composition.on_the_card_registry_names`
-  -> ``on_the_card`` (the live production policy).
-* Everything else -> ``recorded``.
-
-**"On the card" (2026-08-26 fix).** The obvious source for this was
-``artifacts/prospective/challengers.json``'s ``evidence.registry_source``
-field -- the exact mechanism :mod:`nfl_ats.model_ledger` already uses to link
-a challenger to its registry evidence. Measured: it is ``None`` on EVERY
-player-arrests-related entry in that artifact (the promoted overlay, its
-retired coach-only incumbent, the union policy itself, and its own
-incumbent), so that mechanism resolved nothing for this policy and the page
-originally shipped with "On the card" and "Candidates" as two dead filter
-chips. The fix is
-:data:`nfl_ats.four_overlay_composition.MEMBER_REGISTRY_EVIDENCE` -- a
-mapping in CODE, next to the policy it describes, covering all four members
-(one of them, the arrest policy, resolved by an exact NUMBER MATCH against
-``HANDOFF.md`` rather than a declared source; see that module's docstring for
-the full chain and why). ``tests/test_four_overlay_composition.py`` fails the
-build if a member has no mapping or a mapped name is missing from the live
-registry, so this can't go silently empty again.
-
-**"Candidate" was dropped, not filled in.** There is no code-derivable
-source distinguishing "under active consideration for promotion" from
-"merely recorded" -- unlike on-the-card, nothing in this codebase declares
-that distinction anywhere. A five-chip status row that all work beats a
-six-chip row where one is decorative.
-"""
-
 from __future__ import annotations
 
 import json
@@ -122,7 +76,6 @@ def _status(signal: WeakSignal) -> str:
 
 
 def _idea_text(signal: WeakSignal) -> tuple[str, bool]:
-    """(text, is_fallback) -- the plain summary, or the raw description."""
 
     if signal.plain_summary and signal.plain_summary.strip():
         return signal.plain_summary.strip(), False
@@ -151,10 +104,6 @@ def _caveat_flags(
 
 
 def _overlapping_names(registry: Registry) -> frozenset[str]:
-    """Signals whose measurement window overlaps another in the same
-    inferred family -- computed live from the registry (never hardcoded),
-    the same accounting :func:`nfl_ats.weak_signals.family_overlap_warnings`
-    already does for the ``weak-signals pool`` command."""
 
     report = family_overlap_warnings(list(registry.signals.values()))
     names: set[str] = set()
@@ -164,17 +113,6 @@ def _overlapping_names(registry: Registry) -> frozenset[str]:
 
 
 def _duplicate_names(registry: Registry) -> frozenset[str]:
-    """Signals that are byte-for-byte identical to another recorded signal on
-    every quantitative field (league, effect, interval, probability_positive,
-    sample_games, sample_blocks) -- e.g. ``body_clock_night_dose_ge2000`` and
-    ``body_clock_night_west_road_ge2000et`` (owner, measured 2026-08-26: a
-    single genuine pair in 480 rows). This is a REGISTRY DATA QUESTION, not a
-    rendering decision: both rows still render, this only adds a caveat flag
-    so a reader is not misled into treating them as two independent
-    confirmations. Requires interval/probability_positive/sample_games all be
-    present so two sparse rows that both happen to be missing the same fields
-    never false-positive as "duplicates" of each other.
-    """
 
     fingerprints: dict[tuple[Any, ...], list[str]] = {}
     for signal in registry.signals.values():
@@ -265,9 +203,6 @@ def _row_payload(
 
 
 def build_ledger_rows(registry: Registry) -> list[dict[str, Any]]:
-    """Every signal in ``registry``, as a JSON-ready row for the page's
-    client-side table. Sorted by name for determinism (the page's own JS
-    controls the visible order)."""
 
     overlapping = _overlapping_names(registry)
     duplicates = _duplicate_names(registry)
@@ -662,12 +597,6 @@ _JS = """
 
 
 def build_signal_ledger_body(registry: Registry) -> tuple[str, str]:
-    """Compose the ledger page body and its trailing ``<script>`` block.
-
-    Returns ``(body_html, script_html)`` -- the same shape
-    ``public_board._team_explorer_matchup`` returns -- so the caller wraps it
-    with ``public_board._page(..., scripts=script_html)``.
-    """
 
     from nfl_ats.dashboard import viz
 

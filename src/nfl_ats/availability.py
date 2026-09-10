@@ -1,5 +1,3 @@
-"""Season-lagged empirical player-availability probabilities."""
-
 from __future__ import annotations
 
 from collections.abc import Iterable
@@ -79,18 +77,6 @@ def position_group(value: object) -> str:
 
 
 def fixed_unavailability(report_status: object, practice_status: object) -> float:
-    """Return the original hand-authored availability prior.
-
-    Bit-faithful to the pre-availability-research inline heuristic that the
-    frozen active model's injury features were built and evaluated with. The
-    practice fallback deliberately uses raw substring matching, NOT
-    :func:`practice_category`: legacy practice strings such as "Out",
-    "Out (Definitely Will Not Play)", or "DNP" were never recognized by the
-    original rules and must keep returning 0.0 here. Routing through the
-    categorized parser silently changed 18 historical games' injury features
-    (2010-2015) and broke feature-table reproducibility; treat any mapping
-    change as a model change that needs re-evaluation, never a refactor.
-    """
 
     report = str(report_status).strip().lower()
     report_mapping = {
@@ -118,19 +104,6 @@ def build_availability_outcomes(
     *,
     decision_hours_before_kickoff: int = 24,
 ) -> pd.DataFrame:
-    """Create one historical played/unavailable outcome per visible injury row.
-
-    Visibility (ENG-39 follow-up): uses ``injuries["effective_observed_at"]``
-    when that column is present (the output of
-    ``nfl_ats.players.canonicalize_injuries(..., timestamp_fallback=
-    "week_proxy")``), else ``injuries["date_modified"]`` -- matching
-    ``nfl_ats.players._injury_rows_asof`` exactly, so a season whose
-    injuries only became visible via the leakage-safe week_proxy fallback
-    (e.g. 2025, where nflverse drops ``date_modified`` entirely) is no
-    longer silently excluded from the learned availability rates this
-    function feeds. A frame without ``effective_observed_at`` behaves
-    exactly as before this change.
-    """
 
     if decision_hours_before_kickoff < 0:
         raise ValueError("decision_hours_before_kickoff cannot be negative")
@@ -329,7 +302,6 @@ def build_season_lagged_availability_rates(
     combination_prior: float = AVAILABILITY_COMBINATION_PRIOR,
     position_prior: float = AVAILABILITY_POSITION_PRIOR,
 ) -> pd.DataFrame:
-    """Estimate expanding prior-season rates with declared hierarchical shrinkage."""
 
     if not np.isfinite(combination_prior) or combination_prior < 0:
         raise ValueError("combination_prior must be finite and nonnegative")
@@ -467,7 +439,6 @@ def resolve_unavailability(
     practice_status: object,
     position: object,
 ) -> tuple[float, str]:
-    """Resolve the shared learned-then-fixed availability policy and provenance."""
 
     if lookup is not None:
         if target_season is None:
@@ -488,7 +459,6 @@ def resolve_unavailability(
 
 
 def score_availability_rates(outcomes: pd.DataFrame, rates: pd.DataFrame) -> pd.DataFrame:
-    """Compare learned and fixed probabilities on their matched target-season rows."""
 
     lookup = availability_rate_lookup(rates)
     scored = outcomes.copy()

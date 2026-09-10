@@ -1,41 +1,3 @@
-"""Immutable-snapshot ingester for NFL.com weekly league injury reports.
-
-Source: https://www.nfl.com/injuries/league/{season}/reg{week} (plain HTML;
-per-player practice status and game status per team table). Scope: REG weeks
-1-18 for seasons 2022-2024, the era the local nflverse injuries feed covers
-before its post-2024 death, so Stage 1b agreement can be measured.
-
-robots.txt is fetched and evaluated BEFORE any page fetch (fail-closed); as
-measured 2026-08-21, www.nfl.com/robots.txt disallows nothing under /injuries/
-and sets no Crawl-delay; this script still enforces a polite >= 2s delay.
-
-Snapshot convention: data/raw/nflcom_injuries/<UTC ts>/pages/*.html plus a
-manifest.json carrying one sha256 per page and every fetch failure. The
-snapshot directory must stay nested under --out exactly like every other raw
-source (a manifest.json directly at data/raw/ root would be mistaken for a
-schedules snapshot by nfl_ats.snapshots.latest_snapshot()).
-
---agreement runs Stage 1b: joins the parsed snapshot against the local nflverse
-injuries feed (data/players/raw/*/injuries.parquet, gsis_id resolved to names
-via weekly_rosters.parquet) on season+week+team+normalized name and writes
-artifacts/nflcom_injuries/<snapshot_id>/agreement.json.
-
---current runs the IN-SEASON incremental mode required by
-docs/nflcom_friday_refresh.md's frozen integration contract (section
-"Refresh-path integration contract", item 2): resolve the live (season, REG
-week) from the schedules snapshot and fetch ONLY that week's page into a FRESH
-timestamped snapshot directory, instead of the 54-page historical backfill.
-
-Every --current run writes its own snapshot directory on purpose. The NFL.com
-league page is a LIVING document that is revised Wednesday through Friday, and
-a revision stream cannot be recovered retroactively from a final-state page;
-one immutable snapshot per capture is the only way to keep those intermediate
-states. It also matters for the consumer: nfl_ats.prospective's
-latest_nflcom_injuries_snapshot() reads the lexicographically LAST snapshot
-directory only, so a fresh UTC-stamped directory is what makes the newest
-capture the one production sees.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -246,12 +208,6 @@ def sha256_bytes(data: bytes) -> str:
 
 
 def resolve_current_reg_week(repo: Path, now: pd.Timestamp | None = None) -> tuple[int, int]:
-    """The live (season, REG week) to capture, from the schedules snapshot.
-
-    The capture belongs to the week whose games are still AHEAD: we take the
-    earliest REG week that still has an unplayed kickoff. Running on Wednesday
-    of week 5 therefore captures week 5, not the just-completed week 4.
-    """
 
     hits = sorted((repo / "data" / "raw").glob("*/schedules.parquet"))
     if not hits:

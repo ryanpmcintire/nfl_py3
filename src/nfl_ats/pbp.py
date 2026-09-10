@@ -1,5 +1,3 @@
-"""Versioned nflverse play-by-play ingestion and leak-safe feature building."""
-
 from __future__ import annotations
 
 import hashlib
@@ -41,14 +39,6 @@ def season_scope_mask(
     dataset: str,
     column: str,
 ) -> pd.Series:
-    """Select the rows a snapshot keeps for the requested season scope.
-
-    With ``include_postseason`` unset this is exactly the historical
-    ``values == "REG"`` comparison, down to its silent treatment of every other
-    value, so regular-season snapshots stay bit-identical. The opt-in path is
-    strict instead: an unrecognized code raises rather than being kept as
-    garbage or dropped without comment.
-    """
 
     if not include_postseason:
         return values.eq(REGULAR_SEASON_CODE)
@@ -116,8 +106,6 @@ PBP_SNAPSHOT_COLUMNS = (
 
 @dataclass(frozen=True)
 class PbpSnapshot:
-    """An immutable, season-partitioned play-by-play snapshot."""
-
     snapshot_id: str
     root: Path
     seasons: tuple[int, ...]
@@ -149,7 +137,6 @@ def _sha256(path: Path) -> str:
 
 
 def validate_pbp(frame: pd.DataFrame, season: int | None = None) -> None:
-    """Fail loudly when nflverse changes fields needed by the v1 contract."""
 
     require_columns(frame, PBP_REQUIRED_COLUMNS, "play_by_play")
     if frame[["game_id", "play_id"]].isna().any(axis=None):
@@ -171,13 +158,6 @@ def canonicalize_pbp(
     *,
     include_postseason: bool = False,
 ) -> pd.DataFrame:
-    """Select and normalize the stable v1 play-by-play storage contract.
-
-    ``include_postseason`` widens the stored scope to REG plus POST plays so a
-    snapshot can serve playoff predictions. It changes what is written, never
-    what is read: every read path re-applies the regular-season filter by
-    default, so the frozen model's feature values are unaffected.
-    """
 
     validate_pbp(frame, season=season)
     result = frame.copy()
@@ -203,7 +183,6 @@ def write_pbp_snapshot(
     *,
     include_postseason: bool = False,
 ) -> PbpSnapshot:
-    """Write season partitions and a manifest, publishing the manifest last."""
 
     seasons = tuple(sorted(season_frames))
     if not seasons:
@@ -251,7 +230,6 @@ def fetch_pbp_snapshot(
     *,
     include_postseason: bool = False,
 ) -> PbpSnapshot:
-    """Download nflverse PBP one season at a time to bound memory use."""
 
     if not seasons or seasons != sorted(set(seasons)):
         raise ValueError("Seasons must be non-empty, unique, and sorted")
@@ -309,15 +287,6 @@ def latest_pbp_snapshot(raw_root: Path) -> PbpSnapshot:
 
 
 def load_pbp_snapshot(snapshot: PbpSnapshot, *, include_postseason: bool = False) -> pd.DataFrame:
-    """Read a snapshot's plays, regular season only unless asked otherwise.
-
-    ``canonicalize_pbp`` runs at write time, so a postseason-inclusive snapshot
-    on disk would otherwise feed POST plays straight into
-    ``enrich_with_pbp_features``, ``build_qb_game_metrics``, and the
-    participation ratings that join against these plays. Re-applying the scope
-    here keeps every existing feature build regular-season only regardless of
-    what the snapshot contains; callers that want playoff plays opt in.
-    """
 
     frames: list[pd.DataFrame] = []
     for season in snapshot.seasons:
@@ -340,12 +309,6 @@ def load_pbp_snapshot(snapshot: PbpSnapshot, *, include_postseason: bool = False
 
 
 def analysis_plays(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Apply the documented v1 efficiency filter.
-
-    The filter keeps real scrimmage plays with an offense, EPA, and win
-    probability; removes kneels, spikes, aborted plays, and no-plays; and marks
-    the 5%-95% win-probability subset used for efficiency aggregation.
-    """
 
     require_columns(pbp, PBP_SNAPSHOT_COLUMNS, "play_by_play snapshot")
     result = pbp.copy()
@@ -378,7 +341,6 @@ def analysis_plays(pbp: pd.DataFrame) -> pd.DataFrame:
 
 
 def build_drive_table(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Aggregate one row per offensive drive from eligible v1 plays."""
 
     plays = analysis_plays(pbp)
     if plays.empty:
@@ -435,7 +397,6 @@ def _safe_rate(numerator: pd.Series, denominator: pd.Series) -> float:
 
 
 def build_pbp_team_game_metrics(pbp: pd.DataFrame) -> pd.DataFrame:
-    """Build offense and opponent-derived defense metrics per completed game."""
 
     plays = analysis_plays(pbp)
     plays = plays.loc[plays["competitive_play"]].copy()
@@ -633,7 +594,6 @@ def enrich_with_pbp_features(
     opponent_ridge_alpha: float = 10.0,
     opponent_min_team_games: int = 64,
 ) -> pd.DataFrame:
-    """Attach PBP states from games strictly earlier than the game being scored."""
 
     if span < 2:
         raise ValueError("span must be at least 2")

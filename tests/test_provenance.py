@@ -245,7 +245,6 @@ def test_write_experiment_artifact_records_a_dirty_tree_never_blocks(tmp_path: P
 
 
 def test_write_experiment_artifact_supports_bare_provenance_dict(tmp_path: Path) -> None:
-    """The ``run.json`` convention: metadata IS the provenance dict, not wrapped."""
 
     _init_repo(tmp_path)
     feature_path = _feature_setup(tmp_path)
@@ -270,7 +269,6 @@ def test_write_experiment_artifact_supports_bare_provenance_dict(tmp_path: Path)
 
 
 def test_write_experiment_artifact_tolerates_a_minimal_stubbed_provenance(tmp_path: Path) -> None:
-    """Some CLI tests monkeypatch ``artifact_provenance`` to a bare stub -- must not crash."""
 
     metadata = {"provenance": {"test": True}}
     output = tmp_path / "artifacts" / "demo_command" / "20260101T000000Z"
@@ -311,7 +309,6 @@ def test_write_experiment_artifact_reuses_the_artifact_directory_stamp(tmp_path:
 
 
 def test_write_experiment_artifact_two_commands_do_not_clobber_each_other(tmp_path: Path) -> None:
-    """Per-run files under registry/experiments/<command>/ -- no lost-update race."""
 
     feature_path = _feature_setup(tmp_path)
     registry_root = tmp_path / "registry"
