@@ -282,6 +282,7 @@ LEDGERS: tuple[LedgerSpec, ...] = (
         arms=(
             Arm("refreshed", "new_pick_side"),
             Arm("before_refresh", "previous_pick_side"),
+            Arm("model_only_off_arm", "model_only_pick_side"),
         ),
         order_column="revision_recorded_at_utc",
         deadline_columns=("kickoff",),
@@ -293,6 +294,7 @@ LEDGERS: tuple[LedgerSpec, ...] = (
         arms=(
             Arm("tuesday", "tuesday_pick_side"),
             Arm("movement_follow", "movement_would_be_pick_side"),
+            Arm("equal_book_off_arm", "equal_would_be_pick_side"),
         ),
         order_column="revision_recorded_at_utc",
     ),

@@ -1386,10 +1386,18 @@ def plan_refresh(
         validate_three_way_split(scored, line_column="spread_line")
 
         original_indexed = original.set_index("game_id")
-        policy_ids = set(original["decision_policy_id"].astype(str))
+        sunday_lock = sunday_pick_lock(original["kickoff"])
+        original_deadlines = pd.to_datetime(original["kickoff"], utc=True, errors="coerce").map(
+            lambda kickoff: pick_deadline(kickoff, sunday_lock)
+        )
+        revisable = original.loc[original_deadlines.gt(computed_at)]
+        policy_ids = set(
+            (revisable if not revisable.empty else original)["decision_policy_id"].astype(str)
+        )
         if len(policy_ids) != 1 or not policy_ids <= set(PRODUCTION_COMPOSITION_POLICY_IDS):
             raise DataContractError(
-                "Refresh requires one frozen production composition policy for the week"
+                "Refresh requires one frozen production composition policy across the games it "
+                f"can still revise; found {sorted(policy_ids)}"
             )
         overlaid_frame = scored.reset_index(drop=True).copy()
         frozen_union = (
@@ -1404,7 +1412,6 @@ def plan_refresh(
         )
         overlaid = overlaid_frame.set_index("game_id")
 
-        sunday_lock = sunday_pick_lock(original["kickoff"])
         published_side = _published_pick_side(original)
         current_lines, line_metadata = current_captured_home_spread(data_root, now=computed_at)
         late_week_lookup, late_week_metadata = _late_week_follow_lookup(

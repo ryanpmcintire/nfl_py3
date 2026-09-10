@@ -58,6 +58,7 @@ from nfl_ats.clv import load_paper_decisions  # noqa: E402
 from nfl_ats.crew_tilt_refresh_overlay import (  # noqa: E402
     load_crew_tilt_refresh_decisions,
 )
+from nfl_ats.handle_follow_refresh_overlay import LEDGER_NAME as HANDLE_FOLLOW_LEDGER  # noqa: E402
 from nfl_ats.inactives_refresh_overlay import (  # noqa: E402
     load_inactives_refresh_overlay_decisions,
 )
@@ -166,6 +167,40 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "legitimately_empty": (
             "the pick-revision ledger records only games whose pick CHANGED; a week where "
             "no pick moved legitimately writes nothing"
+        ),
+    },
+    "rookie_crew_underdog_off_incumbent": {
+        "ledger": "prospective/pick_revisions.parquet",
+        "loader": load_pick_revisions,
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "its OFF arm is the model_only_pick_side column carried on every pick-revision "
+            "row, so it records only where the served rookie-crew rule moved a pick; a week "
+            "where none moved legitimately writes nothing"
+        ),
+    },
+    "late_week_leader_median_follow_v1": {
+        "ledger": f"prospective/{LATE_WEEK_LEDGER}",
+        "loader": _parquet_ledger(f"prospective/{LATE_WEEK_LEDGER}"),
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "the served leader-median arm shares the equal-book arm's rows in this ledger and "
+            "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
+        ),
+    },
+    "handle_follow_refresh_off_incumbent": {
+        "ledger": f"prospective/{HANDLE_FOLLOW_LEDGER}",
+        "loader": _parquet_ledger(f"prospective/{HANDLE_FOLLOW_LEDGER}"),
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "the handle reading only exists from Saturday noon ET, so this arm cannot record "
+            "at the Tuesday lock -- only on a weekend refresh pass"
         ),
     },
 }

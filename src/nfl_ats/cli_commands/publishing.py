@@ -165,7 +165,9 @@ REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "crew_tilt_refresh_v1": "crew_tilt_refresh_overlay",
     "specialist_absence_fade_refresh_v1": "specialist_absence_fade_refresh_overlay",
     "late_week_move_follow_refresh_v1": "late_week_move_follow_refresh_overlay",
+    "late_week_leader_median_follow_v1": "late_week_move_follow_refresh_overlay",
     "handle_follow_refresh_off_incumbent": "handle_follow_refresh_overlay",
+    "rookie_crew_underdog_off_incumbent": "ledger",
 }
 
 
