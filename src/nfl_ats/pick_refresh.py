@@ -134,6 +134,21 @@ both weekend captures land after their kickoffs. Every revision row keeps the
 pre-rule pick and the money/ticket numbers the decision was made on
 (``handle_*``). See ``docs/handle_follow_on_card.md`` for the measurement and
 ``docs/late_week_refresh.md``'s handle section for the served rule.
+
+Served rookie-crew step (2026-09-09, docs/rookie_crew_reconciliation.md)
+-----------------------------------------------------------------------
+Below both market arms sits ``ROOKIE_CREW_POLICY``: on a game whose published
+Wednesday crew assignment names a head referee with at most one prior season in
+the archive-extended officials table, the served side comes from a refresh-time
+refit on profile ``weak_stack_rookie_crew_underdog`` -- the exact feature build
+that measured +0.133 accuracy points on the played nine-member card,
+``probability_positive`` 0.790, six changed picks over 2020-2025. It governs
+only when neither market arm fires and only when the refit's side differs from
+the model-only side; the OFF arm is the ``model_only_pick_side`` column that
+every ledger row already carries, registered as the paired challenger
+``rookie_crew_underdog_off_incumbent``. Fails open to the model-only side on a
+missing assignment, a snapshot past every game's deadline, a week with no
+rookie crew, or an unavailable refit.
 """
 
 from __future__ import annotations
@@ -148,6 +163,7 @@ from typing import Any, cast
 from zoneinfo import ZoneInfo
 
 import numpy as np
+import numpy.typing as npt
 import pandas as pd
 
 from nfl_ats import mass_preserving_lattice
@@ -257,6 +273,12 @@ def handle_reading_opens(sunday_lock: pd.Timestamp) -> pd.Timestamp:
     saturday = sunday_lock.tz_convert(PICK_LOCK_TIMEZONE).date() - timedelta(days=1)
     local = datetime.combine(saturday, HANDLE_READING_LOCAL_TIME, tzinfo=PICK_LOCK_TIMEZONE)
     return pd.Timestamp(local).tz_convert("UTC")
+
+
+ROOKIE_CREW_POLICY = "rookie_crew_underdog_v1"
+ROOKIE_CREW_SEASON_FLOOR = 2010
+ROOKIE_CREW_PROFILE = "weak_stack_rookie_crew_underdog"
+ROOKIE_CREW_REASON = "The officiating crew is new this season."
 
 
 def _movement_side(delta: float) -> str:
@@ -401,6 +423,9 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "handle_money_pct",
     "handle_ticket_pct",
     "handle_pre_rule_pick_side",
+    "rookie_crew_flag",
+    "rookie_crew_referee",
+    "rookie_crew_pick_side",
     "model_id",
     "feature_table_sha256",
     "reason",
@@ -447,6 +472,9 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
         "handle_money_pct": None,
         "handle_ticket_pct": None,
         "handle_pre_rule_pick_side": "",
+        "rookie_crew_flag": 0.0,
+        "rookie_crew_referee": "",
+        "rookie_crew_pick_side": "",
     }
     for column, default in legacy_defaults.items():
         if column not in ledger.columns:
@@ -502,10 +530,15 @@ def describe_week_revisions(
         run_id = str(revision.get("refresh_run_id", "") or "refresh pass")
         trigger = str(revision.get("trigger_type", "") or "")
         trigger_text = " (news-triggered)" if trigger == "news_event" else ""
+        crew_text = (
+            f" {ROOKIE_CREW_REASON}"
+            if str(revision.get("movement_policy", "") or "") == ROOKIE_CREW_POLICY
+            else ""
+        )
         if new_side == previous_side:
             lines.append(
                 f"{away} at {home} refresh ({run_id}){trigger_text}: "
-                f"refresh confirmed {new_side}, no change from Tuesday; {spread_text}."
+                f"refresh confirmed {new_side}, no change from Tuesday; {spread_text}.{crew_text}"
             )
         else:
             delta = revision.get("movement_delta")
@@ -513,7 +546,7 @@ def describe_week_revisions(
             lines.append(
                 f"{away} at {home} refresh ({run_id}){trigger_text}: "
                 f"pick now {new_side} (Tuesday card: {previous_side}); "
-                f"{spread_text}{movement_text}."
+                f"{spread_text}{movement_text}.{crew_text}"
             )
     return tuple(lines)
 
@@ -648,6 +681,9 @@ class RefreshedGame:
     handle_money_pct: float | None = None
     handle_ticket_pct: float | None = None
     handle_pre_rule_pick_side: str = ""
+    rookie_crew_flag: float = 0.0
+    rookie_crew_referee: str = ""
+    rookie_crew_pick_side: str = ""
 
 
 @dataclass(frozen=True)
@@ -667,6 +703,7 @@ class RefreshResult:
     current_line_metadata: dict[str, Any] = field(default_factory=dict)
     late_week_metadata: dict[str, Any] = field(default_factory=dict)
     handle_metadata: dict[str, Any] = field(default_factory=dict)
+    rookie_crew_metadata: dict[str, Any] = field(default_factory=dict)
 
     @property
     def changed_games(self) -> tuple[RefreshedGame, ...]:
@@ -870,6 +907,210 @@ def _handle_follow_lookup(
     return readings, {**metadata, "reading_opens_utc": opens.isoformat()}
 
 
+def _rookie_crew_lookup(
+    features: pd.DataFrame,
+    overridden: pd.DataFrame,
+    data_root: Path,
+    *,
+    season: int,
+    week: int,
+    decision_spreads: Mapping[str, float],
+    deadlines: Mapping[str, pd.Timestamp],
+    overlay_flip_game_ids: frozenset[str],
+    regressor: str,
+    ridge_alpha: float,
+    min_train_games: int,
+    method: str,
+    probability_method: ResidualSmoothingMethod,
+    center_offset: np.ndarray | None,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    """The reconciled rookie-crew rule's would-be side per game, fail-open.
+
+    The rule is ``docs/rookie_crew_reconciliation.md`` Part 2 verbatim: a head
+    referee with at most ``ROOKIE_PRIOR_EXPERIENCE_MAX`` prior seasons in the
+    archive-extended officials table (2009-2025, so the season floor is that
+    population's own first season plus one), the flag signed by the UNDERDOG
+    side of the frozen Tuesday line, entering as a FEATURE column of the ridge
+    on profile ``weak_stack_rookie_crew_underdog`` -- never a hand-set flip, so
+    the fitted coefficient decides the direction. Serving it needs the
+    refresh-time refit that measurement was taken on, restricted to games whose
+    own ``pick_deadline`` is still open when the Wednesday crew snapshot lands.
+    Anything missing -- no published assignment, a snapshot past every deadline,
+    no rookie crew this week, an unreadable officials history, a refit that will
+    not fit -- returns an empty lookup and the reason, never an exception.
+    """
+
+    def _unavailable(reason: str, **extra: Any) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+        return {}, {
+            "available": False,
+            "reason": reason,
+            "games_with_rookie_crew": 0,
+            "rookie_crew_game_ids": [],
+            **extra,
+        }
+
+    from nfl_ats.crew_tilt_refresh_overlay import latest_crew_snapshot
+
+    try:
+        snapshot = latest_crew_snapshot(data_root, season=season, week=week)
+    except (OSError, ValueError, DataContractError) as error:
+        return _unavailable(f"the crew-assignment snapshot is unreadable: {error}")
+    if snapshot is None or not snapshot.referee_by_game_id:
+        return _unavailable("no officiating-crew assignment is published for this week")
+
+    in_window = {
+        game_id: referee
+        for game_id, referee in snapshot.referee_by_game_id.items()
+        if game_id in deadlines and snapshot.captured_at_utc < deadlines[game_id]
+    }
+    if not in_window:
+        return _unavailable(
+            "the published crew assignment arrived at or after every game's pick deadline",
+            crew_snapshot_id=snapshot.snapshot_id,
+        )
+
+    repo_root = data_root.parent
+    try:
+        from nfl_ats.experiment_runner import _REFEREE_POSITION, _REFEREE_SEASON_TYPE
+        from nfl_ats.officials_archive import load_officials
+        from nfl_ats.officials_flag_features import (
+            ROOKIE_CREW_UNDERDOG_COLUMN,
+            ROOKIE_PRIOR_EXPERIENCE_MAX,
+        )
+        from nfl_ats.schedule_flag_features import default_opener_lines
+        from nfl_ats.weak_stack_v3_features import latest_schedules_snapshot
+
+        officials = load_officials(repo_root, include_archive=True)
+        crews = officials.loc[
+            officials["position"].eq(_REFEREE_POSITION)
+            & officials["season_type"].eq(_REFEREE_SEASON_TYPE),
+            ["game_id", "official_name"],
+        ]
+        schedules = pd.read_parquet(latest_schedules_snapshot(repo_root)).loc[
+            :, ["game_id", "old_game_id", "season", "week"]
+        ]
+        history = (
+            crews.merge(
+                schedules.rename(columns={"season": "crew_season"}),
+                left_on="game_id",
+                right_on="old_game_id",
+                how="inner",
+                suffixes=("_legacy", ""),
+            )
+            .loc[:, ["game_id", "official_name", "crew_season"]]
+            .rename(columns={"crew_season": "season"})
+            .astype({"season": int})
+        )
+        tenure = (
+            history.loc[:, ["official_name", "season"]]
+            .drop_duplicates()
+            .sort_values(["official_name", "season"])
+            .reset_index(drop=True)
+        )
+        tenure["prior_seasons_experience"] = tenure.groupby("official_name").cumcount()
+        history = history.merge(tenure, on=["official_name", "season"], how="left")
+    except (OSError, ValueError, KeyError, DataContractError) as error:
+        return _unavailable(f"the officiating-crew history is unreadable: {error}")
+
+    prior_seasons = tenure.loc[tenure["season"].lt(int(season))].groupby("official_name").size()
+    rookie_sides: dict[str, dict[str, Any]] = {}
+    for game_id, referee in in_window.items():
+        spread = decision_spreads.get(game_id)
+        if spread is None or not np.isfinite(spread) or float(spread) == 0.0:
+            continue
+        if int(prior_seasons.get(str(referee), 0)) > ROOKIE_PRIOR_EXPERIENCE_MAX:
+            continue
+        rookie_sides[game_id] = {
+            "referee": str(referee),
+            "flag": 1.0 if float(spread) < 0.0 else -1.0,
+        }
+    if not rookie_sides:
+        return _unavailable(
+            "no game this week is worked by a first- or second-season officiating crew",
+            crew_snapshot_id=snapshot.snapshot_id,
+        )
+
+    try:
+        openers = default_opener_lines(
+            schedules.loc[:, ["game_id", "season", "week"]],
+            market_root=data_root / "market" / "raw",
+        )
+        proxy = features.loc[:, ["game_id", "spread_line"]].copy()
+        proxy["game_id"] = proxy["game_id"].astype(str)
+        proxy = proxy.merge(
+            openers.loc[:, ["game_id", "tue_open_home_spread"]], on="game_id", how="left"
+        )
+        graded_line = proxy["tue_open_home_spread"].fillna(proxy["spread_line"])
+        line_by_game = dict(zip(proxy["game_id"], graded_line, strict=True))
+
+        history["game_id"] = history["game_id"].astype(str)
+        line = pd.to_numeric(history["game_id"].map(line_by_game), errors="coerce")
+        rookie = history["prior_seasons_experience"].le(ROOKIE_PRIOR_EXPERIENCE_MAX) & history[
+            "season"
+        ].ge(ROOKIE_CREW_SEASON_FLOOR)
+        history_flag = pd.Series(
+            np.where(rookie & line.lt(0.0), 1.0, np.where(rookie & line.gt(0.0), -1.0, 0.0)),
+            index=history.index,
+        )
+        archive = (
+            pd.DataFrame({"game_id": history["game_id"], "flag": history_flag})
+            .drop_duplicates("game_id")
+            .set_index("game_id")["flag"]
+        )
+        forward = pd.Series({key: float(read["flag"]) for key, read in rookie_sides.items()})
+
+        def _flag_for(frame: pd.DataFrame) -> npt.NDArray[np.float64]:
+            ids = frame["game_id"].astype(str)
+            signed = ids.map(forward).fillna(ids.map(archive)).fillna(0.0)
+            return np.asarray(signed.to_numpy(), dtype=np.float64)
+
+        trained = features.assign(**{ROOKIE_CREW_UNDERDOG_COLUMN: _flag_for(features)})
+        scoring = overridden.assign(**{ROOKIE_CREW_UNDERDOG_COLUMN: _flag_for(overridden)})
+        _target, refit = fit_margin_models_for_week(
+            trained,
+            season=season,
+            week=week,
+            regressor=regressor,
+            min_train_games=min_train_games,
+            feature_profile=cast(MarginFeatureProfile, ROOKIE_CREW_PROFILE),
+            ridge_alpha=ridge_alpha,
+            methods=(method,),
+        )
+        forecasts = refit[method].predict(
+            scoring, probability_method=probability_method, center_offset=center_offset
+        )
+    except (OSError, ValueError, KeyError, DataContractError) as error:
+        return _unavailable(
+            f"the rookie-crew refit is unavailable: {error}",
+            crew_snapshot_id=snapshot.snapshot_id,
+        )
+
+    probabilities = pd.to_numeric(forecasts["home_cover_probability"], errors="coerce").to_numpy(
+        dtype=float
+    )
+    lookup: dict[str, dict[str, Any]] = {}
+    for game_id, probability in zip(
+        scoring["game_id"].astype(str).to_numpy(), probabilities, strict=True
+    ):
+        read = rookie_sides.get(str(game_id))
+        if read is None or not np.isfinite(probability):
+            continue
+        composed = 1.0 - probability if str(game_id) in overlay_flip_game_ids else probability
+        lookup[str(game_id)] = {
+            "referee": read["referee"],
+            "flag": float(read["flag"]),
+            "side": "HOME" if composed >= 0.5 else "AWAY",
+        }
+    return lookup, {
+        "available": True,
+        "reason": "",
+        "crew_snapshot_id": snapshot.snapshot_id,
+        "crew_captured_at_utc": snapshot.captured_at_utc.isoformat(),
+        "games_with_rookie_crew": len(lookup),
+        "rookie_crew_game_ids": sorted(lookup),
+    }
+
+
 def plan_refresh(
     artifacts_root: Path,
     data_root: Path,
@@ -956,6 +1197,7 @@ def plan_refresh(
     games: tuple[RefreshedGame, ...] = ()
     line_metadata: dict[str, Any] = {}
     handle_metadata: dict[str, Any] = {}
+    rookie_crew_metadata: dict[str, Any] = {}
     if not refreshable.empty:
         lines = original[["game_id", "decision_home_spread"]].rename(
             columns={"decision_home_spread": "home_spread"}
@@ -1035,6 +1277,31 @@ def plan_refresh(
             sunday_lock=sunday_lock,
             now=computed_at,
         )
+        rookie_crew_lookup, rookie_crew_metadata = _rookie_crew_lookup(
+            features,
+            overridden,
+            data_root,
+            season=season,
+            week=week,
+            decision_spreads={
+                str(game_id): float(cast(Any, value))
+                for game_id, value in original_indexed["decision_home_spread"].items()
+                if pd.notna(value)
+            },
+            deadlines={
+                str(game_id): pick_deadline(pd.Timestamp(row["kickoff"]), sunday_lock)
+                for game_id, row in overlaid.iterrows()
+            },
+            overlay_flip_game_ids=frozenset(
+                overlaid_frame.loc[frozen_union.astype(bool), "game_id"].astype(str)
+            ),
+            regressor=regressor,
+            ridge_alpha=ridge_alpha,
+            min_train_games=min_train_games,
+            method=method,
+            probability_method=probability_method,
+            center_offset=center_offset,
+        )
 
         existing_revisions = load_pick_revisions(artifacts_root)
         week_revisions = existing_revisions.loc[
@@ -1103,6 +1370,12 @@ def plan_refresh(
                     and late_week_net is not None
                     and abs(late_week_net) >= LATE_WEEK_FOLLOW_THRESHOLD
                 )
+            rookie_crew = rookie_crew_lookup.get(game_id)
+            rookie_crew_flag = 0.0 if rookie_crew is None else float(rookie_crew["flag"])
+            rookie_crew_referee = "" if rookie_crew is None else str(rookie_crew["referee"])
+            rookie_crew_side = "" if rookie_crew is None else str(rookie_crew["side"])
+            rookie_crew_fires = rookie_crew_side not in ("", model_only_side)
+
             if late_week_fires:
                 policy = LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
                 new_side = late_week_side
@@ -1115,8 +1388,8 @@ def plan_refresh(
                 movement_delta = consensus_delta
                 movement_pick_side = consensus_side
             else:
-                policy = MOVEMENT_POLICY_MODEL_ONLY
-                new_side = model_only_side
+                policy = ROOKIE_CREW_POLICY if rookie_crew_fires else MOVEMENT_POLICY_MODEL_ONLY
+                new_side = rookie_crew_side if rookie_crew_fires else model_only_side
                 if consensus_delta is not None:
                     movement_delta = consensus_delta
                     movement_pick_side = consensus_side
@@ -1178,6 +1451,9 @@ def plan_refresh(
                     handle_money_pct=handle_money,
                     handle_ticket_pct=handle_ticket,
                     handle_pre_rule_pick_side=handle_pre_rule_side,
+                    rookie_crew_flag=rookie_crew_flag,
+                    rookie_crew_referee=rookie_crew_referee,
+                    rookie_crew_pick_side=rookie_crew_side,
                     eligible=eligible,
                     ineligible_reason=reason,
                     changed=changed,
@@ -1199,6 +1475,7 @@ def plan_refresh(
         current_line_metadata=line_metadata,
         late_week_metadata=late_week_metadata,
         handle_metadata=handle_metadata,
+        rookie_crew_metadata=rookie_crew_metadata,
     )
 
 
@@ -1280,6 +1557,32 @@ def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str,
                     if game.movement_policy == HANDLE_FOLLOW_POLICY
                 ],
             },
+        },
+        "rookie_crew": {
+            "available": bool(plan.rookie_crew_metadata.get("available", False)),
+            "reason": plan.rookie_crew_metadata.get("reason", ""),
+            "crew_snapshot_id": plan.rookie_crew_metadata.get("crew_snapshot_id"),
+            "crew_captured_at_utc": plan.rookie_crew_metadata.get("crew_captured_at_utc"),
+            "games_with_rookie_crew": plan.rookie_crew_metadata.get("games_with_rookie_crew", 0),
+            "rookie_crew_game_ids": plan.rookie_crew_metadata.get("rookie_crew_game_ids", []),
+            "games_rookie_crew_applied": [
+                game.game_id for game in plan.games if game.movement_policy == ROOKIE_CREW_POLICY
+            ],
+            "rookie_crew_reads": [
+                {
+                    "game_id": game.game_id,
+                    "matchup": f"{game.away_team} at {game.home_team}",
+                    "referee": game.rookie_crew_referee,
+                    "underdog_is_home": game.rookie_crew_flag > 0.0,
+                    "decision_home_spread": game.decision_home_spread,
+                    "rookie_crew_pick_side": game.rookie_crew_pick_side,
+                    "model_only_pick_side": game.model_only_pick_side,
+                    "served_pick_side": game.new_pick_side,
+                    "changes_the_served_pick": game.movement_policy == ROOKIE_CREW_POLICY,
+                }
+                for game in plan.games
+                if game.rookie_crew_flag != 0.0
+            ],
         },
     }
 
@@ -1376,6 +1679,9 @@ def record_plan(
             "handle_money_pct": [game.handle_money_pct for game in changed],
             "handle_ticket_pct": [game.handle_ticket_pct for game in changed],
             "handle_pre_rule_pick_side": [game.handle_pre_rule_pick_side for game in changed],
+            "rookie_crew_flag": [game.rookie_crew_flag for game in changed],
+            "rookie_crew_referee": [game.rookie_crew_referee for game in changed],
+            "rookie_crew_pick_side": [game.rookie_crew_pick_side for game in changed],
             "model_id": plan.model_id,
             "feature_table_sha256": plan.feature_table_sha256,
             "reason": [
@@ -1533,9 +1839,11 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
         "followed them, "
         "`movement_ge_1.0` when the pool's own captured line instead moved >=1.0 point and "
         "the pick followed it, `handle_follow_0_70` when neither market arm fired and at "
-        "least 70% of the money bet on the game sat on the other side, or `model_only` "
-        "when nothing above fired (or no market evidence was available) -- see "
-        "docs/late_week_refresh.md's movement-policy sections.\n\n"
+        "least 70% of the money bet on the game sat on the other side, "
+        "`rookie_crew_underdog_v1` when neither market arm fired and the officiating crew "
+        "for that game is new this season, or `model_only` when nothing above fired (or no "
+        "market evidence was available) -- see docs/late_week_refresh.md's movement-policy "
+        "sections.\n\n"
     )
     return heading + intro + table + "\n"
 

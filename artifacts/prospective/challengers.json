@@ -1535,7 +1535,7 @@
       "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision/Tuesday-opener) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). Track all season; evaluate after the season with the predeclared taxonomy only -- an interval crossing zero never grounds rejection. No rotation-registry window is spent or implied by this registration.",
       "registered_at_utc": "2026-08-23T00:28:52Z",
       "registered_by": "Production-wiring task 2026-08-22/23 per POL-10 conventions, before Week 1 locks Sep 8: register the NFL.com Friday Out>=2-starters refresh fade composed on the production chain as a frozen 2026 prospective challenger. Rule text pasted verbatim below from docs/nflcom_friday_refresh.md section '2026 prospective challenger registration (frozen rule text, ready to paste)'; evidence docs/nflcom_friday_refresh.md (+2.18 pts, P+ 0.9954 week-blocked on three seasons, flagged selection-inflated); registry key recorded centrally as registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain.",
-      "rule_frozen_text": "Challenger: nflcom_friday_refresh_out2_starters_v1\nStatus: PROSPECTIVE \u2014 registers a 2026-season prospective test; nothing here\n  is claimed as confirmed. The historical composed figure (+2.1795 pts,\n  P+ 0.9954 week-blocked, artifacts/nflcom_friday_refresh/20260822T231604Z/)\n  is attribution on already-looked-at data (the parent signal was selected\n  AND red-teamed on the same 2022-2024 seasons) and is an upper bound.\nRule (frozen): For each REG game on the weekly card, let CHAIN be the\n  production pick (raw model -> coach fade -> player-arrests policy), PICKED\n  the team CHAIN backs, OPP the opponent. From the current week's FINAL\n  NFL.com league injury page (ingested before the Saturday refresh pass),\n  count OUT designations on STARTER-CALIBER players for each team, where\n  starter-caliber = played >=50% of offensive or defensive snaps in that\n  team's most recent prior REG game of the same season (snap_counts.parquet;\n  Week 1 = proxy unavailable = no flag). If PICKED carries >=2 such Out\n  designations and OPP carries <2, replace CHAIN with the opposite side;\n  otherwise keep CHAIN unchanged (both-flagged keeps; page absent or failing\n  the freshness gate keeps).\nTiming: computed once per week by the late-week refresh pass, Saturday UTC,\n  after the week's final injury page is ingested and before card\n  regeneration; the Tuesday grading line is never re-picked.\nGrading: opener-grade (frozen Tuesday line) vs the incumbent chain's picks,\n  paired accuracy deltas in accuracy points, full slate, pushes excluded;\n  week-blocked primary / season-blocked secondary bootstrap.\nProspective decision rule: track all season; evaluate after the season with\n  the predeclared taxonomy only \u2014 an interval crossing zero never grounds\n  rejection; promotion claims require the owner's declared threshold; card\n  play remains expected value at the opener grade.\nFails open: any ingest or freshness failure leaves the incumbent card\n  untouched for affected games and logs the skip.",
+      "rule_frozen_text": "Challenger: nflcom_friday_refresh_out2_starters_v1\nStatus: PROSPECTIVE — registers a 2026-season prospective test; nothing here\n  is claimed as confirmed. The historical composed figure (+2.1795 pts,\n  P+ 0.9954 week-blocked, artifacts/nflcom_friday_refresh/20260822T231604Z/)\n  is attribution on already-looked-at data (the parent signal was selected\n  AND red-teamed on the same 2022-2024 seasons) and is an upper bound.\nRule (frozen): For each REG game on the weekly card, let CHAIN be the\n  production pick (raw model -> coach fade -> player-arrests policy), PICKED\n  the team CHAIN backs, OPP the opponent. From the current week's FINAL\n  NFL.com league injury page (ingested before the Saturday refresh pass),\n  count OUT designations on STARTER-CALIBER players for each team, where\n  starter-caliber = played >=50% of offensive or defensive snaps in that\n  team's most recent prior REG game of the same season (snap_counts.parquet;\n  Week 1 = proxy unavailable = no flag). If PICKED carries >=2 such Out\n  designations and OPP carries <2, replace CHAIN with the opposite side;\n  otherwise keep CHAIN unchanged (both-flagged keeps; page absent or failing\n  the freshness gate keeps).\nTiming: computed once per week by the late-week refresh pass, Saturday UTC,\n  after the week's final injury page is ingested and before card\n  regeneration; the Tuesday grading line is never re-picked.\nGrading: opener-grade (frozen Tuesday line) vs the incumbent chain's picks,\n  paired accuracy deltas in accuracy points, full slate, pushes excluded;\n  week-blocked primary / season-blocked secondary bootstrap.\nProspective decision rule: track all season; evaluate after the season with\n  the predeclared taxonomy only — an interval crossing zero never grounds\n  rejection; promotion claims require the owner's declared threshold; card\n  play remains expected value at the opener grade.\nFails open: any ingest or freshness failure leaves the incumbent card\n  untouched for affected games and logs the skip.",
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "NOT a retrained model and NOT a change to the published card -- CHALLENGER-tracked only: this challenger's weekly picks are the PLAYED production-chain picks already frozen in the paper-decision ledger, transformed post-prediction by nfl_ats.prospective.record_nflcom_refresh_out2_starters_challenger_decisions using the frozen rule text above. Signal inputs reuse scripts/nflcom_friday_designation_screen.py's exact name-normalization/starter-proxy/join machinery (imported, not reimplemented), reading the newest data/raw/nflcom_injuries snapshot under the frozen freshness gate (page fetched >= Friday 16:00 ET of the game week AND < the week's earliest kickoff). Evidence registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain: +2.1795 accuracy points vs the incumbent chain, week-blocked 95% [+0.5222, +3.8911], probability_positive 0.9954, season-blocked P+ 0.9623, 780 scored games -- THREE SEASONS ONLY (2022-2024, the snapshot's coverage), per-season deltas 2022 +0.000 / 2023 +1.504 / 2024 +4.888 pts. SELECTION-INFLATED, stated every time: the parent signal was selected AND red-teamed on these same seasons, so the composed figure is an upper bound and no fresh confirmation is claimed; classification unresolved_below_power, no window spent.",
       "weekly_generation_command": "N/A -- reuses the played production-chain picks already frozen in artifacts/clv_ledger/decisions.parquet plus the ingested NFL.com injury page; never a separate margin-predict run. Timing follows the frozen refresh-path integration contract (docs/nflcom_friday_refresh.md sections 97-123): computed at the late-week refresh pass after the week's final injury page is ingested; the Tuesday grading line is never re-picked.",
@@ -2958,6 +2958,73 @@
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "Recorded unresolved_below_power; the interval crossing zero is not a closing ground. The OFF arm is retained as the paired prospective record for the served rule.",
       "weekly_generation_command": "N/A -- reuses the refresh pass's own plan and the local public-betting captures; no network fetch.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
+    },
+    {
+      "challenger_id": "rookie_crew_underdog_off_incumbent",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "closing_grounds_taxonomy": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment. Only a RESOLVED wrong sign (whole interval on the wrong side of zero), zero split-half reliability, or a positive control proven able to detect an effect that size ever closes a line of work. Everything else is unresolved_below_power: report probability_positive, never the binary 'contains zero'.",
+        "full_refit_arm_context": {
+          "effect_accuracy_points": 0.1330672,
+          "note": "The predeclared arm in docs/rookie_crew_reconciliation.md lets the refit move UNFLAGGED games too (coefficient drift). Re-measured this session it is +0.133067 accuracy points, week 95% [-0.197109, +0.465735], probability_positive 0.790450, 6 changed picks -- reproducing docs/served_card_harness.md's +0.133 / 0.7904 to the digit. The SERVED step is the flagged-games-only subset above, because AGENTS.md requires a flip to name a mechanism and a drift-only change on an unflagged game names none.",
+          "probability_positive_week_blocked": 0.79045
+        },
+        "registry_source": [
+          "registry/weak_signals.json:rookie_crew_reconciled_card_2020_2025",
+          "registry/weak_signals.json:rookie_crew_reconciled_standalone_2020_2025",
+          "registry/weak_signals.json:rookie_crew_reconciled_reliability_season_pairs_2009_2025"
+        ],
+        "reliability_note": "Split-half reliability of the referee's underdog-cover rate is +0.0756, 95% [-0.0201, +0.1453], probability_positive 0.951, season-to-season over 255 pairs (docs/rookie_crew_reconciliation.md Part 3). Small but positive, so no_split_half_reliability is NOT available as a closing ground for this family.",
+        "served_arm_as_wired": {
+          "arm": "the refit's opener side substituted on FLAGGED games only, on top of the served nine-member card -- exactly what nfl_ats.pick_refresh serves",
+          "bootstrap": "paired week- and season-blocked, 20,000 samples, seed 20260821",
+          "card_accuracy": 0.568862,
+          "effect_accuracy_points": 0.0665336,
+          "interval_points_season_blocked": [
+            -0.1345898,
+            0.2771997
+          ],
+          "interval_points_week_blocked": [
+            -0.1342282,
+            0.3278689
+          ],
+          "n_scored_games": 1503,
+          "picks_changed": 3,
+          "probability_positive_season_blocked": 0.718,
+          "probability_positive_week_blocked": 0.707725,
+          "week_blocks": 107,
+          "window": [
+            2020,
+            2025
+          ],
+          "with_it_accuracy": 0.569528
+        },
+        "write_up": "docs/rookie_crew_reconciliation.md, docs/served_card_harness.md, docs/referee_assignments_capture.md"
+      },
+      "known_gap": "The pick-revision ledger records only games whose SERVED pick changed, so a game where the rookie-crew step held the Tuesday pick against a model-only flip writes no row; every refresh pass's JSON reports those game ids under rookie_crew.rookie_crew_reads, and a settlement pass should read them from there until a dedicated ledger exists. Crew assignments publish Wednesday-Thursday, so this channel can never reach the Tuesday lock and a capture that slips past a Thursday kickoff drops that game.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "Snapshots the active recipe. The ON arm refits at refresh time on feature profile weak_stack_rookie_crew_underdog (production weak_stack plus the one signed rookie_crew_underdog_flag column); the OFF arm is the same pass's model_only_pick_side. Both arms score the same games at the same frozen Tuesday line.",
+      "prospective_protocol": "Score forced-pick ATS accuracy for the OFF arm (model_only_pick_side) against the served arm (new_pick_side) on every pick_revisions.parquet row whose movement_policy is rookie_crew_underdog_v1, paired per game at the frozen Tuesday grading line via nfl-ats prospective-score -- decision_line primary, close_line secondary. The two arms are identical by construction on every game the step did not govern, so only governed games carry information. No rotation-registry window is spent or implied.",
+      "reader_summary": "Tracks what the picks would have been if a new officiating crew never changed one, so the two versions can be compared on the same games.",
+      "registered_at_utc": "2026-09-09T00:00:00+00:00",
+      "registered_by": "Serving the reconciled rookie-crew rule on the late-week refresh path (docs/rookie_crew_reconciliation.md). Registered as the paired OFF arm the way home_side_offset_off_incumbent and late_week_move_follow_refresh_v1 were.",
+      "rule_frozen_text": "Challenger: rookie_crew_underdog_off_incumbent\nStatus: ACTIVE_PROSPECTIVE -- the OFF arm of a SERVED rule, tracked so the 2026 season   scores both arms on the same games at no rotation-window cost.\nServed rule (frozen): at each nfl-ats refresh-picks pass, take the newest\n  data/players/referee_assignments snapshot covering that (season, week) whose\n  captured_at_utc is strictly before a game's own pick deadline min(kickoff, Sunday\n  16:00 ET). A game is FLAGGED when its head referee has at most 1 prior season in the\n  archive-extended officials table (load_officials(include_archive=True), 2009-2025, so\n  the season floor is 2010), signed +1 when the home team is the underdog at the frozen\n  Tuesday line and -1 when the away team is. That signed column is attached to the\n  feature table -- Tuesday-opener spread where the opener store reaches, archived\n  nflverse spread as a close proxy before 2020 -- and the week's model is refit on\n  profile weak_stack_rookie_crew_underdog. On a FLAGGED game whose refit side differs\n  from the model-only side, and only when neither market arm fired, the served pick\n  becomes the refit side; the OFF arm keeps the model-only side.\nPrecedence: BELOW both market arms -- late_week_move_follow_0_5 first, then\n  movement_ge_1.0, then this, then model_only.\nGrading: the frozen Tuesday line (POL-11), decision_line primary.\nFails open: no published assignment, a snapshot at or after every deadline, no rookie\n  crew that week, an unreadable officials history, or a refit that will not fit all\n  yield the model-only side, tagged with the reason -- never an exception.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained production model and NOT a change to the Tuesday card. The Tuesday publish is untouched; this rule exists only on the late-week refresh path, below both market arms, and its OFF arm is the model_only_pick_side column the pick-revision ledger already carries on every row.",
+      "weekly_generation_command": "Generated by refresh-picks from the local Wednesday crew capture (referee_assignments_wed) plus a refresh-time refit; no network fetch.",
       "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
     }
   ],

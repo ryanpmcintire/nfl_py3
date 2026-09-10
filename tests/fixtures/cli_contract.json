@@ -77,6 +77,7 @@
         "clv-ledger",
         "prospective-record",
         "prospective-score",
+        "settle",
         "drift-report",
         "clv-pilot",
         "clv-sign-test",
@@ -260,6 +261,10 @@
         {
           "name": "prospective-score",
           "help": "settle every recorded prospective pick against results and report forced-pick ATS accuracy at the recorded line (primary) and the close (secondary)"
+        },
+        {
+          "name": "settle",
+          "help": "grade every recorded 2026 ledger against the latest final scores at its own decision line, and print won/lost/pushed/pending per arm"
         },
         {
           "name": "drift-report",
@@ -4290,6 +4295,144 @@
               "choices": null,
               "required": false,
               "help": null,
+              "metavar": null
+            }
+          ],
+          "subcommands": null
+        },
+        {
+          "path": [
+            "settle"
+          ],
+          "prog": "nfl-ats settle",
+          "usage": null,
+          "description": null,
+          "epilog": null,
+          "formatter_class": "HelpFormatter",
+          "prefix_chars": "-",
+          "add_help": true,
+          "allow_abbrev": true,
+          "argument_default": null,
+          "conflict_handler": "error",
+          "handler": "nfl_ats.cli_commands.prospective._cmd_settle",
+          "other_defaults": {},
+          "actions": [
+            {
+              "action_class": "_HelpAction",
+              "option_strings": [
+                "-h",
+                "--help"
+              ],
+              "dest": "help",
+              "nargs": 0,
+              "const": null,
+              "default": "==SUPPRESS==",
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "show this help message and exit",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--season"
+              ],
+              "dest": "season",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": {
+                "__type__": "callable",
+                "value": "builtins.int"
+              },
+              "choices": null,
+              "required": false,
+              "help": "settle one season; omit to settle every season from --start-season onward",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--week"
+              ],
+              "dest": "week",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": {
+                "__type__": "callable",
+                "value": "builtins.int"
+              },
+              "choices": null,
+              "required": false,
+              "help": "settle one week of --season; omit to settle every recorded week",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--start-season"
+              ],
+              "dest": "start_season",
+              "nargs": null,
+              "const": null,
+              "default": "<CURRENT_YEAR>",
+              "type": {
+                "__type__": "callable",
+                "value": "builtins.int"
+              },
+              "choices": null,
+              "required": false,
+              "help": "first season to grade when --season is omitted; earlier seasons are historical backtests, not pre-kickoff decisions",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreAction",
+              "option_strings": [
+                "--results"
+              ],
+              "dest": "results",
+              "nargs": null,
+              "const": null,
+              "default": null,
+              "type": {
+                "__type__": "callable",
+                "value": "pathlib.Path"
+              },
+              "choices": null,
+              "required": false,
+              "help": "a schedules parquet to grade against instead of fetching or reading the newest local snapshot",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreTrueAction",
+              "option_strings": [
+                "--no-refresh-results"
+              ],
+              "dest": "no_refresh_results",
+              "nargs": 0,
+              "const": true,
+              "default": false,
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "never reach the network; grade against the newest local schedules snapshot",
+              "metavar": null
+            },
+            {
+              "action_class": "_StoreTrueAction",
+              "option_strings": [
+                "--write-graded"
+              ],
+              "dest": "write_graded",
+              "nargs": 0,
+              "const": true,
+              "default": false,
+              "type": null,
+              "choices": null,
+              "required": false,
+              "help": "write each ledger's graded rows beside it (the recorded rows are never touched); without this the command only reports",
               "metavar": null
             }
           ],

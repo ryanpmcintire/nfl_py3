@@ -228,6 +228,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "inactives_refresh_v1": "Official-inactives refresh flip",
     "pbp08_protection_mismatch_tilt_overlay": "Protection-mismatch tilt",
     "crew_tilt_refresh_v1": "Officiating-crew tilt",
+    "rookie_crew_underdog_off_incumbent": "Picks without the new-crew adjustment",
     "player_qb_continuity|ridge_alpha=1|calibration=none": "QB-continuity alpha probe",
     "bye_edge_fade_overlay": "Bye-week rest-edge fade",
     "tank_zone_fade_tilt_overlay": "Tank-zone fade, weeks 14-18",

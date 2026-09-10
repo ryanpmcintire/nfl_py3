@@ -330,8 +330,11 @@ columns on every row.
 Its evidence is entirely reconstructable from `pick_revisions.parquet`'s
 `model_only_pick_side` column against the same `decision_home_spread`
 grading line every other arm uses -- see that registration for the full
-evidence block, honest caveats, and the (currently absent) settlement
-path.
+evidence block and honest caveats. The settlement path exists as of
+2026-09-09: `nfl-ats settle` grades `pick_revisions.parquet`'s
+`previous_pick_side` and `new_pick_side` as two arms at the frozen
+`decision_home_spread`, taking the latest pass recorded before each game's
+own deadline.
 
 ## The pick-revision ledger
 
@@ -572,6 +575,87 @@ rows carry the reason `Followed the heavy-money side`. The paired
 served and off -- for every eligible game that carried a reading on the pass,
 so the OFF arm accrues game for game instead of being reconstructed later.
 
+## Served rookie-crew step (2026-09-09, below both market arms)
+
+Closing-grounds taxonomy, verbatim, because this section reports intervals: an
+interval or CI that contains zero is NEVER grounds to reject, fail, or close an
+experiment. Only a RESOLVED wrong sign (whole interval on the wrong side of
+zero), zero split-half reliability, or a positive control proven able to detect
+an effect that size ever closes a line of work. Everything else is
+`unresolved_below_power`; report `probability_positive`, never "contains zero".
+
+Officiating-crew assignments publish Wednesday-Thursday, after the Tuesday
+lock (`docs/referee_assignments_capture.md`), so the reconciled rookie-crew
+rule of `docs/rookie_crew_reconciliation.md` can only ever reach the card
+through this path. It is now the third step in the chain, and it is the LAST
+one consulted before the model's own side:
+
+1. `late_week_move_follow_0_5` -- the promoted follow rule above;
+2. `movement_ge_1.0` -- the 1.0-point consensus rule;
+3. `rookie_crew_underdog_v1` -- this step;
+4. `model_only`.
+
+**The rule, exactly as served** (`nfl_ats.pick_refresh._rookie_crew_lookup`,
+one function, one call site). Take the newest
+`data/players/referee_assignments` snapshot covering the pass's (season, week)
+and consider only games whose own `pick_deadline` -- `min(kickoff, Sunday 16:00
+ET)` -- is strictly after that snapshot's `captured_at_utc`. A game is FLAGGED
+when its head referee has at most one prior season in the archive-extended
+officials table (`load_officials(include_archive=True)`, 2009-2025, so the
+season floor is that population's own first season plus one, 2010). The flag is
+signed by the UNDERDOG side of the frozen Tuesday line: `+1` when the home team
+is the underdog, `-1` when the away team is. That signed column is attached to
+the feature table -- Tuesday-opener consensus spread where the opener store
+reaches, archived nflverse spread as a close proxy before 2020 -- and the
+week's model is refit on profile `weak_stack_rookie_crew_underdog`. On a
+FLAGGED game whose refit side differs from the model-only side, and only when
+neither market arm fired, the served pick becomes the refit side. Everything
+else is untouched.
+
+**It is a model feature, not a hand-set flip.** The ridge learns the
+coefficient, so the served direction is whatever the mechanism says on that
+game rather than a fixed "back the dog" instruction. That is what keeps the
+serve equal to the arm that was measured.
+
+**Narrowed to flagged games, deliberately.** The predeclared arm in
+`docs/rookie_crew_reconciliation.md` lets the refit move UNFLAGGED games too
+(coefficient drift), and on the played nine-member card that arm is **+0.133
+accuracy points, week 95% [-0.197, +0.466], `probability_positive` 0.790**, six
+changed picks. The served step is the flagged-games subset, because AGENTS.md
+requires a pick flip to name a mechanism and a drift-only change on an
+unflagged game names none. Measured 2026-09-09 on the same 1,503 non-push
+games, that subset is **+0.067 accuracy points, week 95% [-0.134, +0.328],
+`probability_positive` 0.708** (season-blocked 0.718), three changed picks, on
+a card baseline of 56.886%. Per era: 2020-2021 +0.219
+`probability_positive` 0.820 on one changed pick, 2022-2023 0.000 on two,
+2024-2025 0.000 on none -- magnitude statements per era, never absence.
+Registry cell `rookie_crew_served_step_flagged_games_card_2020_2025`,
+`unresolved_below_power`; nothing here is closed, and the pool is forced picks,
+so a step 71% likely to be better is a step to play.
+
+**Fails open, always.** No published assignment, a snapshot at or after every
+eligible game's deadline, a week with no rookie crew, an unreadable officials
+history, or a refit that will not fit each return the model-only side with the
+reason named in the pass's `rookie_crew.reason`. The refit itself is skipped
+entirely unless a flagged game exists, so an ordinary week pays nothing for it.
+
+**Ledger and paired arm.** Every pick-revision row carries `rookie_crew_flag`,
+`rookie_crew_referee` and `rookie_crew_pick_side` beside the governing
+`movement_policy`; the OFF arm is the `model_only_pick_side` column already on
+every row, registered as `rookie_crew_underdog_off_incumbent` in
+`artifacts/prospective/challengers.json`. Because the ledger records only games
+whose served pick CHANGED, a game where this step held the Tuesday pick against
+a model-only flip writes no row -- every pass's JSON lists those game ids under
+`rookie_crew.rookie_crew_reads`, and that is the known gap the registration
+names.
+
+**Week 1, 2026 (measured, `nfl-ats refresh-picks --note crew_probe`,
+2026-09-10T00:08Z).** One of sixteen crews is new this season: Alex Moore, one
+prior season, working BUF at HOU, where the home team is the 1.5-point
+underdog, so the flag is `+1`. The refit's side is HOME, the model-only side is
+HOME, so the step changes nothing and the row is recorded `model_only`. The
+other fifteen crews carry three or more prior seasons.
+
 ## Exact commands
 
 ```powershell
@@ -632,12 +716,12 @@ frozen line to refresh against, no refresh.
 - **Wiring another research overlay into the refresh's actual decision path.**
   Any future production change must update the frozen Tuesday policy identity
   and flags; refresh must never infer it from live sources mid-week.
-- **Settling `final_pick_per_game` against outcomes.** The function exists
-  and both the Tuesday and final pick are recoverable per game, but wiring
-  this into `prospective-score`'s settlement pass (so a season can report
-  "Tuesday-graded accuracy" vs. "refresh-graded accuracy" side by side) is a
-  natural next step, left for when there is a real week of refresh data to
-  settle.
+- ~~**Settling `final_pick_per_game` against outcomes.**~~ Shipped
+  2026-09-09 as `nfl-ats settle` (`nfl_ats.settlement`), which reports the
+  Tuesday arm and the refreshed arm side by side for every refresh ledger,
+  not only this one. It grades each arm at that row's own frozen
+  `decision_home_spread` and takes the latest pass recorded before the
+  game's deadline, so the week's three or four passes count once.
 - **Re-running the per-overlay challenger recorders from `refresh-picks`
   itself.** Those recorders are first-write-wins per game
   (`nfl_ats.prospective_scoring`), the same anti-backdating discipline this

@@ -33,6 +33,13 @@ from nfl_ats.prospective_scoring import (
     settle_prospective_picks,
 )
 from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
+from nfl_ats.settlement import (
+    load_results,
+    render_arm_table,
+    results_artifact_path,
+    seasons_in_scope,
+    settle_ledgers,
+)
 
 
 def _cmd_prospective_record(args: argparse.Namespace) -> None:
@@ -178,6 +185,49 @@ def _cmd_prospective_score(args: argparse.Namespace) -> None:
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
+def _cmd_settle(args: argparse.Namespace) -> None:
+    artifacts = _artifacts_root()
+    data_root = _data_root()
+    if args.season is not None:
+        seasons = [int(args.season)]
+    else:
+        local, _ = load_results(data_root, refresh=False)
+        seasons = seasons_in_scope(local, start_season=args.start_season)
+    results, provenance = load_results(
+        data_root,
+        seasons=seasons,
+        refresh=not args.no_refresh_results,
+        results_path=args.results,
+    )
+    finals = int(pd.to_numeric(results["result"], errors="coerce").notna().sum())
+    report = settle_ledgers(
+        artifacts,
+        results,
+        season=args.season,
+        week=args.week,
+        start_season=args.start_season,
+        write=args.write_graded,
+    )
+    graded = report.pop("graded")
+    if args.write_graded and not results.empty:
+        atomic_parquet(results, results_artifact_path(artifacts))
+    payload = {
+        **report,
+        "results_source": provenance,
+        "results_rows": len(results),
+        "results_with_a_final_score": finals,
+        "wrote_graded_parquet": bool(args.write_graded),
+    }
+    _print_json(payload)
+    print(render_arm_table(report["arms"]))
+    pending = sum(int(row["pending"]) for row in report["arms"])
+    settled = sum(int(row["won"]) + int(row["lost"]) + int(row["pushed"]) for row in report["arms"])
+    print(
+        f"settle: {len(graded)} graded rows across {len(report['arms'])} arms; "
+        f"{settled} settled, {pending} pending"
+    )
+
+
 def register(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
@@ -223,3 +273,47 @@ def register(
     )
     _add_bootstrap_args(prospective_score, seed=20260817)
     prospective_score.set_defaults(handler=_cmd_prospective_score)
+
+    settle = subparsers.add_parser(
+        "settle",
+        help="grade every recorded 2026 ledger against the latest final scores at its own "
+        "decision line, and print won/lost/pushed/pending per arm",
+    )
+    settle.add_argument(
+        "--season",
+        type=int,
+        default=None,
+        help="settle one season; omit to settle every season from --start-season onward",
+    )
+    settle.add_argument(
+        "--week",
+        type=int,
+        default=None,
+        help="settle one week of --season; omit to settle every recorded week",
+    )
+    settle.add_argument(
+        "--start-season",
+        type=int,
+        default=2026,
+        help="first season to grade when --season is omitted; earlier seasons are historical "
+        "backtests, not pre-kickoff decisions",
+    )
+    settle.add_argument(
+        "--results",
+        type=Path,
+        default=None,
+        help="a schedules parquet to grade against instead of fetching or reading the newest "
+        "local snapshot",
+    )
+    settle.add_argument(
+        "--no-refresh-results",
+        action="store_true",
+        help="never reach the network; grade against the newest local schedules snapshot",
+    )
+    settle.add_argument(
+        "--write-graded",
+        action="store_true",
+        help="write each ledger's graded rows beside it (the recorded rows are never touched); "
+        "without this the command only reports",
+    )
+    settle.set_defaults(handler=_cmd_settle)

@@ -18,7 +18,7 @@ sys.path.insert(0, str(REPO / "src"))
 from nfl_ats.clv import pick_correct  # noqa: E402
 from nfl_ats.evidence_conventions import probability_positive_from_draws  # noqa: E402
 from nfl_ats.io import atomic_csv, atomic_parquet, run_id  # noqa: E402
-from nfl_ats.provenance import sha256_file  # noqa: E402
+from nfl_ats.provenance import sha256_file, write_stamped_artifact  # noqa: E402
 from nfl_ats.sharp_book_movement_features import (  # noqa: E402
     LEADER_BOOKS,
     LEADERSHIP_WEIGHTS,
@@ -346,7 +346,7 @@ def main() -> None:
             "per_game_sha256": sha256_file(args.per_game),
         },
     }
-    (output / "metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf-8")
+    write_stamped_artifact(json.loads(json.dumps(metadata, default=str)), output / "metadata.json")
     print(json.dumps(cells, indent=2), flush=True)
     print(json.dumps(parity, indent=2), flush=True)
     print(f"artifacts: {output}", flush=True)

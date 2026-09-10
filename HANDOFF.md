@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T00:51:08.436171+00:00`
+Refreshed at: `2026-09-10T01:02:14.415863+00:00`
 
 ## Start here
 
@@ -20,12 +20,29 @@ Refreshed at: `2026-09-10T00:51:08.436171+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `452b96a36779` — Serve the small-spread Best Pick rule (|spread| <= 6.5; +1.96 Best-Pick points, P+ 0.69; MIA +3.5 stays the star); unrestricted v2 keeps recording as the off arm. News-gated follow: veto the follow when the injury report contradicts the move (+1.13 over the served rule, P+ 0.83); confirmed moves +3.2, contradicted -4.4.
-- Pending change set: 4 paths
+- Baseline commit: `a11f1ef69eca` — Registry rows from the news-gate lane; handoff refreshed
+- Pending change set: 27 paths
+  - ` M CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `MM registry/weak_signals.json`
-  - ` D registry/weak_signals.json.lock`
+  - `M  artifacts/prospective/challengers.json`
+  - `A  docs/follow_threshold_live_card.md`
+  - `M  docs/late_week_refresh.md`
+  - `M  docs/nflcom_refresh_wiring.md`
+  - `M  docs/prospective_evidence.md`
+  - `M  docs/rookie_crew_reconciliation.md`
+  - `A  registry/experiments/margin-backtest/20260910T005406Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260910T005452Z.json`
+  - `A  registry/experiments/opener-evaluation/20260910T005854Z.json`
+  - `M  registry/weak_signals.json`
+  - `D  registry/weak_signals.json.lock`
+  - `M  scripts/capture_scheduler.py`
+  - `M  scripts/sharp_weighted_follow.py`
+  - `M  scripts/sharp_weighted_follow_record.py`
+  - `M  src/nfl_ats/artifact_contracts.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/cli_commands/prospective.py`
+  - ...and 7 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -34,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `c657058903f3232b`
+- Model ID: `2e8c616b476dd0d2`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260909T183120Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260910T005854Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-09T22:00:47.601862+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-10T00:54:52.334326+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-10T00:39:32.047755+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T00:59:08.438855+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

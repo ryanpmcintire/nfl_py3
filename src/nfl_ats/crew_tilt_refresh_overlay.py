@@ -1025,14 +1025,8 @@ def run_stacked_backtest(
     """
 
     stack = _load_script_module(repo_root, "overlay_stack_backtest")
-    composition = _load_script_module(repo_root, "overlay_subset_composition")
-    from nfl_ats.four_overlay_composition import (
-        COACH_FADE,
-        COMPOSITION_ORDER,
-        DIVISION_REVENGE_TILT,
-        PLAYER_ARRESTS_BACK_SIDE_POLICY,
-        POLICY_ID,
-    )
+    from nfl_ats.four_overlay_composition import COMPOSITION_ORDER, POLICY_ID
+    from nfl_ats.unserved_tilt_marginals import served_card_flip_set
 
     per_game, schedules, player_features, snapshot_name, player_feature_path = stack.load_inputs(
         per_game_artifact, data_root
@@ -1044,18 +1038,17 @@ def run_stacked_backtest(
         name: {flip.game_id for flip in result.flips} for name, result in overlay_results.items()
     }
     stack.verify_no_direction_conflicts(predictions, overlay_results, overlay_flip_sets)
-    arrest_ids, _scored = composition.reconstruct_arrest_flip_set(
-        per_game, features_path, incidents_path
+    production_ids, members = served_card_flip_set(
+        per_game,
+        data_root=data_root,
+        repo_root=repo_root,
+        features=features_path,
+        incidents=incidents_path,
+        schedules=schedules,
     )
-    members: dict[str, set[str]] = {
-        COACH_FADE: overlay_flip_sets["coach_fade_overlay"],
-        DIVISION_REVENGE_TILT: overlay_flip_sets["division_revenge_tilt_overlay"],
-        PLAYER_ARRESTS_BACK_SIDE_POLICY: arrest_ids,
-    }
     missing = [member for member in COMPOSITION_ORDER if member not in members]
-    if missing:  # pragma: no cover - defensive
+    if missing:
         raise DataContractError(f"production chain members not reconstructed: {missing}")
-    production_ids: set[str] = set().union(*members.values())
 
     production_predictions = predictions.copy()
     production_predictions["game_id"] = production_predictions["game_id"].astype(str)
@@ -1193,6 +1186,7 @@ def main(argv: list[str] | None = None) -> int:
     backtest.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     backtest.add_argument("--samples", type=int, default=DEFAULT_SAMPLES)
     backtest.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    backtest.add_argument("--repo-root", type=Path, default=repo_root)
 
     preview = sub.add_parser("preview")
     preview.add_argument("--data-root", type=Path, default=Path("data"))
@@ -1220,6 +1214,7 @@ def main(argv: list[str] | None = None) -> int:
 
     from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
 
+    repo_root = Path(args.repo_root)
     result = run_stacked_backtest(
         repo_root,
         per_game_artifact=args.per_game_artifact,

@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from nfl_ats.provenance import write_stamped_artifact
+
 DATA_REPO = Path("F:/Repos/nfl_py3")
 OUTPUT = DATA_REPO / "artifacts/sharp_weighted_follow"
 FROZEN = "20260909T233606Z"
@@ -286,7 +288,7 @@ def main() -> None:
         )
 
     target = OUTPUT / FROZEN / "record_commands.json"
-    target.write_text(json.dumps(commands, indent=2), encoding="utf-8")
+    write_stamped_artifact({"commands": commands}, target)
     print(f"{len(commands)} commands -> {target}")
     for argv in commands:
         print(argv[3])

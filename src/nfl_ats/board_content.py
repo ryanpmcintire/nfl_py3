@@ -32,17 +32,18 @@ site:
 
 * **In-season finals** (:func:`_load_game_outcomes`, :func:`_game_final_state`)
   -- read from ``data/processed/game_features.parquet``'s own
-  ``home_score``/``away_score``/``result`` columns. Measured directly this
-  session: this table already carries all 272 rows of the 2026 regular
-  season with every score/result column ``NaN`` for a game that has not
-  been played, and is the SAME home-minus-away margin convention (FND-04,
-  ``docs/modeling.md``) every settlement in this repo already scores
-  against. It is refreshed by the repo's own weekly data pipeline as games
-  are played -- no separate "in-season" artifact exists or was found;
-  weekly-forecast/predictions artifacts are pregame-only by construction,
-  and the CLV/prospective ledgers record PICKS, not results. A missing or
-  unreadable file degrades every game to "not final yet", never an
-  exception.
+  ``home_score``/``away_score``/``result`` columns, with
+  ``artifacts/settlement/game_results.parquet`` layered on top. Measured
+  2026-08-31: the feature table already carries all 272 rows of the 2026
+  regular season with every score/result column ``NaN`` for a game that has
+  not been played, and is the SAME home-minus-away margin convention
+  (FND-04, ``docs/modeling.md``) every settlement in this repo already
+  scores against. But only ``weekly-run`` rebuilds it, on a Tuesday, so on
+  its own it would leave Thursday's and Sunday's finals off the board until
+  the following week; the settlement artifact (``nfl-ats settle``, run after
+  the last game of each day) carries the fresher scores and wins wherever it
+  has one. A missing or unreadable file on either side degrades every game
+  to "not final yet", never an exception.
 * **The prospective scoreboard** (:func:`_build_prospective_scoreboard`) --
   pairs the played three-member policy's own paper-decision ledger
   (``nfl_ats.clv.load_paper_decisions``, filtered to
@@ -112,6 +113,7 @@ from nfl_ats.public_board import (
 )
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.retired_four_member_union import INCUMBENT_CHALLENGER_ID
+from nfl_ats.settlement import results_artifact_path
 from nfl_ats.source_freshness_policy import BLOCKED, COMPLETE, DEGRADED, report_for_publication
 from nfl_ats.spread_explorer import (
     SPREAD_EXPLORER_MAX_LINE,
@@ -1556,19 +1558,31 @@ def _build_headline_stats(
 _OUTCOME_COLUMNS: tuple[str, ...] = ("game_id", "result", "home_score", "away_score")
 
 
-def _load_game_outcomes(data_root: Path) -> pd.DataFrame:
-    """The in-season finals table -- see the module docstring. Fail-open: a
-    missing/unreadable file or a table missing an expected column degrades
-    to "nothing is final yet", never an exception."""
-
-    path = data_root / "processed" / "game_features.parquet"
+def _read_outcome_table(path: Path) -> pd.DataFrame:
     try:
         table = pd.read_parquet(path, columns=list(_OUTCOME_COLUMNS))
     except (OSError, ValueError):
         return pd.DataFrame(columns=_OUTCOME_COLUMNS)
     if not set(_OUTCOME_COLUMNS).issubset(table.columns):
         return pd.DataFrame(columns=_OUTCOME_COLUMNS)
-    return table
+    return table.loc[:, list(_OUTCOME_COLUMNS)]
+
+
+def _load_game_outcomes(data_root: Path, artifacts_root: Path | None = None) -> pd.DataFrame:
+    """The in-season finals table -- see the module docstring. Fail-open: a
+    missing/unreadable file or a table missing an expected column degrades
+    to "nothing is final yet", never an exception."""
+
+    weekly = _read_outcome_table(data_root / "processed" / "game_features.parquet")
+    if artifacts_root is None:
+        return weekly
+    settled = _read_outcome_table(results_artifact_path(artifacts_root))
+    settled = settled.loc[pd.to_numeric(settled["result"], errors="coerce").notna()]
+    if settled.empty:
+        return weekly
+    fresher = settled.drop_duplicates("game_id")
+    kept = weekly.loc[~weekly["game_id"].astype(str).isin(set(fresher["game_id"].astype(str)))]
+    return pd.concat([kept, fresher], ignore_index=True)
 
 
 def _game_final_state(
@@ -2693,7 +2707,7 @@ def load_board_content(
             if raw_value is not None:
                 raw_probability_by_game[str(raw_row["game_id"])] = raw_value
 
-    outcomes = _load_game_outcomes(resolved_data_root)
+    outcomes = _load_game_outcomes(resolved_data_root, artifacts_root)
     outcome_by_game_id: dict[str, tuple[Any, Any, Any]] = {}
     if not outcomes.empty:
         for _, outcome_row in outcomes.iterrows():

@@ -234,7 +234,25 @@ family.** The Spearman-Brown corrected within-season figure is -0.038; half a
 season is too few games to see a tendency this faint, which is a statement
 about that instrument, not about the trait.
 
-### What serving it would take (NOT wired here)
+### Now served (2026-09-09)
+
+The three items below were the blocking list; all three are done and the rule
+is a served step on the refresh path, below both market arms. See
+`docs/late_week_refresh.md`, section "Served rookie-crew step". One thing
+changed on the way in: the served step is restricted to games whose own crew
+is FLAGGED, because AGENTS.md requires a pick flip to name a mechanism and the
+predeclared arm's changes on UNFLAGGED games are coefficient drift, which names
+none. Measured 2026-09-09 on the same 1,503 non-push games and the same played
+nine-member card, that subset is **+0.067 accuracy points, week 95% [-0.134,
++0.328], `probability_positive` 0.708** (season-blocked 0.718), three changed
+picks, against the full refit's +0.133 / 0.790 on six. Both are
+`unresolved_below_power`; the subset is recorded as
+`rookie_crew_served_step_flagged_games_card_2020_2025` and is a correlated
+subset of `rookie_crew_reconciled_card_2020_2025`, never an independent pooling
+input. The OFF arm is registered as the paired challenger
+`rookie_crew_underdog_off_incumbent`.
+
+### What serving it would take (as written before it was wired)
 
 Crew assignments are published Wednesday-Thursday of game week, after the
 Tuesday lock (`docs/referee_assignments_capture.md`), so this rule can never

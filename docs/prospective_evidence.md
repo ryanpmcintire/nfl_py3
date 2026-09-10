@@ -310,9 +310,59 @@ the Best Pick for Week 1 was deliberately never hand-recorded, which is what
 kept option 1 available. `publish-predictions` writes it automatically on the
 Tuesday run.
 
+## Settlement: `nfl-ats settle` (2026-09-09)
+
+`prospective-score` settles two ledgers -- the paper ledger and the shared
+challenger ledger -- and takes its results from
+`data/processed/game_features.parquet`. That table is rebuilt only by
+`weekly-run`, on a Tuesday, so before this command a Thursday-night or Sunday
+final did not reach any grade until the following week, and eleven of the
+fifteen ledgers a lock-and-refresh week writes had no scorer reading them at
+all.
+
+`nfl-ats settle` closes both gaps:
+
+- **Results now, not next Tuesday.** It fetches the season's nflverse
+  schedules directly (`load_schedules` carries no season guard, so a Week 1
+  that opens before nflreadpy's Thursday rollover is still reachable) and
+  falls back to the newest `data/raw/*/schedules.parquet` when the network is
+  unavailable. `--no-refresh-results` forces the local snapshot;
+  `--results PATH` grades against a supplied schedules file.
+- **Every ledger, every arm.** `nfl_ats.settlement.LEDGERS` names all fifteen:
+  the paper ledger (played / raw model / pre-arrest / former policy / Best
+  Pick), the shared challenger ledger (one arm per registered challenger),
+  both paired challenger ledgers (challenger and its frozen baseline),
+  `pick_revisions`, the six refresh-challenger ledgers, the Best Pick
+  Tuesday/Sunday pair, and the two totals ledgers.
+- **Each arm at its own frozen line.** A challenger recorded at the Tuesday
+  opener of 3.0 and one recorded at 3.5 settle at 3.0 and 3.5 respectively.
+- **Pushes come from the line, never a rule.** `result - line` is exactly zero
+  only on a whole-number spread, so a half-point pool line can never push.
+  `nfl_ats.clv.pick_correct` is the one implementation.
+- **One graded row per game, not one per pass.** A refresh ledger holds a row
+  per pass; the graded row is the latest pass recorded strictly before that
+  game's own frozen `deadline` (`min(kickoff, Sunday 16:00 ET)`), falling back
+  to `kickoff` on the ledgers that record no deadline. `passes_recorded` keeps
+  the count so a reader sees the four Week 1 passes behind one graded row.
+- **Recorded rows are never touched.** Graded rows are written beside each
+  ledger as `<ledger>.graded.parquet` (long form: one row per arm per game,
+  with `outcome` in `won` / `lost` / `pushed` / `pending`), plus a combined
+  `artifacts/settlement/graded_decisions.parquet` and the fresh results table
+  `artifacts/settlement/game_results.parquet` that the board's settled strip
+  reads on top of the weekly feature table.
+
+Without `--write-graded` the command reports and writes nothing. The daemon
+runs it after the last game of each game day (`settle_thu`, `settle_sun`,
+`settle_mon`, 23:59 ET, 120-minute grace, `catch_up=True`), and `--dry` strips
+`--write-graded` so a rehearsal is read-only.
+
 ## Commands
 
 ```powershell
+# Grade every recorded 2026 ledger against the latest final scores.
+.\.tools\uv.exe run --no-sync nfl-ats settle --season 2026 --week 1
+.\.tools\uv.exe run --no-sync nfl-ats settle --write-graded
+
 # Settle every recorded prospective pick at both grades (safe to run any time;
 # unplayed games simply stay "pending").
 .\.tools\uv.exe run python -m nfl_ats prospective-score

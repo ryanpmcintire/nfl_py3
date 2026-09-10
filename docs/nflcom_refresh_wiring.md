@@ -139,10 +139,12 @@ starter-out counts and flags, `injury_page_snapshot` +
 `injury_page_fetched_at_utc` provenance, and `refresh_run_id` /
 `revision_recorded_at_utc`. Passes append multiple rows per game across the
 week's Thursday/Saturday/Sunday passes (deliberately not deduped);
-settlement should read the LATEST pre-kickoff row per game (mirroring
-`pick_refresh.final_pick_per_game`'s latest-revision rule), then score the
+settlement reads the LATEST pre-deadline row per game (mirroring
+`pick_refresh.final_pick_per_game`'s latest-revision rule), then scores the
 would-be side against outcomes at `decision_home_spread`, paired against the
-played side, pushes excluded identically. The existing publish-time
+played side, pushes excluded identically. That is what `nfl-ats settle`
+(`nfl_ats.settlement`, 2026-09-09) does for this ledger and every other one.
+The existing publish-time
 challenger-ledger rows remain the Tuesday-grade arm of the same comparison;
 the refresh ledger adds "what the refresh machinery would have done."
 

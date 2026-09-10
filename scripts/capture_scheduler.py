@@ -65,11 +65,11 @@ HEARTBEAT_STALE_AFTER_SECONDS = POLL_SECONDS * 3
 
 READ_ONLY_SCRIPT = True
 READ_ONLY_EXCEPTIONS: dict[int, str] = {
-    1201: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
-    1203: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
-    1230: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
-    1244: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
-    1353: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
+    1228: "STATE_PATH.parent.mkdir -- STATE_PATH == REPO / 'data' / 'scheduler_state.json'",
+    1230: "tmp is STATE_PATH's own .tmp sibling (atomic replace), same tree",
+    1257: "HEARTBEAT_PATH.parent.mkdir -- REPO / 'data' / 'scheduler_heartbeat.json'",
+    1271: "tmp is HEARTBEAT_PATH's own .tmp sibling (atomic replace), same tree",
+    1380: "LOG_PATH.parent.mkdir -- LOG_PATH == REPO / 'data' / 'scheduler_log.txt'",
 }
 
 DAYS = {"mon": 0, "tue": 1, "wed": 2, "thu": 3, "fri": 4, "sat": 5, "sun": 6}
@@ -1041,6 +1041,33 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-03",
         catch_up=True,
     ),
+    *(
+        Job(
+            f"settle_{day}",
+            day,
+            "23:59",
+            120,
+            _cli("settle", "--write-graded"),
+            True,
+            "2026-09-09: nothing turned a final score into a graded row until the NEXT "
+            "Tuesday. weekly-run is the only thing that refreshes "
+            "data/processed/game_features.parquet, and prospective-score reads results out "
+            "of that table -- and it only ever covered two of the fifteen ledgers a lock "
+            "and refresh week writes. This grades every ledger at its own frozen decision "
+            "line against results fetched now, writes the graded rows BESIDE each ledger "
+            "(the recorded picks are never touched) and refreshes "
+            "artifacts/settlement/game_results.parquet, which the board's settled strip "
+            "reads on top of the weekly feature table. 23:59 ET clears the last kickoff of "
+            "each game day (TNF, SNF, MNF all end by ~23:30); catch_up=True because a late "
+            "run is still a correct settlement, and the grace runs to 01:59 so a result "
+            "that lands after midnight is still caught. --write-graded is stripped by "
+            "--dry, so a manual rehearsal reports without writing.",
+            season_guarded=True,
+            added_on="2026-09-09",
+            catch_up=True,
+        )
+        for day in ("thu", "sun", "mon")
+    ),
     Job(
         "verify_full_weekly",
         "mon",
@@ -1536,7 +1563,9 @@ def execute_job(command: list[str]) -> tuple[str, str]:
     return status, detail
 
 
-RECORDING_FLAGS: frozenset[str] = frozenset({"--record-decisions", "--publish-card"})
+RECORDING_FLAGS: frozenset[str] = frozenset(
+    {"--record-decisions", "--publish-card", "--write-graded"}
+)
 
 
 def dry_command(command: list[str]) -> list[str]:
