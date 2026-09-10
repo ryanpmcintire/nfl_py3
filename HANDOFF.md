@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T03:47:34.510664+00:00`
+Refreshed at: `2026-09-10T03:47:58.208786+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-09-10T03:47:34.510664+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3abd65e766c8` — Follow threshold by line size: half a point is information at 10.5+ (+3.4) and noise at 0-3 (-3.5, resolved); a 0.5 gate at 10.5+ only is +0.25 over the served flat 1.0, P+ 0.79 week / 0.98 season
+- Baseline commit: `0468a88caeb5` — Handoff refresh
 - Pending change set: 3 paths
   - `M  HANDOFF.md`
   - `M  README.md`
