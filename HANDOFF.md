@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T03:40:01.937626+00:00`
+Refreshed at: `2026-09-10T03:47:19.781476+00:00`
 
 ## Start here
 
@@ -20,29 +20,10 @@ Refreshed at: `2026-09-10T03:40:01.937626+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `5cff7d8d7a97` — Board: strength bands are terciles of the calibrated score's own distribution (1 slight / 14 lean / 1 strong, was 0/6/10); headline reads the nine-member card that is actually served (56.9%), fail-closed on model or policy mismatch; a time-dependent KeyError in the protection flags no longer kills the site build (three long-failing tests pass)
-- Pending change set: 38 paths
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  registry/weak_signals.json`
-  - `M  src/nfl_ats/backup_qb_fade_overlay.py`
-  - `M  src/nfl_ats/best_pick_refresh_prospective.py`
-  - `M  src/nfl_ats/bye_edge_fade_overlay.py`
-  - `M  src/nfl_ats/cli_commands/prospective.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/deadline_drag_challenger.py`
-  - `M  src/nfl_ats/ecdf_mapping_incumbent_overlay.py`
-  - `M  src/nfl_ats/era_weighted_half_life_8_overlay.py`
-  - `M  src/nfl_ats/expected_lineup_loss_challenger.py`
-  - `M  src/nfl_ats/forecast_cold_visitor_tilt_overlay.py`
-  - `M  src/nfl_ats/forecast_weather_kn_precip_high_total_tilt_overlay.py`
-  - `M  src/nfl_ats/forecast_weather_kn_warm_team_cold_late_tilt_overlay.py`
-  - `M  src/nfl_ats/four_overlay_incumbent.py`
-  - `M  src/nfl_ats/gaussian_mean_mapping_incumbent_overlay.py`
-  - `M  src/nfl_ats/home_side_offset_incumbent_overlay.py`
-  - `M  src/nfl_ats/interim_hc_first_game_tilt_overlay.py`
-  - `M  src/nfl_ats/key_line_pick_read_incumbent_overlay.py`
-  - ...and 18 more
+- Baseline commit: `612939a4456a` — --replace-week reaches all 39 publish recorders and --record-from-forecast 37 (scoped to pre-kickoff rows, .bak kept, three arms frozen from a different card by design); paired side ledgers no longer keep a superseded baseline; prospective-record gains --replace-week
+- Pending change set: 2 paths
+  - `A  docs/follow_threshold_by_line.md`
+  - `MM registry/weak_signals.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
