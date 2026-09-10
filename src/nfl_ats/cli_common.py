@@ -25,6 +25,7 @@ from nfl_ats.pbp import snapshot_from_root as pbp_snapshot_from_root
 from nfl_ats.players import (
     PlayerSnapshot,
     PlayerValueSnapshot,
+    injury_first_seen_index,
     latest_player_snapshot,
     latest_player_value_snapshot,
     player_snapshot_from_root,
@@ -55,6 +56,23 @@ def _load_features(path: Path) -> pd.DataFrame:
             f"Feature table not found: {path}. Run `nfl-ats build-features` first."
         )
     return pd.read_parquet(path)
+
+
+def _injury_first_seen_index(seasons: list[int] | None = None) -> pd.DataFrame:
+    """First-seen capture index over this checkout's immutable injury captures.
+
+    ENG-39 follow-up: nflverse publishes no ``date_modified`` for the current
+    season, so an undated row's visibility otherwise falls back to an assumed
+    kickoff-minus-24h proxy. The capture archive already records when each row
+    was first readable, which is a real observation instant; passing this index
+    into ``canonicalize_injuries`` lets it use the earlier of the two. Returns
+    an empty frame in a checkout with no captures, which restores the proxy.
+    """
+
+    root = _data_root()
+    return injury_first_seen_index(
+        [root / "raw" / "nflverse_injuries", root / "players" / "raw"], seasons=seasons
+    )
 
 
 def _season_range(start_season: int, end_season: int) -> list[int]:

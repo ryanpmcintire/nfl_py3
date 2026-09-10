@@ -10,6 +10,7 @@ from nfl_ats.cli_common import (
     _add_include_postseason_arg,
     _add_season_range_args,
     _data_root,
+    _injury_first_seen_index,
     _load_features,
     _print_json,
     _repo_root_on_path,
@@ -139,13 +140,20 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
     for label, (start, end) in ranges.items():
         if end < start:
             raise ValueError(f"{label}-end-season cannot be earlier than {label}-start-season")
+    injury_seasons = list(range(args.injury_start_season, args.injury_end_season + 1))
+    first_seen = (
+        _injury_first_seen_index(injury_seasons)
+        if args.timestamp_fallback == "week_proxy"
+        else None
+    )
     snapshot = fetch_player_snapshot(
-        list(range(args.injury_start_season, args.injury_end_season + 1)),
+        injury_seasons,
         list(range(args.roster_start_season, args.roster_end_season + 1)),
         list(range(args.snap_start_season, args.snap_end_season + 1)),
         _data_root() / "players" / "raw",
         include_postseason=args.include_postseason,
         injury_timestamp_fallback=args.timestamp_fallback,
+        injury_first_seen=first_seen,
     )
     manifest = json.loads(snapshot.manifest_path.read_text(encoding="utf-8"))
     _print_json(
@@ -159,6 +167,7 @@ def _cmd_player_ingest(args: argparse.Namespace) -> None:
             "injury_timestamp_fallback": manifest["injury_timestamp_fallback"],
             "injury_proxy_hours_before_kickoff": manifest["injury_proxy_hours_before_kickoff"],
             "n_proxy_rows_per_season": manifest["n_proxy_rows_per_season"],
+            "n_first_seen_rows_per_season": manifest["n_first_seen_rows_per_season"],
         }
     )
 

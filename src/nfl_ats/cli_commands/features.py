@@ -25,6 +25,7 @@ from nfl_ats.cli_common import (
     _add_player_feature_tuning_args,
     _add_snapshot_args,
     _data_root,
+    _injury_first_seen_index,
     _load_features,
     _print_json,
     _resolve_pbp_snapshot,
@@ -460,10 +461,14 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         if args.injury_timestamp_fallback == "week_proxy"
         else None
     )
+    injury_first_seen = _injury_first_seen_index(
+        sorted(features["season"].astype(int).unique().tolist())
+    )
     canonical_injury_rows = canonicalize_injuries(
         injuries,
         timestamp_fallback=args.injury_timestamp_fallback,
         schedule=availability_injury_schedule,
+        first_seen=injury_first_seen,
     )
     canonical_roster_rows = canonicalize_rosters(rosters)
     snaps_with_ids = attach_snap_player_ids(canonicalize_snaps(snaps), canonical_roster_rows)
@@ -502,6 +507,7 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         value_prior_snaps=args.value_prior_snaps,
         injury_snapshot_captured_at=parse_snapshot_capture(player_snapshot.snapshot_id),
         injury_timestamp_fallback=args.injury_timestamp_fallback,
+        injury_first_seen=injury_first_seen,
     )
     enrichment_seconds = perf_counter() - enrichment_started
     atomic_parquet(rates, args.rates_destination)
@@ -518,6 +524,12 @@ def _cmd_build_learned_availability_features(args: argparse.Namespace) -> None:
         "source_depth_snapshot": depth_snapshot.snapshot_id if depth_snapshot else None,
         "player_feature_version": PLAYER_AVAILABILITY_FEATURE_VERSION,
         "injury_timestamp_fallback": args.injury_timestamp_fallback,
+        "injury_first_seen_rows": len(injury_first_seen),
+        "injury_first_seen_basis_rows": int(
+            canonical_injury_rows.get("observed_at_basis", pd.Series(dtype="object"))
+            .eq("first_seen_capture")
+            .sum()
+        ),
         "availability_configuration": {
             "rate_version": AVAILABILITY_RATE_VERSION,
             "combination": "report category x practice category",

@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import math
 import unicodedata
 from collections import defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime, time, timedelta
 from pathlib import Path
@@ -55,6 +57,15 @@ INJURY_REQUIRED_COLUMNS = (
     "date_modified",
 )
 INJURY_PROXY_HOURS_BEFORE_KICKOFF = 24
+INJURY_FIRST_SEEN_KEY = (
+    "season",
+    "week",
+    "team",
+    "gsis_id",
+    "report_status",
+    "practice_status",
+)
+INJURY_FIRST_SEEN_COLUMN = "first_seen_at"
 _EASTERN = ZoneInfo("America/New_York")
 ROSTER_REQUIRED_COLUMNS = (
     "season",
@@ -248,12 +259,152 @@ def _injury_proxy_times(schedule: pd.DataFrame) -> pd.DataFrame:
     return long[["season", "week", "team", "injury_proxy_at"]]
 
 
+def _injury_first_seen_keys(frame: pd.DataFrame) -> pd.DataFrame:
+    """Normalize the identity columns a first-seen capture index is keyed on."""
+
+    keyed = frame.loc[:, list(INJURY_FIRST_SEEN_KEY)].copy()
+    keyed["season"] = pd.to_numeric(keyed["season"], errors="coerce").astype("Int64")
+    keyed["week"] = pd.to_numeric(keyed["week"], errors="coerce").astype("Int64")
+    keyed["team"] = keyed["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+    keyed["gsis_id"] = keyed["gsis_id"].astype("string")
+    for column in ("report_status", "practice_status"):
+        keyed[column] = (
+            keyed[column].astype("string").fillna("").str.strip().str.upper().astype("string")
+        )
+    return keyed
+
+
+def _capture_instant(directory: Path) -> pd.Timestamp | None:
+    """When an immutable capture directory was written, from its own manifest."""
+
+    candidates: list[Any] = []
+    manifest_path = directory / "manifest.json"
+    if manifest_path.is_file():
+        try:
+            payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            payload = {}
+        candidates = [
+            payload.get(key)
+            for key in ("fetched_utc", "created_at_utc", "captured_at_utc", "captured_at")
+        ]
+    stamped = pd.to_datetime(directory.name, format="%Y%m%dT%H%M%SZ", errors="coerce", utc=True)
+    candidates.append(None if pd.isna(stamped) else stamped)
+    for candidate in candidates:
+        if candidate is None:
+            continue
+        instant = pd.to_datetime(candidate, errors="coerce", utc=True)
+        if not pd.isna(instant):
+            return pd.Timestamp(instant)
+    return None
+
+
+def injury_first_seen_index(
+    roots: Sequence[Path], *, seasons: Sequence[int] | None = None
+) -> pd.DataFrame:
+    """Earliest capture instant at which each undated injury row was demonstrably public.
+
+    Scans immutable capture directories (``data/raw/nflverse_injuries/<stamp>``
+    and ``data/players/raw/<stamp>``), each of which carries an
+    ``injuries.parquet`` and a ``manifest.json`` recording when it was written.
+    A row present in a capture taken at instant T was public at T, so T is a
+    real, evidenced observation time -- unlike the kickoff-derived
+    ``week_proxy``, which is an assumption. Only rows with no usable
+    ``date_modified`` are indexed, because those are the only rows the proxy
+    ever governs. Returns one row per
+    :data:`INJURY_FIRST_SEEN_KEY` with the minimum capture instant in
+    ``first_seen_at``; an empty frame when nothing is readable.
+    """
+
+    wanted = None if seasons is None else {int(season) for season in seasons}
+    columns = [*INJURY_FIRST_SEEN_KEY, "date_modified"]
+    frames: list[pd.DataFrame] = []
+    for root in roots:
+        directory_root = Path(root)
+        if not directory_root.is_dir():
+            continue
+        for directory in sorted(entry for entry in directory_root.iterdir() if entry.is_dir()):
+            parquet = directory / "injuries.parquet"
+            if not parquet.is_file():
+                continue
+            captured_at = _capture_instant(directory)
+            if captured_at is None:
+                continue
+            try:
+                rows = pd.read_parquet(parquet, columns=columns)
+            except (OSError, ValueError, KeyError, IndexError):
+                try:
+                    rows = pd.read_parquet(parquet)
+                except (OSError, ValueError):
+                    continue
+                if not set(INJURY_FIRST_SEEN_KEY).issubset(rows.columns):
+                    continue
+                if "date_modified" not in rows.columns:
+                    rows["date_modified"] = pd.Series(
+                        pd.NaT, index=rows.index, dtype="datetime64[ns, UTC]"
+                    )
+                rows = rows.loc[:, columns]
+            undated = pd.to_datetime(rows["date_modified"], errors="coerce", utc=True).isna()
+            rows = rows.loc[undated]
+            if wanted is not None:
+                rows = rows.loc[pd.to_numeric(rows["season"], errors="coerce").isin(wanted)]
+            if rows.empty:
+                continue
+            keyed = _injury_first_seen_keys(rows)
+            keyed[INJURY_FIRST_SEEN_COLUMN] = captured_at
+            frames.append(keyed.drop_duplicates(list(INJURY_FIRST_SEEN_KEY)))
+    if not frames:
+        return pd.DataFrame(
+            columns=[*INJURY_FIRST_SEEN_KEY, INJURY_FIRST_SEEN_COLUMN],
+        )
+    stacked = pd.concat(frames, ignore_index=True)
+    return (
+        stacked.groupby(list(INJURY_FIRST_SEEN_KEY), dropna=False, as_index=False)
+        .agg({INJURY_FIRST_SEEN_COLUMN: "min"})
+        .reset_index(drop=True)
+    )
+
+
+def _injury_first_seen_at(frame: pd.DataFrame, first_seen: pd.DataFrame | None) -> pd.Series:
+    """Align a first-seen capture index onto ``frame``'s rows, as UTC instants."""
+
+    empty = pd.Series(pd.NaT, index=frame.index, dtype="datetime64[ns, UTC]")
+    if first_seen is None or first_seen.empty:
+        return empty
+    if INJURY_FIRST_SEEN_COLUMN not in first_seen.columns:
+        raise DataContractError(
+            f"Injury first-seen index is missing columns: {INJURY_FIRST_SEEN_COLUMN}"
+        )
+    missing = sorted(set(INJURY_FIRST_SEEN_KEY).difference(first_seen.columns))
+    if missing:
+        raise DataContractError(f"Injury first-seen index is missing columns: {', '.join(missing)}")
+    index = _injury_first_seen_keys(first_seen)
+    index[INJURY_FIRST_SEEN_COLUMN] = pd.to_datetime(
+        first_seen[INJURY_FIRST_SEEN_COLUMN].to_numpy(), errors="coerce", utc=True
+    )
+    index = index.loc[index[INJURY_FIRST_SEEN_COLUMN].notna()]
+    if index.empty:
+        return empty
+    index = index.groupby(list(INJURY_FIRST_SEEN_KEY), dropna=False, as_index=False).agg(
+        {INJURY_FIRST_SEEN_COLUMN: "min"}
+    )
+    keyed = _injury_first_seen_keys(frame)
+    keyed["_first_seen_row"] = np.arange(len(keyed))
+    merged = keyed.merge(
+        index, on=list(INJURY_FIRST_SEEN_KEY), how="left", validate="many_to_one"
+    ).sort_values("_first_seen_row")
+    return pd.Series(
+        pd.to_datetime(merged[INJURY_FIRST_SEEN_COLUMN].to_numpy(), utc=True), index=frame.index
+    )
+
+
 def canonicalize_injuries(
     frame: pd.DataFrame,
     *,
     include_postseason: bool = False,
     timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
     schedule: pd.DataFrame | None = None,
+    first_seen: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Normalize injury revisions while preserving their availability timestamp.
 
@@ -283,6 +434,20 @@ def canonicalize_injuries(
     ``date_modified`` -- has no honest observation time and is dropped,
     exactly as it would be in ``"drop"`` mode. A real ``date_modified`` is
     never overwritten.
+
+    ``first_seen`` (ENG-39 follow-up) is the output of
+    :func:`injury_first_seen_index`: the earliest immutable-capture instant at
+    which each undated row was demonstrably public. Where that instant is
+    EARLIER than the row's kickoff-derived proxy, it replaces the proxy --
+    ``effective_observed_at = min(kickoff - INJURY_PROXY_HOURS_BEFORE_KICKOFF,
+    first_seen_capture_instant)`` -- and ``observed_at_basis`` becomes
+    ``"first_seen_capture"``, so lineage can tell an evidenced observation
+    from an assumed one. This can only ever move a row's visibility EARLIER
+    than the proxy already claimed, never later, and only to an instant the
+    row was provably readable at, so it cannot leak: a row whose first
+    capture postdates its own proxy (every season before the capture archive
+    began) keeps the proxy unchanged. Rows never seen in any capture, and
+    rows with a real ``date_modified``, are untouched.
 
     **Idempotency (ENG-39 follow-up):** ``frame`` may itself already be the
     output of a previous ``"week_proxy"`` canonicalization -- e.g. a
@@ -333,6 +498,17 @@ def canonicalize_injuries(
             real_revision, "date_modified"
         ]
         result.loc[real_revision, "observed_at_basis"] = "date_modified"
+        captured_at = _injury_first_seen_at(result, first_seen)
+        evidenced = (
+            ~real_revision
+            & captured_at.notna()
+            & (
+                result["effective_observed_at"].isna()
+                | captured_at.lt(result["effective_observed_at"])
+            )
+        )
+        result.loc[evidenced, "effective_observed_at"] = captured_at.loc[evidenced]
+        result.loc[evidenced, "observed_at_basis"] = "first_seen_capture"
         result["observed_at_is_proxy"] = result["observed_at_basis"].eq("week_proxy")
         result["team"] = result["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
         result["gsis_id"] = result["gsis_id"].astype("string")
@@ -404,15 +580,24 @@ def canonicalize_injuries(
     result["week"] = result["week"].astype(int)
     proxy_lookup = _injury_proxy_times(schedule)
     result = result.merge(proxy_lookup, on=["season", "week", "team"], how="left")
+    result[INJURY_FIRST_SEEN_COLUMN] = _injury_first_seen_at(result, first_seen)
+    evidenced = (
+        result[INJURY_FIRST_SEEN_COLUMN].notna()
+        & result["injury_proxy_at"].notna()
+        & result[INJURY_FIRST_SEEN_COLUMN].lt(result["injury_proxy_at"])
+    )
+    visible_at = result["injury_proxy_at"].where(~evidenced, result[INJURY_FIRST_SEEN_COLUMN])
     result["effective_observed_at"] = result["date_modified"].where(
-        result["date_modified"].notna(), result["injury_proxy_at"]
+        result["date_modified"].notna(), visible_at
     )
     result["observed_at_basis"] = np.where(
-        result["date_modified"].notna(), "date_modified", "week_proxy"
+        result["date_modified"].notna(),
+        "date_modified",
+        np.where(evidenced, "first_seen_capture", "week_proxy"),
     )
     result["observed_at_is_proxy"] = result["observed_at_basis"].eq("week_proxy")
     result = result.loc[result["effective_observed_at"].notna()].copy()
-    result = result.drop(columns=["injury_proxy_at"])
+    result = result.drop(columns=["injury_proxy_at", INJURY_FIRST_SEEN_COLUMN])
     result = result.drop_duplicates().sort_values(
         ["season", "week", "team", "gsis_id", "effective_observed_at"]
     )
@@ -572,6 +757,18 @@ def _schedule_kickoff_utc(schedules: pd.DataFrame) -> pd.Series:
     ).dt.tz_convert("UTC")
 
 
+def _injury_basis_counts(injuries: pd.DataFrame, basis: str) -> dict[str, int]:
+    """Per-season row counts for one ``observed_at_basis`` value."""
+
+    return {
+        str(season): int(count)
+        for season, count in injuries.loc[injuries["observed_at_basis"].eq(basis), "season"]
+        .value_counts()
+        .sort_index()
+        .items()
+    }
+
+
 def write_player_snapshot(
     injuries: pd.DataFrame,
     rosters: pd.DataFrame,
@@ -585,14 +782,16 @@ def write_player_snapshot(
     include_postseason: bool = False,
     injury_timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
     injury_schedule: pd.DataFrame | None = None,
+    injury_first_seen: pd.DataFrame | None = None,
 ) -> PlayerSnapshot:
     """Write the three player sources and their hashes as one immutable snapshot.
 
-    ``injury_timestamp_fallback`` and ``injury_schedule`` (ENG-39) are
-    forwarded to ``canonicalize_injuries``; the default ``"drop"`` needs no
-    schedule and reproduces the pre-ENG-39 snapshot bit-identically. Once
-    written, a snapshot -- including which fallback produced it -- is
-    immutable; this only changes what a *new* snapshot may contain.
+    ``injury_timestamp_fallback``, ``injury_schedule`` and
+    ``injury_first_seen`` (ENG-39) are forwarded to ``canonicalize_injuries``;
+    the default ``"drop"`` needs neither schedule nor first-seen index and
+    reproduces the pre-ENG-39 snapshot bit-identically. Once written, a
+    snapshot -- including which fallback produced it -- is immutable; this
+    only changes what a *new* snapshot may contain.
     """
 
     _valid_seasons(injury_seasons, "Injury")
@@ -607,6 +806,7 @@ def write_player_snapshot(
         include_postseason=include_postseason,
         timestamp_fallback=injury_timestamp_fallback,
         schedule=injury_schedule,
+        first_seen=injury_first_seen,
     )
     canonical_rosters = canonicalize_rosters(rosters, include_postseason=include_postseason)
     canonical_snaps = canonicalize_snaps(snaps, include_postseason=include_postseason)
@@ -633,17 +833,13 @@ def write_player_snapshot(
             "sha256": _sha256(path),
         }
     if "observed_at_basis" in canonical_injuries.columns:
-        n_proxy_rows_per_season = {
-            str(season): int(count)
-            for season, count in canonical_injuries.loc[
-                canonical_injuries["observed_at_basis"].eq("week_proxy"), "season"
-            ]
-            .value_counts()
-            .sort_index()
-            .items()
-        }
+        n_proxy_rows_per_season = _injury_basis_counts(canonical_injuries, "week_proxy")
+        n_first_seen_rows_per_season = _injury_basis_counts(
+            canonical_injuries, "first_seen_capture"
+        )
     else:
         n_proxy_rows_per_season = {}
+        n_first_seen_rows_per_season = {}
     manifest = {
         "snapshot_id": identifier,
         "created_at_utc": datetime.now(UTC).isoformat(),
@@ -661,6 +857,7 @@ def write_player_snapshot(
         "injury_timestamp_fallback": injury_timestamp_fallback,
         "injury_proxy_hours_before_kickoff": INJURY_PROXY_HOURS_BEFORE_KICKOFF,
         "n_proxy_rows_per_season": n_proxy_rows_per_season,
+        "n_first_seen_rows_per_season": n_first_seen_rows_per_season,
         "files": files,
     }
     atomic_json(manifest, snapshot.manifest_path)
@@ -675,8 +872,13 @@ def fetch_player_snapshot(
     *,
     include_postseason: bool = False,
     injury_timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
+    injury_first_seen: pd.DataFrame | None = None,
 ) -> PlayerSnapshot:
     """Download historically feasible player sources into an immutable snapshot.
+
+    ``injury_first_seen`` (ENG-39 follow-up, optional) is forwarded verbatim
+    to ``canonicalize_injuries``; see that function for the visibility rule it
+    imposes and why it cannot leak.
 
     ``injury_timestamp_fallback="week_proxy"`` (ENG-39) additionally fetches
     nflverse schedules for ``injury_seasons`` to resolve each team-game's own
@@ -710,12 +912,11 @@ def fetch_player_snapshot(
         include_postseason=include_postseason,
         injury_timestamp_fallback=injury_timestamp_fallback,
         injury_schedule=injury_schedule,
+        injury_first_seen=injury_first_seen,
     )
 
 
 def player_snapshot_from_root(root: Path) -> PlayerSnapshot:
-    import json
-
     manifest = root / "manifest.json"
     if not manifest.is_file():
         raise FileNotFoundError(f"Player manifest not found: {manifest}")
@@ -1428,6 +1629,7 @@ def enrich_with_player_features(
     depth_charts: pd.DataFrame | None = None,
     injury_snapshot_captured_at: pd.Timestamp | datetime | str | None = None,
     injury_timestamp_fallback: Literal["drop", "week_proxy"] = "drop",
+    injury_first_seen: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
     """Attach conservative expected-lineup features using strictly earlier outcomes.
 
@@ -1472,6 +1674,11 @@ def enrich_with_player_features(
     team-game's own kickoff from ``games`` itself (already required above)
     to resolve the leakage-safe proxy time for a row with no real
     ``date_modified``.
+
+    ``injury_first_seen`` (ENG-39 follow-up, optional) is forwarded verbatim
+    to ``canonicalize_injuries``, which lowers an assumed proxy time to the
+    earliest capture instant that row was demonstrably public at. Omitting it
+    reproduces the previous behaviour exactly.
     """
 
     if injury_timestamp_fallback not in ("drop", "week_proxy"):
@@ -1519,6 +1726,7 @@ def enrich_with_player_features(
         injuries,
         timestamp_fallback=injury_timestamp_fallback,
         schedule=injury_schedule,
+        first_seen=injury_first_seen,
     )
     rosters = canonicalize_rosters(rosters)
     snaps = canonicalize_snaps(snaps)

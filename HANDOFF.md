@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T00:32:45.948756+00:00`
+Refreshed at: `2026-09-10T00:35:44.521087+00:00`
 
 ## Start here
 
@@ -20,14 +20,14 @@ Refreshed at: `2026-09-10T00:32:45.948756+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `3074041a147b` — Serve follow-the-handle on the weekend passes (from Saturday noon, at least 70% of the money on the other side, only when neither market rule fired): +0.38 pts on the played card, P+ 0.57; off arm recorded alongside. Board text names both late-week rules.
+- Baseline commit: `6a0dcff5fe08` — Follow rule vs the six tilts: precedence is not the lever, the 0.5-1.0 band is (market side wins 42-46% there, 52-59% above 1.0); a threshold re-read on the live card is running
 - Pending change set: 7 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - ` M HANDOFF.md`
-  - ` M README.md`
-  - `A  docs/follow_vs_tilts.md`
-  - `A  registry/experiments/crew-tilt-refresh-stacked-backtest/20260910T001631Z.json`
-  - `M  registry/weak_signals.json`
+  - ` M registry/weak_signals.json`
+  - `M  src/nfl_ats/cli_commands/data.py`
+  - `M  src/nfl_ats/cli_commands/features.py`
+  - `M  src/nfl_ats/cli_common.py`
+  - `M  src/nfl_ats/players.py`
   - ` M tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
