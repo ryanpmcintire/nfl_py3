@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T04:03:46.025262+00:00`
+Refreshed at: `2026-09-10T04:14:15.745881+00:00`
 
 ## Start here
 
@@ -20,10 +20,20 @@ Refreshed at: `2026-09-10T04:03:46.025262+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d7fcd41c2062` — Best Pick across eras: the served small-spread rule's +1.96 is grade-specific (a dead heat on the production probability rule); the highest calibrated score inside v2's pool is +3.96 over it (P+ 0.77) and never negative in any era
-- Pending change set: 2 paths
+- Baseline commit: `481bb4b78ee5` — Closing-line value of the Tuesday card: the market drifts our way +0.15 pts but almost all of it is its own home drift; a full-point move toward the pick is worth +12.6 accuracy points over one against it (except at exactly 7, -4.6); two thirds of confirmations arrive by Thursday evening
+- Pending change set: 12 paths
   - `M  HANDOFF.md`
-  - `A  docs/tuesday_card_clv.md`
+  - `M  README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lineup_loss_on_card.md`
+  - `M  docs/model.html`
+  - `M  registry/weak_signals.json`
+  - `A  scripts/lineup_loss_on_card.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal_style.css`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

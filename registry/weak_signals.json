@@ -31535,6 +31535,678 @@
       "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
       "standard_error": null
     },
+    "lineup_loss_on_card_card_0-6.5": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 0-6.5. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.1811594203,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -1.3723696249,
+        1.0138248848
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 1104 non-push games, 107 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 58.786% vs candidate 58.605%; 40 of 1104 picks differ. season-blocked 95% [-1.0138, 0.8858], P+ 0.3402 on 6 blocks. Brier improvement -0.000566 (P+ 0.0738), log-loss improvement -0.001132 (P+ 0.0790). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 1104 games it changed 40 picks and finished 0.18 points of accuracy worse than what we play now.",
+      "probability_positive": 0.386075,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 0.6143936073
+    },
+    "lineup_loss_on_card_card_10.5+": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 10.5+. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": 1.5267175573,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -1.5873015873,
+        5.6737588652
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 131 non-push games, 77 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 51.145% vs candidate 52.672%; 4 of 131 picks differ. season-blocked 95% [-2.4590, 5.5215], P+ 0.6970 on 6 blocks. Brier improvement -0.000704 (P+ 0.3359), log-loss improvement -0.001582 (P+ 0.3205). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 131 games it changed 4 picks and finished 1.53 points of accuracy better than what we play now.",
+      "probability_positive": 0.783875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.8782048472
+    },
+    "lineup_loss_on_card_card_2020": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 2020. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -2.7272727273,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -5.3571428571,
+        -0.4405286344
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 220 non-push games, 17 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 59.091% vs candidate 56.364%; 10 of 220 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.000760 (P+ 0.2497), log-loss improvement -0.001551 (P+ 0.2551). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 220 games it changed 10 picks and finished 2.73 points of accuracy worse than what we play now.",
+      "probability_positive": 0.0142,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.2874795871
+    },
+    "lineup_loss_on_card_card_2021": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 2021. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": 2.1186440678,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -0.4149377593,
+        4.9382716049
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 236 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 55.508% vs candidate 57.627%; 11 of 236 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.001431 (P+ 0.0840), log-loss improvement -0.002906 (P+ 0.0881). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 236 games it changed 11 picks and finished 2.12 points of accuracy better than what we play now.",
+      "probability_positive": 0.9559,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.3090657303
+    },
+    "lineup_loss_on_card_card_2022": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 2022. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.8064516129,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -2.766798419,
+        1.1812190719
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 248 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 58.871% vs candidate 58.065%; 6 of 248 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.001269 (P+ 0.1260), log-loss improvement -0.002613 (P+ 0.1231). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 248 games it changed 6 picks and finished 0.81 points of accuracy worse than what we play now.",
+      "probability_positive": 0.20845,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 0.9725663432
+    },
+    "lineup_loss_on_card_card_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 2023. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.3759398496,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -1.9011406844,
+        1.1583011583
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 266 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 59.398% vs candidate 59.023%; 5 of 266 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.000394 (P+ 0.2591), log-loss improvement -0.000839 (P+ 0.2501). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 266 games it changed 5 picks and finished 0.38 points of accuracy worse than what we play now.",
+      "probability_positive": 0.33005,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 0.8280579388
+    },
+    "lineup_loss_on_card_card_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 2024. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.3759398496,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -2.641509434,
+        2.2727272727
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 266 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 54.135% vs candidate 53.759%; 9 of 266 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement 0.000859 (P+ 0.8442), log-loss improvement 0.001774 (P+ 0.8440). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 266 games it changed 9 picks and finished 0.38 points of accuracy worse than what we play now.",
+      "probability_positive": 0.36555,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.2393830938
+    },
+    "lineup_loss_on_card_card_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 2025. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -2.2471910112,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -4.4776119403,
+        -0.3676470588
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 267 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 54.682% vs candidate 52.434%; 14 of 267 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.000857 (P+ 0.1747), log-loss improvement -0.001726 (P+ 0.1774). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 267 games it changed 14 picks and finished 2.25 points of accuracy worse than what we play now.",
+      "probability_positive": 0.01335,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.0645566124
+    },
+    "lineup_loss_on_card_card_7": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 7. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -5.4054054054,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -11.2676056338,
+        -1.2658227848
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 74 non-push games, 56 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 50.000% vs candidate 44.595%; 4 of 74 picks differ. season-blocked 95% [-8.5106, -1.5385], P+ 0.0077 on 6 blocks. Brier improvement -0.004752 (P+ 0.0037), log-loss improvement -0.010264 (P+ 0.0034). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 74 games it changed 4 picks and finished 5.41 points of accuracy worse than what we play now.",
+      "probability_positive": 0.00835,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 2.6648692657
+    },
+    "lineup_loss_on_card_card_7.5-10": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: 7.5-10. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -3.6082474227,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -6.3157894737,
+        -1.2565355763
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 194 non-push games, 91 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 52.577% vs candidate 48.969%; 7 of 194 picks differ. season-blocked 95% [-6.1856, -1.0526], P+ 0.0007 on 6 blocks. Brier improvement 0.000743 (P+ 0.7398), log-loss improvement 0.001694 (P+ 0.7600). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 194 games it changed 7 picks and finished 3.61 points of accuracy worse than what we play now.",
+      "probability_positive": 0.0003,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.2992640449
+    },
+    "lineup_loss_on_card_card_overall": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: overall. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.7318695941,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -1.6512549538,
+        0.2005347594
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 1503 non-push games, 107 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 56.886% vs candidate 56.154%; 55 of 1503 picks differ. season-blocked 95% [-1.8414, 0.4645], P+ 0.1203 on 6 blocks. Brier improvement -0.000615 (P+ 0.0542), log-loss improvement -0.001256 (P+ 0.0563). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 1503 games it changed 55 picks and finished 0.73 points of accuracy worse than what we play now.",
+      "probability_positive": 0.0631,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 0.4768871013
+    },
+    "lineup_loss_on_card_card_refresh_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade THROUGH the served nine-member card (coach fade, division revenge, player arrests, bye edge fade, forecast cold visitor, pbp08 protection mismatch, interim HC first game, tank zone fade, precip high total), OR-union recomputed against this arm's own picks. Scope: refresh_2023_2025. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -1.0012515645,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -2.2332506203,
+        0.2506265664
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 799 non-push games, 54 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 56.070% vs candidate 55.069%; 28 of 799 picks differ. season-blocked 95% [-2.2472, -0.3759], P+ 0.0000 on 3 blocks. Brier improvement -0.000132 (P+ 0.3942), log-loss improvement -0.000266 (P+ 0.3953). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 799 games it changed 28 picks and finished 1.00 points of accuracy worse than what we play now.",
+      "probability_positive": 0.056275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 0.6230731226
+    },
+    "lineup_loss_on_card_standalone_0-6.5": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 0-6.5. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.634057971,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -2.1178637201,
+        0.8482964118
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 1104 non-push games, 107 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 56.159% vs candidate 55.525%; 73 of 1104 picks differ. season-blocked 95% [-1.7512, 1.0427], P+ 0.2147 on 6 blocks. Brier improvement -0.000590 (P+ 0.0775), log-loss improvement -0.001193 (P+ 0.0819). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 1104 games it changed 73 picks and finished 0.63 points of accuracy worse than what we play now.",
+      "probability_positive": 0.205575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 0.7643771348
+    },
+    "lineup_loss_on_card_standalone_10.5+": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 10.5+. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": 2.2900763359,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -2.4193548387,
+        7.4074074074
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 131 non-push games, 77 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 47.328% vs candidate 49.618%; 9 of 131 picks differ. season-blocked 95% [-2.5000, 7.3620], P+ 0.7089 on 6 blocks. Brier improvement 0.001151 (P+ 0.7720), log-loss improvement 0.002181 (P+ 0.7560). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 131 games it changed 9 picks and finished 2.29 points of accuracy better than what we play now.",
+      "probability_positive": 0.813625,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 2.5177926901
+    },
+    "lineup_loss_on_card_standalone_2020": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 2020. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -3.1818181818,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -5.8295964126,
+        -0.8474576271
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 220 non-push games, 17 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 52.273% vs candidate 49.091%; 11 of 220 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.000251 (P+ 0.4050), log-loss improvement -0.000567 (P+ 0.3982). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 220 games it changed 11 picks and finished 3.18 points of accuracy worse than what we play now.",
+      "probability_positive": 0.005925,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 17,
+      "sample_games": 220,
+      "seasons": [
+        2020,
+        2020
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.3139029127
+    },
+    "lineup_loss_on_card_standalone_2021": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 2021. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": 4.6610169492,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        0.826446281,
+        9.0517241379
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 236 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 54.237% vs candidate 58.898%; 23 of 236 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.000139 (P+ 0.4462), log-loss improvement -0.000264 (P+ 0.4474). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 236 games it changed 23 picks and finished 4.66 points of accuracy better than what we play now.",
+      "probability_positive": 0.990725,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 236,
+      "seasons": [
+        2021,
+        2021
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 2.1229953083
+    },
+    "lineup_loss_on_card_standalone_2022": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 2022. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.8064516129,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -3.0434782609,
+        1.2658227848
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 248 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 55.242% vs candidate 54.435%; 12 of 248 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.001397 (P+ 0.0718), log-loss improvement -0.002898 (P+ 0.0718). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 248 games it changed 12 picks and finished 0.81 points of accuracy worse than what we play now.",
+      "probability_positive": 0.2392,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 248,
+      "seasons": [
+        2022,
+        2022
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.1451448794
+    },
+    "lineup_loss_on_card_standalone_2023": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 2023. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -1.1278195489,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -3.6496350365,
+        1.1363636364
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 266 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 56.391% vs candidate 55.263%; 15 of 266 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement 0.000645 (P+ 0.8428), log-loss improvement 0.001297 (P+ 0.8415). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 266 games it changed 15 picks and finished 1.13 points of accuracy worse than what we play now.",
+      "probability_positive": 0.181125,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.1929899379
+    },
+    "lineup_loss_on_card_standalone_2024": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 2024. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.3759398496,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -3.0303030303,
+        2.6217228464
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 266 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 53.008% vs candidate 52.632%; 13 of 266 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement 0.000746 (P+ 0.8675), log-loss improvement 0.001495 (P+ 0.8633). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 266 games it changed 13 picks and finished 0.38 points of accuracy worse than what we play now.",
+      "probability_positive": 0.38975,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.4499196359
+    },
+    "lineup_loss_on_card_standalone_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 2025. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -1.872659176,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -5.2434456929,
+        1.5151515152
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 267 non-push games, 18 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 55.805% vs candidate 53.933%; 23 of 267 picks differ. season-blocked is one block and therefore DEGENERATE, reported as such, never as an interval. Brier improvement -0.001457 (P+ 0.0404), log-loss improvement -0.002919 (P+ 0.0439). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 267 games it changed 23 picks and finished 1.87 points of accuracy worse than what we play now.",
+      "probability_positive": 0.1467,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.7425503572
+    },
+    "lineup_loss_on_card_standalone_7": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 7. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": 1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -4.347826087,
+        7.3529411765
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 74 non-push games, 56 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 51.351% vs candidate 52.703%; 5 of 74 picks differ. season-blocked 95% [-2.7397, 5.7971], P+ 0.7220 on 6 blocks. Brier improvement -0.001952 (P+ 0.1714), log-loss improvement -0.004412 (P+ 0.1630). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 74 games it changed 5 picks and finished 1.35 points of accuracy better than what we play now.",
+      "probability_positive": 0.6688,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 3.0251008002
+    },
+    "lineup_loss_on_card_standalone_7.5-10": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: 7.5-10. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -2.0618556701,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -5.3475935829,
+        1.0362694301
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 194 non-push games, 91 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 51.546% vs candidate 49.485%; 10 of 194 picks differ. season-blocked 95% [-5.2632, 0.5208], P+ 0.0903 on 6 blocks. Brier improvement 0.000985 (P+ 0.8035), log-loss improvement 0.002139 (P+ 0.8159). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 194 games it changed 10 picks and finished 2.06 points of accuracy worse than what we play now.",
+      "probability_positive": 0.102575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 1.6291307735
+    },
+    "lineup_loss_on_card_standalone_overall": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: overall. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -0.4657351963,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -1.7322074173,
+        0.8185538881
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 1503 non-push games, 107 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 54.558% vs candidate 54.092%; 97 of 1503 picks differ. season-blocked 95% [-1.9907, 1.6315], P+ 0.2801 on 6 blocks. Brier improvement -0.000302 (P+ 0.2030), log-loss improvement -0.000627 (P+ 0.1988). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 1503 games it changed 97 picks and finished 0.47 points of accuracy worse than what we play now.",
+      "probability_positive": 0.23745,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 0.6520947424
+    },
+    "lineup_loss_on_card_standalone_refresh_2023_2025": {
+      "category": "health",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power. refuted_mechanism is unavailable on both admissible grounds: the PRIMARY cell (lineup_loss_on_card_card_overall) has week-blocked 95% [-1.6513, +0.2005], not a resolved wrong sign, and split-half reliability of the trait is 0.8140 on 384 team-seasons (measured this session, artifacts/lineup_loss_on_card/20260910T035735Z/build.json), so no_split_half_reliability cannot apply. bounded_by_control is unavailable by construction: no positive control was run here, and the CX5 leaky control (+44.30 points by substituting realized ATS margin) proves sensitivity to a huge injected signal and bounds nothing at the fractions-of-a-point scale at issue. Per the predeclaration (docs/lineup_loss_on_card.md section 7) only the primary cell can fire the terminal rule, and it does not; every per-season and per-bucket cell here is a post-hoc decomposition of an unresolved whole and is recorded unresolved whatever its own interval does.",
+      "closing_ground": null,
+      "description": "LEAD-62 expected lineup loss, the registered paired challenger weak_stack_expected_lineup_loss, refit exactly as its own weekly recorder refits it (production weak_stack ridge, alpha 10.0, market_residual, min_train_games 500, plus exactly the three frozen diff_expected_lineup_loss_{qb,offense,defense} columns; 90 -> 93 feature columns, identity-gated), scored at the Tuesday-opener grade on the raw served model with the fitted home-side offset and no overlays. Scope: refresh_2023_2025. Predeclared in docs/lineup_loss_on_card.md before any candidate number existed; the incumbent arm reproduces the served archive with max residual gap 0.0 and max probability gap 0.0 on all 1,537 rows.",
+      "effect": -1.12640801,
+      "effect_units": "accuracy_points",
+      "family": "expected_lineup_loss_on_card",
+      "interval": [
+        -2.7707808564,
+        0.6218905473
+      ],
+      "league": "nfl",
+      "notes": "Paired candidate-minus-baseline forced-pick opener accuracy on 799 non-push games, 54 week blocks, 20,000 block-bootstrap samples, seed 20260821. Levels: baseline 55.069% vs candidate 53.942%; 51 of 799 picks differ. season-blocked 95% [-1.8727, -0.3759], P+ 0.0000 on 3 blocks. Brier improvement -0.000024 (P+ 0.4813), log-loss improvement -0.000046 (P+ 0.4824). POINT-IN-TIME: this feature's depth-chart and injury inputs are gated at min(kickoff, Sunday 16:00 ET), the pool's PICK deadline, not the Tuesday noon lock. Measured this session: 0 of 6,814 team-weeks in the play-probability panel carry a depth observation before their own week's Tuesday noon, and only 328 of 87,220 injury rows (0.38%; 187 of 33,383 in 2020-2025) are visible then. So this is a REFRESH-PATH read against the Tuesday-frozen pool line, not a Tuesday-lock candidate. CORRELATED, not an independent vote: every cell in family expected_lineup_loss_on_card decomposes the same 1,503-game 2020-2025 opener archive (artifacts/opener_evaluation/20260910T005854Z, active model 2e8c616b476dd0d2); the declared commensurable pooling family is the two overall cells only.",
+      "plain_summary": "We added a measure of how much of each team's expected starting lineup is likely to sit out, weighted by how much those players normally play, and re-ran the picks. Over 799 games it changed 51 picks and finished 1.13 points of accuracy worse than what we play now.",
+      "probability_positive": 0.095275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.8140117940501888,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/lineup_loss_on_card/20260910T035735Z/arm_results.json",
+      "standard_error": 0.8594862146
+    },
     "low_total_div_home_dog_on_production": {
       "category": "schedule",
       "classification": "unresolved_below_power",

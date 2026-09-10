@@ -83,18 +83,33 @@ from nfl_ats.displayed_confidence import (
     fit_production_displayed_confidence,
 )
 from nfl_ats.four_overlay_composition import (
+    BYE_EDGE_FADE,
     COACH_FADE,
     DIVISION_REVENGE_TILT,
+    FORECAST_COLD_VISITOR_TILT,
+    INTERIM_HC_FIRST_GAME_TILT,
+    PBP08_PROTECTION_MISMATCH_TILT,
     PLAYER_ARRESTS_BACK_SIDE_POLICY,
     POLICY_ID,
+    PRECIP_HIGH_TOTAL_TILT,
     SPREAD_GAP_ZONE_FADE,
+    TANK_ZONE_FADE_TILT,
 )
 from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
 from nfl_ats.pick_refresh import (
+    FOLLOW_NEWS_VETO_REASON,
+    HANDLE_FOLLOW_POLICY,
+    HANDLE_FOLLOW_REASON,
+    LATE_WEEK_FOLLOW_NEWS_VETO_POLICY,
+    LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
+    MOVEMENT_POLICY_MODEL_ONLY,
+    MOVEMENT_POLICY_MOVEMENT,
     PICK_LOCK_TIMEZONE,
+    ROOKIE_CREW_POLICY,
+    ROOKIE_CREW_REASON,
     describe_week_revisions,
     load_pick_revisions,
     pick_deadline,
@@ -140,6 +155,12 @@ _MEMBER_LABELS: dict[str, str] = {
     DIVISION_REVENGE_TILT: "division revenge",
     PLAYER_ARRESTS_BACK_SIDE_POLICY: "player arrests",
     SPREAD_GAP_ZONE_FADE: "spread-gap zone",
+    BYE_EDGE_FADE: "bye-week rest edge",
+    FORECAST_COLD_VISITOR_TILT: "cold-weather visitor",
+    PBP08_PROTECTION_MISMATCH_TILT: "pass-protection mismatch",
+    INTERIM_HC_FIRST_GAME_TILT: "interim coach's first game",
+    TANK_ZONE_FADE_TILT: "tank-zone fade",
+    PRECIP_HIGH_TOTAL_TILT: "rain on a high total",
 }
 
 _WEEK_LABELS = {
@@ -164,6 +185,12 @@ def _number(value: Any) -> float | None:
     except (TypeError, ValueError):
         return None
     return None if pd.isna(number) else number
+
+
+def _utc_timestamp(value: Any) -> Any:
+    """One instant read as UTC, or ``NaT`` when it cannot be read."""
+
+    return pd.to_datetime(value, utc=True, errors="coerce")
 
 
 def _sentence_case(label: str) -> str:
@@ -1221,6 +1248,345 @@ def _build_rival_rules(
     )
 
 
+WEEK_CHANGES_TITLE = "What changed this week"
+
+WEEK_CHANGES_NONE = (
+    "Nothing has moved since Tuesday's lock: every pick above is the one you already had."
+)
+
+WEEK_CHANGES_NO_LOCK = (
+    "Tuesday's locked card is not on file for this week, so there is nothing yet to compare "
+    "today's picks against."
+)
+
+WEEK_CHANGES_METHOD_NOTE = (
+    "Tuesday's card is the one written down when the pool's lines locked. This list is rebuilt "
+    "against it every time the picks are published, so a change can only be added, never "
+    "quietly dropped."
+)
+
+_LATE_WEEK_CHANGE_REASONS: dict[str, str] = {
+    MOVEMENT_POLICY_MODEL_ONLY: "The computer's own read on this game moved.",
+    MOVEMENT_POLICY_MOVEMENT: "The market took this line a full point and the card followed it.",
+    LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY: (
+        "The books that move first took this line a full point, and the card followed them."
+    ),
+    LATE_WEEK_FOLLOW_NEWS_VETO_POLICY: FOLLOW_NEWS_VETO_REASON,
+    HANDLE_FOLLOW_POLICY: f"{HANDLE_FOLLOW_REASON}.",
+    ROOKIE_CREW_POLICY: ROOKIE_CREW_REASON,
+}
+
+
+@dataclass(frozen=True)
+class WeekChangeRow:
+    """One game whose side or Best Pick star is no longer Tuesday's."""
+
+    game_id: str
+    matchup: str
+    when_text: str
+    was_team: str
+    was_best: bool
+    now_team: str
+    now_best: bool
+    reason: str
+
+    @property
+    def side_moved(self) -> bool:
+        return self.was_team != self.now_team
+
+
+@dataclass(frozen=True)
+class WeekChangesPanel:
+    """The "what changed this week" section's content. ``comparable`` is
+    ``False`` until a Tuesday card exists to compare against, in which case
+    only ``summary`` renders."""
+
+    comparable: bool = False
+    summary: str = WEEK_CHANGES_NO_LOCK
+    count_text: str = ""
+    rows: tuple[WeekChangeRow, ...] = ()
+    method_note: str = WEEK_CHANGES_METHOD_NOTE
+
+
+def _default_week_changes() -> WeekChangesPanel:
+    """``BoardContent.week_changes``' default -- see that field's docstring."""
+
+    return WeekChangesPanel()
+
+
+def _recorded_card_states(
+    paper_decisions: pd.DataFrame,
+    artifacts_root: Path,
+    *,
+    season: Any,
+    week: Any,
+) -> list[tuple[Any, dict[str, dict[str, Any]]]]:
+    """Every card recorded for this week, oldest first.
+
+    The live ledger holds only the newest recording; a same-week re-record
+    copies the one it replaced to a timestamped file beside it, so the
+    Tuesday lock survives there and is read back here. Unreadable copies are
+    skipped rather than raised on -- this is a display lift, never a gate.
+    """
+
+    frames = [_week_ledger_rows(paper_decisions, season=season, week=week)]
+    for path in sorted((artifacts_root / "clv_ledger").glob("decisions.*.bak.parquet")):
+        try:
+            frames.append(_week_ledger_rows(pd.read_parquet(path), season=season, week=week))
+        except (OSError, ValueError):
+            continue
+    populated = [frame for frame in frames if not frame.empty]
+    if not populated:
+        return []
+    combined = pd.concat(populated, ignore_index=True)
+    combined["recorded_at_utc"] = _utc_timestamp(combined["recorded_at_utc"])
+    combined = combined.dropna(subset=["recorded_at_utc"]).drop_duplicates(
+        subset=["recorded_at_utc", "game_id"], keep="last"
+    )
+    states: list[tuple[Any, dict[str, dict[str, Any]]]] = []
+    for recorded_at, group in combined.groupby("recorded_at_utc", sort=True):
+        states.append(
+            (recorded_at, {str(row["game_id"]): dict(row) for _, row in group.iterrows()})
+        )
+    return states
+
+
+def _late_week_change_reason(revision: Mapping[str, Any]) -> str:
+    """The pool-player reason for one late-week pass moving a pick."""
+
+    policy = str(revision.get("movement_policy") or "")
+    sentence = _LATE_WEEK_CHANGE_REASONS.get(policy, "A late-week check moved this pick.")
+    delta = _number(revision.get("movement_delta"))
+    if delta:
+        size = abs(delta)
+        sentence += f" The line moved {size:g} point{'' if size == 1 else 's'}."
+    referee = str(revision.get("rookie_crew_referee") or "")
+    if referee and policy == ROOKIE_CREW_POLICY:
+        sentence += f" {referee} has the whistle."
+    return sentence
+
+
+def _recorded_change_reason(
+    game: GameRow,
+    recorded: Mapping[str, Any],
+    locked: Mapping[str, Any],
+    *,
+    side_moved: bool,
+    best_pick_note: str,
+) -> str:
+    """The reason a re-published card, rather than a late-week pass, moved."""
+
+    if not side_moved:
+        return best_pick_note or "The star moved with the card."
+    names = " and ".join(game.flip_member_labels)
+    fires_now = bool(recorded.get("composed_overlay_flip"))
+    fired_tuesday = bool(locked.get("composed_overlay_flip"))
+    if fires_now and not fired_tuesday:
+        return (
+            f"A situational adjustment now fires here: {names}."
+            if names
+            else "A situational adjustment now fires on this game."
+        )
+    if fired_tuesday and not fires_now:
+        return "The situational adjustment behind Tuesday's pick no longer fires here."
+    if str(recorded.get("decision_policy_id") or "") != str(locked.get("decision_policy_id") or ""):
+        return (
+            f"More situational adjustments were switched on this week: {names}."
+            if names
+            else "More situational adjustments were switched on this week."
+        )
+    return f"The computer's own read on this game moved to {game.pick_team}."
+
+
+def _star_move_note(
+    game: GameRow,
+    best_pick_note: str,
+    *,
+    matchups: dict[str, str],
+    starred_tuesday: str | None,
+    starred_now: str | None,
+) -> str:
+    """Why one game gained or lost the star, said as a move between games."""
+
+    if game.is_best:
+        came_from = matchups.get(starred_tuesday or "")
+        lead = f"The star moved here from {came_from}." if came_from else "The star moved here."
+        return f"{lead} {best_pick_note}".strip()
+    went_to = matchups.get(starred_now or "")
+    return f"The star moved to {went_to}." if went_to else "This is no longer the starred pick."
+
+
+def _pool_line_lock_index(states: list[tuple[Any, dict[str, dict[str, Any]]]]) -> int:
+    """The oldest recorded card whose every line is the pool's half-point line."""
+
+    for index, (_, rows) in enumerate(states):
+        spreads = [_number(row.get("decision_home_spread")) for row in rows.values()]
+        if spreads and all(
+            value is not None
+            and abs(value * 2 - round(value * 2)) < 1e-9
+            and round(value * 2) % 2 == 1
+            for value in spreads
+        ):
+            return index
+    return 0
+
+
+def _week_change_summary(rows: tuple[WeekChangeRow, ...], n_games: int) -> tuple[str, str]:
+    """The panel's headline sentence and its count chip."""
+
+    if not rows:
+        return WEEK_CHANGES_NONE, "Nothing moved"
+    sides = sum(1 for row in rows if row.side_moved)
+    tail = " Each one is listed below, in the order it happened."
+    if not sides:
+        return f"Every side is still Tuesday's; only the star moved.{tail}", "Star moved"
+    verb = "have" if sides != 1 else "has"
+    star = ", and the star moved to a different game" if sides != len(rows) else ""
+    return (
+        f"{sides} of this week's {n_games} picks {verb} changed side since Tuesday's "
+        f"lock{star}.{tail}",
+        f"{sides} of {n_games} moved",
+    )
+
+
+def _build_week_changes(
+    games: tuple[GameRow, ...],
+    paper_decisions: pd.DataFrame,
+    artifacts_root: Path,
+    *,
+    season: Any,
+    week: Any,
+    best_pick_note: str,
+    published_at: Any,
+) -> WeekChangesPanel:
+    """Which picks are no longer the ones locked on Tuesday, when they moved,
+    and why -- the question a pool player asks on Thursday and the board
+    could not answer.
+
+    Tuesday's card is the OLDEST recording for the week (see
+    :func:`_recorded_card_states`); today's side is the one on the board
+    above, so a republished card cannot show a change here that a reader
+    cannot see in the table. Attribution walks the same three places the
+    change itself could have come from, newest evidence first: a late-week
+    pass in the pick-revision ledger, then the recorded card that first
+    carried the new side, then the card's own situational adjustments.
+    """
+
+    if not games:
+        return _default_week_changes()
+    states = _recorded_card_states(paper_decisions, artifacts_root, season=season, week=week)
+    if not states:
+        return _default_week_changes()
+    lock_index = _pool_line_lock_index(states)
+    locked_state = states[lock_index][1]
+    later_states = states[lock_index + 1 :]
+    try:
+        revisions = _week_ledger_rows(load_pick_revisions(artifacts_root), season=season, week=week)
+    except (ValueError, OSError):
+        revisions = pd.DataFrame()
+    published = _utc_timestamp(published_at)
+    matchups = {game.game_id: _matchup_label(game.away, game.home) for game in games}
+    starred_tuesday = next(
+        (game_id for game_id, row in locked_state.items() if bool(row.get("is_best_pick"))), None
+    )
+    starred_now = next((game.game_id for game in games if game.is_best), None)
+
+    dated: list[tuple[Any, WeekChangeRow]] = []
+    for game in games:
+        locked = locked_state.get(game.game_id)
+        if locked is None:
+            continue
+        was_side = str(locked.get("pick_side") or "")
+        if was_side not in ("HOME", "AWAY"):
+            continue
+        was_team = game.home if was_side == "HOME" else game.away
+        was_best = bool(locked.get("is_best_pick"))
+        now_side = "HOME" if game.pick_team == game.home else "AWAY"
+        side_moved = was_team != game.pick_team
+        if not side_moved and was_best == game.is_best:
+            continue
+        when, reason = _week_change_attribution(
+            game,
+            locked,
+            now_side=now_side,
+            side_moved=side_moved,
+            later_states=later_states,
+            revisions=revisions,
+            best_pick_note=_star_move_note(
+                game,
+                best_pick_note,
+                matchups=matchups,
+                starred_tuesday=starred_tuesday,
+                starred_now=starred_now,
+            ),
+        )
+        moved_at = when if when is not None else published
+        known = not pd.isna(moved_at)
+        dated.append(
+            (
+                moved_at if known else states[0][0],
+                WeekChangeRow(
+                    game_id=game.game_id,
+                    matchup=_matchup_label(game.away, game.home),
+                    when_text=_timeline_time(moved_at) if known else "since Tuesday",
+                    was_team=was_team,
+                    was_best=was_best,
+                    now_team=game.pick_team,
+                    now_best=game.is_best,
+                    reason=reason,
+                ),
+            )
+        )
+
+    rows = tuple(row for _when, row in sorted(dated, key=lambda entry: entry[0]))
+    summary, count_text = _week_change_summary(rows, len(games))
+    return WeekChangesPanel(comparable=True, summary=summary, count_text=count_text, rows=rows)
+
+
+def _week_change_attribution(
+    game: GameRow,
+    locked: Mapping[str, Any],
+    *,
+    now_side: str,
+    side_moved: bool,
+    later_states: list[tuple[Any, dict[str, dict[str, Any]]]],
+    revisions: pd.DataFrame,
+    best_pick_note: str,
+) -> tuple[Any, str]:
+    """When one game's pick moved, and the reason in the card's own words."""
+
+    if side_moved and not revisions.empty:
+        mine = revisions.loc[
+            revisions["game_id"].astype(str).eq(game.game_id)
+            & revisions["new_pick_side"].astype(str).eq(now_side)
+        ]
+        if not mine.empty:
+            latest = dict(mine.sort_values("revision_recorded_at_utc").iloc[-1])
+            moved_at = _utc_timestamp(latest.get("revision_recorded_at_utc"))
+            return (
+                None if pd.isna(moved_at) else moved_at,
+                _late_week_change_reason(latest),
+            )
+    for recorded_at, state in later_states:
+        recorded = state.get(game.game_id)
+        if recorded is None:
+            continue
+        if side_moved and str(recorded.get("pick_side") or "") != now_side:
+            continue
+        if not side_moved and bool(recorded.get("is_best_pick")) != game.is_best:
+            continue
+        return recorded_at, _recorded_change_reason(
+            game, recorded, locked, side_moved=side_moved, best_pick_note=best_pick_note
+        )
+    on_the_board = {
+        "composed_overlay_flip": bool(game.flip_member_labels),
+        "decision_policy_id": locked.get("decision_policy_id"),
+    }
+    return None, _recorded_change_reason(
+        game, on_the_board, locked, side_moved=side_moved, best_pick_note=best_pick_note
+    )
+
+
 @dataclass(frozen=True)
 class BoardContent:
     """Everything the This Week page renders. Built once by
@@ -1254,6 +1620,7 @@ class BoardContent:
     source_policy: SourcePolicyView = field(default_factory=_default_source_policy_view)
     tiebreaker: TiebreakerView = field(default_factory=_default_tiebreaker_view)
     rivals: RivalRulesPanel = field(default_factory=_default_rival_rules)
+    week_changes: WeekChangesPanel = field(default_factory=_default_week_changes)
 
     @property
     def pick_lock_note(self) -> str | None:
@@ -2924,6 +3291,15 @@ def load_board_content(
             season=artifacts.metadata.get("season"),
             week=artifacts.metadata.get("week"),
         ),
+        week_changes=_build_week_changes(
+            tuple(games),
+            paper_decisions,
+            artifacts_root,
+            season=artifacts.metadata.get("season"),
+            week=artifacts.metadata.get("week"),
+            best_pick_note=best_pick_note,
+            published_at=_card_publication_time(forecast_dir),
+        ),
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,
         season_record=season_record,
@@ -2942,6 +3318,10 @@ __all__ = [
     "SOURCE_POLICY_NOT_RECORDED",
     "TIEBREAKER_NOT_PUBLISHED_TEXT",
     "TIEBREAKER_NUDGE_NOTE",
+    "WEEK_CHANGES_METHOD_NOTE",
+    "WEEK_CHANGES_NONE",
+    "WEEK_CHANGES_NO_LOCK",
+    "WEEK_CHANGES_TITLE",
     "AttributionPanel",
     "AttributionRow",
     "BoardContent",
@@ -2964,6 +3344,8 @@ __all__ = [
     "SpreadAdjusterParams",
     "TickerChrome",
     "TiebreakerView",
+    "WeekChangeRow",
+    "WeekChangesPanel",
     "injury_report_state",
     "load_board_content",
     "verify_number_provenance",

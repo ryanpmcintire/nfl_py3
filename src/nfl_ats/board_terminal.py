@@ -53,6 +53,7 @@ from nfl_ats.board_content import (
     RIVAL_RULES_TITLE,
     SOURCE_POLICY_COMPUTED_LIVE_NOTE,
     SOURCE_POLICY_LEGEND,
+    WEEK_CHANGES_TITLE,
     BoardContent,
     GameDive,
     GameRow,
@@ -1338,6 +1339,59 @@ def _findings_teaser_section(content: BoardContent) -> str:
     )
 
 
+def _week_change_side_html(team: str, best: bool) -> str:
+    """One Was/Now cell: the side, with the board's own star when it held it."""
+
+    star = '<span class="star">&#9733;</span>' if best else ""
+    return f"{star}{escape(team)}"
+
+
+def _week_changes_section(content: BoardContent) -> str:
+    """Which of my picks changed since Tuesday, and why -- the question a pool
+    player asks midweek, which the board could not answer.
+
+    One line per game whose side or star is no longer Tuesday's, in the order
+    the changes happened, each saying the old side, the new side, when it
+    moved and why. When nothing moved it is a single sentence, which is the
+    honest and far more common state; the section never disappears, because a
+    reader who has to wonder whether it ran is back where he started.
+    Reuses ``.section-head``/``.policy-note``/``.board-scroll``/
+    ``table.board`` and the board's own ``td.pick``/``.star`` ink. Its rows
+    carry ``.change-row`` rather than the board's ``.game`` so the picks
+    board's row-click, keyboard walk and sort control never treat a change
+    line as a game; the stylesheet's appended block gives that class the same
+    stacked-card treatment on a phone.
+    """
+
+    panel = content.week_changes
+    count = f'<span class="sub">{escape(panel.count_text)}</span>' if panel.count_text else ""
+    head = (
+        '<section aria-labelledby="changed-h"><div class="section-head">'
+        f'<h2 id="changed-h">{escape(WEEK_CHANGES_TITLE)}</h2>{count}</div>'
+        f'<p class="policy-note">{escape(panel.summary)}</p>'
+    )
+    if not panel.rows:
+        return head + "</section>"
+    body = "".join(
+        '<tr class="change-row">'
+        f'<td class="kickoff" data-label="When">{escape(row.when_text)}</td>'
+        f'<td class="matchup" data-label="Game"><b>{escape(row.matchup)}</b></td>'
+        f'<td class="pick" data-label="Was">'
+        f"{_week_change_side_html(row.was_team, row.was_best)}</td>"
+        f'<td class="pick" data-label="Now">'
+        f"{_week_change_side_html(row.now_team, row.now_best)}</td>"
+        f'<td data-label="Why"><span class="game-sub">{escape(row.reason)}</span></td>'
+        "</tr>"
+        for row in panel.rows
+    )
+    return (
+        head + '<div class="board-scroll"><table class="board"><thead><tr>'
+        "<th>When</th><th>Game</th><th>Was</th><th>Now</th><th>Why</th>"
+        f"</tr></thead><tbody>{body}</tbody></table></div>"
+        f'<p class="micro">{escape(panel.method_note)}</p></section>'
+    )
+
+
 def _rival_rules_section(content: BoardContent) -> str:
     """UI-20(e): the alternative pick rules recorded beside this week's card.
 
@@ -1539,6 +1593,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         + _board_section(content)
         + _inspector_section(content)
         + "</div>"
+        + _week_changes_section(content)
         + _rival_rules_section(content)
         + _findings_teaser_section(content)
         + board_assistant.assistant_section(board_assistant.build_knowledge_for_board(content))

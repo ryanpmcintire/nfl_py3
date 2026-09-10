@@ -630,6 +630,10 @@ table.board td.kickoff .lock{display:block;font-size:9px;color:var(--text-faint)
        needs those children to wrap onto their own lines rather than being
        forced, un-shrinking, onto a single one. */
     table.board td{ flex-wrap:wrap; }
+    table.board tr.change-row{
+      border:1px solid var(--line); margin-bottom:10px; padding:10px 12px 12px;
+      background:var(--panel);
+    }
   }
 
   /* snapshot motion rail -- appended 2026-09-02. Every rotating value is
@@ -835,3 +839,8 @@ table.board td.kickoff .lock{display:block;font-size:9px;color:var(--text-faint)
   .dive-panel:target{ display:block; }
   .dive-panels:has(.dive-panel:target) .dive-panel{ display:none; }
   .dive-panels:has(.dive-panel:target) .dive-panel:target{ display:block; }
+
+  /* what-changed rows -- appended to verbatim mockup sheet; their own row
+     class, not the board's .game, so the picks board's row-click, keyboard
+     walk and sort never see them as a game. */
+  table.board tbody tr.change-row:hover{ background:#10151b; }
