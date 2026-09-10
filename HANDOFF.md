@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T00:46:00.373021+00:00`
+Refreshed at: `2026-09-10T00:51:08.436171+00:00`
 
 ## Start here
 
@@ -20,29 +20,12 @@ Refreshed at: `2026-09-10T00:46:00.373021+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b8a50e11ea2f` — Injury rows become visible at their first capture instant instead of kickoff minus 24h when nflverse carries no date_modified; Week 1 rebuild now passes lineage before Thursday, SF at LA +0.4 pp, no flip
-- Pending change set: 24 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `452b96a36779` — Serve the small-spread Best Pick rule (|spread| <= 6.5; +1.96 Best-Pick points, P+ 0.69; MIA +3.5 stays the star); unrestricted v2 keeps recording as the off arm. News-gated follow: veto the follow when the injury report contradicts the move (+1.13 over the served rule, P+ 0.83); confirmed moves +3.2, contradicted -4.4.
+- Pending change set: 4 paths
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/best_pick_big_spread_challenger.md`
-  - `M  docs/best_pick_bucket_confidence.md`
-  - `M  docs/best_pick_followup.md`
-  - `M  docs/best_pick_ranker.md`
-  - `M  docs/findings.html`
-  - `A  docs/follow_news_gate.md`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/model.html`
   - `MM registry/weak_signals.json`
-  - `A  registry/weak_signals.json.lock`
-  - `M  src/nfl_ats/best_pick_big_spread_challenger.py`
-  - `M  src/nfl_ats/best_pick_nomination.py`
-  - `M  src/nfl_ats/board_assistant.py`
-  - `M  src/nfl_ats/card_view.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - ...and 4 more
+  - ` D registry/weak_signals.json.lock`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
