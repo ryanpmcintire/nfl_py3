@@ -66,6 +66,7 @@ from math import isfinite
 from typing import Any
 
 from nfl_ats.coach_fade_overlay import OverlayFlip
+from nfl_ats.displayed_confidence import displayed_pick_probability
 from nfl_ats.division_revenge_tilt_overlay import TiltFlip as DivisionRevengeFlip
 from nfl_ats.four_overlay_composition import (
     COACH_FADE,
@@ -201,12 +202,15 @@ def _format_line(value: float | None) -> str:
 
 
 def _pick_side_and_probability(row: Mapping[str, Any]) -> tuple[str | None, float | None]:
-    """The picked team and this game's model probability FOR that side.
+    """The picked team and the score DISPLAYED for that side.
 
     ``row`` may supply an explicit ``pick_team`` (e.g. an already-rendered
     card row); otherwise the pick is derived the same way
     ``publishing._published_card`` derives it: home when
-    ``home_cover_probability >= 0.5``, away otherwise.
+    ``home_cover_probability >= 0.5``, away otherwise. The number prefers
+    ``displayed_pick_probability`` when the row carries it
+    (``nfl_ats.displayed_confidence``), so the sentence and the card's own
+    score can never disagree.
     """
 
     home_team = _optional_str(row.get("home_team"))
@@ -217,6 +221,9 @@ def _pick_side_and_probability(row: Mapping[str, Any]) -> tuple[str | None, floa
         if home_probability is None or home_team is None or away_team is None:
             return None, None
         pick_team = home_team if home_probability >= 0.5 else away_team
+    displayed = displayed_pick_probability(row)
+    if displayed is not None:
+        return pick_team, displayed
     if home_probability is None:
         return pick_team, None
     probability = home_probability if pick_team == home_team else 1.0 - home_probability
@@ -255,18 +262,26 @@ class MarketLineComponent:
 
 @dataclass(frozen=True)
 class ModelProbabilityComponent:
-    """This game's own model probability for the pick side -- never an
-    accuracy figure (AGENTS.md: keep historical accuracy distinct from each
-    game's model probability)."""
+    """This game's probability for the pick side -- never an accuracy figure
+    (AGENTS.md: keep historical accuracy distinct from each game's model
+    probability).
+
+    ``probability`` is the DISPLAYED score, which is the model's own number
+    calibrated to its record at that line size when
+    ``nfl_ats.displayed_confidence`` is served. ``stated_probability`` keeps
+    the model's raw output beside it, so the sidecar always carries both.
+    """
 
     pick_side: str
     probability: float | None
     provenance: str
+    stated_probability: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "pick_side": self.pick_side,
             "probability": self.probability,
+            "stated_probability": self.stated_probability,
             "provenance": self.provenance,
         }
 
@@ -276,6 +291,7 @@ class ModelProbabilityComponent:
             pick_side=str(payload.get("pick_side") or ""),
             probability=_finite_float(payload.get("probability")),
             provenance=str(payload.get("provenance", NO_DATA)),
+            stated_probability=_finite_float(payload.get("stated_probability")),
         )
 
 
@@ -670,9 +686,14 @@ def _lead_sentence(
         return f"{lead} No model probability is recorded for this pick."
     word = confidence_word(model_probability.probability)
     phrase = _CONFIDENCE_PHRASES.get(word, word)
+    adjusted = (
+        model_probability.stated_probability is not None
+        and abs(model_probability.stated_probability - model_probability.probability) >= 0.0005
+    )
+    basis = " once its record on spreads this size is counted in" if adjusted else ""
     return (
-        f"{lead} The model makes {pick_side or 'the pick'} a "
-        f"{model_probability.probability:.1%} cover, {phrase}."
+        f"{lead} The model gives {pick_side or 'the pick'} a "
+        f"{model_probability.probability:.1%} chance to cover{basis}, {phrase}."
     )
 
 
@@ -975,10 +996,17 @@ def explain_pick(
         provenance=MEASURED_FROM_ARTIFACT if home_line is not None else NO_DATA,
     )
 
+    home_probability = _finite_float(row.get("home_cover_probability"))
+    stated = (
+        None
+        if home_probability is None
+        else (home_probability if pick_is_home else 1.0 - home_probability)
+    )
     model_probability = ModelProbabilityComponent(
         pick_side=pick_team or "",
         probability=probability,
         provenance=COMPUTED_NOW if probability is not None else NO_DATA,
+        stated_probability=stated,
     )
 
     overlays_component = OverlaysComponent(

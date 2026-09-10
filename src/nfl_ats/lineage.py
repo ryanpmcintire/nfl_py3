@@ -738,8 +738,10 @@ PUBLISHED_DISPLAY_FIELDS: dict[str, str] = {
     "Matchup": "formatted from home_team/away_team, already covered by model_input:market",
     "ATS prediction": "rendering of pick and market_line, both of which carry their own lineage",
     "Decision score": (
-        "rendering of model_probability from the picked side's perspective; introduces "
-        "no independent source"
+        "rendering of model_probability from the picked side's perspective, calibrated by "
+        "the served displayed-confidence cells (docs/displayed_confidence.md); the cells "
+        "come from the opener evaluation matched to the active model, so it introduces no "
+        "independent source"
     ),
 }
 

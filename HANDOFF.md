@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T01:50:06.879134+00:00`
+Refreshed at: `2026-09-10T02:28:57.479020+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-10T01:50:06.879134+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `fa242cbaaf7c` — Injury rows first captured after kickoff minus 24h take their capture instant, never the earlier proxy (five Week 1 rows move ~20h later; 2009-2025 byte-identical)
-- Pending change set: 26 paths
+- Baseline commit: `3e26979cd5ce` — Late-week follow now waits for a full-point move by the leading books and is vetoed when injury news filed since Tuesday points the other way (+2.0 and +1.1 on the played card, P+ 0.92 / 0.83); half-point and no-veto arms recorded as paired OFF challengers; board text updated
+- Pending change set: 23 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `M  artifacts/prospective/challengers.json`
+  - `A  docs/big_spread_signal.md`
+  - `A  docs/cfb_served_tilts.md`
+  - `A  docs/displayed_confidence.md`
   - `M  docs/findings.html`
-  - `M  docs/follow_news_gate.md`
-  - `M  docs/follow_threshold_live_card.md`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `M  docs/late_week_refresh.md`
   - `M  docs/model.html`
+  - `A  docs/served_refresh_card.md`
   - `M  registry/weak_signals.json`
-  - `M  src/nfl_ats/artifact_contracts.py`
-  - `M  src/nfl_ats/board_assistant.py`
+  - `A  scripts/big_spread_signal.py`
+  - `A  scripts/cfb_served_tilts_replication.py`
+  - `A  scripts/displayed_confidence_measure.py`
   - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `M  src/nfl_ats/injury_signal_refresh_tilt.py`
-  - `M  src/nfl_ats/late_week_move_follow_refresh_overlay.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `M  src/nfl_ats/public_board.py`
-  - ...and 6 more
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/card_explanation.py`
+  - `A  src/nfl_ats/displayed_confidence.py`
+  - `M  src/nfl_ats/lineage.py`
+  - ...and 3 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -62,7 +62,7 @@ The 52.29% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T01:07:47.585512+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T02:20:41.210361+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

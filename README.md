@@ -19,22 +19,22 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Decision score   |
 |:------------|:-----------|:-----------------|:-----------------|
-| Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.4%            |
-| Thu, Sep 10 | SF at LA   | SF +3.5          | 56.0%            |
-| Sun, Sep 13 | ARI at LAC | ARI +9.5         | 64.2%            |
-| Sun, Sep 13 | ATL at PIT | PIT -3.5         | 55.9%            |
+| Wed, Sep 09 | NE at SEA  | NE +3.5          | 56.9%            |
+| Thu, Sep 10 | SF at LA   | SF +3.5          | 55.4%            |
+| Sun, Sep 13 | ARI at LAC | ARI +9.5         | 53.4%            |
+| Sun, Sep 13 | ATL at PIT | PIT -3.5         | 55.4%            |
 | Sun, Sep 13 | BAL at IND | IND +3.5         | 55.4%            |
-| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 54.2%            |
-| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 51.6%            |
-| Sun, Sep 13 | CLE at JAX | JAX -8.5         | 53.3%            |
-| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 50.2%            |
-| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 54.1%            |
-| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 56.1%            |
-| Sun, Sep 13 | NO at DET  | NO +6.5          | 52.3%            |
-| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 51.6%            |
-| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 50.9%            |
-| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 63.3%            |
-| Mon, Sep 14 | DEN at KC  | DEN +2.5         | 51.8%            |
+| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 57.0%            |
+| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 56.9%            |
+| Sun, Sep 13 | CLE at JAX | JAX -8.5         | 59.3%            |
+| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 56.9%            |
+| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 57.0%            |
+| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 55.4%            |
+| Sun, Sep 13 | NO at DET  | NO +6.5          | 56.9%            |
+| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 56.9%            |
+| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 56.9%            |
+| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 55.7%            |
+| Mon, Sep 14 | DEN at KC  | DEN +2.5         | 56.9%            |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -65,7 +65,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 4,934 results recorded -- 4,909 unresolved_below_power, 25 closed (25 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 4,958 results recorded -- 4,933 unresolved_below_power, 25 closed (25 refuted_mechanism, 0 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 436 declared research families -- 70 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 49 of 55 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

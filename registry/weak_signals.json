@@ -6440,6 +6440,678 @@
       "source": "docs/surgical_injury.md sec 3.3",
       "standard_error": null
     },
+    "cfb_served_tilt_bowl_dead_analogue_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.3580, +0.4031] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +3.806 points, roughly 54x the NFL served effect of +0.07 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.8332 on 137 team-seasons. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "DECLARED ANALOGUE of the NFL served tank-zone fade, NOT a replication of it: a team mathematically unable to reach six wins (bowl eligibility) with its remaining regular-season games, in the final five regular-season weeks, fading the flagged side. This is a DIFFERENT mechanism (nothing left to play for) from the NFL cell's draft-position incentive, which college football does not have. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points. ERA SLICE 2012-2019 only.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.35798,
+        0.403063
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2012-2019 only. Close-graded secondary: -0.0374 points, 95% [-0.4053, +0.3758], probability_positive 0.4037. Eligible games 448, flips 170. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4646 on 734 graded games (0.5 under no effect). NFL served sibling motivation_ladder_tank_zone_wk14_18 / tank_zone_fade_tilt_overlay at +0.07 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, betting against teams that can no longer reach a bowl game, in the last few weeks of the season, leaned slightly profitable.",
+      "probability_positive": 0.480375,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.833206,
+      "sample_blocks": 121,
+      "sample_games": 5333,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_bowl_dead_analogue_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.2884, +1.4009] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +4.343 points, roughly 62x the NFL served effect of +0.07 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.8332 on 137 team-seasons. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "DECLARED ANALOGUE of the NFL served tank-zone fade, NOT a replication of it: a team mathematically unable to reach six wins (bowl eligibility) with its remaining regular-season games, in the final five regular-season weeks, fading the flagged side. This is a DIFFERENT mechanism (nothing left to play for) from the NFL cell's draft-position incentive, which college football does not have. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points. ERA SLICE 2021-2025 only.",
+      "effect": 0.501114,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.288355,
+        1.400878
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2021-2025 only. Close-graded secondary: +0.5580 points, 95% [-0.2306, +1.4579], probability_positive 0.9078. Eligible games 286, flips 120. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4646 on 734 graded games (0.5 under no effect). NFL served sibling motivation_ladder_tank_zone_wk14_18 / tank_zone_fade_tilt_overlay at +0.07 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, betting against teams that can no longer reach a bowl game, in the last few weeks of the season, leaned slightly profitable.",
+      "probability_positive": 0.881725,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.833206,
+      "sample_blocks": 77,
+      "sample_games": 3592,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_bowl_dead_analogue_full": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.1930, +0.6475] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +4.022 points, roughly 57x the NFL served effect of +0.07 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.8332 on 137 team-seasons. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "DECLARED ANALOGUE of the NFL served tank-zone fade, NOT a replication of it: a team mathematically unable to reach six wins (bowl eligibility) with its remaining regular-season games, in the final five regular-season weeks, fading the flagged side. This is a DIFFERENT mechanism (nothing left to play for) from the NFL cell's draft-position incentive, which college football does not have. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points.",
+      "effect": 0.201681,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.19303,
+        0.647507
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). FULL clean core 2012-2019 + 2021-2025. Close-graded secondary: +0.2015 points, 95% [-0.1911, +0.6410], probability_positive 0.8325. Eligible games 734, flips 290. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4646 on 734 graded games (0.5 under no effect). NFL served sibling motivation_ladder_tank_zone_wk14_18 / tank_zone_fade_tilt_overlay at +0.07 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, betting against teams that can no longer reach a bowl game, in the last few weeks of the season, leaned slightly profitable.",
+      "probability_positive": 0.8279,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.833206,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_bowl_dead_analogue_positive_control_full": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Instrument-power control, classified unresolved_below_power because it closes nothing: it is not a mechanism claim, and no admissible closing ground is asserted for it or on the strength of it.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL for cfb_served_tilt_bowl_dead_analogue_full: perfect-foresight flips on the same eligible set, a deliberate leak. A harness that cannot detect this would be blind. Never a signal and never pooled with the tilt cells.",
+      "effect": 4.022409,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        2.898377,
+        5.232895
+      ],
+      "league": "cfb",
+      "notes": "POSITIVE CONTROL, not a signal: on exactly this cell's eligible set the candidate pick is replaced by the realised winning side. It measures what a maximum-size effect looks like at this cell's own flip volume. It resolves at +4.0224 points on 359 flips, so the instrument detects a large leak; the cell's own week-blocked half-width is 0.4203 points against an NFL served effect of +0.07 points, so the control does NOT prove the instrument can detect an NFL-sized effect and bounded_by_control is inadmissible for the tilt cell above.",
+      "plain_summary": "A deliberate cheat used to check the measuring stick works: if we knew the winners in advance on exactly these games, this is how much better the picks would be.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_bye_edge_fade_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-1.0133, +0.8146] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +8.907 points, roughly 17x the NFL served effect of +0.53 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.6678 on 703 team-seasons, and the within-season instrument is pushed negative by arithmetic for any schedule quantity (a season holds a fixed number of days and games), which is a property of the instrument, not the trait. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CFB replication of the NFL served bye-edge fade: exactly one of the two teams is off a strict bye (>=12-day gap to its own immediately preceding game that season) and the frozen CFB benchmark ridge arm's forced pick IS that side, so the pick is flipped away from it. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points; positive = the fade helped. ERA SLICE 2012-2019 only.",
+      "effect": -0.093756,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -1.013277,
+        0.814594
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2012-2019 only. Close-graded secondary: +0.1496 points, 95% [-0.7586, +1.0615], probability_positive 0.6259. Eligible games 930, flips 631. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.5164 on 1497 graded games (0.5 under no effect). NFL served sibling bye_overval_fade_full_slate_post2011 / bye_edge_fade_overlay at +0.53 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, when one team is coming off a long break and the other is not, betting against the rested team did not help.",
+      "probability_positive": 0.42175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.667835,
+      "sample_blocks": 121,
+      "sample_games": 5333,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_bye_edge_fade_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-1.6618, +0.6529] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +7.656 points, roughly 14x the NFL served effect of +0.53 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.6678 on 703 team-seasons, and the within-season instrument is pushed negative by arithmetic for any schedule quantity (a season holds a fixed number of days and games), which is a property of the instrument, not the trait. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CFB replication of the NFL served bye-edge fade: exactly one of the two teams is off a strict bye (>=12-day gap to its own immediately preceding game that season) and the frozen CFB benchmark ridge arm's forced pick IS that side, so the pick is flipped away from it. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points; positive = the fade helped. ERA SLICE 2021-2025 only.",
+      "effect": -0.501114,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -1.661817,
+        0.652884
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2021-2025 only. Close-graded secondary: -0.3069 points, 95% [-1.4543, +0.8253], probability_positive 0.3013. Eligible games 567, flips 398. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.5164 on 1497 graded games (0.5 under no effect). NFL served sibling bye_overval_fade_full_slate_post2011 / bye_edge_fade_overlay at +0.53 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, when one team is coming off a long break and the other is not, betting against the rested team did not help.",
+      "probability_positive": 0.197925,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.667835,
+      "sample_blocks": 77,
+      "sample_games": 3592,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_bye_edge_fade_full": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.9665, +0.4659] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +8.403 points, roughly 16x the NFL served effect of +0.53 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.6678 on 703 team-seasons, and the within-season instrument is pushed negative by arithmetic for any schedule quantity (a season holds a fixed number of days and games), which is a property of the instrument, not the trait. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CFB replication of the NFL served bye-edge fade: exactly one of the two teams is off a strict bye (>=12-day gap to its own immediately preceding game that season) and the frozen CFB benchmark ridge arm's forced pick IS that side, so the pick is flipped away from it. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points; positive = the fade helped.",
+      "effect": -0.257703,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.966497,
+        0.46593
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). FULL clean core 2012-2019 + 2021-2025. Close-graded secondary: -0.0336 points, 95% [-0.7529, +0.6823], probability_positive 0.4640. Eligible games 1497, flips 1029. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.5164 on 1497 graded games (0.5 under no effect). NFL served sibling bye_overval_fade_full_slate_post2011 / bye_edge_fade_overlay at +0.53 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, when one team is coming off a long break and the other is not, betting against the rested team did not help.",
+      "probability_positive": 0.239475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.667835,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_bye_edge_fade_positive_control_full": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Instrument-power control, classified unresolved_below_power because it closes nothing: it is not a mechanism claim, and no admissible closing ground is asserted for it or on the strength of it.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL for cfb_served_tilt_bye_edge_fade_full: perfect-foresight flips on the same eligible set, a deliberate leak. A harness that cannot detect this would be blind. Never a signal and never pooled with the tilt cells.",
+      "effect": 8.403361,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        7.451233,
+        9.373267
+      ],
+      "league": "cfb",
+      "notes": "POSITIVE CONTROL, not a signal: on exactly this cell's eligible set the candidate pick is replaced by the realised winning side. It measures what a maximum-size effect looks like at this cell's own flip volume. It resolves at +8.4034 points on 750 flips, so the instrument detects a large leak; the cell's own week-blocked half-width is 0.7162 points against an NFL served effect of +0.53 points, so the control does NOT prove the instrument can detect an NFL-sized effect and bounded_by_control is inadmissible for the tilt cell above.",
+      "plain_summary": "A deliberate cheat used to check the measuring stick works: if we knew the winners in advance on exactly these games, this is how much better the picks would be.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_interim_hc_first_game_2012_2019": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.1572, +0.1516] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.244 points, roughly 2x the NFL served effect of +0.13 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.1900 on 703 team-seasons -- above any no-reliability ceiling -- though split-half reliability is only weakly meaningful here: a first game under a mid-season replacement is a one-off EVENT, not a repeatable team trait, and what the instrument picks up is that some programmes fire coaches more often than others. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CFB replication of the NFL served interim-head-coach first-game tilt: a team's first regular-season game under a mid-season head-coach replacement (a coach whose CFBD hire date falls strictly between that team's first and last regular-season kickoff of that season), backing that team when the frozen CFB benchmark ridge arm's forced pick is not already on it. CFBD carries no 'interim' label; a mid-season replacement in college football IS an interim appointment, which is the disclosed assumption of this cell. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points. ERA SLICE 2012-2019 only.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.157233,
+        0.151603
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2012-2019 only. Close-graded secondary: +0.0000 points, 95% [-0.1594, +0.1529], probability_positive 0.5066. Eligible games 24, flips 16. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4844 on 64 graded games (0.5 under no effect). NFL served sibling interim_hc_first_game / interim_hc_first_game_tilt_overlay at +0.13 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, backing a team in its first game after firing its head coach mid-season did not help.",
+      "probability_positive": 0.506125,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.189979,
+      "sample_blocks": 121,
+      "sample_games": 5333,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_interim_hc_first_game_2021_2025": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.2211, +0.2195] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.557 points, roughly 4x the NFL served effect of +0.13 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.1900 on 703 team-seasons -- above any no-reliability ceiling -- though split-half reliability is only weakly meaningful here: a first game under a mid-season replacement is a one-off EVENT, not a repeatable team trait, and what the instrument picks up is that some programmes fire coaches more often than others. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CFB replication of the NFL served interim-head-coach first-game tilt: a team's first regular-season game under a mid-season head-coach replacement (a coach whose CFBD hire date falls strictly between that team's first and last regular-season kickoff of that season), backing that team when the frozen CFB benchmark ridge arm's forced pick is not already on it. CFBD carries no 'interim' label; a mid-season replacement in college football IS an interim appointment, which is the disclosed assumption of this cell. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points. ERA SLICE 2021-2025 only.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.221056,
+        0.21954
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2021-2025 only. Close-graded secondary: -0.0558 points, 95% [-0.3045, +0.1836], probability_positive 0.3296. Eligible games 40, flips 22. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4844 on 64 graded games (0.5 under no effect). NFL served sibling interim_hc_first_game / interim_hc_first_game_tilt_overlay at +0.13 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, backing a team in its first game after firing its head coach mid-season did not help.",
+      "probability_positive": 0.50235,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.189979,
+      "sample_blocks": 77,
+      "sample_games": 3592,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_interim_hc_first_game_full": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.1300, +0.1261] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.370 points, roughly 3x the NFL served effect of +0.13 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.1900 on 703 team-seasons -- above any no-reliability ceiling -- though split-half reliability is only weakly meaningful here: a first game under a mid-season replacement is a one-off EVENT, not a repeatable team trait, and what the instrument picks up is that some programmes fire coaches more often than others. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CFB replication of the NFL served interim-head-coach first-game tilt: a team's first regular-season game under a mid-season head-coach replacement (a coach whose CFBD hire date falls strictly between that team's first and last regular-season kickoff of that season), backing that team when the frozen CFB benchmark ridge arm's forced pick is not already on it. CFBD carries no 'interim' label; a mid-season replacement in college football IS an interim appointment, which is the disclosed assumption of this cell. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.130039,
+        0.126063
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). FULL clean core 2012-2019 + 2021-2025. Close-graded secondary: -0.0224 points, 95% [-0.1589, +0.1113], probability_positive 0.3739. Eligible games 64, flips 38. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4844 on 64 graded games (0.5 under no effect). NFL served sibling interim_hc_first_game / interim_hc_first_game_tilt_overlay at +0.13 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, backing a team in its first game after firing its head coach mid-season did not help.",
+      "probability_positive": 0.501075,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.189979,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_interim_hc_first_game_gamecount_2012_2019": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.1339, +0.1694] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.225 points, roughly 2x the NFL served effect of +0.13 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.1900 on 703 team-seasons -- above any no-reliability ceiling -- though split-half reliability is only weakly meaningful here: a first game under a mid-season replacement is a one-off EVENT, not a repeatable team trait, and what the instrument picks up is that some programmes fire coaches more often than others. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CORRECTED ADDRESSING of cfb_served_tilt_interim_hc_first_game_*. CFBD's hire date carries no time of day, so the predeclared cell misattributes an evening game played the night BEFORE the hire date -- usually the game that got the previous coach fired -- to the successor: measured, 13 of its 81 events flag a game kicking within 12 hours of the hire date. This variant addresses the successor's first game by the PREDECESSOR'S OWN CFBD game count instead (a fired coach never coaches the bowl, so his count is exactly his regular-season games). 75 events, 60 of them the same game as the predeclared cell. Same tilt, same direction, same population, same bootstrap. ERA SLICE 2012-2019 only.",
+      "effect": 0.018751,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.133896,
+        0.169397
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2012-2019 only. Close-graded secondary: +0.0187 points, 95% [-0.1334, +0.1669], probability_positive 0.5972. Eligible games 22, flips 15. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.5763 on 59 graded games (0.5 under no effect). NFL served sibling interim_hc_first_game / interim_hc_first_game_tilt_overlay at +0.13 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "The same college head-coach-firing check, but pointed at the right game: the first one the new coach actually ran, not the loss that got the old one fired.",
+      "probability_positive": 0.59915,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.189979,
+      "sample_blocks": 121,
+      "sample_games": 5333,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_interim_hc_first_game_gamecount_2021_2025": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.1078, +0.3270] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.501 points, roughly 4x the NFL served effect of +0.13 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.1900 on 703 team-seasons -- above any no-reliability ceiling -- though split-half reliability is only weakly meaningful here: a first game under a mid-season replacement is a one-off EVENT, not a repeatable team trait, and what the instrument picks up is that some programmes fire coaches more often than others. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CORRECTED ADDRESSING of cfb_served_tilt_interim_hc_first_game_*. CFBD's hire date carries no time of day, so the predeclared cell misattributes an evening game played the night BEFORE the hire date -- usually the game that got the previous coach fired -- to the successor: measured, 13 of its 81 events flag a game kicking within 12 hours of the hire date. This variant addresses the successor's first game by the PREDECESSOR'S OWN CFBD game count instead (a fired coach never coaches the bowl, so his count is exactly his regular-season games). 75 events, 60 of them the same game as the predeclared cell. Same tilt, same direction, same population, same bootstrap. ERA SLICE 2021-2025 only.",
+      "effect": 0.111359,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.107762,
+        0.326993
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2021-2025 only. Close-graded secondary: +0.0837 points, 95% [-0.1788, +0.3455], probability_positive 0.7364. Eligible games 37, flips 20. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.5763 on 59 graded games (0.5 under no effect). NFL served sibling interim_hc_first_game / interim_hc_first_game_tilt_overlay at +0.13 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "The same college head-coach-firing check, but pointed at the right game: the first one the new coach actually ran, not the loss that got the old one fired.",
+      "probability_positive": 0.8439,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.189979,
+      "sample_blocks": 77,
+      "sample_games": 3592,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_interim_hc_first_game_gamecount_full": {
+      "category": "offfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.0693, +0.1813] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.336 points, roughly 3x the NFL served effect of +0.13 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.1900 on 703 team-seasons -- above any no-reliability ceiling -- though split-half reliability is only weakly meaningful here: a first game under a mid-season replacement is a one-off EVENT, not a repeatable team trait, and what the instrument picks up is that some programmes fire coaches more often than others. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "CORRECTED ADDRESSING of cfb_served_tilt_interim_hc_first_game_*. CFBD's hire date carries no time of day, so the predeclared cell misattributes an evening game played the night BEFORE the hire date -- usually the game that got the previous coach fired -- to the successor: measured, 13 of its 81 events flag a game kicking within 12 hours of the hire date. This variant addresses the successor's first game by the PREDECESSOR'S OWN CFBD game count instead (a fired coach never coaches the bowl, so his count is exactly his regular-season games). 75 events, 60 of them the same game as the predeclared cell. Same tilt, same direction, same population, same bootstrap.",
+      "effect": 0.056022,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.069252,
+        0.181304
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). FULL clean core 2012-2019 + 2021-2025. Close-graded secondary: +0.0448 points, 95% [-0.0969, +0.1807], probability_positive 0.7349. Eligible games 59, flips 35. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.5763 on 59 graded games (0.5 under no effect). NFL served sibling interim_hc_first_game / interim_hc_first_game_tilt_overlay at +0.13 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "The same college head-coach-firing check, but pointed at the right game: the first one the new coach actually ran, not the loss that got the old one fired.",
+      "probability_positive": 0.807025,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.189979,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_interim_hc_first_game_gamecount_positive_control_full": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Instrument-power control, classified unresolved_below_power because it closes nothing: it is not a mechanism claim, and no admissible closing ground is asserted for it or on the strength of it.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL for cfb_served_tilt_interim_hc_first_game_gamecount_full: perfect-foresight flips on the same eligible set, a deliberate leak. A harness that cannot detect this would be blind. Never a signal and never pooled with the tilt cells.",
+      "effect": 0.336134,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        0.227297,
+        0.456049
+      ],
+      "league": "cfb",
+      "notes": "POSITIVE CONTROL, not a signal: on exactly this cell's eligible set the candidate pick is replaced by the realised winning side. It measures what a maximum-size effect looks like at this cell's own flip volume. It resolves at +0.3361 points on 30 flips, so the instrument detects a large leak; the cell's own week-blocked half-width is 0.1253 points against an NFL served effect of +0.13 points, so the control does NOT prove the instrument can detect an NFL-sized effect and bounded_by_control is inadmissible for the tilt cell above.",
+      "plain_summary": "A deliberate cheat used to check the measuring stick works: if we knew the winners in advance on exactly these games, this is how much better the picks would be.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_interim_hc_first_game_positive_control_full": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Instrument-power control, classified unresolved_below_power because it closes nothing: it is not a mechanism claim, and no admissible closing ground is asserted for it or on the strength of it.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL for cfb_served_tilt_interim_hc_first_game_full: perfect-foresight flips on the same eligible set, a deliberate leak. A harness that cannot detect this would be blind. Never a signal and never pooled with the tilt cells.",
+      "effect": 0.369748,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        0.249214,
+        0.499831
+      ],
+      "league": "cfb",
+      "notes": "POSITIVE CONTROL, not a signal: on exactly this cell's eligible set the candidate pick is replaced by the realised winning side. It measures what a maximum-size effect looks like at this cell's own flip volume. It resolves at +0.3697 points on 33 flips, so the instrument detects a large leak; the cell's own week-blocked half-width is 0.1281 points against an NFL served effect of +0.13 points, so the control does NOT prove the instrument can detect an NFL-sized effect and bounded_by_control is inadmissible for the tilt cell above.",
+      "plain_summary": "A deliberate cheat used to check the measuring stick works: if we knew the winners in advance on exactly these games, this is how much better the picks would be.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_protection_mismatch_sackonly_2012_2019": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.9482, +0.3213] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +6.469 points, roughly 16x the NFL served effect of +0.40 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.4771 on 140 team-seasons, far above any no-reliability ceiling. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "DEGRADED CFB replication of the NFL served pass-protection-mismatch tilt. CFB play-by-play carries no QB-hit field, so pressure is SACK RATE ON DROPBACKS alone, not sack-or-hit -- a strictly narrower instrument, declared as a deviation in docs/cfb_served_tilts.md section 2.3. Everything else ports byte-for-byte: 4-game strictly-prior window, min 3 observations, expanding strictly-prior quartile thresholds over a 200-observation pool, top-quartile allow x top-quartile generate, exactly-one-side-flagged, back the defence. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points. ERA SLICE 2012-2019 only.",
+      "effect": -0.31877,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.948239,
+        0.321314
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2012-2019 only. Close-graded secondary: -0.2430 points, 95% [-0.8633, +0.3868], probability_positive 0.2268. Eligible games 732, flips 331. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4943 on 1149 graded games (0.5 under no effect). NFL served sibling pbp08_protection_mismatch / pbp08_protection_mismatch_tilt_overlay at +0.40 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, backing the defence when a leaky pass-blocking offence meets a heavy pass rush did not help. The college measure counts only sacks, because college data records no quarterback hits.",
+      "probability_positive": 0.164075,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.477083,
+      "sample_blocks": 121,
+      "sample_games": 5333,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_protection_mismatch_sackonly_2021_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-1.4727, +0.3482] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +5.568 points, roughly 14x the NFL served effect of +0.40 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.4771 on 140 team-seasons, far above any no-reliability ceiling. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "DEGRADED CFB replication of the NFL served pass-protection-mismatch tilt. CFB play-by-play carries no QB-hit field, so pressure is SACK RATE ON DROPBACKS alone, not sack-or-hit -- a strictly narrower instrument, declared as a deviation in docs/cfb_served_tilts.md section 2.3. Everything else ports byte-for-byte: 4-game strictly-prior window, min 3 observations, expanding strictly-prior quartile thresholds over a 200-observation pool, top-quartile allow x top-quartile generate, exactly-one-side-flagged, back the defence. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points. ERA SLICE 2021-2025 only.",
+      "effect": -0.528953,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -1.472721,
+        0.348247
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2021-2025 only. Close-graded secondary: -0.5301 points, 95% [-1.4447, +0.3133], probability_positive 0.1154. Eligible games 417, flips 179. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4943 on 1149 graded games (0.5 under no effect). NFL served sibling pbp08_protection_mismatch / pbp08_protection_mismatch_tilt_overlay at +0.40 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, backing the defence when a leaky pass-blocking offence meets a heavy pass rush did not help. The college measure counts only sacks, because college data records no quarterback hits.",
+      "probability_positive": 0.124125,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.477083,
+      "sample_blocks": 77,
+      "sample_games": 3592,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_protection_mismatch_sackonly_full": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.9363, +0.1240] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +6.106 points, roughly 15x the NFL served effect of +0.40 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.4771 on 140 team-seasons, far above any no-reliability ceiling. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "DEGRADED CFB replication of the NFL served pass-protection-mismatch tilt. CFB play-by-play carries no QB-hit field, so pressure is SACK RATE ON DROPBACKS alone, not sack-or-hit -- a strictly narrower instrument, declared as a deviation in docs/cfb_served_tilts.md section 2.3. Everything else ports byte-for-byte: 4-game strictly-prior window, min 3 observations, expanding strictly-prior quartile thresholds over a 200-observation pool, top-quartile allow x top-quartile generate, exactly-one-side-flagged, back the defence. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points.",
+      "effect": -0.403361,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.93633,
+        0.123997
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). FULL clean core 2012-2019 + 2021-2025. Close-graded secondary: -0.3582 points, 95% [-0.8771, +0.1600], probability_positive 0.0885. Eligible games 1149, flips 510. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4943 on 1149 graded games (0.5 under no effect). NFL served sibling pbp08_protection_mismatch / pbp08_protection_mismatch_tilt_overlay at +0.40 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "In college football, backing the defence when a leaky pass-blocking offence meets a heavy pass rush did not help. The college measure counts only sacks, because college data records no quarterback hits.",
+      "probability_positive": 0.067275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.477083,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_protection_mismatch_sackonly_positive_control_full": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Instrument-power control, classified unresolved_below_power because it closes nothing: it is not a mechanism claim, and no admissible closing ground is asserted for it or on the strength of it.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL for cfb_served_tilt_protection_mismatch_sackonly_full: perfect-foresight flips on the same eligible set, a deliberate leak. A harness that cannot detect this would be blind. Never a signal and never pooled with the tilt cells.",
+      "effect": 6.106443,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        5.506943,
+        6.725497
+      ],
+      "league": "cfb",
+      "notes": "POSITIVE CONTROL, not a signal: on exactly this cell's eligible set the candidate pick is replaced by the realised winning side. It measures what a maximum-size effect looks like at this cell's own flip volume. It resolves at +6.1064 points on 545 flips, so the instrument detects a large leak; the cell's own week-blocked half-width is 0.5302 points against an NFL served effect of +0.40 points, so the control does NOT prove the instrument can detect an NFL-sized effect and bounded_by_control is inadmissible for the tilt cell above.",
+      "plain_summary": "A deliberate cheat used to check the measuring stick works: if we knew the winners in advance on exactly these games, this is how much better the picks would be.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_tank_zone_literal_2012_2019": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.1129, +0.1519] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.488 points, roughly 7x the NFL served effect of +0.07 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.6057 on 137 team-seasons. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "FALSIFICATION PROBE, not a mechanism replication: the NFL tank-zone flag ported mechanically to CFB (bottom two league-wide by strictly-prior-week record, final five regular-season weeks, fade the flagged side). College football has NO record-ordered draft, so the draft-position incentive the NFL flag names does not exist here; a payoff would falsify the NFL mechanism attribution. Incidence differs by construction (bottom two of ~130 FBS teams is 1.5% of the league against 6.25% of a 32-team NFL) and rescaling would be re-tuning, which is banned. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points. ERA SLICE 2012-2019 only.",
+      "effect": 0.018751,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.112867,
+        0.151893
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2012-2019 only. Close-graded secondary: +0.0187 points, 95% [-0.1127, +0.1511], probability_positive 0.6034. Eligible games 52, flips 15. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4941 on 85 graded games (0.5 under no effect). NFL served sibling motivation_ladder_tank_zone_wk14_18 / tank_zone_fade_tilt_overlay at +0.07 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "College football has no draft order to lose for, so betting against its two worst-record teams late in the year is a check on the NFL tanking story rather than a copy of it. It did not move the needle.",
+      "probability_positive": 0.602175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.605728,
+      "sample_blocks": 121,
+      "sample_games": 5333,
+      "seasons": [
+        2012,
+        2019
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_tank_zone_literal_2021_2025": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.2010, +0.2104] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.473 points, roughly 7x the NFL served effect of +0.07 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.6057 on 137 team-seasons. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "FALSIFICATION PROBE, not a mechanism replication: the NFL tank-zone flag ported mechanically to CFB (bottom two league-wide by strictly-prior-week record, final five regular-season weeks, fade the flagged side). College football has NO record-ordered draft, so the draft-position incentive the NFL flag names does not exist here; a payoff would falsify the NFL mechanism attribution. Incidence differs by construction (bottom two of ~130 FBS teams is 1.5% of the league against 6.25% of a 32-team NFL) and rescaling would be re-tuning, which is banned. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points. ERA SLICE 2021-2025 only.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.201037,
+        0.210417
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). ERA SLICE 2021-2025 only. Close-graded secondary: +0.0000 points, 95% [-0.2017, +0.2107], probability_positive 0.4936. Eligible games 33, flips 12. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4941 on 85 graded games (0.5 under no effect). NFL served sibling motivation_ladder_tank_zone_wk14_18 / tank_zone_fade_tilt_overlay at +0.07 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "College football has no draft order to lose for, so betting against its two worst-record teams late in the year is a check on the NFL tanking story rather than a copy of it. It did not move the needle.",
+      "probability_positive": 0.493575,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.605728,
+      "sample_blocks": 77,
+      "sample_games": 3592,
+      "seasons": [
+        2021,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_tank_zone_literal_full": {
+      "category": "schedule",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "An interval containing zero is NEVER grounds to close: at this evaluator's ~2-point resolution that is the EXPECTED shape for a real small signal. wrong_sign_resolved needs the WHOLE interval on the wrong side of zero and this one is [-0.1011, +0.1267] points. positive_control_bound needs the instrument PROVEN able to detect an effect of THIS size; the paired perfect-foresight control on this cell's own eligible set resolves at +0.482 points, roughly 7x the NFL served effect of +0.07 points, so it proves detection of a large leak and NOT of an NFL-sized effect -- inadmissible. no_split_half_reliability needs a trait with no reliability; the across-season odd/even-year instrument reads Spearman-Brown +0.6057 on 137 team-seasons. Classification is unresolved_below_power.",
+      "closing_ground": null,
+      "description": "FALSIFICATION PROBE, not a mechanism replication: the NFL tank-zone flag ported mechanically to CFB (bottom two league-wide by strictly-prior-week record, final five regular-season weeks, fade the flagged side). College football has NO record-ordered draft, so the draft-position incentive the NFL flag names does not exist here; a payoff would falsify the NFL mechanism attribution. Incidence differs by construction (bottom two of ~130 FBS teams is 1.5% of the league against 6.25% of a 32-team NFL) and rescaling would be re-tuning, which is banned. Paired candidate-minus-baseline forced-pick accuracy delta in accuracy points.",
+      "effect": 0.011204,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        -0.101125,
+        0.126688
+      ],
+      "league": "cfb",
+      "notes": "OPENER-GRADED (primary, result - spread_open). FULL clean core 2012-2019 + 2021-2025. Close-graded secondary: +0.0112 points, 95% [-0.1000, +0.1255], probability_positive 0.5784. Eligible games 85, flips 27. Model-free read on the full-window eligible set: the side the NFL rule names covers 0.4941 on 85 graded games (0.5 under no effect). NFL served sibling motivation_ladder_tank_zone_wk14_18 / tank_zone_fade_tilt_overlay at +0.07 points. A CFB replication is corroboration of a mechanism, never a second independent NFL evidence point; this changes no served behaviour. Baseline arm is the frozen CFB benchmark ridge walk-forward (artifacts/cfb_benchmark/20260818T115149Z), forced pick at home_cover_probability >= 0.5. Week-blocked bootstrap, 20000 samples, seed 20260821; within-week correlation is mandated ZERO.",
+      "plain_summary": "College football has no draft order to lose for, so betting against its two worst-record teams late in the year is a check on the NFL tanking story rather than a copy of it. It did not move the needle.",
+      "probability_positive": 0.57865,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.605728,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
+    "cfb_served_tilt_tank_zone_literal_positive_control_full": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Instrument-power control, classified unresolved_below_power because it closes nothing: it is not a mechanism claim, and no admissible closing ground is asserted for it or on the strength of it.",
+      "closing_ground": null,
+      "description": "POSITIVE CONTROL for cfb_served_tilt_tank_zone_literal_full: perfect-foresight flips on the same eligible set, a deliberate leak. A harness that cannot detect this would be blind. Never a signal and never pooled with the tilt cells.",
+      "effect": 0.481793,
+      "effect_units": "accuracy_points",
+      "family": "cfb_served_tilts_replication",
+      "interval": [
+        0.329632,
+        0.650955
+      ],
+      "league": "cfb",
+      "notes": "POSITIVE CONTROL, not a signal: on exactly this cell's eligible set the candidate pick is replaced by the realised winning side. It measures what a maximum-size effect looks like at this cell's own flip volume. It resolves at +0.4818 points on 43 flips, so the instrument detects a large leak; the cell's own week-blocked half-width is 0.1139 points against an NFL served effect of +0.07 points, so the control does NOT prove the instrument can detect an NFL-sized effect and bounded_by_control is inadmissible for the tilt cell above.",
+      "plain_summary": "A deliberate cheat used to check the measuring stick works: if we knew the winners in advance on exactly these games, this is how much better the picks would be.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 198,
+      "sample_games": 8925,
+      "seasons": [
+        2012,
+        2025
+      ],
+      "source": "scripts/cfb_served_tilts_replication.py; artifacts/cfb_served_tilts/20260910T014734Z/results.json; docs/cfb_served_tilts.md",
+      "standard_error": null
+    },
     "cfb_special_teams_punt_net_top_quartile": {
       "category": "onfield",
       "classification": "unresolved_below_power",

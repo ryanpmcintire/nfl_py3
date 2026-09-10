@@ -110,6 +110,7 @@ from nfl_ats.dashboard.findings_content import (
     findings_for,
 )
 from nfl_ats.data import DataContractError
+from nfl_ats.displayed_confidence import displayed_pick_probability
 from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
 from nfl_ats.findings_registry import (
     WatchingLead,
@@ -733,12 +734,20 @@ def spread_words(home: str, away: str, home_spread: float) -> str:
 
 
 def pick_side(row: pd.Series) -> tuple[str, float]:
-    """Forced pool pick: (team, that side's calibrated cover probability)."""
+    """Forced pool pick: (team, the score displayed for that side).
+
+    The SIDE always comes from ``home_cover_probability``; the displayed
+    number prefers ``displayed_pick_probability`` when the row carries it
+    (``nfl_ats.displayed_confidence``, docs/displayed_confidence.md), which is
+    the same cover chance adjusted for how the model has actually done at that
+    line size. A row without the column shows the model's own probability.
+    """
 
     probability = float(row["home_cover_probability"])
+    displayed = displayed_pick_probability(row)
     if probability >= 0.5:
-        return str(row["home_team"]), probability
-    return str(row["away_team"]), 1.0 - probability
+        return str(row["home_team"]), displayed if displayed is not None else probability
+    return str(row["away_team"]), displayed if displayed is not None else 1.0 - probability
 
 
 def _kickoff_words(row: pd.Series) -> str:
@@ -3566,6 +3575,100 @@ def _opener_model_matches(metadata: Mapping[str, Any], active: Mapping[str, Any]
         if config.get(key, metadata.get(key, default)) != active.get(key, default):
             return False
     return True
+
+
+@dataclass(frozen=True)
+class RefreshChainMeasurement:
+    """The whole served refresh chain's archive score, keyed to the served rules."""
+
+    tuesday_card_accuracy: float
+    refresh_chain_accuracy: float
+    scored_games: int
+    week_blocks: int
+    seasons: tuple[int, ...]
+    late_week_input_seasons: tuple[int, ...]
+    scored_games_with_late_week_inputs: int
+    picks_changed: int
+    directory: Path
+    variant: str
+
+
+def served_refresh_policy_ids() -> dict[str, str]:
+    """The policy ids ``pick_refresh`` serves today, in chain order."""
+
+    from nfl_ats.pick_refresh import (
+        HANDLE_FOLLOW_POLICY,
+        LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
+        MOVEMENT_POLICY_MOVEMENT,
+        PRODUCTION_COMPOSITION_POLICY_IDS,
+        ROOKIE_CREW_POLICY,
+    )
+
+    return {
+        "composition": PRODUCTION_COMPOSITION_POLICY_IDS[-1],
+        "late_week_follow": LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
+        "consensus_movement": MOVEMENT_POLICY_MOVEMENT,
+        "rookie_crew": ROOKIE_CREW_POLICY,
+        "handle_follow": HANDLE_FOLLOW_POLICY,
+    }
+
+
+def load_refresh_chain_measurement(
+    artifacts_root: Path, active: Mapping[str, Any] | None = None
+) -> RefreshChainMeasurement | None:
+    """The served refresh chain's archive score, or ``None`` when unmeasured.
+
+    Fails closed rather than showing a number that belongs to something else:
+    an artifact recorded against a different model raises, and so does one whose
+    recorded policy ids name a chain the code no longer serves. ``None`` means
+    the lane has never run here, which is the only case where showing nothing is
+    the honest answer.
+    """
+
+    if active is None:
+        active = load_active_ats_model(artifacts_root)
+    if not active:
+        return None
+    directories = list(
+        artifact_directories(artifacts_root / "served_refresh_card", "headline.json")
+    )
+    if not directories:
+        return None
+    directory = directories[0]
+    payload = read_json(directory / "headline.json")
+    recorded_model = str(payload.get("model_id") or "")
+    active_model = str(active.get("model_id") or "")
+    if recorded_model != active_model:
+        raise ValueError(
+            f"The served refresh chain in {directory} was measured on model "
+            f"{recorded_model!r}, not the active {active_model!r}; rerun that lane."
+        )
+    served = served_refresh_policy_ids()
+    variants = payload.get("variants") or []
+    for variant in variants:
+        if not isinstance(variant, Mapping) or variant.get("policy_ids") != served:
+            continue
+        seasons = tuple(int(value) for value in variant.get("seasons") or ())
+        return RefreshChainMeasurement(
+            tuesday_card_accuracy=float(variant["tuesday_card_accuracy"]),
+            refresh_chain_accuracy=float(variant["refresh_chain_accuracy"]),
+            scored_games=int(variant["scored_games"]),
+            week_blocks=int(variant["week_blocks"]),
+            seasons=seasons,
+            late_week_input_seasons=tuple(
+                int(value) for value in variant.get("late_week_input_seasons") or ()
+            ),
+            scored_games_with_late_week_inputs=int(
+                variant.get("scored_games_with_late_week_inputs") or 0
+            ),
+            picks_changed=int(variant.get("picks_changed") or 0),
+            directory=directory,
+            variant=str(variant.get("variant") or ""),
+        )
+    raise ValueError(
+        f"The served refresh chain in {directory} names none of the rules being served "
+        f"({sorted(served.values())}); rerun that lane against the served chain."
+    )
 
 
 @dataclass(frozen=True)

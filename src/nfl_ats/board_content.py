@@ -78,6 +78,10 @@ from nfl_ats.dashboard.findings_content import (
     OVERLAY_UNION_SUBSET_COUNT,
     PLAYED_CARD_EXPECTATION_PERCENT,
 )
+from nfl_ats.displayed_confidence import (
+    attach_displayed_confidence,
+    fit_production_displayed_confidence,
+)
 from nfl_ats.four_overlay_composition import (
     COACH_FADE,
     DIVISION_REVENGE_TILT,
@@ -107,6 +111,7 @@ from nfl_ats.public_board import (
     humanize_identifier,
     load_baseline_measurement,
     load_public_board_artifacts,
+    load_refresh_chain_measurement,
     load_waterfall_feed,
     pick_side,
     spread_words,
@@ -540,6 +545,11 @@ class HeadlineStats:
     close_grade_caption: str
 
     prospective_scoreboard: ProspectiveScoreboard
+
+    refresh_chain_pct: float | None = None
+    refresh_chain_value_text: str = "--"
+    refresh_chain_caption: str = ""
+    refresh_chain_foot_text: str = ""
 
 
 @dataclass(frozen=True)
@@ -1530,6 +1540,30 @@ def _build_headline_stats(
     else:
         close_grade_caption = "Close-graded evaluation not yet available."
 
+    chain = load_refresh_chain_measurement(artifacts_root, active)
+    if chain is None:
+        refresh_chain_pct = None
+        refresh_chain_value_text = "--"
+        refresh_chain_caption = (
+            "The through-the-week rules have not been scored on the archive yet."
+        )
+        refresh_chain_foot_text = "not yet measured"
+    else:
+        refresh_chain_pct = chain.refresh_chain_accuracy * 100
+        refresh_chain_value_text = f"{refresh_chain_pct:.1f}%"
+        first, last = chain.late_week_input_seasons[0], chain.late_week_input_seasons[-1]
+        refresh_chain_caption = (
+            "Every pick re-decided through the week the way it is now: follow the books when "
+            "they move the line, follow the money when it piles on one side, and re-read the "
+            "game when a new officiating crew is assigned. The same picks left alone after "
+            f"Tuesday score {chain.tuesday_card_accuracy * 100:.1f}%."
+        )
+        refresh_chain_foot_text = (
+            f"{chain.scored_games:,} opener-graded games · {chain.picks_changed:,} picks moved · "
+            f"the week rules only reach {first}-{last}, where hour-by-hour lines and injury "
+            "news exist"
+        )
+
     return HeadlineStats(
         model_id=str(model_id) if model_id else None,
         model_method_label=model_method_label,
@@ -1553,6 +1587,10 @@ def _build_headline_stats(
         close_grade_value_text=f"{close_grade_pct:.2f}%" if close_grade_pct is not None else "--",
         close_grade_caption=close_grade_caption,
         prospective_scoreboard=prospective_scoreboard,
+        refresh_chain_pct=refresh_chain_pct,
+        refresh_chain_value_text=refresh_chain_value_text,
+        refresh_chain_caption=refresh_chain_caption,
+        refresh_chain_foot_text=refresh_chain_foot_text,
     )
 
 
@@ -2679,6 +2717,15 @@ def load_board_content(
     )
 
     final = view.predictions if view is not None else artifacts.predictions
+    final = attach_displayed_confidence(
+        final,
+        fit_production_displayed_confidence(
+            artifacts_root,
+            artifacts.active,
+            season=int(artifacts.metadata.get("season") or 0),
+            week=int(artifacts.metadata.get("week") or 0),
+        ),
+    )
     sort_columns = [column for column in ("kickoff", "game_id") if column in final]
     ordered = final.sort_values(sort_columns, na_position="last") if sort_columns else final
 

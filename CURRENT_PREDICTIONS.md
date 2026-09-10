@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from the synchronized weak stack model, 2026-09-10 01:07 UTC.
+Published from the synchronized weak stack model, 2026-09-10 02:20 UTC.
 
-<!-- publication: model_id=2e8c616b476dd0d2 published_at_utc=2026-09-10T01:07:47.585512+00:00 -->
+<!-- publication: model_id=2e8c616b476dd0d2 published_at_utc=2026-09-10T02:20:41.210361+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -14,25 +14,25 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Decision score   |
 |:------------|:-----------|:-----------------|:-----------------|
-| Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.4%            |
-| Thu, Sep 10 | SF at LA   | SF +3.5          | 56.0%            |
-| Sun, Sep 13 | ARI at LAC | ARI +9.5         | 64.2%            |
-| Sun, Sep 13 | ATL at PIT | PIT -3.5         | 55.9%            |
+| Wed, Sep 09 | NE at SEA  | NE +3.5          | 56.9%            |
+| Thu, Sep 10 | SF at LA   | SF +3.5          | 55.4%            |
+| Sun, Sep 13 | ARI at LAC | ARI +9.5         | 53.4%            |
+| Sun, Sep 13 | ATL at PIT | PIT -3.5         | 55.4%            |
 | Sun, Sep 13 | BAL at IND | IND +3.5         | 55.4%            |
-| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 54.2%            |
-| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 51.6%            |
-| Sun, Sep 13 | CLE at JAX | JAX -8.5         | 53.3%            |
-| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 50.2%            |
-| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 54.1%            |
-| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 56.1%            |
-| Sun, Sep 13 | NO at DET  | NO +6.5          | 52.3%            |
-| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 51.6%            |
-| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 50.9%            |
-| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 63.3%            |
-| Mon, Sep 14 | DEN at KC  | DEN +2.5         | 51.8%            |
+| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 57.0%            |
+| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 56.9%            |
+| Sun, Sep 13 | CLE at JAX | JAX -8.5         | 59.3%            |
+| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 56.9%            |
+| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 57.0%            |
+| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 55.4%            |
+| Sun, Sep 13 | NO at DET  | NO +6.5          | 56.9%            |
+| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 56.9%            |
+| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 56.9%            |
+| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 55.7%            |
+| Mon, Sep 14 | DEN at KC  | DEN +2.5         | 56.9%            |
 
 **Tiebreaker (last game, DEN at KC):** KC 23 - DEN 21, total 44 (market total 43.5) -- consistent with the DEN +2.5 pick.
 
 **Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
-`Decision score` is the computer's own probability, oriented to the final pick. On a flip it is a mirrored decision-strength score, not a newly calibrated probability for that side; it is also not historical accuracy.
+`Decision score` is the computer's own chance that this side covers, adjusted for how the computer has actually done on spreads this size. Big favourites and big underdogs have been its weak spot, so a very confident-looking number there is pulled back toward what it has really hit. It is a per-game chance, not historical accuracy.

@@ -515,6 +515,13 @@ def _headline_section(headline: HeadlineStats) -> str:
         f'<span class="value muted">{headline.close_grade_value_text}</span>'
         f'<span class="foot">{escape(headline.close_grade_caption)}</span></div>'
         "</div>"
+        '<div class="headline-block" style="margin-top:1px;">'
+        '<div class="headline-main">'
+        '<span class="label">With the line-move and injury rules applied through the week</span>'
+        f'<span class="value">{headline.refresh_chain_value_text}</span>'
+        f'<span class="foot">{escape(headline.refresh_chain_foot_text)}</span></div>'
+        '<div class="caveat"><span class="caveat-flag">What this second number is</span>'
+        f"<p>{escape(headline.refresh_chain_caption)}</p></div></div>"
         '<div class="policy-note" style="margin-top:1px;border-left-color:var(--line);">'
         f"Active model <b>{escape(headline.model_method_label)}</b>"
         ". Four stats, four roles: headline archive score, the prior chain it's tracked "
@@ -904,7 +911,7 @@ def _board_section(content: BoardContent) -> str:
                 f"{_lock_html(game.lock_text)}</td>"
                 f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
-                f'<td class="prob" data-label="Cover prob">{escape(game.probability_text)}</td>'
+                f'<td class="prob" data-label="Cover chance">{escape(game.probability_text)}</td>'
                 f'<td class="flipline" data-label="Flips at">{_flip_line_html(game)}</td>'
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'
                 "</tr>"
@@ -913,9 +920,11 @@ def _board_section(content: BoardContent) -> str:
     table = (
         '<table class="board"><thead><tr>'
         "<th>Kickoff</th><th>Matchup</th><th>Pick</th>"
-        "<th><abbr title=\"The computer's own probability, oriented to the final pick. On a "
-        'flip this is a mirrored decision-strength score, not a freshly calibrated probability.">'
-        "Cover&nbsp;prob</abbr></th>"
+        "<th><abbr title=\"The computer's own chance that this side covers, adjusted for how "
+        "it has actually done on spreads this size. Big favourites and big underdogs have "
+        "been its weak spot, so a very confident-looking number there is pulled back toward "
+        'what it has really hit.">'
+        "Cover&nbsp;chance</abbr></th>"
         "<th><abbr title=\"Read it as: if the pick's own line reaches this number, the card "
         "switches to the team after the arrow. E.g. a NYJ +3 pick with NYJ +2.5 → TEN "
         "flips to TEN once NYJ gets only +2.5. Uses the spread adjuster's math plus the "

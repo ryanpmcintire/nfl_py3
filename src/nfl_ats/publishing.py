@@ -28,6 +28,13 @@ from nfl_ats.card_explanation import (
 from nfl_ats.card_view import BestPickNomination, resolve_card_view
 from nfl_ats.coach_fade_overlay import OverlayResult, overlay_disclosure_note
 from nfl_ats.dashboard.findings_content import PLAYED_CARD_EXPECTATION_HERO
+from nfl_ats.displayed_confidence import (
+    DISPLAYED_CONFIDENCE_FILENAME,
+    DISPLAYED_PICK_PROBABILITY_COLUMN,
+    ProductionDisplayedConfidence,
+    attach_displayed_confidence,
+    fit_production_displayed_confidence,
+)
 from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
 from nfl_ats.io import atomic_json, atomic_text
 from nfl_ats.key_line_pick_read import key_line_touched_games
@@ -101,8 +108,11 @@ def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) 
     if best_pick_id is not None:
         best = card["game_id"].astype(str).eq(best_pick_id)
         card.loc[best, "ATS prediction"] = BEST_PICK_MARK + card.loc[best, "ATS prediction"]
-    card["Decision score"] = card["home_cover_probability"].where(
-        home_pick, 1.0 - card["home_cover_probability"]
+    stated = card["home_cover_probability"].where(home_pick, 1.0 - card["home_cover_probability"])
+    card["Decision score"] = (
+        pd.to_numeric(card[DISPLAYED_PICK_PROBABILITY_COLUMN], errors="coerce").fillna(stated)
+        if DISPLAYED_PICK_PROBABILITY_COLUMN in card
+        else stated
     )
     card["Matchup"] = card["away_team"] + " at " + card["home_team"]
     card["_gameday"] = pd.to_datetime(card["gameday"], errors="raise")
@@ -111,6 +121,24 @@ def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) 
     published = card[["Date", "Matchup", "ATS prediction", "Decision score"]].copy()
     published["Decision score"] = published["Decision score"].map(lambda value: f"{value:.1%}")
     return published
+
+
+def _decision_score_note(displayed_confidence: ProductionDisplayedConfidence) -> str:
+    """The card's own footnote for the score column, in pool-player words."""
+
+    if not displayed_confidence.served:
+        return (
+            "`Decision score` is the computer's own chance that this side covers, "
+            "oriented to the final pick. On a flip it is a mirrored decision-strength "
+            "score; it is also not historical accuracy.\n"
+        )
+    return (
+        "`Decision score` is the computer's own chance that this side covers, adjusted "
+        "for how the computer has actually done on spreads this size. Big favourites and "
+        "big underdogs have been its weak spot, so a very confident-looking number there "
+        "is pulled back toward what it has really hit. It is a per-game chance, not "
+        "historical accuracy.\n"
+    )
 
 
 def _publication_context(
@@ -128,6 +156,7 @@ def _publication_context(
     ArrestOverlayResult,
     FourOverlayCompositionResult | None,
     pd.DataFrame,
+    ProductionDisplayedConfidence,
 ]:
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -159,7 +188,14 @@ def _publication_context(
         require_fresh_arrest_overlay=require_fresh_arrest_overlay,
         nominate_v2_fn=nominate_v2_small_spread,
     )
-    card = _published_card(view.predictions, view.nomination.active_game_id)
+    displayed_confidence = fit_production_displayed_confidence(
+        artifacts_root,
+        active,
+        season=int(metadata["season"]),
+        week=int(metadata["week"]),
+    )
+    served = attach_displayed_confidence(view.predictions, displayed_confidence)
+    card = _published_card(served, view.nomination.active_game_id)
     return (
         active,
         metadata,
@@ -168,7 +204,8 @@ def _publication_context(
         view.overlay,
         view.arrest_overlay,
         view.production_overlay,
-        view.predictions,
+        served,
+        displayed_confidence,
     )
 
 
@@ -419,6 +456,7 @@ def publish_active_predictions(
         arrest_overlay,
         production_overlay,
         raw_predictions,
+        displayed_confidence,
     ) = _publication_context(
         artifacts_root,
         data_root,
@@ -503,9 +541,7 @@ def publish_active_predictions(
         + tiebreaker_card_line
         + source_report.summary_line()
         + "\n\n"
-        "`Decision score` is the computer's own probability, oriented to the final pick. "
-        "On a flip it is a mirrored decision-strength score, not a newly calibrated "
-        "probability for that side; it is also not historical accuracy.\n"
+        + _decision_score_note(displayed_confidence)
     )
 
     played_card_lineage_path: str | None = None
@@ -630,6 +666,7 @@ def publish_active_predictions(
         if include_pick_explanation_lines:
             detail = detail + "\n\n" + render_explanations_markdown(explanations)
         atomic_json(source_report.to_metadata(), forecast_dir / "source_policy.json")
+        atomic_json(displayed_confidence.to_dict(), forecast_dir / DISPLAYED_CONFIDENCE_FILENAME)
 
     atomic_json(source_report.to_metadata(), destination.parent / "source_policy.json")
 
