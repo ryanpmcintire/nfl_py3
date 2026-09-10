@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T04:00:51.233252+00:00`
+Refreshed at: `2026-09-10T04:03:46.025262+00:00`
 
 ## Start here
 
@@ -20,13 +20,10 @@ Refreshed at: `2026-09-10T04:00:51.233252+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c0c46ccf0dd8` — Leader books re-derived walk-forward: the triple is window-specific (William Hill only leads from 2024) but never changes a side, only the fire count; the served triple still edges every walk-forward set (P+ 0.75-0.86 for served)
-- Pending change set: 5 paths
+- Baseline commit: `d7fcd41c2062` — Best Pick across eras: the served small-spread rule's +1.96 is grade-specific (a dead heat on the production probability rule); the highest calibrated score inside v2's pool is +3.96 over it (P+ 0.77) and never negative in any era
+- Pending change set: 2 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `A  docs/best_pick_eras.md`
-  - `M  registry/weak_signals.json`
-  - `A  scripts/best_pick_eras_eval.py`
+  - `A  docs/tuesday_card_clv.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
