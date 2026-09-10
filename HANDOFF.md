@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T18:12:06.257676+00:00`
+Refreshed at: `2026-09-10T18:24:56.237229+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-09-10T18:12:06.257676+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `125236d83205` — Scheduler status: an acknowledged MISSED window says so in the job table instead of reading like an open alarm
+- Baseline commit: `521f59b78fbe` — Injury news is polled every four hours, not once a day: the source page holds ~12 hours of posts and its monthly archive stops at June, so the daily pull was losing about half of each week's articles with nothing to backfill them
 - Pending change set: none
 
 The baseline commit and pending paths were observed before the automatic refresh.

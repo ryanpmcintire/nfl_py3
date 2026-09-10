@@ -274,12 +274,12 @@ def _player_snapshot_job(day: str) -> Job:
     )
 
 
-def _injury_news_job(day: str) -> Job:
-
+def _injury_news_job(day: str, at: str = "16:00") -> Job:
+    suffix = "" if at == "16:00" else "_" + at.replace(":", "")
     return Job(
-        f"injury_news_{day}",
+        f"injury_news_{day}{suffix}",
         day,
-        "16:00",
+        at,
         120,
         [
             str(UV),
@@ -303,10 +303,15 @@ def _injury_news_job(day: str) -> Job:
         "once and then skip it forever. 16:00 ET clears before nflverse_injuries_"
         "<day>_pm (16:30) and lineups_thu_pm (17:00), the consumers the news reader "
         "sits ahead of. catch_up=False: a late bulk headline pull past this window is "
-        "still useful but is no longer the timely same-day read this slot is for.",
+        "still useful but is no longer the timely same-day read this slot is for. "
+        "2026-09-10: measured that the hub page lists ~28 links spanning ~12 hours "
+        "(5 injury-relevant) and that the source's monthly sitemap stops at 202606, "
+        "so a once-a-day pull lost about half of each week's articles with no "
+        "archive to backfill them. The pull now runs every four hours Tuesday "
+        "16:00 through Monday; each run fetches only articles not already on disk.",
         dedupe_dir="data/raw/injury_news",
         dedupe_minutes=120,
-        added_on="2026-09-09",
+        added_on="2026-09-09" if at == "16:00" else "2026-09-10",
         catch_up=False,
     )
 
@@ -737,7 +742,14 @@ SCHEDULE: tuple[Job, ...] = (
     *(_player_snapshot_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
     *(_nflverse_injuries_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
     *(_player_snapshot_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
-    *(_injury_news_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
+    *(_injury_news_job(day) for day in ("wed", "thu", "fri", "sat", "sun", "mon")),
+    *(
+        _injury_news_job(day, at)
+        for day in ("tue", "wed", "thu", "fri", "sat", "sun", "mon")
+        for at in ("00:00", "04:00", "08:00", "12:00", "20:00")
+        if not (day == "tue" and at in ("00:00", "04:00", "08:00", "12:00"))
+    ),
+    _injury_news_job("tue"),
     Job(
         "injury_news_sun_early",
         "sun",
