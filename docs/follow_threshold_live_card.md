@@ -367,6 +367,20 @@ neither substitutes for the other. Third, this is the historical-backfill replay
 not the live path the rule actually runs on, so it is evidence about the rule's
 shape and not a re-grade of the promotion taken on the raw surface.
 
+### Served since 2026-09-10 (wired in a later lane, not this one)
+
+L10 is now the served gate. The change is a SEPARATE constant --
+`sharp_book_movement_features.LEADER_FOLLOW_THRESHOLD = 1.0` -- so the paired
+equal-book challenger stays on `THRESHOLD = 0.5`, the constant it was measured
+at, exactly as item 1 below requires; the policy id became
+`late_week_leader_median_follow_1_0`; and the retired half-point leader-median
+arm records as its own paired OFF challenger
+(`late_week_leader_median_follow_0_5_off_incumbent`,
+`leader_median_half_would_be_pick_side` on
+`late_week_move_follow_refresh_decisions.parquet`), so both sides keep accruing
+game for game. See `docs/late_week_refresh.md`'s promotion section. The list
+below is the original, unedited statement of what it would take.
+
 ### What serving L10 would take (NOT wired here)
 
 1. **The single constant.** `THRESHOLD = 0.5` at

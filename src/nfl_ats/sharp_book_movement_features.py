@@ -23,6 +23,7 @@ LEADERSHIP_WEIGHTS = {
 }
 LEADER_BOOKS = ("bovada", "williamhill_us", "mybookieag")
 THRESHOLD = 0.5
+LEADER_FOLLOW_THRESHOLD = 1.0
 
 
 def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> pd.DataFrame:
@@ -126,9 +127,11 @@ def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> p
     return result.drop(columns=["_monday", "_wednesday", "_sunday"])
 
 
-def refresh_pick(production_home: pd.Series, net_move: pd.Series) -> pd.Series:
+def refresh_pick(
+    production_home: pd.Series, net_move: pd.Series, *, threshold: float = THRESHOLD
+) -> pd.Series:
     """Follow qualifying movement; absent/subthreshold movement keeps production."""
-    return production_home.astype(bool).mask(net_move.abs().ge(THRESHOLD), net_move.gt(0))
+    return production_home.astype(bool).mask(net_move.abs().ge(threshold), net_move.gt(0))
 
 
 LATE_WEEK_GAMES_COLUMNS = (
@@ -161,8 +164,12 @@ def late_week_follow_frame(
     ``eligible_books`` for the paired equal-book arm -- plus
     ``tuesday_pick_side``, ``movement_would_be_pick_side`` (the served
     :func:`refresh_pick` decision: market side when
-    ``|leader_median_net_move|`` is at least 0.5, else the Tuesday side),
-    ``movement_flip``, and the equal-book arm's own
+    ``|leader_median_net_move|`` is at least
+    :data:`LEADER_FOLLOW_THRESHOLD`, else the Tuesday side),
+    ``movement_flip``, the retired half-point gate's own
+    ``leader_median_half_would_be_pick_side`` /
+    ``leader_median_half_movement_flip`` (the paired OFF arm, still read at
+    :data:`THRESHOLD`), and the equal-book arm's own
     ``equal_would_be_pick_side`` / ``equal_movement_flip``, one row per input
     game.
     """
@@ -200,6 +207,8 @@ def late_week_follow_frame(
             tuesday_pick_side=pd.Series(dtype=str),
             movement_would_be_pick_side=pd.Series(dtype=str),
             movement_flip=pd.Series(dtype=bool),
+            leader_median_half_would_be_pick_side=pd.Series(dtype=str),
+            leader_median_half_movement_flip=pd.Series(dtype=bool),
             equal_would_be_pick_side=pd.Series(dtype=str),
             equal_movement_flip=pd.Series(dtype=bool),
         ), refused
@@ -211,9 +220,16 @@ def late_week_follow_frame(
         raise DataContractError("Tuesday card is missing games in the refresh plan")
     exposure["tuesday_pick_side"] = exposure.game_id.astype(str).map(sides)
     tuesday_home = exposure.tuesday_pick_side.eq("HOME")
-    served = refresh_pick(tuesday_home, exposure.leader_median_net_move)
+    served = refresh_pick(
+        tuesday_home, exposure.leader_median_net_move, threshold=LEADER_FOLLOW_THRESHOLD
+    )
     exposure["movement_would_be_pick_side"] = served.map({True: "HOME", False: "AWAY"})
     exposure["movement_flip"] = exposure.movement_would_be_pick_side.ne(exposure.tuesday_pick_side)
+    half = refresh_pick(tuesday_home, exposure.leader_median_net_move, threshold=THRESHOLD)
+    exposure["leader_median_half_would_be_pick_side"] = half.map({True: "HOME", False: "AWAY"})
+    exposure["leader_median_half_movement_flip"] = (
+        exposure.leader_median_half_would_be_pick_side.ne(exposure.tuesday_pick_side)
+    )
     equal = refresh_pick(tuesday_home, exposure.equal_net_move)
     exposure["equal_would_be_pick_side"] = equal.map({True: "HOME", False: "AWAY"})
     exposure["equal_movement_flip"] = exposure.equal_would_be_pick_side.ne(

@@ -357,15 +357,18 @@ change writes zero rows (see "No-op refresh").
 | `coach_fade_flip`, `division_revenge_flip`, `player_arrests_flip`, `spread_gap_zone_flip` | Frozen Tuesday member flags; each member was evaluated against the raw card |
 | `composed_overlay_flip` | OR of the four member flags; the refitted raw side is complemented once when true |
 | `player_arrests_snapshot_id`, `player_arrests_safe_index_sha256` | Provenance copied from Tuesday's paper row; refresh never opens that snapshot or a newer one |
-| `movement_policy` | `late_week_leader_median_follow_0_5` (the promoted late-week follow governed this pick -- see "Promoted late-week follow" below), `movement_ge_1.0` (the observed-movement policy governed this pick), or `model_only` (below both thresholds, or no market evidence -- see "Observed-movement pick policy" above) |
+| `movement_policy` | `late_week_leader_median_follow_1_0` (the promoted late-week follow governed this pick -- see "Promoted late-week follow" below), `late_week_leader_median_follow_1_0_news_veto` (that follow fired and post-Tuesday injury news contradicted it, so the Tuesday pick stands -- see "Injury-news veto" below), `movement_ge_1.0` (the observed-movement policy governed this pick), or `model_only` (below both thresholds, or no market evidence -- see "Observed-movement pick policy" above) |
 | `movement_delta` | The governing arm's signed move in home-oriented points: the late-week leader-median net move when the late-week arm governs, else the consensus delta when a fresh captured line exists, else the late-week net when only that arm has evidence; blank/null when neither arm does |
 | `movement_pick_side` | The side the governing (or counterfactual) market arm points at, whenever `movement_delta` is not null -- the candidate side even on rows where `movement_policy` did not select it |
 | `model_only_pick_side` | The recomputed production-policy pick (post frozen four-member union, pre movement-policy override) -- always present; the counterfactual the `model_only_refresh_incumbent` challenger tracks |
 | `late_week_net_move` | The served late-week arm's own evidence: the MEDIAN Wednesday-to-deadline net move across the three leading books; null when the live intraday archive has no usable quotes for this game this pass |
-| `late_week_pick_side` | The leading books' side at the frozen 0.5-point threshold; blank when unavailable |
+| `late_week_pick_side` | The leading books' side at the served full-point threshold; blank when unavailable |
 | `late_week_eligible_books` | How many of the three leading books contributed an increment; 0 when none did (the arm cannot fire). The equal-book arm's own twelve-book count stays on its paired challenger ledger |
 | `consensus_delta` | The 1.0-point consensus arm's own evidence: `current_captured_home_spread - decision_home_spread`; null when no fresh captured line exists for this game |
 | `consensus_pick_side` | The side the consensus move points at; blank when unavailable |
+| `follow_news_veto` | True when the follow fired and post-Tuesday injury news pointed against it, so the Tuesday pick was kept. The un-vetoed side stays on `movement_pick_side`, which is the paired OFF arm |
+| `follow_news_source` | Which reader answered: `official` (the injury report, when that season's rows carry a real timestamp), `pft_fallback` (ProFootballTalk headlines when they do not), or `none` |
+| `follow_news_team` | The team the market moved TOWARD -- the one the contrary injury news is about; blank when the follow did not fire or nothing was readable |
 | `model_id` | The active model this revision was computed under |
 | `feature_table_sha256` | Provenance: which exact feature-table build produced this revision |
 | `reason` | `"pick_refresh recompute"`, or `"pick_refresh recompute (<note>)"` when `--note` was passed |
@@ -423,8 +426,10 @@ later pass, replaces just its own) a clearly-labeled section:
 data but scored at the frozen Tuesday grading line. Only games whose
 deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier)
 had not yet passed were eligible. "Policy" is
-`late_week_leader_median_follow_0_5` when the three leading books moved the
-line at least half a point since Tuesday and the pick followed them,
+`late_week_leader_median_follow_1_0` when the three leading books moved the
+line at least a full point since Tuesday and the pick followed them,
+`late_week_leader_median_follow_1_0_news_veto` when they moved that far but
+the injury report points the other way, so Tuesday's pick stands,
 `movement_ge_1.0` when the pool's own captured line
 instead moved >=1.0 point and the pick followed it, or `model_only` when
 neither market arm fired -- see the movement-policy sections above. This is
@@ -456,8 +461,113 @@ pass in place.
 mean of all twelve books. It is the **median Wednesday-to-deadline net move of
 the three leading books** -- Bovada, William Hill (US), MyBookie, the three
 `docs/book_leadership.md` identifies as leading roughly three-fifths of their
-own line moves -- at the same frozen 0.5-point threshold. The equal-book rule
+own line moves -- at the then-frozen 0.5-point threshold. The equal-book rule
 it replaced keeps recording as the paired OFF challenger.
+
+**What changed on 2026-09-10: the gate is a FULL point, not half a point.**
+`docs/follow_threshold_live_card.md` measured a predeclared 0.5 / 0.75 / 1.0 /
+1.5 grid on the nine-member card that is actually played, 2023-2025, 799
+opener-graded games. Against the served 0.5 arm, the 1.0 arm reads **+2.003
+accuracy points, week-blocked 95% [-0.769, +4.851], `probability_positive`
+0.918** (season-blocked [+0.376, +4.869]) on 140 changed picks, and **+1.252
+points against not following at all** (`probability_positive` 0.846) where the
+served 0.5 arm reads **-0.751** (`probability_positive` 0.332). The 1.0 arm is
+the only one positive on BOTH the played card and the raw model card
+(+1.252 / +1.752). Every cell is `unresolved_below_power`; an interval
+containing zero is not a rejection ground (AGENTS.md), and the pool is forced
+picks, so the arm with the higher expected accuracy at the deadline is served.
+
+**The mechanism, named, because a threshold that flips the played card must
+name one (AGENTS.md).** The leaders' median lives on a half-point lattice, and
+the band decomposition splits cleanly by move size: inside 0.5-to-0.75 the
+market side LOSES the picks it reverses -- 22 of 52 member-flip reversals
+(42.3%) and 40 of 88 raw-pick reversals (45.5%) -- while at a full point or
+more it WINS them (58.5% and 52.5%). The served 0.5 rule spent 288 of its 514
+scored firings in the losing band; the [0.75, 1.0) band is empty on the whole
+816-game archive, so raising the gate to 1.0 deletes exactly that band and
+keeps every firing where the market side wins. This is a statement about how
+much information a market move of a given SIZE carries, not an accuracy dip
+located at a spread number. Higher is not automatically better either: the 1.5
+arm is worse than 1.0 on both surfaces (+1.126 vs +2.003 against the 0.5 arm),
+which is what one losing band -- rather than a monotone trend -- looks like.
+
+**The constant is separate on purpose.** The served gate is
+`sharp_book_movement_features.LEADER_FOLLOW_THRESHOLD` (1.0); the equal-book
+paired challenger stays on `THRESHOLD` (0.5), the constant it was measured at,
+so the two arms remain comparable game for game. The retired half-point
+leader-median arm keeps recording as its own paired OFF challenger
+(`late_week_leader_median_follow_0_5_off_incumbent`,
+`leader_median_half_would_be_pick_side` on the follow ledger), and the policy
+id on every revision row became `late_week_leader_median_follow_1_0`, so the
+ledger keeps the two eras distinguishable without a migration. The rule had
+never fired on a played card before the Thursday 2026-09-10 refresh, so
+nothing is reversed retroactively.
+
+## Injury-news veto on the follow (F3p, 2026-09-10)
+
+`docs/follow_news_gate.md` measured a second, separately predeclared change
+inside the follow branch. On the 816-game archive, over the games where the
+leaders moved and the injury report can be read, following the market is a
+literal coin flip against just keeping the Tuesday pick (189-189). Split those
+fires by whether an injury filed since Tuesday noon agrees with the move and
+the halves separate by 7.5 points: **following a CONFIRMED move is worth +3.18
+accuracy points, following a CONTRADICTED one costs 4.35**, and the "neither"
+bucket is an exact 43-43 tie.
+
+**The served rule.** When the follow fires and post-Tuesday injury news points
+AGAINST the move -- the team the market moved TOWARD is the one whose
+skill-position injury situation just got worse -- the market side is discarded
+and the Tuesday pick stands. Paired against following every move, that reads
+**+1.126 accuracy points, week-blocked 95% [-1.242, +3.461],
+`probability_positive` 0.830**, on 79 pick changes across three seasons. The
+positive control (perfect foresight on the same decision set) resolves at
+about +29 points, so the instrument is proven and nothing here is bounded by
+it; every cell is `unresolved_below_power`.
+
+**The reader, exactly.** `injury_signal_refresh_tilt.follow_news_for_game`.
+For each skill-position player (QB/RB/WR/TE) on each team, `prior_sev` is that
+player's latest designation filed at or before this week's Tuesday noon ET,
+searched across the whole season (a cross-week prior -- the own-week baseline
+was measured identically zero on 494 of 494 games), and `final_sev` is the
+latest own-week designation filed by the pass instant. Only players with at
+least one own-week row filed inside `(Tuesday noon, now]` contribute, so a
+player who simply never reappears on this week's report cannot be credited
+with a recovery. Severity is `Out=4, Doubtful=3, Questionable=2, Probable=1`.
+The direction is defined from the MARKET, never from the pick:
+`news_toward_market = news(the team the market moved against) - news(the team
+it moved toward)`, with the abandoned/favored roles read off
+`sign(leader_median_net_move)`. At or above `INJURY_NET_THRESHOLD` (2.0) the
+news CONFIRMS the move; at or below -2.0 it CONTRADICTS it and the veto fires.
+On a season whose official rows carry no usable timestamp -- measured: every
+2025 and 2026 row of snapshot `20260909T223500Z` is `week_proxy` with a null
+`date_modified` -- the reader falls back to the ProFootballTalk headline path
+at its own bar of 1.0, which is what makes this F3p rather than F3 and what
+lets it act at all on the live season. Fail-open everywhere: no snapshot, no
+headline archive, an unreadable store or a zero move all read as "no news",
+and no news never vetoes.
+
+**Precedence.** The veto is a guard INSIDE the follow branch, never a step
+below it: a vetoed game counts as "the follow fired", so it does not fall
+through to the 1.0-point consensus arm, the heavy-handle rule or the
+rookie-crew step. That is how it was measured. Its OFF arm is the un-vetoed
+side, which every revision row already carries as `movement_pick_side`, and
+the follow ledger records it explicitly as
+`late_week_follow_no_news_veto_off_incumbent`.
+
+**What the reader sees.** "The line moved, but the injury report points the
+other way." -- the sentence on the refreshed-pick line, and one clause in the
+board's late-week note.
+
+**Two things stated plainly.** The higher-scoring arm in that battery is F3w
+(+1.752, `probability_positive` 0.964), the same veto computed on an
+unrestricted news delta; it is not served because its confirmation flag's
+split-half reliability is -0.027 against F3's +0.035 and its "news" credits a
+team whenever a player merely fails to reappear on the report -- a filing
+artifact. And F2 ("news lowers the movement bar") is the one resolved result
+in that battery and it is negative (-1.752, whole week-blocked interval below
+zero), recorded `refuted_mechanism` on `wrong_sign_resolved`; what that refutes
+is narrow -- a sub-half-point single-book move plus agreeing news is not a
+follow signal -- and it closes nothing about the veto.
 
 Measured 2026-09-09
 (`artifacts/sharp_weighted_follow/20260909T233606Z/`, predeclared in
@@ -472,8 +582,10 @@ season-blocked [0.000, +2.256], P+ 0.982. Both arms are positive in every
 season. On the current model the same head-to-head reads +0.38, P+ 0.63
 (reported by the lane that measured it; not re-measured here).
 
-**Mechanism, not a threshold search.** The threshold is unchanged at 0.5 and
-no grid was searched. S1's fire set almost exactly contains S4's (measured on
+**Mechanism, not a threshold search** (as of the 2026-09-09 promotion; the
+gate itself moved to a full point the next day, above). The threshold was
+unchanged at 0.5 and no grid was searched. S1's fire set almost exactly
+contains S4's (measured on
 the 816-game archive frame): 325 games where both fire, agreeing on the side in
 all 325, 4 where only the equal-book mean fires, and **198 where the leaders
 cleared half a point but the twelve-book mean was diluted below it**. Those 198
@@ -496,9 +608,11 @@ series over the `[Monday, Sunday)` window and sum only the increments observed
 at or after that week's Wednesday, strictly before the refresh instant, with
 provider updates later than the observation refused -- read from live intraday
 snapshots only. Let `net` be the **median** of those per-book net moves over
-the three leading books that contributed one. If `|net| >= 0.5`: the served
+the three leading books that contributed one. If
+`|net| >= LEADER_FOLLOW_THRESHOLD` (1.0 since 2026-09-10): the served
 pick becomes the side the market moved toward (`net > 0` picks HOME, else
-AWAY). If no leading book contributed, the arm cannot fire and the Tuesday
+AWAY), unless the injury-news veto below discards it. If no leading book
+contributed, the arm cannot fire and the Tuesday
 pick stands -- it never falls through to the twelve-book mean. Otherwise the
 existing logic stands unchanged (the model's own recompute, possibly
 1.0-consensus-overridden). Sunday passes consume Saturday evidence; Sunday
@@ -506,15 +620,20 @@ moves are outside the rule, preserving the measured construct. Missing archives
 or unusable stores are fail-open: the arm reports itself unavailable and the
 pass proceeds exactly as before.
 
-**One computation, two records.** `late_week_follow_frame` returns both arms on
-every row -- `leader_median_net_move` / `leader_books` for the served arm and
+**One computation, four records.** `late_week_follow_frame` returns every arm
+on every row -- `leader_median_net_move` / `leader_books` for the served arm,
+`leader_median_half_would_be_pick_side` for the retired half-point gate, and
 `equal_net_move` / `eligible_books` for the equal-book arm -- so the served
 pick and the paired ledger can never drift apart. The
 `late_week_move_follow_refresh_decisions.parquet` ledger keeps its
-`late_week_move_follow_refresh_v1` challenger id, now recording the EQUAL-BOOK
-arm (`equal_would_be_pick_side`, `equal_movement_flip`) as the paired OFF
-challenger, beside the served arm's own side and a
-`served_challenger_id` of `late_week_leader_median_follow_v1`. Every
+`late_week_move_follow_refresh_v1` challenger id, recording the EQUAL-BOOK
+arm (`equal_would_be_pick_side`, `equal_movement_flip`) as one paired OFF
+challenger, beside the served arm's own side, a
+`served_challenger_id` of `late_week_leader_median_follow_v1`, and two more OFF
+arms: `late_week_leader_median_follow_0_5_off_incumbent` (the half-point gate)
+and `late_week_follow_no_news_veto_off_incumbent`
+(`news_veto_would_be_pick_side` is the served side, `movement_would_be_pick_side`
+the un-vetoed one). Every
 pick-revision row additionally carries both market arms' evidence
 (`late_week_*`, `consensus_*`), the governing `movement_policy`, and the
 `model_only_pick_side` counterfactual, so a later settlement pass can score

@@ -91,7 +91,7 @@ def _original():
     )
 
 
-def _quotes(move=0.5):
+def _quotes(move=1.0):
     return pd.DataFrame(
         [
             {
@@ -118,7 +118,7 @@ def _build(quotes=None, plan=None, original=None):
 
 
 @pytest.mark.parametrize(
-    "move,side,flips", [(0.5, "HOME", 1), (0.49, "AWAY", 0), (-0.5, "AWAY", 0), (0, "AWAY", 0)]
+    "move,side,flips", [(1.0, "HOME", 1), (0.5, "AWAY", 0), (-1.0, "AWAY", 0), (0, "AWAY", 0)]
 )
 def test_frozen_threshold_and_tuesday_baseline(move, side, flips):
     rows, info = _build(_quotes(move))
@@ -145,7 +145,7 @@ def test_equal_books_not_capture_frequency():
 )
 def test_future_quote_and_snapshot_leakage(column):
     q = _quotes()
-    q.loc[q.home_spread_line.eq(3.5), column] = "2025-09-21T18:00Z"
+    q.loc[q.home_spread_line.eq(4.0), column] = "2025-09-21T18:00Z"
     rows, info = _build(q)
     assert rows.empty
     assert info["skipped"]
@@ -160,7 +160,7 @@ def test_sunday_quotes_do_not_change_frozen_construct():
     future["home_spread_line"] = -100
     plan = replace(_plan((_game(game_id="g"),)), computed_at_utc=pd.Timestamp("2025-09-21T14:00Z"))
     rows, _ = _build(pd.concat([q, future]), plan)
-    assert rows.iloc[0].equal_net_move == 0.5
+    assert rows.iloc[0].equal_net_move == 1.0
 
 
 @pytest.mark.parametrize("instant", ["2025-09-21T17:00Z", "2025-09-22T00:00Z"])
@@ -239,9 +239,9 @@ def test_unknown_books_cannot_change_the_frozen_universe():
     q = _quotes()
     unknown = q.iloc[[0, 1]].copy()
     unknown["bookmaker_key"] = "unlisted_book"
-    unknown.loc[unknown.home_spread_line.eq(3.5), "home_spread_line"] = -100
+    unknown.loc[unknown.home_spread_line.eq(4.0), "home_spread_line"] = -100
     rows, _ = _build(pd.concat([q, unknown], ignore_index=True))
-    assert rows.iloc[0].equal_net_move == 0.5
+    assert rows.iloc[0].equal_net_move == 1.0
     assert rows.iloc[0].eligible_books == 2
 
 

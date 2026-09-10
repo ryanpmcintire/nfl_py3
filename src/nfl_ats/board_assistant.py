@@ -901,9 +901,11 @@ def build_knowledge(
                 "Picks can be updated until the earlier of each game's own kickoff "
                 "and Sunday 4:00 PM ET; the "
                 "pool's lines freeze Tuesday. If the three books that usually "
-                "move first shift the line half a point or more off the frozen "
+                "move first shift the line a full point or more off the frozen "
                 "Tuesday number -- or any captured line moves a full point -- "
-                "the refreshed pick follows the market side. This card was generated "
+                "the refreshed pick follows the market side, unless an injury "
+                "filed since Tuesday points the other way, which keeps the "
+                "Tuesday pick. This card was generated "
                 f"{human_update_time(generated_at_text)}."
             ),
             anchor="index.html",

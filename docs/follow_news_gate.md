@@ -555,8 +555,25 @@ identical population and sit on the other side of zero; both stay
    `late_week_leader_median_follow_0_5`. The un-vetoed leader-median arm records
    as the paired OFF challenger exactly the way the equal-book arm does today.
 
-**Nothing above was implemented.** No served code, ledger, manifest, forecast or
-board was touched, and nothing was committed or pushed.
+**Nothing above was implemented in THIS lane.** No served code, ledger,
+manifest, forecast or board was touched by it, and nothing was committed or
+pushed.
+
+**Served since 2026-09-10 (wired in a later lane).** F3p is now a guard inside
+the follow branch: `injury_signal_refresh_tilt.follow_news_for_game` is the
+sibling reader item 1 asks for (cross-week `prior_sev`, oriented on
+`sign(leader_median_net_move)`, filed-row restricted, official path with the
+PFT fallback), `pick_refresh.plan_refresh` discards a contradicted move and
+keeps the Tuesday pick under `movement_policy =
+late_week_leader_median_follow_1_0_news_veto` -- treated as "the follow fired"
+for precedence, so it never falls through to the consensus, handle or
+rookie-crew steps -- and every revision row carries `follow_news_veto`,
+`follow_news_source` and `follow_news_team` beside the un-vetoed
+`movement_pick_side`, which is the paired OFF arm
+(`late_week_follow_no_news_veto_off_incumbent`). Note the served gate is now a
+FULL point (`docs/follow_threshold_live_card.md`), so the veto acts on a
+smaller fire set than the 0.5 arm measured here. See
+`docs/late_week_refresh.md`'s injury-news veto section.
 
 ### Caveats (label how you know it)
 

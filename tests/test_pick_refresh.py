@@ -1626,11 +1626,11 @@ def test_late_week_follow_governs_the_served_pick(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
     """A genuine override: the Wednesday move points opposite the model's own
-    recompute and the served pick follows the market at the 0.5-point
+    recompute and the served pick follows the market at the full-point
     threshold, with both arms' evidence on the row."""
 
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
-    move = -0.75 if model_only_side == "HOME" else 0.75
+    move = -1.25 if model_only_side == "HOME" else 1.25
     expected_side = "AWAY" if model_only_side == "HOME" else "HOME"
     _write_live_intraday_archive(
         data_root,
@@ -1660,11 +1660,12 @@ def test_late_week_follow_governs_the_served_pick(
 def test_late_week_follow_keeps_the_model_pick_below_threshold(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """A 0.4-point Wednesday move is recorded as evidence but does not govern:
-    the model's own recompute stands (and the consensus arm stays quiet too)."""
+    """A half-point Wednesday move -- the band the served gate stopped buying
+    on 2026-09-10 -- is recorded as evidence but does not govern: the model's
+    own recompute stands (and the consensus arm stays quiet too)."""
 
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
-    move = -0.4 if model_only_side == "HOME" else 0.4
+    move = -0.5 if model_only_side == "HOME" else 0.5
     _write_live_intraday_archive(
         data_root,
         game_id=LATE_WEEK_GAME["game_id"],
@@ -1690,7 +1691,7 @@ def test_late_week_follow_takes_precedence_over_the_consensus_arm(
     the promoted late-week arm while the consensus arm stays recorded."""
 
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
-    late_move = -0.75 if model_only_side == "HOME" else 0.75
+    late_move = -1.25 if model_only_side == "HOME" else 1.25
     late_side = "AWAY" if model_only_side == "HOME" else "HOME"
     _write_live_intraday_archive(
         data_root,
@@ -1734,7 +1735,7 @@ def test_late_week_served_pick_matches_the_paired_challenger_module(
         game_id=LATE_WEEK_GAME["game_id"],
         kickoff=LATE_WEEK_GAME["kickoff"],
         anchor_line=LATE_WEEK_ORIGINAL_LINE,
-        move=0.75,
+        move=1.25,
     )
     plan = _late_week_plan(artifacts_root, data_root, features_path)
     game = plan.games[0]
@@ -1757,7 +1758,7 @@ def test_late_week_summary_ledger_and_card_carry_the_new_arm(
     from nfl_ats.pick_refresh import append_refresh_to_card, load_pick_revisions, refresh_summary
 
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
-    move = -0.75 if model_only_side == "HOME" else 0.75
+    move = -1.25 if model_only_side == "HOME" else 1.25
     _write_live_intraday_archive(
         data_root,
         game_id=LATE_WEEK_GAME["game_id"],

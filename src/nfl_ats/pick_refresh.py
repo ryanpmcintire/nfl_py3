@@ -102,20 +102,48 @@ and the model-only counterfactual are recorded on every ledger row
 movement pick policy" section for the full predeclaration and the evidence
 this is an EV play, not a resolved finding.
 
-Promoted late-week follow (MKT-15, leader median served 2026-09-09)
-------------------------------------------------------------------
+Promoted late-week follow (MKT-15, leader median at a full point, 2026-09-09)
+----------------------------------------------------------------------------
 A second, separately predeclared market arm takes precedence over the
 1.0-point rule above: the MEDIAN Wednesday-to-deadline net move across the
 three leading books (``sharp_book_movement_features.LEADER_BOOKS``: Bovada,
-William Hill, MyBookie) follows the market at >=0.5 points
-(``LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY``). It runs on the live intraday
+William Hill, MyBookie) follows the market at
+>=``LEADER_FOLLOW_THRESHOLD`` (1.0) points
+(``LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY``). The gate moved from 0.5 to 1.0
+on the evidence in ``docs/follow_threshold_live_card.md``: on the played
+nine-member card the leaders' sub-point drift LOSES the picks it reverses
+(the market side wins 42-46% of them) while moves of a full point or more
+WIN them (52-59%), and the leader median lives on a half-point lattice, so
+the retired 0.5 gate bought only the losing band. The half-point arm keeps
+recording as the paired OFF challenger on the follow ledger; the equal-book
+arm stays at its own ``sharp_book_movement_features.THRESHOLD`` so the two
+challengers remain comparable game for game. It runs on the live intraday
 archive only (read-only, fail-open), shares its exact computation with the
 paired equal-book arm the ``late_week_move_follow_refresh_v1`` challenger
-ledger records (one call to ``late_week_follow_frame`` returns both), and
-every ledger row keeps both arms' evidence (``late_week_*`` and
+ledger records (one call to ``late_week_follow_frame`` returns all three),
+and every ledger row keeps both arms' evidence (``late_week_*`` and
 ``consensus_*``) beside the governing ``movement_policy`` and the
 ``model_only_pick_side`` counterfactual. See ``docs/late_week_refresh.md``'s
 promotion section.
+
+Injury-news veto on the follow (F3p, docs/follow_news_gate.md)
+-------------------------------------------------------------
+Inside the follow branch, and never below it: when the leaders' move fires
+but injury news first observable after that week's Tuesday noon and before
+the pick deadline points AGAINST the move -- the team the market moved
+TOWARD is the one whose skill-position injury situation just got worse --
+the market side is discarded and the Tuesday pick stands
+(``LATE_WEEK_FOLLOW_NEWS_VETO_POLICY``). Measured on the played card, the
+veto is worth +1.13 accuracy points over following every move
+(``probability_positive`` 0.83): confirmed moves are worth +3.2 and
+contradicted ones -4.4. The reader is
+``injury_signal_refresh_tilt.follow_news_for_game`` -- the official report
+when that season's rows carry a real timestamp, the ProFootballTalk headline
+archive when they do not -- and it is fail-open everywhere: no reading is
+never a veto. A vetoed game counts as "the follow fired" for precedence, so
+it never falls through to the 1.0-point consensus, handle or rookie-crew
+steps, which is how it was measured. The un-vetoed side stays on every row as
+``movement_pick_side``, the paired OFF challenger.
 
 Heavy-handle follow (H1, owner order 2026-09-09)
 ------------------------------------------------
@@ -201,7 +229,10 @@ from nfl_ats.prediction_safety import validate_three_way_split
 from nfl_ats.provenance import sha256_file
 from nfl_ats.public_betting_live import HandleReading, load_latest_public_handle
 from nfl_ats.sharp_book_movement_features import (
-    THRESHOLD as LATE_WEEK_FOLLOW_THRESHOLD,
+    LEADER_FOLLOW_THRESHOLD as LATE_WEEK_FOLLOW_THRESHOLD,
+)
+from nfl_ats.sharp_book_movement_features import (
+    THRESHOLD as LATE_WEEK_FOLLOW_OFF_THRESHOLD,
 )
 from nfl_ats.sharp_book_movement_features import (
     late_week_follow_frame,
@@ -251,9 +282,15 @@ MOVEMENT_POLICY_THRESHOLD = 1.0
 MOVEMENT_POLICY_MOVEMENT = "movement_ge_1.0"
 MOVEMENT_POLICY_MODEL_ONLY = "model_only"
 
-LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY = "late_week_leader_median_follow_0_5"
+LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY = "late_week_leader_median_follow_1_0"
+LATE_WEEK_FOLLOW_NEWS_VETO_POLICY = "late_week_leader_median_follow_1_0_news_veto"
+FOLLOW_NEWS_VETO_REASON = "The line moved, but the injury report points the other way."
 
-MOVEMENT_GOVERNED_POLICIES = (MOVEMENT_POLICY_MOVEMENT, LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY)
+MOVEMENT_GOVERNED_POLICIES = (
+    MOVEMENT_POLICY_MOVEMENT,
+    LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
+    LATE_WEEK_FOLLOW_NEWS_VETO_POLICY,
+)
 
 HANDLE_FOLLOW_POLICY = "handle_follow_0_70"
 HANDLE_FOLLOW_MONEY_THRESHOLD = 70.0
@@ -426,6 +463,9 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "rookie_crew_flag",
     "rookie_crew_referee",
     "rookie_crew_pick_side",
+    "follow_news_veto",
+    "follow_news_source",
+    "follow_news_team",
     "model_id",
     "feature_table_sha256",
     "reason",
@@ -475,6 +515,9 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
         "rookie_crew_flag": 0.0,
         "rookie_crew_referee": "",
         "rookie_crew_pick_side": "",
+        "follow_news_veto": False,
+        "follow_news_source": "",
+        "follow_news_team": "",
     }
     for column, default in legacy_defaults.items():
         if column not in ledger.columns:
@@ -530,11 +573,10 @@ def describe_week_revisions(
         run_id = str(revision.get("refresh_run_id", "") or "refresh pass")
         trigger = str(revision.get("trigger_type", "") or "")
         trigger_text = " (news-triggered)" if trigger == "news_event" else ""
-        crew_text = (
-            f" {ROOKIE_CREW_REASON}"
-            if str(revision.get("movement_policy", "") or "") == ROOKIE_CREW_POLICY
-            else ""
-        )
+        policy_name = str(revision.get("movement_policy", "") or "")
+        crew_text = f" {ROOKIE_CREW_REASON}" if policy_name == ROOKIE_CREW_POLICY else ""
+        if policy_name == LATE_WEEK_FOLLOW_NEWS_VETO_POLICY:
+            crew_text = f" {FOLLOW_NEWS_VETO_REASON}"
         if new_side == previous_side:
             lines.append(
                 f"{away} at {home} refresh ({run_id}){trigger_text}: "
@@ -684,6 +726,9 @@ class RefreshedGame:
     rookie_crew_flag: float = 0.0
     rookie_crew_referee: str = ""
     rookie_crew_pick_side: str = ""
+    follow_news_veto: bool = False
+    follow_news_source: str = ""
+    follow_news_team: str = ""
 
 
 @dataclass(frozen=True)
@@ -702,6 +747,7 @@ class RefreshResult:
     missing_from_features_game_ids: tuple[str, ...]
     current_line_metadata: dict[str, Any] = field(default_factory=dict)
     late_week_metadata: dict[str, Any] = field(default_factory=dict)
+    follow_news_metadata: dict[str, Any] = field(default_factory=dict)
     handle_metadata: dict[str, Any] = field(default_factory=dict)
     rookie_crew_metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -773,7 +819,7 @@ def _late_week_follow_lookup(
 
     Runs :func:`late_week_follow_frame` -- the one call that returns both the
     served leader-median arm (Wednesday-to-deadline net increments across the
-    three leading books, 0.5-point follow, Tuesday-anchored, Sunday evidence
+    three leading books, full-point follow, Tuesday-anchored, Sunday evidence
     excluded) and the equal-book arm the paired
     ``late_week_move_follow_refresh_v1`` challenger records -- against the same
     Tuesday card, so the served pick and the challenger ledger agree by
@@ -832,22 +878,31 @@ def _late_week_follow_lookup(
         lookup[str(row.game_id)] = {
             "net_move": float(cast(Any, row.leader_median_net_move)),
             "pick_side": str(row.movement_would_be_pick_side),
+            "tuesday_pick_side": str(row.tuesday_pick_side),
             "eligible_books": int(cast(Any, row.leader_books)),
+            "off_threshold_pick_side": str(row.leader_median_half_would_be_pick_side),
             "equal_net_move": float(cast(Any, row.equal_net_move)),
             "equal_pick_side": str(row.equal_would_be_pick_side),
             "equal_eligible_books": int(cast(Any, row.eligible_books)),
         }
-    followed = sum(
-        1
-        for value in lookup.values()
-        if cast(int, value["eligible_books"]) > 0
-        and abs(cast(float, value["net_move"])) >= LATE_WEEK_FOLLOW_THRESHOLD
+
+    def _fires(value: dict[str, Any], threshold: float) -> bool:
+        return (
+            cast(int, value["eligible_books"]) > 0
+            and abs(cast(float, value["net_move"])) >= threshold
+        )
+
+    followed = sum(1 for value in lookup.values() if _fires(value, LATE_WEEK_FOLLOW_THRESHOLD))
+    off_followed = sum(
+        1 for value in lookup.values() if _fires(value, LATE_WEEK_FOLLOW_OFF_THRESHOLD)
     )
     return lookup, {
         "available": True,
         "reason": "",
         "games_with_exposure": int(exposure.eligible_books.gt(0).sum()),
         "games_followed": followed,
+        "games_followed_at_off_threshold": off_followed,
+        "off_threshold": LATE_WEEK_FOLLOW_OFF_THRESHOLD,
         "refused_quote_rows": refused,
         "games": [
             {
@@ -855,12 +910,99 @@ def _late_week_follow_lookup(
                 "leader_median_net_move": value["net_move"],
                 "leader_books": value["eligible_books"],
                 "leader_pick_side": value["pick_side"],
+                "off_threshold_pick_side": value["off_threshold_pick_side"],
                 "equal_net_move": value["equal_net_move"],
                 "eligible_books": value["equal_eligible_books"],
                 "equal_pick_side": value["equal_pick_side"],
             }
             for game_id, value in lookup.items()
             if cast(int, value["equal_eligible_books"]) > 0
+        ],
+    }
+
+
+def _follow_news_veto_lookup(
+    data_root: Path,
+    late_week_lookup: Mapping[str, dict[str, Any]],
+    overlaid: pd.DataFrame,
+    *,
+    season: int,
+    week: int,
+    now: pd.Timestamp,
+) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
+    """The F3p injury-news reading on every game the served follow fires, fail-open.
+
+    Only firing games are read, because the veto can only ever discard a move
+    the follow rule is about to make. Anything missing -- no injury snapshot,
+    no headline archive, an unreadable store -- returns an empty lookup, and
+    an empty lookup never vetoes anything.
+    """
+
+    from nfl_ats.injury_signal_refresh_tilt import follow_news_for_game, load_news_sources
+
+    firing = {
+        game_id: value
+        for game_id, value in late_week_lookup.items()
+        if cast(int, value["eligible_books"]) > 0
+        and abs(cast(float, value["net_move"])) >= LATE_WEEK_FOLLOW_THRESHOLD
+    }
+    if not firing:
+        return {}, {
+            "available": False,
+            "reason": "the late-week follow did not fire on any game this pass",
+            "games_evaluated": 0,
+            "games_vetoed": 0,
+            "games": [],
+        }
+    try:
+        injuries, pft = load_news_sources(data_root)
+        lookup: dict[str, dict[str, Any]] = {}
+        for game_id, value in firing.items():
+            if game_id not in overlaid.index:
+                continue
+            row = overlaid.loc[game_id]
+            reading = follow_news_for_game(
+                game_id=game_id,
+                season=season,
+                week=week,
+                kickoff=pd.Timestamp(cast(Any, row["kickoff"])),
+                home_team=str(row["home_team"]),
+                away_team=str(row["away_team"]),
+                leader_median_net_move=cast(float, value["net_move"]),
+                now=now,
+                injuries=injuries,
+                pft=pft,
+            )
+            lookup[game_id] = {
+                "source": reading.source,
+                "net_toward_market": reading.net_toward_market,
+                "moved_toward_team": reading.moved_toward_team,
+                "confirms": reading.confirms,
+                "contradicts": reading.contradicts,
+            }
+    except (OSError, ValueError, KeyError, TypeError, DataContractError) as error:
+        return {}, {
+            "available": False,
+            "reason": f"the injury-news reader is unusable: {error}",
+            "games_evaluated": 0,
+            "games_vetoed": 0,
+            "games": [],
+        }
+    return lookup, {
+        "available": True,
+        "reason": "",
+        "games_evaluated": len(lookup),
+        "games_vetoed": sum(1 for value in lookup.values() if value["contradicts"]),
+        "games": [
+            {
+                "game_id": game_id,
+                "follow_news_source": value["source"],
+                "news_toward_market": value["net_toward_market"],
+                "moved_toward_team": value["moved_toward_team"],
+                "confirms_the_move": value["confirms"],
+                "contradicts_the_move": value["contradicts"],
+            }
+            for game_id, value in lookup.items()
         ],
     }
 
@@ -1196,6 +1338,8 @@ def plan_refresh(
 
     games: tuple[RefreshedGame, ...] = ()
     line_metadata: dict[str, Any] = {}
+    late_week_metadata: dict[str, Any] = {}
+    follow_news_metadata: dict[str, Any] = {}
     handle_metadata: dict[str, Any] = {}
     rookie_crew_metadata: dict[str, Any] = {}
     if not refreshable.empty:
@@ -1268,6 +1412,14 @@ def plan_refresh(
             overlaid,
             data_root,
             sunday_lock=sunday_lock,
+            now=computed_at,
+        )
+        follow_news_lookup, follow_news_metadata = _follow_news_veto_lookup(
+            data_root,
+            late_week_lookup,
+            overlaid,
+            season=season,
+            week=week,
             now=computed_at,
         )
         handle_lookup, handle_metadata = _handle_follow_lookup(
@@ -1359,17 +1511,25 @@ def plan_refresh(
             if late_week is None:
                 late_week_net: float | None = None
                 late_week_side = ""
+                late_week_tuesday_side = ""
                 late_week_books = 0
                 late_week_fires = False
             else:
                 late_week_net = late_week["net_move"]
                 late_week_side = late_week["pick_side"]
+                late_week_tuesday_side = late_week["tuesday_pick_side"]
                 late_week_books = late_week["eligible_books"]
                 late_week_fires = (
                     late_week_books > 0
                     and late_week_net is not None
                     and abs(late_week_net) >= LATE_WEEK_FOLLOW_THRESHOLD
                 )
+            follow_news = follow_news_lookup.get(game_id)
+            follow_news_source = "" if follow_news is None else str(follow_news["source"])
+            follow_news_team = "" if follow_news is None else str(follow_news["moved_toward_team"])
+            follow_news_veto = bool(
+                late_week_fires and follow_news is not None and follow_news["contradicts"]
+            )
             rookie_crew = rookie_crew_lookup.get(game_id)
             rookie_crew_flag = 0.0 if rookie_crew is None else float(rookie_crew["flag"])
             rookie_crew_referee = "" if rookie_crew is None else str(rookie_crew["referee"])
@@ -1377,8 +1537,16 @@ def plan_refresh(
             rookie_crew_fires = rookie_crew_side not in ("", model_only_side)
 
             if late_week_fires:
-                policy = LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
-                new_side = late_week_side
+                policy = (
+                    LATE_WEEK_FOLLOW_NEWS_VETO_POLICY
+                    if follow_news_veto
+                    else LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
+                )
+                new_side = (
+                    (late_week_tuesday_side or model_only_side)
+                    if follow_news_veto
+                    else late_week_side
+                )
                 movement_delta = late_week_net
                 movement_pick_side = late_week_side
             elif consensus_fires:
@@ -1454,6 +1622,9 @@ def plan_refresh(
                     rookie_crew_flag=rookie_crew_flag,
                     rookie_crew_referee=rookie_crew_referee,
                     rookie_crew_pick_side=rookie_crew_side,
+                    follow_news_veto=follow_news_veto,
+                    follow_news_source=follow_news_source,
+                    follow_news_team=follow_news_team,
                     eligible=eligible,
                     ineligible_reason=reason,
                     changed=changed,
@@ -1474,6 +1645,7 @@ def plan_refresh(
         missing_from_features_game_ids=missing_from_features,
         current_line_metadata=line_metadata,
         late_week_metadata=late_week_metadata,
+        follow_news_metadata=follow_news_metadata,
         handle_metadata=handle_metadata,
         rookie_crew_metadata=rookie_crew_metadata,
     )
@@ -1535,6 +1707,12 @@ def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str,
                 "reason": plan.late_week_metadata.get("reason", ""),
                 "games_with_exposure": plan.late_week_metadata.get("games_with_exposure", 0),
                 "games_followed": plan.late_week_metadata.get("games_followed", 0),
+                "off_threshold": plan.late_week_metadata.get(
+                    "off_threshold", LATE_WEEK_FOLLOW_OFF_THRESHOLD
+                ),
+                "games_followed_at_off_threshold": plan.late_week_metadata.get(
+                    "games_followed_at_off_threshold", 0
+                ),
                 "refused_quote_rows": plan.late_week_metadata.get("refused_quote_rows", 0),
                 "games": plan.late_week_metadata.get("games", []),
                 "games_late_week_follow_applied": [
@@ -1542,6 +1720,18 @@ def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str,
                     for game in plan.games
                     if game.movement_policy == LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
                 ],
+                "news_veto": {
+                    "available": bool(plan.follow_news_metadata.get("available", False)),
+                    "reason": plan.follow_news_metadata.get("reason", ""),
+                    "games_evaluated": plan.follow_news_metadata.get("games_evaluated", 0),
+                    "games_vetoed": plan.follow_news_metadata.get("games_vetoed", 0),
+                    "games": plan.follow_news_metadata.get("games", []),
+                    "games_news_veto_applied": [
+                        game.game_id
+                        for game in plan.games
+                        if game.movement_policy == LATE_WEEK_FOLLOW_NEWS_VETO_POLICY
+                    ],
+                },
             },
             "handle_follow": {
                 "threshold_money_pct": HANDLE_FOLLOW_MONEY_THRESHOLD,
@@ -1634,6 +1824,7 @@ def record_plan(
 
     reason_text = f"pick_refresh recompute ({note})" if note else "pick_refresh recompute"
     handle_reason = f"{HANDLE_FOLLOW_REASON} ({note})" if note else HANDLE_FOLLOW_REASON
+    veto_reason = f"{FOLLOW_NEWS_VETO_REASON} ({note})" if note else FOLLOW_NEWS_VETO_REASON
     observed_at = _utc(
         trigger_observed_at_utc if trigger_observed_at_utc is not None else plan.computed_at_utc
     )
@@ -1682,10 +1873,17 @@ def record_plan(
             "rookie_crew_flag": [game.rookie_crew_flag for game in changed],
             "rookie_crew_referee": [game.rookie_crew_referee for game in changed],
             "rookie_crew_pick_side": [game.rookie_crew_pick_side for game in changed],
+            "follow_news_veto": [game.follow_news_veto for game in changed],
+            "follow_news_source": [game.follow_news_source for game in changed],
+            "follow_news_team": [game.follow_news_team for game in changed],
             "model_id": plan.model_id,
             "feature_table_sha256": plan.feature_table_sha256,
             "reason": [
-                handle_reason if game.movement_policy == HANDLE_FOLLOW_POLICY else reason_text
+                handle_reason
+                if game.movement_policy == HANDLE_FOLLOW_POLICY
+                else veto_reason
+                if game.movement_policy == LATE_WEEK_FOLLOW_NEWS_VETO_POLICY
+                else reason_text
                 for game in changed
             ],
             "trigger_type": trigger_type,
@@ -1834,9 +2032,10 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
         f"{len(changed)} pick{plural} changed since the Tuesday card{label}, recomputed with "
         "current data but scored at the frozen Tuesday grading line. Only games whose "
         "deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not "
-        'yet passed were eligible. "Policy" is `late_week_leader_median_follow_0_5` when the '
-        "three leading books moved the line at least half a point since Tuesday and the pick "
-        "followed them, "
+        'yet passed were eligible. "Policy" is `late_week_leader_median_follow_1_0` when the '
+        "three leading books moved the line at least a full point since Tuesday and the pick "
+        "followed them, `late_week_leader_median_follow_1_0_news_veto` when they moved that far "
+        "but the injury report points the other way, so Tuesday's pick stands, "
         "`movement_ge_1.0` when the pool's own captured line instead moved >=1.0 point and "
         "the pick followed it, `handle_follow_0_70` when neither market arm fired and at "
         "least 70% of the money bet on the game sat on the other side, "

@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from the synchronized weak stack model, 2026-09-10 00:39 UTC.
+Published from the synchronized weak stack model, 2026-09-10 01:07 UTC.
 
-<!-- publication: model_id=c657058903f3232b published_at_utc=2026-09-10T00:39:32.047755+00:00 -->
+<!-- publication: model_id=2e8c616b476dd0d2 published_at_utc=2026-09-10T01:07:47.585512+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -14,8 +14,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 | Date        | Matchup    | ATS prediction   | Decision score   |
 |:------------|:-----------|:-----------------|:-----------------|
-| Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.2%            |
-| Thu, Sep 10 | SF at LA   | SF +3.5          | 55.6%            |
+| Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.4%            |
+| Thu, Sep 10 | SF at LA   | SF +3.5          | 56.0%            |
 | Sun, Sep 13 | ARI at LAC | ARI +9.5         | 64.2%            |
 | Sun, Sep 13 | ATL at PIT | PIT -3.5         | 55.9%            |
 | Sun, Sep 13 | BAL at IND | IND +3.5         | 55.4%            |

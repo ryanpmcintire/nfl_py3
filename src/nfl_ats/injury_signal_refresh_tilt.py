@@ -428,6 +428,169 @@ def injury_signal_for_game(
     )
 
 
+FOLLOW_NEWS_CONFIRMS = "confirms"
+FOLLOW_NEWS_CONTRADICTS = "contradicts"
+FOLLOW_NEWS_NEITHER = "neither"
+
+
+@dataclass(frozen=True)
+class FollowNewsReading:
+    """One game's post-Tuesday injury news, oriented on the market's own move."""
+
+    game_id: str
+    source: str
+    net_toward_market: float
+    threshold: float
+    moved_toward_team: str
+    moved_against_team: str
+    verdict: str
+
+    @property
+    def confirms(self) -> bool:
+        return self.verdict == FOLLOW_NEWS_CONFIRMS
+
+    @property
+    def contradicts(self) -> bool:
+        return self.verdict == FOLLOW_NEWS_CONTRADICTS
+
+
+def load_news_sources(data_root: Path) -> tuple[pd.DataFrame | None, pd.DataFrame | None]:
+    """The official injury snapshot and the PFT headline index, both fail-open."""
+
+    return _latest_official_injuries_fail_open(data_root), _latest_pft_index_fail_open(data_root)
+
+
+def _news_team_delta(
+    injuries: pd.DataFrame,
+    *,
+    season: int,
+    week: int,
+    team: str,
+    tuesday_noon_utc: pd.Timestamp,
+    end: pd.Timestamp,
+) -> float:
+    """Post-Tuesday severity change for one team's skill positions against a
+    CROSS-WEEK prior baseline -- that player's latest designation filed at or
+    before this week's Tuesday noon, searched across the whole season, which
+    ``docs/injury_news_vs_level.md`` measured to be the only baseline that is
+    not identically zero. Only players with at least one own-week row filed
+    inside ``(tuesday noon, end]`` contribute, so a player who simply never
+    reappears on this week's report cannot be credited as a recovery."""
+
+    season_rows = injuries.loc[
+        injuries["season"].eq(season)
+        & injuries["team"].eq(team)
+        & injuries["position"].isin(SKILL_POSITIONS)
+    ]
+    if season_rows.empty:
+        return 0.0
+    week_rows = season_rows.loc[season_rows["week"].eq(week)]
+    if week_rows.empty:
+        return 0.0
+    modified = pd.to_datetime(week_rows["date_modified"], utc=True, errors="coerce")
+    filed = set(week_rows.loc[modified.gt(tuesday_noon_utc) & modified.le(end), "gsis_id"])
+    if not filed:
+        return 0.0
+    prior = _severity_asof(season_rows, tuesday_noon_utc).rename(columns={"severity": "prior"})
+    final = _severity_asof(week_rows, end).rename(columns={"severity": "final"})
+    both = prior.merge(final, on="gsis_id", how="outer")
+    both[["prior", "final"]] = both[["prior", "final"]].fillna(0.0)
+    both = both.loc[both["gsis_id"].isin(filed)]
+    return float((both["final"] - both["prior"]).sum())
+
+
+def follow_news_for_game(
+    *,
+    game_id: str,
+    season: int,
+    week: int,
+    kickoff: pd.Timestamp,
+    home_team: str,
+    away_team: str,
+    leader_median_net_move: float,
+    now: pd.Timestamp,
+    injuries: pd.DataFrame | None,
+    pft: pd.DataFrame | None,
+) -> FollowNewsReading:
+    """Whether injury news filed since Tuesday noon agrees with the leading
+    books' own move, defined WITHOUT reference to the pick.
+
+    ``net_toward_market = news(the team the market moved against) - news(the
+    team it moved toward)``: at or above the threshold the news CONFIRMS the
+    move, at or below its negative the news CONTRADICTS it. FAIL-OPEN: an
+    unreadable official season falls through to the ProFootballTalk headline
+    path, and no reader at all returns ``source = "none"``, which never
+    confirms and never contradicts."""
+
+    home = _canonical_team(home_team)
+    away = _canonical_team(away_team)
+    move = float(leader_median_net_move)
+    if move == 0.0 or not pd.notna(move):
+        return FollowNewsReading(
+            game_id=game_id,
+            source=SOURCE_NONE,
+            net_toward_market=0.0,
+            threshold=float("nan"),
+            moved_toward_team="",
+            moved_against_team="",
+            verdict=FOLLOW_NEWS_NEITHER,
+        )
+    toward, against = (home, away) if move > 0.0 else (away, home)
+    tuesday_noon = own_week_tuesday_noon_utc(pd.Series([kickoff])).iloc[0]
+
+    if injuries is not None and _season_has_readable_official_rows(injuries, season):
+        source = SOURCE_OFFICIAL
+        threshold = INJURY_NET_THRESHOLD
+        net = _news_team_delta(
+            injuries,
+            season=season,
+            week=week,
+            team=against,
+            tuesday_noon_utc=tuesday_noon,
+            end=now,
+        ) - _news_team_delta(
+            injuries,
+            season=season,
+            week=week,
+            team=toward,
+            tuesday_noon_utc=tuesday_noon,
+            end=now,
+        )
+    elif pft is not None:
+        source = SOURCE_PFT_FALLBACK
+        threshold = PFT_NET_THRESHOLD
+        net = float(
+            _pft_team_hits(pft, against, tuesday_noon, now)
+            - _pft_team_hits(pft, toward, tuesday_noon, now)
+        )
+    else:
+        return FollowNewsReading(
+            game_id=game_id,
+            source=SOURCE_NONE,
+            net_toward_market=0.0,
+            threshold=float("nan"),
+            moved_toward_team=toward,
+            moved_against_team=against,
+            verdict=FOLLOW_NEWS_NEITHER,
+        )
+
+    if net >= threshold:
+        verdict = FOLLOW_NEWS_CONFIRMS
+    elif net <= -threshold:
+        verdict = FOLLOW_NEWS_CONTRADICTS
+    else:
+        verdict = FOLLOW_NEWS_NEITHER
+    return FollowNewsReading(
+        game_id=game_id,
+        source=source,
+        net_toward_market=net,
+        threshold=threshold,
+        moved_toward_team=toward,
+        moved_against_team=against,
+        verdict=verdict,
+    )
+
+
 def classify_disagreement(
     *,
     injury_fires: bool,

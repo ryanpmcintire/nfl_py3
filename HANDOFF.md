@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T01:31:04.073493+00:00`
+Refreshed at: `2026-09-10T01:50:06.879134+00:00`
 
 ## Start here
 
@@ -20,15 +20,29 @@ Refreshed at: `2026-09-10T01:31:04.073493+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `451c561b36d5` — Scheduler: Thursday 17:00 refit after the afternoon injury capture (SF at LA's horizon clears Wednesday night) and a Wednesday settle so tonight's game grades tonight
-- Pending change set: 7 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - ` M docs/findings.html`
-  - ` M docs/history.html`
-  - ` M docs/index.html`
-  - ` M docs/model.html`
-  - `M  src/nfl_ats/players.py`
-  - ` M tiebreaker.json`
+- Baseline commit: `fa242cbaaf7c` — Injury rows first captured after kickoff minus 24h take their capture instant, never the earlier proxy (five Week 1 rows move ~20h later; 2009-2025 byte-identical)
+- Pending change set: 26 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/findings.html`
+  - `M  docs/follow_news_gate.md`
+  - `M  docs/follow_threshold_live_card.md`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/late_week_refresh.md`
+  - `M  docs/model.html`
+  - `M  registry/weak_signals.json`
+  - `M  src/nfl_ats/artifact_contracts.py`
+  - `M  src/nfl_ats/board_assistant.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  src/nfl_ats/injury_signal_refresh_tilt.py`
+  - `M  src/nfl_ats/late_week_move_follow_refresh_overlay.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  src/nfl_ats/public_board.py`
+  - ...and 6 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

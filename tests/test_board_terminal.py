@@ -151,15 +151,17 @@ def test_terminal_best_pick_flag_renders_once() -> None:
 
 def test_terminal_board_states_the_late_week_refresh_rule() -> None:
     """UI-20 standing lane, 2026-09-06: the This Week board tells readers in
-    plain words that a pick can still move after Tuesday when lines move half
-    a point -- the promoted late-week follow, rendered from the single
+    plain words that a pick can still move after Tuesday when lines move a
+    full point, and that a contrary injury report keeps Tuesday's pick --
+    the promoted late-week follow and its news veto, rendered from the single
     ``REFRESH_POLICY_NOTE`` constant, never re-typed per page."""
 
     from nfl_ats.board_content import REFRESH_POLICY_NOTE
 
     html = board_terminal.render(build_fixture_content())
     assert REFRESH_POLICY_NOTE in html
-    assert "half a point" in html
+    assert "a full point" in html
+    assert "injury filed since Tuesday points the other way" in html
     assert html.count("Late-week refreshes can still move a pick") == 1
 
 

@@ -1019,10 +1019,11 @@ def _movement_policy_note(challengers: Sequence[Mapping[str, Any]]) -> str:
     body = (
         '<div class="prose"><p><b>If lines move late in the week, we follow them.</b> '
         "At each pass we look at the three books that usually move first: if their "
-        "middle move is half a point or more off Tuesday's frozen number, the pick "
-        "follows them; a full-point move in the pool's own line is a second, separate "
-        "trigger. Below those moves (or with no fresh lines captured), the model's own "
-        "re-run pick plays as always.</p></div>"
+        "middle move is a full point or more off Tuesday's frozen number, the pick "
+        "follows them -- unless an injury filed since Tuesday points the other way, "
+        "which keeps Tuesday's pick. A full-point move in the pool's own line is a "
+        "second, separate trigger. Below those moves (or with no fresh lines "
+        "captured), the model's own re-run pick plays as always.</p></div>"
     )
     if isinstance(threshold_text, str) and threshold_text.strip():
         body += (

@@ -241,6 +241,8 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "specialist_absence_fade_refresh_v1": "Snapper/punter absence fade",
     "late_week_move_follow_refresh_v1": "Follow late-week line moves",
     "late_week_leader_median_follow_v1": "Follow the books that move first",
+    "late_week_leader_median_follow_0_5_off_incumbent": "Follow even a half-point move",
+    "late_week_follow_no_news_veto_off_incumbent": "Follow the move, injury report or not",
     "handle_follow_refresh_off_incumbent": "Ignore where the money is",
     "low_total_div_home_dog_challenger": "Low-total divisional home-dog",
     "rain_on_grass_dog_challenger": "Rain-on-grass underdog tilt",

@@ -5,7 +5,12 @@ Sunday refreshes consume Saturday evidence; Sunday moves are outside this rule.
 Only live captures are prospective inputs, never historical backfills.
 Since 2026-09-09 the SERVED arm is the leading books' median move
 (``late_week_leader_median_follow_v1``) and this ledger's own challenger id
-records the equal-book arm it replaced; both are on every row.
+records the equal-book arm it replaced; both are on every row. Since
+2026-09-10 the served gate is a FULL point, so two more OFF arms record
+beside it on every row: the retired half-point gate
+(``late_week_leader_median_follow_0_5_off_incumbent``) and following every
+move without the injury-news veto
+(``late_week_follow_no_news_veto_off_incumbent``).
 """
 
 from __future__ import annotations
@@ -27,6 +32,8 @@ from nfl_ats.sharp_book_movement_features import late_week_follow_frame
 
 CHALLENGER_ID = "late_week_move_follow_refresh_v1"
 SERVED_CHALLENGER_ID = "late_week_leader_median_follow_v1"
+OFF_THRESHOLD_CHALLENGER_ID = "late_week_leader_median_follow_0_5_off_incumbent"
+NEWS_VETO_OFF_CHALLENGER_ID = "late_week_follow_no_news_veto_off_incumbent"
 LEDGER_NAME = "late_week_move_follow_refresh_decisions.parquet"
 
 
@@ -98,10 +105,37 @@ def build_late_week_move_follow_refresh_rows(
         else "Keep Tuesday's pick; the leading books' move does not call for a switch."
         for books, flip in zip(exposure.leader_books, exposure.movement_flip, strict=True)
     ]
+    vetoes = {game.game_id: game for game in plan.games}
+    exposure["follow_news_veto"] = [
+        bool(vetoes[game_id].follow_news_veto) if game_id in vetoes else False
+        for game_id in exposure.game_id
+    ]
+    exposure["follow_news_source"] = [
+        str(vetoes[game_id].follow_news_source) if game_id in vetoes else ""
+        for game_id in exposure.game_id
+    ]
+    exposure["follow_news_team"] = [
+        str(vetoes[game_id].follow_news_team) if game_id in vetoes else ""
+        for game_id in exposure.game_id
+    ]
+    exposure["news_veto_would_be_pick_side"] = [
+        tuesday if veto else served
+        for veto, tuesday, served in zip(
+            exposure.follow_news_veto,
+            exposure.tuesday_pick_side,
+            exposure.movement_would_be_pick_side,
+            strict=True,
+        )
+    ]
+    exposure["news_veto_movement_flip"] = exposure.news_veto_would_be_pick_side.ne(
+        exposure.tuesday_pick_side
+    )
     exposure["revision_recorded_at_utc"] = now
     exposure["refresh_run_id"] = plan.refresh_run_id
     exposure["challenger_id"] = CHALLENGER_ID
     exposure["served_challenger_id"] = SERVED_CHALLENGER_ID
+    exposure["off_threshold_challenger_id"] = OFF_THRESHOLD_CHALLENGER_ID
+    exposure["news_veto_off_challenger_id"] = NEWS_VETO_OFF_CHALLENGER_ID
     exposure["season"] = plan.season
     exposure["week"] = plan.week
     exposure["model_id"] = plan.model_id
@@ -110,7 +144,10 @@ def build_late_week_move_follow_refresh_rows(
         "skipped": False,
         "games_considered": len(exposure),
         "flips": int(exposure.movement_flip.sum()),
+        "off_threshold_flips": int(exposure.leader_median_half_movement_flip.sum()),
         "equal_book_flips": int(exposure.equal_movement_flip.sum()),
+        "news_vetoes": int(exposure.follow_news_veto.sum()),
+        "news_veto_flips": int(exposure.news_veto_movement_flip.sum()),
         "refused_quote_rows": refused,
     }
 
@@ -122,6 +159,8 @@ def record_late_week_move_follow_refresh_overlay(
     result: dict[str, Any] = {
         "challenger_id": CHALLENGER_ID,
         "served_challenger_id": SERVED_CHALLENGER_ID,
+        "off_threshold_challenger_id": OFF_THRESHOLD_CHALLENGER_ID,
+        "news_veto_off_challenger_id": NEWS_VETO_OFF_CHALLENGER_ID,
         "recorded": 0,
     }
     if not record_decisions:

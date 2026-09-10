@@ -784,10 +784,11 @@ CADENCE_NOTE = (
 
 REFRESH_POLICY_NOTE = (
     "Late-week refreshes can still move a pick: if the three books that usually move "
-    "first shift the line half a point or more after Tuesday, the pick follows them. "
-    "From Saturday lunchtime a pick can also switch to the side holding at least 70% "
-    "of the money bet on that game, when the line itself has not moved enough to say "
-    "so. Passes run Thursday, Saturday, and Sunday morning."
+    "first shift the line a full point or more after Tuesday, the pick follows them, "
+    "unless an injury filed since Tuesday points the other way, in which case the "
+    "Tuesday pick stands. From Saturday lunchtime a pick can also switch to the side "
+    "holding at least 70% of the money bet on that game, when the line itself has not "
+    "moved enough to say so. Passes run Thursday, Saturday, and Sunday morning."
 )
 
 TIEBREAKER_NOT_PUBLISHED_TEXT = "Tiebreaker not published for this week."
