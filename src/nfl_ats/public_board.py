@@ -110,7 +110,13 @@ from nfl_ats.dashboard.findings_content import (
     findings_for,
 )
 from nfl_ats.data import DataContractError
-from nfl_ats.displayed_confidence import displayed_pick_probability
+from nfl_ats.displayed_confidence import (
+    STRENGTH_ROUNDING_PLACES,
+    StrengthBands,
+    displayed_pick_probability,
+    displayed_strength_word,
+    served_strength_bands,
+)
 from nfl_ats.division_revenge_tilt_overlay import apply_division_revenge_tilt_overlay
 from nfl_ats.findings_registry import (
     WatchingLead,
@@ -119,7 +125,12 @@ from nfl_ats.findings_registry import (
     top_open_leads,
     validate_curation,
 )
-from nfl_ats.four_overlay_composition import FourOverlayCompositionResult
+from nfl_ats.four_overlay_composition import (
+    POLICY_ID as SERVED_POLICY_ID,
+)
+from nfl_ats.four_overlay_composition import (
+    FourOverlayCompositionResult,
+)
 from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.injury_value_tilt_overlay import (
     PLAYER_FEATURE_TABLE_NAME,
@@ -774,26 +785,29 @@ def _default_data_root() -> Path:
     return Path(os.environ.get("NFL_ATS_DATA_DIR", "data"))
 
 
-CONFIDENCE_ROUNDING_PLACES = 3
+CONFIDENCE_ROUNDING_PLACES = STRENGTH_ROUNDING_PLACES
 
 
-def confidence_word(probability: float) -> str:
+def confidence_word(probability: float, bands: StrengthBands | None) -> str:
     """Plain-English decision-strength label for the week board (D1).
 
-    Three bands on the final side-oriented score, applied to the probability
-    ROUNDED to what the board displays (see
+    Three bands on the final side-oriented displayed score, applied to the
+    probability ROUNDED to what the board displays (see
     :data:`CONFIDENCE_ROUNDING_PLACES`) so the word and the number can never
-    contradict each other. For an unflipped row the score is the calibrated
-    model probability; for a production-policy flip it is the mirrored
-    raw-model score and must not be read as newly calibrated.
+    contradict each other. The two edges are the terciles of that displayed
+    score's own distribution on the archive of the ACTIVE model
+    (:func:`nfl_ats.displayed_confidence.derive_strength_bands`), never a
+    hand-set number: with no archive to derive them from there is no word.
     """
 
-    shown = round(float(probability), CONFIDENCE_ROUNDING_PLACES)
-    if shown > 0.56:
-        return "strong"
-    if shown >= 0.53:
-        return "lean"
-    return "slight"
+    return "" if bands is None else bands.word(probability)
+
+
+def row_confidence_word(row: pd.Series, bands: StrengthBands | None) -> str:
+    """One card row's strength word, preferring the word attached at publish."""
+
+    attached = displayed_strength_word(row)
+    return attached if attached is not None else confidence_word(pick_side(row)[1], bands)
 
 
 _CONFIDENCE_FILL = {"slight": 1, "lean": 2, "strong": 3}
@@ -1442,6 +1456,7 @@ def _week_board(
     flipped_by_game: Mapping[str, object],
     best_pick_id: str | None,
     why_by_game: Mapping[str, str],
+    bands: StrengthBands | None = None,
 ) -> str:
     """P2: ONE continuous table -- kickoff/matchup/line/pick/strength at 40px,
     each game followed by an expandable sub-row carrying the why-this-pick
@@ -1453,7 +1468,7 @@ def _week_board(
         game_id = str(row["game_id"])
         home, away = str(row["home_team"]), str(row["away_team"])
         market_spread = float(row["spread_line"])
-        pick_team, pick_probability = pick_side(row)
+        pick_team = pick_side(row)[0]
         pick_cell = f'<span class="pick-team">{escape(pick_team)}</span>'
         if best_pick_id is not None and game_id == best_pick_id:
             pick_cell += (
@@ -1482,8 +1497,8 @@ def _week_board(
             f"{escape(spread_words(home, away, market_spread))}</td>"
             f'<td data-label="Pick">{pick_cell}</td>'
             f'<td data-label="Strength" class="strength">'
-            f"{confidence_meter(confidence_word(pick_probability))}"
-            f"{confidence_word(pick_probability)}</td>"
+            f"{confidence_meter(row_confidence_word(row, bands))}"
+            f"{row_confidence_word(row, bands)}</td>"
             "</tr>"
             f'<tr class="board-sub"><td colspan="5">{expansion}</td></tr>'
         )
@@ -1787,6 +1802,7 @@ def render_picks_page(
     challenger_week_previews: Mapping[str, str] | None = None,
     recent_form_text: str | None = None,
     played_chain_accuracy: float | None = None,
+    strength_bands: StrengthBands | None = None,
 ) -> str:
     """Render ``docs/index.html`` -- this week's forced picks, one card per game.
 
@@ -1918,8 +1934,10 @@ def render_picks_page(
         else recommendations
     )
 
+    if strength_bands is None and artifacts_root is not None:
+        strength_bands = served_strength_bands(artifacts_root, active_model)
     strong_count = sum(
-        1 for _, row in ordered.iterrows() if confidence_word(pick_side(row)[1]) == "strong"
+        1 for _, row in ordered.iterrows() if row_confidence_word(row, strength_bands) == "strong"
     )
     header = viz.page_header(
         f"{season_label}{week_label} · {len(recommendations)} games",
@@ -1993,11 +2011,14 @@ def render_picks_page(
         if production_overlay is not None
         else set(flipped_by_game) | set(arrest_flipped_by_game)
     )
-    week_board = _week_board(ordered, dict.fromkeys(flipped_game_ids), best_pick_id, why_by_game)
+    week_board = _week_board(
+        ordered, dict.fromkeys(flipped_game_ids), best_pick_id, why_by_game, strength_bands
+    )
     board_legend = (
         '<p class="fine" style="margin-top:8px;">&#9733; best pick &middot; &#8646; flipped '
-        "by an overlay rule &middot; strength runs slight &lt; lean &lt; strong, by "
-        "model-vs-market gap.</p>"
+        "by an overlay rule &middot; strength runs slight &lt; lean &lt; strong, by where "
+        "this pick's cover chance sits among the model's own picks over the past six "
+        "seasons.</p>"
     )
 
     composition = ["Synchronized with the active model"]
@@ -3784,6 +3805,61 @@ def played_union_subset_accuracy(payload: Mapping[str, Any]) -> float | None:
     return None
 
 
+@dataclass(frozen=True)
+class ServedUnionMeasurement:
+    """The card that is actually played, graded on the active model's archive."""
+
+    accuracy: float
+    scored_games: int
+    member_count: int
+    seasons: tuple[int, int] | None
+
+
+def load_served_union_measurement(
+    artifacts_root: Path, active: Mapping[str, Any] | None = None
+) -> ServedUnionMeasurement | None:
+    """The played card's own opener-graded accuracy, keyed to the active model.
+
+    Fails closed the way every headline source must: a run scored against a
+    different policy than the one on the board, or against a different model
+    than the active one, is skipped rather than shown. The three-member subset
+    inside an ``overlay_subset_composition`` run is NOT this number -- that
+    subset stopped being the played card when the policy grew to nine members,
+    and reading it kept the headline a full accuracy point low.
+    """
+
+    if active is None:
+        active = load_active_ats_model(artifacts_root)
+    active_model_id = str((active or {}).get("model_id") or "")
+    if not active_model_id:
+        return None
+    for directory in artifact_directories(
+        artifacts_root / "unserved_tilt_marginals", "result.json"
+    ):
+        try:
+            payload = read_json(directory / "result.json")
+        except (OSError, ValueError):
+            continue
+        served = payload.get("served_policy")
+        if not isinstance(served, Mapping) or served.get("policy_id") != SERVED_POLICY_ID:
+            continue
+        if str(payload.get("active_model_id") or "") != active_model_id:
+            continue
+        accuracy = _number(payload.get("served_card_accuracy"))
+        scored = payload.get("n_scored_games")
+        members = served.get("members")
+        if accuracy is None or not 0 <= accuracy <= 1:
+            continue
+        if not isinstance(scored, int) or scored <= 0 or not isinstance(members, list):
+            continue
+        span = payload.get("seasons")
+        seasons = (
+            (int(span[0]), int(span[1])) if isinstance(span, list) and len(span) == 2 else None
+        )
+        return ServedUnionMeasurement(accuracy, scored, len(members), seasons)
+    return None
+
+
 def load_played_chain_accuracy(artifacts_root: Path) -> float | None:
     """The played three-member overlay union's opener-graded archive
     accuracy, from the newest ``overlay_subset_composition`` run whose own
@@ -4396,6 +4472,7 @@ def render_pool_workbench_page(
     model_id: str | None = None,
     generated_at: datetime | None = None,
     best_pick_game_id: str | None = None,
+    strength_bands: StrengthBands | None = None,
 ) -> str:
     """Render ``docs/pool.html`` -- the pool workbench (UI-09).
 
@@ -4413,6 +4490,7 @@ def render_pool_workbench_page(
         best_pick_game_id=best_pick_game_id,
         season=season,
         week=week,
+        strength_bands=strength_bands,
     )
     return _page(
         current=POOL_PAGE,
@@ -4616,6 +4694,7 @@ def build_public_site(
             model_id=str(model_id) if model_id else None,
             generated_at=generated,
             best_pick_game_id=(nomination.active_game_id if nomination is not None else None),
+            strength_bands=served_strength_bands(artifacts_root, artifacts.active),
         ),
         LEDGER_PAGE: render_signal_ledger_page(generated_at=generated),
     }
@@ -4634,6 +4713,7 @@ __all__ = [
     "EraMagnitude",
     "OpenerEvaluationArtifacts",
     "PublicBoardArtifacts",
+    "ServedUnionMeasurement",
     "assert_spread_explorer_matches_card",
     "build_public_site",
     "challenger_blurb",
@@ -4645,6 +4725,7 @@ __all__ = [
     "load_played_chain_accuracy",
     "load_prospective_challengers",
     "load_public_board_artifacts",
+    "load_served_union_measurement",
     "load_waterfall_feed",
     "pick_side",
     "render_findings_page",
@@ -4653,5 +4734,6 @@ __all__ = [
     "render_pool_workbench_page",
     "render_signal_ledger_page",
     "render_team_explorer_page",
+    "row_confidence_word",
     "spread_words",
 ]

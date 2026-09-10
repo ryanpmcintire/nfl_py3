@@ -112,6 +112,7 @@ from nfl_ats.public_board import (
     load_baseline_measurement,
     load_public_board_artifacts,
     load_refresh_chain_measurement,
+    load_served_union_measurement,
     load_waterfall_feed,
     pick_side,
     spread_words,
@@ -1485,24 +1486,27 @@ def _build_headline_stats(
             close_ci = (lower * 100, upper * 100)
     close_grade_pct = close_accuracy * 100 if close_accuracy is not None else None
 
-    played_union_fraction = baseline.played_accuracy if baseline is not None else None
-    if played_union_fraction is not None:
+    served_union = load_served_union_measurement(artifacts_root, active)
+    played_union_fraction = served_union.accuracy if served_union is not None else None
+    if played_union_fraction is not None and served_union is not None:
         played_card_pct = played_union_fraction * 100
         played_card_stale = False
+        played_games_text = f"{served_union.scored_games:,}"
     else:
         played_card_pct = None
         played_card_stale = True
+        played_games_text = "an unpublished count of"
     games_text = (
         f"{scored_games_int:,}" if scored_games_int is not None else "an unpublished count of"
     )
     played_card_caption = (
-        f"Opener-graded accuracy across {games_text} paired games -- the three-member overlay "
-        "union that is actually on the board this week, not a hypothetical."
+        f"Opener-graded accuracy across {played_games_text} past games -- the full set of "
+        "adjustments that is actually on the board this week, not a hypothetical."
         if not played_card_stale
         else "Archive score not recomputed for this model yet."
     )
     played_card_foot_text = (
-        f"{games_text} opener-graded games · three-member overlay union"
+        f"{played_games_text} opener-graded games · the card as played"
         if not played_card_stale
         else "archive score not recomputed for this model"
     )
@@ -2717,15 +2721,14 @@ def load_board_content(
     )
 
     final = view.predictions if view is not None else artifacts.predictions
-    final = attach_displayed_confidence(
-        final,
-        fit_production_displayed_confidence(
-            artifacts_root,
-            artifacts.active,
-            season=int(artifacts.metadata.get("season") or 0),
-            week=int(artifacts.metadata.get("week") or 0),
-        ),
+    displayed_confidence = fit_production_displayed_confidence(
+        artifacts_root,
+        artifacts.active,
+        season=int(artifacts.metadata.get("season") or 0),
+        week=int(artifacts.metadata.get("week") or 0),
     )
+    strength_bands = displayed_confidence.bands
+    final = attach_displayed_confidence(final, displayed_confidence)
     sort_columns = [column for column in ("kickoff", "game_id") if column in final]
     ordered = final.sort_values(sort_columns, na_position="last") if sort_columns else final
 
@@ -2824,7 +2827,7 @@ def load_board_content(
                 market_spread=market_spread,
                 pick_team=team,
                 pick_probability=probability,
-                confidence_word=confidence_word(probability),
+                confidence_word=confidence_word(probability, strength_bands),
                 is_best=best_pick_id is not None and game_id == best_pick_id,
                 is_flipped=game_id in flipped_game_ids,
                 flip_member_labels=_flip_member_labels(view, game_id),

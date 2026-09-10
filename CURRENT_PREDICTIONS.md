@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from the synchronized weak stack model, 2026-09-10 02:20 UTC.
+Published from the synchronized weak stack model, 2026-09-10 03:25 UTC.
 
-<!-- publication: model_id=2e8c616b476dd0d2 published_at_utc=2026-09-10T02:20:41.210361+00:00 -->
+<!-- publication: model_id=2e8c616b476dd0d2 published_at_utc=2026-09-10T03:25:51.677864+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 

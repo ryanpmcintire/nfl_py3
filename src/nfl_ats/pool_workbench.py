@@ -27,6 +27,7 @@ from typing import Any, ClassVar
 import pandas as pd
 
 from nfl_ats.dashboard import viz
+from nfl_ats.displayed_confidence import StrengthBands
 from nfl_ats.pick_refresh import pick_deadline, sunday_pick_lock
 from nfl_ats.pool import build_ats_pool_card
 
@@ -574,6 +575,7 @@ def _entry_list_section(
     *,
     best_pick_game_id: str | None = None,
     storage_key: str | None = None,
+    strength_bands: StrengthBands | None = None,
 ) -> str:
     """The pool's one entry-list table.
 
@@ -600,7 +602,7 @@ def _entry_list_section(
     rows: list[str] = []
     for _, row in entry_list.iterrows():
         is_best = str(row["game_id"]) == str(best_pick_game_id)
-        word = confidence_word(float(row["pick_probability"]))
+        word = confidence_word(float(row["pick_probability"]), strength_bands)
         meter = viz.probability_meter(float(row["pick_probability"]), label="cover")
         model_side = str(row["pool_side"])
         model_line = float(row["pick_line"])
@@ -824,6 +826,7 @@ def build_pool_workbench_body(
     best_pick_game_id: str | None = None,
     season: int | None = None,
     week: int | None = None,
+    strength_bands: StrengthBands | None = None,
 ) -> str:
     """Compose the pool-workbench body (rules, entry list, ownership)."""
 
@@ -854,6 +857,7 @@ def build_pool_workbench_body(
                 entry_list,
                 best_pick_game_id=best_pick_game_id,
                 storage_key=storage_key,
+                strength_bands=strength_bands,
             ),
             _ownership_section(ownership),
         ]

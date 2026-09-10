@@ -618,6 +618,8 @@ def apply_four_overlay_composition(
 def protection_flags_for_card(predictions: pd.DataFrame, data_root: Path) -> pd.DataFrame:
     """The PBP-08 lean table for every (season, week) on the card, fail-open."""
 
+    if not {"season", "week"}.issubset(predictions.columns):
+        return _empty_protection_flags()
     weeks = (
         predictions[["season", "week"]]
         .dropna()

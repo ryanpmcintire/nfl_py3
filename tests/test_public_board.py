@@ -341,12 +341,17 @@ def test_render_picks_page_strong_lean_count_matches_the_board_buckets() -> None
     renders, using the same confidence_word buckets -- never from a
     different threshold on a different frame."""
 
+    from nfl_ats.displayed_confidence import StrengthBands
+
+    bands = StrengthBands(lean_min=0.547, strong_min=0.572)
     predictions = _predictions_fixture()
     expected = sum(
-        1 for _, row in predictions.iterrows() if confidence_word(pick_side(row)[1]) == "strong"
+        1
+        for _, row in predictions.iterrows()
+        if confidence_word(pick_side(row)[1], bands) == "strong"
     )
     assert expected > 0
-    page = render_picks_page(predictions, _sweep_fixture())
+    page = render_picks_page(predictions, _sweep_fixture(), strength_bands=bands)
     assert f"{expected} strong lean{'s' if expected != 1 else ''}" in page
 
 
@@ -1628,11 +1633,15 @@ def test_render_picks_page_uses_v2_nomination_end_to_end(tmp_path: Path) -> None
 
 
 def test_confidence_word_bands() -> None:
-    assert confidence_word(0.50) == "slight"
-    assert confidence_word(0.529) == "slight"
-    assert confidence_word(0.53) == "lean"
-    assert confidence_word(0.56) == "lean"
-    assert confidence_word(0.561) == "strong"
+    from nfl_ats.displayed_confidence import StrengthBands
+
+    bands = StrengthBands(lean_min=0.547, strong_min=0.572)
+    assert confidence_word(0.50, bands) == "slight"
+    assert confidence_word(0.546, bands) == "slight"
+    assert confidence_word(0.547, bands) == "lean"
+    assert confidence_word(0.571, bands) == "lean"
+    assert confidence_word(0.572, bands) == "strong"
+    assert confidence_word(0.60, None) == ""
 
 
 def test_render_picks_page_week_board_anchors_to_each_card() -> None:
@@ -2372,7 +2381,7 @@ def test_week_board_carries_the_best_pick_and_flip_legend() -> None:
     page = render_picks_page(_predictions_fixture(), _sweep_fixture())
     assert "best pick" in page
     assert "flipped by an overlay rule" in page
-    assert "slight &lt; lean &lt; strong, by model-vs-market gap" in page
+    assert "slight &lt; lean &lt; strong, by where this pick's cover chance sits" in page
 
 
 def test_sweep_table_formats_are_one_decimal_and_zero_never_signed() -> None:

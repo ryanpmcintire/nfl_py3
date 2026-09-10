@@ -66,7 +66,7 @@ from math import isfinite
 from typing import Any
 
 from nfl_ats.coach_fade_overlay import OverlayFlip
-from nfl_ats.displayed_confidence import displayed_pick_probability
+from nfl_ats.displayed_confidence import displayed_pick_probability, displayed_strength_word
 from nfl_ats.division_revenge_tilt_overlay import TiltFlip as DivisionRevengeFlip
 from nfl_ats.four_overlay_composition import (
     COACH_FADE,
@@ -79,7 +79,6 @@ from nfl_ats.key_line_pick_read import is_half_point_line
 from nfl_ats.lineage import FIELD_MARKET_LINE, CardLineage
 from nfl_ats.market_decomposition import GameExplanation, explain_game_structured
 from nfl_ats.player_arrests_back_side_overlay import ArrestFlip
-from nfl_ats.public_board import confidence_word
 from nfl_ats.source_freshness_policy import SourcePolicyReport
 from nfl_ats.spread_gap_zone_fade_overlay import TiltFlip as SpreadGapFlip
 
@@ -276,6 +275,7 @@ class ModelProbabilityComponent:
     probability: float | None
     provenance: str
     stated_probability: float | None = None
+    strength_word: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -684,16 +684,16 @@ def _lead_sentence(
     lead = f"{label}."
     if model_probability.probability is None:
         return f"{lead} No model probability is recorded for this pick."
-    word = confidence_word(model_probability.probability)
-    phrase = _CONFIDENCE_PHRASES.get(word, word)
+    phrase = _CONFIDENCE_PHRASES.get(model_probability.strength_word or "", "")
     adjusted = (
         model_probability.stated_probability is not None
         and abs(model_probability.stated_probability - model_probability.probability) >= 0.0005
     )
     basis = " once its record on spreads this size is counted in" if adjusted else ""
+    tail = f", {phrase}." if phrase else "."
     return (
         f"{lead} The model gives {pick_side or 'the pick'} a "
-        f"{model_probability.probability:.1%} chance to cover{basis}, {phrase}."
+        f"{model_probability.probability:.1%} chance to cover{basis}{tail}"
     )
 
 
@@ -1007,6 +1007,7 @@ def explain_pick(
         probability=probability,
         provenance=COMPUTED_NOW if probability is not None else NO_DATA,
         stated_probability=stated,
+        strength_word=displayed_strength_word(row),
     )
 
     overlays_component = OverlaysComponent(

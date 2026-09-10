@@ -36,6 +36,11 @@ DISPLAYED_CONFIDENCE_POLICY = "displayed_confidence_reliability_v1"
 DISPLAYED_CONFIDENCE_SERVED = True
 DISPLAYED_CONFIDENCE_FILENAME = "displayed_confidence.json"
 DISPLAYED_PICK_PROBABILITY_COLUMN = "displayed_pick_probability"
+DISPLAYED_STRENGTH_WORD_COLUMN = "displayed_strength_word"
+
+STRENGTH_WORDS = ("slight", "lean", "strong")
+STRENGTH_BAND_QUANTILES = (1.0 / 3.0, 2.0 / 3.0)
+STRENGTH_ROUNDING_PLACES = 3
 
 
 def display_spread_bucket(spread: pd.Series) -> pd.Series:
@@ -201,6 +206,71 @@ def walk_forward_displayed_confidence(stream: pd.DataFrame) -> pd.Series:
 
 
 @dataclass(frozen=True)
+class StrengthBands:
+    """Where the board's slight/lean/strong meter cuts the displayed score."""
+
+    lean_min: float
+    strong_min: float
+
+    def word(self, probability: float) -> str:
+        shown = round(float(probability), STRENGTH_ROUNDING_PLACES)
+        if shown >= self.strong_min:
+            return STRENGTH_WORDS[2]
+        if shown >= self.lean_min:
+            return STRENGTH_WORDS[1]
+        return STRENGTH_WORDS[0]
+
+    def words(self, probability: pd.Series) -> pd.Series:
+        value = pd.to_numeric(probability, errors="coerce").round(STRENGTH_ROUNDING_PLACES)
+        return pd.Series(
+            np.select(
+                [value.ge(self.strong_min), value.ge(self.lean_min)],
+                [STRENGTH_WORDS[2], STRENGTH_WORDS[1]],
+                default=STRENGTH_WORDS[0],
+            ),
+            index=probability.index,
+            dtype=object,
+        ).where(value.notna())
+
+    def to_dict(self) -> dict[str, float]:
+        return {"lean_min": self.lean_min, "strong_min": self.strong_min}
+
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any] | None) -> StrengthBands | None:
+        if not isinstance(payload, Mapping):
+            return None
+        try:
+            lean = float(payload["lean_min"])
+            strong = float(payload["strong_min"])
+        except (KeyError, TypeError, ValueError):
+            return None
+        return cls(lean_min=lean, strong_min=strong) if lean <= strong else None
+
+
+def derive_strength_bands(stream: pd.DataFrame) -> StrengthBands | None:
+    """Terciles of the archive's own walk-forward calibrated scores.
+
+    The meter says where a pick sits among the reads this model actually
+    produces, so its two edges are quantiles of that distribution rather than
+    round numbers. Measured on the 2020-2025 opener archive, realised accuracy
+    does NOT rise across the three bands, so the bands are relative standing
+    and never a promised hit rate -- see ``docs/displayed_confidence.md``.
+    """
+
+    scored = stream.loc[stream["correct"].notna()]
+    if scored.empty:
+        return None
+    calibrated = walk_forward_displayed_confidence(scored.copy()).dropna()
+    if calibrated.empty:
+        return None
+    lower, upper = np.quantile(calibrated.to_numpy(dtype=float), STRENGTH_BAND_QUANTILES)
+    return StrengthBands(
+        lean_min=round(float(lower), STRENGTH_ROUNDING_PLACES),
+        strong_min=round(float(upper), STRENGTH_ROUNDING_PLACES),
+    )
+
+
+@dataclass(frozen=True)
 class ProductionDisplayedConfidence:
     """Cells fitted for one target week from an archived out-of-time stream."""
 
@@ -211,6 +281,7 @@ class ProductionDisplayedConfidence:
     active_model_id: str | None
     prior_rows: int
     warnings: tuple[str, ...]
+    bands: StrengthBands | None = None
 
     @property
     def served(self) -> bool:
@@ -227,6 +298,8 @@ class ProductionDisplayedConfidence:
             "served": self.served,
             "cells": self.cells.to_dict(),
             "table": self.cells.to_frame().to_dict(orient="records"),
+            "strength_bands": self.bands.to_dict() if self.bands is not None else None,
+            "strength_band_quantiles": list(STRENGTH_BAND_QUANTILES),
             "source_path": self.source_path,
             "source_model_id": self.source_model_id,
             "active_model_id": self.active_model_id,
@@ -326,6 +399,13 @@ def fit_production_displayed_confidence(
             f"display history comes from model {source_model_id}, the active model is "
             f"{active_model_id}"
         )
+    try:
+        bands = derive_strength_bands(stream)
+    except (KeyError, ValueError) as error:
+        warnings.append(f"strength bands could not be derived: {error}")
+        bands = None
+    if bands is None:
+        warnings.append("no strength bands derived; the board shows no strength word")
     return ProductionDisplayedConfidence(
         policy=DISPLAYED_CONFIDENCE_POLICY,
         cells=fit_reliability_cells(prior),
@@ -334,7 +414,16 @@ def fit_production_displayed_confidence(
         active_model_id=active_model_id,
         prior_rows=len(prior),
         warnings=tuple(warnings),
+        bands=bands,
     )
+
+
+def served_strength_bands(
+    artifacts_root: Path, active: Mapping[str, object] | None
+) -> StrengthBands | None:
+    """The meter edges the board serves, from the active model's own archive."""
+
+    return fit_production_displayed_confidence(artifacts_root, active, season=0, week=0).bands
 
 
 def attach_displayed_confidence(
@@ -357,6 +446,10 @@ def attach_displayed_confidence(
         frame[DISPLAYED_PICK_PROBABILITY_COLUMN] = stated
         return frame
     frame[DISPLAYED_PICK_PROBABILITY_COLUMN] = calibration.calibrate(stated, frame["spread_line"])
+    if calibration.bands is not None:
+        frame[DISPLAYED_STRENGTH_WORD_COLUMN] = calibration.bands.words(
+            frame[DISPLAYED_PICK_PROBABILITY_COLUMN]
+        )
     return frame
 
 
@@ -371,24 +464,40 @@ def displayed_pick_probability(row: Mapping[str, Any] | pd.Series) -> float | No
     return None if not np.isfinite(number) else number
 
 
+def displayed_strength_word(row: Mapping[str, Any] | pd.Series) -> str | None:
+    """One row's derived strength word, or ``None`` when the row has none."""
+
+    value: Any = row.get(DISPLAYED_STRENGTH_WORD_COLUMN)
+    word = str(value).strip().lower() if isinstance(value, str) else ""
+    return word if word in STRENGTH_WORDS else None
+
+
 __all__ = [
     "DISPLAYED_CONFIDENCE_FILENAME",
     "DISPLAYED_CONFIDENCE_POLICY",
     "DISPLAYED_CONFIDENCE_SERVED",
     "DISPLAYED_PICK_PROBABILITY_COLUMN",
+    "DISPLAYED_STRENGTH_WORD_COLUMN",
     "DISPLAY_BUCKETS",
     "PROBABILITY_BANDS",
     "PSEUDO_OBSERVATIONS",
+    "STRENGTH_BAND_QUANTILES",
+    "STRENGTH_ROUNDING_PLACES",
+    "STRENGTH_WORDS",
     "ProductionDisplayedConfidence",
     "ReliabilityCells",
+    "StrengthBands",
     "archive_display_stream",
     "attach_displayed_confidence",
     "cell_keys",
+    "derive_strength_bands",
     "display_spread_bucket",
     "displayed_pick_probability",
+    "displayed_strength_word",
     "fit_production_displayed_confidence",
     "fit_reliability_cells",
     "prior_rows_before",
     "probability_band",
+    "served_strength_bands",
     "walk_forward_displayed_confidence",
 ]

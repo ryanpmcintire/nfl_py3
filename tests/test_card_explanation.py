@@ -475,14 +475,16 @@ def test_one_printed_percentage_never_carries_two_confidence_words() -> None:
     the word is a function of what the reader sees.
     """
 
+    from nfl_ats.displayed_confidence import StrengthBands
     from nfl_ats.public_board import confidence_word
 
+    bands = StrengthBands(lean_min=0.547, strong_min=0.572)
     by_printed: dict[str, set[str]] = {}
     step = 0.0001
     probability = 0.40
     while probability <= 0.75:
         printed = f"{probability:.1%}"
-        by_printed.setdefault(printed, set()).add(confidence_word(probability))
+        by_printed.setdefault(printed, set()).add(confidence_word(probability, bands))
         probability += step
     split = {shown: words for shown, words in by_printed.items() if len(words) > 1}
     assert not split, f"one printed percentage mapped to several words: {split}"
@@ -491,12 +493,13 @@ def test_one_printed_percentage_never_carries_two_confidence_words() -> None:
 def test_confidence_word_bands_are_unchanged_away_from_the_edges() -> None:
     """Rounding to the printed number must not move the bands themselves."""
 
+    from nfl_ats.displayed_confidence import StrengthBands
     from nfl_ats.public_board import confidence_word
 
-    assert confidence_word(0.499) == "slight"
-    assert confidence_word(0.529) == "slight"
-    assert confidence_word(0.530) == "lean"
-    assert confidence_word(0.559) == "lean"
-    assert confidence_word(0.560) == "lean"
-    assert confidence_word(0.561) == "strong"
-    assert confidence_word(0.642) == "strong"
+    bands = StrengthBands(lean_min=0.547, strong_min=0.572)
+    assert confidence_word(0.499, bands) == "slight"
+    assert confidence_word(0.546, bands) == "slight"
+    assert confidence_word(0.547, bands) == "lean"
+    assert confidence_word(0.571, bands) == "lean"
+    assert confidence_word(0.572, bands) == "strong"
+    assert confidence_word(0.642, bands) == "strong"

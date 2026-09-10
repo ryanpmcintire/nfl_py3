@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T03:18:59.582867+00:00`
+Refreshed at: `2026-09-10T03:31:45.707924+00:00`
 
 ## Start here
 
@@ -20,16 +20,25 @@ Refreshed at: `2026-09-10T03:18:59.582867+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b9bd3dd7fb17` — Retire the 1.0-point consensus rule from the served chain (-1.6 through the chain, 30-43 on the picks it changed; recorded as a paired OFF challenger); served week-rules headline 58.0%
-- Pending change set: 8 paths
-  - `M  docs/capture_scheduling.md`
-  - `A  docs/line_size_shrinkage.md`
-  - `M  scripts/capture_scheduler.py`
-  - `M  scripts/cfb_served_tilts_replication.py`
-  - `A  scripts/check_splash_board.py`
-  - `M  scripts/ingest_injury_news.py`
-  - `M  scripts/scheduled_weekly_lock.py`
-  - `M  tests/test_capture_scheduler.py`
+- Baseline commit: `ccd6e1c2d544` — Lock fails in seconds without the pool board (splash_board_tue check, weekly_lock requires it, BLOCKED lines in the log); injury-news scrape scheduled Wed-Sun 16:00 and Sun 11:30 on the site's new URL scheme; line-size shrinkage lost through the card (best arm P+ 0.32) though its k curve confirms the mechanism
+- Pending change set: 17 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  docs/displayed_confidence.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/card_explanation.py`
+  - `M  src/nfl_ats/displayed_confidence.py`
+  - `M  src/nfl_ats/four_overlay_composition.py`
+  - `M  src/nfl_ats/pool_workbench.py`
+  - `M  src/nfl_ats/public_board.py`
+  - `M  tests/test_board_content.py`
+  - `M  tests/test_card_explanation.py`
+  - `M  tests/test_public_board.py`
+  - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -49,7 +58,7 @@ The 52.29% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T02:20:41.210361+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T03:25:51.677864+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

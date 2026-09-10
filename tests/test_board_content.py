@@ -86,6 +86,25 @@ def _headline_artifacts(root: Path) -> tuple[dict, Path]:
         ),
         encoding="utf-8",
     )
+    from nfl_ats.four_overlay_composition import COMPOSITION_ORDER, POLICY_ID
+
+    served = root / "unserved_tilt_marginals" / "20260905T000002Z"
+    served.mkdir(parents=True)
+    (served / "result.json").write_text(
+        json.dumps(
+            {
+                "active_model_id": "active-model",
+                "n_scored_games": 100,
+                "seasons": [2020, 2025],
+                "served_card_accuracy": 0.5688622754491018,
+                "served_policy": {
+                    "policy_id": POLICY_ID,
+                    "members": list(COMPOSITION_ORDER),
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
     return active, path
 
 
@@ -873,7 +892,7 @@ def test_game_row_lock_text_reads_as_a_sentence_fragment() -> None:
     assert by_id["2026_01_ARI_LAC"].lock_text is None
 
 
-def test_headline_uses_three_member_row_and_compares_retired_four(tmp_path: Path) -> None:
+def test_headline_uses_the_served_union_row_and_compares_retired_four(tmp_path: Path) -> None:
     from _board_content_fixtures import build_fixture_content
 
     from nfl_ats.public_board import PLAYED_UNION_MEMBER_IDS
@@ -894,9 +913,10 @@ def test_headline_uses_three_member_row_and_compares_retired_four(tmp_path: Path
         active,
         prospective_scoreboard=build_fixture_content().headline.prospective_scoreboard,
     )
-    assert headline.played_card_pct == pytest.approx(55.2228875582169)
+    assert headline.played_card_pct == pytest.approx(56.88622754491018)
     assert headline.prior_chain_pct == pytest.approx(55.42248835662009)
-    assert "three-member" in headline.played_card_caption
+    assert "three-member" not in headline.played_card_caption
+    assert "actually on the board this week" in headline.played_card_caption
     assert "lacks an explained mechanism" in headline.selection_caveat_text
 
 

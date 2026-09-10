@@ -362,27 +362,58 @@ and `explanations.json` carries both numbers on every pick
 forecast's `recommendations.csv` is not rewritten at all — its
 `home_cover_probability` stays the model's raw output.
 
-### The one thing this change makes worse, stated up front
+### The one thing this change made worse, and how it was repaired
 
-The board's three-word strength meter (`confidence_word`: above 0.56 "strong",
-0.53 and up "lean", else "slight") is applied to the DISPLAYED number, by its
-own design, so that the word and the number can never contradict each other.
-Compressing the displayed numbers into 53-59% pushes almost everything over the
-0.56 line. Measured on the rendered This Week page:
+The board's three-word strength meter (`confidence_word`) is applied to the
+DISPLAYED number, by its own design, so that the word and the number can never
+contradict each other. Its two edges used to be hand-set literals -- above 0.56
+"strong", 0.53 and up "lean", else "slight" -- and compressing the displayed
+numbers into 53-59% pushed almost everything over the 0.56 line. Measured on
+the rendered This Week page:
 
 | | slight | lean | strong |
 |---|---|---|---|
-| before | 7 | 6 | 3 |
-| after | 0 | 6 | 10 |
+| before this lane | 7 | 6 | 3 |
+| calibrated score, hand-set edges | 0 | 6 | 10 |
+| calibrated score, derived edges | 1 | 14 | 1 |
 
-A meter that reads "Strong" on ten of sixteen picks tells a reader nothing.
-**This is a real regression and it is not repaired here**, because the two
-band edges are a separate served rule and moving them after seeing these signs
-would be exactly the tuning this document forbids itself. It is the first
-follow-up this lane hands on: the band edges were never derived from anything
-(AGENTS.md's rule on underived constants applies to them), and they now sit on
-a differently-scaled quantity. The right fix is a predeclared decision about
-what the meter is for, not a nudge to 0.58.
+**The edges are now derived, not chosen.** They are the terciles of the
+displayed score's own walk-forward distribution on the 1,503-game 2020-2025
+opener archive of the ACTIVE model, rounded to the three decimals the board
+prints (`derive_strength_bands`), so a Week 1 2026 card reads
+`lean_min` 0.547 and `strong_min` 0.572. They are recomputed from the
+archive whenever the active model changes and are written into the forecast's
+`displayed_confidence.json` beside the cells; no percentage on the meter is a
+constant, and a board with no archive behind it shows no strength word rather
+than a made-up one.
+
+**Why terciles and not realised-accuracy breakpoints.** The other candidate was
+to cut the score where a reader's expectation genuinely changes -- bands at,
+say, 55% / 58% / 61% realised. Measured on the same archive, under the served
+edges above, those breakpoints do not exist:
+
+| band | games | mean displayed | realised accuracy |
+|---|---|---|---|
+| slight | 496 | 50.71% | 54.23% |
+| lean | 500 | 56.18% | 56.60% |
+| strong | 507 | 59.29% | 52.86% |
+
+Realised accuracy does not rise across the three bands; the top third is the
+worst of them, which is the same inversion the reliability table above
+records, surviving the transform. Cutting at accuracy breakpoints would
+therefore have meant either inventing edges the data does not support or
+labelling the model's most confident picks "slight" -- an unexplained flip in
+everything but name. Terciles say something the data does support: **where this
+pick sits among the reads this model actually produces**, one third of the
+archive in each band by construction. That is what the board's legend now says
+in pool-player words, and it is deliberately not a promised hit rate. The
+per-bucket weak spots stay where they belong, on the Model page's own table.
+
+The 1 / 14 / 1 split on Week 1 2026 is not the meter failing. Fourteen of the
+sixteen calibrated scores land between 0.547 and 0.572 because this card's
+picks fall into two adjacent cells, which is the transform reporting -- as the
+headline table already did -- that the model does not separate these sixteen
+picks as sharply as its raw probability implied.
 
 ### Decision
 
