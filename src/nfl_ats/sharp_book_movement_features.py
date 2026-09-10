@@ -56,9 +56,10 @@ def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> p
         (sunday - pd.Timedelta(days=4)).dt.tz_localize("America/New_York").dt.tz_convert("UTC")
     )
     result["_sunday"] = sunday.dt.tz_localize("America/New_York").dt.tz_convert("UTC")
-    for name in ("leader", "equal"):
+    for name in ("leader", "equal", "leader_median"):
         result[f"{name}_net_move"] = 0.0
     result["eligible_books"] = 0
+    result["leader_books"] = 0
     result["leader_move_observed"] = False
     if not quotes.empty:
         needed = {
@@ -106,9 +107,21 @@ def sharp_book_movement_features(quotes: pd.DataFrame, games: pd.DataFrame) -> p
             eligible_books=("move", "size"),
         )
         summary["leader_net_move"] = summary.weighted_move / summary.weight
-        for column in ("leader_net_move", "equal_net_move", "eligible_books"):
+        leaders = books.loc[books.bookmaker_key.isin(LEADER_BOOKS)]
+        summary = summary.join(
+            leaders.groupby("game_id").agg(
+                leader_median_net_move=("move", "median"), leader_books=("move", "size")
+            )
+        )
+        for column in (
+            "leader_net_move",
+            "equal_net_move",
+            "leader_median_net_move",
+            "eligible_books",
+            "leader_books",
+        ):
             result[column] = result.game_id.map(summary[column]).fillna(0)
-    for name in ("leader", "equal"):
+    for name in ("leader", "equal", "leader_median"):
         result[f"{name}_flag"] = result[f"{name}_net_move"].abs().ge(THRESHOLD)
     return result.drop(columns=["_monday", "_wednesday", "_sunday"])
 
@@ -143,11 +156,15 @@ def late_week_follow_frame(
     rows with ``observed_at_utc`` or ``snapshot_timestamp_utc`` at/after
     ``now``, or a provider update later than the observation, are refused and
     counted, never scored. Returns ``(exposure, refused_quote_rows)`` where
-    exposure carries ``equal_net_move``, ``eligible_books``,
-    ``tuesday_pick_side``, ``movement_would_be_pick_side`` (the
-    :func:`refresh_pick` decision: market side when ``|equal_net_move|`` is at
-    least 0.5, else the Tuesday side) and ``movement_flip`` (market side
-    differs from the Tuesday side), one row per input game.
+    exposure carries both arms on every row -- ``leader_median_net_move`` /
+    ``leader_books`` for the SERVED leader-median rule and ``equal_net_move`` /
+    ``eligible_books`` for the paired equal-book arm -- plus
+    ``tuesday_pick_side``, ``movement_would_be_pick_side`` (the served
+    :func:`refresh_pick` decision: market side when
+    ``|leader_median_net_move|`` is at least 0.5, else the Tuesday side),
+    ``movement_flip``, and the equal-book arm's own
+    ``equal_would_be_pick_side`` / ``equal_movement_flip``, one row per input
+    game.
     """
 
     now_ts = pd.Timestamp(now)
@@ -183,6 +200,8 @@ def late_week_follow_frame(
             tuesday_pick_side=pd.Series(dtype=str),
             movement_would_be_pick_side=pd.Series(dtype=str),
             movement_flip=pd.Series(dtype=bool),
+            equal_would_be_pick_side=pd.Series(dtype=str),
+            equal_movement_flip=pd.Series(dtype=bool),
         ), refused
     sides = tuesday_pick_side.astype(str)
     if sides.isna().any() or not sides.isin(["HOME", "AWAY"]).all():
@@ -191,7 +210,13 @@ def late_week_follow_frame(
     if unmapped:
         raise DataContractError("Tuesday card is missing games in the refresh plan")
     exposure["tuesday_pick_side"] = exposure.game_id.astype(str).map(sides)
-    home = refresh_pick(exposure.tuesday_pick_side.eq("HOME"), exposure.equal_net_move)
-    exposure["movement_would_be_pick_side"] = home.map({True: "HOME", False: "AWAY"})
+    tuesday_home = exposure.tuesday_pick_side.eq("HOME")
+    served = refresh_pick(tuesday_home, exposure.leader_median_net_move)
+    exposure["movement_would_be_pick_side"] = served.map({True: "HOME", False: "AWAY"})
     exposure["movement_flip"] = exposure.movement_would_be_pick_side.ne(exposure.tuesday_pick_side)
+    equal = refresh_pick(tuesday_home, exposure.equal_net_move)
+    exposure["equal_would_be_pick_side"] = equal.map({True: "HOME", False: "AWAY"})
+    exposure["equal_movement_flip"] = exposure.equal_would_be_pick_side.ne(
+        exposure.tuesday_pick_side
+    )
     return exposure, refused

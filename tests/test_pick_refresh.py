@@ -16,7 +16,7 @@ from nfl_ats.lines import apply_external_lines
 from nfl_ats.market_data import QUOTE_COLUMNS
 from nfl_ats.outcomes import fit_margin_models_for_week
 from nfl_ats.pick_refresh import (
-    LATE_WEEK_MOVE_FOLLOW_POLICY,
+    LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
     LATE_WEEK_REFRESH_END,
     LATE_WEEK_REFRESH_START,
     MOVEMENT_POLICY_MODEL_ONLY,
@@ -1643,13 +1643,13 @@ def test_late_week_follow_governs_the_served_pick(
     plan = _late_week_plan(artifacts_root, data_root, features_path)
     game = plan.games[0]
     assert game.model_only_pick_side == model_only_side
-    assert game.movement_policy == LATE_WEEK_MOVE_FOLLOW_POLICY
+    assert game.movement_policy == LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
     assert game.new_pick_side == expected_side != model_only_side
     assert game.movement_delta == pytest.approx(move)
     assert game.movement_pick_side == expected_side
     assert game.late_week_net_move == pytest.approx(move)
     assert game.late_week_pick_side == expected_side
-    assert game.late_week_eligible_books == 2
+    assert game.late_week_eligible_books == 1
     assert game.consensus_delta == pytest.approx(move)
     assert game.consensus_pick_side == expected_side
     assert plan.late_week_metadata["available"] is True
@@ -1678,7 +1678,7 @@ def test_late_week_follow_keeps_the_model_pick_below_threshold(
     assert game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
     assert game.new_pick_side == model_only_side
     assert game.late_week_net_move == pytest.approx(move)
-    assert game.late_week_eligible_books == 2
+    assert game.late_week_eligible_books == 1
     assert plan.late_week_metadata["available"] is True
     assert plan.late_week_metadata["games_followed"] == 0
 
@@ -1712,7 +1712,7 @@ def test_late_week_follow_takes_precedence_over_the_consensus_arm(
     )
     plan = _late_week_plan(artifacts_root, data_root, features_path)
     game = plan.games[0]
-    assert game.movement_policy == LATE_WEEK_MOVE_FOLLOW_POLICY
+    assert game.movement_policy == LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
     assert game.new_pick_side == late_side
     assert game.consensus_pick_side != late_side
     assert abs(game.consensus_delta or 0.0) >= MOVEMENT_POLICY_THRESHOLD
@@ -1738,7 +1738,7 @@ def test_late_week_served_pick_matches_the_paired_challenger_module(
     )
     plan = _late_week_plan(artifacts_root, data_root, features_path)
     game = plan.games[0]
-    assert game.movement_policy == LATE_WEEK_MOVE_FOLLOW_POLICY
+    assert game.movement_policy == LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
     rows, _ = movement.build_late_week_move_follow_refresh_rows(
         plan,
         original=original_card(artifacts_root, season=LATE_WEEK_SEASON, week=LATE_WEEK_WEEK),
@@ -1786,16 +1786,16 @@ def test_late_week_summary_ledger_and_card_carry_the_new_arm(
     )
     assert result["ledger"]["recorded"] == 1
     row = load_pick_revisions(artifacts_root).iloc[0]
-    assert row["movement_policy"] == LATE_WEEK_MOVE_FOLLOW_POLICY
+    assert row["movement_policy"] == LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
     assert row["late_week_net_move"] == pytest.approx(move)
-    assert row["late_week_eligible_books"] == 2
+    assert row["late_week_eligible_books"] == 1
     assert row["consensus_delta"] == pytest.approx(move)
 
     card = artifacts_root / "card.md"
     card.write_text("# Card\n", encoding="utf-8")
     append_refresh_to_card(card, plan, note="wednesday_pass")
     text = card.read_text(encoding="utf-8")
-    assert LATE_WEEK_MOVE_FOLLOW_POLICY in text
+    assert LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY in text
 
 
 def test_late_week_arm_unavailable_without_a_live_archive(

@@ -137,7 +137,7 @@ def test_equal_books_not_capture_frequency():
     q = pd.concat([q, q.iloc[[1]]], ignore_index=True)
     rows, _ = _build(q)
     assert rows.iloc[0].equal_net_move == 0
-    assert rows.iloc[0].movement_would_be_pick_side == "AWAY"
+    assert rows.iloc[0].equal_would_be_pick_side == "AWAY"
 
 
 @pytest.mark.parametrize(

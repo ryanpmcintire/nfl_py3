@@ -3,6 +3,9 @@
 Reuse the CX18 Wednesday-Saturday increments and twelve-book universe exactly.
 Sunday refreshes consume Saturday evidence; Sunday moves are outside this rule.
 Only live captures are prospective inputs, never historical backfills.
+Since 2026-09-09 the SERVED arm is the leading books' median move
+(``late_week_leader_median_follow_v1``) and this ledger's own challenger id
+records the equal-book arm it replaced; both are on every row.
 """
 
 from __future__ import annotations
@@ -23,6 +26,7 @@ from nfl_ats.pick_refresh import RefreshResult, original_card, sunday_pick_lock
 from nfl_ats.sharp_book_movement_features import late_week_follow_frame
 
 CHALLENGER_ID = "late_week_move_follow_refresh_v1"
+SERVED_CHALLENGER_ID = "late_week_leader_median_follow_v1"
 LEDGER_NAME = "late_week_move_follow_refresh_decisions.parquet"
 
 
@@ -87,16 +91,17 @@ def build_late_week_move_follow_refresh_rows(
         {game.game_id: game.away_team for game in plan.games}
     )
     exposure["explanation"] = [
-        "Keep Tuesday's pick because no late-week book changes are available."
+        "Keep Tuesday's pick because the leading books did not move the line."
         if books == 0
-        else "Follow the late-week line move toward the other team."
+        else "The leading books moved the line late; follow it to the other team."
         if flip
-        else "Keep Tuesday's pick; the line move does not call for a switch."
-        for books, flip in zip(exposure.eligible_books, exposure.movement_flip, strict=True)
+        else "Keep Tuesday's pick; the leading books' move does not call for a switch."
+        for books, flip in zip(exposure.leader_books, exposure.movement_flip, strict=True)
     ]
     exposure["revision_recorded_at_utc"] = now
     exposure["refresh_run_id"] = plan.refresh_run_id
     exposure["challenger_id"] = CHALLENGER_ID
+    exposure["served_challenger_id"] = SERVED_CHALLENGER_ID
     exposure["season"] = plan.season
     exposure["week"] = plan.week
     exposure["model_id"] = plan.model_id
@@ -105,6 +110,7 @@ def build_late_week_move_follow_refresh_rows(
         "skipped": False,
         "games_considered": len(exposure),
         "flips": int(exposure.movement_flip.sum()),
+        "equal_book_flips": int(exposure.equal_movement_flip.sum()),
         "refused_quote_rows": refused,
     }
 
@@ -113,7 +119,11 @@ def record_late_week_move_follow_refresh_overlay(
     artifacts_root: Path, data_root: Path, plan: RefreshResult, *, record_decisions: bool = False
 ) -> dict[str, Any]:
     """Append paired arms in a separate ledger, once per game and refresh run."""
-    result: dict[str, Any] = {"challenger_id": CHALLENGER_ID, "recorded": 0}
+    result: dict[str, Any] = {
+        "challenger_id": CHALLENGER_ID,
+        "served_challenger_id": SERVED_CHALLENGER_ID,
+        "recorded": 0,
+    }
     if not record_decisions:
         return {**result, "skipped": True, "reason": "Recording was not requested."}
     original = original_card(artifacts_root, season=plan.season, week=plan.week)

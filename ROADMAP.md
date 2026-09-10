@@ -1072,6 +1072,30 @@ chances, 39 active challengers). Pushed through `3fdd73b`.**
    refresh pass before that kickoff; added `odds_wed_opener` (Wed 18:00 ET)
    and `refresh_wed` (Wed 18:15 ET, closes 19:45), both backfill-guarded.
    The scheduler daemon was restarted on the new code (44 enabled jobs).
+   **2026-09-09 (measured): the served arm is now the LEADING BOOKS' MEDIAN,
+   not the equal-book mean.** Predeclared in `docs/sharp_weighted_follow.md`
+   before any arm was computed and measured in
+   `artifacts/sharp_weighted_follow/20260909T233606Z/`: on the frozen
+   2026-09-05 baseline, 2023-2025, 799 opener-graded games, the leader-median
+   arm (S1) scores +3.004 accuracy points [-0.993, +6.953] `probability_positive`
+   0.930 against the equal-book arm's (S4) +1.752 [-0.870, +4.326] P+ 0.907;
+   head to head S1 - S4 = +1.252 [-0.990, +3.522] P+ 0.864 week-blocked,
+   [0.000, +2.256] P+ 0.982 season-blocked. Mechanism: S1's fire set almost
+   contains S4's (325 both, same side on all 325; 4 equal-only) plus 198 games
+   where the leaders cleared 0.5 and the twelve-book mean was diluted -- the
+   Tuesday card is 47.94% right on those and following the leaders makes it
+   52.06%; a fire-count-matched loose equal gate does not recover it (S1
+   +1.377, P+ 0.961). Served as
+   `LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY` / `late_week_leader_median_follow_0_5`;
+   `late_week_follow_frame` now returns BOTH arms so the equal-book rule keeps
+   recording as the paired OFF challenger under its existing
+   `late_week_move_follow_refresh_v1` id, with the served arm registered as
+   `late_week_leader_median_follow_v1`. The three `late_week_*` pick-revision
+   columns now carry the leader-median move, side and leading-book count.
+   Proven against the real data root (16 games with exposure, 1 followed:
+   `2026_01_MIA_LV`, leader median -0.5 on 3 leading books) and, on a scratch
+   artifacts copy, `--record-decisions` wrote the revision row with
+   `movement_policy=late_week_leader_median_follow_0_5`.
 2. On Tuesday 2026-09-08 run the real lock as `weekly-run --record-decisions`;
    do not create the genuine Week 1 rows early. The chain now refits and
    activates a new model id, then runs `opener-evaluation` and

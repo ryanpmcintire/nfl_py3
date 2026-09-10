@@ -781,9 +781,9 @@ CADENCE_NOTE = (
 )
 
 REFRESH_POLICY_NOTE = (
-    "Late-week refreshes can still move a pick: if lines move at least half a point "
-    "after Tuesday, the pick follows the market. Passes run Thursday, Saturday, "
-    "and Sunday morning."
+    "Late-week refreshes can still move a pick: if the three books that usually move "
+    "first shift the line half a point or more after Tuesday, the pick follows them. "
+    "Passes run Thursday, Saturday, and Sunday morning."
 )
 
 TIEBREAKER_NOT_PUBLISHED_TEXT = "Tiebreaker not published for this week."

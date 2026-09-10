@@ -102,18 +102,20 @@ and the model-only counterfactual are recorded on every ledger row
 movement pick policy" section for the full predeclaration and the evidence
 this is an EV play, not a resolved finding.
 
-Promoted late-week follow (MKT-15/CX18, owner order 2026-09-05)
---------------------------------------------------------------
-A second, separately predeclared market arm now takes precedence over the
-1.0-point rule above: the equal-book Wednesday-to-deadline net move over the
-frozen twelve-book universe follows the market at >=0.5 points
-(``LATE_WEEK_MOVE_FOLLOW_POLICY``). It runs on the live intraday archive
-only (read-only, fail-open), shares its exact computation with the paired
-``late_week_move_follow_refresh_v1`` challenger ledger (which keeps
-recording Tuesday-vs-movement sides on every pass), and every ledger row
-keeps both arms' evidence (``late_week_*`` and ``consensus_*``) beside the
-governing ``movement_policy`` and the ``model_only_pick_side``
-counterfactual. See ``docs/late_week_refresh.md``'s promotion section.
+Promoted late-week follow (MKT-15, leader median served 2026-09-09)
+------------------------------------------------------------------
+A second, separately predeclared market arm takes precedence over the
+1.0-point rule above: the MEDIAN Wednesday-to-deadline net move across the
+three leading books (``sharp_book_movement_features.LEADER_BOOKS``: Bovada,
+William Hill, MyBookie) follows the market at >=0.5 points
+(``LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY``). It runs on the live intraday
+archive only (read-only, fail-open), shares its exact computation with the
+paired equal-book arm the ``late_week_move_follow_refresh_v1`` challenger
+ledger records (one call to ``late_week_follow_frame`` returns both), and
+every ledger row keeps both arms' evidence (``late_week_*`` and
+``consensus_*``) beside the governing ``movement_policy`` and the
+``model_only_pick_side`` counterfactual. See ``docs/late_week_refresh.md``'s
+promotion section.
 """
 
 from __future__ import annotations
@@ -214,9 +216,9 @@ MOVEMENT_POLICY_THRESHOLD = 1.0
 MOVEMENT_POLICY_MOVEMENT = "movement_ge_1.0"
 MOVEMENT_POLICY_MODEL_ONLY = "model_only"
 
-LATE_WEEK_MOVE_FOLLOW_POLICY = "late_week_move_follow_0_5"
+LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY = "late_week_leader_median_follow_0_5"
 
-MOVEMENT_GOVERNED_POLICIES = (MOVEMENT_POLICY_MOVEMENT, LATE_WEEK_MOVE_FOLLOW_POLICY)
+MOVEMENT_GOVERNED_POLICIES = (MOVEMENT_POLICY_MOVEMENT, LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY)
 
 
 def _movement_side(delta: float) -> str:
@@ -679,13 +681,14 @@ def _late_week_follow_lookup(
     sunday_lock: pd.Timestamp,
     now: pd.Timestamp,
 ) -> tuple[dict[str, dict[str, Any]], dict[str, Any]]:
-    """The promoted MKT-15/CX18 follow arm's per-game evidence, fail-open.
+    """The served MKT-15 leader-median follow arm's per-game evidence, fail-open.
 
-    Runs the exact frozen rule the paired ``late_week_move_follow_refresh_v1``
-    challenger records (:func:`late_week_follow_frame`: equal-book
-    Wednesday-to-deadline net increments over the twelve-book universe,
-    0.5-point follow, Tuesday-anchored, Sunday evidence excluded) against the
-    same Tuesday card, so the served pick and the challenger ledger agree by
+    Runs :func:`late_week_follow_frame` -- the one call that returns both the
+    served leader-median arm (Wednesday-to-deadline net increments across the
+    three leading books, 0.5-point follow, Tuesday-anchored, Sunday evidence
+    excluded) and the equal-book arm the paired
+    ``late_week_move_follow_refresh_v1`` challenger records -- against the same
+    Tuesday card, so the served pick and the challenger ledger agree by
     construction. Anything missing or unusable -- no live intraday archive,
     no pre-deadline book changes, an unreadable store -- returns an empty
     lookup (the arm is unavailable and the existing consensus/model-only
@@ -738,12 +741,13 @@ def _late_week_follow_lookup(
         return _unavailable("No pre-deadline late-week book changes are available.", refused)
     lookup: dict[str, dict[str, Any]] = {}
     for row in exposure.itertuples():
-        net_move = float(cast(Any, row.equal_net_move))
-        eligible_books = int(cast(Any, row.eligible_books))
         lookup[str(row.game_id)] = {
-            "net_move": net_move,
+            "net_move": float(cast(Any, row.leader_median_net_move)),
             "pick_side": str(row.movement_would_be_pick_side),
-            "eligible_books": eligible_books,
+            "eligible_books": int(cast(Any, row.leader_books)),
+            "equal_net_move": float(cast(Any, row.equal_net_move)),
+            "equal_pick_side": str(row.equal_would_be_pick_side),
+            "equal_eligible_books": int(cast(Any, row.eligible_books)),
         }
     followed = sum(
         1
@@ -757,6 +761,19 @@ def _late_week_follow_lookup(
         "games_with_exposure": int(exposure.eligible_books.gt(0).sum()),
         "games_followed": followed,
         "refused_quote_rows": refused,
+        "games": [
+            {
+                "game_id": game_id,
+                "leader_median_net_move": value["net_move"],
+                "leader_books": value["eligible_books"],
+                "leader_pick_side": value["pick_side"],
+                "equal_net_move": value["equal_net_move"],
+                "eligible_books": value["equal_eligible_books"],
+                "equal_pick_side": value["equal_pick_side"],
+            }
+            for game_id, value in lookup.items()
+            if cast(int, value["equal_eligible_books"]) > 0
+        ],
     }
 
 
@@ -986,7 +1003,7 @@ def plan_refresh(
                     and abs(late_week_net) >= LATE_WEEK_FOLLOW_THRESHOLD
                 )
             if late_week_fires:
-                policy = LATE_WEEK_MOVE_FOLLOW_POLICY
+                policy = LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
                 new_side = late_week_side
                 movement_delta = late_week_net
                 movement_pick_side = late_week_side
@@ -1123,10 +1140,11 @@ def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str,
                 "games_with_exposure": plan.late_week_metadata.get("games_with_exposure", 0),
                 "games_followed": plan.late_week_metadata.get("games_followed", 0),
                 "refused_quote_rows": plan.late_week_metadata.get("refused_quote_rows", 0),
+                "games": plan.late_week_metadata.get("games", []),
                 "games_late_week_follow_applied": [
                     game.game_id
                     for game in plan.games
-                    if game.movement_policy == LATE_WEEK_MOVE_FOLLOW_POLICY
+                    if game.movement_policy == LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY
                 ],
             },
         },
@@ -1369,8 +1387,9 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
         f"{len(changed)} pick{plural} changed since the Tuesday card{label}, recomputed with "
         "current data but scored at the frozen Tuesday grading line. Only games whose "
         "deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not "
-        'yet passed were eligible. "Policy" is `late_week_move_follow_0_5` when late-week '
-        "lines moved at least half a point since Tuesday and the pick followed the market, "
+        'yet passed were eligible. "Policy" is `late_week_leader_median_follow_0_5` when the '
+        "three leading books moved the line at least half a point since Tuesday and the pick "
+        "followed them, "
         "`movement_ge_1.0` when the pool's own captured line instead moved >=1.0 point and "
         "the pick followed it, or `model_only` when neither market arm fired (or no market "
         "evidence was available) -- see docs/late_week_refresh.md's movement-policy "
