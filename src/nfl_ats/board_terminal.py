@@ -2129,7 +2129,7 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
     )
     best = '<span class="best-flag">Best pick</span>' if row.best_pick else ""
     confidence = f"{row.confidence:.1%}" if row.confidence is not None else "--"
-    line = f"{row.decision_home_spread:+g}" if row.decision_home_spread is not None else "--"
+    line = row.pick_line_text
     model_id = f"<code>{escape(row.model_id[:8])}</code>" if row.model_id else "--"
     row_class = "game is-best" if row.best_pick else "game"
     return (
@@ -2137,7 +2137,7 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
         f'<td data-label="Season / week">{escape(season_week)}</td>'
         f'<td data-label="Matchup">{escape(row.away_team)} at '
         f"<b>{escape(row.home_team)}</b></td>"
-        f'<td data-label="Pick"><b>{escape(row.pick_side)}</b> {escape(line)} {best}</td>'
+        f'<td data-label="Pick"><b>{escape(row.pick_team)}</b> {escape(line)} {best}</td>'
         f'<td data-label="Confidence" class="prob">{confidence}</td>'
         f'<td data-label="Outcome">{_history_status_html(row)}</td>'
         f'<td data-label="Model id"><span class="mono-id">{model_id}</span></td>'

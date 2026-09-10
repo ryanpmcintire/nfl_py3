@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T04:36:55.378256+00:00`
+Refreshed at: `2026-09-10T11:08:59.436303+00:00`
 
 ## Start here
 
@@ -20,12 +20,22 @@ Refreshed at: `2026-09-10T04:36:55.378256+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1c8be11175e1` — Late-week follow: half a point is enough on spreads of 10.5 or more (+0.25 over flat 1.0, P+ 0.79 / 0.98 season; on a spread that big even half a point from the books that move first is a signal); flat-1.0 arm recorded as the OFF challenger; served week-rules headline 58.2%
-- Pending change set: 4 paths
+- Baseline commit: `92227fe287e8` — Reduced model at 10.5+: a walk-forward family pair is +0.13 through the card (P+ 0.70) but its chosen pair leans on the least reliable block; the sharper finding is that the served 90-column model's own prediction stream has zero split-half reliability (-0.02 overall, -0.14 at 10.5+) while results+elo alone is +0.50
+- Pending change set: 14 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
-  - `A  docs/big_spread_reduced_model.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
   - `M  registry/weak_signals.json`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_site_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `A  src/nfl_ats/published_picks.py`
+  - `M  src/nfl_ats/publishing.py`
+  - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -45,7 +55,7 @@ The 52.29% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T03:25:51.677864+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T10:56:11.432360+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

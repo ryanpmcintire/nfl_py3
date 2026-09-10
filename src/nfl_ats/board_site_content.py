@@ -95,6 +95,7 @@ from nfl_ats.public_board import (
     load_prospective_challengers,
     load_public_board_artifacts,
 )
+from nfl_ats.published_picks import FrozenPick, frozen_picks
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.signal_ledger import build_ledger_rows
 from nfl_ats.weak_signals import default_registry_path
@@ -319,6 +320,21 @@ class HistoryPickRow:
     status: str
     correct: bool | None
     score_text: str | None
+
+    @property
+    def pick_team(self) -> str:
+        if self.pick_side == "HOME":
+            return self.home_team
+        if self.pick_side == "AWAY":
+            return self.away_team
+        return self.pick_side
+
+    @property
+    def pick_line_text(self) -> str:
+        if self.decision_home_spread is None:
+            return "--"
+        line = -self.decision_home_spread if self.pick_side == "HOME" else self.decision_home_spread
+        return "PK" if line == 0.0 else f"{line:+g}"
 
 
 @dataclass(frozen=True)
@@ -1000,6 +1016,18 @@ def _history_forecast_probability(artifacts_root: Path, row: Mapping[Any, Any]) 
         path = candidate if candidate.suffix == ".csv" else candidate / "predictions.csv"
         if not path.is_file():
             continue
+        card_path = path.parent / "pool_card.csv"
+        if card_path.is_file():
+            try:
+                card = pd.read_csv(card_path, usecols=["game_id", "pool_side", "pick_probability"])
+            except (OSError, ValueError):
+                card = pd.DataFrame()
+            if not card.empty:
+                hit = card.loc[card["game_id"].astype(str).eq(str(row.get("game_id")))]
+                if not hit.empty and str(hit.iloc[0]["pool_side"]) == pick_side:
+                    picked = _number(hit.iloc[0]["pick_probability"])
+                    if picked is not None and 0.0 <= picked <= 1.0:
+                        return picked
         try:
             table = pd.read_csv(
                 path,
@@ -1037,12 +1065,25 @@ def _history_score_text(outcomes: pd.DataFrame, game_id: str) -> str | None:
     return f"{int(away_score)} at {int(home_score)}"
 
 
+def _frozen_confidence(frozen: Mapping[str, FrozenPick], row: pd.Series) -> float | None:
+    pick = frozen.get(str(row.get("game_id")))
+    if pick is None:
+        return None
+    team = row.get("home_team") if str(row.get("pick_side")) == "HOME" else row.get("away_team")
+    return pick.displayed_score if pick.pick_team == str(team) else None
+
+
 def _history_pick_rows(
-    artifacts_root: Path, decisions: pd.DataFrame, outcomes: pd.DataFrame
+    artifacts_root: Path,
+    decisions: pd.DataFrame,
+    outcomes: pd.DataFrame,
+    *,
+    now: datetime | None = None,
 ) -> tuple[HistoryPickRow, ...]:
     if decisions.empty:
         return ()
     settled = settle_prospective_picks(decisions, outcomes)
+    frozen = frozen_picks(artifacts_root, now=now or datetime.now(UTC), include_open=True)
     rows: list[HistoryPickRow] = []
     for _, row in settled.iterrows():
         status = str(row.get(f"status_at_{DECISION_GRADE}") or "pending")
@@ -1062,7 +1103,11 @@ def _history_pick_rows(
                 home_team=str(row.get("home_team") or "--"),
                 pick_side=str(row.get("pick_side") or "--"),
                 decision_home_spread=_number(row.get("decision_home_spread")),
-                confidence=_history_forecast_probability(artifacts_root, row.to_dict()),
+                confidence=(
+                    frozen_score
+                    if (frozen_score := _frozen_confidence(frozen, row)) is not None
+                    else _history_forecast_probability(artifacts_root, row.to_dict())
+                ),
                 model_id=(str(row.get("model_id")) if row.get("model_id") is not None else None),
                 best_pick=bool(row.get("is_best_pick", False)),
                 status=status,
@@ -1495,9 +1540,9 @@ def _load_history_page_content(
         primary_error = str(error) or "primary paper ledger unavailable"
     else:
         primary_available = not primary.empty
-    outcomes = _load_game_outcomes(data_root)
+    outcomes = _load_game_outcomes(data_root, artifacts_root)
     try:
-        picks = _history_pick_rows(artifacts_root, primary, outcomes)
+        picks = _history_pick_rows(artifacts_root, primary, outcomes, now=generated_at)
     except (ValueError, OSError) as error:
         picks = ()
         primary_error = primary_error or str(error) or "primary ledger could not be settled"

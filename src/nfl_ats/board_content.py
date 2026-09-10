@@ -132,6 +132,7 @@ from nfl_ats.public_board import (
     pick_side,
     spread_words,
 )
+from nfl_ats.published_picks import frozen_picks, game_deadlines, record_published_picks
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.retired_four_member_union import INCUMBENT_CHALLENGER_ID
 from nfl_ats.settlement import results_artifact_path
@@ -2074,11 +2075,7 @@ def _build_prospective_scoreboard(
     which does not happen until the first Tuesday lock
     (``docs/prospective_evidence.md``)."""
 
-    played = (
-        paper_decisions.loc[paper_decisions["decision_policy_id"].astype(str).eq(POLICY_ID)]
-        if "decision_policy_id" in paper_decisions.columns
-        else paper_decisions.iloc[0:0]
-    )
+    played = paper_decisions
     prior = (
         challenger_decisions.loc[
             challenger_decisions["challenger_id"].astype(str).eq(INCUMBENT_CHALLENGER_ID)
@@ -3159,13 +3156,46 @@ def load_board_content(
 
     games: list[GameRow] = []
     week_sunday_lock = _week_sunday_lock(ordered)
+    deadlines = game_deadlines(ordered)
+    season_number = _number(artifacts.metadata.get("season"))
+    week_number = _number(artifacts.metadata.get("week"))
+    frozen = frozen_picks(
+        artifacts_root,
+        now=generated,
+        season=int(season_number) if season_number is not None else None,
+        week=int(week_number) if week_number is not None else None,
+    )
+    published_rows: list[dict[str, Any]] = []
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         team, probability = pick_side(row)
+        word = confidence_word(probability, strength_bands)
         lock_label, locks_before_kickoff = pick_lock_label(row.get("kickoff"), week_sunday_lock)
         home_team = str(row["home_team"])
         away_team = str(row["away_team"])
         market_spread = float(row["spread_line"])
+        frozen_pick = frozen.get(game_id)
+        if frozen_pick is not None:
+            team = frozen_pick.pick_team
+            probability = frozen_pick.displayed_score
+            word = frozen_pick.strength_word
+            market_spread = frozen_pick.market_spread
+        elif game_id in deadlines:
+            published_rows.append(
+                {
+                    "season": artifacts.metadata.get("season"),
+                    "week": artifacts.metadata.get("week"),
+                    "game_id": game_id,
+                    "away_team": away_team,
+                    "home_team": home_team,
+                    "kickoff": pd.Timestamp(str(row.get("kickoff"))),
+                    "pick_deadline_utc": deadlines[game_id],
+                    "pick_team": team,
+                    "market_spread": market_spread,
+                    "displayed_score": probability,
+                    "strength_word": word,
+                }
+            )
         result, home_score, away_score = outcome_by_game_id.get(game_id, (None, None, None))
         flip_line_value, flip_held_value, flip_reason_value = _flip_line(
             game_id,
@@ -3195,7 +3225,7 @@ def load_board_content(
                 market_spread=market_spread,
                 pick_team=team,
                 pick_probability=probability,
-                confidence_word=confidence_word(probability, strength_bands),
+                confidence_word=word,
                 is_best=best_pick_id is not None and game_id == best_pick_id,
                 is_flipped=game_id in flipped_game_ids,
                 flip_member_labels=_flip_member_labels(view, game_id),
@@ -3210,6 +3240,9 @@ def load_board_content(
                 explanation_text=pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
             )
         )
+
+    if require_fresh_arrest_overlay and published_rows:
+        record_published_picks(artifacts_root, published_rows, published_at=generated)
 
     strong_count = sum(1 for game in games if game.confidence_word == "strong")
     policy, flip_count = _build_policy_note(view, strong_count, len(games))

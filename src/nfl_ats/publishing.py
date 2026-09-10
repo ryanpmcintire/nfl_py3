@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, cast
@@ -59,6 +60,7 @@ from nfl_ats.player_arrests_back_side_overlay import (
     arrest_overlay_disclosure_note,
 )
 from nfl_ats.public_board import humanize_identifier, load_waterfall_feed
+from nfl_ats.published_picks import FrozenPick, frozen_picks
 from nfl_ats.readme_state import apply_generated_state_blocks
 from nfl_ats.source_freshness_policy import (
     BLOCKED as SOURCE_STATE_BLOCKED,
@@ -88,7 +90,11 @@ def _line(value: float) -> str:
     return "PK" if value == 0.0 else f"{value:+g}"
 
 
-def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) -> pd.DataFrame:
+def _published_card(
+    predictions: pd.DataFrame,
+    best_pick_id: str | None = None,
+    frozen: Mapping[str, FrozenPick] | None = None,
+) -> pd.DataFrame:
     required = {
         "game_id",
         "gameday",
@@ -114,6 +120,15 @@ def _published_card(predictions: pd.DataFrame, best_pick_id: str | None = None) 
         if DISPLAYED_PICK_PROBABILITY_COLUMN in card
         else stated
     )
+    for game_id, pick in (frozen or {}).items():
+        mask = card["game_id"].astype(str).eq(game_id)
+        if not mask.any():
+            continue
+        frozen_home = card.loc[mask, "home_team"].eq(pick.pick_team)
+        line = (-pick.market_spread) if bool(frozen_home.iloc[0]) else pick.market_spread
+        prefix = BEST_PICK_MARK if best_pick_id == game_id else ""
+        card.loc[mask, "ATS prediction"] = f"{prefix}{pick.pick_team} {_line(line)}"
+        card.loc[mask, "Decision score"] = pick.displayed_score
     card["Matchup"] = card["away_team"] + " at " + card["home_team"]
     card["_gameday"] = pd.to_datetime(card["gameday"], errors="raise")
     card["Date"] = card["_gameday"].dt.strftime("%a, %b %d")
@@ -195,7 +210,16 @@ def _publication_context(
         week=int(metadata["week"]),
     )
     served = attach_displayed_confidence(view.predictions, displayed_confidence)
-    card = _published_card(served, view.nomination.active_game_id)
+    card = _published_card(
+        served,
+        view.nomination.active_game_id,
+        frozen_picks(
+            artifacts_root,
+            now=published_at or datetime.now(UTC),
+            season=int(metadata["season"]),
+            week=int(metadata["week"]),
+        ),
+    )
     return (
         active,
         metadata,

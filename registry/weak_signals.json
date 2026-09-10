@@ -10553,6 +10553,2834 @@
       "source": "docs/ecdf_smoothing.md",
       "standard_error": null
     },
+    "edge_reproducibility_control_market_move_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "following the opener-to-close move (10p5_plus), opener grade, paired accuracy points on the archive",
+      "effect": 12.962963,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        3.809524,
+        22.680412
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.99665,
+      "recorded_at": "2026-09-10",
+      "reliability": 1.0,
+      "sample_blocks": 68,
+      "sample_games": 108,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.810683
+    },
+    "edge_reproducibility_control_market_move_all_lines_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "following the opener-to-close move (all_lines), opener grade, paired accuracy points on the archive",
+      "effect": 0.441306,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -3.262859,
+        4.192685
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.588725,
+      "recorded_at": "2026-09-10",
+      "reliability": 1.0,
+      "sample_blocks": 107,
+      "sample_games": 1133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.902053
+    },
+    "edge_reproducibility_control_market_move_vs_market_10p5_plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "control market move vs market 10p5 plus: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 12.962963,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        3.703704,
+        22.173913
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.996725,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 68,
+      "sample_games": 108,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.724562
+    },
+    "edge_reproducibility_control_market_move_vs_market_all_lines_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "control market move vs market all lines: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 5.075022,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        2.2648,
+        7.885466
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.42323
+    },
+    "edge_reproducibility_control_results_elo_accuracy_vs_market_r1_nan_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "control results elo accuracy vs market for the eight-column results+elo ridge half copy nan, 10p5_plus",
+      "effect": -1.538462,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -9.482759,
+        6.557377
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.348675,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.057109
+    },
+    "edge_reproducibility_control_results_elo_accuracy_vs_market_r1_nan_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "control results elo accuracy vs market for the eight-column results+elo ridge half copy nan, all_lines",
+      "effect": 2.827678,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.0,
+        5.629591
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.975125,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.426575
+    },
+    "edge_reproducibility_half_copy_accuracy_vs_market_r0_a_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy accuracy vs market for the served 90-column weak_stack ridge half copy a, 10p5_plus",
+      "effect": 4.615385,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -3.90625,
+        12.809917
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.8587,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.281596
+    },
+    "edge_reproducibility_half_copy_accuracy_vs_market_r0_a_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy accuracy vs market for the served 90-column weak_stack ridge half copy a, all_lines",
+      "effect": 2.295409,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.554523,
+        5.085894
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.945,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.440883
+    },
+    "edge_reproducibility_half_copy_accuracy_vs_market_r0_b_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy accuracy vs market for the served 90-column weak_stack ridge half copy b, 10p5_plus",
+      "effect": -5.384615,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -13.910391,
+        3.030303
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.100925,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.316137
+    },
+    "edge_reproducibility_half_copy_accuracy_vs_market_r0_b_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy accuracy vs market for the served 90-column weak_stack ridge half copy b, all_lines",
+      "effect": 2.49501,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.066403,
+        5.087015
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.972,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.312719
+    },
+    "edge_reproducibility_half_copy_accuracy_vs_market_r1_a_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy accuracy vs market for the eight-column results+elo ridge half copy a, 10p5_plus",
+      "effect": 5.384615,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -2.941176,
+        13.571429
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.89935,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.206329
+    },
+    "edge_reproducibility_half_copy_accuracy_vs_market_r1_a_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy accuracy vs market for the eight-column results+elo ridge half copy a, all_lines",
+      "effect": 1.829674,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.832193,
+        4.460719
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.9147,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.353195
+    },
+    "edge_reproducibility_half_copy_accuracy_vs_market_r1_b_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy accuracy vs market for the eight-column results+elo ridge half copy b, 10p5_plus",
+      "effect": 0.769231,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -7.364659,
+        8.955224
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.571825,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.169006
+    },
+    "edge_reproducibility_half_copy_accuracy_vs_market_r1_b_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy accuracy vs market for the eight-column results+elo ridge half copy b, all_lines",
+      "effect": 2.095808,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.567083,
+        4.828356
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.93485,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.377931
+    },
+    "edge_reproducibility_half_copy_vs_full_model_r0_a_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy vs full model for the served 90-column weak_stack ridge half copy a, 10p5_plus",
+      "effect": 6.923077,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -1.459854,
+        15.108367
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.951025,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.182164
+    },
+    "edge_reproducibility_half_copy_vs_full_model_r0_a_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy vs full model for the served 90-column weak_stack ridge half copy a, all_lines",
+      "effect": -2.262142,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -4.812834,
+        0.266152
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.040025,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.292373
+    },
+    "edge_reproducibility_half_copy_vs_full_model_r0_b_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy vs full model for the served 90-column weak_stack ridge half copy b, 10p5_plus",
+      "effect": -3.076923,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -10.9375,
+        4.511278
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.2138,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 3.947426
+    },
+    "edge_reproducibility_half_copy_vs_full_model_r0_b_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy vs full model for the served 90-column weak_stack ridge half copy b, all_lines",
+      "effect": -2.062542,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -4.464917,
+        0.333117
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.0457,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.217557
+    },
+    "edge_reproducibility_half_copy_vs_full_model_r1_a_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy vs full model for the eight-column results+elo ridge half copy a, 10p5_plus",
+      "effect": 7.692308,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -2.290076,
+        17.647059
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.937725,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 5.036717
+    },
+    "edge_reproducibility_half_copy_vs_full_model_r1_a_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy vs full model for the eight-column results+elo ridge half copy a, all_lines",
+      "effect": -2.727878,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -5.595799,
+        0.198547
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.0336,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.472873
+    },
+    "edge_reproducibility_half_copy_vs_full_model_r1_b_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy vs full model for the eight-column results+elo ridge half copy b, 10p5_plus",
+      "effect": 3.076923,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -5.084746,
+        11.666667
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.7618,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 77,
+      "sample_games": 130,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 4.26832
+    },
+    "edge_reproducibility_half_copy_vs_full_model_r1_b_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "half copy vs full model for the eight-column results+elo ridge half copy b, all_lines",
+      "effect": -2.461743,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -5.256065,
+        0.34132
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How often a model trained on only half the past games still picks the winning side, against the coin flip a forced pick starts from.",
+      "probability_positive": 0.0438,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5044,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.437697
+    },
+    "edge_reproducibility_ladder_L1_raw_residual_sign_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "raw residual sign, opener grade, paired accuracy points on the archive",
+      "effect": 2.960745,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.489844,
+        5.459974
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.9902,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.259308
+    },
+    "edge_reproducibility_ladder_L2_plus_residual_median_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "raw sign + weekly median, opener grade, paired accuracy points on the archive",
+      "effect": 3.958749,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        1.329787,
+        6.582512
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.997875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.2958,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.34516
+    },
+    "edge_reproducibility_ladder_L3_served_model_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served model standalone, opener grade, paired accuracy points on the archive",
+      "effect": 4.557552,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        1.938477,
+        7.181029
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.99935,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9855,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.339889
+    },
+    "edge_reproducibility_ladder_L4_served_card_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served card, opener grade, paired accuracy points on the archive",
+      "effect": 6.886228,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        4.332236,
+        9.389516
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.4816,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.300457
+    },
+    "edge_reproducibility_member_flip_reliability_bye_edge_fade_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the bye_edge_fade flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.510019,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.40965,
+        0.604195
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.510019,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_coach_fade_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the coach_fade flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.495172,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.398222,
+        0.588988
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.495172,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_division_revenge_tilt_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the division_revenge_tilt flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.555902,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.463649,
+        0.642448
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.555902,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_forecast_cold_visitor_tilt_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the forecast_cold_visitor_tilt flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.371172,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.23099,
+        0.502966
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.371172,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_interim_hc_first_game_tilt_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the interim_hc_first_game_tilt flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.720462,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.36261,
+        0.942501
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 0.9915,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.720462,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_or_union_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the OR_UNION flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.481621,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.431443,
+        0.532182
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.481621,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_pbp08_protection_mismatch_tilt_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the pbp08_protection_mismatch_tilt flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.452299,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.381432,
+        0.52511
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.452299,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_player_arrests_back_side_policy_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the player_arrests_back_side_policy flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.507415,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.344278,
+        0.648615
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.507415,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_precip_high_total_tilt_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the precip_high_total_tilt flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.805396,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.629522,
+        0.942186
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.805396,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_member_flip_reliability_tank_zone_fade_tilt_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "Split-half reliability of the tank_zone_fade_tilt flip set: the same member recomputed on two half-trained copies of the served model, correlated game by game",
+      "effect": 0.448603,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.266547,
+        0.614543
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "If the model had been trained on a different half of the past games, how many of the same games would this rule still have flipped?",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.448603,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_piece_follow_p0_2023_2025_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served follow at 0.5 (P0) against the nine-member card with no follow, opener grade, paired accuracy points on the archive",
+      "effect": -0.750939,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -4.171779,
+        2.753442
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.3315,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.761328
+    },
+    "edge_reproducibility_piece_follow_p1_2023_2025_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "all nine members protected (P1) against the nine-member card with no follow, opener grade, paired accuracy points on the archive",
+      "effect": -0.625782,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -3.865457,
+        2.64492
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.35485,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.656423
+    },
+    "edge_reproducibility_piece_follow_p2_2023_2025_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "three original members protected (P2) against the nine-member card with no follow, opener grade, paired accuracy points on the archive",
+      "effect": -1.376721,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -4.477751,
+        1.750055
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.1908,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.587927
+    },
+    "edge_reproducibility_piece_follow_p3_2023_2025_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "protected below 1.0, market wins at 1.0 (P3) against the nine-member card with no follow, opener grade, paired accuracy points on the archive",
+      "effect": 0.250313,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -3.206018,
+        3.797468
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.557225,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.787868
+    },
+    "edge_reproducibility_piece_home_side_push_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "S3 home-side push, opener grade, paired accuracy points on the archive",
+      "effect": 0.598802,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.265781,
+        1.494477
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.9093,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.9855,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.451722
+    },
+    "edge_reproducibility_piece_key_line_read_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "discrete key-number lattice through the card, opener grade, paired accuracy points on the archive",
+      "effect": -1.330672,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -3.47769,
+        0.794176
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.1129,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.4816,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.101119
+    },
+    "edge_reproducibility_piece_key_line_read_standalone_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Both the week-blocked and the season-blocked 95% interval sit entirely below zero, week [-5.9180, -0.2697], season [-5.2869, -0.6930]. This resolves the SIGN of this specific arm and nothing wider.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "discrete key-number lattice on the served model, opener grade, paired accuracy points on the archive",
+      "effect": -3.127079,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -5.918033,
+        -0.269714
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.0151,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.442681
+    },
+    "edge_reproducibility_piece_member_bye_edge_fade_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "bye_edge_fade (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.598802,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.522884,
+        1.724138
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.851825,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.510019,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.565156
+    },
+    "edge_reproducibility_piece_member_bye_edge_fade_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "bye_edge_fade (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": 0.133067,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.724638,
+        0.993377
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.617825,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.510019,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.430855
+    },
+    "edge_reproducibility_piece_member_coach_fade_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "coach_fade (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.399202,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.922266,
+        1.71504
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.72535,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.495172,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.66713
+    },
+    "edge_reproducibility_piece_member_coach_fade_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "coach_fade (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": -0.199601,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -1.274334,
+        0.863214
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.359275,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.495172,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.546273
+    },
+    "edge_reproducibility_piece_member_division_revenge_tilt_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "division_revenge_tilt (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.73187,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.785867,
+        2.191235
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.835875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.555902,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.75365
+    },
+    "edge_reproducibility_piece_member_division_revenge_tilt_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "division_revenge_tilt (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": 0.266134,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -1.043705,
+        1.472582
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.668725,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.555902,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.637695
+    },
+    "edge_reproducibility_piece_member_forecast_cold_visitor_tilt_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "forecast_cold_visitor_tilt (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.73187,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.266489,
+        1.744996
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.92645,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.371172,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.514856
+    },
+    "edge_reproducibility_piece_member_forecast_cold_visitor_tilt_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "forecast_cold_visitor_tilt (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": 0.199601,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.592135,
+        0.996016
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.694125,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.371172,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.400681
+    },
+    "edge_reproducibility_piece_member_interim_hc_first_game_tilt_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "interim_hc_first_game_tilt (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.133067,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.197762,
+        0.466667
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.789125,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.720462,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.163302
+    },
+    "edge_reproducibility_piece_member_interim_hc_first_game_tilt_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "interim_hc_first_game_tilt (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": 0.133067,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.0,
+        0.335796
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.932625,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.720462,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.094176
+    },
+    "edge_reproducibility_piece_member_pbp08_protection_mismatch_tilt_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "pbp08_protection_mismatch_tilt (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.665336,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.469177,
+        1.761518
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.87615,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.452299,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.573841
+    },
+    "edge_reproducibility_piece_member_pbp08_protection_mismatch_tilt_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "pbp08_protection_mismatch_tilt (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": 0.133067,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.937725,
+        1.199201
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.597325,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.452299,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.547591
+    },
+    "edge_reproducibility_piece_member_player_arrests_back_side_policy_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "player_arrests_back_side_policy (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.465735,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.200267,
+        1.133333
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.9107,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.507415,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.342703
+    },
+    "edge_reproducibility_piece_member_player_arrests_back_side_policy_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "player_arrests_back_side_policy (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": 0.266134,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.201481,
+        0.737265
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.85835,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.507415,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.246162
+    },
+    "edge_reproducibility_piece_member_precip_high_total_tilt_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "precip_high_total_tilt (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.199601,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.330688,
+        0.748834
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.761175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.805396,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.274856
+    },
+    "edge_reproducibility_piece_member_precip_high_total_tilt_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "precip_high_total_tilt (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": -0.066534,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.402955,
+        0.267917
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.357975,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.805396,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.176544
+    },
+    "edge_reproducibility_piece_member_tank_zone_fade_tilt_add_one_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tank_zone_fade_tilt (alone on the served model), opener grade, paired accuracy points on the archive",
+      "effect": 0.066534,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.339449,
+        0.526316
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.616475,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.448603,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.222102
+    },
+    "edge_reproducibility_piece_member_tank_zone_fade_tilt_leave_one_out_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tank_zone_fade_tilt (leave-one-out of the card), opener grade, paired accuracy points on the archive",
+      "effect": -0.133067,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.462657,
+        0.19802
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.2097,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.448603,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.161425
+    },
+    "edge_reproducibility_piece_nine_member_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "nine-member OR union, opener grade, paired accuracy points on the archive",
+      "effect": 2.328676,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.464199,
+        5.092624
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.949825,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.4816,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.412132
+    },
+    "edge_reproducibility_piece_residual_median_offset_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "weekly residual-median constant, opener grade, paired accuracy points on the archive",
+      "effect": 0.998004,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.796826,
+        2.774021
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.85655,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.2958,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 0.915842
+    },
+    "edge_reproducibility_region_copies_agree_served_card_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served card where the two copies copies_agree, opener grade, paired accuracy points on the archive",
+      "effect": 8.108108,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        4.488738,
+        11.804821
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.4816,
+      "sample_blocks": 107,
+      "sample_games": 814,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.854423
+    },
+    "edge_reproducibility_region_copies_agree_served_model_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served model where the two copies copies_agree, opener grade, paired accuracy points on the archive",
+      "effect": 4.422604,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.678175,
+        8.191385
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.989675,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 814,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.916305
+    },
+    "edge_reproducibility_region_copies_disagree_served_card_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served card where the two copies copies_disagree, opener grade, paired accuracy points on the archive",
+      "effect": 5.442671,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        1.683748,
+        9.135321
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.997175,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.4816,
+      "sample_blocks": 107,
+      "sample_games": 689,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.89704
+    },
+    "edge_reproducibility_region_copies_disagree_served_model_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served model where the two copies copies_disagree, opener grade, paired accuracy points on the archive",
+      "effect": 4.716981,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        1.023616,
+        8.211144
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.9937,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 689,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 1.823417
+    },
+    "edge_reproducibility_region_residual_decile_10_served_card_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served card in |residual| decile 10, opener grade, paired accuracy points on the archive",
+      "effect": 9.731544,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        2.631579,
+        16.666667
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.995775,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.4816,
+      "sample_blocks": 79,
+      "sample_games": 149,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 3.594016
+    },
+    "edge_reproducibility_region_residual_decile_10_served_model_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served model in |residual| decile 10, opener grade, paired accuracy points on the archive",
+      "effect": 2.348993,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -5.102041,
+        9.459459
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.738,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 79,
+      "sample_games": 149,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 3.726935
+    },
+    "edge_reproducibility_region_residual_decile_1_served_card_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served card in |residual| decile 1, opener grade, paired accuracy points on the archive",
+      "effect": 6.493506,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -1.250396,
+        14.0
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.951875,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.4816,
+      "sample_blocks": 81,
+      "sample_games": 154,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 3.900237
+    },
+    "edge_reproducibility_region_residual_decile_1_served_model_vs_market_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "served model in |residual| decile 1, opener grade, paired accuracy points on the archive",
+      "effect": 9.090909,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        2.023121,
+        16.242038
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How many extra games out of a hundred this one piece of the published card gets right, on top of the card without it.",
+      "probability_positive": 0.99505,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 81,
+      "sample_games": 154,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": 3.602147
+    },
+    "edge_reproducibility_reliability_home_side_offset_r0_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "reliability home side offset of the served 90-column weak_stack ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.985483,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.9792,
+        0.990217
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.985483,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_reliability_home_side_offset_r1_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "reliability home side offset of the eight-column results+elo ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.998958,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.998572,
+        0.999255
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.998958,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_reliability_residual_median_r0_weekly_constants_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "reliability residual median of the served 90-column weak_stack ridge, weekly_constants, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.295785,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.152308,
+        0.443048
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.295785,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_reliability_residual_median_r1_weekly_constants_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "reliability residual median of the eight-column results+elo ridge, weekly_constants, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.079262,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.078563,
+        0.236182
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.843,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.079262,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_reliability_residual_r0_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "bounded_by_control",
+      "classification_evidence": "The identical split protocol resolves a reliability of +0.5897 on these same games (results+elo, interval entirely above zero), so the instrument detects an effect of that size; this cell's whole interval [-0.2762, 0.0275] lies below it with a non-positive point estimate. What is bounded is the MAGNITUDE: a reliability near the control's is excluded. A small positive reliability is NOT excluded and nothing about the model's accuracy is closed.",
+      "closing_ground": "positive_control_bound",
+      "description": "reliability residual of the served 90-column weak_stack ridge, 10.5_plus, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": -0.137743,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.276157,
+        0.027542
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.0505,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.137743,
+      "sample_blocks": 77,
+      "sample_games": 133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_reliability_residual_r0_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "bounded_by_control",
+      "classification_evidence": "The identical split protocol resolves a reliability of +0.5044 on these same games (results+elo, interval entirely above zero), so the instrument detects an effect of that size; this cell's whole interval [-0.0794, 0.0406] lies below it with a non-positive point estimate. What is bounded is the MAGNITUDE: a reliability near the control's is excluded. A small positive reliability is NOT excluded and nothing about the model's accuracy is closed.",
+      "closing_ground": "positive_control_bound",
+      "description": "reliability residual of the served 90-column weak_stack ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": -0.019535,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.079366,
+        0.040599
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.2545,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.019535,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_reliability_residual_r1_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "reliability residual of the eight-column results+elo ridge, 10.5_plus, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.589695,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.452016,
+        0.70644
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.589695,
+      "sample_blocks": 77,
+      "sample_games": 133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_reliability_residual_r1_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "reliability residual of the eight-column results+elo ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.504362,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.461444,
+        0.549121
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.504362,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_raw_r0_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement raw of the served 90-column weak_stack ridge, 10.5_plus, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.036467,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.124249,
+        0.213915
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.6685,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.036467,
+      "sample_blocks": 77,
+      "sample_games": 133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_raw_r0_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement raw of the served 90-column weak_stack ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.026428,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.026789,
+        0.07807
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.831,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.026428,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_raw_r1_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement raw of the eight-column results+elo ridge, 10.5_plus, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.508148,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.374828,
+        0.645362
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.508148,
+      "sample_blocks": 77,
+      "sample_games": 133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_raw_r1_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement raw of the eight-column results+elo ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.384431,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.331223,
+        0.436991
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.384431,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_served_decile_10_r0_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement served decile 10 of the served 90-column weak_stack ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.686958,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.56751,
+        0.798886
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.686958,
+      "sample_blocks": 79,
+      "sample_games": 149,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_served_decile_10_r1_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement served decile 10 of the eight-column results+elo ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.298448,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.119358,
+        0.467344
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.298448,
+      "sample_blocks": 79,
+      "sample_games": 149,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_served_decile_1_r0_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The predeclared wrong_sign_resolved condition is met numerically and is DECLINED here: the two copies are complementary halves of one training set, so their location constants deviate in opposite directions by construction, and where the residual is near zero that construction alone produces anti-agreement. A mechanical artefact of the split is not a refuted football mechanism, so the cell stays open.",
+      "closing_ground": null,
+      "description": "sign agreement served decile 1 of the served 90-column weak_stack ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": -0.347015,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.495762,
+        -0.196128
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.347015,
+      "sample_blocks": 81,
+      "sample_games": 154,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_served_decile_1_r1_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement served decile 1 of the eight-column results+elo ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.32249,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.173416,
+        0.477689
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.32249,
+      "sample_blocks": 81,
+      "sample_games": 154,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_served_r0_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement served of the served 90-column weak_stack ridge, 10.5_plus, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.061546,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.127761,
+        0.249582
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.7335,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.061546,
+      "sample_blocks": 77,
+      "sample_games": 133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_served_r0_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement served of the served 90-column weak_stack ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.074976,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.018149,
+        0.127845
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 0.994,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.074976,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_served_r1_10p5_plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement served of the eight-column results+elo ridge, 10.5_plus, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.356178,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.201391,
+        0.495693
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.356178,
+      "sample_blocks": 77,
+      "sample_games": 133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_sign_agreement_served_r1_all_lines_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "sign agreement served of the eight-column results+elo ridge, all_lines, two copies fitted on disjoint halves of each walk-forward week's training rows",
+      "effect": 0.281387,
+      "effect_units": "correlation",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.211544,
+        0.352172
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "Train two copies of the model on separate halves of the same past games and see how much the two copies agree. A number near 1 means a second copy would say the same thing; a number near 0 means it would not.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.281387,
+      "sample_blocks": 107,
+      "sample_games": 1537,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_L1_raw_residual_sign_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split L1 raw residual sign: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 2.936155,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        0.538361,
+        5.339033
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.991,
+      "recorded_at": "2026-09-10",
+      "reliability": -0.0195,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_L2_plus_residual_median_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split L2 plus residual median: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 3.896664,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        1.358155,
+        6.461711
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_L3_served_model_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split L3 served model: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 4.508614,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        1.954693,
+        7.14063
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_L4_served_card_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split L4 served card: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 6.887445,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        4.165168,
+        9.436264
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_L5_lattice_mapping_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split L5 lattice mapping: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 1.372283,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.771568,
+        3.67553
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.8975,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_R0_copy_a_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split R0 copy a: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 2.259132,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.551807,
+        5.021258
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.95075,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_R0_copy_b_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split R0 copy b: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 2.464089,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.025932,
+        4.910153
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.9735,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_R1_copy_a_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split R1 copy a: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 1.73253,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.662387,
+        4.193872
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.9095,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_R1_copy_b_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split R1 copy b: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": 1.99769,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -0.616728,
+        4.545318
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.93975,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
+    "edge_reproducibility_tilt_split_always_favourite_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Neither predeclared ground applies: the sign is not resolved on both blockings and no positive control bounds this magnitude with a non-positive point estimate. An interval containing zero is not a closing ground.",
+      "closing_ground": null,
+      "description": "tilt split always favourite: accuracy above what the same home-pick RATE alone would score in this window, so a marginal tilt cannot generate it",
+      "effect": -0.634083,
+      "effect_units": "accuracy_points",
+      "family": "mod18_edge_reproducibility_v1",
+      "interval": [
+        -2.960848,
+        1.769436
+      ],
+      "league": "nfl",
+      "notes": "Lane BH decomposes ONE played card on ONE window; every cell in this family is a correlated view of the same 1,503 opener games, so the family is not a set of independent votes. Diagnosis only: no arm here was promoted, published or served.",
+      "plain_summary": "How much of the card's edge comes from actually telling the games apart, rather than from leaning on home teams or favourites in a window where that leaning paid nothing.",
+      "probability_positive": 0.2925,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/edge_reproducibility.md; artifacts/edge_reproducibility/20260910T044043Z",
+      "standard_error": null
+    },
     "environmental_battery_aqi_high_outdoor": {
       "category": "environment",
       "classification": "unresolved_below_power",
@@ -149745,6 +152573,398 @@
       ],
       "source": "docs/team_style.md, artifacts\\team_style_screen\\20260819T210011Z\\results.json",
       "standard_error": null
+    },
+    "tiebreaker_total_a1_closest_share_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A1 (market total as quoted) vs A0, expected share of the tiebreak against 284 rivals drawn from a DECLARED field (normal around the market total, sigma 13.299 from 2009-2019 actual-minus-market, rounded to integers; no capture holds real rival guesses). UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 7e-06,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        -0.003275,
+        0.003287
+      ],
+      "league": "nfl",
+      "notes": "Realized-hit estimator: over 107 weeks this arm hit the exact total twice, so the mean is a 2-count statistic and the interval is wide by construction.",
+      "plain_summary": "How often each guess would win the weekly tiebreaker against 284 other entries. Submitting the raw betting total was no better than what we publish.",
+      "probability_positive": 0.653,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.023740751537757544
+    },
+    "tiebreaker_total_a1_market_only_mae_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A1 (submit the market total as quoted) vs A0 (served chain), mean absolute error against the actual combined score. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.0794,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.0234,
+        0.1776
+      ],
+      "league": "nfl",
+      "notes": "Positive = candidate closer than the served arm. A1 is the best POINT estimate and the worst tiebreak submission (see the closest-share cells) because a half-point number can never hit exactly.",
+      "plain_summary": "For the weekly tiebreaker we guess the combined score of the last game. Just submitting the bookmakers' total was about 0.08 points closer on average than the guess we actually publish, over 107 weeks.",
+      "probability_positive": 0.94,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.051271
+    },
+    "tiebreaker_total_a2_closest_share_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A2 (market total snapped to the nearest plausible combined score) vs A0, expected tiebreak share against 284 declared rivals. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.001094,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        -1e-06,
+        0.003283
+      ],
+      "league": "nfl",
+      "notes": "Realized-hit estimator: 3 exact hits vs the served arm's 2 over 107 weeks.",
+      "plain_summary": "Snapping the betting total to a combined score football actually produces won the weekly tiebreaker slightly more often than the guess we publish.",
+      "probability_positive": 0.646,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.019979616700262107
+    },
+    "tiebreaker_total_a2_expected_share_posthoc_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "POST-HOC, NOT PREDECLARED. Tiebreaker total arm A2 vs A0 on a variance-reduced estimator of the same estimand: expected tiebreak share integrated over the 2009-2019 empirical distribution of actual-minus-market total, instead of counting realized hits. Same declared 284-rival field. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.0001602,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_expected_share_posthoc",
+      "interval": [
+        1.92e-05,
+        0.0003003
+      ],
+      "league": "nfl",
+      "notes": "Estimator chosen AFTER seeing that the predeclared one was a 3-count statistic. Not a confirmatory look. The effect is entirely a property of the declared rival field; no real rival tiebreaker guesses have ever been captured.",
+      "plain_summary": "Snapping the betting total to a combined score football actually produces should win the weekly tiebreaker about 5% more often than the guess we publish.",
+      "probability_positive": 0.986,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/posthoc_expected_share.json",
+      "standard_error": 0.00039174149820206
+    },
+    "tiebreaker_total_a2_lattice_rounded_mae_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A2 (market total rounded to the nearest plausible combined score, the 36 local maxima of the 2009-2025 total distribution) vs A0, MAE. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.0187,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.1869,
+        0.2243
+      ],
+      "league": "nfl",
+      "notes": "Positive = candidate closer than the served arm.",
+      "plain_summary": "Football totals cluster on certain numbers. Snapping the bookmakers' total to the nearest one of those was about as close on average as the guess we publish.",
+      "probability_positive": 0.57,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.105098
+    },
+    "tiebreaker_total_a3_closest_share_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A3 (served total snapped to the nearest plausible combined score -- served arm with the pick-side shade removed) vs A0, expected tiebreak share against 284 declared rivals. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.001094,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        -1e-06,
+        0.003283
+      ],
+      "league": "nfl",
+      "notes": "Realized-hit estimator: 3 exact hits vs 2. The variance-reduced post-hoc read of the same estimand is recorded separately as tiebreaker_total_a3_expected_share_posthoc_2020_2025.",
+      "plain_summary": "Our own total, snapped to a combined score football actually produces, won the weekly tiebreaker slightly more often than the guess we publish.",
+      "probability_positive": 0.641,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.02157672502202707
+    },
+    "tiebreaker_total_a3_expected_share_posthoc_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "POST-HOC, NOT PREDECLARED. Tiebreaker total arm A3 (served total snapped to a plausible combined score, pick-side shade removed) vs A0 on the variance-reduced expected-share estimator. Same declared 284-rival field. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.0001869,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_expected_share_posthoc",
+      "interval": [
+        4.33e-05,
+        0.0003325
+      ],
+      "league": "nfl",
+      "notes": "Estimator chosen AFTER seeing that the predeclared one was a 3-count statistic. The EV-favoured arm of the study. The effect is entirely a property of the declared rival field; no real rival tiebreaker guesses have ever been captured.",
+      "plain_summary": "Our own total, snapped to a combined score football actually produces, should win the weekly tiebreaker about 6% more often than the guess we publish.",
+      "probability_positive": 0.994,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/posthoc_expected_share.json",
+      "standard_error": 0.0003985574342878795
+    },
+    "tiebreaker_total_a3_no_shade_mae_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total arm A3 (served total rounded to the nearest plausible combined score -- the served arm with the pick-side shade removed) vs A0, MAE. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": -0.0561,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.243,
+        0.1308
+      ],
+      "league": "nfl",
+      "notes": "Positive = candidate closer than the served arm. Average distance and exact-hit rate trade against each other here; the pool pays for the latter.",
+      "plain_summary": "Dropping the rule that forces the guessed score to agree with our spread pick, and snapping to a plausible total instead, was about 0.06 points further from the real score on average -- but it hit the exact total more often, which is what the pool pays.",
+      "probability_positive": 0.273,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.094289
+    },
+    "tiebreaker_total_a4_closest_share_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total control A4 (median of the week's other actual combined scores, not playable) vs A0, expected tiebreak share against 284 declared rivals. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.003706,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        -0.002159,
+        0.009937
+      ],
+      "league": "nfl",
+      "notes": "NOT a playable arm.",
+      "plain_summary": "Knowing the rest of the week's scoring would have won the tiebreaker roughly three times as often as our published guess. Nobody can do that; it shows what is missing.",
+      "probability_positive": 0.912,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.021996085086015024
+    },
+    "tiebreaker_total_a4_week_median_mae_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total control A4 (median of the week's OTHER actual combined scores -- not playable, it reads the same week's results) vs A0, MAE. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.8084,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.1495,
+        1.8037
+      ],
+      "league": "nfl",
+      "notes": "NOT a playable arm. Measures week-level scoring-environment information the market total does not carry by kickoff; a pregame proxy for it is a lead, not a finding.",
+      "plain_summary": "If you already knew how much scoring happened in the rest of the week, you would guess the last game's total about 0.8 points better than we do. Nobody can, but it shows how much week-level scoring information the betting total misses.",
+      "probability_positive": 0.947,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.501782
+    },
+    "tiebreaker_total_offset_minus35_expected_share_posthoc_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "POST-HOC, NOT PREDECLARED, ARGMAX OF A 21-POINT SWEEP WITH NO SELECTION CORRECTION. Submitting round(market_total - 3.5) vs A0 on the variance-reduced expected-share estimator against 284 declared rivals. The sweep is roughly symmetric (+3.5 scores 0.3871% against -3.5's 0.3930%), so the mechanism is differentiating from a field that piles up on the market total, not a low-total bias. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.00078947,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_expected_share_posthoc",
+      "interval": [
+        0.00065173,
+        0.00093021
+      ],
+      "league": "nfl",
+      "notes": "Selected as the argmax of a sweep; treat the 3.5 as a direction, not a calibrated constant. Entirely conditional on the DECLARED rival field -- settle it with a Week-1 capture of the real field before serving anything. Related: the live tiebreaker_low_side_shade challenger shades -1.0, which the sweep scores at 0.3486% against -3.5's 0.3930%.",
+      "plain_summary": "In a 285-entry pool everyone guesses near the bookmakers' total, so guessing a few points away from it wins the tiebreaker more often even though it is further from the real score. Worth about a quarter more tiebreak wins.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/posthoc_offset35_vs_a0.json",
+      "standard_error": 0.0004054919612938307
+    },
+    "tiebreaker_total_opener_vs_close_mae_2020_2021": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total: the OPENING market total vs the CLOSING market total as the guess, MAE against the actual combined score, on the 35 last-games-of-week 2020-2021 where data/processed/sbr_odds.parquet carries both. Positive = the opener is closer. Paired week-blocked bootstrap 20000 draws seed 20260821.",
+      "effect": 0.1,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        -0.6143,
+        0.7999
+      ],
+      "league": "nfl",
+      "notes": "Only 2020-2021 carry both an opening and a closing total in this repository, so this is 35 weeks, not 107.",
+      "plain_summary": "The total the bookmakers post first was about a tenth of a point closer to the real combined score than the one they settle on. Too small and too few weeks to call.",
+      "probability_positive": 0.615,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 35,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.360312
+    },
+    "tiebreaker_total_pc_closest_share_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total POSITIVE CONTROL (actual combined score) vs A0, expected tiebreak share against 284 declared rivals. UNITS PLACEHOLDER: the effect is a closest-share PROBABILITY difference, not a correlation. EFFECT_UNITS has no probability unit and labelling a 0.35%-scale tiebreak-win share accuracy_points would put a non-commensurable quantity into the NFL ATS pool. Never pool this row with anything but its own family. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 0.198946,
+      "effect_units": "correlation",
+      "family": "tiebreaker_total_closest_share",
+      "interval": [
+        0.173326,
+        0.228698
+      ],
+      "league": "nfl",
+      "notes": "Detects at ~1000x the scale separating the playable arms: the instrument works and bounds nothing, so bounded_by_control is unavailable for this family.",
+      "plain_summary": "Knowing the final score would win the weekly tiebreaker about 20% of the time even against 284 rivals -- ties are shared, so even a perfect guess is not a certainty.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.01416411
+    },
+    "tiebreaker_total_pc_perfect_foresight_mae_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No wrong sign is resolved on the predeclared metric and the positive control (perfect foresight) detects at 100-1000x the tested scale, so it bounds nothing: bounded_by_control is unavailable and this stays unresolved_below_power.",
+      "closing_ground": null,
+      "description": "Tiebreaker total POSITIVE CONTROL (submit the actual combined score) vs A0, MAE. Predeclared in docs/tiebreaker_total.md; 107 last-games-of-week 2020-2025; paired week-blocked bootstrap 20000 draws seed 20260821; baseline is A0, the tiebreaker chain served today (joint-residual total blended at 0.1, then the pick-side-consistent score lattice).",
+      "effect": 10.1776,
+      "effect_units": "mae_improvement",
+      "family": "tiebreaker_total_mae",
+      "interval": [
+        8.7474,
+        11.7196
+      ],
+      "league": "nfl",
+      "notes": "Detects at ~100x the scale separating the playable arms, so it proves the instrument works and bounds NOTHING at the tested scale: bounded_by_control is unavailable for every cell in this family.",
+      "plain_summary": "Knowing the final score in advance would beat our tiebreaker guess by about 10 points a week. That is the ceiling, and it confirms the measurement can see a real effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 107,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/tiebreaker_total/20260910T043514Z/results.json",
+      "standard_error": 0.758117
     },
     "totals_market_residual_blend": {
       "category": "market",
