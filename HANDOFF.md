@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T03:47:58.208786+00:00`
+Refreshed at: `2026-09-10T03:48:06.766768+00:00`
 
 ## Start here
 
@@ -20,7 +20,7 @@ Refreshed at: `2026-09-10T03:47:58.208786+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0468a88caeb5` — Handoff refresh
+- Baseline commit: `ee96c4de72f5` — Handoff refresh with registry rows from running lanes
 - Pending change set: 3 paths
   - `M  HANDOFF.md`
   - `M  README.md`

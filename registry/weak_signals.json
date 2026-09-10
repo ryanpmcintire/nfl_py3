@@ -21629,6 +21629,62 @@
       "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
       "standard_error": 0.224659
     },
+    "home_push_on_served_card_control_foresight_vs_h0_overall_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on all lines, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 1.167315,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.38835,
+        2.10325
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.1673 [+0.8065, +1.5038] P+ 1.0000; touched 20 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 20 games the home-side push changes, the card would have gone from 59.14% to 60.31% on all lines. That is the whole prize on those games.",
+      "probability_positive": 0.9995,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.43016
+    },
+    "home_push_on_served_card_control_foresight_vs_h0_overall_2024_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H0 nine-member card, on all lines, 2024-2025. The ceiling any push setting could reach on that flip set.",
+      "effect": 1.313321,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.553506,
+        2.259887
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +1.3133 [+1.1236, +1.5038] P+ 1.0000; touched 19 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 19 games the home-side push changes, the card would have gone from 54.41% to 55.72% on all lines. That is the whole prize on those games.",
+      "probability_positive": 0.999825,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 533,
+      "seasons": [
+        2024,
+        2025
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.44886
+    },
     "home_push_on_served_card_control_foresight_vs_h1_10p5_plus_2020_2025": {
       "category": "control",
       "classification": "unresolved_below_power",
@@ -21713,6 +21769,34 @@
       "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
       "standard_error": 1.118746
     },
+    "home_push_on_served_card_control_foresight_vs_h1_overall_2020_2021": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on all lines, 2020-2021. The ceiling any push setting could reach on that flip set.",
+      "effect": 0.219298,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        0.0,
+        0.663717
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +0.2193 [+0.0000, +0.4545] P+ 0.8745; touched 4 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 4 games the home-side push changes, the card would have gone from 57.02% to 57.24% on all lines. That is the whole prize on those games.",
+      "probability_positive": 0.819725,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 35,
+      "sample_games": 456,
+      "seasons": [
+        2020,
+        2021
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.213184
+    },
     "home_push_on_served_card_control_foresight_vs_h1_overall_2020_2025": {
       "category": "control",
       "classification": "unresolved_below_power",
@@ -21740,6 +21824,34 @@
       ],
       "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
       "standard_error": 0.296639
+    },
+    "home_push_on_served_card_control_foresight_vs_h1_overall_2022_2023": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control cell, recorded so later cells can be bounded against it; it is an upper bound on the flip set, not a candidate rule.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the games the served home-side push flips, added to the H1 nine-member card, on all lines, 2022-2023. The ceiling any push setting could reach on that flip set.",
+      "effect": 2.140078,
+      "effect_units": "accuracy_points",
+      "family": "mod18_home_push_on_served_card_v1",
+      "interval": [
+        1.153846,
+        3.231939
+      ],
+      "league": "nfl",
+      "notes": "season-blocked +2.1401 [+1.6129, +2.6316] P+ 1.0000; touched 20 games; docs/home_push_on_served_card.md",
+      "plain_summary": "If we had known the answer in advance on the 20 games the home-side push changes, the card would have gone from 58.17% to 60.31% on all lines. That is the whole prize on those games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.5077,
+      "sample_blocks": 36,
+      "sample_games": 514,
+      "seasons": [
+        2022,
+        2023
+      ],
+      "source": "artifacts/home_push_on_served_card/20260910T033757Z/arm_results.json",
+      "standard_error": 0.534618
     },
     "home_push_on_served_card_h1_push_off_card_10p5_plus_2020_2025": {
       "category": "modeling",
