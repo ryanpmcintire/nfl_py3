@@ -4570,6 +4570,34 @@
       "source": "artifacts/crew_tilt_refresh/20260901T195622Z/results.json",
       "standard_error": null
     },
+    "crew_tilt_stacked_on_served_nine_member_card_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not terminal on any admissible ground. Neither blocking sits entirely below zero -- week 95% [-0.8011, +0.3976], season 95% [-0.8684, +0.3906] -- so wrong_sign_resolved is unavailable, and an interval containing zero is never grounds to close anything. Both parent cells carry non-zero split-half reliability (0.3226 and 0.3702), so no_split_half_reliability is unavailable. No positive control was run at this effect size. probability_positive 0.2610 week / 0.2828 season -- reported, never the binary contains-zero.",
+      "closing_ground": null,
+      "description": "The frozen crew_tilt_refresh_v1 additive probability tilt (cell C penalty_crew_holding_tilt_run_heavy -0.05995 when the home team is run-heavy and the referee's prior-season Offensive Holding rate is top-quartile; cell A penalty_crew_high_flag_heavy_underdog_opener +0.16772 when the referee's prior-season mean_total rate is top-quartile and the home team is getting at least 7 points), stacked on the SERVED NINE-MEMBER card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 at the OPENER grade, 1,537-game archive (1,503 non-push).",
+      "effect": -0.1996007984031989,
+      "effect_units": "accuracy_points",
+      "family": "referee_assignments_crew_tilt",
+      "interval": [
+        -0.8010680907877155,
+        0.3976143141153021
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-09, the FIRST run of nfl_ats.crew_tilt_refresh_overlay.run_stacked_backtest since commit b5f60b7 grew COMPOSITION_ORDER to nine names: the function had been raising DataContractError on the current archive because it rebuilt only a three-member members dict, and it now builds the served composition through nfl_ats.unserved_tilt_marginals.served_card_flip_set. Nine-member reconstruction verified: coach fade 107, division revenge 155, player arrests 24, bye edge 73, cold visitor 57, protection mismatch 111, interim coach 6, tank zone 17, precipitation 15, union 487, production accuracy 56.8862 percent -- all matching docs/served_card_harness.md exactly. Week- and season-blocked paired bootstrap, 20,000 samples, seed 20260901, within-week correlation zero. 23 stacked flips. This SUPERSEDES the three-member reading crew_tilt_stacked_on_production (+0.3327, probability_positive 0.8825) as the read against the card that is played; that cell stands for the card it measured. Correlated decomposition of its own two parent cells and of the played chain: standalone attribution only, never pooled as an independent arm. MINED-SEASONS context declared not a gate before it was run; no rotation-registry window spent.",
+      "plain_summary": "Nudging the pick when the referee's crew throws a lot of flags, or a lot of holding calls against a run-heavy home team, moved the picks we actually play from 56.9 percent to 56.7 percent right against the opening line over 2020-25, changing 23 picks. About 26 percent likely to help, so it leans against being worth playing but is not settled -- and on the shorter three-member card it had leaned the other way.",
+      "probability_positive": 0.260975,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.32260090874115543,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad/crew_tilt_backtest/20260910T001631Z/results.json (nfl_ats.crew_tilt_refresh_overlay backtest, 2026-09-09); docs/referee_assignments_capture.md",
+      "standard_error": null
+    },
     "cx15_denver_home_on_production_opener": {
       "category": "environment",
       "classification": "unresolved_below_power",
@@ -6685,6 +6713,594 @@
       ],
       "source": "docs/fluview_battery.md, artifacts\\fluview_battery\\20260820T003505Z\\results.json",
       "standard_error": null
+    },
+    "follow_vs_tilts_p0_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.1718, 2.7534] accuracy points reaches both sides of zero (season-blocked [-2.2472, 1.1278] on 3 block(s)); probability_positive 0.331500. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P0, the SERVED precedence: the leader-median late-week follow overrides every Tuesday pick, including one an overlay member flipped, scored against the nine-member Tuesday card with no late-week follow at all; paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": -0.7509386733,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -4.1717791411,
+        2.7534418023
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the nine-member Tuesday card with no late-week follow at all. Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 56.070%, candidate 55.319%, picks changed 240.",
+      "plain_summary": "Compared the market-move rule overriding every pick, which is what runs today against the card with no late-week rule at all over 2023-2025: 56.1% to 55.3% right against the opening line on 799 games, changing 240 picks; about 33% likely to help.",
+      "probability_positive": 0.3315,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.76132807
+    },
+    "follow_vs_tilts_p1_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.8655, 2.6449] accuracy points reaches both sides of zero (season-blocked [-3.3708, 3.3835] on 3 block(s)); probability_positive 0.354850. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P1: the follow may not reverse a pick that any of the nine card members flipped; it applies only to raw-model picks, scored against the nine-member Tuesday card with no late-week follow at all; paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": -0.6257822278,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -3.8654572993,
+        2.6449196528
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the nine-member Tuesday card with no late-week follow at all. Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 56.070%, candidate 55.444%, picks changed 147.",
+      "plain_summary": "Compared never letting a late market move undo one of the card's own nine rules against the card with no late-week rule at all over 2023-2025: 56.1% to 55.4% right against the opening line on 799 games, changing 147 picks; about 35% likely to help.",
+      "probability_positive": 0.35485,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.6564228473
+    },
+    "follow_vs_tilts_p1_vs_p0_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-5.0584, 3.2967] accuracy points reaches both sides of zero (season-blocked [-0.7519, -0.7519] on 1 block(s)); probability_positive 0.363850. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P1: the follow may not reverse a pick that any of the nine card members flipped; it applies only to raw-model picks, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2023 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": -0.7518796992,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -5.0583657588,
+        3.2967032967
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 58.271%, candidate 57.519%, picks changed 32.",
+      "plain_summary": "Compared never letting a late market move undo one of the card's own nine rules against the market-move rule overriding every pick, which is what runs today over 2023: 58.3% to 57.5% right against the opening line on 266 games, changing 32 picks; about 36% likely to help.",
+      "probability_positive": 0.36385,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 2.1223562995
+    },
+    "follow_vs_tilts_p1_vs_p0_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.2613, 2.5189] accuracy points reaches both sides of zero (season-blocked [-1.1236, 2.2556] on 3 block(s)); probability_positive 0.542825. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P1: the follow may not reverse a pick that any of the nine card members flipped; it applies only to raw-model picks, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 0.1251564456,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -2.2613065327,
+        2.5188916877
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 55.319%, candidate 55.444%, picks changed 93.",
+      "plain_summary": "Compared never letting a late market move undo one of the card's own nine rules against the market-move rule overriding every pick, which is what runs today over 2023-2025: 55.3% to 55.4% right against the opening line on 799 games, changing 93 picks; about 54% likely to help.",
+      "probability_positive": 0.542825,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.2326323205
+    },
+    "follow_vs_tilts_p1_vs_p0_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.6619, 7.4074] accuracy points reaches both sides of zero (season-blocked [2.2556, 2.2556] on 1 block(s)); probability_positive 0.809975. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P1: the follow may not reverse a pick that any of the nine card members flipped; it applies only to raw-model picks, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2024 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 2.2556390977,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -2.6618509274,
+        7.4074074074
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 55.263%, candidate 57.519%, picks changed 28.",
+      "plain_summary": "Compared never letting a late market move undo one of the card's own nine rules against the market-move rule overriding every pick, which is what runs today over 2024: 55.3% to 57.5% right against the opening line on 266 games, changing 28 picks; about 81% likely to help.",
+      "probability_positive": 0.809975,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 2.594618313
+    },
+    "follow_vs_tilts_p1_vs_p0_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.7313, 1.8727] accuracy points reaches both sides of zero (season-blocked [-1.1236, -1.1236] on 1 block(s)); probability_positive 0.217700. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P1: the follow may not reverse a pick that any of the nine card members flipped; it applies only to raw-model picks, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": -1.1235955056,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -3.7313432836,
+        1.872659176
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 52.434%, candidate 51.311%, picks changed 33.",
+      "plain_summary": "Compared never letting a late market move undo one of the card's own nine rules against the market-move rule overriding every pick, which is what runs today over 2025: 52.4% to 51.3% right against the opening line on 267 games, changing 33 picks; about 22% likely to help.",
+      "probability_positive": 0.2177,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.4205838936
+    },
+    "follow_vs_tilts_p2_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.4778, 1.7501] accuracy points reaches both sides of zero (season-blocked [-3.3708, 1.1278] on 3 block(s)); probability_positive 0.190800. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P2: as P1 but only the three original members (coach fade, division revenge, player arrests) are protected and the six tilts added 2026-09-09 are not, scored against the nine-member Tuesday card with no late-week follow at all; paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": -1.3767209011,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -4.4777513429,
+        1.7500547559
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the nine-member Tuesday card with no late-week follow at all. Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 56.070%, candidate 54.693%, picks changed 189.",
+      "plain_summary": "Compared protecting only the card's three oldest rules from a late market move against the card with no late-week rule at all over 2023-2025: 56.1% to 54.7% right against the opening line on 799 games, changing 189 picks; about 19% likely to help.",
+      "probability_positive": 0.1908,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.5879265018
+    },
+    "follow_vs_tilts_p2_vs_p0_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.2556, 1.0013] accuracy points reaches both sides of zero (season-blocked [-1.1236, 0.0000] on 3 block(s)); probability_positive 0.232450. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P2: as P1 but only the three original members (coach fade, division revenge, player arrests) are protected and the six tilts added 2026-09-09 are not, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": -0.6257822278,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -2.2556390977,
+        1.0012515645
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 55.319%, candidate 54.693%, picks changed 51.",
+      "plain_summary": "Compared protecting only the card's three oldest rules from a late market move against the market-move rule overriding every pick, which is what runs today over 2023-2025: 55.3% to 54.7% right against the opening line on 799 games, changing 51 picks; about 23% likely to help.",
+      "probability_positive": 0.23245,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 0.8319243578
+    },
+    "follow_vs_tilts_p3_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.2060, 3.7975] accuracy points reaches both sides of zero (season-blocked [-1.4981, 3.0075] on 3 block(s)); probability_positive 0.557225. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P3: the follow may not reverse a member flip on a move below 1.0 point, but a leader-median move of at least 1.0 against a member flip does reverse it, scored against the nine-member Tuesday card with no late-week follow at all; paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 0.2503128911,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -3.2060175671,
+        3.7974683544
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the nine-member Tuesday card with no late-week follow at all. Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 56.070%, candidate 56.320%, picks changed 188.",
+      "plain_summary": "Compared protecting the card's rules from small late moves but not from big ones against the card with no late-week rule at all over 2023-2025: 56.1% to 56.3% right against the opening line on 799 games, changing 188 picks; about 56% likely to help.",
+      "probability_positive": 0.557225,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.7878683343
+    },
+    "follow_vs_tilts_p3_vs_p0_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.3835, 3.7453] accuracy points reaches both sides of zero (season-blocked [0.3759, 0.3759] on 1 block(s)); probability_positive 0.589625. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P3: the follow may not reverse a member flip on a move below 1.0 point, but a leader-median move of at least 1.0 against a member flip does reverse it, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2023 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 0.3759398496,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -3.3834586466,
+        3.7453183521
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 58.271%, candidate 58.647%, picks changed 19.",
+      "plain_summary": "Compared protecting the card's rules from small late moves but not from big ones against the market-move rule overriding every pick, which is what runs today over 2023: 58.3% to 58.6% right against the opening line on 266 games, changing 19 picks; about 59% likely to help.",
+      "probability_positive": 0.589625,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.8003890755
+    },
+    "follow_vs_tilts_p3_vs_p0_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.6386, 2.6616] accuracy points reaches both sides of zero (season-blocked [0.3759, 1.8797] on 3 block(s)); probability_positive 0.880150. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P3: the follow may not reverse a member flip on a move below 1.0 point, but a leader-median move of at least 1.0 against a member flip does reverse it, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 1.0012515645,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -0.6385900187,
+        2.6615969582
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 55.319%, candidate 56.320%, picks changed 52.",
+      "plain_summary": "Compared protecting the card's rules from small late moves but not from big ones against the market-move rule overriding every pick, which is what runs today over 2023-2025: 55.3% to 56.3% right against the opening line on 799 games, changing 52 picks; about 88% likely to help.",
+      "probability_positive": 0.88015,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 0.8585212823
+    },
+    "follow_vs_tilts_p3_vs_p0_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 4.0590] accuracy points reaches both sides of zero (season-blocked [1.8797, 1.8797] on 1 block(s)); probability_positive 0.970675. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P3: the follow may not reverse a member flip on a move below 1.0 point, but a leader-median move of at least 1.0 against a member flip does reverse it, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2024 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 1.8796992481,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        0.0,
+        4.0590405904
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 55.263%, candidate 57.143%, picks changed 11.",
+      "plain_summary": "Compared protecting the card's rules from small late moves but not from big ones against the market-move rule overriding every pick, which is what runs today over 2024: 55.3% to 57.1% right against the opening line on 266 games, changing 11 picks; about 97% likely to help.",
+      "probability_positive": 0.970675,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.0339615916
+    },
+    "follow_vs_tilts_p3_vs_p0_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.8939, 3.7594] accuracy points reaches both sides of zero (season-blocked [0.7491, 0.7491] on 1 block(s)); probability_positive 0.676150. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P3: the follow may not reverse a member flip on a move below 1.0 point, but a leader-median move of at least 1.0 against a member flip does reverse it, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 0.7490636704,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -1.8939393939,
+        3.7593984962
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 52.434%, candidate 53.184%, picks changed 22.",
+      "plain_summary": "Compared protecting the card's rules from small late moves but not from big ones against the market-move rule overriding every pick, which is what runs today over 2025: 52.4% to 53.2% right against the opening line on 267 games, changing 22 picks; about 68% likely to help.",
+      "probability_positive": 0.67615,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.4855676138
+    },
+    "follow_vs_tilts_p3_vs_p4_threshold_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.6524, 1.7566] accuracy points reaches both sides of zero (season-blocked [-4.1199, 1.1278] on 3 block(s)); probability_positive 0.233100. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P3: the follow may not reverse a member flip on a move below 1.0 point, but a leader-median move of at least 1.0 against a member flip does reverse it, scored against the post-hoc P4 arm (same follow, threshold raised to 1.0 for every game); paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": -1.0012515645,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -3.6523929471,
+        1.756587202
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the post-hoc P4 arm (same follow, threshold raised to 1.0 for every game). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 57.322%, candidate 56.320%, picks changed 88. SELECTION DISCLOSED: the P4 threshold arm was NOT predeclared. It was added after the band table showed the 0.5-to-1.0 leader-median band losing on both member flips (22-30) and raw-model picks (40-48). Recorded as a diagnostic that names the mechanism behind P3's gain, not as a promotion candidate.",
+      "plain_summary": "Compared protecting the card's rules from small late moves but not from big ones against only following a late market move when it is a full point or more over 2023-2025: 57.3% to 56.3% right against the opening line on 799 games, changing 88 picks; about 23% likely to help.",
+      "probability_positive": 0.2331,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.3726671146
+    },
+    "follow_vs_tilts_p4_threshold_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.1222, 3.7133] accuracy points reaches both sides of zero (season-blocked [-0.7519, 2.6217] on 3 block(s)); probability_positive 0.846175. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P4, a POST-HOC confound arm added after the band table was seen: the same leader-median follow with its threshold raised from 0.5 to 1.0 for every game, with no precedence change and no protection for any member flip, scored against the nine-member Tuesday card with no late-week follow at all; paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 1.2515644556,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -1.1221945137,
+        3.7132953177
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the nine-member Tuesday card with no late-week follow at all. Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 56.070%, candidate 57.322%, picks changed 100. SELECTION DISCLOSED: the P4 threshold arm was NOT predeclared. It was added after the band table showed the 0.5-to-1.0 leader-median band losing on both member flips (22-30) and raw-model picks (40-48). Recorded as a diagnostic that names the mechanism behind P3's gain, not as a promotion candidate.",
+      "plain_summary": "Compared only following a late market move when it is a full point or more against the card with no late-week rule at all over 2023-2025: 56.1% to 57.3% right against the opening line on 799 games, changing 100 picks; about 85% likely to help.",
+      "probability_positive": 0.846175,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.2185140169
+    },
+    "follow_vs_tilts_p4_threshold_vs_p0_2023": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.6512, 5.2632] accuracy points reaches both sides of zero (season-blocked [0.3759, 0.3759] on 1 block(s)); probability_positive 0.556850. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P4, a POST-HOC confound arm added after the band table was seen: the same leader-median follow with its threshold raised from 0.5 to 1.0 for every game, with no precedence change and no protection for any member flip, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2023 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 0.3759398496,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -4.6511627907,
+        5.2631578947
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 58.271%, candidate 58.647%, picks changed 53. SELECTION DISCLOSED: the P4 threshold arm was NOT predeclared. It was added after the band table showed the 0.5-to-1.0 leader-median band losing on both member flips (22-30) and raw-model picks (40-48). Recorded as a diagnostic that names the mechanism behind P3's gain, not as a promotion candidate.",
+      "plain_summary": "Compared only following a late market move when it is a full point or more against the market-move rule overriding every pick, which is what runs today over 2023: 58.3% to 58.6% right against the opening line on 266 games, changing 53 picks; about 56% likely to help.",
+      "probability_positive": 0.55685,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2023,
+        2023
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 2.5788588176
+    },
+    "follow_vs_tilts_p4_threshold_vs_p0_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.7692, 4.8507] accuracy points reaches both sides of zero (season-blocked [0.3759, 4.8689] on 3 block(s)); probability_positive 0.917750. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "P4, a POST-HOC confound arm added after the band table was seen: the same leader-median follow with its threshold raised from 0.5 to 1.0 for every game, with no precedence change and no protection for any member flip, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 2.0025031289,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -0.7692307692,
+        4.8507462687
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 55.319%, candidate 57.322%, picks changed 140. SELECTION DISCLOSED: the P4 threshold arm was NOT predeclared. It was added after the band table showed the 0.5-to-1.0 leader-median band losing on both member flips (22-30) and raw-model picks (40-48). Recorded as a diagnostic that names the mechanism behind P3's gain, not as a promotion candidate.",
+      "plain_summary": "Compared only following a late market move when it is a full point or more against the market-move rule overriding every pick, which is what runs today over 2023-2025: 55.3% to 57.3% right against the opening line on 799 games, changing 140 picks; about 92% likely to help.",
+      "probability_positive": 0.91775,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.4559735958
+    },
+    "follow_vs_tilts_p4_threshold_vs_p0_2024": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.0651, 4.3960] accuracy points reaches both sides of zero (season-blocked [0.7519, 0.7519] on 1 block(s)); probability_positive 0.663525. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P4, a POST-HOC confound arm added after the band table was seen: the same leader-median follow with its threshold raised from 0.5 to 1.0 for every game, with no precedence change and no protection for any member flip, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2024 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 0.7518796992,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -3.0651340996,
+        4.3960084034
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 55.263%, candidate 56.015%, picks changed 32. SELECTION DISCLOSED: the P4 threshold arm was NOT predeclared. It was added after the band table showed the 0.5-to-1.0 leader-median band losing on both member flips (22-30) and raw-model picks (40-48). Recorded as a diagnostic that names the mechanism behind P3's gain, not as a promotion candidate.",
+      "plain_summary": "Compared only following a late market move when it is a full point or more against the market-move rule overriding every pick, which is what runs today over 2024: 55.3% to 56.0% right against the opening line on 266 games, changing 32 picks; about 66% likely to help.",
+      "probability_positive": 0.663525,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 266,
+      "seasons": [
+        2024,
+        2024
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.9021815532
+    },
+    "follow_vs_tilts_p4_threshold_vs_p0_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.7722, 10.5263] accuracy points reaches both sides of zero (season-blocked [4.8689, 4.8689] on 1 block(s)); probability_positive 0.951225. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed. Season-blocked bootstrap has one block here and is degenerate.",
+      "closing_ground": null,
+      "description": "P4, a POST-HOC confound arm added after the band table was seen: the same leader-median follow with its threshold raised from 0.5 to 1.0 for every game, with no precedence change and no protection for any member flip, scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 4.8689138577,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        -0.7722007722,
+        10.5263157895
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 52.434%, candidate 57.303%, picks changed 55. SELECTION DISCLOSED: the P4 threshold arm was NOT predeclared. It was added after the band table showed the 0.5-to-1.0 leader-median band losing on both member flips (22-30) and raw-model picks (40-48). Recorded as a diagnostic that names the mechanism behind P3's gain, not as a promotion candidate.",
+      "plain_summary": "Compared only following a late market move when it is a full point or more against the market-move rule overriding every pick, which is what runs today over 2025: 52.4% to 57.3% right against the opening line on 267 games, changing 55 picks; about 95% likely to help.",
+      "probability_positive": 0.951225,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 18,
+      "sample_games": 267,
+      "seasons": [
+        2025,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 2.9075710512
+    },
+    "follow_vs_tilts_pc_oracle_2023_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [1.6189, 8.6466] accuracy points reaches both sides of zero (season-blocked [3.3708, 7.5188] on 3 block(s)); probability_positive 0.997800. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "Positive control: perfect-foresight resolution of every follow-vs-member-flip collision (the covering side is taken on each of the 94 collisions), scored against the nine-member Tuesday card with no late-week follow at all; paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 5.1314142678,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        1.6188786764,
+        8.6466165414
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the nine-member Tuesday card with no late-week follow at all. Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 56.070%, candidate 61.202%, picks changed 193.",
+      "plain_summary": "Compared knowing the answer in advance on every clash between a card rule and the market against the card with no late-week rule at all over 2023-2025: 56.1% to 61.2% right against the opening line on 799 games, changing 193 picks; about 100% likely to help.",
+      "probability_positive": 0.9978,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.7982722526
+    },
+    "follow_vs_tilts_pc_oracle_vs_p0_2023_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [4.0353, 7.9404] accuracy points reaches both sides of zero (season-blocked [5.6180, 6.3910] on 3 block(s)); probability_positive 1.000000. The positive control on this same population resolves at +5.882 accuracy points over P0, 95% [+4.035, +7.940], so the instrument is proven able to see about six points and is NOT proven able to see the one-to-two-point effects the arms sit at; no positive control bounds this cell and no reliability floor applies, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "Positive control: perfect-foresight resolution of every follow-vs-member-flip collision (the covering side is taken on each of the 94 collisions), scored against the SERVED precedence P0 (the follow overrides every Tuesday pick); paired forced-pick accuracy at the Tuesday OPENER on the 2023-2025 archive, leader-median late-week follow replayed from the intraday_hourly market backfill with each game's cutoff at its own pick deadline min(kickoff, Sunday 16:00 ET).",
+      "effect": 5.8823529412,
+      "effect_units": "accuracy_points",
+      "family": "follow_vs_tilts_precedence",
+      "interval": [
+        4.0353089533,
+        7.9404466501
+      ],
+      "league": "nfl",
+      "notes": "Lane AD precedence study, predeclared in docs/follow_vs_tilts.md (sha256 08134fe4f64ea7bf2e49257a8141a82e2aa2ac9ffbf6a82de0a1e27da3b7c921) before any sign was seen. Baseline column: the SERVED precedence P0 (the follow overrides every Tuesday pick). Population: 799 scored games of 816 archive games 2023-2025 (17 opener pushes), all with replayable late-week exposure, 0 quote rows refused. The Tuesday card is the served nine-member joint OR overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 rebuilt with nfl_ats.unserved_tilt_marginals.served_card_flip_set on the opener archive artifacts/opener_evaluation/20260909T183120Z (active model c657058903f3232b, gaussian_median); it scores 56.070% here, reproducing docs/served_card_harness.md to the digit. The follow is the SERVED leader-median arm (movement_would_be_pick_side / leader_median_net_move from the frozen nfl_ats.sharp_book_movement_features.late_week_follow_frame), NOT the equal-book arm the harness lane reported. STATED DEVIATION: the served path loads capture_kind=live and the archive holds no live capture before 2026-08-17, so 2023-2025 is reachable only through the intraday_hourly historical backfill; this is the same substitution docs/served_card_harness.md documents and it is evidence about the rule's shape, not a re-grade of its promotion. Collisions: the follow fired on 172 member-flipped picks and reversed 94 of them, endorsing 78; it fired on 350 raw-model picks and reversed 149. Week-blocked and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero by owner mandate; the recorded interval is the week-blocked one. Reused 2023-2025 window already mined by the served-card harness lane; descriptive reused-window measurement with a stated discount, not independent confirmation. Baseline accuracy 55.319%, candidate 61.202%, picks changed 47.",
+      "plain_summary": "Compared knowing the answer in advance on every clash between a card rule and the market against the market-move rule overriding every pick, which is what runs today over 2023-2025: 55.3% to 61.2% right against the opening line on 799 games, changing 47 picks; about 100% likely to help.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
+      "standard_error": 1.0036188906
     },
     "forecast_weather_dome_team_outdoors_cold": {
       "category": "environment",
@@ -121167,6 +121783,34 @@
       "source": "artifacts/rookie_crew_reconciliation/20260909T190000Z/results.json",
       "standard_error": null
     },
+    "rookie_crew_served_step_flagged_games_card_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Not terminal on any admissible ground. The interval crosses zero, which is never grounds to close anything; probability_positive 0.7077 week-blocked and 0.7180 season-blocked both favour the candidate, so wrong_sign_resolved is unavailable in any case. The trait's split-half reliability is +0.0756, 95% [-0.0201, +0.1453], probability_positive 0.951 season-to-season over 255 referee pairs, so no_split_half_reliability is unavailable. No positive control was run at this effect size, so positive_control_bound is unavailable.",
+      "closing_ground": null,
+      "description": "The reconciled rookie-crew rule AS WIRED into nfl_ats.pick_refresh: a refresh-time refit on feature profile weak_stack_rookie_crew_underdog (production weak_stack plus one signed rookie_crew_underdog_flag column, archive-extended referee tenure with season floor 2010, signed by the underdog side of the frozen Tuesday line, close-proxy line before 2020), whose opener side replaces the model-only side ONLY on games whose own crew is flagged. Marginal on the served nine-member card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 at the OPENER grade, 1,537-game archive (1,503 non-push).",
+      "effect": 0.06653359946773248,
+      "effect_units": "accuracy_points",
+      "family": "rookie_crew_reconciliation",
+      "interval": [
+        -0.1342281879194631,
+        0.32786885245901637
+      ],
+      "league": "nfl",
+      "notes": "Measured 2026-09-09. Paired week- and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero, pushes excluded. Served card baseline 56.8862 percent on 487 union flips (reproduces docs/served_card_harness.md exactly); with the step 56.9528 percent, 3 changed picks. This is the SUBSET arm actually served: the predeclared arm in docs/rookie_crew_reconciliation.md also lets the refit move UNFLAGGED games (coefficient drift), and re-measured this session that reads +0.133067, week 95% [-0.197109, +0.465735], probability_positive 0.790450 on 6 changed picks, reproducing the harness lane's +0.133 / 0.7904 to the digit. The served step is narrowed to flagged games because AGENTS.md requires a pick flip to name a mechanism and a drift-only change on an unflagged game names none. Per-era, as wired: 2020-2021 +0.2193 [0.0000, +0.6667] probability_positive 0.8197 on 1 changed pick; 2022-2023 0.0000 [-0.5792, +0.5769] probability_positive 0.4971 on 2; 2024-2025 0.0000 on 0 changed picks -- magnitude statements per era, never absence. Reused 1,537-game opener archive: descriptive reused-window measurement with a stated discount, not independent confirmation. Correlated with rookie_crew_reconciled_card_2020_2025, of which it is a subset; never pool the two as independent inputs.",
+      "plain_summary": "When the referee working a game is in his first or second season, back the side the model likes once it knows that. Over 2020-25 this changed 3 of our picks and moved us from 56.9 percent to 57.0 percent right against the opening line -- about 71 percent likely to be an improvement, which is small and not settled, but better than a coin flip. This week it applies to exactly one game.",
+      "probability_positive": 0.707725,
+      "recorded_at": "2026-09-10",
+      "reliability": 0.0756,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scratchpad/served_rookie_arm.json (2026-09-09); docs/rookie_crew_reconciliation.md; docs/served_card_harness.md",
+      "standard_error": 0.11524904030976
+    },
     "rookie_crew_underdog_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -124809,22 +125453,22 @@
     },
     "spread_hole_t1_card_7p5_10_2020_2025": {
       "category": "modeling",
-      "classification": "refuted_mechanism",
-      "classification_evidence": "Both the week-blocked interval [-5.0000, -0.5236] and the season-blocked interval [-4.1237, -1.0638] sit entirely below zero, a RESOLVED wrong sign, which is the one admissible closing ground; probability_positive 0.0029.",
-      "closing_ground": "wrong_sign_resolved",
-      "description": "MOD-18 lane N arm T1: all 47 team-quality columns (results, elo, offense, defense) orthogonalised to the game's own line with slope and intercept fitted on that week's training rows only, AND spread_line deleted from the 90-column feature matrix altogether (89 columns), so the line enters only as the offset the market_residual target is measured against; paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5 to 10, on the 1,537-game archive (1,503 non-push).",
-      "effect": -2.5773195876,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "RE-SCORED on the card that is actually played. The recorded refuted_mechanism / wrong_sign_resolved closure was taken against the retired THREE-member card, where this arm read -2.5773 week [-5.0000, -0.5236] and season [-4.1237, -1.0638]. On the served nine-member card the same arm reads -1.5464, week 95% [-3.9409, +0.5236] and season 95% [-3.8835, +1.0204]: neither blocking sits entirely below zero, so wrong_sign_resolved is NOT available. A closure taken against a card that is not played is not a closure. No positive control bounds this cell and the trait's split-half reliability was never measured at zero, so neither other ground applies. probability_positive 0.0848 week / 0.1076 season -- reported, never the binary contains-zero.",
+      "closing_ground": null,
+      "description": "MOD-18 lane N arm T1: all 47 team-quality columns (results, elo, offense, defense) orthogonalised to the game's own line with slope and intercept fitted on that week's training rows only, AND spread_line deleted from the 90-column feature matrix altogether (89 columns), so the line enters only as the offset the market_residual target is measured against; paired forced-pick accuracy through the SERVED NINE-MEMBER card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 versus the active model c657058903f3232b at the OPENER, on lines of 7.5 to 10, on the 1,537-game archive (1,503 non-push).",
+      "effect": -1.5463917525773196,
       "effect_units": "accuracy_points",
       "family": "mod18_spread_hole_target_v1",
       "interval": [
-        -5.0,
-        -0.5235602094
+        -3.9408866995073892,
+        0.5235602094240838
       ],
       "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K, L and M; these arms were motivated by decompositions computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-4.1237, -1.0638], season probability_positive 0.0007. Picks changed: 5. Card flip count for this arm: 286. T3 carries no S3 home-side offset by construction; its primary comparison is against the served incumbent and the predeclared like-for-like comparison against the incumbent's raw pre-S3 picks is recorded separately under the _vs_raw names. T4 is a positive control that may never be played.",
-      "plain_summary": "Rebuilding the model so it cannot see the point spread as an input at all -- the spread is only the number the pick is measured against, and every team-strength number has the spread's share stripped out moved the card from 51.5% to 49.0% right against the opening line in games with a spread of 7.5 to 10 in 2020-25, changing 5 picks; about 0% likely to help.",
-      "probability_positive": 0.0029,
-      "recorded_at": "2026-09-09",
+      "notes": "Re-measured 2026-09-09 with scripts/spread_hole_target.py against artifacts/opener_evaluation/20260909T183120Z; replay gate exact (1,537 rows, max residual gap 0.0, max probability gap 0.0). Served nine-member card baseline 56.8862 percent, incumbent union 487 flips; this arm's own union 498 flips, 5 picks changed in the 7.5-10 bucket. Week- and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-3.8835, +1.0204], season probability_positive 0.107575. Reused 1,537-game opener archive already mined by MOD-18 lanes F, H, K, L, M and N: descriptive reused-window measurement with a stated discount, not independent confirmation.",
+      "plain_summary": "Rebuilding the model so it cannot see the point spread as an input at all -- the spread is only the number the pick is measured against -- moved the picks we actually play from 52.6 percent to 51.0 percent right against the opening line in games with a spread of 7.5 to 10 in 2020-25, changing 5 picks. About 8 percent likely to help, on 194 games, so it is not settled either way.",
+      "probability_positive": 0.0848,
+      "recorded_at": "2026-09-10",
       "reliability": null,
       "sample_blocks": 91,
       "sample_games": 194,
@@ -124832,8 +125476,8 @@
         2020,
         2025
       ],
-      "source": "artifacts/spread_hole_target/20260909T231047Z/arm_results.json; docs/spread_hole_target.md",
-      "standard_error": 1.1257941445
+      "source": "scratchpad/spread_hole_served/arm_results.json (scripts/spread_hole_target.py, 2026-09-09); docs/spread_hole_target.md; docs/served_card_harness.md",
+      "standard_error": 1.1455860817373062
     },
     "spread_hole_t1_card_overall_2020_2025": {
       "category": "modeling",
@@ -125089,22 +125733,22 @@
     },
     "spread_hole_t2_card_7p5_10_2020_2025": {
       "category": "modeling",
-      "classification": "refuted_mechanism",
-      "classification_evidence": "Both the week-blocked interval [-6.8627, -0.5102] and the season-blocked interval [-5.3191, -1.9417] sit entirely below zero, a RESOLVED wrong sign, which is the one admissible closing ground; probability_positive 0.0141.",
-      "closing_ground": "wrong_sign_resolved",
-      "description": "MOD-18 lane N arm T2: arm T1 (47 team-quality columns orthogonalised to the line, spread_line deleted from the feature matrix) with the market_residual training target winsorised at plus/minus 21 points (three touchdowns, predeclared and not tuned); paired forced-pick accuracy through the played three-member card versus the active model c657058903f3232b at the OPENER, on lines of 7.5 to 10, on the 1,537-game archive (1,503 non-push).",
-      "effect": -3.6082474227,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "RE-SCORED on the card that is actually played. The recorded refuted_mechanism / wrong_sign_resolved closure was taken against the retired THREE-member card, where this arm read -3.6082 week [-6.8627, -0.5102] and season [-5.3191, -1.9417]. On the served nine-member card the same arm reads -1.5464, week 95% [-4.2105, +1.0526] and season 95% [-4.9505, +1.0753]: neither blocking sits entirely below zero, so wrong_sign_resolved is NOT available. A closure taken against a card that is not played is not a closure. No positive control bounds this cell and the trait's split-half reliability was never measured at zero, so neither other ground applies. probability_positive 0.12735 week / 0.17805 season -- reported, never the binary contains-zero. Note that T2's SEPARATE cell at lines of exactly 7 stays closed: there both blockings do sit entirely below zero on this same served card.",
+      "closing_ground": null,
+      "description": "MOD-18 lane N arm T2: arm T1 (47 team-quality columns orthogonalised to the line, spread_line deleted from the feature matrix) with the market_residual training target winsorised at plus/minus 21 points (three touchdowns, predeclared and not tuned); paired forced-pick accuracy through the SERVED NINE-MEMBER card overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3 versus the active model c657058903f3232b at the OPENER, on lines of 7.5 to 10, on the 1,537-game archive (1,503 non-push).",
+      "effect": -1.5463917525773196,
       "effect_units": "accuracy_points",
       "family": "mod18_spread_hole_target_v1",
       "interval": [
-        -6.862745098,
-        -0.5102040816
+        -4.2105263157894735,
+        1.0526315789473684
       ],
       "league": "nfl",
-      "notes": "Reused 1,537-game opener archive (2020-2025) already mined by MOD-18 lanes F, H, K, L and M; these arms were motivated by decompositions computed on this same archive. Descriptive reused-window measurement with a stated discount, not independent confirmation. Incumbent replay reproduces artifacts/opener_evaluation/20260909T183120Z exactly (max residual gap 0.0, max probability gap 0.0 on 1537 games). Week-blocked and season-blocked bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-5.3191, -1.9417], season probability_positive 0.0000. Picks changed: 11. Card flip count for this arm: 279. T3 carries no S3 home-side offset by construction; its primary comparison is against the served incumbent and the predeclared like-for-like comparison against the incumbent's raw pre-S3 picks is recorded separately under the _vs_raw names. T4 is a positive control that may never be played.",
-      "plain_summary": "The same spread-blind rebuild, plus telling the model to treat any blowout beyond three touchdowns as a three-touchdown win, so lopsided scores stop dragging its estimates moved the card from 51.5% to 47.9% right against the opening line in games with a spread of 7.5 to 10 in 2020-25, changing 11 picks; about 1% likely to help.",
-      "probability_positive": 0.014125,
-      "recorded_at": "2026-09-09",
+      "notes": "Re-measured 2026-09-09 with scripts/spread_hole_target.py against artifacts/opener_evaluation/20260909T183120Z; replay gate exact (1,537 rows, max residual gap 0.0, max probability gap 0.0). Served nine-member card baseline 56.8862 percent, incumbent union 487 flips; this arm's own union 496 flips, 7 picks changed in the 7.5-10 bucket. Week- and season-blocked paired bootstrap, 20,000 samples, seed 20260821, within-week correlation zero. Recorded interval is the week-blocked one; season-blocked [-4.9505, +1.0753], season probability_positive 0.17805. Reused 1,537-game opener archive already mined by MOD-18 lanes F, H, K, L, M and N: descriptive reused-window measurement with a stated discount, not independent confirmation.",
+      "plain_summary": "The same spread-blind rebuild, plus telling the model to treat any blowout beyond three touchdowns as a three-touchdown win, moved the picks we actually play from 52.6 percent to 51.0 percent right against the opening line in games with a spread of 7.5 to 10 in 2020-25, changing 7 picks. About 13 percent likely to help, on 194 games, so it is not settled either way.",
+      "probability_positive": 0.12735,
+      "recorded_at": "2026-09-10",
       "reliability": null,
       "sample_blocks": 91,
       "sample_games": 194,
@@ -125112,8 +125756,8 @@
         2020,
         2025
       ],
-      "source": "artifacts/spread_hole_target/20260909T231047Z/arm_results.json; docs/spread_hole_target.md",
-      "standard_error": 1.6395551019
+      "source": "scratchpad/spread_hole_served/arm_results.json (scripts/spread_hole_target.py, 2026-09-09); docs/spread_hole_target.md; docs/served_card_harness.md",
+      "standard_error": 1.3419906515943623
     },
     "spread_hole_t2_card_overall_2020_2025": {
       "category": "modeling",

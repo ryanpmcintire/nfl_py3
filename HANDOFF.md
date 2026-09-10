@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T00:17:25.326577+00:00`
+Refreshed at: `2026-09-10T00:32:45.948756+00:00`
 
 ## Start here
 
@@ -20,25 +20,15 @@ Refreshed at: `2026-09-10T00:17:25.326577+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `a474c8fd21cf` — Serve the leader-median late-week follow (three leading books, half-point threshold): +1.25 pts over the equal-book rule, P+ 0.86 on the frozen baseline; the equal-book rule keeps recording as the paired OFF arm
-- Pending change set: 17 paths
+- Baseline commit: `3074041a147b` — Serve follow-the-handle on the weekend passes (from Saturday noon, at least 70% of the money on the other side, only when neither market rule fired): +0.38 pts on the played card, P+ 0.57; off arm recorded alongside. Board text names both late-week rules.
+- Pending change set: 7 paths
   - ` M CURRENT_PREDICTIONS.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/late_week_refresh.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/artifact_contracts.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
-  - `A  src/nfl_ats/handle_follow_refresh_overlay.py`
-  - `M  src/nfl_ats/pick_refresh.py`
-  - `A  src/nfl_ats/public_betting_live.py`
-  - `M  tests/test_snapshot_diff.py`
+  - ` M HANDOFF.md`
+  - ` M README.md`
+  - `A  docs/follow_vs_tilts.md`
+  - `A  registry/experiments/crew-tilt-refresh-stacked-backtest/20260910T001631Z.json`
+  - `M  registry/weak_signals.json`
   - ` M tiebreaker.json`
-  - `?? registry/experiments/crew-tilt-refresh-stacked-backtest/20260910T001631Z.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
