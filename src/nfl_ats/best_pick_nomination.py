@@ -28,6 +28,11 @@ separately measured, the combination is not. Flagged here and in
 ``docs/best_pick_ranker.md`` rather than silently presented as identical to
 chooser 6.
 
+**Served since 2026-09-09: :func:`nominate_v2_small_spread`**, the same rule
+restricted to candidates whose frozen decision spread is 6.5 points or less
+(``docs/best_pick_bucket_confidence.md``, arm B2). :func:`nominate_v2` itself
+keeps running unrestricted as the paired OFF arm under :data:`CHALLENGER_ID`.
+
 SIDES NEVER CHANGE. This module only decides WHICH game gets the week's
 Best Pick nomination; every game's own forced pick still comes from the
 active model, exactly as published. Best Pick selection (both v1 and v2)
@@ -103,6 +108,8 @@ from nfl_ats.recorder_override import replace_week_rows, resolve_recording_forec
 NOMINATION_RIDGE_ALPHA = 2_000.0
 
 NOMINATION_V2_ENABLED = True
+
+SERVED_SPREAD_THRESHOLD = 7.0
 
 CHALLENGER_ID = "best_pick_nomination_v2"
 
@@ -250,13 +257,24 @@ def fit_candidate_probabilities(
 
 @dataclass(frozen=True)
 class NominationV2Result:
-    """One week's v2 nomination, plus everything needed to disclose it."""
+    """One week's v2 nomination, plus everything needed to disclose it.
+
+    ``spread_threshold`` is ``None`` for the unrestricted rule and the
+    excluded-at-or-above magnitude for the served small-spread rule
+    (:func:`nominate_v2_small_spread`); ``spread_fallback`` says that screen
+    found no eligible game and the week fell back to the unrestricted pool;
+    ``base_game_id`` is the unrestricted rule's own nominee, kept so the paired
+    OFF arm can be disclosed without refitting.
+    """
 
     game_id: str
     n_tied_at_max: int
     tie_break: str
     probability_table: pd.DataFrame
     dispersion: DispersionPool
+    spread_threshold: float | None = None
+    spread_fallback: bool = False
+    base_game_id: str | None = None
 
 
 def _select_nominee(
@@ -468,6 +486,174 @@ def nominate_v2(
 
 
 @dataclass(frozen=True)
+class SpreadEligibilityResult:
+    """A v2 nominee re-chosen after a spread screen, plus its audit table."""
+
+    game_id: str
+    n_tied_at_max: int
+    tie_break: str
+    probability_table: pd.DataFrame
+    excluded_game_ids: tuple[str, ...]
+    fallback_to_v2: bool
+    base_v2_game_id: str
+
+
+def apply_spread_eligibility(
+    predictions: pd.DataFrame,
+    base: NominationV2Result,
+    *,
+    threshold: float,
+) -> SpreadEligibilityResult:
+    """Re-choose inside v2's own pool after dropping absolute spreads of ``threshold`` or more.
+
+    ``spread_line`` is the card's frozen decision-line input. The transform uses
+    its absolute magnitude only; it does not read outcomes, closing lines,
+    post-kickoff data, or even the card's pick side/probability. When every
+    v2-eligible game is excluded the unmodified v2 pool is restored, so the
+    forced weekly nomination is never dropped.
+    """
+
+    if not np.isfinite(threshold) or threshold <= 0:
+        raise ValueError("Best-Pick spread eligibility threshold must be finite and positive")
+    required_predictions = {"game_id", "spread_line"}
+    missing_predictions = sorted(required_predictions.difference(predictions.columns))
+    if missing_predictions:
+        raise DataContractError(
+            "Best-Pick spread eligibility is missing card columns: "
+            f"{', '.join(missing_predictions)}"
+        )
+    if predictions["game_id"].astype(str).duplicated().any():
+        raise DataContractError("Best-Pick spread eligibility card contains duplicate games")
+
+    required_table = {"game_id", "candidate_dist", "spread_std", "pool_pass"}
+    missing_table = sorted(required_table.difference(base.probability_table.columns))
+    if missing_table:
+        raise DataContractError(
+            f"Best-Pick v2 probability table is missing columns: {', '.join(missing_table)}"
+        )
+
+    spreads = predictions[["game_id", "spread_line"]].copy()
+    spreads["game_id"] = spreads["game_id"].astype(str)
+    spreads["spread_line"] = pd.to_numeric(spreads["spread_line"], errors="coerce")
+    if not np.isfinite(spreads["spread_line"].to_numpy(dtype=float)).all():
+        raise DataContractError("Best-Pick spread eligibility found a non-finite decision spread")
+
+    table = base.probability_table.copy()
+    table["game_id"] = table["game_id"].astype(str)
+    table = table.merge(spreads, on="game_id", how="left", validate="one_to_one")
+    if len(table) != len(spreads) or table["spread_line"].isna().any():
+        raise DataContractError("Best-Pick spread eligibility join dropped or duplicated games")
+
+    v2_pool = table["pool_pass"].astype(bool)
+    if not bool(v2_pool.any()):
+        raise DataContractError("Best-Pick v2 eligibility pool contains no candidates")
+    table["spread_eligible"] = table["spread_line"].abs().lt(threshold)
+    screened_pool = v2_pool & table["spread_eligible"]
+    fallback_to_v2 = not bool(screened_pool.any())
+    final_pool = v2_pool if fallback_to_v2 else screened_pool
+
+    nominee, n_tied, tie_break = select_nominee(table.loc[final_pool])
+    excluded = tuple(
+        sorted(table.loc[v2_pool & ~table["spread_eligible"], "game_id"].astype(str).tolist())
+    )
+    return SpreadEligibilityResult(
+        game_id=nominee,
+        n_tied_at_max=n_tied,
+        tie_break=tie_break,
+        probability_table=table.sort_values("game_id").reset_index(drop=True),
+        excluded_game_ids=excluded,
+        fallback_to_v2=fallback_to_v2,
+        base_v2_game_id=base.game_id,
+    )
+
+
+def _screened_dispersion(base: DispersionPool, eligible_game_ids: set[str]) -> DispersionPool:
+    """v2's dispersion pool with ``pool_pass`` narrowed to the served eligibility."""
+
+    frame = base.frame.copy()
+    frame["pool_pass"] = frame["pool_pass"].astype(bool) & frame["game_id"].astype(str).isin(
+        eligible_game_ids
+    )
+    return DispersionPool(
+        frame=frame,
+        fallback=base.fallback,
+        fallback_reason=base.fallback_reason,
+        n_games=base.n_games,
+        n_missing=base.n_missing,
+        n_pool_pass=int(frame["pool_pass"].sum()),
+    )
+
+
+def nominate_v2_small_spread(
+    predictions: pd.DataFrame,
+    features: pd.DataFrame,
+    *,
+    market_root: Path,
+    season: int,
+    week: int,
+    regressor: str,
+    feature_profile: MarginFeatureProfile,
+    min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
+    ridge_alpha: float = NOMINATION_RIDGE_ALPHA,
+    threshold: float = SERVED_SPREAD_THRESHOLD,
+) -> NominationV2Result | None:
+    """The SERVED Best Pick rule: v2 restricted to spreads of 6.5 or less.
+
+    Owner decision 2026-09-09 (``docs/best_pick_bucket_confidence.md``, arm B2,
+    artifact ``artifacts/best_pick_bucket_confidence/20260909T233823Z``): v2 sent
+    25.2% of its 107 archive nominations into spreads of 7 or more, where the
+    served stream hit 48.15% against 59.21% on its small-spread nominations.
+    Restricting the pool scored 60/102 against v2's 58/102 -- +1.96 Best-Pick
+    accuracy points, week-blocked ``probability_positive`` 0.688 -- and per
+    ``AGENTS.md`` a forced weekly nomination plays the favoured side of that bet.
+
+    Sides never change; only which game carries the star. The candidate
+    probabilities, the below-median-dispersion pool, the ranking score and the
+    tie-break are :func:`nominate_v2`'s byte-for-byte; the only difference is
+    that a candidate at ``threshold`` points or more is not eligible for the
+    star. The unrestricted rule keeps recording as the paired OFF arm under
+    :data:`CHALLENGER_ID`.
+    """
+
+    base = nominate_v2(
+        predictions,
+        features,
+        market_root=market_root,
+        season=season,
+        week=week,
+        regressor=regressor,
+        feature_profile=feature_profile,
+        min_train_games=min_train_games,
+        ridge_alpha=ridge_alpha,
+    )
+    if base is None:
+        return None
+    screened = apply_spread_eligibility(predictions, base, threshold=threshold)
+    eligible = set(
+        screened.probability_table.loc[
+            screened.probability_table["spread_eligible"].astype(bool), "game_id"
+        ]
+        .astype(str)
+        .tolist()
+    )
+    dispersion = (
+        base.dispersion
+        if screened.fallback_to_v2
+        else _screened_dispersion(base.dispersion, eligible)
+    )
+    return NominationV2Result(
+        game_id=screened.game_id,
+        n_tied_at_max=screened.n_tied_at_max,
+        tie_break=screened.tie_break,
+        probability_table=screened.probability_table,
+        dispersion=dispersion,
+        spread_threshold=float(threshold),
+        spread_fallback=screened.fallback_to_v2,
+        base_game_id=screened.base_v2_game_id,
+    )
+
+
+@dataclass(frozen=True)
 class NominationV3Result:
     """One week's v3 nomination -- same fitting and eligibility pool as v2,
     but v3's own dispersion-tiebreak-free ranking rule (:func:`select_nominee_v3`)."""
@@ -571,17 +757,30 @@ def nomination_v3_tie_note(result: NominationV3Result) -> str:
 
 NOMINATION_V2_METHOD_SENTENCE = "nominated by calibrated probability among low-disagreement games"
 
+NOMINATION_SMALL_SPREAD_CLAUSE = " with a spread of six and a half or less"
+
+NOMINATION_SMALL_SPREAD_FALLBACK_CLAUSE = (
+    " (no game in this week's pool had a spread that small, so the star came from the full pool)"
+)
+
 
 def nomination_v2_disclosure_note(result: NominationV2Result) -> str:
-    """The card-facing sentence disclosing the v2 nomination method.
+    """The card-facing sentence disclosing the served nomination method.
 
-    Always leads with :data:`NOMINATION_V2_METHOD_SENTENCE` verbatim, then
+    Always leads with :data:`NOMINATION_V2_METHOD_SENTENCE` verbatim, then names
+    the served spread restriction (or says the week fell back past it), then
     states the dispersion-pool fallback (if this week fell back to the full
     game set) and the tie state (via :func:`nomination_v2_tie_note`) -- so
     the disclosure never implies a filter that did not actually apply.
     """
 
     sentence = NOMINATION_V2_METHOD_SENTENCE
+    if result.spread_threshold is not None:
+        sentence += (
+            NOMINATION_SMALL_SPREAD_FALLBACK_CLAUSE
+            if result.spread_fallback
+            else NOMINATION_SMALL_SPREAD_CLAUSE
+        )
     dispersion = result.dispersion
     if dispersion.fallback:
         reason = (

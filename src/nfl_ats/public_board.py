@@ -2626,9 +2626,10 @@ _CHALLENGER_BLURBS: dict[str, str] = {
         "arm and one member of the published three-adjustment policy."
     ),
     "best_pick_nomination_v2": (
-        "Chooses which single game gets the week's bonus Best Pick using calibrated win "
-        "probability among the games the model and market agree on most, instead of the "
-        "old rule (how much the edge survives a moving line)."
+        "Chooses the week's bonus Best Pick by calibrated win probability among the games "
+        "the model and market agree on most, with no limit on how big the spread is. The "
+        "played card now adds that limit, so this tracks the star it would have given "
+        "otherwise, on the same weeks."
     ),
     "injury_value_lost_tilt_overlay": (
         "Nudges the pick toward whichever team lost less value to injury, using a "
@@ -3061,17 +3062,19 @@ def _best_pick_preview_sentence(
             "Could not be computed this week (not enough walk-forward training history "
             "yet, or no market snapshot available)."
         )
-    v2_team = _team_for_game(predictions, nomination.v2_result.game_id)
-    if nomination.active_rule == "v2":
+    result = nomination.v2_result
+    unrestricted_id = result.base_game_id if result.base_game_id is not None else result.game_id
+    v2_team = _team_for_game(predictions, unrestricted_id)
+    if nomination.active_rule == "v2" and result.spread_threshold is None:
         team_text = v2_team if v2_team else "this week's nominated game"
         return f"This IS the rule actually used this week: it nominates {team_text} for Best Pick."
-    v1_team = _team_for_game(predictions, nomination.v1_game_id)
-    if v2_team and v1_team and v2_team == v1_team:
+    played_team = _team_for_game(predictions, nomination.active_game_id)
+    if v2_team and played_team and v2_team == played_team:
         return f"This week it agrees with the rule now in use: both nominate {v2_team}."
     if v2_team:
         return (
             f"This week it would nominate {v2_team}, but the rule actually played "
-            f"nominates {v1_team or 'a different game'} instead."
+            f"nominates {played_team or 'a different game'} instead."
         )
     return "No nomination this week (playoff week, or no line-sweep artifact yet)."
 

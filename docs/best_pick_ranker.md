@@ -760,3 +760,62 @@ against the unfiltered parent — arguably more so, given how few weeks
 actually distinguish the two rules. 2026 prospective evidence (`nfl-ats
 prospective-score`, all three of v1/v2/v3 recorded independently) is the
 next real look, and it needs no rotation-registry window.
+
+## Served rule change, 2026-09-09 — v2 restricted to spreads of 6.5 or less
+
+The nomination rule the card actually plays is no longer bare v2. It is
+`nfl_ats.best_pick_nomination.nominate_v2_small_spread`: v2's own candidate
+probabilities, v2's own below-median cross-book dispersion pool, v2's own
+ranking score and v2's own tie-break, with candidates whose frozen decision
+spread is 7 points or more removed from the pool before the nominee is
+chosen (lines are half-points, so that is "6.5 or less"). If a week ever has
+no eligible small-spread candidate the unrestricted pool is restored, so the
+forced weekly nomination is never dropped; over the 107 archive weeks that
+fallback never fired (mean pool 7.59 games, 5.88 of them small).
+
+**Why.** `docs/best_pick_bucket_confidence.md` (arm B2, artifact
+`artifacts/best_pick_bucket_confidence/20260909T233823Z`) measured bare v2
+sending 27 of its 107 archive nominations — 25.2% — into spreads of 7 and up,
+where the served stream hits 48.15% against 59.21% on its small-spread
+nominations. Restricting the pool scores **60/102 against v2's 58/102**:
++1.96 Best-Pick accuracy points, week-blocked 95% [-5.88, +9.80],
+`probability_positive` 0.688, nominee differs in 26 of 102 paired weeks. That
+interval contains zero and the cell is recorded `unresolved_below_power`; per
+`AGENTS.md` that is not grounds to decline a forced weekly nomination, and
+the expected-value call is the restricted rule.
+
+This is a RANKING change, not a side change. Every game's forced pick is
+exactly what it was; only which single game carries the ★ can move.
+
+**What changed in code.**
+
+- `nfl_ats.best_pick_nomination.SERVED_SPREAD_THRESHOLD = 7.0` and
+  `nominate_v2_small_spread`, which composes `nominate_v2` with
+  `apply_spread_eligibility` — the screen that used to live in
+  `nfl_ats.best_pick_big_spread_challenger`, moved here so the served rule
+  and the 10-point side-ledger challenger share one implementation.
+- `nfl_ats.card_view`'s `nominate_v2_fn` default (the single place
+  `publishing.py`, `public_board.py`, `board_content.py`, `clv.py` and the
+  waterfall feed all resolve the nomination through) is the restricted rule,
+  and `publishing._publication_context` passes it explicitly.
+- `NominationV2Result` gained `spread_threshold`, `spread_fallback` and
+  `base_game_id` (the unrestricted nominee), so the card's disclosure
+  sentence and the board's challenger preview can both tell the truth
+  without refitting.
+- The disclosed method sentence gains "with a spread of six and a half or
+  less" (and says so plainly when a week falls back past the restriction).
+  The board assistant's Best Pick glossary entry matches.
+- The served result's dispersion frame carries the RESTRICTED `pool_pass`, so
+  the Sunday re-nomination arm (`best_pick_sunday_renomination`) re-chooses
+  inside the same pool the star was drawn from rather than a wider one.
+
+**What changed in the ledgers.** The played ★ still lands on the primary
+paper-decision ledger as the active model's own `is_best_pick` flag.
+`best_pick_nomination_v2` keeps recording the UNRESTRICTED v2 nominee,
+unchanged, by the same recorder — from 2026-09-09 it is the paired OFF arm
+rather than a mirror of the played star, and its registration says so.
+Rows written before that date were the played star, so those weeks are dead
+heats against the primary ledger and carry no information about the
+restriction. `best_pick_big_spread_eligibility` keeps its 10-point threshold
+and its whole history; its registration records that the served rule now
+applies the same mechanism at the boundary the diagnosis actually locates.

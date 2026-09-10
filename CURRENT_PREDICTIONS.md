@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from the synchronized weak stack model, 2026-09-09 23:13 UTC.
+Published from the synchronized weak stack model, 2026-09-10 00:39 UTC.
 
-<!-- publication: model_id=c657058903f3232b published_at_utc=2026-09-09T23:13:48.616141+00:00 -->
+<!-- publication: model_id=c657058903f3232b published_at_utc=2026-09-10T00:39:32.047755+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -10,7 +10,7 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** three situational rules run independently against the computer's first pick and flip it once when any one of them fires: coach fade, division revenge, and player arrests. This week they changed 5 picks. The spread-only threshold adjustment is retired because it has no explained mechanism. Its archive comparison reuses 127 similar combinations scored on the same games; it is not independent evidence of future accuracy. The planning estimate remains ≈55%. Paired prospective tracking against the former four-adjustment card begins at the Week 1 lock. Rules: coach fade, division revenge tilt, player arrests back side policy, bye edge fade, forecast cold visitor tilt, pbp08 protection mismatch tilt, interim hc first game tilt, tank zone fade tilt, precip high total tilt. See docs/spread_gap_zone_retired.md.
 
-**Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games.
+**Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games with a spread of six and a half or less.
 
 | Date        | Matchup    | ATS prediction   | Decision score   |
 |:------------|:-----------|:-----------------|:-----------------|

@@ -1,5 +1,21 @@
 # Big-spread Best-Pick eligibility challenger
 
+> **Status update, 2026-09-09.** The played Best Pick is no longer the
+> unrestricted v2 nomination this document was written against. The same
+> mechanism at a tighter boundary — exclude 7 points and up rather than 10 —
+> is now the SERVED rule (`nfl_ats.best_pick_nomination.nominate_v2_small_spread`;
+> see `docs/best_pick_ranker.md`, "Served rule change, 2026-09-09", and the
+> lane-U write-up `docs/best_pick_bucket_confidence.md`, arm B2: 60/102 against
+> v2's 58/102, +1.96 accuracy points, week-blocked `probability_positive`
+> 0.688). This 10-point challenger keeps recording unchanged at
+> `BIG_SPREAD_THRESHOLD = 10.0`, and its whole prospective history is kept; it
+> is now a second, weaker screen tracked beside the served one, and the two
+> share one implementation
+> (`nfl_ats.best_pick_nomination.apply_spread_eligibility`, moved out of this
+> module). Everything below describes the state before that change; the
+> "played Best Pick remains the live v2 nomination" sentence is superseded by
+> this note.
+
 ## Decision
 
 `best_pick_big_spread_eligibility` is registered `ACTIVE_PROSPECTIVE` as a

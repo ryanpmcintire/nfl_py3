@@ -883,7 +883,7 @@ def test_v2_nomination_and_the_coach_fade_overlay_do_not_interfere(
         probability_table=pd.DataFrame(),
         dispersion=DispersionPool(pd.DataFrame(), False, None, 3, 0, 2),
     )
-    monkeypatch.setattr(publishing_module, "nominate_v2", lambda *a, **k: fixed_v2)
+    monkeypatch.setattr(publishing_module, "nominate_v2_small_spread", lambda *a, **k: fixed_v2)
 
     destination = tmp_path / "CURRENT_PREDICTIONS.md"
     result = _publish_with_fresh_empty_arrest(

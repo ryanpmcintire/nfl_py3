@@ -199,9 +199,13 @@ falling back to the full week on missing data or an empty strict filter. v2
 additionally tie-breaks on lower dispersion before falling through to
 ascending `game_id`; v3 (and the historically-scored "chooser 6",
 `dispersion_filtered_candidate`) breaks ties on ascending `game_id` alone.
-The disclosed method sentence is verbatim `NOMINATION_V2_METHOD_SENTENCE`,
-"nominated by calibrated probability among low-disagreement games"
-(`src/nfl_ats/best_pick_nomination.py:583`).
+The disclosed method sentence leads with `NOMINATION_V2_METHOD_SENTENCE`,
+"nominated by calibrated probability among low-disagreement games". Since
+2026-09-09 the served rule is `nominate_v2_small_spread` — the same ranking
+inside the same pool, restricted to spreads of 6.5 or less — so the sentence
+continues "with a spread of six and a half or less"
+(`NOMINATION_SMALL_SPREAD_CLAUSE`; see `docs/best_pick_ranker.md`, "Served
+rule change, 2026-09-09").
 
 Two registry cells already measure this exact mechanism, both on the
 identical 1,537-game/107-week paired opener archive, seasons 2020-2025

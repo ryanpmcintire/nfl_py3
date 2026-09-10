@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T00:35:44.521087+00:00`
+Refreshed at: `2026-09-10T00:46:00.373021+00:00`
 
 ## Start here
 
@@ -20,15 +20,29 @@ Refreshed at: `2026-09-10T00:35:44.521087+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6a0dcff5fe08` — Follow rule vs the six tilts: precedence is not the lever, the 0.5-1.0 band is (market side wins 42-46% there, 52-59% above 1.0); a threshold re-read on the live card is running
-- Pending change set: 7 paths
-  - ` M CURRENT_PREDICTIONS.md`
-  - ` M registry/weak_signals.json`
-  - `M  src/nfl_ats/cli_commands/data.py`
-  - `M  src/nfl_ats/cli_commands/features.py`
-  - `M  src/nfl_ats/cli_common.py`
-  - `M  src/nfl_ats/players.py`
-  - ` M tiebreaker.json`
+- Baseline commit: `b8a50e11ea2f` — Injury rows become visible at their first capture instant instead of kickoff minus 24h when nflverse carries no date_modified; Week 1 rebuild now passes lineage before Thursday, SF at LA +0.4 pp, no flip
+- Pending change set: 24 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/best_pick_big_spread_challenger.md`
+  - `M  docs/best_pick_bucket_confidence.md`
+  - `M  docs/best_pick_followup.md`
+  - `M  docs/best_pick_ranker.md`
+  - `M  docs/findings.html`
+  - `A  docs/follow_news_gate.md`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/model.html`
+  - `MM registry/weak_signals.json`
+  - `A  registry/weak_signals.json.lock`
+  - `M  src/nfl_ats/best_pick_big_spread_challenger.py`
+  - `M  src/nfl_ats/best_pick_nomination.py`
+  - `M  src/nfl_ats/board_assistant.py`
+  - `M  src/nfl_ats/card_view.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -48,7 +62,7 @@ The 52.29% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-09T23:49:50.538161+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `c657058903f3232b`, published `2026-09-10T00:39:32.047755+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

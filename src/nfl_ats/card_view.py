@@ -8,9 +8,11 @@ without ever rewriting that file:
 1. The frozen four-member production policy evaluates coach fade, division
    revenge, player arrests, and spread-gap independently against the raw card,
    unions their game ids, and complements each affected pick exactly once.
-2. Best Pick nomination v2 (:mod:`nfl_ats.best_pick_nomination`) usually
-   replaces the incumbent ``sweep_robustness`` signal (v1) for choosing WHICH
-   game gets the week's bonus pick.
+2. Best Pick nomination (:mod:`nfl_ats.best_pick_nomination`) usually replaces
+   the incumbent ``sweep_robustness`` signal (v1) for choosing WHICH game gets
+   the week's bonus pick. The served rule is
+   :func:`~nfl_ats.best_pick_nomination.nominate_v2_small_spread` (v2's own
+   ranking, restricted to spreads of 6.5 or less, owner decision 2026-09-09).
 
 Before this module existed, that composition was implemented three times:
 ``nfl_ats.publishing`` (the tracked Markdown card), ``nfl_ats.public_board``
@@ -49,7 +51,7 @@ from nfl_ats.best_pick import best_pick_tie_note, select_best_pick
 from nfl_ats.best_pick_nomination import (
     NOMINATION_V2_ENABLED,
     NominationV2Result,
-    nominate_v2,
+    nominate_v2_small_spread,
     nomination_v2_disclosure_note,
     nomination_v2_tie_note,
 )
@@ -256,13 +258,13 @@ def compute_v2_nomination(
     metadata: Mapping[str, Any],
     data_root: Path | None,
     *,
-    nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2,
+    nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
 ) -> NominationV2Result | None:
-    """The plain, uncached v2 computation -- what every one-shot caller
+    """The plain, uncached served computation -- what every one-shot caller
     (publish, static-site render) wants. ``nominate_v2_fn`` is injectable so
     a caller can swap in a cached/mocked implementation (tests patch this at
-    the CALLER's own module scope, e.g. ``publishing.nominate_v2``, and pass
-    it through here explicitly, rather than patching this module).
+    the CALLER's own module scope, e.g. ``publishing.nominate_v2_small_spread``,
+    and pass it through here explicitly, rather than patching this module).
 
     Degrades to ``None`` -- never raises -- when the feature table cannot be
     read, or ``nominate_v2_fn`` itself raises ``ValueError``/
@@ -302,7 +304,7 @@ def resolve_nomination(
     data_root: Path | None,
     *,
     v2_result: NominationV2Result | None = _UNSET,
-    nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2,
+    nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
 ) -> BestPickNomination:
     """Both rules' nominations for one week, plus which one is played.
 
@@ -368,7 +370,7 @@ def resolve_card_view(
     data_root: Path | None = None,
     now: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
-    nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2,
+    nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
 ) -> CardView:
     """Apply the production OR-union and resolve the Best Pick nomination.
 

@@ -161,7 +161,7 @@ higher expected Best-Pick accuracy.** It scores **58.82% (60/102)** against the
 served nominator's **56.86% (58/102)** on the same paired weeks: **+1.96
 accuracy points, `probability_positive` 0.688**. On a forced weekly nomination
 that is a 69/31 bet, and per `AGENTS.md` a promotion bar is not a decision bar,
-so the expected-value call is B2. **It is not wired**, per this lane's brief,
+so the expected-value call is B2. **Served the same evening** (see docs/best_pick_ranker.md);
 and on the current Week 1 card it would change nothing (below). B1 is a dead
 heat and B3 leans against the incumbent.
 
@@ -283,7 +283,7 @@ on the card.** The dispersion pool holds 8 games this week and **all 8 are at
 play B1's and B3's reliability terms are constants that cannot re-rank anything.
 Serving B2 would change **no pick and no star** in Week 1.
 
-### What serving B2 would take (NOT wired)
+### What serving B2 took (served 2026-09-09)
 
 1. **The rule already exists.**
    `nfl_ats.best_pick_big_spread_challenger.apply_big_spread_eligibility`

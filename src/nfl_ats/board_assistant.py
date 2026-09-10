@@ -165,7 +165,8 @@ GLOSSARY: tuple[GlossaryEntry, ...] = (
     GlossaryEntry(
         "Best Pick",
         "The pool scores one Best Pick per week. This board nominates "
-        "it by calibrated probability among low-disagreement games.",
+        "it by calibrated probability among low-disagreement games "
+        "with a spread of six and a half or less.",
     ),
     GlossaryEntry(
         "confidence",

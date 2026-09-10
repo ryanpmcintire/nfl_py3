@@ -7,22 +7,29 @@ at least 10 points) below the unfiltered baseline.  The result remains
 the document's direct policy lead at no rotation-window cost by recording an
 alternative weekly Best Pick prospectively.
 
-The incumbent published nomination remains v2.  This challenger composes one
-additional eligibility rule with v2, after v2's below-median-dispersion pool is
-built: exclude candidates whose absolute decision spread is at least
-``BIG_SPREAD_THRESHOLD``.  Candidate probabilities, primary ranking, and tie
-breaks are otherwise v2 byte-for-byte.  If every v2-eligible game is a big
-spread, fall back to the unmodified v2 pool so the forced weekly nomination is
-never dropped.
+This challenger composes one additional eligibility rule with v2, after v2's
+below-median-dispersion pool is built: exclude candidates whose absolute
+decision spread is at least ``BIG_SPREAD_THRESHOLD``.  Candidate probabilities,
+primary ranking, and tie breaks are otherwise v2 byte-for-byte.  If every
+v2-eligible game is a big spread, fall back to the unmodified v2 pool so the
+forced weekly nomination is never dropped.
 
-Only the separate prospective challenger ledger is written.  Nothing in this
-module is imported by ``nfl_ats.publishing`` or ``nfl_ats.card_view``, and no
-published prediction, side, probability, or ``is_best_pick`` flag is changed.
+**Superseded on the played card, 2026-09-09.** The same mechanism at the
+boundary ``docs/spread_hole_diagnosis.md`` actually locates -- exclude 7 points
+and up -- is now the SERVED nomination rule
+(``nfl_ats.best_pick_nomination.nominate_v2_small_spread``,
+``docs/best_pick_bucket_confidence.md``), and both rules share this module's
+former screen, now ``nfl_ats.best_pick_nomination.apply_spread_eligibility``.
+This 10-point arm keeps recording unchanged so its prospective history is not
+lost; it is no longer the only spread-screened nominator.
+
+Only the separate prospective challenger ledger is written here.  No published
+prediction, side, probability, or ``is_best_pick`` flag is changed by this
+module.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -31,7 +38,14 @@ import numpy as np
 import pandas as pd
 
 from nfl_ats.active_model import load_active_ats_model
-from nfl_ats.best_pick_nomination import NominationV2Result, nominate_v2, select_nominee
+from nfl_ats.best_pick_nomination import (
+    NominationV2Result,
+    apply_spread_eligibility,
+    nominate_v2,
+)
+from nfl_ats.best_pick_nomination import (
+    SpreadEligibilityResult as BigSpreadNominationResult,
+)
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
@@ -53,86 +67,15 @@ CHALLENGER_ID = "best_pick_big_spread_eligibility"
 BIG_SPREAD_THRESHOLD = 10.0
 
 
-@dataclass(frozen=True)
-class BigSpreadNominationResult:
-    """The challenger nominee and an auditable copy of its eligibility table."""
-
-    game_id: str
-    n_tied_at_max: int
-    tie_break: str
-    probability_table: pd.DataFrame
-    excluded_game_ids: tuple[str, ...]
-    fallback_to_v2: bool
-    base_v2_game_id: str
-
-
 def apply_big_spread_eligibility(
     predictions: pd.DataFrame,
     base: NominationV2Result,
     *,
     threshold: float = BIG_SPREAD_THRESHOLD,
 ) -> BigSpreadNominationResult:
-    """Apply the predeclared spread screen to an already-computed v2 result.
+    """This challenger's 10-point screen, on the shared eligibility primitive."""
 
-    ``spread_line`` is the card's frozen decision-line input.  The transform
-    uses its absolute magnitude only; it does not read outcomes, closing lines,
-    post-kickoff data, or even the card's pick side/probability.
-    """
-
-    if not np.isfinite(threshold) or threshold <= 0:
-        raise ValueError("Big-spread eligibility threshold must be finite and positive")
-    required_predictions = {"game_id", "spread_line"}
-    missing_predictions = sorted(required_predictions.difference(predictions.columns))
-    if missing_predictions:
-        raise DataContractError(
-            "Best-Pick big-spread challenger is missing card columns: "
-            f"{', '.join(missing_predictions)}"
-        )
-    if predictions["game_id"].astype(str).duplicated().any():
-        raise DataContractError("Best-Pick big-spread challenger card contains duplicate games")
-
-    required_table = {"game_id", "candidate_dist", "spread_std", "pool_pass"}
-    missing_table = sorted(required_table.difference(base.probability_table.columns))
-    if missing_table:
-        raise DataContractError(
-            f"Best-Pick v2 probability table is missing columns: {', '.join(missing_table)}"
-        )
-
-    spreads = predictions[["game_id", "spread_line"]].copy()
-    spreads["game_id"] = spreads["game_id"].astype(str)
-    spreads["spread_line"] = pd.to_numeric(spreads["spread_line"], errors="coerce")
-    if not np.isfinite(spreads["spread_line"].to_numpy(dtype=float)).all():
-        raise DataContractError(
-            "Best-Pick big-spread challenger found a non-finite decision spread"
-        )
-
-    table = base.probability_table.copy()
-    table["game_id"] = table["game_id"].astype(str)
-    table = table.merge(spreads, on="game_id", how="left", validate="one_to_one")
-    if len(table) != len(spreads) or table["spread_line"].isna().any():
-        raise DataContractError("Best-Pick big-spread spread join dropped or duplicated games")
-
-    v2_pool = table["pool_pass"].astype(bool)
-    if not bool(v2_pool.any()):
-        raise DataContractError("Best-Pick v2 eligibility pool contains no candidates")
-    table["big_spread_pass"] = table["spread_line"].abs().lt(threshold)
-    challenger_pool = v2_pool & table["big_spread_pass"]
-    fallback_to_v2 = not bool(challenger_pool.any())
-    final_pool = v2_pool if fallback_to_v2 else challenger_pool
-
-    nominee, n_tied, tie_break = select_nominee(table.loc[final_pool])
-    excluded = tuple(
-        sorted(table.loc[v2_pool & ~table["big_spread_pass"], "game_id"].astype(str).tolist())
-    )
-    return BigSpreadNominationResult(
-        game_id=nominee,
-        n_tied_at_max=n_tied,
-        tie_break=tie_break,
-        probability_table=table.sort_values("game_id").reset_index(drop=True),
-        excluded_game_ids=excluded,
-        fallback_to_v2=fallback_to_v2,
-        base_v2_game_id=base.game_id,
-    )
+    return apply_spread_eligibility(predictions, base, threshold=threshold)
 
 
 def nominate_big_spread_challenger(

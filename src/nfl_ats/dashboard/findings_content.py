@@ -190,7 +190,7 @@ LEDGER_PROMOTED_CAVEAT = (
 CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "mod07_weak_signal_stack": "Model + seven-rule stat stack",
     "hc_year_one_fade_overlay": "Year-one coach fade",
-    "best_pick_nomination_v2": "Best Pick by calibrated probability",
+    "best_pick_nomination_v2": "Best Pick with no spread limit",
     "best_pick_nomination_v3": "Best Pick v3 ranker",
     "best_pick_big_spread_eligibility": "Best-Pick big-spread eligibility",
     "injury_value_lost_tilt_overlay": "Injury value-lost tilt",

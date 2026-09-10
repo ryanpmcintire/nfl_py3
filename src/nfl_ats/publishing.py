@@ -11,7 +11,7 @@ import pandas as pd
 
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.artifact_contracts import KIND_CARD, check_compatible, stamp
-from nfl_ats.best_pick_nomination import nominate_v2
+from nfl_ats.best_pick_nomination import nominate_v2_small_spread
 from nfl_ats.card_explanation import (
     OverlayFiring,
     RefreshChangeInput,
@@ -157,7 +157,7 @@ def _publication_context(
         data_root=data_root,
         now=published_at,
         require_fresh_arrest_overlay=require_fresh_arrest_overlay,
-        nominate_v2_fn=nominate_v2,
+        nominate_v2_fn=nominate_v2_small_spread,
     )
     card = _published_card(view.predictions, view.nomination.active_game_id)
     return (
@@ -670,6 +670,15 @@ def publish_active_predictions(
         "best_pick_nomination_v1_game_id": nomination.v1_game_id,
         "best_pick_nomination_v2_game_id": (
             nomination.v2_result.game_id if nomination.v2_result is not None else None
+        ),
+        "best_pick_nomination_unrestricted_game_id": (
+            nomination.v2_result.base_game_id if nomination.v2_result is not None else None
+        ),
+        "best_pick_nomination_spread_threshold": (
+            nomination.v2_result.spread_threshold if nomination.v2_result is not None else None
+        ),
+        "best_pick_nomination_spread_fallback": (
+            nomination.v2_result.spread_fallback if nomination.v2_result is not None else False
         ),
         "best_pick_nomination_v2_available": nomination.v2_result is not None,
         "historical_accuracy": active["historical_evaluation"]["accuracy"],
