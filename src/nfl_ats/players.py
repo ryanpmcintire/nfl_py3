@@ -216,12 +216,13 @@ def _injury_week_tuesday_floor_utc(kickoff_utc: pd.Timestamp) -> pd.Timestamp:
 def _injury_proxy_times(schedule: pd.DataFrame) -> pd.DataFrame:
     """Kickoff-derived per-(season, week, team) injury visibility proxy time.
 
-    Used only by ``canonicalize_injuries(timestamp_fallback="week_proxy")``.
-    Requires ``season``, ``week``, ``home_team``, ``away_team``, ``kickoff``.
-    Returns one row per team-game with ``injury_proxy_at``: that team's own
-    kickoff minus ``INJURY_PROXY_HOURS_BEFORE_KICKOFF`` hours, clamped to
-    fall no earlier than 00:00 America/New_York on the Tuesday that starts
-    that game's own NFL week, and strictly before kickoff itself.
+    Used by ``canonicalize_injuries(timestamp_fallback="week_proxy")`` and by
+    :func:`_injury_kickoff_at`. Requires ``season``, ``week``, ``home_team``,
+    ``away_team``, ``kickoff``. Returns one row per team-game with its own
+    ``kickoff`` and ``injury_proxy_at``: that team's own kickoff minus
+    ``INJURY_PROXY_HOURS_BEFORE_KICKOFF`` hours, clamped to fall no earlier
+    than 00:00 America/New_York on the Tuesday that starts that game's own
+    NFL week, and strictly before kickoff itself.
     """
 
     required = {"season", "week", "home_team", "away_team", "kickoff"}
@@ -256,7 +257,7 @@ def _injury_proxy_times(schedule: pd.DataFrame) -> pd.DataFrame:
         candidate = min(candidate, kickoff_ts - pd.Timedelta(minutes=1))
         proxy_at.append(candidate)
     long["injury_proxy_at"] = proxy_at
-    return long[["season", "week", "team", "injury_proxy_at"]]
+    return long[["season", "week", "team", "injury_proxy_at", "kickoff"]]
 
 
 def _injury_first_seen_keys(frame: pd.DataFrame) -> pd.DataFrame:
@@ -398,6 +399,24 @@ def _injury_first_seen_at(frame: pd.DataFrame, first_seen: pd.DataFrame | None) 
     )
 
 
+def _injury_kickoff_at(frame: pd.DataFrame, schedule: pd.DataFrame | None) -> pd.Series:
+    """Align each row's own team-game kickoff from ``schedule`` onto ``frame``, as UTC instants."""
+
+    empty = pd.Series(pd.NaT, index=frame.index, dtype="datetime64[ns, UTC]")
+    if schedule is None:
+        return empty
+    lookup = _injury_proxy_times(schedule)[["season", "week", "team", "kickoff"]]
+    keyed = frame.loc[:, ["season", "week", "team"]].copy()
+    keyed["season"] = pd.to_numeric(keyed["season"], errors="coerce")
+    keyed["week"] = pd.to_numeric(keyed["week"], errors="coerce")
+    keyed["team"] = keyed["team"].replace(TEAM_ABBREVIATION_ALIASES).astype("string")
+    keyed["_kickoff_row"] = np.arange(len(keyed))
+    merged = keyed.merge(
+        lookup, on=["season", "week", "team"], how="left", validate="many_to_one"
+    ).sort_values("_kickoff_row")
+    return pd.Series(pd.to_datetime(merged["kickoff"].to_numpy(), utc=True), index=frame.index)
+
+
 def canonicalize_injuries(
     frame: pd.DataFrame,
     *,
@@ -437,17 +456,17 @@ def canonicalize_injuries(
 
     ``first_seen`` (ENG-39 follow-up) is the output of
     :func:`injury_first_seen_index`: the earliest immutable-capture instant at
-    which each undated row was demonstrably public. Where that instant is
-    EARLIER than the row's kickoff-derived proxy, it replaces the proxy --
-    ``effective_observed_at = min(kickoff - INJURY_PROXY_HOURS_BEFORE_KICKOFF,
-    first_seen_capture_instant)`` -- and ``observed_at_basis`` becomes
-    ``"first_seen_capture"``, so lineage can tell an evidenced observation
-    from an assumed one. This can only ever move a row's visibility EARLIER
-    than the proxy already claimed, never later, and only to an instant the
-    row was provably readable at, so it cannot leak: a row whose first
-    capture postdates its own proxy (every season before the capture archive
-    began) keeps the proxy unchanged. Rows never seen in any capture, and
-    rows with a real ``date_modified``, are untouched.
+    which each undated row was demonstrably public. Whenever that instant is
+    strictly before the row's own kickoff, it becomes ``effective_observed_at``
+    in place of the kickoff-derived proxy -- on whichever side of the proxy it
+    falls -- and ``observed_at_basis`` becomes ``"first_seen_capture"``, so
+    lineage can tell an evidenced observation from an assumed one. A capture
+    strictly before kickoff cannot leak: it is an instant the row was provably
+    readable at, even when that instant is after the proxy's own assumed
+    visibility time (an optimistic assumption a real capture then corrects).
+    A row whose only capture postdates its own kickoff (every season before
+    the capture archive began) keeps the proxy unchanged, and so does a row
+    never seen in any capture or one with a real ``date_modified``.
 
     **Idempotency (ENG-39 follow-up):** ``frame`` may itself already be the
     output of a previous ``"week_proxy"`` canonicalization -- e.g. a
@@ -499,14 +518,23 @@ def canonicalize_injuries(
         ]
         result.loc[real_revision, "observed_at_basis"] = "date_modified"
         captured_at = _injury_first_seen_at(result, first_seen)
-        evidenced = (
-            ~real_revision
-            & captured_at.notna()
-            & (
-                result["effective_observed_at"].isna()
-                | captured_at.lt(result["effective_observed_at"])
+        if schedule is None:
+            evidenced = (
+                ~real_revision
+                & captured_at.notna()
+                & (
+                    result["effective_observed_at"].isna()
+                    | captured_at.lt(result["effective_observed_at"])
+                )
             )
-        )
+        else:
+            kickoff_at = _injury_kickoff_at(result, schedule)
+            evidenced = (
+                ~real_revision
+                & captured_at.notna()
+                & kickoff_at.notna()
+                & captured_at.lt(kickoff_at)
+            )
         result.loc[evidenced, "effective_observed_at"] = captured_at.loc[evidenced]
         result.loc[evidenced, "observed_at_basis"] = "first_seen_capture"
         result["observed_at_is_proxy"] = result["observed_at_basis"].eq("week_proxy")
@@ -583,8 +611,8 @@ def canonicalize_injuries(
     result[INJURY_FIRST_SEEN_COLUMN] = _injury_first_seen_at(result, first_seen)
     evidenced = (
         result[INJURY_FIRST_SEEN_COLUMN].notna()
-        & result["injury_proxy_at"].notna()
-        & result[INJURY_FIRST_SEEN_COLUMN].lt(result["injury_proxy_at"])
+        & result["kickoff"].notna()
+        & result[INJURY_FIRST_SEEN_COLUMN].lt(result["kickoff"])
     )
     visible_at = result["injury_proxy_at"].where(~evidenced, result[INJURY_FIRST_SEEN_COLUMN])
     result["effective_observed_at"] = result["date_modified"].where(
@@ -597,7 +625,7 @@ def canonicalize_injuries(
     )
     result["observed_at_is_proxy"] = result["observed_at_basis"].eq("week_proxy")
     result = result.loc[result["effective_observed_at"].notna()].copy()
-    result = result.drop(columns=["injury_proxy_at", INJURY_FIRST_SEEN_COLUMN])
+    result = result.drop(columns=["injury_proxy_at", "kickoff", INJURY_FIRST_SEEN_COLUMN])
     result = result.drop_duplicates().sort_values(
         ["season", "week", "team", "gsis_id", "effective_observed_at"]
     )
@@ -1676,9 +1704,10 @@ def enrich_with_player_features(
     ``date_modified``.
 
     ``injury_first_seen`` (ENG-39 follow-up, optional) is forwarded verbatim
-    to ``canonicalize_injuries``, which lowers an assumed proxy time to the
-    earliest capture instant that row was demonstrably public at. Omitting it
-    reproduces the previous behaviour exactly.
+    to ``canonicalize_injuries``, which replaces an assumed proxy time with
+    the earliest capture instant that row was demonstrably public at,
+    whenever that instant is still strictly before its own kickoff. Omitting
+    it reproduces the previous behaviour exactly.
     """
 
     if injury_timestamp_fallback not in ("drop", "week_proxy"):

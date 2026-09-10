@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T01:07:21.838891+00:00`
+Refreshed at: `2026-09-10T01:31:04.073493+00:00`
 
 ## Start here
 
@@ -20,14 +20,14 @@ Refreshed at: `2026-09-10T01:07:21.838891+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `acd27253ac7f` — Settlement: one command grades all fifteen ledgers at their own lines with daemon jobs after each game day; results no longer wait for Tuesday. Rookie-crew rule served on the refresh path below the market rules (+0.07 as wired, P+ 0.71; Week 1: one new crew, no change). Follow threshold on the played card: 1.0 beats the served 0.5 by +2.0 (P+ 0.92), the half-point band loses. Provenance: sharp-book scripts stamp their JSON.
+- Baseline commit: `451c561b36d5` — Scheduler: Thursday 17:00 refit after the afternoon injury capture (SF at LA's horizon clears Wednesday night) and a Wednesday settle so tonight's game grades tonight
 - Pending change set: 7 paths
   - ` M CURRENT_PREDICTIONS.md`
   - ` M docs/findings.html`
   - ` M docs/history.html`
   - ` M docs/index.html`
   - ` M docs/model.html`
-  - `M  scripts/capture_scheduler.py`
+  - `M  src/nfl_ats/players.py`
   - ` M tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
@@ -48,7 +48,7 @@ The 52.29% figure is the distinct secondary close-grade historical classificatio
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T00:59:08.438855+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `2e8c616b476dd0d2`, published `2026-09-10T01:07:47.585512+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 
