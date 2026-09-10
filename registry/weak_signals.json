@@ -22127,6 +22127,1630 @@
       "source": "artifacts/availability_experiments/20260813T133345Z/paired_comparisons.csv; docs/availability_confirmation.md sec 1.2 (M4); ROADMAP.md#PER-11",
       "standard_error": null
     },
+    "line_size_shrinkage_ak1_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.8855, 1.2082] accuracy points reaches or crosses zero (season-blocked [-2.6464, 1.0676]); probability_positive 0.2176 on 1104 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 0 to 6.5 points, 1104 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24674 against the incumbent's 0.24441; candidate log loss 0.68662 against 0.68197; 145 picks changed.",
+      "effect": -0.8152173913,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -2.8855055052,
+        1.2081985027
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on close games (the line inside a touchdown): 58.8% right against the opening line became 58.0% over 2020-25, changing 145 picks; about 22% likely to be an improvement.",
+      "probability_positive": 0.217575,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.0452696834
+    },
+    "line_size_shrinkage_ak1_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.1898, 5.3030] accuracy points reaches or crosses zero (season-blocked [0.0000, 5.0420]); probability_positive 0.7947 on 131 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 10.5 or more, 131 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25266 against the incumbent's 0.25657; candidate log loss 0.69854 against 0.70668; 6 picks changed.",
+      "effect": 1.5267175573,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -2.1897810219,
+        5.303030303
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the card we actually play on the big blowout lines of 10.5 points or more: 51.1% right against the opening line became 52.7% over 2020-25, changing 6 picks; about 79% likely to be an improvement.",
+      "probability_positive": 0.794675,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.854721997
+    },
+    "line_size_shrinkage_ak1_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-15.9420, 1.3889] accuracy points reaches or crosses zero (season-blocked [-13.1868, 1.6667]); probability_positive 0.0558 on 74 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of exactly 7, 74 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25102 against the incumbent's 0.25111; candidate log loss 0.69520 against 0.69570; 9 picks changed.",
+      "effect": -6.7567567568,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -15.9420289855,
+        1.3888888889
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on games priced at exactly a touchdown: 50.0% right against the opening line became 43.2% over 2020-25, changing 9 picks; about 6% likely to be an improvement.",
+      "probability_positive": 0.0558,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 4.3720773998
+    },
+    "line_size_shrinkage_ak1_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.7872, 2.6882] accuracy points reaches or crosses zero (season-blocked [-4.0816, 2.7473]); probability_positive 0.3009 on 194 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 7.5 to 10, 194 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24948 against the incumbent's 0.25346; candidate log loss 0.69212 against 0.70026; 16 picks changed.",
+      "effect": -1.0309278351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -4.7872340426,
+        2.688172043
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on games priced between 7.5 and 10 points: 52.6% right against the opening line became 51.5% over 2020-25, changing 16 picks; about 30% likely to be an improvement.",
+      "probability_positive": 0.300875,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.9255403124
+    },
+    "line_size_shrinkage_ak1_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.5116, 0.6081] accuracy points reaches or crosses zero (season-blocked [-2.6565, 0.7979]); probability_positive 0.1229 on 1503 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on all lines, 1503 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24782 against the incumbent's 0.24696; candidate log loss 0.68880 against 0.68716; 176 picks changed.",
+      "effect": -0.9314703925,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -2.5115664243,
+        0.6081286801
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on every game: 56.9% right against the opening line became 56.0% over 2020-25, changing 176 picks; about 12% likely to be an improvement.",
+      "probability_positive": 0.122925,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.7998994169
+    },
+    "line_size_shrinkage_ak1_opener_corpus_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.7658, 0.6228] accuracy points reaches or crosses zero (season-blocked [-1.0573, -0.0917]); probability_positive 0.1863 on 1104 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 0 to 6.5 points, 1104 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24536 against the incumbent's 0.24441; candidate log loss 0.68396 against 0.68197; 38 picks changed.",
+      "effect": -0.5434782609,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -1.7657992565,
+        0.6227758007
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on close games (the line inside a touchdown): 58.8% right against the opening line became 58.2% over 2020-25, changing 38 picks; about 19% likely to be an improvement.",
+      "probability_positive": 0.186325,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.6053499945
+    },
+    "line_size_shrinkage_ak1_opener_corpus_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.6260, 3.4483] accuracy points reaches or crosses zero (season-blocked [0.0000, 2.5424]); probability_positive 0.7146 on 131 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 10.5 or more, 131 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25204 against the incumbent's 0.25657; candidate log loss 0.69716 against 0.70668; 3 picks changed.",
+      "effect": 0.7633587786,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -1.6260162602,
+        3.4482758621
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the card we actually play on the big blowout lines of 10.5 points or more: 51.1% right against the opening line became 51.9% over 2020-25, changing 3 picks; about 71% likely to be an improvement.",
+      "probability_positive": 0.714625,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.3159064505
+    },
+    "line_size_shrinkage_ak1_opener_corpus_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-17.1429, 0.0000] accuracy points reaches or crosses zero (season-blocked [-16.1290, 1.6667]); probability_positive 0.0321 on 74 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of exactly 7, 74 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25096 against the incumbent's 0.25111; candidate log loss 0.69548 against 0.69570; 10 picks changed.",
+      "effect": -8.1081081081,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -17.1428571429,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on games priced at exactly a touchdown: 50.0% right against the opening line became 41.9% over 2020-25, changing 10 picks; about 3% likely to be an improvement.",
+      "probability_positive": 0.032075,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 4.4748963425
+    },
+    "line_size_shrinkage_ak1_opener_corpus_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.8889, 2.7476] accuracy points reaches or crosses zero (season-blocked [-3.6852, 3.9326]); probability_positive 0.3811 on 194 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 7.5 to 10, 194 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25280 against the incumbent's 0.25346; candidate log loss 0.69907 against 0.70026; 15 picks changed.",
+      "effect": -0.5154639175,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.8888888889,
+        2.7476322021
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on games priced between 7.5 and 10 points: 52.6% right against the opening line became 52.1% over 2020-25, changing 15 picks; about 38% likely to be an improvement.",
+      "probability_positive": 0.381075,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.7175564389
+    },
+    "line_size_shrinkage_ak1_opener_corpus_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.7544, 0.1334] accuracy points reaches or crosses zero (season-blocked [-1.7710, -0.0688]); probability_positive 0.0470 on 1503 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on all lines, 1503 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24718 against the incumbent's 0.24696; candidate log loss 0.68763 against 0.68716; 66 picks changed.",
+      "effect": -0.7984031936,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -1.7544155798,
+        0.1334245082
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on every game: 56.9% right against the opening line became 56.1% over 2020-25, changing 66 picks; about 5% likely to be an improvement.",
+      "probability_positive": 0.047025,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.4819723545
+    },
+    "line_size_shrinkage_ak1_opener_corpus_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.1139, 0.0000] accuracy points reaches or crosses zero (season-blocked [-3.0698, -0.1889]); probability_positive 0.0237 on 1104 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 0 to 6.5 points, 1104 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24966 against the incumbent's 0.24899; candidate log loss 0.69278 against 0.69137; 73 picks changed.",
+      "effect": -1.5398550725,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.1139422026,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on close games (the line inside a touchdown): 56.2% right against the opening line became 54.6% over 2020-25, changing 73 picks; about 2% likely to be an improvement.",
+      "probability_positive": 0.0237,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.7925152758
+    },
+    "line_size_shrinkage_ak1_opener_corpus_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.3260, 8.8710] accuracy points reaches or crosses zero (season-blocked [-3.0769, 10.8527]); probability_positive 0.8604 on 131 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 10.5 or more, 131 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25482 against the incumbent's 0.26130; candidate log loss 0.70299 against 0.71625; 14 picks changed.",
+      "effect": 3.0534351145,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -2.3260356105,
+        8.8709677419
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the raw model pick on the big blowout lines of 10.5 points or more: 47.3% right against the opening line became 50.4% over 2020-25, changing 14 picks; about 86% likely to be an improvement.",
+      "probability_positive": 0.860425,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 2.8394298056
+    },
+    "line_size_shrinkage_ak1_opener_corpus_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-9.3333, 9.2308] accuracy points reaches or crosses zero (season-blocked [-5.7692, 7.8947]); probability_positive 0.4983 on 74 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of exactly 7, 74 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25048 against the incumbent's 0.25015; candidate log loss 0.69483 against 0.69407; 16 picks changed.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -9.3333333333,
+        9.2307692308
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on games priced at exactly a touchdown: 51.4% right against the opening line became 51.4% over 2020-25, changing 16 picks; about 50% likely to be an improvement.",
+      "probability_positive": 0.4983,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 4.6906047946
+    },
+    "line_size_shrinkage_ak1_opener_corpus_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-8.5561, 6.8293] accuracy points reaches or crosses zero (season-blocked [-7.0707, 3.8043]); probability_positive 0.3876 on 194 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 7.5 to 10, 194 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25732 against the incumbent's 0.26030; candidate log loss 0.70819 against 0.71420; 42 picks changed.",
+      "effect": -1.0309278351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -8.5561497326,
+        6.8292682927
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on games priced between 7.5 and 10 points: 51.5% right against the opening line became 50.5% over 2020-25, changing 42 picks; about 39% likely to be an improvement.",
+      "probability_positive": 0.387575,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 3.9101593251
+    },
+    "line_size_shrinkage_ak1_opener_corpus_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.7911, 0.7438] accuracy points reaches or crosses zero (season-blocked [-2.1304, 0.0678]); probability_positive 0.1361 on 1503 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed. Same functional form, same likelihood, same 500-row floor, so the arm is the served model until late 2022; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on all lines, 1503 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25114 against the incumbent's 0.25158; candidate log loss 0.69576 against 0.69662; 145 picks changed.",
+      "effect": -0.998003992,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -2.7910527678,
+        0.7437583544
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on every game: 54.6% right against the opening line became 53.6% over 2020-25, changing 145 picks; about 14% likely to be an improvement.",
+      "probability_positive": 0.1361,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.9092305777
+    },
+    "line_size_shrinkage_ak1_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Both the week-blocked interval [-7.2465, -1.1215] and the season-blocked interval [-6.2709, -2.1375] sit ENTIRELY below zero on 1104 paired games, probability_positive 0.0043. That is a resolved wrong sign for the stated mechanism (shrinking the residual by a line-size function raises forced-pick accuracy) on this cell, which is the only admissible reading here; no interval merely containing zero closed anything in this lane.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 0 to 6.5 points, 1104 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24907 against the incumbent's 0.24899; candidate log loss 0.69128 against 0.69137; 320 picks changed.",
+      "effect": -4.1666666667,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -7.2465065587,
+        -1.1214751853
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on close games (the line inside a touchdown): 56.2% right against the opening line became 52.0% over 2020-25, changing 320 picks; about 0% likely to be an improvement.",
+      "probability_positive": 0.00425,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.5583365111
+    },
+    "line_size_shrinkage_ak1_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-5.5118, 5.6916] accuracy points reaches or crosses zero (season-blocked [-4.3165, 5.6075]); probability_positive 0.4970 on 131 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 10.5 or more, 131 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25622 against the incumbent's 0.26130; candidate log loss 0.70571 against 0.71625; 16 picks changed.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -5.5118110236,
+        5.6916376307
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on the big blowout lines of 10.5 points or more: 47.3% right against the opening line became 47.3% over 2020-25, changing 16 picks; about 50% likely to be an improvement.",
+      "probability_positive": 0.497,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 2.8649029554
+    },
+    "line_size_shrinkage_ak1_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-9.5890, 12.5000] accuracy points reaches or crosses zero (season-blocked [-6.2500, 11.6667]); probability_positive 0.5989 on 74 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of exactly 7, 74 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24830 against the incumbent's 0.25015; candidate log loss 0.68979 against 0.69407; 21 picks changed.",
+      "effect": 1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -9.5890410959,
+        12.5
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the raw model pick on games priced at exactly a touchdown: 51.4% right against the opening line became 52.7% over 2020-25, changing 21 picks; about 60% likely to be an improvement.",
+      "probability_positive": 0.598925,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 5.6105549795
+    },
+    "line_size_shrinkage_ak1_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-12.1057, 0.5556] accuracy points reaches or crosses zero (season-blocked [-13.5000, 1.0526]); probability_positive 0.0419 on 194 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 7.5 to 10, 194 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25278 against the incumbent's 0.26030; candidate log loss 0.69871 against 0.71420; 39 picks changed.",
+      "effect": -5.6701030928,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -12.105661882,
+        0.5556331471
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on games priced between 7.5 and 10 points: 51.5% right against the opening line became 45.9% over 2020-25, changing 39 picks; about 4% likely to be an improvement.",
+      "probability_positive": 0.041875,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 3.2943430767
+    },
+    "line_size_shrinkage_ak1_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "Both the week-blocked interval [-5.9702, -1.4715] and the season-blocked interval [-5.9393, -1.6277] sit ENTIRELY below zero on 1503 paired games, probability_positive 0.0006. That is a resolved wrong sign for the stated mechanism (shrinking the residual by a line-size function raises forced-pick accuracy) on this cell, which is the only admissible reading here; no interval merely containing zero closed anything in this lane.",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "AK-1 (primary, seeded corpus): the served weak_stack market-residual ridge's own opener residual multiplied by k(|line|) = 2/(1+exp(a+b|line|)), a two-parameter logistic fitted each week by maximising the Bernoulli cover log-likelihood over games completed strictly before that week's first kickoff (2011-2019 close-proxy seed plus the accumulated 2020-2025 opener stream, 500-row floor), null initialisation reproducing the served model exactly; the arm's own S3 home-side offset stream is refitted from its own shrunken point; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on all lines, 1503 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25013 against the incumbent's 0.25158; candidate log loss 0.69342 against 0.69662; 396 picks changed.",
+      "effect": -3.7258815702,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -5.9701987739,
+        -1.4715473146
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on every game: 54.6% right against the opening line became 50.8% over 2020-25, changing 396 picks; about 0% likely to be an improvement.",
+      "probability_positive": 0.000575,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.1485814243
+    },
+    "line_size_shrinkage_ak1b_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.9417, 1.3838] accuracy points reaches or crosses zero (season-blocked [-1.6716, 0.7156]); probability_positive 0.3824 on 1104 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 0 to 6.5 points, 1104 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24766 against the incumbent's 0.24441; candidate log loss 0.68845 against 0.68197; 75 picks changed.",
+      "effect": -0.2717391304,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -1.9417475728,
+        1.3837638376
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on close games (the line inside a touchdown): 58.8% right against the opening line became 58.5% over 2020-25, changing 75 picks; about 38% likely to be an improvement.",
+      "probability_positive": 0.382425,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.849705506
+    },
+    "line_size_shrinkage_ak1b_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.1746, 4.6875] accuracy points reaches or crosses zero (season-blocked [-1.8293, 5.0420]); probability_positive 0.6486 on 131 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 10.5 or more, 131 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25181 against the incumbent's 0.25657; candidate log loss 0.69687 against 0.70668; 7 picks changed.",
+      "effect": 0.7633587786,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.1746031746,
+        4.6875
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the card we actually play on the big blowout lines of 10.5 points or more: 51.1% right against the opening line became 51.9% over 2020-25, changing 7 picks; about 65% likely to be an improvement.",
+      "probability_positive": 0.648625,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 2.0119679176
+    },
+    "line_size_shrinkage_ak1b_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-6.7568, 11.6883] accuracy points reaches or crosses zero (season-blocked [-8.8235, 14.0625]); probability_positive 0.7211 on 74 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of exactly 7, 74 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24754 against the incumbent's 0.25111; candidate log loss 0.68819 against 0.69570; 12 picks changed.",
+      "effect": 2.7027027027,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -6.7567567568,
+        11.6883116883
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the card we actually play on games priced at exactly a touchdown: 50.0% right against the opening line became 52.7% over 2020-25, changing 12 picks; about 72% likely to be an improvement.",
+      "probability_positive": 0.72115,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 4.7152623766
+    },
+    "line_size_shrinkage_ak1b_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-6.5000, 1.1050] accuracy points reaches or crosses zero (season-blocked [-4.6875, -0.5155]); probability_positive 0.0962 on 194 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 7.5 to 10, 194 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24992 against the incumbent's 0.25346; candidate log loss 0.69301 against 0.70026; 23 picks changed.",
+      "effect": -2.5773195876,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -6.5,
+        1.1049723757
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on games priced between 7.5 and 10 points: 52.6% right against the opening line became 50.0% over 2020-25, changing 23 picks; about 10% likely to be an improvement.",
+      "probability_positive": 0.096225,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.9730336784
+    },
+    "line_size_shrinkage_ak1b_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.6938, 1.0101] accuracy points reaches or crosses zero (season-blocked [-1.5797, 0.8135]); probability_positive 0.3214 on 1503 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on all lines, 1503 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24831 against the incumbent's 0.24696; candidate log loss 0.68976 against 0.68716; 117 picks changed.",
+      "effect": -0.3326679973,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -1.6938386794,
+        1.0101180266
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on every game: 56.9% right against the opening line became 56.6% over 2020-25, changing 117 picks; about 32% likely to be an improvement.",
+      "probability_positive": 0.32135,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.6950962392
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_card_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.5666, 0.5597] accuracy points reaches or crosses zero (season-blocked [-0.9087, -0.0929]); probability_positive 0.2122 on 1104 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 0 to 6.5 points, 1104 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24518 against the incumbent's 0.24441; candidate log loss 0.68359 against 0.68197; 27 picks changed.",
+      "effect": -0.4528985507,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -1.5665856505,
+        0.5597014925
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on close games (the line inside a touchdown): 58.8% right against the opening line became 58.3% over 2020-25, changing 27 picks; about 21% likely to be an improvement.",
+      "probability_positive": 0.21225,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.5532727923
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_card_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.8168, 3.6765] accuracy points reaches or crosses zero (season-blocked [0.0000, 0.0000]); probability_positive 0.5011 on 131 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 10.5 or more, 131 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25025 against the incumbent's 0.25657; candidate log loss 0.69356 against 0.70668; 6 picks changed.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.8167938931,
+        3.6764705882
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on the big blowout lines of 10.5 points or more: 51.1% right against the opening line became 51.1% over 2020-25, changing 6 picks; about 50% likely to be an improvement.",
+      "probability_positive": 0.501075,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.8718719976
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_card_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-8.0000, 9.8592] accuracy points reaches or crosses zero (season-blocked [-8.8235, 10.0000]); probability_positive 0.6252 on 74 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of exactly 7, 74 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25039 against the incumbent's 0.25111; candidate log loss 0.69437 against 0.69570; 9 picks changed.",
+      "effect": 1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -8.0,
+        9.8591549296
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the card we actually play on games priced at exactly a touchdown: 50.0% right against the opening line became 51.4% over 2020-25, changing 9 picks; about 63% likely to be an improvement.",
+      "probability_positive": 0.625225,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 4.5100076069
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_card_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-5.4348, 3.2090] accuracy points reaches or crosses zero (season-blocked [-3.5000, 1.1111]); probability_positive 0.3258 on 194 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 7.5 to 10, 194 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25266 against the incumbent's 0.25346; candidate log loss 0.69878 against 0.70026; 20 picks changed.",
+      "effect": -1.0309278351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -5.4347826087,
+        3.2089874073
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on games priced between 7.5 and 10 points: 52.6% right against the opening line became 51.5% over 2020-25, changing 20 picks; about 33% likely to be an improvement.",
+      "probability_positive": 0.325825,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 2.2068911751
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_card_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.4199, 0.6614] accuracy points reaches or crosses zero (season-blocked [-0.8333, 0.0657]); probability_positive 0.2280 on 1503 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored THROUGH the served nine-member card (overlay_union_coach_division_arrests_bye_coldvisitor_protection_interim_tank_precip_v3), with the composition recomputed on the candidate's own probabilities; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on all lines, 1503 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24684 against the incumbent's 0.24696; candidate log loss 0.68695 against 0.68716; 62 picks changed.",
+      "effect": -0.3992015968,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -1.419902313,
+        0.6613756614
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the card we actually play on every game: 56.9% right against the opening line became 56.5% over 2020-25, changing 62 picks; about 23% likely to be an improvement.",
+      "probability_positive": 0.227975,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.5280646797
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.4259, -0.1762] accuracy points reaches or crosses zero (season-blocked [-3.4043, 0.0000]); probability_positive 0.0152 on 1104 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 0 to 6.5 points, 1104 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24946 against the incumbent's 0.24899; candidate log loss 0.69237 against 0.69137; 59 picks changed.",
+      "effect": -1.7210144928,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.425940537,
+        -0.1762075759
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on close games (the line inside a touchdown): 56.2% right against the opening line became 54.4% over 2020-25, changing 59 picks; about 2% likely to be an improvement.",
+      "probability_positive": 0.015175,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.8363255831
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-1.5385, 11.1111] accuracy points reaches or crosses zero (season-blocked [-2.3077, 13.2743]); probability_positive 0.9253 on 131 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 10.5 or more, 131 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25347 against the incumbent's 0.26130; candidate log loss 0.70028 against 0.71625; 18 picks changed.",
+      "effect": 4.5801526718,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -1.5384615385,
+        11.1111111111
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the raw model pick on the big blowout lines of 10.5 points or more: 47.3% right against the opening line became 51.9% over 2020-25, changing 18 picks; about 93% likely to be an improvement.",
+      "probability_positive": 0.925325,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 3.2109013892
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-7.1429, 10.2941] accuracy points reaches or crosses zero (season-blocked [-3.2258, 8.9552]); probability_positive 0.6166 on 74 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of exactly 7, 74 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25151 against the incumbent's 0.25015; candidate log loss 0.69689 against 0.69407; 13 picks changed.",
+      "effect": 1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -7.1428571429,
+        10.2941176471
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the raw model pick on games priced at exactly a touchdown: 51.4% right against the opening line became 52.7% over 2020-25, changing 13 picks; about 62% likely to be an improvement.",
+      "probability_positive": 0.6166,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 4.5014987373
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-10.3829, 6.3494] accuracy points reaches or crosses zero (season-blocked [-8.0000, 2.5000]); probability_positive 0.3065 on 194 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 7.5 to 10, 194 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25667 against the incumbent's 0.26030; candidate log loss 0.70690 against 0.71420; 50 picks changed.",
+      "effect": -2.0618556701,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -10.3828518098,
+        6.349435728
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on games priced between 7.5 and 10 points: 51.5% right against the opening line became 49.5% over 2020-25, changing 50 picks; about 31% likely to be an improvement.",
+      "probability_positive": 0.30645,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 4.2486241178
+    },
+    "line_size_shrinkage_ak1b_opener_corpus_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-2.8169, 0.6601] accuracy points reaches or crosses zero (season-blocked [-2.7297, 0.3866]); probability_positive 0.1150 on 1503 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b with the declared alternative fit corpus: the opener stream only, no 2011-2019 close-proxy seed; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on all lines, 1503 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25084 against the incumbent's 0.25158; candidate log loss 0.69515 against 0.69662; 140 picks changed.",
+      "effect": -1.0645375915,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -2.8169014085,
+        0.6600660066
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on every game: 54.6% right against the opening line became 53.5% over 2020-25, changing 140 picks; about 12% likely to be an improvement.",
+      "probability_positive": 0.115,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 0.8817167562
+    },
+    "line_size_shrinkage_ak1b_standalone_0_6p5_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.2077, 0.7124] accuracy points reaches or crosses zero (season-blocked [-3.5406, 0.0000]); probability_positive 0.0828 on 1104 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 0 to 6.5 points, 1104 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24952 against the incumbent's 0.24899; candidate log loss 0.69220 against 0.69137; 163 picks changed.",
+      "effect": -1.7210144928,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -4.2076991943,
+        0.7123775601
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on close games (the line inside a touchdown): 56.2% right against the opening line became 54.4% over 2020-25, changing 163 picks; about 8% likely to be an improvement.",
+      "probability_positive": 0.08285,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1104,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.2468426246
+    },
+    "line_size_shrinkage_ak1b_standalone_10p5plus_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.9683, 10.4478] accuracy points reaches or crosses zero (season-blocked [-3.4188, 11.4035]); probability_positive 0.7916 on 131 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 10.5 or more, 131 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25452 against the incumbent's 0.26130; candidate log loss 0.70242 against 0.71625; 24 picks changed.",
+      "effect": 3.0534351145,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.9682539683,
+        10.447761194
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the raw model pick on the big blowout lines of 10.5 points or more: 47.3% right against the opening line became 50.4% over 2020-25, changing 24 picks; about 79% likely to be an improvement.",
+      "probability_positive": 0.7916,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 77,
+      "sample_games": 131,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 3.6952531842
+    },
+    "line_size_shrinkage_ak1b_standalone_7_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-10.1266, 13.2353] accuracy points reaches or crosses zero (season-blocked [-3.9216, 8.3333]); probability_positive 0.5941 on 74 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of exactly 7, 74 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.24996 against the incumbent's 0.25015; candidate log loss 0.69311 against 0.69407; 25 picks changed.",
+      "effect": 1.3513513514,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -10.1265822785,
+        13.2352941176
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger helped the raw model pick on games priced at exactly a touchdown: 51.4% right against the opening line became 52.7% over 2020-25, changing 25 picks; about 59% likely to be an improvement.",
+      "probability_positive": 0.5941,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 56,
+      "sample_games": 74,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 5.9249117988
+    },
+    "line_size_shrinkage_ak1b_standalone_7p5_10_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-10.2805, 2.9557] accuracy points reaches or crosses zero (season-blocked [-8.4158, 1.6667]); probability_positive 0.1418 on 194 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on lines of 7.5 to 10, 194 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25163 against the incumbent's 0.26030; candidate log loss 0.69641 against 0.71420; 41 picks changed.",
+      "effect": -3.6082474227,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -10.2805073431,
+        2.9556650246
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on games priced between 7.5 and 10 points: 51.5% right against the opening line became 47.9% over 2020-25, changing 41 picks; about 14% likely to be an improvement.",
+      "probability_positive": 0.141775,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 91,
+      "sample_games": 194,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 3.365982788
+    },
+    "line_size_shrinkage_ak1b_standalone_overall_2020_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.4091, 0.6558] accuracy points reaches or crosses zero (season-blocked [-2.5222, -0.3191]); probability_positive 0.0908 on 1503 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-1b (secondary, seeded corpus): AK-1 plus the gaussian_median location constant itself made a function of the line's size, m * g(|line|) with g the same two-parameter logistic, four parameters fitted jointly on the same likelihood and the same strictly-prior corpus; scored standalone, the arm's own opener pick with no card; paired forced-pick accuracy versus the active model 2e8c616b476dd0d2 at the OPENER on all lines, 1503 paired non-push games of the 1,537-game 2020-2025 archive. Candidate Brier 0.25025 against the incumbent's 0.25158; candidate log loss 0.69368 against 0.69662; 253 picks changed.",
+      "effect": -1.3972055888,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.409109538,
+        0.6557592327
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO. Reused 2020-2025 opener window already mined by lanes F, M, N and AK -- a stated discount, not a ban. The walk-forward likelihood fit is a post-fit transformation of the served ridge's own weekly output; the served replay reproduces the archive to 1.1e-16 in probability and 1.000 in pick agreement. Nothing here was promoted, published or served.",
+      "plain_summary": "Trusting the model's own number less and less as the point spread gets bigger hurt the raw model pick on every game: 54.6% right against the opening line became 53.2% over 2020-25, changing 253 picks; about 9% likely to be an improvement.",
+      "probability_positive": 0.090825,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": 1.0325973914
+    },
+    "line_size_shrinkage_ak2_ak2_vs_no_follow_0_6p5_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.4263, 2.6187] accuracy points reaches or crosses zero (season-blocked [-1.4354, -0.5181]); probability_positive 0.2917 on 607 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 0 to 6.5 points, 607 scoreable games. Baseline is no_follow.",
+      "effect": -0.9884678748,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -4.4263063088,
+        2.6186579378
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 58.0% to 57.0% right against the opening line in 2023-25; about 29% likely to be an improvement.",
+      "probability_positive": 0.2917,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 607,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_no_follow_10p5plus_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-9.3765, 20.0000] accuracy points reaches or crosses zero (season-blocked [0.0000, 8.3333]); probability_positive 0.7495 on 58 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 10.5 or more, 58 scoreable games. Baseline is no_follow.",
+      "effect": 5.1724137931,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -9.3764740566,
+        20.0
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 50.0% to 55.2% right against the opening line in 2023-25; about 75% likely to be an improvement.",
+      "probability_positive": 0.749475,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 58,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_no_follow_7_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-5.5556, 22.2222] accuracy points reaches or crosses zero (season-blocked [0.0000, 18.1818]); probability_positive 0.8779 on 37 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of exactly 7, 37 scoreable games. Baseline is no_follow.",
+      "effect": 8.1081081081,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -5.5555555556,
+        22.2222222222
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 40.5% to 48.6% right against the opening line in 2023-25; about 88% likely to be an improvement.",
+      "probability_positive": 0.877875,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 37,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_no_follow_7p5_10_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-10.7527, 12.7451] accuracy points reaches or crosses zero (season-blocked [-6.0606, 12.1212]); probability_positive 0.5730 on 97 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 7.5 to 10, 97 scoreable games. Baseline is no_follow.",
+      "effect": 1.0309278351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -10.752688172,
+        12.7450980392
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 53.6% to 54.6% right against the opening line in 2023-25; about 57% likely to be an improvement.",
+      "probability_positive": 0.57305,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 47,
+      "sample_games": 97,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_no_follow_overall_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.1747, 3.5488] accuracy points reaches or crosses zero (season-blocked [-1.1278, 1.1278]); probability_positive 0.5262 on 799 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, all lines, 799 scoreable games. Baseline is no_follow.",
+      "effect": 0.1251564456,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.1747001979,
+        3.5487959442
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 56.1% to 56.2% right against the opening line in 2023-25; about 53% likely to be an improvement.",
+      "probability_positive": 0.526175,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_served_follow_0_6p5_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.6633, 3.4370] accuracy points reaches or crosses zero (season-blocked [0.0000, 4.1451]); probability_positive 0.9010 on 607 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 0 to 6.5 points, 607 scoreable games. Baseline is served_follow.",
+      "effect": 1.3179571664,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -0.6633499171,
+        3.4369885434
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 55.7% to 57.0% right against the opening line in 2023-25; about 90% likely to be an improvement.",
+      "probability_positive": 0.900975,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 607,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_served_follow_10p5plus_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-5.5556, 0.0000] accuracy points reaches or crosses zero (season-blocked [-4.1667, 0.0000]); probability_positive 0.1816 on 58 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 10.5 or more, 58 scoreable games. Baseline is served_follow.",
+      "effect": -1.724137931,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -5.5555555556,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 56.9% to 55.2% right against the opening line in 2023-25; about 18% likely to be an improvement.",
+      "probability_positive": 0.181625,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 58,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_served_follow_7_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-13.1579, 0.0000] accuracy points reaches or crosses zero (season-blocked [-10.5263, 0.0000]); probability_positive 0.0643 on 37 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of exactly 7, 37 scoreable games. Baseline is served_follow.",
+      "effect": -5.4054054054,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -13.1578947368,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 54.1% to 48.6% right against the opening line in 2023-25; about 6% likely to be an improvement.",
+      "probability_positive": 0.064325,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 37,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_served_follow_7p5_10_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-3.1915, 8.1633] accuracy points reaches or crosses zero (season-blocked [0.0000, 6.4516]); probability_positive 0.7560 on 97 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 7.5 to 10, 97 scoreable games. Baseline is served_follow.",
+      "effect": 2.0618556701,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -3.1914893617,
+        8.1632653061
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 52.6% to 54.6% right against the opening line in 2023-25; about 76% likely to be an improvement.",
+      "probability_positive": 0.75595,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 47,
+      "sample_games": 97,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_ak2_vs_served_follow_overall_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-0.8816, 2.8015] accuracy points reaches or crosses zero (season-blocked [0.0000, 2.6217]); probability_positive 0.8256 on 799 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, all lines, 799 scoreable games. Baseline is served_follow.",
+      "effect": 0.8760951189,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -0.8816120907,
+        2.8014616322
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 55.3% to 56.2% right against the opening line in 2023-25; about 83% likely to be an improvement.",
+      "probability_positive": 0.8256,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_served_follow_vs_no_follow_0_6p5_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-6.1361, 1.5358] accuracy points reaches or crosses zero (season-blocked [-4.6632, -0.9756]); probability_positive 0.1193 on 607 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 0 to 6.5 points, 607 scoreable games. Baseline is no_follow.",
+      "effect": -2.3064250412,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -6.1360604088,
+        1.5358361775
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 58.0% to 55.7% right against the opening line in 2023-25; about 12% likely to be an improvement.",
+      "probability_positive": 0.119275,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 607,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_served_follow_vs_no_follow_10p5plus_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-7.9365, 21.7411] accuracy points reaches or crosses zero (season-blocked [0.0000, 12.5000]); probability_positive 0.8136 on 58 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed. Stated bound, not a closure: the positive control on the same 10.5+ games -- following the market's own opener-to-close move, +12.96 accuracy points, week-blocked [+3.70, +22.17], probability_positive 0.9967, measured this session -- resolves an effect of that size at this sample, and this cell's interval excludes it. So this arm cannot be the repair the market's own move is; the cell is still recorded unresolved because a small real effect is entirely live and closing a positively leaning cell on a magnitude bound would delete exactly the signal worth keeping.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 10.5 or more, 58 scoreable games. Baseline is no_follow.",
+      "effect": 6.8965517241,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -7.9365079365,
+        21.7411067194
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 50.0% to 56.9% right against the opening line in 2023-25; about 81% likely to be an improvement.",
+      "probability_positive": 0.81365,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 34,
+      "sample_games": 58,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_served_follow_vs_no_follow_7_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [0.0000, 28.1250] accuracy points reaches or crosses zero (season-blocked [0.0000, 18.1818]); probability_positive 0.9604 on 37 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of exactly 7, 37 scoreable games. Baseline is no_follow.",
+      "effect": 13.5135135135,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        0.0,
+        28.125
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 40.5% to 54.1% right against the opening line in 2023-25; about 96% likely to be an improvement.",
+      "probability_positive": 0.9604,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 28,
+      "sample_games": 37,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_served_follow_vs_no_follow_7p5_10_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-13.1868, 10.8911] accuracy points reaches or crosses zero (season-blocked [-9.6774, 12.1212]); probability_positive 0.4351 on 97 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, lines of 7.5 to 10, 97 scoreable games. Baseline is no_follow.",
+      "effect": -1.0309278351,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -13.1868131868,
+        10.8910891089
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 53.6% to 52.6% right against the opening line in 2023-25; about 44% likely to be an improvement.",
+      "probability_positive": 0.43515,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 47,
+      "sample_games": 97,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_ak2_served_follow_vs_no_follow_overall_2023_2025": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.1718, 2.7534] accuracy points reaches or crosses zero (season-blocked [-2.2472, 1.1278]); probability_positive 0.3315 on 799 paired games. No reliability floor and no positive control bounds this cell, so it is unresolved, not closed.",
+      "closing_ground": null,
+      "description": "AK-2: the served late-week follow rule's fire threshold made a fitted function of the line's size, t(|line|) = 0.5 * 2/(1+exp(e+f|line|)), chosen each week on a declared deterministic grid by maximising forced-pick accuracy over strictly prior rows (500-row floor), null values reproducing the served constant 0.5; scored through the served nine-member card at the OPENER on the 2023-2025 intraday_hourly replay, all lines, 799 scoreable games. Baseline is no_follow.",
+      "effect": -0.7509386733,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -4.1717791411,
+        2.7534418023
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO, AK-2. Replayed on the historical intraday_hourly backfill rather than the live capture the served rule reads, the same substitution docs/follow_threshold_live_card.md documents; evidence about the rule's SHAPE, not a re-grade of its promotion. The stated deviation from the predeclaration: a hard switching rule has no probability, so the fit criterion is prior-window forced-pick accuracy on a declared grid, not a log-likelihood.",
+      "plain_summary": "Letting the line's size decide how big a late-week market move has to be before we switch to the market's side moved the played card from 56.1% to 55.3% right against the opening line in 2023-25; about 33% likely to be an improvement.",
+      "probability_positive": 0.3315,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_positive_control_follow_move_10p5plus_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [3.7037, 22.1739], probability_positive 0.9967. A favourable interval is not a closing ground either, so this control cell is recorded open like every other cell.",
+      "closing_ground": null,
+      "description": "Positive control for lane AO: forced-pick accuracy of following the market's own opener-to-close line move, graded at the OPENER, on lines of 10.5 or more, 108 moved games (22 zero-move games excluded), against the coin flip. The close is an oracle (src/nfl_ats/clv.py) so this is an upper bound on a Tuesday-to-Sunday follow channel, and it exists to prove the instrument resolves an effect of this size at this sample. On the same games the served model is 47.69% right; it agrees with the move on 76 games at 59.21% and fights it on 32 at 28.12%.",
+      "effect": 12.962962963,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        3.7037037037,
+        22.1739130435
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO positive control. Reproduces docs/big_spread_signal.md's own reading on the current archive; measured this session.",
+      "plain_summary": "If you simply took whichever side the betting line moved toward during the week, you were 63.0% right against the opening line on the big blowout lines in 2020-25 -- against the model's own 47.7%. This is what a real edge of that size looks like on this sample.",
+      "probability_positive": 0.996725,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 68,
+      "sample_games": 108,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_positive_control_follow_move_7p5_10_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [-4.1182, 11.0739], probability_positive 0.8203. A favourable interval is not a closing ground either, so this control cell is recorded open like every other cell.",
+      "closing_ground": null,
+      "description": "Positive control for lane AO: forced-pick accuracy of following the market's own opener-to-close line move, graded at the OPENER, on lines of 7.5 to 10, 157 moved games (37 zero-move games excluded), against the coin flip. The close is an oracle (src/nfl_ats/clv.py) so this is an upper bound on a Tuesday-to-Sunday follow channel, and it exists to prove the instrument resolves an effect of this size at this sample. On the same games the served model is 51.55% right; it agrees with the move on 86 games at 53.49% and fights it on 71 at 46.48%.",
+      "effect": 3.5031847134,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        -4.1182090671,
+        11.0739259736
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO positive control. Reproduces docs/big_spread_signal.md's own reading on the current archive; measured this session.",
+      "plain_summary": "If you simply took whichever side the betting line moved toward during the week, you were 53.5% right against the opening line across all games in 2020-25 -- against the model's own 51.5%. This is what a real edge of that size looks like on this sample.",
+      "probability_positive": 0.82025,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 87,
+      "sample_games": 157,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
+    "line_size_shrinkage_positive_control_follow_move_all_lines_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked interval [2.2648, 7.8855], probability_positive 0.9999. A favourable interval is not a closing ground either, so this control cell is recorded open like every other cell.",
+      "closing_ground": null,
+      "description": "Positive control for lane AO: forced-pick accuracy of following the market's own opener-to-close line move, graded at the OPENER, on all lines, 1133 moved games (370 zero-move games excluded), against the coin flip. The close is an oracle (src/nfl_ats/clv.py) so this is an upper bound on a Tuesday-to-Sunday follow channel, and it exists to prove the instrument resolves an effect of this size at this sample. On the same games the served model is 54.56% right; it agrees with the move on 644 games at 58.54% and fights it on 489 at 49.49%.",
+      "effect": 5.0750220653,
+      "effect_units": "accuracy_points",
+      "family": "mod18_line_size_shrinkage_v1",
+      "interval": [
+        2.2648004722,
+        7.8854663725
+      ],
+      "league": "nfl",
+      "notes": "MOD-18 lane AO positive control. Reproduces docs/big_spread_signal.md's own reading on the current archive; measured this session.",
+      "plain_summary": "If you simply took whichever side the betting line moved toward during the week, you were 55.1% right against the opening line across all games in 2020-25 -- against the model's own 54.6%. This is what a real edge of that size looks like on this sample.",
+      "probability_positive": 0.9999,
+      "recorded_at": "2026-09-10",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1133,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_size_shrinkage/20260910T023340Z/arm_results.json; artifacts/line_size_shrinkage/20260910T023340Z/stage3_results.json; docs/line_size_shrinkage.md",
+      "standard_error": null
+    },
     "low_total_div_home_dog_on_production": {
       "category": "schedule",
       "classification": "unresolved_below_power",

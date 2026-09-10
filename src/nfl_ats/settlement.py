@@ -310,6 +310,16 @@ LEDGERS: tuple[LedgerSpec, ...] = (
         order_column="revision_recorded_at_utc",
     ),
     LedgerSpec(
+        key="consensus_movement_refresh",
+        relative_path="prospective/consensus_movement_refresh_decisions.parquet",
+        arms=(
+            Arm("tuesday", "tuesday_pick_side"),
+            Arm("served", "served_pick_side"),
+            Arm("consensus_arm", "consensus_arm_pick_side"),
+        ),
+        order_column="revision_recorded_at_utc",
+    ),
+    LedgerSpec(
         key="crew_tilt_refresh",
         relative_path="prospective/crew_tilt_refresh_decisions.parquet",
         arms=(

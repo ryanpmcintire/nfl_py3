@@ -31,6 +31,9 @@ from nfl_ats.cli_common import (
 )
 from nfl_ats.clv import record_paper_decisions
 from nfl_ats.coach_fade_overlay import record_overlay_challenger_decisions
+from nfl_ats.consensus_movement_refresh_overlay import (
+    record_consensus_movement_refresh_overlay,
+)
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.crew_tilt_refresh_overlay import record_crew_tilt_refresh_overlay
 from nfl_ats.deadline_drag_challenger import record_deadline_drag_challenger_decisions
@@ -168,6 +171,7 @@ REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "late_week_leader_median_follow_v1": "late_week_move_follow_refresh_overlay",
     "handle_follow_refresh_off_incumbent": "handle_follow_refresh_overlay",
     "rookie_crew_underdog_off_incumbent": "ledger",
+    "consensus_movement_1_0_off_incumbent": "consensus_movement_refresh_overlay",
 }
 
 
@@ -1043,6 +1047,12 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         )
     except Exception as error:
         result["handle_follow_refresh_overlay"] = {"recorded": 0, "error": str(error)}
+    try:
+        result["consensus_movement_refresh_overlay"] = record_consensus_movement_refresh_overlay(
+            _artifacts_root(), plan, record_decisions=args.record_decisions
+        )
+    except Exception as error:
+        result["consensus_movement_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     result["failed_recorders"] = collect_failed_recorders(result, REFRESH_CHALLENGER_RESULT_KEYS)
     if args.publish_card:
         if not plan.changed_games:

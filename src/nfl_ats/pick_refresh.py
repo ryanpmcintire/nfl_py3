@@ -86,21 +86,28 @@ split and the served pick are restored verbatim from the sidecars (the
 policy degrades to "keep Tuesday's numbers", never to "silently drop
 them").
 
-Observed-movement pick policy (POL-11 addendum, 2026-08-20)
--------------------------------------------------------------
-One market-based decision rule IS applied to the played pick, distinct from
-every pick-level overlay above (those stay challenger-tracked only). Once the
-model's own recompute (post coach-fade) is in hand, :func:`plan_refresh` reads
-whatever line the scheduled ``odds-ingest`` capture has already landed
-(:func:`current_captured_home_spread` -- read-only, never a live fetch) and
-compares it against the frozen Tuesday line. A move of >=1.0 point overrides
-the pick to the side the market moved toward; below that, or with no fresh
-capture (fail-open), the model's own recompute stands. Both the played pick
-and the model-only counterfactual are recorded on every ledger row
-(``movement_policy``, ``movement_delta``, ``movement_pick_side``,
-``model_only_pick_side``) -- see ``docs/late_week_refresh.md``'s "Observed-
-movement pick policy" section for the full predeclaration and the evidence
-this is an EV play, not a resolved finding.
+Consensus-movement rule, retired from the served chain (2026-09-10)
+-------------------------------------------------------------------
+``MOVEMENT_POLICY_MOVEMENT`` -- follow the pool's own captured consensus
+line once it has moved at least ``MOVEMENT_POLICY_THRESHOLD`` since the
+frozen Tuesday number -- no longer governs any served pick. Measured on the
+whole served chain over 2023-2025, 799 opener-graded games in 54 weeks
+(``docs/served_refresh_card.md``), it costs -1.627 accuracy points through
+the chain (``probability_positive`` 0.041), and dropping it while keeping
+every other step scores 57.947%, +2.003 over the served chain, week-blocked
+[+0.126, +3.865], ``probability_positive`` 0.9816.
+
+The mechanism, which is what retires it: on the picks each rule changes the
+leader-median follow goes 38-26 while this one goes 30-43; both fire on 179
+of the same games and disagree on 21, so it is largely a diluted, later echo
+of the move the three leading books already priced, and reading the same
+money twice is what costs the points. Nothing is closed -- the cell stays
+``unresolved_below_power`` -- and the rule keeps recording as the paired
+challenger ``consensus_movement_1_0_off_incumbent``
+(:mod:`nfl_ats.consensus_movement_refresh_overlay`), whose arm is the served
+pick with the rule still applied. :func:`current_captured_home_spread` still
+runs on every pass and ``consensus_delta`` / ``consensus_pick_side`` stay on
+every ledger row.
 
 Promoted late-week follow (MKT-15, leader median at a full point, 2026-09-09)
 ----------------------------------------------------------------------------
@@ -123,8 +130,9 @@ paired equal-book arm the ``late_week_move_follow_refresh_v1`` challenger
 ledger records (one call to ``late_week_follow_frame`` returns all three),
 and every ledger row keeps both arms' evidence (``late_week_*`` and
 ``consensus_*``) beside the governing ``movement_policy`` and the
-``model_only_pick_side`` counterfactual. See ``docs/late_week_refresh.md``'s
-promotion section.
+``model_only_pick_side`` counterfactual. Since 2026-09-10 it is the only
+market rule that can govern a served pick. See
+``docs/late_week_refresh.md``'s promotion section.
 
 Injury-news veto on the follow (F3p, docs/follow_news_gate.md)
 -------------------------------------------------------------
@@ -141,20 +149,20 @@ contradicted ones -4.4. The reader is
 when that season's rows carry a real timestamp, the ProFootballTalk headline
 archive when they do not -- and it is fail-open everywhere: no reading is
 never a veto. A vetoed game counts as "the follow fired" for precedence, so
-it never falls through to the 1.0-point consensus, handle or rookie-crew
-steps, which is how it was measured. The un-vetoed side stays on every row as
+it never falls through to the handle or rookie-crew steps, which is how it
+was measured. The un-vetoed side stays on every row as
 ``movement_pick_side``, the paired OFF challenger.
 
 Heavy-handle follow (H1, owner order 2026-09-09)
 ------------------------------------------------
-A third served step sits STRICTLY BELOW both market rules above: from
-Saturday 12:00 ET of that week, when neither market arm fired and the latest
-pre-pass public-betting capture puts at least
+A third served step sits STRICTLY BELOW the follow rule above: from
+Saturday 12:00 ET of that week, when the follow rule did not fire and the
+latest pre-pass public-betting capture puts at least
 ``HANDLE_FOLLOW_MONEY_THRESHOLD`` percent of a game's spread money on the
 side the pick is NOT on, the pick switches to the money's side. Heavy handle
-is largely the cause of the line move the two market rules already read, so
-applying it on top of them would count the same money twice; it may only
-apply where neither fired. The reading comes from
+is largely the cause of the line move the follow rule already read, so
+applying it on top would count the same money twice; it may only apply where
+the follow rule was silent. The reading comes from
 :func:`nfl_ats.public_betting_live.load_latest_public_handle` (read-only,
 fail-open: no store, no capture before this pass, or no row for this game
 keeps the pick), and Thursday and Wednesday games never see one, because
@@ -165,14 +173,14 @@ pre-rule pick and the money/ticket numbers the decision was made on
 
 Served rookie-crew step (2026-09-09, docs/rookie_crew_reconciliation.md)
 -----------------------------------------------------------------------
-Below both market arms sits ``ROOKIE_CREW_POLICY``: on a game whose published
+Below the follow rule sits ``ROOKIE_CREW_POLICY``: on a game whose published
 Wednesday crew assignment names a head referee with at most one prior season in
 the archive-extended officials table, the served side comes from a refresh-time
 refit on profile ``weak_stack_rookie_crew_underdog`` -- the exact feature build
 that measured +0.133 accuracy points on the played nine-member card,
 ``probability_positive`` 0.790, six changed picks over 2020-2025. It governs
-only when neither market arm fires and only when the refit's side differs from
-the model-only side; the OFF arm is the ``model_only_pick_side`` column that
+only when the follow rule is silent and only when the refit's side differs
+from the model-only side; the OFF arm is the ``model_only_pick_side`` column that
 every ledger row already carries, registered as the paired challenger
 ``rookie_crew_underdog_off_incumbent``. Fails open to the model-only side on a
 missing assignment, a snapshot past every game's deadline, a week with no
@@ -281,6 +289,7 @@ def pick_deadline(kickoff: pd.Timestamp, sunday_lock: pd.Timestamp) -> pd.Timest
 MOVEMENT_POLICY_THRESHOLD = 1.0
 MOVEMENT_POLICY_MOVEMENT = "movement_ge_1.0"
 MOVEMENT_POLICY_MODEL_ONLY = "model_only"
+CONSENSUS_MOVEMENT_OFF_CHALLENGER_ID = "consensus_movement_1_0_off_incumbent"
 
 LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY = "late_week_leader_median_follow_1_0"
 LATE_WEEK_FOLLOW_NEWS_VETO_POLICY = "late_week_leader_median_follow_1_0_news_veto"
@@ -324,10 +333,9 @@ def _movement_side(delta: float) -> str:
     Reuses ``scripts/observed_movement_channel.py``'s ``_threshold_pick`` sign
     logic verbatim: ``delta > 0`` (the home-oriented spread number increased,
     i.e. the market moved toward home) picks HOME, everything else (including
-    an exact tie) picks AWAY. Only ever consulted by :func:`plan_refresh` when
-    ``abs(delta) >= MOVEMENT_POLICY_THRESHOLD``, so the tie behavior is never
-    actually selected -- it exists only so this helper totally orders every
-    possible delta the same way the measurement script does.
+    an exact tie) picks AWAY. Since 2026-09-10 its answer reaches no served
+    pick: it labels the recorded ``consensus_pick_side`` evidence and the
+    retired rule's paired challenger arm.
     """
 
     return "HOME" if delta > 0.0 else "AWAY"
@@ -719,6 +727,7 @@ class RefreshedGame:
     late_week_eligible_books: int = 0
     consensus_delta: float | None = None
     consensus_pick_side: str = ""
+    consensus_arm_pick_side: str = ""
     handle_pick_side: str = ""
     handle_money_pct: float | None = None
     handle_ticket_pct: float | None = None
@@ -1556,12 +1565,6 @@ def plan_refresh(
                 )
                 movement_delta = late_week_net
                 movement_pick_side = late_week_side
-            elif consensus_fires:
-                assert consensus_delta is not None and consensus_side
-                policy = MOVEMENT_POLICY_MOVEMENT
-                new_side = consensus_side
-                movement_delta = consensus_delta
-                movement_pick_side = consensus_side
             else:
                 policy = ROOKIE_CREW_POLICY if rookie_crew_fires else MOVEMENT_POLICY_MODEL_ONLY
                 new_side = rookie_crew_side if rookie_crew_fires else model_only_side
@@ -1587,6 +1590,9 @@ def plan_refresh(
             ):
                 policy = HANDLE_FOLLOW_POLICY
                 new_side = handle_side
+            consensus_arm_side = (
+                consensus_side if consensus_fires and not late_week_fires else new_side
+            )
             changed = eligible and new_side != prev_side
 
             rows.append(
@@ -1622,6 +1628,7 @@ def plan_refresh(
                     late_week_eligible_books=late_week_books,
                     consensus_delta=consensus_delta,
                     consensus_pick_side=consensus_side,
+                    consensus_arm_pick_side=consensus_arm_side,
                     handle_pick_side=handle_side,
                     handle_money_pct=handle_money,
                     handle_ticket_pct=handle_ticket,
@@ -1703,11 +1710,35 @@ def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str,
                 for game in plan.games
                 if game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
             ],
-            "games_consensus_applied": [
-                game.game_id
-                for game in plan.games
-                if game.movement_policy == MOVEMENT_POLICY_MOVEMENT
-            ],
+            "consensus_movement": {
+                "served": False,
+                "retired_policy_id": MOVEMENT_POLICY_MOVEMENT,
+                "challenger_id": CONSENSUS_MOVEMENT_OFF_CHALLENGER_ID,
+                "games_consensus_applied": [],
+                "games_consensus_would_fire": [
+                    game.game_id
+                    for game in plan.games
+                    if game.consensus_delta is not None
+                    and abs(game.consensus_delta) >= MOVEMENT_POLICY_THRESHOLD
+                ],
+                "games_consensus_would_govern": [
+                    game.game_id
+                    for game in plan.games
+                    if game.consensus_delta is not None
+                    and abs(game.consensus_delta) >= MOVEMENT_POLICY_THRESHOLD
+                    and game.movement_policy
+                    not in (
+                        LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
+                        LATE_WEEK_FOLLOW_NEWS_VETO_POLICY,
+                    )
+                ],
+                "games_consensus_would_change_pick": [
+                    game.game_id
+                    for game in plan.games
+                    if game.consensus_arm_pick_side
+                    and game.consensus_arm_pick_side != game.new_pick_side
+                ],
+            },
             "late_week_follow": {
                 "threshold": LATE_WEEK_FOLLOW_THRESHOLD,
                 "available": bool(plan.late_week_metadata.get("available", False)),
@@ -2043,13 +2074,13 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
         "three leading books moved the line at least a full point since Tuesday and the pick "
         "followed them, `late_week_leader_median_follow_1_0_news_veto` when they moved that far "
         "but the injury report points the other way, so Tuesday's pick stands, "
-        "`movement_ge_1.0` when the pool's own captured line instead moved >=1.0 point and "
-        "the pick followed it, `handle_follow_0_70` when neither market arm fired and at "
-        "least 70% of the money bet on the game sat on the other side, "
-        "`rookie_crew_underdog_v1` when neither market arm fired and the officiating crew "
-        "for that game is new this season, or `model_only` when nothing above fired (or no "
-        "market evidence was available) -- see docs/late_week_refresh.md's movement-policy "
-        "sections.\n\n"
+        "`handle_follow_0_70` when that rule did not fire and at least 70% of the money "
+        "bet on the game sat on the other side, `rookie_crew_underdog_v1` when it did not "
+        "fire and the officiating crew for that game is new this season, or `model_only` "
+        "when nothing above fired (or no market evidence was available). The 1.0-point "
+        "`movement_ge_1.0` consensus rule was retired from the served chain on 2026-09-10 "
+        "and is recorded as the paired challenger `consensus_movement_1_0_off_incumbent` "
+        "-- see docs/late_week_refresh.md's movement-policy sections.\n\n"
     )
     return heading + intro + table + "\n"
 

@@ -190,12 +190,44 @@ Other overlays remain prospective attribution arms unless separately promoted.
 In particular, injury value-lost, backup-QB fade, and surface-switch are not
 part of this production union.
 
-## Observed-movement pick policy (POL-11 addendum, 2026-08-20)
+## Observed-movement pick policy (POL-11 addendum, 2026-08-20; RETIRED from the served chain 2026-09-10)
 
-Unlike every overlay above, this one **is** wired into the played pick, not
-left as challenger-only evidence. It is a market-based decision rule, not a
-pick-level overlay, so it sits outside the "no overlay logic is touched"
-statement above and is documented separately here.
+**Retired from the played card on 2026-09-10, and this section is kept as the
+rule's frozen description plus the evidence that put it there and the evidence
+that took it out.** Measured on the whole served chain over 2023-2025 -- 799
+opener-graded games in 54 weeks, every step replayed in the precedence the code
+actually serves (`docs/served_refresh_card.md`,
+`artifacts/served_refresh_card/20260910T011328Z/results.json`) -- the 1.0-point
+consensus step costs **-1.627 accuracy points, week-blocked 95%
+[-3.409, +0.250], `probability_positive` 0.0413**, on 73 changed picks, and
+dropping it while keeping every other step scores **57.947% against the served
+chain's 55.945%: +2.003 accuracy points, week-blocked 95% [+0.126, +3.865],
+`probability_positive` 0.9816** (season-blocked [+0.752, +4.135]).
+
+**The mechanism, which is what retires it, not the interval.** On the picks
+each rule changes, the leader-median follow at a full point goes **38-26
+(59.4%)** and this rule goes **30-43 (41.1%)**. The two fire together on **179**
+of their games and point at opposite sides on **21** of those, so the consensus
+rule is largely a diluted, later echo of the same move the three leading books
+already priced -- reading the same money twice. That is a difference in what the
+two aggregations measure, not an accuracy dip located at a threshold, which is
+what AGENTS.md requires of any rule that touches a served pick.
+
+**Nothing here is closed.** The step's week-blocked interval has its upper end
+above zero, so the sign is not RESOLVED and `wrong_sign_resolved` is
+inadmissible; the cell is `unresolved_below_power` with a null closing ground.
+Removing it from the played card is an expected-value call on a forced-pick
+pool at roughly 96/4, exactly as AGENTS.md's "a promotion bar is not a decision
+bar" requires. The rule keeps accruing as the paired challenger
+`consensus_movement_1_0_off_incumbent`
+(`src/nfl_ats/consensus_movement_refresh_overlay.py`,
+`prospective/consensus_movement_refresh_decisions.parquet`), whose arm is the
+served pick with the rule still applied, and every pick-revision row keeps
+`consensus_delta` and `consensus_pick_side` as before.
+
+Everything below described the rule while it was served. It is a market-based
+decision rule, not a pick-level overlay, so it sits outside the "no overlay
+logic is touched" statement above and is documented separately here.
 
 **The evidence base, and what it does and does not establish.** Measured
 2026-08-20 (`docs/observed_movement_channel.md`,
@@ -261,20 +293,20 @@ over:**
   `wrong_sign_resolved` either (no whole interval sits below zero). All six
   therefore stay `unresolved_below_power`, correctly, in the registry.
 
-**The rule, exactly as implemented (`nfl_ats.pick_refresh.plan_refresh`,
-`current_captured_home_spread`, `MOVEMENT_POLICY_THRESHOLD`).** At each
-refresh pass, for each still-open game (the existing per-game deadline
+**The rule, frozen as it ran until 2026-09-10 (`current_captured_home_spread`,
+`MOVEMENT_POLICY_THRESHOLD`), and now the challenger arm's definition.** At
+each refresh pass, for each still-open game (the existing per-game deadline
 guard already decides which games are even reachable): let
 `delta = current_captured_line - decision_home_spread` -- the current
 locally-captured home spread minus the frozen Tuesday line, home-oriented,
 the identical sign convention `open_move` uses in
 `scripts/observed_movement_channel.py` and throughout `nfl_ats.clv`
 (`tue_open_home_spread` / `close_home_spread` are the same `home_spread_line`
-column that convention already relies on). If `abs(delta) >= 1.0`: the
-refreshed pick becomes the side the market moved toward (`delta > 0` picks
-HOME, else AWAY -- reused verbatim from the measurement script's
-`_threshold_pick`). Otherwise: the refreshed pick is the model's own
-recomputed pick, exactly the prior behavior.
+column that convention already relies on). If `abs(delta) >= 1.0`: the pick
+became the side the market moved toward (`delta > 0` picks HOME, else AWAY --
+reused verbatim from the measurement script's `_threshold_pick`). Otherwise:
+the refreshed pick was the model's own recomputed pick. Since 2026-09-10 that
+side is written to the challenger ledger and never to the served pick.
 
 **Where "the current captured line" comes from -- read-only, no live fetch
 from inside `refresh-picks`.** `scripts/odds_capture.ps1` (a Windows Task
@@ -296,7 +328,9 @@ one, and avoids spending API quota or making a network call on every
 `refresh-picks` invocation (which, per the cadence above, can run several
 times a week and in rehearsal without `--record-decisions`).
 
-**Fail-open, explicitly.** "Fresh" means the newest quote's
+**Fail-open, explicitly, and it still runs every pass** -- the read below is
+what populates `consensus_delta` on every ledger row and what the challenger
+arm is computed from. "Fresh" means the newest quote's
 `observed_at_utc` across the whole local market store falls on the same
 America/New_York calendar date as the refresh's own `now`. If the store is
 empty, or its newest quote is not from today (the scheduled capture hasn't
@@ -310,8 +344,10 @@ applies per game even when the store IS fresh overall, if that specific
 game's line was not matched/captured this pass.
 
 **Both arms recorded, always.** Every pick-revision ledger row now carries
-four additional columns: `movement_policy` (`movement_ge_1.0` or
-`model_only`), `movement_delta` (the signed point move, `null` when no
+four additional columns: `movement_policy` (since 2026-09-10 one of the
+late-week follow ids, `handle_follow_0_70`, `rookie_crew_underdog_v1` or
+`model_only`; `movement_ge_1.0` appears only on rows written before that
+date), `movement_delta` (the signed point move, `null` when no
 fresh line was available), `movement_pick_side` (the side the market
 moved toward, computed whenever a delta exists, even on rows where the
 policy did not select it), and `model_only_pick_side` (the model's own
@@ -324,7 +360,12 @@ movement-governed row, `new_pick_side` may not equal the usual
 to that invariant in this codebase, fully recoverable from these four
 columns on every row.
 
-**Tracked challenger.** `model_only_refresh_incumbent`
+**Tracked challengers.** `consensus_movement_1_0_off_incumbent` is the retired
+rule's own arm -- the pick each pass would have served with the rule still
+applied, recorded beside the pick it did serve in
+`prospective/consensus_movement_refresh_decisions.parquet`, one row per game
+per pass on every game that carries a captured line.
+`model_only_refresh_incumbent`
 (`artifacts/prospective/challengers.json`) is the counterfactual arm:
 "what would this week's refresh have picked with no movement override."
 Its evidence is entirely reconstructable from `pick_revisions.parquet`'s
@@ -357,7 +398,7 @@ change writes zero rows (see "No-op refresh").
 | `coach_fade_flip`, `division_revenge_flip`, `player_arrests_flip`, `spread_gap_zone_flip` | Frozen Tuesday member flags; each member was evaluated against the raw card |
 | `composed_overlay_flip` | OR of the four member flags; the refitted raw side is complemented once when true |
 | `player_arrests_snapshot_id`, `player_arrests_safe_index_sha256` | Provenance copied from Tuesday's paper row; refresh never opens that snapshot or a newer one |
-| `movement_policy` | `late_week_leader_median_follow_1_0` (the promoted late-week follow governed this pick -- see "Promoted late-week follow" below), `late_week_leader_median_follow_1_0_news_veto` (that follow fired and post-Tuesday injury news contradicted it, so the Tuesday pick stands -- see "Injury-news veto" below), `movement_ge_1.0` (the observed-movement policy governed this pick), or `model_only` (below both thresholds, or no market evidence -- see "Observed-movement pick policy" above) |
+| `movement_policy` | `late_week_leader_median_follow_1_0` (the promoted late-week follow governed this pick -- see "Promoted late-week follow" below), `late_week_leader_median_follow_1_0_news_veto` (that follow fired and post-Tuesday injury news contradicted it, so the Tuesday pick stands -- see "Injury-news veto" below), `handle_follow_0_70`, `rookie_crew_underdog_v1`, or `model_only` (below the threshold, or no market evidence). `movement_ge_1.0` appears only on rows written before 2026-09-10, when the observed-movement policy still governed served picks -- see "Observed-movement pick policy" above |
 | `movement_delta` | The governing arm's signed move in home-oriented points: the late-week leader-median net move when the late-week arm governs, else the consensus delta when a fresh captured line exists, else the late-week net when only that arm has evidence; blank/null when neither arm does |
 | `movement_pick_side` | The side the governing (or counterfactual) market arm points at, whenever `movement_delta` is not null -- the candidate side even on rows where `movement_policy` did not select it |
 | `model_only_pick_side` | The recomputed production-policy pick (post frozen four-member union, pre movement-policy override) -- always present; the counterfactual the `model_only_refresh_incumbent` challenger tracks |
@@ -430,10 +471,14 @@ had not yet passed were eligible. "Policy" is
 line at least a full point since Tuesday and the pick followed them,
 `late_week_leader_median_follow_1_0_news_veto` when they moved that far but
 the injury report points the other way, so Tuesday's pick stands,
-`movement_ge_1.0` when the pool's own captured line
-instead moved >=1.0 point and the pick followed it, or `model_only` when
-neither market arm fired -- see the movement-policy sections above. This is
-research output, not a wagering recommendation.
+`handle_follow_0_70` when that rule did not fire and at least 70% of the money
+bet on the game sat on the other side, `rookie_crew_underdog_v1` when it did
+not fire and the officiating crew for that game is new this season, or
+`model_only` when nothing above fired. The 1.0-point `movement_ge_1.0`
+consensus rule was retired from the served chain on 2026-09-10 and is recorded
+as the paired challenger `consensus_movement_1_0_off_incumbent` -- see the
+movement-policy sections above. This is research output, not a wagering
+recommendation.
 
 | Matchup | Previous pick | New pick | Model estimate | Policy | Market move |
 |---|---|---|---|---|---|
@@ -548,8 +593,9 @@ and no news never vetoes.
 
 **Precedence.** The veto is a guard INSIDE the follow branch, never a step
 below it: a vetoed game counts as "the follow fired", so it does not fall
-through to the 1.0-point consensus arm, the heavy-handle rule or the
-rookie-crew step. That is how it was measured. Its OFF arm is the un-vetoed
+through to the heavy-handle rule or the rookie-crew step (nor, while it was
+served, to the 1.0-point consensus arm). That is how it was measured. Its OFF
+arm is the un-vetoed
 side, which every revision row already carries as `movement_pick_side`, and
 the follow ledger records it explicitly as
 `late_week_follow_no_news_veto_off_incumbent`.
@@ -615,7 +661,7 @@ AWAY), unless the injury-news veto below discards it. If no leading book
 contributed, the arm cannot fire and the Tuesday
 pick stands -- it never falls through to the twelve-book mean. Otherwise the
 existing logic stands unchanged (the model's own recompute, possibly
-1.0-consensus-overridden). Sunday passes consume Saturday evidence; Sunday
+rookie-crew or heavy-handle governed). Sunday passes consume Saturday evidence; Sunday
 moves are outside the rule, preserving the measured construct. Missing archives
 or unusable stores are fail-open: the arm reports itself unavailable and the
 pass proceeds exactly as before.
@@ -634,7 +680,8 @@ arms: `late_week_leader_median_follow_0_5_off_incumbent` (the half-point gate)
 and `late_week_follow_no_news_veto_off_incumbent`
 (`news_veto_would_be_pick_side` is the served side, `movement_would_be_pick_side`
 the un-vetoed one). Every
-pick-revision row additionally carries both market arms' evidence
+pick-revision row additionally carries the served arm's and the retired
+consensus rule's evidence
 (`late_week_*`, `consensus_*`), the governing `movement_policy`, and the
 `model_only_pick_side` counterfactual, so a later settlement pass can score
 Tuesday vs final, model-only vs played, leader vs equal, and the two market
@@ -665,7 +712,7 @@ extending this lane, not a verdict on H1.
 **The rule, exactly as served (`nfl_ats.pick_refresh.plan_refresh`,
 `nfl_ats.public_betting_live.load_latest_public_handle`).** At each refresh
 pass at or after **Saturday 12:00 ET** of that week, for each still-open game
-where **neither** market rule above fired: read the latest public-betting
+where the late-week follow above did **not** fire: read the latest public-betting
 capture strictly at or before the pass instant that carries rows for this
 season and week (`data/raw/public_betting_live/`, written by the
 `public_betting_sat` and `public_betting_sun` scheduler jobs), take the side
@@ -673,10 +720,11 @@ with the larger share of the spread money, and if that share is **>= 70%** and
 the pick is on the other side, the served pick becomes the money's side.
 Otherwise everything stands exactly as before.
 
-**Precedence is strictly below both market rules, on purpose.** Heavy handle
-is largely the cause of the line move `LATE_WEEK_MOVE_FOLLOW_POLICY` and the
-1.0-point consensus rule already read, so applying it on top of them would
-count the same money twice. It may only apply where neither fired.
+**Precedence is strictly below the market rule, on purpose.** Heavy handle
+is largely the cause of the line move the late-week follow already read, so
+applying it on top would count the same money twice. It may only apply where
+that rule was silent. It sat below the 1.0-point consensus rule too, until
+that rule was retired on 2026-09-10.
 
 **Thursday and Wednesday games never see a reading.** Both captures land after
 those kickoffs, and the clock gate refuses a pass before Saturday noon ET
@@ -694,7 +742,7 @@ rows carry the reason `Followed the heavy-money side`. The paired
 served and off -- for every eligible game that carried a reading on the pass,
 so the OFF arm accrues game for game instead of being reconstructed later.
 
-## Served rookie-crew step (2026-09-09, below both market arms)
+## Served rookie-crew step (2026-09-09, below the market arm)
 
 Closing-grounds taxonomy, verbatim, because this section reports intervals: an
 interval or CI that contains zero is NEVER grounds to reject, fail, or close an
@@ -706,13 +754,15 @@ an effect that size ever closes a line of work. Everything else is
 Officiating-crew assignments publish Wednesday-Thursday, after the Tuesday
 lock (`docs/referee_assignments_capture.md`), so the reconciled rookie-crew
 rule of `docs/rookie_crew_reconciliation.md` can only ever reach the card
-through this path. It is now the third step in the chain, and it is the LAST
-one consulted before the model's own side:
+through this path. It is the LAST step consulted before the model's own side:
 
-1. `late_week_move_follow_0_5` -- the promoted follow rule above;
-2. `movement_ge_1.0` -- the 1.0-point consensus rule;
-3. `rookie_crew_underdog_v1` -- this step;
-4. `model_only`.
+1. `late_week_leader_median_follow_1_0` -- the promoted follow rule above,
+   with its injury-news veto;
+2. `rookie_crew_underdog_v1` -- this step;
+3. `model_only`, after which `handle_follow_0_70` may still act.
+
+The 1.0-point `movement_ge_1.0` consensus rule sat between steps 1 and 2 until
+it was retired from the served chain on 2026-09-10.
 
 **The rule, exactly as served** (`nfl_ats.pick_refresh._rookie_crew_lookup`,
 one function, one call site). Take the newest
@@ -728,7 +778,7 @@ the feature table -- Tuesday-opener consensus spread where the opener store
 reaches, archived nflverse spread as a close proxy before 2020 -- and the
 week's model is refit on profile `weak_stack_rookie_crew_underdog`. On a
 FLAGGED game whose refit side differs from the model-only side, and only when
-neither market arm fired, the served pick becomes the refit side. Everything
+the late-week follow did not fire, the served pick becomes the refit side. Everything
 else is untouched.
 
 **It is a model feature, not a hand-set flip.** The ridge learns the

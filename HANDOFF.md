@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T02:44:31.318099+00:00`
+Refreshed at: `2026-09-10T03:14:51.598470+00:00`
 
 ## Start here
 
@@ -20,12 +20,25 @@ Refreshed at: `2026-09-10T02:44:31.318099+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `403b3b2638f3` — Displayed decision score calibrated by spread bucket (Brier P+ 0.82; sides unchanged; ARI +9.5 shows 53.4% not 64.2%). Site shows the served week-rules number beside the Tuesday card. 10.5+ diagnosis: the assembled model is noise there (50.8%) while results, elo and the market's own move carry signal (55-63%). Served chain measured as one object: the 1.0-point consensus rule costs -1.6 through the chain. CFB: bye-edge and protection lean against the NFL direction; precip has no corroboration anywhere.
-- Pending change set: 4 paths
-  - `M  scripts/lockday_verify.py`
+- Baseline commit: `ef60021d9d21` — Week 2 lock rehearsal fixes: lockday_verify knows today's three served arms (0 missing, 0 pending), a replace-week after a kickoff no longer bricks later refresh passes, settle grades the equal-book and model-only OFF arms
+- Pending change set: 17 paths
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `M  docs/late_week_refresh.md`
+  - `M  docs/model.html`
+  - `M  registry/weak_signals.json`
+  - `M  src/nfl_ats/board_assistant.py`
   - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `A  src/nfl_ats/consensus_movement_refresh_overlay.py`
+  - `M  src/nfl_ats/dashboard/findings_content.py`
   - `M  src/nfl_ats/pick_refresh.py`
+  - `M  src/nfl_ats/public_board.py`
   - `M  src/nfl_ats/settlement.py`
+  - `M  tests/test_pick_refresh.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

@@ -3112,6 +3112,71 @@
       "status_reason": "Recorded unresolved_below_power. This ledger is the OFF arm of the news veto: the pick the follow rule would have served with no injury-report check.",
       "weekly_generation_command": "N/A -- reuses the refresh pass's own plan and the local public-betting captures; no network fetch.",
       "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
+    },
+    {
+      "challenger_id": "consensus_movement_1_0_off_incumbent",
+      "config_fingerprint": "bc77638d47e2748c",
+      "correlation_and_reuse_warning": "Paired game-for-game with the served refresh pick on the same frozen Tuesday line, and heavily correlated with the late-week leader-median follow -- the two rules read the same money and fired together on 179 of their games over 2023-2025; never pool these rows as independent.",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "closing_ground": null,
+        "closing_grounds_taxonomy": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment. Only a RESOLVED wrong sign (whole interval on the wrong side of zero), zero split-half reliability, or a positive control proven able to detect an effect that size ever closes a line of work. Everything else is unresolved_below_power: report probability_positive, never the binary 'contains zero'.",
+        "mechanism": "On the picks each rule changes, the leader-median follow at a full point goes 38-26 (59.4%) while the whole-market consensus rule goes 30-43 (41.1%). Both fire on 179 of the same games and point at opposite sides on 21, so the consensus rule is largely a diluted, later echo of the move the three leading books already priced. That is a difference in what the two aggregations measure, not an accuracy dip located at a threshold.",
+        "retired_from_served_chain": {
+          "arm": "the served chain with the 1.0-point consensus rule still applied, which is what ran through 2026-09-10",
+          "bootstrap": "paired week- and season-blocked, 20,000 samples, seed 20260821",
+          "chain_without_it_accuracy": 0.57947,
+          "effect_of_removing_it_accuracy_points": 2.003,
+          "interval_points_season_blocked": [
+            0.752,
+            4.135
+          ],
+          "interval_points_week_blocked": [
+            0.126,
+            3.865
+          ],
+          "n_scored_games": 799,
+          "picks_changed": 70,
+          "probability_positive_week_blocked": 0.9816,
+          "served_chain_accuracy": 0.55945,
+          "step_effect_accuracy_points": -1.627,
+          "step_interval_points_week_blocked": [
+            -3.409,
+            0.25
+          ],
+          "step_picks_changed": 73,
+          "step_probability_positive_week_blocked": 0.0413,
+          "week_blocks": 54,
+          "window": [
+            2023,
+            2025
+          ]
+        },
+        "source": "artifacts/served_refresh_card/20260910T011328Z/results.json; docs/served_refresh_card.md",
+        "write_up": "docs/served_refresh_card.md, docs/late_week_refresh.md"
+      },
+      "known_gap": "The historical measurement replays each game's DEADLINE consensus from the intraday_hourly backfill -- the maximum late-week information the rule could see -- while production compares against whatever the morning's scheduled capture holds, so the 342 measured fires are an upper bound on how often it acts and its measured cost is an upper bound too. A pass with no fresh captured line writes no row for that game.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "prospective_protocol": "Retired from the served chain on 2026-09-10 and kept as a paired arm. On every refresh pass that holds a fresh captured line, prospective/consensus_movement_refresh_decisions.parquet records the pick the pass WOULD have served with the rule still applied (consensus_arm_pick_side) beside the pick it did serve (served_pick_side) and the frozen Tuesday pick, at the same frozen Tuesday grading line, one row per game per refresh run. The two arms are identical by construction on every game the rule would not have governed, so only firing games carry information. Score with nfl-ats prospective-score, decision_line primary, close_line secondary. No rotation window spent.",
+      "reader_summary": "The card if a late move in the whole market's average line still switched a pick, the way it did before 2026-09-10.",
+      "registered_at_utc": "2026-09-10T02:38:05.474300+00:00",
+      "registered_by": "Retiring the 1.0-point consensus rule from the served chain (docs/served_refresh_card.md): measured on the full served chain over 2023-2025, the rule costs -1.627 accuracy points, probability_positive 0.041, and dropping it scores +2.003 over the served chain, week-blocked [+0.126, +3.865], probability_positive 0.9816. Registered as the paired arm the way handle_follow_refresh_off_incumbent and late_week_leader_median_follow_0_5_off_incumbent were.",
+      "rule_frozen_text": "Challenger: consensus_movement_1_0_off_incumbent\nStatus: ACTIVE_PROSPECTIVE -- the arm of a RETIRED rule, tracked so the 2026 season scores both arms on the same games at no rotation-window cost.\nRetired rule (frozen): at each nfl-ats refresh-picks pass, let delta = the newest locally captured consensus home spread minus the frozen Tuesday decision_home_spread. When abs(delta) >= 1.0 and the late-week leader-median follow did not fire, the pick became the side delta points at (delta > 0 picks HOME, else AWAY).\nServed chain today: leader-median follow at a full point with the injury-news veto, then the rookie-crew refit, then the heavy-handle follow, then model-only. This rule sits in none of it.\nGrading: the frozen Tuesday line (POL-11), decision_line primary.\nFails open: no fresh capture, or no captured line for that game, writes no row.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "Recorded unresolved_below_power with a null closing ground: the step's week-blocked interval is [-3.409, +0.250], whose upper end is above zero, so the sign is not resolved and wrong_sign_resolved is inadmissible. The rule was removed from the played card as a 96/4 expected-value call on a forced-pick pool, not as a refutation, and it keeps accruing here so the two arms stay comparable game for game.",
+      "weekly_generation_command": "N/A -- reuses the refresh pass's own plan and the local captured odds store; no network fetch.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

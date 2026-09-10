@@ -902,7 +902,7 @@ def build_knowledge(
                 "and Sunday 4:00 PM ET; the "
                 "pool's lines freeze Tuesday. If the three books that usually "
                 "move first shift the line a full point or more off the frozen "
-                "Tuesday number -- or any captured line moves a full point -- "
+                "Tuesday number, "
                 "the refreshed pick follows the market side, unless an injury "
                 "filed since Tuesday points the other way, which keeps the "
                 "Tuesday pick. This card was generated "

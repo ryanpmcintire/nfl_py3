@@ -1030,8 +1030,7 @@ def _movement_policy_note(challengers: Sequence[Mapping[str, Any]]) -> str:
         "At each pass we look at the three books that usually move first: if their "
         "middle move is a full point or more off Tuesday's frozen number, the pick "
         "follows them -- unless an injury filed since Tuesday points the other way, "
-        "which keeps Tuesday's pick. A full-point move in the pool's own line is a "
-        "second, separate trigger. Below those moves (or with no fresh lines "
+        "which keeps Tuesday's pick. Below that move (or with no fresh lines "
         "captured), the model's own re-run pick plays as always.</p></div>"
     )
     if isinstance(threshold_text, str) and threshold_text.strip():
@@ -3599,7 +3598,6 @@ def served_refresh_policy_ids() -> dict[str, str]:
     from nfl_ats.pick_refresh import (
         HANDLE_FOLLOW_POLICY,
         LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
-        MOVEMENT_POLICY_MOVEMENT,
         PRODUCTION_COMPOSITION_POLICY_IDS,
         ROOKIE_CREW_POLICY,
     )
@@ -3607,7 +3605,6 @@ def served_refresh_policy_ids() -> dict[str, str]:
     return {
         "composition": PRODUCTION_COMPOSITION_POLICY_IDS[-1],
         "late_week_follow": LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
-        "consensus_movement": MOVEMENT_POLICY_MOVEMENT,
         "rookie_crew": ROOKIE_CREW_POLICY,
         "handle_follow": HANDLE_FOLLOW_POLICY,
     }

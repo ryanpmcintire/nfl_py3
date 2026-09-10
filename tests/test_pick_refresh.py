@@ -16,6 +16,7 @@ from nfl_ats.lines import apply_external_lines
 from nfl_ats.market_data import QUOTE_COLUMNS
 from nfl_ats.outcomes import fit_margin_models_for_week
 from nfl_ats.pick_refresh import (
+    CONSENSUS_MOVEMENT_OFF_CHALLENGER_ID,
     LATE_WEEK_LEADER_MEDIAN_FOLLOW_POLICY,
     LATE_WEEK_REFRESH_END,
     LATE_WEEK_REFRESH_START,
@@ -864,9 +865,9 @@ def test_movement_side_sign_convention_matches_the_measurement_script() -> None:
 def test_movement_policy_overrides_the_pick_when_the_market_moves_at_least_one_point(
     refresh_env: tuple[Path, Path, pd.DataFrame], delta_sign: int
 ) -> None:
-    """A >=1.0 point move in EITHER direction overrides the played pick to
-    the side the market moved toward, regardless of what the model's own
-    recompute says -- both signs, as required, in one fixture."""
+    """A >=1.0 point consensus move in EITHER direction is recorded as the
+    retired rule's arm and never governs the served pick -- both signs, as
+    required, in one fixture."""
 
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(
@@ -905,10 +906,11 @@ def test_movement_policy_overrides_the_pick_when_the_market_moves_at_least_one_p
     assert len(plan.games) == 1
     game = plan.games[0]
     expected_side = "HOME" if delta_sign > 0 else "AWAY"
-    assert game.movement_policy == MOVEMENT_POLICY_MOVEMENT
+    assert game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
     assert game.movement_delta == pytest.approx(delta)
     assert game.movement_pick_side == expected_side
-    assert game.new_pick_side == expected_side
+    assert game.new_pick_side == model_only_side
+    assert game.consensus_arm_pick_side == expected_side
     assert game.model_only_pick_side == model_only_side
     assert plan.current_line_metadata["fresh"] is True
 
@@ -916,9 +918,9 @@ def test_movement_policy_overrides_the_pick_when_the_market_moves_at_least_one_p
 def test_movement_policy_overrides_a_disagreeing_model_pick(
     refresh_env: tuple[Path, Path, pd.DataFrame],
 ) -> None:
-    """A genuine override, not a coincidence: the movement side is
-    deliberately forced OPPOSITE the model's own recompute, and the market
-    still wins the played pick."""
+    """The consensus side is deliberately forced OPPOSITE the model's own
+    recompute, and since the rule was retired the model still wins the played
+    pick while the retired rule's arm keeps the market side."""
 
     artifacts_root, data_root, model_frame = refresh_env
     reference = _reference_probability(
@@ -956,9 +958,9 @@ def test_movement_policy_overrides_a_disagreeing_model_pick(
     )
     game = plan.games[0]
     assert game.model_only_pick_side == model_only_side
-    assert game.new_pick_side != model_only_side
-    assert game.movement_policy == MOVEMENT_POLICY_MOVEMENT
-    assert game.new_pick_side == game.movement_pick_side
+    assert game.new_pick_side == model_only_side
+    assert game.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
+    assert game.consensus_arm_pick_side == game.movement_pick_side != game.new_pick_side
 
 
 def test_movement_policy_keeps_the_model_pick_below_threshold(
@@ -1147,7 +1149,7 @@ def test_movement_policy_is_a_no_op_per_game_when_that_games_line_is_not_capture
     )
     assert plan.current_line_metadata["fresh"] is True
     by_id = {game.game_id: game for game in plan.games}
-    assert by_id[MOVEMENT_GAME["game_id"]].movement_policy == MOVEMENT_POLICY_MOVEMENT
+    assert by_id[MOVEMENT_GAME["game_id"]].movement_delta == pytest.approx(2.0)
     uncaptured = by_id["2026_02_UNC_APT"]
     assert uncaptured.movement_policy == MOVEMENT_POLICY_MODEL_ONLY
     assert uncaptured.movement_delta is None
@@ -1165,7 +1167,8 @@ def test_ledger_records_movement_policy_delta_and_both_candidate_picks(
         week=WEEK,
     )
     model_only_side = "HOME" if reference[MOVEMENT_GAME["game_id"]] >= 0.5 else "AWAY"
-    _write_movement_original_card(artifacts_root, pick_side=model_only_side)
+    tuesday_side = "AWAY" if model_only_side == "HOME" else "HOME"
+    _write_movement_original_card(artifacts_root, pick_side=tuesday_side)
     features_path = data_root / "processed" / "game_features.parquet"
     atomic_parquet(_target_frame(model_frame, [MOVEMENT_GAME]), features_path)
 
@@ -1192,15 +1195,23 @@ def test_ledger_records_movement_policy_delta_and_both_candidate_picks(
     )
     assert result["ledger"]["recorded"] == 1
     assert result["movement_policy"]["current_line_fresh"] is True
-    assert result["movement_policy"]["games_movement_applied"] == [MOVEMENT_GAME["game_id"]]
+    assert result["movement_policy"]["games_movement_applied"] == []
+    consensus = result["movement_policy"]["consensus_movement"]
+    assert consensus["served"] is False
+    assert consensus["retired_policy_id"] == MOVEMENT_POLICY_MOVEMENT
+    assert consensus["challenger_id"] == CONSENSUS_MOVEMENT_OFF_CHALLENGER_ID
+    assert consensus["games_consensus_applied"] == []
+    assert consensus["games_consensus_would_govern"] == [MOVEMENT_GAME["game_id"]]
+    assert consensus["games_consensus_would_change_pick"] == [MOVEMENT_GAME["game_id"]]
 
     revisions = load_pick_revisions(artifacts_root)
     row = revisions.loc[revisions["game_id"].eq(MOVEMENT_GAME["game_id"])].iloc[0]
-    assert row["movement_policy"] == MOVEMENT_POLICY_MOVEMENT
+    assert row["movement_policy"] == MOVEMENT_POLICY_MODEL_ONLY
     assert row["movement_delta"] == pytest.approx(delta)
+    assert row["consensus_delta"] == pytest.approx(delta)
     assert row["model_only_pick_side"] == model_only_side
-    assert row["new_pick_side"] != model_only_side
-    assert row["movement_pick_side"] == row["new_pick_side"]
+    assert row["new_pick_side"] == model_only_side
+    assert row["consensus_pick_side"] == row["movement_pick_side"] != row["new_pick_side"]
 
 
 def test_movement_policy_never_bypasses_the_kickoff_deadline_guard(
@@ -1285,7 +1296,7 @@ def test_movement_policy_never_bypasses_the_kickoff_deadline_guard(
     )
     assert plan.current_line_metadata["fresh"] is True
     game = plan.games[0]
-    assert game.movement_policy == MOVEMENT_POLICY_MOVEMENT
+    assert game.consensus_delta == pytest.approx(3.0)
     assert game.eligible is False
     assert game.ineligible_reason == "kickoff_passed"
     assert game.changed is False
@@ -1772,7 +1783,7 @@ def test_late_week_summary_ledger_and_card_carry_the_new_arm(
     assert summary["movement_policy"]["late_week_follow"]["games_late_week_follow_applied"] == [
         LATE_WEEK_GAME["game_id"]
     ]
-    assert summary["movement_policy"]["games_consensus_applied"] == []
+    assert summary["movement_policy"]["consensus_movement"]["games_consensus_applied"] == []
     assert summary["movement_policy"]["late_week_follow"]["games_followed"] == 1
 
     result = record_refresh(
