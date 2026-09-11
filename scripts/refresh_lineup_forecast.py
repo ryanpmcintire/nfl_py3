@@ -56,6 +56,30 @@ def main() -> int:
         cwd=REPO,
         check=True,
     )
+    subprocess.run(
+        [str(UV), "run", "--no-sync", "nfl-ats", "card-ledger-check"],
+        cwd=REPO,
+        check=False,
+    )
+    subprocess.run(
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "nfl-ats",
+            "refresh-picks",
+            "--publish-card",
+            "--note",
+            "lineups_refresh",
+        ],
+        cwd=REPO,
+        check=False,
+    )
+    subprocess.run(
+        [str(UV), "run", "--no-sync", "nfl-ats", "publish-board"],
+        cwd=REPO,
+        check=True,
+    )
     return 0
 
 

@@ -22,6 +22,7 @@ Registrar = Callable[["argparse._SubParsersAction[argparse.ArgumentParser]", int
 
 REGISTRARS: tuple[Registrar, ...] = (
     operations.register_health,
+    operations.register_card_ledger_check,
     data.register_player_arrests,
     publishing.register,
     operations.register_handoff,

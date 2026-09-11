@@ -23,6 +23,7 @@ UV = REPO / ".tools" / ("uv.exe" if sys.platform == "win32" else "uv")
 SCHEDULER_ROLE = os.environ.get("NFL_ATS_SCHEDULER_ROLE", "primary")
 CAPTURE_JOB_PREFIXES: tuple[str, ...] = (
     "odds_",
+    "player_props_",
     "public_betting_",
     "injuries_",
     "sportradar_injuries_",
@@ -562,6 +563,134 @@ SCHEDULE: tuple[Job, ...] = (
         season_guarded=False,
         added_on="2026-09-05",
         requires=("odds_sat",),
+    ),
+    Job(
+        "odds_wed_opener_halves",
+        "wed",
+        "18:00",
+        90,
+        _cli("odds-ingest-halves"),
+        True,
+        "LEAD-61 per-event half/quarter-game market capture riding the "
+        "Wednesday opener window; requires=('odds_wed_opener',) for its "
+        "event ids and quota reading. Added 2026-09-11: the Tuesday/"
+        "Saturday pair alone left every Wed/Thu game with only one "
+        "half-line snapshot and no paired late read.",
+        season_guarded=False,
+        added_on="2026-09-11",
+        requires=("odds_wed_opener",),
+    ),
+    Job(
+        "odds_thu_tnf_halves",
+        "thu",
+        "18:00",
+        90,
+        _cli("odds-ingest-halves"),
+        True,
+        "LEAD-61 per-event half/quarter-game market capture riding the "
+        "Thursday TNF window; requires=('odds_thu_tnf',) for its event "
+        "ids and quota reading. Added 2026-09-11, same gap as "
+        "odds_wed_opener_halves.",
+        season_guarded=False,
+        added_on="2026-09-11",
+        requires=("odds_thu_tnf",),
+    ),
+    Job(
+        "odds_sun_close_halves",
+        "sun",
+        "12:30",
+        25,
+        _cli("odds-ingest-halves"),
+        True,
+        "LEAD-61 per-event half/quarter-game market capture riding the "
+        "Sunday closing-line window; requires=('odds_sun_close',) for its "
+        "event ids and quota reading. Added 2026-09-11 to complete the "
+        "paired-snapshot coverage LEAD-61's own bar (a season of paired "
+        "weekly snapshots) needs.",
+        season_guarded=False,
+        added_on="2026-09-11",
+        requires=("odds_sun_close",),
+    ),
+    Job(
+        "odds_mon_mnf_halves",
+        "mon",
+        "19:00",
+        90,
+        _cli("odds-ingest-halves"),
+        True,
+        "LEAD-61 per-event half/quarter-game market capture riding the "
+        "Monday MNF window; requires=('odds_mon_mnf',) for its event ids "
+        "and quota reading. Added 2026-09-11, same gap as "
+        "odds_sun_close_halves.",
+        season_guarded=False,
+        added_on="2026-09-11",
+        requires=("odds_mon_mnf",),
+    ),
+    Job(
+        "player_props_sat",
+        "sat",
+        "12:00",
+        180,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "ingest_player_props.py"),
+            "--seasons",
+            "2026",
+            "--markets",
+            "player_pass_yds",
+            "--earliest-kickoff-only",
+            "--snapshot-weekday",
+            "saturday",
+            "--budget",
+            "200",
+            "--quota-floor",
+            "600",
+        ],
+        True,
+        "MKT-13 v2 archive contract: earliest-kickoff-only player_pass_yds "
+        "tranche at Saturday noon ET, one immutable snapshot per run under "
+        "data/raw/odds_api_props. Budget 200 covers a full 2026-season sweep "
+        "(18 weeks x ~11 credits for an already-posted week, ~1 for an "
+        "unposted one) well inside the 600-credit registry floor "
+        "(config/source_policies.json, the_odds_api).",
+        dedupe_dir="data/raw/odds_api_props",
+        dedupe_minutes=180,
+        added_on="2026-09-11",
+    ),
+    Job(
+        "player_props_tue",
+        "tue",
+        "12:30",
+        180,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "ingest_player_props.py"),
+            "--seasons",
+            "2026",
+            "--markets",
+            "player_pass_yds",
+            "--earliest-kickoff-only",
+            "--snapshot-weekday",
+            "tuesday",
+            "--budget",
+            "200",
+            "--quota-floor",
+            "600",
+        ],
+        True,
+        "MKT-13 v2 archive contract: earliest-kickoff-only player_pass_yds "
+        "tranche at Tuesday 12:30 ET, 30m after the pool's own noon lock so "
+        "the week's books have had a chance to post the early game's props. "
+        "Same budget/floor reasoning as player_props_sat.",
+        dedupe_dir="data/raw/odds_api_props",
+        dedupe_minutes=180,
+        added_on="2026-09-11",
     ),
     Job(
         "public_betting_sat",
@@ -1700,6 +1829,9 @@ def failure_detail(stderr: str | None, stdout_tail: str, *, limit: int = 300) ->
     return text[-limit:]
 
 
+JOB_SUBPROCESS_TIMEOUT_SECONDS = 3600
+
+
 def execute_job(command: list[str]) -> tuple[str, str]:
     status, detail, _ = execute_job_with_output(command)
     return status, detail
@@ -1714,7 +1846,7 @@ def execute_job_with_output(command: list[str]) -> tuple[str, str, str]:
             cwd=REPO,
             capture_output=True,
             text=True,
-            timeout=1800,
+            timeout=JOB_SUBPROCESS_TIMEOUT_SECONDS,
             creationflags=no_window,
         )
         stdout = proc.stdout or ""
@@ -1723,7 +1855,7 @@ def execute_job_with_output(command: list[str]) -> tuple[str, str, str]:
         status = "OK" if proc.returncode == 0 else f"FAIL({proc.returncode})"
         detail = tail if proc.returncode == 0 else failure_detail(proc.stderr, tail)
     except subprocess.TimeoutExpired:
-        status, detail = "FAIL(timeout)", "exceeded 1800s"
+        status, detail = "FAIL(timeout)", f"exceeded {JOB_SUBPROCESS_TIMEOUT_SECONDS}s"
     except OSError as exc:
         status, detail = "FAIL(oserror)", str(exc)[:300]
     return status, detail, stdout

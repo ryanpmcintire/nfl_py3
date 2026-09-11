@@ -590,12 +590,17 @@ def _situational_adjustment_sentence(overlays: OverlaysComponent) -> str:
     return "No situational adjustment fired."
 
 
+_FRESHNESS_NEUTRAL_STATES = frozenset({"not_configured", "not_due"})
+
+
 def _freshness_clause(freshness: FreshnessComponent) -> str:
     if not freshness.sources:
         return ""
     fan_state: dict[str, str] = {}
     other_stale = 0
     for entry in freshness.sources:
+        if entry.state in _FRESHNESS_NEUTRAL_STATES:
+            continue
         category = _fan_category(entry.source_id)
         if category is None:
             if entry.state != "complete":
@@ -632,7 +637,7 @@ _REFRESH_SHORT_CLAUSES: dict[str, str] = {
 }
 
 
-def _render_text(
+def render_pick_text(
     matchup: str,
     market_line: MarketLineComponent,
     model_probability: ModelProbabilityComponent,
@@ -738,7 +743,7 @@ def family_contributions_from_waterfall_entry(
     return totals or None
 
 
-def _game_explanation_from_contributions(
+def game_explanation_from_contributions(
     game_id: str, home_team: str, away_team: str, family_contributions: Mapping[str, float] | None
 ) -> GameExplanation | None:
     if not family_contributions or not home_team or not away_team:
@@ -811,14 +816,14 @@ def explain_pick(
 
     freshness_component = _freshness_component(source_report)
     refresh_component = _refresh_component(refresh_changes)
-    game_explanation = _game_explanation_from_contributions(
+    game_explanation = game_explanation_from_contributions(
         game_id,
         home_team,
         away_team,
         family_contributions_from_waterfall_entry(waterfall_entry),
     )
 
-    text = _render_text(
+    text = render_pick_text(
         matchup,
         market_line,
         model_probability,
@@ -935,6 +940,7 @@ __all__ = [
     "family_contributions_from_waterfall_entry",
     "from_dict",
     "from_json",
+    "game_explanation_from_contributions",
     "overlay_firing_from_arrest_flip",
     "overlay_firing_from_coach_fade_flip",
     "overlay_firing_from_division_revenge_flip",
@@ -942,5 +948,6 @@ __all__ = [
     "overlay_firings_from_composition",
     "refresh_change_from_pick_revision",
     "render_markdown",
+    "render_pick_text",
     "to_json",
 ]

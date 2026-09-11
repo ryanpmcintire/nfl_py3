@@ -979,14 +979,8 @@ _NOTABLE_SIGNAL_LIMIT = 8
 class RecentActivityEntryView:
     plain_summary: str
     effect_text: str
-    direction_sentence: str
+    chance_it_helps_text: str
     closed_label: str | None
-
-
-@dataclass(frozen=True)
-class RecentActivityCategoryView:
-    category: str
-    entries: tuple[RecentActivityEntryView, ...]
 
 
 @dataclass(frozen=True)
@@ -994,7 +988,8 @@ class RecentActivityView:
     window_days: int
     screened_count: int
     resolved_count: int
-    categories: tuple[RecentActivityCategoryView, ...]
+    still_open_count: int
+    entries: tuple[RecentActivityEntryView, ...]
 
     @property
     def is_empty(self) -> bool:
@@ -1051,26 +1046,55 @@ def _recent_activity_entry_view(entry: RecentActivityEntry) -> RecentActivityEnt
         if entry.effect is not None
         else "not yet measured"
     )
+    chance_text = (
+        f"chance it helps: {entry.probability_positive:.0%}"
+        if entry.probability_positive is not None
+        else "chance it helps: not measured yet"
+    )
     return RecentActivityEntryView(
         plain_summary=name_books_for_readers(entry.plain_summary or PLAIN_SUMMARY_PENDING),
         effect_text=effect_text,
-        direction_sentence=entry.direction_sentence or "No confidence figure recorded yet.",
+        chance_it_helps_text=chance_text,
         closed_label=entry.closed_label,
     )
 
 
+def _recent_activity_extremity(entry: RecentActivityEntry) -> float:
+    return abs((entry.probability_positive or 0.5) - 0.5)
+
+
+def _recent_activity_highlights(
+    activity: RecentRegistryActivity, *, limit: int
+) -> tuple[RecentActivityEntry, ...]:
+    all_entries = [
+        entry for _category, entries in activity.entries_by_category for entry in entries
+    ]
+    ranked = sorted(
+        (entry for entry in all_entries if not entry.is_instrument_control),
+        key=_recent_activity_extremity,
+        reverse=True,
+    )
+    seen_summaries: set[str] = set()
+    highlighted: list[RecentActivityEntry] = []
+    for entry in ranked:
+        summary_key = entry.plain_summary or entry.key
+        if summary_key in seen_summaries:
+            continue
+        seen_summaries.add(summary_key)
+        highlighted.append(entry)
+        if len(highlighted) >= limit:
+            break
+    return tuple(highlighted)
+
+
 def _recent_activity_view(activity: RecentRegistryActivity) -> RecentActivityView:
+    highlighted = _recent_activity_highlights(activity, limit=_NOTABLE_SIGNAL_LIMIT)
     return RecentActivityView(
         window_days=activity.window_days,
         screened_count=activity.screened_count,
         resolved_count=activity.resolved_count,
-        categories=tuple(
-            RecentActivityCategoryView(
-                category=category,
-                entries=tuple(_recent_activity_entry_view(entry) for entry in entries),
-            )
-            for category, entries in activity.entries_by_category
-        ),
+        still_open_count=activity.screened_count - activity.resolved_count,
+        entries=tuple(_recent_activity_entry_view(entry) for entry in highlighted),
     )
 
 

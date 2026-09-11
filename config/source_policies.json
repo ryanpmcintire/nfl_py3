@@ -40,6 +40,62 @@
       "derived_publication": "aggregates_only",
       "conditions": ["express_written_consent_required_before_new_fetches"]
     },
+    "nfl_team_sites": {
+      "risk": "red",
+      "terms_url": "https://www.chiefs.com/terms-of-use",
+      "terms_reviewed_on": "2026-09-11",
+      "acquisition_allowed": false,
+      "raw_retention": "private_local_existing_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "LEAD-55_sample_check_chiefs_com_terms_prohibit_bot_hack_crack_or_any_spider_or_other_automatic_or_manual_device",
+        "same_nfl_digital_media_platform_and_terms_family_as_nfl_com_injuries",
+        "express_written_consent_required_before_new_fetches"
+      ]
+    },
+    "espn_nfl_injuries": {
+      "risk": "red",
+      "terms_url": "https://www.espn.com/robots.txt",
+      "terms_reviewed_on": "2026-09-11",
+      "acquisition_allowed": false,
+      "raw_retention": "private_local_existing_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "LEAD-55_check_robots_txt_disallows_user_agent_anthropic_ai_sitewide_disallow_slash",
+        "no_fetches_until_explicit_site_permission"
+      ]
+    },
+    "cbssports_nfl_injuries": {
+      "risk": "red",
+      "terms_url": "https://www.viacomcbs.legal/us/en/cbsi/terms-of-use",
+      "terms_reviewed_on": "2026-09-11",
+      "acquisition_allowed": false,
+      "raw_retention": "private_local_existing_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "LEAD-55_check_terms_prohibit_unauthorized_spidering_scraping_data_mining_or_harvesting_of_content",
+        "page_at_cbssports_com_nfl_injuries_is_day_resolved_wed_thu_fri_per_player_but_blocked_by_this_clause",
+        "express_written_consent_required_before_new_fetches"
+      ]
+    },
+    "rotowire_nfl_practice_reports": {
+      "risk": "red",
+      "terms_url": "https://www.rotowire.com/termsandconditions.php",
+      "terms_reviewed_on": "2026-09-11",
+      "acquisition_allowed": false,
+      "raw_retention": "private_local_existing_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "LEAD-55_check_terms_prohibit_manual_or_automated_software_devices_or_processes_to_crawl_or_spider_any_roto_sports_network_page",
+        "llms_txt_invites_conversational_qa_use_only_not_a_scheduled_recurring_capture",
+        "day_resolved_mon_thru_sun_json_endpoint_found_at_football_tables_practice-report.php_but_blocked_by_the_terms_clause_above",
+        "express_written_consent_required_before_new_fetches"
+      ]
+    },
     "nflverse": {
       "risk": "green",
       "terms_url": "https://github.com/nflverse/nflverse-data/blob/master/LICENSE",

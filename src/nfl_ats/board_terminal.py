@@ -36,7 +36,7 @@ from nfl_ats.board_site_content import (
     LedgerEvidenceItem,
     ModelLedgerRowView,
     ModelPageContent,
-    RecentActivityCategoryView,
+    RecentActivityEntryView,
     RecentActivityView,
     SeasonChallengerRecord,
     SeasonGradeRow,
@@ -1193,12 +1193,14 @@ def _rival_rules_section(content: BoardContent) -> str:
         f'<td data-label="Rule"><b>{escape(row.name)}</b></td>'
         f'<td data-label="Picks differently on" class="num">{escape(row.differs_text)}</td>'
         f'<td data-label="Games">{escape(row.games_text)}</td>'
+        f'<td data-label="Record so far">{escape(row.record_text)}</td>'
         "</tr>"
         for row in panel.rows
     )
     table = (
         '<div class="board-scroll"><table class="board">'
-        "<thead><tr><th>Rule</th><th>Picks differently on</th><th>Games</th></tr></thead>"
+        "<thead><tr><th>Rule</th><th>Picks differently on</th><th>Games</th>"
+        "<th>Record so far</th></tr></thead>"
         f"<tbody>{body}</tbody></table></div>"
     )
     single = (
@@ -2155,21 +2157,14 @@ def _watching_lead_html(lead: WatchingLeadView) -> str:
     )
 
 
-def _recent_activity_category_html(group: RecentActivityCategoryView) -> str:
+def _recent_activity_entry_html(entry: RecentActivityEntryView) -> str:
 
-    lines = "".join(
+    return (
         '<p class="game-sub" style="margin:6px 0;">'
-        f"{escape(entry.plain_summary)} &mdash; {escape(entry.effect_text)}. "
-        f"{escape(entry.direction_sentence)}"
+        f"{escape(entry.plain_summary)} &mdash; {escape(entry.effect_text)}, "
+        f"{escape(entry.chance_it_helps_text)}."
         + (f' <span class="pill">{escape(entry.closed_label)}</span>' if entry.closed_label else "")
         + "</p>"
-        for entry in group.entries
-    )
-    return (
-        '<details class="table-view">'
-        f'<summary class="micro" style="cursor:pointer;">'
-        f"{escape(humanize_identifier(group.category))} ({len(group.entries)})</summary>"
-        f"{lines}</details>"
     )
 
 
@@ -2178,14 +2173,20 @@ def _recent_activity_section_html(activity: RecentActivityView) -> str:
     header = (
         '<section aria-labelledby="recentactivity-h"><div class="section-head">'
         '<h2 id="recentactivity-h">Research this week</h2>'
-        f'<span class="sub">{activity.screened_count} screened &middot; '
-        f"{activity.resolved_count} resolved &middot; last {activity.window_days} days</span>"
+        f'<span class="sub">{activity.screened_count} signals looked at &middot; '
+        f"{activity.resolved_count} resolved either way &middot; "
+        f"{activity.still_open_count} still open</span>"
         "</div>"
     )
     if activity.is_empty:
         body = '<p class="policy-note">No new screens recorded this week.</p>'
+    elif not activity.entries:
+        body = (
+            '<p class="policy-note">Nothing worth a one-line summary '
+            "from this week&#x27;s screens yet.</p>"
+        )
     else:
-        body = "".join(_recent_activity_category_html(group) for group in activity.categories)
+        body = "".join(_recent_activity_entry_html(entry) for entry in activity.entries)
     return header + body + "</section>"
 
 

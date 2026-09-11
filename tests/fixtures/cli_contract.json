@@ -41,6 +41,7 @@
       "order": [
         "doctor",
         "preflight",
+        "card-ledger-check",
         "ingest-player-arrests",
         "publish-predictions",
         "refresh-picks",
@@ -82,7 +83,9 @@
         "clv-pilot",
         "clv-sign-test",
         "opener-evaluation",
+        "opener-line-series",
         "overlay-composition",
+        "served-refresh-card",
         "predict-close",
         "build-features",
         "build-pbp-features",
@@ -118,6 +121,10 @@
         {
           "name": "preflight",
           "help": "read-only environment/configuration check (Python, uv, hooks, writable destinations, source policy, local research-data inventory)"
+        },
+        {
+          "name": "card-ledger-check",
+          "help": "compare the paper-decision ledger and the pick-revision ledger against the currently served card for the active week; exits 1 on any disagreement"
         },
         {
           "name": "ingest-player-arrests",
@@ -284,8 +291,16 @@
           "help": "grade the frozen active model against Tuesday openers vs closes on every archived paired game (the pool primary-goal measurement; one predeclared look)"
         },
         {
+          "name": "opener-line-series",
+          "help": "build a Tuesday-opener line series from the per-book archive: one named book's posted spread, or the median of the half-point quotes only"
+        },
+        {
           "name": "overlay-composition",
           "help": "recompute overlay subset scores from the active model's matching opener evaluation"
+        },
+        {
+          "name": "served-refresh-card",
+          "help": "score the whole served refresh chain (Tuesday card plus every through-the-week rule) against the active model's matching opener evaluation; reuses the latest measurement when its archive still matches the active model and re-measures otherwise"
         },
         {
           "name": "predict-close",

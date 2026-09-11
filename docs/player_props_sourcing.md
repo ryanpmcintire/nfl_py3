@@ -603,3 +603,79 @@ a scheduler entry. **Inferred:** MKT-13 remains open until a newly budgeted real
 capture exercises this version-2 archive contract; the older pilot snapshots
 cannot retroactively supply discarded raw bodies or sidecars. No ATS
 experiment, registry decision, or model wiring was performed.
+
+## 11. First real v2-contract capture, a normalizer defect found and fixed, and two recurring scheduler jobs (2026-09-11)
+
+**Read**: the 2026-09-10 repository cut (`b7ed31d`) deleted
+`scripts/ingest_player_props.py`, `scripts/compare_player_prop_snapshots.py`,
+and `tests/test_player_prop_snapshot_compare.py` as "reachable from nothing"
+(no scheduler job, CLI command, or `src/` import used them). MKT-13's queued
+next step depends on the ingestion script, so it and the comparison script
+were restored from `9f84d09` (the commit immediately before the cut, already
+past the comment ban) and re-stripped with `scripts/strip_comments.py` to
+match the current docstring ban; `ruff format`/`ruff check` pass on both. The
+test file was **not** restored -- the current test moratorium bans new files
+under `tests/` proper, and `compare_player_prop_snapshots.py` runs standalone
+against the parquet outputs without it.
+
+**Quota baseline (measured, read before spending)**: the freshest game-market
+manifest, `data/market/raw/20260910T220054Z/manifest.json` (observed
+2026-09-10T22:00:54Z), recorded `requests_remaining: 99533`. Registry floor is
+600 (`config/source_policies.json`, `the_odds_api.quota.historical_minimum_remaining`).
+
+**Real Week 1 earliest-kickoff capture (measured)**:
+`data/raw/odds_api_props/20260911T152255Z/manifest.json` -- season 2026 week
+1, `--snapshot-weekday tuesday` (2026-09-08 noon UTC, safely pre-kickoff of
+the week's earliest game, SEA@NE Wed 2026-09-09 20:20 local), `--budget 11
+--quota-floor 600` (sized to stop exactly at week 1's own actual cost so the
+run never reaches week 2). Cost 11 requests (1 events-list + 10 event-odds),
+remaining 99532 -> 99522. Manifest status `PARTIAL_QUOTA_STOP` by design;
+week 1 itself is `complete`: 1/1 matched earliest-kickoff event, 22 rows, 2
+players (Drake Maye/NE, Sam Darnold/SEA), 6 bookmakers, 100% join rate to
+`nflverse_game_id`.
+
+**A real normalizer defect found and fixed (measured)**: exercising the new
+Saturday-tranche job's exact argv before scheduling it (per this repo's
+scheduler binding rule) failed both times it was tried --
+`normalize_event_odds`'s fail-closed guard compared each bookmaker/market
+`last_update` against the *provider's own response-generation instant*
+(`snapshot_actual_at_utc`) instead of the timestamp actually *requested*
+(`snapshot_requested_at_utc`), and real responses routinely carry a few
+seconds of skew between the two (measured on a near-live 2026 request:
+`betrivers`'s `player_pass_yds` market updated 5s after the envelope
+timestamp; measured again on a fully historical, one-year-old 2025 request:
+7s after) -- so this was not a testing artifact, it was a latent defect in
+the restored script that the pilot tranches never happened to trip. Fixed
+(`scripts/ingest_player_props.py`, `normalize_event_odds`): the guard now
+compares against `snapshot_requested_at_utc`, the actual point-in-time
+contract boundary the adjacent `snapshot_actual_at_utc <=
+snapshot_requested_at_utc` check already enforces, rather than an internal
+provider clock that has no bearing on leakage. Verified by rerunning the
+failing 2025 case
+(`data/raw/odds_api_props/20260911T153147Z/manifest.json`, now `complete` for
+week 1: 8/8 tied earliest-kickoff Sunday games, 222 rows, 16 players, 7
+bookmakers) and by both new scheduler jobs completing cleanly afterward.
+
+**Two recurring scheduler jobs (measured)**: `scripts/capture_scheduler.py`
+`SCHEDULE` gained `player_props_sat` (Saturday 12:00 ET) and
+`player_props_tue` (Tuesday 12:30 ET, after the pool's own noon lock), each
+`--earliest-kickoff-only player_pass_yds --budget 200 --quota-floor 600`
+(sized for a full 18-week 2026 sweep every run; measured worst case this
+session was 178 of 200). Both were added to `CAPTURE_JOB_PREFIXES`
+(`"player_props_"`) so the second capture host also runs them. Both were
+exercised with `--run-job NAME --dry` and recorded `MANUAL-DRY-RUN OK` in
+`data/scheduler_state.json` (`job_health.player_props_sat` /
+`.player_props_tue`, `last_manual_status: "OK (dry)"`). **Caveat (measured)**:
+`--dry` does not suppress real spend for this job family --
+`capture_scheduler.RECORDING_FLAGS` only strips card/ledger-writing flags
+this job's argv never carries -- so every manual exercise of it, dry or not,
+spends real quota; small against the current balance, but not free.
+
+**Total spend this session (measured)**: 341 requests across the Week 1
+capture, the pre-fix failed Saturday exercise on 2026 data, a pre-fix
+diagnostic and its post-fix confirmation on 2025 data, and the two final
+scheduler exercises (11+21+11+82+178+38), plus roughly 2 credits of ambient
+drift from other concurrent jobs sharing the same account. Quota remaining as
+of the last call this session
+(`data/raw/odds_api_props/20260911T153339Z/manifest.json`): **99,192**,
+comfortably above the 600-credit registry floor.

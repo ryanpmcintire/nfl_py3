@@ -943,26 +943,26 @@ def test_board_content_injury_chip_reads_off_its_own_sentence() -> None:
     assert content.injury_state_class == "degraded"
 
 
-def _rival_ledgers() -> tuple[pd.DataFrame, pd.DataFrame]:
-    from nfl_ats.four_overlay_composition import POLICY_ID
+def _rival_ledgers() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
 
     games = [
-        ("2026_01_BAL_IND", "BAL", "IND", "HOME"),
-        ("2026_01_CHI_CAR", "CHI", "CAR", "AWAY"),
-        ("2026_01_NE_SEA", "NE", "SEA", "AWAY"),
+        ("2026_01_BAL_IND", "BAL", "IND", "HOME", -3.0),
+        ("2026_01_CHI_CAR", "CHI", "CAR", "AWAY", 2.5),
+        ("2026_01_NE_SEA", "NE", "SEA", "AWAY", -6.0),
     ]
     played = pd.DataFrame(
         [
             {
                 "season": 2026,
                 "week": 1,
-                "decision_policy_id": POLICY_ID,
+                "decision_policy_id": "overlay_union_coach_division_revenge_player_arrests_v2",
                 "game_id": game_id,
                 "away_team": away,
                 "home_team": home,
                 "pick_side": side,
+                "decision_home_spread": spread,
             }
-            for game_id, away, home, side in games
+            for game_id, away, home, side, spread in games
         ]
     )
     rival_sides = {
@@ -979,9 +979,10 @@ def _rival_ledgers() -> tuple[pd.DataFrame, pd.DataFrame]:
             "away_team": away,
             "home_team": home,
             "pick_side": side,
+            "decision_home_spread": spread,
         }
         for challenger_id, sides in rival_sides.items()
-        for (game_id, away, home, _played_side), side in zip(games, sides, strict=True)
+        for (game_id, away, home, _played_side, spread), side in zip(games, sides, strict=True)
     ]
     rows.append(
         {
@@ -992,26 +993,41 @@ def _rival_ledgers() -> tuple[pd.DataFrame, pd.DataFrame]:
             "away_team": "NE",
             "home_team": "SEA",
             "pick_side": "AWAY",
+            "decision_home_spread": -6.0,
         }
     )
-    return played, pd.DataFrame(rows)
+    outcomes = pd.DataFrame([{"game_id": "2026_01_BAL_IND", "result": 10.0}])
+    return played, pd.DataFrame(rows), outcomes
 
 
 def test_build_rival_rules_counts_disagreements_and_names_the_contested_game() -> None:
-    played, rivals = _rival_ledgers()
-    panel = board_content._build_rival_rules(played, rivals, season=2026, week=1)
+    played, rivals, outcomes = _rival_ledgers()
+    panel = board_content._build_rival_rules(played, rivals, outcomes, season=2026, week=1)
 
     assert panel.recorded
     assert panel.count_text == "4 recorded beside this week's card"
     assert panel.summary == (
         "Of the 3 that pick a whole card, 2 take a different team somewhere this week. "
-        "BAL at IND is the pick they argue with most: 2 of the 3 take the other side."
+        "BAL at IND is the pick they argue with most: 2 of the 3 take the other side. "
+        "1 other rule agrees with the card on every game this week."
     )
-    assert [(row.name, row.differs_text, row.games_text) for row in panel.rows] == [
-        ("Rain-on-grass underdog tilt", "2 of 3", "BAL at IND, CHI at CAR"),
-        ("Division-revenge tilt", "1 of 3", "BAL at IND"),
-        ("Year-one coach fade", "0 of 3", "Takes the same side everywhere"),
+    assert [
+        (row.name, row.differs_text, row.games_text, row.record_text) for row in panel.rows
+    ] == [
+        (
+            "Rain-on-grass underdog tilt",
+            "2 of 3",
+            "BAL at IND (BAL), CHI at CAR (CAR)",
+            "0-1 so far, card 1-0 on those games",
+        ),
+        (
+            "Division-revenge tilt",
+            "1 of 3",
+            "BAL at IND (BAL)",
+            "0-1 so far, card 1-0 on those games",
+        ),
     ]
+    assert "Year-one coach fade" not in [row.name for row in panel.rows]
     assert panel.single_game_line == (
         "1 more rule names a single game rather than a whole card: NE at SEA (1)."
     )
@@ -1021,19 +1037,23 @@ def test_build_rival_rules_is_dormant_until_the_week_has_rows() -> None:
 
     from nfl_ats.board_content import RIVAL_RULES_NONE_RECORDED
 
-    played, rivals = _rival_ledgers()
+    played, rivals, outcomes = _rival_ledgers()
     empty = pd.DataFrame()
     for first, second in ((empty, rivals), (played, empty), (empty, empty)):
-        panel = board_content._build_rival_rules(first, second, season=2026, week=1)
+        panel = board_content._build_rival_rules(first, second, outcomes, season=2026, week=1)
         assert not panel.recorded
         assert panel.summary == RIVAL_RULES_NONE_RECORDED
-    assert not board_content._build_rival_rules(played, rivals, season=2026, week=2).recorded
-    assert not board_content._build_rival_rules(played, rivals, season=None, week=None).recorded
+    assert not board_content._build_rival_rules(
+        played, rivals, outcomes, season=2026, week=2
+    ).recorded
+    assert not board_content._build_rival_rules(
+        played, rivals, outcomes, season=None, week=None
+    ).recorded
 
 
 def test_build_rival_rules_pairs_the_two_ledgers_not_the_live_forecast() -> None:
 
-    played, rivals = _rival_ledgers()
+    played, rivals, outcomes = _rival_ledgers()
     unpaired = pd.DataFrame(
         [
             {
@@ -1044,11 +1064,12 @@ def test_build_rival_rules_pairs_the_two_ledgers_not_the_live_forecast() -> None
                 "away_team": "SF",
                 "home_team": "LA",
                 "pick_side": "HOME",
+                "decision_home_spread": -1.0,
             }
         ]
     )
     panel = board_content._build_rival_rules(
-        played, pd.concat([rivals, unpaired], ignore_index=True), season=2026, week=1
+        played, pd.concat([rivals, unpaired], ignore_index=True), outcomes, season=2026, week=1
     )
     assert "Turf-surface switch" not in [row.name for row in panel.rows]
     assert panel.count_text == "4 recorded beside this week's card"

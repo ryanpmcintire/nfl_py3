@@ -19,6 +19,8 @@ from nfl_ats.dashboard.findings_content import (
     PLAYED_CARD_EXPECTATION_PERCENT,
 )
 from nfl_ats.displayed_confidence import (
+    PICK_SIDE_FLOOR,
+    ProductionDisplayedConfidence,
     attach_displayed_confidence,
     fit_production_displayed_confidence,
 )
@@ -30,7 +32,6 @@ from nfl_ats.four_overlay_composition import (
     INTERIM_HC_FIRST_GAME_TILT,
     PBP08_PROTECTION_MISMATCH_TILT,
     PLAYER_ARRESTS_BACK_SIDE_POLICY,
-    POLICY_ID,
     PRECIP_HIGH_TOTAL_TILT,
     SPREAD_GAP_ZONE_FADE,
     TANK_ZONE_FADE_TILT,
@@ -886,6 +887,8 @@ RIVAL_RULES_METHOD_NOTE = (
     "before any game kicked off. None of them can be changed once the games start."
 )
 
+RIVAL_RULES_RECORD_PENDING = "Nothing settled yet."
+
 
 @dataclass(frozen=True)
 class RivalRuleRow:
@@ -893,6 +896,7 @@ class RivalRuleRow:
     differs: int
     paired: int
     games_text: str
+    record_text: str = ""
 
     @property
     def differs_text(self) -> str:
@@ -930,17 +934,21 @@ def _matchup_label(away: Any, home: Any) -> str:
     return f"{away} at {home}"
 
 
+def _side_team(entry: Any) -> str:
+
+    return str(entry.home_team) if str(entry.pick_side) == "HOME" else str(entry.away_team)
+
+
 def _build_rival_rules(
     paper_decisions: pd.DataFrame,
     challenger_decisions: pd.DataFrame,
+    outcomes: pd.DataFrame,
     *,
     season: Any,
     week: Any,
 ) -> RivalRulesPanel:
 
     played = _week_ledger_rows(paper_decisions, season=season, week=week)
-    if "decision_policy_id" in played.columns:
-        played = played.loc[played["decision_policy_id"].astype(str).eq(POLICY_ID)]
     rivals = _week_ledger_rows(challenger_decisions, season=season, week=week)
     if played.empty or rivals.empty or "challenger_id" not in rivals.columns:
         return _default_rival_rules()
@@ -952,6 +960,7 @@ def _build_rival_rules(
     contested: dict[str, int] = {}
     single_games: dict[str, int] = {}
     single_count = 0
+    full_count = 0
     for challenger_id, group in rivals.groupby("challenger_id", sort=True):
         paired = group.loc[group["game_id"].astype(str).isin(played_side)]
         if paired.empty:
@@ -959,47 +968,74 @@ def _build_rival_rules(
         name = CHALLENGER_DISPLAY_NAMES.get(
             str(challenger_id), humanize_identifier(str(challenger_id))
         )
-        matchups = [
-            _matchup_label(entry.away_team, entry.home_team) for entry in paired.itertuples()
-        ]
         if len(paired) < len(played_side):
             single_count += 1
-            for matchup in matchups:
+            for entry in paired.itertuples():
+                matchup = _matchup_label(entry.away_team, entry.home_team)
                 single_games[matchup] = single_games.get(matchup, 0) + 1
             continue
-        differing = [
-            matchup
-            for matchup, entry in zip(matchups, paired.itertuples(), strict=False)
+        full_count += 1
+        differing_ids = [
+            str(entry.game_id)
+            for entry in paired.itertuples()
             if str(entry.pick_side) != played_side[str(entry.game_id)]
         ]
-        for matchup in differing:
-            contested[matchup] = contested.get(matchup, 0) + 1
+        for entry in paired.itertuples():
+            if str(entry.game_id) in differing_ids:
+                matchup = _matchup_label(entry.away_team, entry.home_team)
+                contested[matchup] = contested.get(matchup, 0) + 1
+        if not differing_ids:
+            continue
+        diff_subset = paired.loc[paired["game_id"].astype(str).isin(differing_ids)]
+        card_subset = played.loc[played["game_id"].astype(str).isin(differing_ids)]
+        rule_wins, rule_losses, rule_pushes, _rule_pending = _grade_decisions(diff_subset, outcomes)
+        card_wins, card_losses, card_pushes, _card_pending = _grade_decisions(card_subset, outcomes)
+        settled_so_far = rule_wins + rule_losses + rule_pushes
+        record_text = (
+            f"{_record_text(rule_wins, rule_losses, rule_pushes)} so far, "
+            f"card {_record_text(card_wins, card_losses, card_pushes)} on those games"
+            if settled_so_far
+            else RIVAL_RULES_RECORD_PENDING
+        )
+        diff_pairs = sorted(
+            (_matchup_label(entry.away_team, entry.home_team), _side_team(entry))
+            for entry in diff_subset.itertuples()
+        )
+        games_text = ", ".join(f"{matchup} ({team})" for matchup, team in diff_pairs)
         rows.append(
             RivalRuleRow(
                 name=name,
-                differs=len(differing),
+                differs=len(differing_ids),
                 paired=len(paired),
-                games_text=", ".join(sorted(differing)) or "Takes the same side everywhere",
+                games_text=games_text,
+                record_text=record_text,
             )
         )
 
-    if not rows and not single_count:
+    if not rows and not single_count and not full_count:
         return _default_rival_rules()
 
-    disagreeing = sum(1 for row in rows if row.differs)
-    summary = (
-        f"Of the {len(rows)} that pick a whole card, {disagreeing} take a different team "
-        "somewhere this week."
-        if rows
-        else "None of them picks a whole card this week."
-    )
+    mirror_count = full_count - len(rows)
+    if rows:
+        summary = (
+            f"Of the {full_count} that pick a whole card, {len(rows)} take a different team "
+            "somewhere this week."
+        )
+    elif full_count:
+        summary = "Every rule that picks a whole card agrees with the card this week."
+    else:
+        summary = "None of them picks a whole card this week."
     if contested:
         matchup, count = max(sorted(contested.items()), key=lambda item: item[1])
         if count > 1:
             summary += (
                 f" {matchup} is the pick they argue with most: "
-                f"{count} of the {len(rows)} take the other side."
+                f"{count} of the {full_count} take the other side."
             )
+    if rows and mirror_count == 1:
+        summary += " 1 other rule agrees with the card on every game this week."
+    elif rows and mirror_count > 1:
+        summary += f" {mirror_count} other rules agree with the card on every game this week."
     single_line = None
     if single_count:
         listed = ", ".join(
@@ -1011,7 +1047,7 @@ def _build_rival_rules(
             if single_count != 1
             else f"1 more rule names a single game rather than a whole card: {listed}."
         )
-    total = len(rows) + single_count
+    total = full_count + single_count
     return RivalRulesPanel(
         recorded=True,
         summary=summary,
@@ -1157,6 +1193,49 @@ def _revision_side(revision: Mapping[str, Any] | None, key: str) -> str:
         return ""
     side = str(revision.get(key) or "")
     return side if side in ("HOME", "AWAY") else ""
+
+
+def _played_side_overrides(
+    artifacts_root: Path, *, season: Any, week: Any
+) -> dict[str, dict[str, Any]]:
+
+    if season is None or week is None:
+        return {}
+    try:
+        revisions = _week_ledger_rows(load_pick_revisions(artifacts_root), season=season, week=week)
+    except (ValueError, OSError):
+        return {}
+    return _latest_revision_by_game(revisions)
+
+
+def _played_pick(
+    row: pd.Series,
+    revision: Mapping[str, Any],
+    calibration: ProductionDisplayedConfidence,
+    bands: Any,
+) -> tuple[str, float, str] | None:
+
+    side = _revision_side(revision, "new_pick_side")
+    if not side:
+        return None
+    team = str(row["home_team"]) if side == "HOME" else str(row["away_team"])
+    board_team, _board_probability = pick_side(row)
+    if team == board_team:
+        return None
+    home_probability = _number(revision.get("new_home_cover_probability"))
+    stated = (
+        None
+        if home_probability is None
+        else (home_probability if side == "HOME" else 1.0 - home_probability)
+    )
+    if stated is None or stated < PICK_SIDE_FLOOR:
+        displayed = PICK_SIDE_FLOOR
+    else:
+        calibrated = calibration.calibrate(
+            pd.Series([stated], dtype=float), pd.Series([float(row["spread_line"])], dtype=float)
+        )
+        displayed = max(float(calibrated.iloc[0]), PICK_SIDE_FLOOR)
+    return team, displayed, confidence_word(displayed, bands)
 
 
 def _raw_read_team(game: GameRow, raw_home_cover_probability: float | None) -> str:
@@ -2823,10 +2902,20 @@ def load_board_content(
         week=int(week_number) if week_number is not None else None,
     )
     published_rows: list[dict[str, Any]] = []
+    played_overrides = _played_side_overrides(
+        artifacts_root, season=season_number, week=week_number
+    )
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         team, probability = pick_side(row)
         word = confidence_word(probability, strength_bands)
+        played = (
+            _played_pick(row, played_overrides[game_id], displayed_confidence, strength_bands)
+            if game_id in played_overrides
+            else None
+        )
+        if played is not None:
+            team, probability, word = played
         lock_label, locks_before_kickoff = pick_lock_label(row.get("kickoff"), week_sunday_lock)
         home_team = str(row["home_team"])
         away_team = str(row["away_team"])
@@ -2983,6 +3072,7 @@ def load_board_content(
         rivals=_build_rival_rules(
             paper_decisions,
             challenger_decisions,
+            outcomes,
             season=artifacts.metadata.get("season"),
             week=artifacts.metadata.get("week"),
         ),
@@ -3010,6 +3100,7 @@ __all__ = [
     "INJURY_STATE_NAME",
     "RIVAL_RULES_METHOD_NOTE",
     "RIVAL_RULES_NONE_RECORDED",
+    "RIVAL_RULES_RECORD_PENDING",
     "RIVAL_RULES_TITLE",
     "SOURCE_POLICY_LEGEND",
     "SOURCE_POLICY_NOT_RECORDED",

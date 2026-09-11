@@ -370,6 +370,7 @@ class RecentActivityEntry:
     closed: bool
     closed_label: str | None
     recorded_at: str
+    is_instrument_control: bool = False
 
 
 @dataclass(frozen=True)
@@ -421,6 +422,24 @@ def _is_activity_candidate(signal: weak_signals.WeakSignal) -> bool:
     )
 
 
+_INSTRUMENT_CONTROL_PHRASES: tuple[str, ...] = (
+    "positive control",
+    "perfect foresight",
+    "perfect-foresight",
+    "oracle",
+    "cheat rule",
+)
+_INSTRUMENT_CONTROL_NAME_RE = re.compile(r"(^|_)(pc|control)(_|$)")
+
+
+def _is_instrument_control_text(name: str, description: str | None) -> bool:
+
+    text = (description or "").lower()
+    if any(phrase in text for phrase in _INSTRUMENT_CONTROL_PHRASES):
+        return True
+    return bool(_INSTRUMENT_CONTROL_NAME_RE.search(name.lower()))
+
+
 def recent_registry_activity(
     registry: weak_signals.Registry,
     rotation_registry: rotation.Registry,
@@ -461,6 +480,7 @@ def recent_registry_activity(
                 closed=closed,
                 closed_label=CLOSED_ACTIVITY_BADGE_TEXT if closed else None,
                 recorded_at=signal.recorded_at,
+                is_instrument_control=_is_instrument_control_text(signal.name, signal.description),
             )
         )
 
@@ -490,6 +510,9 @@ def recent_registry_activity(
                     closed=closed,
                     closed_label=CLOSED_ACTIVITY_BADGE_TEXT if closed else None,
                     recorded_at=str(stamp),
+                    is_instrument_control=_is_instrument_control_text(
+                        family.name, family.description
+                    ),
                 )
             )
 

@@ -24,6 +24,9 @@ from nfl_ats.clv import load_paper_decisions  # noqa: E402
 from nfl_ats.crew_tilt_refresh_overlay import (  # noqa: E402
     load_crew_tilt_refresh_decisions,
 )
+from nfl_ats.half_line_refresh_overlay import (  # noqa: E402
+    load_half_line_refresh_decisions,
+)
 from nfl_ats.handle_follow_refresh_overlay import LEDGER_NAME as HANDLE_FOLLOW_LEDGER  # noqa: E402
 from nfl_ats.inactives_refresh_overlay import (  # noqa: E402
     load_inactives_refresh_overlay_decisions,
@@ -173,6 +176,18 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "legitimately_empty": (
             "the handle reading only exists from Saturday noon ET, so this arm cannot record "
             "at the Tuesday lock -- only on a weekend refresh pass"
+        ),
+    },
+    "half_line_2h_underdog_refresh_v1": {
+        "ledger": "prospective/half_line_refresh_decisions.parquet",
+        "loader": load_half_line_refresh_decisions,
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "legitimately_empty": (
+            "needs a matched second-half-line snapshot alongside the full-game line, which "
+            "is not reliably captured until a late-week refresh pass; zero at the Tuesday "
+            "lock is expected"
         ),
     },
 }

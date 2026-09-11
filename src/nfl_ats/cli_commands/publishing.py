@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import sys
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -23,6 +24,7 @@ from nfl_ats.best_pick_renomination import (
 from nfl_ats.board_content import verify_number_provenance
 from nfl_ats.board_site import build_site
 from nfl_ats.bye_edge_fade_overlay import record_bye_edge_fade_challenger_decisions
+from nfl_ats.card_ledger_check import check_card_ledger_consistency
 from nfl_ats.cli_common import (
     _add_active_forecast_season_week_args,
     _add_board_destination_args,
@@ -68,6 +70,7 @@ from nfl_ats.four_overlay_incumbent import record_former_production_incumbent_de
 from nfl_ats.gaussian_mean_mapping_incumbent_overlay import (
     record_gaussian_mean_mapping_incumbent_challenger_decisions,
 )
+from nfl_ats.half_line_refresh_overlay import record_half_line_refresh_overlay
 from nfl_ats.handle_follow_refresh_overlay import record_handle_follow_refresh_overlay
 from nfl_ats.home_side_offset_incumbent_overlay import (
     record_home_side_offset_incumbent_challenger_decisions,
@@ -77,6 +80,9 @@ from nfl_ats.injury_signal_refresh_tilt import record_injury_signal_refresh_tilt
 from nfl_ats.injury_value_tilt_overlay import record_injury_value_tilt_challenger_decisions
 from nfl_ats.interim_hc_first_game_tilt_overlay import (
     record_interim_hc_first_game_tilt_challenger_decisions,
+)
+from nfl_ats.interim_playcaller_first_game_back_overlay import (
+    record_interim_playcaller_first_game_back_overlay_decisions,
 )
 from nfl_ats.io import atomic_text
 from nfl_ats.key_line_pick_read_incumbent_overlay import (
@@ -187,6 +193,9 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "post_bye_new_playcaller_back_overlay": (
         "post_bye_new_playcaller_back_overlay_challenger_ledger"
     ),
+    "interim_playcaller_first_game_back_overlay": (
+        "interim_playcaller_first_game_back_overlay_challenger_ledger"
+    ),
     "tv_attention_fade_overlay": "tv_attention_fade_overlay_challenger_ledger",
     "rookie_prior_surplus_tilt_overlay": "rookie_prior_surplus_tilt_overlay_challenger_ledger",
 }
@@ -198,6 +207,7 @@ REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_overlay",
     "inactives_refresh_v1": "inactives_refresh_overlay",
     "crew_tilt_refresh_v1": "crew_tilt_refresh_overlay",
+    "half_line_2h_underdog_refresh_v1": "half_line_refresh_overlay",
     "specialist_absence_fade_refresh_v1": "specialist_absence_fade_refresh_overlay",
     "late_week_move_follow_refresh_v1": "late_week_move_follow_refresh_overlay",
     "late_week_leader_median_follow_v1": "late_week_move_follow_refresh_overlay",
@@ -942,6 +952,21 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "error": str(error),
             }
         try:
+            result["interim_playcaller_first_game_back_overlay_challenger_ledger"] = (
+                record_interim_playcaller_first_game_back_overlay_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["interim_playcaller_first_game_back_overlay_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
             result["rookie_prior_surplus_tilt_overlay_challenger_ledger"] = (
                 record_rookie_prior_surplus_tilt_overlay_decisions(
                     _artifacts_root(),
@@ -978,6 +1003,29 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
         if request.replace_week:
             result["replaced_week"] = collect_replacement_report(result)
     else:
+        try:
+            check = check_card_ledger_consistency(
+                _artifacts_root(), data_root=_data_root(), now=publish_instant
+            )
+        except Exception as error:
+            check = {"evaluated": False, "ok": True, "reason": f"{type(error).__name__}: {error}"}
+        result["card_ledger_check"] = check
+        if (
+            check.get("evaluated", True)
+            and not check.get("ok", True)
+            and check.get("paper_ledger_rows_checked", 0) > 0
+        ):
+            games = ", ".join(
+                sorted({str(row["matchup"]) for row in check.get("disagreements", [])})
+            )
+            print(
+                "publish-predictions: served without --record-decisions, and the recorded "
+                f"paper-decision/pick-revision ledger for {check.get('season')} week "
+                f"{check.get('week')} now disagrees with the card just served on: {games}. "
+                "Repair with `nfl-ats publish-predictions --record-decisions --replace-week` "
+                "when ready to re-freeze the ledger baseline.",
+                file=sys.stderr,
+            )
         result["best_pick_tuesday_ledger"] = {
             "recorded": 0,
             "skipped": True,
@@ -1235,6 +1283,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "reason": "pass --record-decisions to append the post-bye new-playcaller "
             "BACK overlay's picks to the prospective challenger ledger",
         }
+        result["interim_playcaller_first_game_back_overlay_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the interim play-caller "
+            "first-game BACK overlay's picks to the prospective challenger ledger",
+        }
         result["rookie_prior_surplus_tilt_overlay_challenger_ledger"] = {
             "recorded": 0,
             "skipped": True,
@@ -1326,6 +1380,15 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     except Exception as error:
         result["crew_tilt_refresh_overlay"] = {"recorded": 0, "error": str(error)}
     try:
+        result["half_line_refresh_overlay"] = record_half_line_refresh_overlay(
+            _artifacts_root(),
+            _data_root(),
+            plan,
+            record_decisions=args.record_decisions,
+        )
+    except Exception as error:
+        result["half_line_refresh_overlay"] = {"recorded": 0, "error": str(error)}
+    try:
         result["specialist_absence_fade_refresh_overlay"] = (
             record_specialist_absence_fade_refresh_overlay(
                 _artifacts_root(),
@@ -1367,10 +1430,11 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     result["failed_recorders"] = collect_failed_recorders(result, REFRESH_CHALLENGER_RESULT_KEYS)
     if args.publish_card:
         star_moved = renomination is not None and renomination.moved
-        if not plan.changed_games and not star_moved:
+        if not plan.card_changed_games and not star_moved:
             result["card"] = {
                 "written": False,
-                "reason": "no eligible picks changed and the Best Pick did not move",
+                "reason": "no eligible picks differ from the published card and the Best Pick "
+                "did not move",
             }
         else:
             try:
@@ -1383,6 +1447,23 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
                 result["card"] = card
             except (ValueError, FileNotFoundError) as error:
                 result["card"] = {"written": False, "error": str(error)}
+    try:
+        check = check_card_ledger_consistency(_artifacts_root(), data_root=_data_root())
+    except Exception as error:
+        result["card_ledger_check"] = {
+            "evaluated": False,
+            "ok": True,
+            "reason": f"{type(error).__name__}: {error}",
+        }
+    else:
+        result["card_ledger_check"] = check
+        if check.get("evaluated", True) and not check.get("ok", True):
+            result["warnings"] = [
+                *result.get("warnings", []),
+                "card_ledger_check: the paper ledger and/or the pick-revision ledger disagree "
+                "with the currently served card for "
+                f"{len(check.get('disagreements', []))} field(s) -- see result.card_ledger_check.",
+            ]
     _print_json(result)
 
 

@@ -1465,15 +1465,40 @@ def refuse_if_outside_recording_lock_window(
         )
 
 
-def record_paper_decisions(
+@dataclass(frozen=True)
+class PlayedCardView:
+    season: int
+    week: int
+    model_id: str
+    method: str
+    forecast_artifact: str
+    forecast_created_at_utc: pd.Timestamp
+    recorded_at: pd.Timestamp
+    card: pd.DataFrame
+    kickoffs: pd.Series
+    played_card: pd.DataFrame
+    model_pick_side: pd.Series
+    pre_arrest_pick_side: pd.Series
+    former_policy_pick_side: pd.Series
+    final_pick_side: pd.Series
+    coach_flip_ids: frozenset[str]
+    division_flip_ids: frozenset[str]
+    arrest_flip_ids: frozenset[str]
+    spread_gap_flip_ids: frozenset[str]
+    composed_flip_ids: frozenset[str]
+    decision_policy_id: str
+    decision_policy_fingerprint: str
+    view: Any
+
+
+def current_played_card_view(
     artifacts_root: Path,
     *,
     data_root: Path | None = None,
     now: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
     forecast_artifact: str | None = None,
-    replace_week: bool = False,
-) -> dict[str, Any]:
+) -> PlayedCardView:
 
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -1590,6 +1615,72 @@ def record_paper_decisions(
         composition.policy_id if composition is not None else "coach_fade_then_player_arrests_v1"
     )
     decision_policy_fingerprint = composition.policy_fingerprint if composition is not None else ""
+
+    return PlayedCardView(
+        season=int(card["season"].iloc[0]),
+        week=int(card["week"].iloc[0]),
+        model_id=recorded_model_id,
+        method=method,
+        forecast_artifact=recorded_artifact,
+        forecast_created_at_utc=pd.to_datetime(
+            metadata.get("created_at_utc"), utc=True, errors="coerce"
+        ),
+        recorded_at=recorded_at,
+        card=raw_card,
+        kickoffs=kickoffs,
+        played_card=played_card,
+        model_pick_side=model_pick_side,
+        pre_arrest_pick_side=pre_arrest_pick_side,
+        former_policy_pick_side=former_policy_pick_side,
+        final_pick_side=final_pick_side,
+        coach_flip_ids=frozenset(coach_flip_ids),
+        division_flip_ids=frozenset(division_flip_ids),
+        arrest_flip_ids=frozenset(arrest_flip_ids),
+        spread_gap_flip_ids=frozenset(spread_gap_flip_ids),
+        composed_flip_ids=frozenset(composed_flip_ids),
+        decision_policy_id=decision_policy_id,
+        decision_policy_fingerprint=decision_policy_fingerprint,
+        view=view,
+    )
+
+
+def record_paper_decisions(
+    artifacts_root: Path,
+    *,
+    data_root: Path | None = None,
+    now: datetime | None = None,
+    require_fresh_arrest_overlay: bool = True,
+    forecast_artifact: str | None = None,
+    replace_week: bool = False,
+) -> dict[str, Any]:
+
+    played = current_played_card_view(
+        artifacts_root,
+        data_root=data_root,
+        now=now,
+        require_fresh_arrest_overlay=require_fresh_arrest_overlay,
+        forecast_artifact=forecast_artifact,
+    )
+    card = played.card
+    recorded_artifact = played.forecast_artifact
+    recorded_model_id = played.model_id
+    method = played.method
+    kickoffs = played.kickoffs
+    spreads = pd.to_numeric(card["spread_line"], errors="coerce")
+    forecast_created_at_utc = played.forecast_created_at_utc
+    view = played.view
+    model_pick_side = played.model_pick_side
+    pre_arrest_pick_side = played.pre_arrest_pick_side
+    former_policy_pick_side = played.former_policy_pick_side
+    final_pick_side = played.final_pick_side
+    coach_flip_ids = played.coach_flip_ids
+    division_flip_ids = played.division_flip_ids
+    arrest_flip_ids = played.arrest_flip_ids
+    spread_gap_flip_ids = played.spread_gap_flip_ids
+    composed_flip_ids = played.composed_flip_ids
+    decision_policy_id = played.decision_policy_id
+    decision_policy_fingerprint = played.decision_policy_fingerprint
+    recorded_at = played.recorded_at
     schedule_snapshot_id = ""
     schedule_parquet_sha256 = ""
     if data_root is not None:
@@ -1600,8 +1691,8 @@ def record_paper_decisions(
     refuse_if_outside_recording_lock_window(kickoffs, recorded_at, ledger="paper-decision")
     pre_kickoff = kickoffs.gt(recorded_at)
     existing = load_paper_decisions(artifacts_root)
-    season = int(card["season"].iloc[0])
-    week = int(card["week"].iloc[0])
+    season = played.season
+    week = played.week
     replaced_rows = 0
     left_post_kickoff = 0
     dropped_best_pick_id: str | None = None
@@ -1640,9 +1731,7 @@ def record_paper_decisions(
         {
             "recorded_at_utc": recorded_at,
             "forecast_artifact": recorded_artifact,
-            "forecast_created_at_utc": pd.to_datetime(
-                metadata.get("created_at_utc"), utc=True, errors="coerce"
-            ),
+            "forecast_created_at_utc": forecast_created_at_utc,
             "model_id": recorded_model_id,
             "method": method,
             "decision_policy_id": decision_policy_id,
@@ -1831,6 +1920,29 @@ def pick_correct(pick_home: pd.Series, settle_margin: pd.Series) -> pd.Series:
     return pd.Series(np.where(settle_margin.eq(0.0), np.nan, correct), index=settle_margin.index)
 
 
+def normalise_opener_line_override(override: pd.DataFrame | None) -> pd.DataFrame | None:
+    if override is None:
+        return None
+    required = {"game_id", "home_spread"}
+    missing = sorted(required.difference(override.columns))
+    if missing:
+        raise DataContractError(f"Opener line override is missing columns: {', '.join(missing)}")
+    frame = override.loc[
+        :, [c for c in ("game_id", "home_spread", "books") if c in override]
+    ].copy()
+    frame["game_id"] = frame["game_id"].astype(str)
+    frame["home_spread"] = pd.to_numeric(frame["home_spread"], errors="coerce")
+    if frame["home_spread"].isna().any():
+        raise DataContractError("Opener line override contains a non-numeric home spread")
+    if frame["game_id"].duplicated().any():
+        raise DataContractError("Opener line override contains duplicate game rows")
+    if "books" not in frame.columns:
+        frame["books"] = 1
+    frame["books"] = pd.to_numeric(frame["books"], errors="coerce").fillna(1).astype(int)
+    frame.attrs = {}
+    return frame.sort_values("game_id").reset_index(drop=True)
+
+
 def opener_pick_evaluation(
     root: Path,
     features: pd.DataFrame,
@@ -1840,6 +1952,7 @@ def opener_pick_evaluation(
     artifacts_root: Path | None = None,
     min_train_games: int = DEFAULT_MIN_TRAIN_GAMES,
     home_side_offset: bool | None = None,
+    opener_line_override: pd.DataFrame | None = None,
 ) -> pd.DataFrame:
 
     apply_offset = HOME_SIDE_OFFSET_SERVED if home_side_offset is None else bool(home_side_offset)
@@ -1870,6 +1983,8 @@ def opener_pick_evaluation(
     features = features.loc[:, [c for c in features.columns if c in required]]
     features.attrs = {}
 
+    override = normalise_opener_line_override(opener_line_override)
+
     cache_root = evaluation_cache_root()
     result_cache: Path | None = None
     inventory_digest: str | None = None
@@ -1889,6 +2004,7 @@ def opener_pick_evaluation(
                     str(min_train_games),
                     str(apply_offset),
                     _frame_content_digest(features.reset_index(drop=True)),
+                    "none" if override is None else _frame_content_digest(override),
                 )
                 + ".parquet"
             )
@@ -1910,6 +2026,16 @@ def opener_pick_evaluation(
     tue_open = pairing.loc[pairing["decision_label"].eq("tue_open")][
         ["game_id", "season", "week", "home_spread", "spread_books"]
     ].rename(columns={"home_spread": "tue_open_home_spread", "spread_books": "opener_books"})
+    if override is not None:
+        tue_open = tue_open.drop(columns=["tue_open_home_spread", "opener_books"]).merge(
+            override.rename(
+                columns={"home_spread": "tue_open_home_spread", "books": "opener_books"}
+            ),
+            on="game_id",
+            how="inner",
+        )
+        if tue_open.empty:
+            raise ValueError("The opener line override covers none of the archived opener games")
     paired = tue_open.merge(close, on="game_id", how="inner")
 
     outcomes = features[["game_id", "result"]].drop_duplicates("game_id")

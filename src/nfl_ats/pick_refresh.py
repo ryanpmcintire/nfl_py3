@@ -488,6 +488,7 @@ class RefreshedGame:
     follow_news_veto: bool = False
     follow_news_source: str = ""
     follow_news_team: str = ""
+    published_pick_side: str = ""
 
 
 @dataclass(frozen=True)
@@ -511,6 +512,16 @@ class RefreshResult:
     @property
     def changed_games(self) -> tuple[RefreshedGame, ...]:
         return tuple(game for game in self.games if game.changed)
+
+    @property
+    def card_changed_games(self) -> tuple[RefreshedGame, ...]:
+        return tuple(
+            game
+            for game in self.games
+            if game.eligible
+            and game.published_pick_side in ("HOME", "AWAY")
+            and game.new_pick_side != game.published_pick_side
+        )
 
     @property
     def ineligible_games(self) -> tuple[RefreshedGame, ...]:
@@ -1342,6 +1353,7 @@ def plan_refresh(
                     eligible=eligible,
                     ineligible_reason=reason,
                     changed=changed,
+                    published_pick_side=str(published_side[game_id]),
                 )
             )
         games = tuple(sorted(rows, key=lambda game: game.game_id))
@@ -1779,7 +1791,7 @@ def _renomination_sentence(renomination: SundayRenomination | None) -> str:
 def _refresh_section_markdown(
     result: RefreshResult, note: str, renomination: SundayRenomination | None = None
 ) -> str:
-    changed = result.changed_games
+    changed = result.card_changed_games
     heading = f"## Late-week refresh (as of {result.computed_at_utc.isoformat()})\n\n"
     label = f" ({note})" if note else ""
     star = _renomination_sentence(renomination)
@@ -1797,7 +1809,7 @@ def _refresh_section_markdown(
         rows.append(
             {
                 "Matchup": f"{game.away_team} at {game.home_team}",
-                "Previous pick": game.previous_pick_side,
+                "Previous pick": game.published_pick_side,
                 "New pick": game.new_pick_side,
                 "Model estimate": f"{estimate:.1%}",
                 "Policy": game.movement_policy,
@@ -1822,7 +1834,8 @@ def _refresh_section_markdown(
         "when nothing above fired (or no market evidence was available). The 1.0-point "
         "`movement_ge_1.0` consensus rule was retired from the served chain on 2026-09-10 "
         "and is recorded as the paired challenger `consensus_movement_1_0_off_incumbent` "
-        "-- see docs/late_week_refresh.md's movement-policy sections.\n\n"
+        "-- see docs/late_week_refresh.md's movement-policy sections. Where this table "
+        "and the picks table above disagree, the side here is the one being played.\n\n"
     )
     return heading + star + intro + table + "\n"
 

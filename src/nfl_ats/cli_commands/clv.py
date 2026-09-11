@@ -51,7 +51,8 @@ from nfl_ats.drift import build_drift_report, write_drift_artifacts
 from nfl_ats.home_side_location import HOME_SIDE_OFFSET_SERVED
 from nfl_ats.io import atomic_csv, atomic_json, atomic_parquet, run_id
 from nfl_ats.odds_backfill import HISTORICAL_CAPTURE_KIND
-from nfl_ats.provenance import artifact_provenance, write_experiment_artifact
+from nfl_ats.provenance import artifact_provenance, sha256_file, write_experiment_artifact
+from nfl_ats.served_refresh_card import reuse_or_measure as served_refresh_card_reuse_or_measure
 
 
 def _cmd_clv_score(args: argparse.Namespace) -> None:
@@ -396,12 +397,31 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
     if without_offset and HOME_SIDE_OFFSET_SERVED and "model_id" in active_model_config:
         active_model_config = dict(active_model_config)
         active_model_config["comparison_baseline_model_id"] = active_model_config.pop("model_id")
+    line_source_path = getattr(args, "opener_line_source", None)
+    line_source: dict[str, Any] | None = None
+    override = None
+    if line_source_path is not None:
+        override = pd.read_parquet(line_source_path)
+        line_source = {
+            "path": str(line_source_path),
+            "sha256": sha256_file(Path(line_source_path)),
+            "games": len(override),
+            "label": str(override["line_source"].iloc[0])
+            if "line_source" in override.columns and len(override)
+            else "unnamed",
+        }
+        if "model_id" in active_model_config:
+            active_model_config = dict(active_model_config)
+            active_model_config["comparison_baseline_model_id"] = active_model_config.pop(
+                "model_id"
+            )
     scored = opener_pick_evaluation(
         market_root,
         features,
         active_model_config=active_model_config,
         min_train_games=args.min_train_games,
         home_side_offset=serve_offset,
+        opener_line_override=override,
     )
     metrics = opener_evaluation_metrics(scored)
     uncertainty = pd.concat(
@@ -434,18 +454,25 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         season_rows.append(season_row)
     season_summary = pd.DataFrame(season_rows)
 
-    output = _artifacts_root() / "opener_evaluation" / run_id()
+    root_name = "opener_evaluation" if line_source is None else "opener_evaluation_line_source"
+    command_name = "opener-evaluation" if line_source is None else "opener-evaluation-line-source"
+    output = _artifacts_root() / root_name / run_id()
     atomic_parquet(scored, output / "per_game.parquet")
     atomic_csv(uncertainty, output / "uncertainty.csv")
     atomic_csv(season_summary, output / "season_summary.csv")
     configuration = {
-        "command": "opener-evaluation",
+        "command": command_name,
         "min_train_games": args.min_train_games,
         "bootstrap_samples": args.bootstrap_samples,
         "bootstrap_seed": args.bootstrap_seed,
         "hypothesis_frozen_before_scoring": True,
-        "predeclaration": "docs/opener_evaluation.md",
+        "predeclaration": (
+            "docs/opener_evaluation.md"
+            if line_source is None
+            else "docs/single_book_opener_grade.md"
+        ),
         "active_model_config": active_model_config,
+        "opener_line_source": line_source,
     }
     metadata = {
         "created_at_utc": datetime.now(UTC).isoformat(),
@@ -475,13 +502,58 @@ def _cmd_opener_evaluation(args: argparse.Namespace) -> None:
         output,
         "metadata.json",
         metadata,
-        command="opener-evaluation",
+        command=command_name,
         metrics=metadata,
         registry_root=_registry_root(),
     )
     print(season_summary.to_string(index=False))
     print(uncertainty.to_string(index=False))
     _print_json({**metadata, "artifact_directory": str(output)})
+
+
+def _cmd_opener_line_series(args: argparse.Namespace) -> None:
+    from nfl_ats.single_book_opener import (
+        book_coverage,
+        choose_book,
+        half_point_median_series,
+        opener_book_quotes,
+        series_agreement,
+        single_book_series,
+    )
+
+    features = _load_features(args.features)
+    market_root = _data_root() / "market" / "raw"
+    quotes = opener_book_quotes(market_root, schedule=features)
+    coverage = book_coverage(quotes)
+    book = args.book or choose_book(coverage)
+    series = (
+        single_book_series(quotes, book)
+        if args.series == "book"
+        else half_point_median_series(quotes)
+    )
+    output = args.output or (_artifacts_root() / "opener_line_series" / run_id())
+    atomic_parquet(series, output / f"{args.series}.parquet")
+    atomic_csv(coverage, output / "book_coverage.csv")
+    consensus = build_pairing_table(
+        market_root, capture_kind=HISTORICAL_CAPTURE_KIND, labels=("tue_open",), schedule=features
+    )
+    consensus = consensus.rename(columns={"home_spread": "tue_open_home_spread"})
+    summary = {
+        "created_at_utc": datetime.now(UTC).isoformat(),
+        "series": args.series,
+        "book": book if args.series == "book" else None,
+        "book_chosen_by": "most games among the predeclared candidate books"
+        if args.book is None
+        else "explicit --book",
+        "opener_quote_rows": len(quotes),
+        "opener_quote_games": int(quotes["game_id"].nunique()) if len(quotes) else 0,
+        "books_in_archive": int(quotes["bookmaker_key"].nunique()) if len(quotes) else 0,
+        "coverage_top": coverage.head(12).to_dict(orient="records"),
+        "agreement": series_agreement(series, consensus),
+        "artifact_directory": str(output),
+    }
+    atomic_json(summary, output / "summary.json")
+    _print_json(summary)
 
 
 def _cmd_overlay_composition(args: argparse.Namespace) -> None:
@@ -505,6 +577,32 @@ def _cmd_overlay_composition(args: argparse.Namespace) -> None:
             seed=args.bootstrap_seed,
         )
     )
+
+
+def _cmd_served_refresh_card(args: argparse.Namespace) -> None:
+    from nfl_ats.served_refresh_card import measure as served_refresh_card_measure
+
+    artifacts_root = _artifacts_root()
+    data_root = _data_root()
+    repo_root = Path.cwd()
+    registry_dir = args.registry_dir or _registry_root()
+    if args.force:
+        result = served_refresh_card_measure(
+            artifacts_root=artifacts_root,
+            data_root=data_root,
+            repo_root=repo_root,
+            record=args.record,
+            registry_dir=registry_dir,
+        )
+    else:
+        result = served_refresh_card_reuse_or_measure(
+            artifacts_root=artifacts_root,
+            data_root=data_root,
+            repo_root=repo_root,
+            record=args.record,
+            registry_dir=registry_dir,
+        )
+    _print_json(result)
 
 
 def _cmd_predict_close(args: argparse.Namespace) -> None:
@@ -704,6 +802,15 @@ def register_diagnostics(
         help="override the active model probability mapping for this evaluation only",
     )
     opener_evaluation_parser.add_argument(
+        "--opener-line-source",
+        type=Path,
+        default=None,
+        help="grade at an alternative opener line instead of the captured cross-book consensus: "
+        "a parquet with game_id, home_spread and optional books columns (see "
+        "nfl-ats opener-line-series). The run writes to artifacts/opener_evaluation_line_source "
+        "and never identifies itself as the active model's opener evaluation",
+    )
+    opener_evaluation_parser.add_argument(
         "--no-home-side-offset",
         action="store_true",
         help="score the raw model without the served walk-forward home-side offset "
@@ -711,6 +818,21 @@ def register_diagnostics(
     )
     _add_bootstrap_args(opener_evaluation_parser, seed=20260817)
     opener_evaluation_parser.set_defaults(handler=_cmd_opener_evaluation)
+
+    line_series_parser = subparsers.add_parser(
+        "opener-line-series",
+        help="build a Tuesday-opener line series from the per-book archive: one named book's "
+        "posted spread, or the median of the half-point quotes only",
+    )
+    _add_features_arg(line_series_parser, "game_features_weak_stack.parquet")
+    line_series_parser.add_argument(
+        "--series", choices=("book", "halfpoint_median"), default="book"
+    )
+    line_series_parser.add_argument(
+        "--book", default=None, help="bookmaker key; default picks the best-covered candidate book"
+    )
+    line_series_parser.add_argument("--output", type=Path, default=None)
+    line_series_parser.set_defaults(handler=_cmd_opener_line_series)
 
     composition_parser = subparsers.add_parser(
         "overlay-composition",
@@ -721,6 +843,25 @@ def register_diagnostics(
     composition_parser.add_argument("--incidents", type=Path)
     _add_bootstrap_args(composition_parser, samples=20_000, seed=20260821)
     composition_parser.set_defaults(handler=_cmd_overlay_composition)
+
+    served_refresh_card_parser = subparsers.add_parser(
+        "served-refresh-card",
+        help="score the whole served refresh chain (Tuesday card plus every through-the-week "
+        "rule) against the active model's matching opener evaluation; reuses the latest "
+        "measurement when its archive still matches the active model and re-measures otherwise",
+    )
+    served_refresh_card_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="re-measure even when the existing artifact already matches the active model",
+    )
+    served_refresh_card_parser.add_argument(
+        "--record",
+        action="store_true",
+        help="record every chain cell through weak-signals record (family served_refresh_card)",
+    )
+    served_refresh_card_parser.add_argument("--registry-dir", type=Path, default=None)
+    served_refresh_card_parser.set_defaults(handler=_cmd_served_refresh_card)
 
     predict_close = subparsers.add_parser(
         "predict-close",

@@ -16,7 +16,6 @@ from nfl_ats.board_content import (
 from nfl_ats.board_site_content import (
     FindingsPageContent,
     HonestyRuleView,
-    RecentActivityCategoryView,
     RecentActivityEntryView,
     RecentActivityView,
     SignalLedgerSummary,
@@ -214,52 +213,47 @@ def _findings_fixture(recent_activity: RecentActivityView) -> FindingsPageConten
 
 
 def test_recent_activity_section_renders_empty_window_correctly() -> None:
-    activity = RecentActivityView(window_days=7, screened_count=0, resolved_count=0, categories=())
+    activity = RecentActivityView(
+        window_days=7, screened_count=0, resolved_count=0, still_open_count=0, entries=()
+    )
     html = board_terminal.render_findings_page(_findings_fixture(activity))
     assert "Research this week" in html
     assert "No new screens recorded this week." in html
-    assert "0 screened" in html
-    assert "0 resolved" in html
+    assert "0 signals looked at" in html
+    assert "0 resolved either way" in html
+    assert "0 still open" in html
 
 
-def test_recent_activity_section_renders_grouped_entries() -> None:
+def test_recent_activity_section_renders_up_to_eight_entries() -> None:
     activity = RecentActivityView(
         window_days=7,
         screened_count=2,
         resolved_count=1,
-        categories=(
-            RecentActivityCategoryView(
-                category="onfield",
-                entries=(
-                    RecentActivityEntryView(
-                        plain_summary="A plain-English summary of a fresh screen.",
-                        effect_text="+0.40 accuracy points",
-                        direction_sentence="Leans FOR the pattern described -- 70% confidence "
-                        "in that direction (not yet resolved; see the interval).",
-                        closed_label=None,
-                    ),
-                    RecentActivityEntryView(
-                        plain_summary="A refuted mechanism, closed this week.",
-                        effect_text="-1.50 accuracy points",
-                        direction_sentence="Leans AGAINST the pattern described -- read this as "
-                        "a lead for the OTHER side, 99% confidence in that direction (not yet "
-                        "resolved; see the interval).",
-                        closed_label="Resolved the other way",
-                    ),
-                ),
+        still_open_count=1,
+        entries=(
+            RecentActivityEntryView(
+                plain_summary="A plain-English summary of a fresh screen.",
+                effect_text="+0.40 accuracy points",
+                chance_it_helps_text="chance it helps: 70%",
+                closed_label=None,
+            ),
+            RecentActivityEntryView(
+                plain_summary="A refuted mechanism, closed this week.",
+                effect_text="-1.50 accuracy points",
+                chance_it_helps_text="chance it helps: 1%",
+                closed_label="Resolved the other way",
             ),
         ),
     )
     html = board_terminal.render_findings_page(_findings_fixture(activity))
-    assert "2 screened" in html
-    assert "1 resolved" in html
-    assert "onfield (2)" in html
+    assert "2 signals looked at" in html
+    assert "1 resolved either way" in html
+    assert "1 still open" in html
     assert "A plain-English summary of a fresh screen." in html
     assert "+0.40 accuracy points" in html
-    assert "Leans FOR the pattern described" in html
+    assert "chance it helps: 70%" in html
     assert "Resolved the other way" in html
     assert "failed" not in html.lower()
-    assert '<details class="table-view">' in html
 
 
 def test_recent_activity_section_never_says_contains_zero() -> None:
@@ -267,18 +261,13 @@ def test_recent_activity_section_never_says_contains_zero() -> None:
         window_days=7,
         screened_count=1,
         resolved_count=0,
-        categories=(
-            RecentActivityCategoryView(
-                category="market",
-                entries=(
-                    RecentActivityEntryView(
-                        plain_summary="A small measured effect.",
-                        effect_text="+0.10 accuracy points",
-                        direction_sentence="Leans FOR the pattern described -- 55% confidence "
-                        "in that direction (not yet resolved; see the interval).",
-                        closed_label=None,
-                    ),
-                ),
+        still_open_count=1,
+        entries=(
+            RecentActivityEntryView(
+                plain_summary="A small measured effect.",
+                effect_text="+0.10 accuracy points",
+                chance_it_helps_text="chance it helps: 55%",
+                closed_label=None,
             ),
         ),
     )

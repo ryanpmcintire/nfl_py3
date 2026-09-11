@@ -405,6 +405,21 @@ def plan_weekly_run(
                 command=("overlay-composition",),
                 notes=("skip only if model id is unchanged and both matching measurements exist",),
             ),
+            WeeklyStep(
+                number=7,
+                name="served-refresh-card",
+                description=(
+                    "reuse the served refresh-chain measurement when its archive still matches "
+                    "the active opener evaluation, re-measure otherwise; publish-board fails "
+                    "closed on a stale one"
+                ),
+                command=("served-refresh-card",),
+                optional=True,
+                notes=(
+                    "self-checking: decides reuse vs re-measure from the archive, not from "
+                    "whether the model id changed",
+                ),
+            ),
         ]
     )
     publish_command = ["publish-predictions", "--with-board"]

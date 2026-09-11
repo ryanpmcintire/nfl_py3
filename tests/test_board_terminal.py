@@ -1150,8 +1150,20 @@ def _rival_panel() -> board_content.RivalRulesPanel:
         summary="Of the 8 that pick a whole card, 7 take a different team somewhere this week.",
         count_text="11 recorded beside this week's card",
         rows=(
-            board_content.RivalRuleRow("Rain-on-grass underdog tilt", 5, 16, "BAL at IND"),
-            board_content.RivalRuleRow("Year-one coach fade", 0, 16, "Takes the same side"),
+            board_content.RivalRuleRow(
+                "Rain-on-grass underdog tilt",
+                5,
+                16,
+                "BAL at IND (IND)",
+                "1-0 so far, card 0-1 on those games",
+            ),
+            board_content.RivalRuleRow(
+                "Year-one coach fade",
+                1,
+                16,
+                "ARI at LAC (LAC)",
+                board_content.RIVAL_RULES_RECORD_PENDING,
+            ),
         ),
         single_game_line=(
             "3 more rules name a single game each rather than a whole card: ARI at LAC (2)."
@@ -1172,6 +1184,7 @@ def test_rival_rules_section_shows_the_public_test_and_hides_the_detail() -> Non
         assert escape(row.name) in html
         assert row.differs_text in html
         assert escape(row.games_text) in html
+        assert escape(row.record_text) in html
     section = html[html.index('id="rivals-h"') : html.index('id="find-h"')]
     details = section[section.index("<details") : section.index("</details>")]
     for row in content.rivals.rows:

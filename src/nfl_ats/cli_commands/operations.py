@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 from nfl_ats import __version__
+from nfl_ats.card_ledger_check import check_card_ledger_consistency
+from nfl_ats.card_ledger_check import render_report as render_card_ledger_check_report
 from nfl_ats.cli_common import (
     _add_season_week_args,
     _artifacts_root,
@@ -198,6 +200,32 @@ def register_health(
         ),
     )
     preflight.set_defaults(handler=_cmd_preflight)
+
+
+def _cmd_card_ledger_check(args: argparse.Namespace) -> None:
+    report = check_card_ledger_consistency(_artifacts_root(), data_root=_data_root())
+    if args.json:
+        _print_json(report)
+    else:
+        print(render_card_ledger_check_report(report))
+    if report.get("evaluated", True) and not report.get("ok", True):
+        raise SystemExit(1)
+
+
+def register_card_ledger_check(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+    current_year: int,
+) -> None:
+
+    check = subparsers.add_parser(
+        "card-ledger-check",
+        help=(
+            "compare the paper-decision ledger and the pick-revision ledger against "
+            "the currently served card for the active week; exits 1 on any disagreement"
+        ),
+    )
+    check.add_argument("--json", action="store_true", help="emit a machine-readable report")
+    check.set_defaults(handler=_cmd_card_ledger_check)
 
 
 def register_handoff(

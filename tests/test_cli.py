@@ -758,7 +758,7 @@ def test_refresh_crew_recorder_is_gated_and_fails_open(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
 
-    plan = SimpleNamespace(changed_games=(object(),))
+    plan = SimpleNamespace(changed_games=(object(),), card_changed_games=(object(),))
     calls: list[bool] = []
     destination = tmp_path / "card.md"
 

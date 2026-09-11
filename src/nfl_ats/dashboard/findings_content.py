@@ -141,6 +141,9 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "backup_qb_fade_overlay": "Backup-quarterback fade",
     "veteran_rest_back_overlay": "Rested-veteran back",
     "post_bye_new_playcaller_back_overlay": "Post-bye new playcaller back",
+    "interim_playcaller_first_game_back_overlay": (
+        "Back a team in its first game under a new play-caller"
+    ),
     "rookie_prior_surplus_tilt_overlay": "Rookie-starter value tilt",
     "tv_attention_fade_overlay": "Fade the most-watched team",
     "surface_switch_tilt_overlay": "Turf-surface switch",
@@ -177,6 +180,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "inactives_refresh_v1": "Official-inactives refresh flip",
     "pbp08_protection_mismatch_tilt_overlay": "Protection-mismatch tilt",
     "crew_tilt_refresh_v1": "Officiating-crew tilt",
+    "half_line_2h_underdog_refresh_v1": "Back the underdog when the second-half line disagrees",
     "rookie_crew_underdog_off_incumbent": "Picks without the new-crew adjustment",
     "player_qb_continuity|ridge_alpha=1|calibration=none": "QB-continuity alpha probe",
     "bye_edge_fade_overlay": "Bye-week rest-edge fade",

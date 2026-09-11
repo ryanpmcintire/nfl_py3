@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-11T05:27:46.404498+00:00`
+Refreshed at: `2026-09-11T19:10:49.494804+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-11T05:27:46.404498+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `ef24943cf6d4` — Injury news is polled every four hours, not once a day: the source page holds ~12 hours of posts and its monthly archive stops at June, so the daily pull was losing about half of each week's articles with nothing to backfill them
-- Pending change set: 134 paths
-  - `M  .gitignore`
+- Baseline commit: `18fa1f4c7332` — Backlog night: Sunday Best Pick re-nomination, tiebreaker low-side shade, confidence floor and last-call refreshes served; six prospective challengers registered; two repo-cut deletions restored; off-site backup and second capture host live
+- Pending change set: 76 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
   - `M  artifacts/prospective/challengers.json`
   - `M  config/source_policies.json`
-  - `A  deploy/nfl-ats-capture.service`
-  - `A  docs/altitude_fourth_quarter.md`
-  - `A  docs/bayesian_team_model_on_production.md`
-  - `A  docs/best_pick_sunday_renomination.md`
-  - `A  docs/coach_speak_base_rates.md`
-  - `M  docs/coaching_leads.md`
-  - `A  docs/contest_utility_optimizer.md`
   - `M  docs/findings.html`
-  - `A  docs/friday_designation_momentum.md`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `A  docs/late_season_crews.md`
-  - `M  docs/late_week_refresh.md`
-  - ...and 114 more
+  - `A  docs/mod18_pool_shaped_read.md`
+  - `M  docs/model.html`
+  - `A  docs/overlay_union_line_shape.md`
+  - `M  docs/playcaller_change_leads.md`
+  - `M  docs/player_props_sourcing.md`
+  - `A  docs/single_book_opener_grade.md`
+  - `A  docs/whole_number_line_model_diagnosis.md`
+  - `A  registry/experiments/margin-backtest/20260911T160857Z.json`
+  - `A  registry/experiments/margin-backtest/20260911T164740Z.json`
+  - `A  registry/experiments/margin-backtest/20260911T164743Z.json`
+  - `A  registry/experiments/margin-backtest/20260911T164746Z.json`
+  - ...and 56 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `d49194e04945a5e5`
+- Model ID: `7786467eabe418b8`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260910T211255Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260911T161354Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-10T21:08:52.849945+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-11T18:36:32.939751+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `d49194e04945a5e5`, published `2026-09-11T05:18:34.686177+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `7786467eabe418b8`, published `2026-09-11T18:39:50.463601+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

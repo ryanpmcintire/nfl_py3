@@ -273,6 +273,15 @@ LEDGERS: tuple[LedgerSpec, ...] = (
         order_column="revision_recorded_at_utc",
     ),
     LedgerSpec(
+        key="half_line_refresh",
+        relative_path="prospective/half_line_refresh_decisions.parquet",
+        arms=(
+            Arm("played", "played_pick_side"),
+            Arm("half_line_2h_underdog", "half_line_would_be_pick_side"),
+        ),
+        order_column="revision_recorded_at_utc",
+    ),
+    LedgerSpec(
         key="inactives_refresh",
         relative_path="prospective/inactives_refresh_decisions.parquet",
         arms=(

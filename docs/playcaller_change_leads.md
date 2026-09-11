@@ -609,3 +609,129 @@ can fire at all), `nfl-ats prospective-score` reports this challenger's
 exactly like every other overlay challenger. That number -- not the combined
 back+fade production-screen figures quoted above -- is what will actually
 say whether backing a new playcaller off a bye holds up on its own.
+
+## Interim play-caller first-game BACK overlay: LEAD-29's own no-window-cost challenger (2026-09-11)
+
+Follows `post_bye_new_playcaller_back_overlay`'s exact pattern (module,
+`CHALLENGER_DISPLAY_NAMES` entry, `artifacts/prospective/challengers.json`
+registration, an additive fail-open recorder block in
+`orchestrate_publish_predictions`) to wire LEAD-29's own trait -- not
+LEAD-28's -- as a second, independent, zero-rotation-window-cost prospective
+challenger. Closing-grounds taxonomy from the top of this document applies
+without restatement.
+
+### What is built
+
+`interim_playcaller_first_game_back_overlay`
+(`src/nfl_ats/interim_playcaller_first_game_back_overlay.py`): a
+parameter-free pick-level rule -- BACK a team in its first REG-season game
+whose kickoff falls strictly after a midseason (in-season) offensive or
+defensive coordinator change, flipping production's opener pick onto that
+side only when the opponent is NOT also uniquely flagged and production's
+own pick is not already on that side; otherwise the challenger mirrors the
+served pick. This is the R1 construct above (`playcaller_first_game`)
+exactly, single-sided (it only ever backs, never fades), never combined with
+any other signal -- unlike LEAD-28's overlay, there is no disclosure gap
+between "what was measured" and "what this challenger's own rule does."
+
+**Events, reused not re-derived.** `load_counted_playcaller_change_events`
+globs `data/raw/coordinators/*/change_validation.json` for the newest
+snapshot that HAS that file (not simply the newest `coordinator_history.parquet`)
+and keeps only `staff_change`/`playcaller_role` adjudications -- the same 12
+events (2022-2025) R1 above counts. **Measured 2026-09-11**: two newer
+coordinator snapshots exist
+(`data/raw/coordinators/20260911T033007437805Z/`, which also carries the
+first 2026 preseason OC rows for all 32 teams, and
+`data/raw/coordinators/20260911T034010993419Z/`), but neither ships a
+hand-adjudicated `change_validation.json` -- both instead carry an
+unadjudicated `coverage_audit.json` whose 16-row raw identity-edit list still
+includes the 4 rows (`role_correction`, two `reverted_identity_edit`, one
+`unverified_identity_edit`) the hand adjudication excluded as noise (e.g. the
+SF 2022 DC handoff that reverted 12 hours later). Using that unadjudicated
+list would silently reintroduce noise into a live challenger's flags, so the
+module deliberately keeps resolving to the one snapshot that has been
+adjudicated. If a future snapshot ships its own `change_validation.json`,
+the glob picks it up automatically with no code change.
+
+**Pregame-safe.** `games_after_playcaller_change_flag_by_game` flags a team's
+game only when its kickoff is strictly after the most recent counted event's
+revision instant for that team (`numpy.searchsorted(..., side="left")`,
+matching R1's own boundary rule exactly); a game exactly at the revision
+instant is not counted as after it.
+
+### Historical dry grade (zero rotation-window cost)
+
+**Measured** (`apply_interim_playcaller_first_game_back_overlay` applied
+directly to the frozen opener archive
+`artifacts/opener_evaluation/20260907T152026Z/per_game.parquet`, baseline
+pick = `home_cover_probability_at_open >= 0.5`, outcome via
+`nfl_ats.clv.pick_correct` on `margin_vs_open`; no `confirmation_split`, no
+rotation window touched;
+`artifacts/playcaller_change_leads/interim_playcaller_first_game_back_overlay_dry_grade.json`):
+4 of 1,503 graded 2020-2025 picks flip
+(`2024_11_LV_MIA`, `2025_11_GB_NYG`, `2025_13_NYG_NE`, `2025_16_NYJ_NO`),
+**-0.1331 accuracy points**, week-blocked 95% **[-0.4008, +0.1322]**, P+
+**0.16045**, season-blocked 95% [-0.2630, 0.0000], P+ 0.04305 -- this
+reproduces the already-recorded `playcaller_change_lead29_production_screen_full_archive`
+registry entry (computed via the older, now rotation-window-spent
+`scripts/playcaller_change_screen.py production-lead29` path) to within
+ordinary bootstrap-seed noise, confirming the new module ports the same
+construct faithfully. Recorded as its own registry entry,
+`playcaller_change_interim_overlay_module_full_archive` (family
+`playcaller_change`), explicitly labelled as a fidelity check rather than a
+second independent measurement.
+
+**Read plainly**, this leans slightly AGAINST the predeclared BACK direction
+on a thin sample (4 real flips) -- the opposite lean from LEAD-28's sibling
+overlay. It is **not** a resolved wrong sign: the week-blocked upper bound is
+positive and the season-blocked interval touches but does not sit strictly
+below zero. Per this document's own closing-grounds taxonomy, an interval
+crossing zero is never grounds to decline building a free instrument, so the
+challenger is registered anyway -- only the 2026+ prospective ledger, not
+this thin historical slice, will actually settle it.
+
+### Confirmed live against 2026 Week 1
+
+**Measured 2026-09-11** (`record_interim_playcaller_first_game_back_overlay_decisions`,
+active forecast `2026-week-01-20260910T210852Z`, model `bc77638d47e2748c`
+config fingerprint): `flip_count: 0`, `flipped_game_ids: []`,
+`both_flagged_games: []` -- expected, since no 2026 midseason coordinator
+change has happened yet and no coordinator snapshot carries any 2026
+in-season row. `recorded: 14`, `post_kickoff_skipped: 2` (the same two
+already-kicked-off games every other overlay excludes this week),
+`ledger_rows: 600` after the append. With zero flips every recorded row is a
+byte-identical mirror of production's own pick.
+
+### What is and is not wired in
+
+- `src/nfl_ats/interim_playcaller_first_game_back_overlay.py`: the transform
+  (`apply_interim_playcaller_first_game_back_overlay`), the signal readers
+  (`load_counted_playcaller_change_events`,
+  `games_after_playcaller_change_flag_by_game`), the disclosure sentence
+  (`overlay_disclosure_note`, not currently surfaced anywhere), and the
+  recorder (`record_interim_playcaller_first_game_back_overlay_decisions`).
+- `src/nfl_ats/cli_commands/publishing.py`'s `orchestrate_publish_predictions`:
+  one more additive, fail-open `try`/`except` block, a
+  `PUBLISH_CHALLENGER_RESULT_KEYS` entry
+  (`interim_playcaller_first_game_back_overlay` ->
+  `interim_playcaller_first_game_back_overlay_challenger_ledger`), and a
+  matching `skipped` placeholder in the no-`--record-decisions` branch. This
+  writes ONLY to `artifacts/prospective/challenger_decisions.parquet`; the
+  production pick path (`publish_active_predictions`) is untouched.
+- `artifacts/prospective/challengers.json`: registered as
+  `interim_playcaller_first_game_back_overlay`, status `ACTIVE_PROSPECTIVE`.
+- `src/nfl_ats/dashboard/findings_content.py`'s `CHALLENGER_DISPLAY_NAMES`:
+  `interim_playcaller_first_game_back_overlay` -> `"Back a team in its first
+  game under a new play-caller"`.
+- **Not wired anywhere:** no switch applies this overlay to the published
+  card. Tracked independently against the active model's own card, not
+  stacked on any other overlay.
+
+### No new tests (moratorium)
+
+Per the standing test moratorium, no test file or test function was added.
+Verification here is the direct runs reported above (the archive dry grade
+and the live `record_interim_playcaller_first_game_back_overlay_decisions`
+call against the real 2026 Week 1 card), plus
+`pytest tests -k "challenger or prospective" -n 4` (311 passed, none added
+or edited).
