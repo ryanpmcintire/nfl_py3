@@ -46,6 +46,10 @@ MODEL_RESIDUAL_WEIGHT = 0.2
 
 TOTALS_RESIDUAL_WEIGHT = 0.1
 
+TOTAL_LOW_SIDE_SHADE_POINTS = -1.0
+
+TOTAL_LOW_SIDE_SHADE_SOURCE = "docs/tiebreaker_low_side_shading.md"
+
 
 @dataclass(frozen=True)
 class MarketConsensus:
@@ -93,11 +97,18 @@ class TiebreakerReport:
     pick_cover_probability: float | None = None
     pick_push_probability: float | None = None
     consistency_note: str = ""
+    low_side_shade_points: float = 0.0
+    low_side_shade_source: str = ""
 
     @property
     def served_total(self) -> float:
 
         return self.guess_total_line
+
+    @property
+    def served_total_before_shade(self) -> float:
+
+        return self.guess_total_line - self.low_side_shade_points
 
 
 def newest_schedules_path(data_root: Path) -> Path:
@@ -377,6 +388,7 @@ def build_report(
         joint_view=joint_totals_view,
         blend_weight=TOTALS_RESIDUAL_WEIGHT,
     )
+    guess_total_line += TOTAL_LOW_SIDE_SHADE_POINTS
     implied_home, implied_away = market_implied_scores(guess_margin, guess_total_line)
     neighborhood = _neighborhood(finals, guess_margin, guess_total_line)
     rows, weights = neighborhood.frame, neighborhood.weights
@@ -494,6 +506,8 @@ def build_report(
         total_median_ae=float(total_error.abs().median()),
         total_bias=float(total_error.mean()),
         implied_score_mae=implied_mae,
+        low_side_shade_points=TOTAL_LOW_SIDE_SHADE_POINTS,
+        low_side_shade_source=TOTAL_LOW_SIDE_SHADE_SOURCE,
     )
 
 
@@ -767,5 +781,22 @@ def tiebreaker_lineage_sources(
                 ),
             )
         )
+
+    sources.append(
+        TiebreakerSource(
+            input_name="total_low_side_shade",
+            builder_module="nfl_ats.tiebreaker",
+            builder_version=BUILDER_VERSION,
+            effective_timestamp=fallback_effective_timestamp,
+            source_snapshot=None,
+            source_captured_at=None,
+            effective_timestamp_basis="feature_table_build",
+            unknown_source_reason=(
+                f"policy constant, not a data capture: served total shaded "
+                f"{report.low_side_shade_points:+.1f} point(s) low "
+                f"({report.low_side_shade_source})"
+            ),
+        )
+    )
 
     return tuple(sources)

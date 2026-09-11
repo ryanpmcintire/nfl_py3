@@ -105,11 +105,26 @@ def _prospective_primary_entrants(active: pd.DataFrame) -> list[tuple[str, pd.Da
     return entrants
 
 
+def _prospective_outcomes(features: pd.DataFrame, artifacts: Path) -> pd.DataFrame:
+
+    outcomes = features.loc[:, ["game_id", "result"]].copy()
+    try:
+        settled = pd.read_parquet(results_artifact_path(artifacts), columns=["game_id", "result"])
+    except (OSError, ValueError):
+        return outcomes
+    settled = settled.loc[pd.to_numeric(settled["result"], errors="coerce").notna()]
+    if settled.empty:
+        return outcomes
+    fresher = settled.drop_duplicates("game_id")
+    kept = outcomes.loc[~outcomes["game_id"].astype(str).isin(set(fresher["game_id"].astype(str)))]
+    return pd.concat([kept, fresher], ignore_index=True)
+
+
 def _cmd_prospective_score(args: argparse.Namespace) -> None:
     now = datetime.now(UTC)
     artifacts = _artifacts_root()
     features = _load_features(args.features)
-    outcomes = features.loc[:, ["game_id", "result"]].copy()
+    outcomes = _prospective_outcomes(features, artifacts)
     close_reference = live_close_reference(_data_root() / "market" / "raw", features, as_of=now)
 
     active = load_paper_decisions(artifacts)

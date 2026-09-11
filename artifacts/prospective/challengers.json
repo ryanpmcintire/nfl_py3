@@ -15,6 +15,13 @@
       "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_tiebreaker_shade_decisions)"
     },
     {
+      "challenger_id": "tiebreaker_lattice_centre",
+      "prospective_protocol": "MOD-17: docs/tiebreaker.md 2026-09-11 predeclaration; the served tiebreaker score (lattice centred on predicted_margin) against a challenger score whose lattice is centred on the pick-deciding margin -- the served discrete push read's own per-game point -- with the line plus the minimum consistent step substituted whenever an overlay flip leaves that point on the side the card no longer picks; paired closest-total and closest-score absolute error; separate lattice_centre_decisions.parquet ledger.",
+      "registered_at_utc": "2026-09-11T00:00:00+00:00",
+      "status": "ACTIVE_PROSPECTIVE",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (record_lattice_centre_decisions)"
+    },
+    {
       "challenger_id": "mod07_weak_signal_stack",
       "config_fingerprint": "bc77638d47e2748c",
       "evidence": {
@@ -2724,6 +2731,56 @@
       "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
     },
     {
+      "challenger_id": "late_week_follow_no_sunday_blackout",
+      "config_fingerprint": "bc77638d47e2748c",
+      "correlation_and_reuse_warning": "Paired game-for-game with the served late-week follow (late_week_leader_median_follow_v1) on the same games and lines; identical to the served arm whenever the leader books show no pre-deadline Sunday-morning movement, so never pool these rows as independent of the served rule.",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "closing_ground": null,
+        "closing_grounds_taxonomy": "An interval or CI that contains zero is NEVER grounds to reject, fail, or close an experiment. At this evaluator's ~2-point resolution, 'contains zero' is the EXPECTED outcome for a real small signal. Only two grounds ever close a line of work: (1) refuted mechanism -- a RESOLVED wrong sign (whole interval on the wrong side of zero) or zero split-half reliability; (2) bounded by a positive control proven able to detect an effect that size. Everything else is unresolved_below_power: record it with nfl-ats weak-signals record, report probability_positive, never the binary 'contains zero'.",
+        "decay_curve_h3_2024_2025": {
+          "effect_accuracy_points": 3.0,
+          "interval_points_week_blocked": [
+            0.1848,
+            5.9259
+          ],
+          "probability_positive": 0.9789
+        },
+        "pooled_2020_2025": {
+          "effect_accuracy_points": 0.4657,
+          "interval_points_week_blocked": [
+            -1.0695,
+            2.0107
+          ],
+          "probability_positive": 0.7218
+        },
+        "reliability_note": "The leader-book net-move trait's split-half reliability (bovada vs williamhill_us+mybookieag) is 0.885 pooled (0.899 / 0.901 / 0.851 by era), Spearman-Brown corrected 0.939 -- highly reliable, so no_split_half_reliability is not available as a closing ground.",
+        "source": "artifacts/refresh_timing_policy/20260911T000000Z/results.json; docs/refresh_timing_policy.md"
+      },
+      "known_gap": "The historical archive can only supply ONE Sunday-window quote per game per week (the single sun_early_close capture at 12:25 ET in every season measured), so every effect above is a lower bound on what real Sunday-morning movement is worth. The live intraday captures run several times each Sunday morning, so this challenger's real reach on the 2026 season is larger than anything the historical read could measure. No positive control has been run for this channel, so bounded_by_control is unavailable either; every cell stays unresolved_below_power.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "Reuses the served late-week follow's own live intraday odds read (nfl_ats.clv.load_decision_quotes, capture_kind='live') at zero extra capture-window cost; independently recomputes the leader-median net move over the same three leading books (bovada, williamhill_us, mybookieag) at the same leader_follow_threshold gate the served rule uses, but without excluding quotes observed on Sunday. Both arms use the original Tuesday card and the frozen Tuesday line.",
+      "prospective_protocol": "At each Thursday, Saturday and Sunday-morning refresh pass, for every game still open at that pass, recompute the leader-median net move counting Sunday-morning increments (the served rule's own construct excludes them) and follow it at the same threshold the served rule uses (a full point, half a point at or above a 10.5-point line). Recorded on every pass in prospective/late_week_follow_no_sunday_blackout_decisions.parquet beside the served pick and the frozen Tuesday pick, at the frozen Tuesday grading line. Frozen Tuesday grading, latest valid pass per game, no rotation window spent.",
+      "reader_summary": "Tracks what the pick would have been if Sunday-morning line moves counted too, so the two versions can be compared on the same games.",
+      "registered_at_utc": "2026-09-11T03:25:54.141811+00:00",
+      "registered_by": "MKT-08 follow-up (docs/refresh_timing_policy.md): removing the served follow rule's Sunday blackout reads +3.00 accuracy points on 2024-2025 (week-blocked 95% [+0.18, +5.93], probability_positive 0.9789, H=3) and +0.4657 pooled 2020-2025 (probability_positive 0.7218); the doc names it a challenger, not a rule change. Registered here so 2026 grades it prospectively.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "Recorded unresolved_below_power. This ledger is the arm of the served late-week follow with the Sunday blackout removed; the served rule (with the blackout) is the OFF arm on the same games.",
+      "weekly_generation_command": "N/A -- reuses the refresh pass's own plan and the local live intraday odds captures already fetched for the served late-week follow; no new network fetch.",
+      "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
+    },
+    {
       "challenger_id": "gaussian_mean_mapping_incumbent",
       "config_fingerprint": "bc77638d47e2748c",
       "evidence": {
@@ -3220,6 +3277,273 @@
       "status_reason": "Recorded unresolved_below_power. This ledger is the OFF arm of the served big-spread gate: what the pick would have been at a flat full point on every line. Mechanism named in the docs: a half-point drift in the leaders' median is noise on a pick'em (-3.470 accuracy points at 0-3, whole interval below zero) and information on a blowout line (+3.448 at 10.5+).",
       "weekly_generation_command": "N/A -- reuses the refresh pass's own plan and the local public-betting captures; no network fetch.",
       "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
+    },
+    {
+      "challenger_id": "veteran_rest_back_overlay",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "mechanism_note": "LEAD-11 (docs/veteran_rest_day_tell.md) predeclared a FADE of teams with rest-tagged 30+ veteran starters and measured the OPPOSITE of the predeclared direction: registry/weak_signals.json:veteran_rest_day_tell_on_production (rotation family veteran_rest_day_tell_on_production, assigned+spent window [2020, 2021], opener grade) recorded effect -2.6316 accuracy points, week-blocked 95% [-5.765, +0.222], probability_positive 0.038225, 466 paired games / 35 weeks, 39/466 forced picks flipped -- i.e. fading AWAY from the flagged side was measured net negative. The independent on-field comparison in the same write-up (starter-matched, 2021-2025, n=790 flagged vs n=8,381 control) found flagged veterans show a SMALLER production drop from their own trailing baseline (-0.0154 vs -0.0273) and a LOWER 4-week missed-game rate (0.195 vs 0.251) than matched non-flagged 30+ starters, replicating in both odd (2021/23/25) and even (2022/24) season halves -- both readings point the same way: a rest day for a 30+ starter behaves like load management that works, not a hidden decline the market has under-priced. Team rest-tag propensity is a reliable team-season trait (Pearson r=0.5633, 95% [0.285, 0.768], probability_positive 0.99985 on odd/even season halves), ruling out no_split_half_reliability as a closing ground; the opener-window interval crosses zero, so wrong_sign_resolved is also inadmissible. Registered classification: unresolved_below_power.",
+        "mirror_arithmetic_disclosure": "This lane's own task brief described the reverse direction as 'BACKING those teams at +2.63 points, probability_positive 0.96, on the same flips' -- that is the exact arithmetic negation of LEAD-11's own recorded numbers (-2.6316 -> +2.6316; 0.038225 -> 1-0.038225=0.961775), not an independently re-run backtest. This registration does NOT re-score the spent 2020-2021 rotation-registry window under a reversed rule -- doing so would spend the same window twice on the same family, which the rotation registry's window discipline exists to prevent. The +2.63 / 0.96 figures are read here only as the DIRECTION and rough MAGNITUDE the reversal is expected to carry, not as a verified number for this specific overlay's flip rule (see known_gap for why the flip population is not literally identical to LEAD-11's own screen). The only evidence this challenger will ever cite for itself is its own 2026+ prospective ledger.",
+        "registry_source": "registry/weak_signals.json:veteran_rest_day_tell_on_production",
+        "sample_games": 466,
+        "seasons_measured": [
+          2020,
+          2021
+        ],
+        "write_up": "docs/veteran_rest_back_overlay.md"
+      },
+      "known_gap": "This overlay's team-week flag is deliberately SIMPLER than LEAD-11's own production-screen feature: it reuses LEAD-11's PLAYER-LEVEL flag exactly (rest/NIR reason text on nflverse injuries.parquet reason columns, chronological age >=30 via nflreadpy players cache birth dates, final practice_status not DNP) but does NOT reapply LEAD-11's additional trailing-snap-share starter gate (trailing_share >= 0.5 over up to 4 prior games this season) used only inside LEAD-11's own confirmation screen. Measured 2026-09-11: reapplying that starter gate live would make this overlay a PERMANENT no-op in every season's Week 1 (trailing share is always 0/NaN before any game has been played that season), which would have made the explicit task of confirming a 2026 Week 1 value impossible by construction. The team flag here is instead 'this team has at least one rest/NIR-tagged 30+ veteran on this week's injury report', with no workload weighting. Corollary: this overlay's flip population is NOT the same 39 games LEAD-11's screen flipped, and its flip RULE is also structurally different, not merely sign-reversed -- the fade flips away from the flagged side only when production's own pick ALREADY sits there; the back overlay flips ONTO the flagged side only when production's pick does NOT already sit there (the true behavioral mirror: fade always moves picks off flagged teams, back always moves picks onto them). Confirmed live 2026-09-11 against the active 2026 Week 1 card (artifacts/margin_predictions/2026-week-01-20260910T210852Z): exactly one team is flagged (LA, home team in 2026_01_SF_LA, rest-tagged veteran gsis_id 00-0033110), production's raw pick sat on SF (home_cover_probability 0.4442, i.e. away/non-flagged side), so the overlay flips this one game onto LA. bet_side is always recorded as PASS and edge as NaN, mirroring every sibling overlay's identical rationale: this tracks the overlay's forced-pick accuracy only, never an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.veteran_rest_back_overlay.record_veteran_rest_back_overlay_decisions can refuse to record when the active model's live fingerprint no longer matches. The veteran rest-tag signal itself is read live from the newest local nflverse injuries snapshot (data/raw/nflverse_injuries/<snapshot>/injuries.parquet) and the newest nflreadpy players cache (data/players/raw/<snapshot>/players.parquet) -- neither snapshot's identity is part of this fingerprint, which pins only the ACTIVE model's own configuration. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the overlay should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration. This challenger is graded EXCLUSIVELY on 2026+ games recorded from this registration date forward -- the 2020-2021 window LEAD-11 already spent is never re-used as evidence for this reversed rule.",
+      "reader_summary": "Tracks what would happen if the model backed, instead of faded, a team that rested a 30-or-older starter that week -- the opposite bet from what the original rest-day study proposed, tried here because the study's own on-field numbers pointed the other way.",
+      "registered_at_utc": "2026-09-11T02:25:00+00:00",
+      "registered_by": "LEAD-11 follow-up lane (2026-09-11): the predeclared FADE of rest-tagged 30+ veteran teams scored a measured negative on its assigned rotation-registry window (registry/weak_signals.json:veteran_rest_day_tell_on_production, -2.6316 accuracy points, probability_positive 0.038225) and the independent on-field comparison in the same write-up pointed the same way (flagged veterans decline LESS and miss FEWER games than matched controls). THE DIRECTION OF THIS CHALLENGER WAS CHOSEN AFTER SEEING THAT SIGN -- this is an explicit post-hoc reversal, not a predeclared construct, and it is registered as such. It is graded only on 2026+ games nobody has looked at yet; it makes no retroactive claim on the spent 2020-2021 window (see evidence.mirror_arithmetic_disclosure).",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like the other pick-level overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.veteran_rest_back_overlay.apply_veteran_rest_back_overlay wherever a parameter-free rule fires -- flip ONTO a side with a rest/NIR-tagged 30+ veteran (final practice_status not DNP that week) whenever the opponent does NOT also carry such a flag and production's own pick is not already on that side, REG season only. This is the deliberate mirror of the now-DEACTIVATED-in-direction-only reasoning behind LEAD-11's FADE screen: that screen's own confirmation cell and its on-field comparison both leaned toward rest-tagged veterans covering MORE, not less, than the market/model expects. See evidence and known_gap above for exactly what is and is not carried over from LEAD-11's construction.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The overlay is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.veteran_rest_back_overlay.record_veteran_rest_back_overlay_decisions -- there is no `prospective-record --challenger veteran_rest_back_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row)."
+    },
+    {
+      "challenger_id": "post_bye_new_playcaller_back_overlay",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "combined_tilt_disclosure": "The two registry entries below are the COMBINED back+fade production screen (docs/playcaller_change_leads.md's LEAD-28 production read): it backs a post-bye team with a year-1/2 offensive-coordinator AND, in the same tilt, fades a post-bye team with a year-3+ offensive coordinator on the opposite side. This challenger's OWN rule is back-only -- it never fades the veteran-OC side -- so these numbers are not a direct measurement of this challenger's own construct. Measured 2026-09-10 against the saved production-screen ledgers (artifacts/playcaller_change_leads/production_paired_lead28_{window,full}.parquet): of the picks the combined tilt changed, 16 of 23 (window) and 53 of 73 (full archive) were attributable to the back-only signal (the rest to the fade-only signal), with zero games carrying both signals at once -- the back component is the majority contributor to the combined read, but was never isolated and re-measured on its own. This challenger's own 2026+ prospective ledger is the only evidence that will speak to the back-only construct specifically, exactly as veteran_rest_back_overlay's own registration disclaims its arithmetic-mirror figure.",
+        "mechanism_note": "docs/playcaller_change_leads.md's 2026-09-10 section ('Rebuild, split-half reliability, and production screens') measured a clean-case back/fade tilt (family lead28_post_bye_new_playcaller_on_production) stacked on production weak_stack's opener pick: assigned rotation window [2020, 2021], +0.877 accuracy points, week-blocked 95% [-0.887, +2.643], probability_positive 0.8287, 22 of 456 graded picks changed (registry/weak_signals.json:playcaller_change_lead28_production_screen_window); full 2020-2025 descriptive archive +0.333 points, 95% [-0.728, +1.390], probability_positive 0.7337, 71 of 1,503 changed (registry/weak_signals.json:playcaller_change_lead28_production_screen_full_archive). Both cross zero and both are recorded unresolved_below_power -- per AGENTS.md that is not grounds to decline building a no-window-cost prospective challenger, and probability_positive above 0.5 favours playing the tilt on expected value. The 2020-2021 rotation window is already spent for this family (nfl-ats rotation record, verdict unresolved) and is never re-scored by this challenger; only 2026+ games feed this challenger's own ledger.",
+        "registry_source": [
+          "registry/weak_signals.json:playcaller_change_lead28_production_screen_window",
+          "registry/weak_signals.json:playcaller_change_lead28_production_screen_full_archive"
+        ],
+        "sample_games": 456,
+        "seasons_measured": [
+          2020,
+          2021
+        ],
+        "write_up": "docs/playcaller_change_leads.md"
+      },
+      "known_gap": "The offensive-coordinator tenure proxy is read from data/raw/coordinators/<snapshot>/coordinator_history.parquet's PRESEASON (September 1 cutoff) OC rows only -- never an in-season revision -- so a coordinator promoted or fired mid-season never changes that season's already-classified year-1/2/3+ tenure; the only way tenure can change for a team is at the FOLLOWING season's own September 1 cutoff. This makes the construct pregame-safe by design (every season's classification is fixed before that season's first REG kickoff) but also means it inherits the source's own coverage: measured 2026-09-10 (pandas.read_parquet against the newest snapshot, data/raw/coordinators/20260907T213814366437Z/), the table's seasons run 2009-2025 only -- there is no 2026 preseason OC row for any team yet, so every 2026 team-game currently resolves to an 'unknown' tenure and the back flag cannot fire for any 2026 game until a fresh coordinator snapshot with a 2026 preseason observation is captured, independently of whether that week has any byes. Bye eligibility itself is read live from the newest data/raw/<snapshot>/schedules.parquet via the shared nfl_ats.bye_edge_fade_overlay.bye_edge_flag_by_game function (the same >=12-day-gap definition the live bye_edge_fade_overlay challenger and the LEAD-28 screen both use), so that half of the flag is current every week regardless of the coordinator-data gap above.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.post_bye_new_playcaller_back_overlay.record_post_bye_new_playcaller_back_overlay_decisions can refuse to record when the active model's live fingerprint no longer matches. The post-bye/new-playcaller signal itself is read live from the newest local schedules snapshot and the newest coordinator_history snapshot (see known_gap) -- neither snapshot's identity is part of this fingerprint, which pins only the ACTIVE model's own configuration. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the overlay should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration. This challenger is graded EXCLUSIVELY on 2026+ games recorded from this registration date forward -- the 2020-2021 window LEAD-28's production screen already spent is never re-used as evidence for this challenger's own back-only rule.",
+      "reader_summary": "Tracks what would happen if the model backed a team playing its first game off a bye when that team's offensive playcaller is in his first or second season on the job, on top of our regular picks -- tried because that tilt scored a small positive edge on past seasons when combined with a matching veteran-playcaller fade.",
+      "registered_at_utc": "2026-09-10T23:30:00+00:00",
+      "registered_by": "LEAD-28 follow-up lane (2026-09-10): docs/playcaller_change_leads.md's rebuilt production screen measured a combined back/fade post-bye-playcaller tilt on production's opener pick at +0.877 accuracy points (assigned window, probability_positive 0.8287) and +0.333 (full 2020-2025 archive, probability_positive 0.7337), both unresolved_below_power. This challenger wires ONLY the back half of that tilt (flip onto a post-bye team with a year-1/2 offensive coordinator when production's pick is not already on that side; it never fades a post-bye veteran-OC team) as a fresh ACTIVE_PROSPECTIVE challenger, graded exclusively on 2026+ games -- see evidence.combined_tilt_disclosure for exactly how this challenger's own rule differs from the combined-tilt numbers that motivated building it.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like the other pick-level overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.post_bye_new_playcaller_back_overlay.apply_post_bye_new_playcaller_back_overlay wherever a parameter-free rule fires -- flip ONTO a team coming off its own bye (>=12-day gap to its prior REG game) whose offensive coordinator is in year 1 or 2 of tenure (per the September-1 preseason observation), whenever the opponent is NOT also uniquely flagged and production's own pick is not already on that side, REG season only. Mirrors docs/playcaller_change_leads.md's R2 back cell (lead29_playcaller_change_v1_post_bye_new_oc_back) and the LEAD-28 production screen's back component, without that screen's paired fade-side flip. See evidence and known_gap above for exactly what is and is not carried over from the screen's construction.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The overlay is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.post_bye_new_playcaller_back_overlay.record_post_bye_new_playcaller_back_overlay_decisions -- there is no `prospective-record --challenger post_bye_new_playcaller_back_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row)."
+    },
+    {
+      "challenger_id": "rookie_prior_surplus_tilt_overlay",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "activation_clean_disclosure": "docs/rookie_priors_on_production.md section 6.5 measured the tilt WITH a game-day activation peek (a rookie's snap-count row for week w reveals he was active that week, which a Tuesday deadline cannot know): assigned rotation window [2020, 2021] +2.412 accuracy points, week-blocked 95% [-2.450, +7.456], probability_positive 0.832, 118 of 456 graded picks changed; full 2020-2025 opener archive (secondary, not a separate window spend) +1.065 points, 95% [-1.378, +3.508], probability_positive 0.811, 325 of 1,503 changed. Section 6.6 removed the peek (last-known trailing share and snap total carried forward whether or not the rookie appeared that week) on the same full archive: picks changed 329, flagged 628, delta +0.466 accuracy points, week-blocked 95% [-2.076, +3.102], probability_positive 0.648, 91.4% pick agreement with the peeking arm. This overlay is built to compute ONLY the activation-clean quantity live -- see known_gap for why -- so its own 2026+ ledger should track near the clean +0.466/0.648 read, not the peeking window's +2.412/0.832.",
+        "classification": "unresolved_below_power",
+        "mechanism_note": "docs/rookie_priors_on_production.md's XLG-06 lane (2026-09-11) predeclared that the market prices a team starting rookies at high-leverage positions at a generic replacement level because no NFL evidence exists on them yet, while deadline-visible college production share and draft slot are not fully in the number; the frozen rule tilts toward the side whose decayed, snap-share-weighted rookie prior surplus (a ridge-fitted, position-arm-specific prior over generic replacement, standardised by training-residual RMSE) is larger. Registered classification is unresolved_below_power per AGENTS.md's closing-grounds taxonomy: every interval above crosses zero (no resolved wrong sign -- the single negative season, 2023 at -3.008, has an interval running to +1.509), and the outcome construct has measured non-zero split-half reliability (realised rookie value, odd vs even weeks of the same rookie season, Pearson r=0.2596, Spearman-Brown 0.4122, n=1,288), so no_split_half_reliability is also inadmissible. Per AGENTS.md's promotion-bar section, probability_positive above 0.5 (0.648 on the clean read) favours playing the tilt on expected value even though it is not resolved.",
+        "registry_source": [
+          "registry/weak_signals.json:xlg06_rookie_prior_surplus_tilt_on_production",
+          "registry/weak_signals.json:xlg06_rookie_prior_surplus_tilt_full_opener_archive",
+          "registry/weak_signals.json:xlg06_rookie_prior_surplus_tilt_activation_clean"
+        ],
+        "sample_games": 456,
+        "seasons_measured": [
+          2020,
+          2021
+        ],
+        "write_up": "docs/rookie_priors_on_production.md"
+      },
+      "known_gap": "The frozen construction (ridge-fitted prior per draft class on strictly earlier classes, RIDGE_ALPHA=1.0, decay weight(n)=N0/(n+N0) with N0=300, the 80th-percentile walk-forward firing threshold, and the last-known-share-carried-forward rule) is reused unchanged from scripts/xlg06_rookie_priors_screen.py (screen.fit_priors(screen.build_prior_inputs()), screen.N0_SNAPS, screen.FLAG_PERCENTILE, screen.carry_forward_presence, screen.week1_expected_share), including that script's local workaround for the offensive-line snap-count crosswalk gap measured in its section 6.1 (weekly_rosters.pfr_id is almost never populated for linemen; screen.load_snap_panel's _pfr_to_gsis links pfr_player_id to gsis_id from weekly_rosters first and backfills from players.parquet's own pfr_id/gsis_id columns, so OL rookies who have actually taken snaps this season are not silently dropped from the trailing-share arm). What this overlay does NOT reuse is screen.rookie_week_state/screen.team_week_surplus/screen.game_level_feature themselves: those read a cached, gitignored local artifact (artifacts/xlg06_rookie_priors/rookie_prior_table.parquet, written only by a manual `scripts/xlg06_rookie_priors_screen.py prior` run) that will not exist on a fresh clone, and they identify a season's rookies by inner-joining onto snap_counts.parquet, so a rookie who has not yet recorded a single snap this season -- which is EVERY rookie in his own team's Week 1, before that game is played -- never appears in that pipeline at all. Measured 2026-09-11: data/players/raw/20260905T123614Z/snap_counts.parquet carries zero season-2026 rows. This overlay therefore refits the prior fresh on every run (never touching the cached artifact) and adds a live-only branch: for a current-draft-class rookie absent from this season's snap panel, his team is read from players.parquet's latest_team field (refreshed with every new players snapshot, deadline-visible) instead of a snap-count row, and his Week 1 contribution uses the same frozen week1_expected_share walk-forward fallback the screen's own writeup specifies for exactly this case (\"a player with no completed game yet... gets the walk-forward mean week-1 share of rookies of the same draft round and position group in strictly earlier seasons\"); for week 2+ with still no snaps, contribution is 0.0, exactly as frozen. Confirmed live 2026-09-11 against the active 2026 Week 1 card (artifacts/margin_predictions/2026-week-01-20260910T210852Z, 16 games): 11 flagged (6 away-favoured, 5 home-favoured), the walk-forward threshold for season 2026 (computed from 2015-2025 history only, before any 2026 game) was 0.132863, 6 of the 16 flags changed production's own raw pick (2026_01_ATL_PIT -> PIT, 2026_01_CLE_JAX -> CLE, 2026_01_DAL_NYG -> NYG, 2026_01_MIA_LV -> LV, 2026_01_SF_LA -> LA, 2026_01_TB_CIN -> TB), the other 5 flagged games already agreed with production's raw pick, and zero games carried both flags. No pick on the served card was changed by this confirmation run.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.rookie_prior_surplus_tilt_overlay.record_rookie_prior_surplus_tilt_overlay_decisions can refuse to record when the active model's live fingerprint no longer matches. The rookie-prior signal itself is read live from the newest local draft-picks, CFB-usage, players and snap-count snapshots (see known_gap) -- none of those snapshots' identities are part of this fingerprint, which pins only the ACTIVE model's own configuration. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the overlay should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration. This challenger is graded EXCLUSIVELY on 2026+ games recorded from this registration date forward -- the 2020-2021 window docs/rookie_priors_on_production.md already spent is never re-used as evidence for this challenger's own live construction.",
+      "reader_summary": "Tracks what would happen if the model leaned toward whichever team's rookie starters looked better on their college production and draft slot than a typical rookie at that position, and away from the team whose rookies looked worse -- tried because that lean scored a small positive edge on past seasons once a data peek was cleaned out of the measurement.",
+      "registered_at_utc": "2026-09-11T06:00:00+00:00",
+      "registered_by": "XLG-06 follow-up lane (2026-09-11): docs/rookie_priors_on_production.md's rebuilt rookie prior measured the prior-surplus tilt stacked on production's opener pick at +2.412 accuracy points (assigned window, probability_positive 0.832, with a game-day activation peek disclosed) and, with that peek removed, +0.466 points on the full 2020-2025 archive (probability_positive 0.648), both unresolved_below_power. This challenger wires the activation-clean construction only, graded exclusively on 2026+ games -- see evidence.activation_clean_disclosure and known_gap for exactly how this challenger's live construction differs from the screen's own historical pipeline.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like the other pick-level overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.rookie_prior_surplus_tilt_overlay.apply_rookie_prior_surplus_tilt_overlay wherever the frozen rule fires -- tilt toward the side whose decayed, snap-share-weighted rookie prior surplus exceeds the walk-forward 80th-percentile threshold, flipping onto that side only when production's own pick is not already there, REG season only. Mirrors docs/rookie_priors_on_production.md section 5's frozen rule in the activation-clean (section 6.6) form. See evidence and known_gap above for exactly what is and is not carried over from the screen's construction.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The overlay is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.rookie_prior_surplus_tilt_overlay.record_rookie_prior_surplus_tilt_overlay_decisions -- there is no `prospective-record --challenger rookie_prior_surplus_tilt_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row)."
+    },
+    {
+      "challenger_id": "forecast_weather_kn_wind_pass_heavy_fade",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "on_production": {
+          "active_model_id": "d49194e04945a5e5",
+          "baseline_accuracy": 0.5329,
+          "candidate_accuracy": 0.5373,
+          "effect_accuracy_points": 0.439,
+          "grade": "opener",
+          "interval_points_week_blocked": [
+            -1.101,
+            2.155
+          ],
+          "n_fade_away_in_window": 19,
+          "n_fade_home_in_window": 15,
+          "picks_changed": 16,
+          "probability_positive": 0.698,
+          "window_seasons": [
+            2020,
+            2021
+          ]
+        },
+        "registry_source": [
+          "registry/rotation_registry.json:weather_interactions_wind_pass_heavy_on_production"
+        ],
+        "screen_source": "docs/weather_interactions.md cell 1 (weather_interactions_wind_pass_heavy_fade), team-long framed: pool_decision cutoff +5.096 accuracy points vs the full population, week-blocked 95% [-1.730, +11.954], probability_positive 0.9276, n_flag=160/558; kickoff_nearest cutoff +3.968 pts, probability_positive 0.8744, n_flag=154/540. Narrow control (same wind/outdoor condition, trait quartile != 4): +6.434 pts [-2.343, +15.003].",
+        "trait_reliability": "Prior-season pass-attempt-rate year-over-year Pearson r=0.3929, 512 team-season pairs (docs/weather_interactions.md). Not zero -- no_split_half_reliability does not apply.",
+        "write_up": "docs/weather_interactions.md"
+      },
+      "known_gap": "bet_side is always recorded as PASS and edge is always NaN, mirroring every sibling overlay challenger's identical rationale: this tracks the tilt's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the tilt to the published card -- that remains a separate owner decision, not made by this registration. FAIL-OPEN, unconditionally: any live forecast fetch failure (missing/unmapped stadium, network timeout, malformed API response) is caught, logged as a warning, and folds into zero flags for the week rather than blocking recording or the publish -- see nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay.fetch_kickoff_nearest_forecasts_fail_open, reused directly by this module. The prior-season pass-attempt-rate trait is built from the newest raw PBP snapshot at record time (nfl_ats.forecast_weather_kn_wind_pass_heavy_fade_overlay.team_pass_rate_quartile_fail_open); if that build fails (missing snapshot, schema drift) the challenger fails open to zero flags for the week rather than erroring the publish, logged as a warning. The live forecast this challenger reads (kickoff-nearest, model=GFS) is SHARED with forecast_weather_kn_warm_team_cold_late_tilt and forecast_weather_kn_precip_high_total_tilt via fetch_shared_kickoff_nearest_forecasts_fail_open -- this is a new field (forecast_wind_mph, parsed from the same MOS bulletin response's wsp field) extracted from that already-live fetch, not a new network call.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.forecast_weather_kn_wind_pass_heavy_fade_overlay.record_forecast_weather_kn_wind_pass_heavy_fade_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches (a promotion under this challenger's feet must not silently convert into 'prospective evidence' for the tilt). The forecast signal itself is fetched LIVE, weekly, from the Iowa Environmental Mesonet's public MOS JSON API (kickoff-nearest cutoff, model=GFS -- the SAME live fetch forecast_weather_kn_warm_team_cold_late_tilt and forecast_weather_kn_precip_high_total_tilt already make, shared via fetch_shared_kickoff_nearest_forecasts_fail_open, now also carrying a forecast_wind_mph field parsed from that identical response) -- that live fetch's success/failure is not part of this fingerprint, which pins only the ACTIVE model's own configuration. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the tilt should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration -- the [2020, 2021] window cited under evidence.on_production was already spent and recorded by docs/weather_interactions.md's own production screen, not by this registration.",
+      "reader_summary": "Tracks what would happen if, on a windy outdoor forecast (15mph+), we picked against whichever team throws the ball the most -- tried because that tilt scored a small positive edge on past seasons.",
+      "registered_at_utc": "2026-09-11T03:35:00+00:00",
+      "registered_by": "ENV-05 follow-up lane (2026-09-10/11): docs/weather_interactions.md measured this cell's on-production read (opener grade, window [2020, 2021], 16 of 456 picks changed) at +0.439 accuracy points, probability_positive 0.698 -- expected value favours playing it, per AGENTS.md's 'a promotion bar is not a decision bar,' but nothing is resolved (both the screen-level and production-level intervals cross zero). This registration wires it as a no-window-cost, dual-tracked prospective challenger sharing the existing live kickoff-nearest GFS-MOS fetch (adding a forecast_wind_mph field parsed from that identical response, not a new network call), mirroring how forecast_weather_kn_warm_team_cold_late_tilt and forecast_weather_kn_precip_high_total_tilt were wired 2026-08-20. NOT an owner decision to play this on the real card -- nothing in nfl_ats.forecast_weather_kn_wind_pass_heavy_fade_overlay is wired into publishing.py's production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like the other overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.forecast_weather_kn_wind_pass_heavy_fade_overlay.apply_wind_pass_heavy_fade_tilt_overlay wherever a PARAMETER-FREE rule fires -- fade (flip away from) whichever team the model's pick is already on, home or away, whenever that team is playing outdoors with a LIVE kickoff-nearest GFS-MOS forecast wind of 15mph or more AND that team's own prior-season pass-attempt rate (raw PBP, posteam pass_attempt/(pass_attempt+rush_attempt)) sits in the most pass-heavy global quartile, REG season only. This is the general, team-long form of the mechanism docs/weather_interactions.md cell 1 measured and recorded to registry/weak_signals.json (forecast-timed, not the restricted away-favorite-only form ENV-01's forecast_weather_kn_wind_passing_away_favorite cell tried and did not wire). registry/rotation_registry.json:weather_interactions_wind_pass_heavy_on_production (week-blocked, opener grade, window [2020, 2021], active model d49194e04945a5e5): 16 of 456 picks changed, candidate 53.73% vs baseline 53.29%, +0.439 accuracy points, 95% [-1.101, +2.155], probability_positive 0.698 -- interval crosses zero, per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to decline; unresolved_below_power, does not spend a further rotation-registry window (the cited window was already spent by the production screen this registration reuses evidence from).",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.forecast_weather_kn_wind_pass_heavy_fade_overlay.record_forecast_weather_kn_wind_pass_heavy_fade_challenger_decisions -- there is no `prospective-record --challenger forecast_weather_kn_wind_pass_heavy_fade` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row)."
+    },
+    {
+      "challenger_id": "forecast_weather_kn_heat_pace_fade",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "on_production": {
+          "active_model_id": "d49194e04945a5e5",
+          "baseline_accuracy": 0.5329,
+          "candidate_accuracy": 0.5395,
+          "effect_accuracy_points": 0.658,
+          "grade": "opener",
+          "interval_points_week_blocked": [
+            -0.229,
+            1.895
+          ],
+          "n_fade_away_in_window": 5,
+          "n_fade_home_in_window": 7,
+          "picks_changed": 5,
+          "probability_positive": 0.883,
+          "window_seasons": [
+            2020,
+            2021
+          ]
+        },
+        "registry_source": [
+          "registry/rotation_registry.json:weather_interactions_heat_pace_on_production"
+        ],
+        "screen_source": "docs/weather_interactions.md cell 3 (weather_interactions_heat_pace_fade), team-long framed, predeclared FADE direction: pool_decision cutoff -4.723 accuracy points vs the full population, week-blocked 95% [-14.506, +4.581], probability_positive 0.1574, n_flag=64/212 -- the screen-level population leans AGAINST the predicted fade, and the odd/even split is sharply inconsistent (P+ 0.051 vs 0.589-0.688). The on-production read diverges from the screen and leans FOR the fade, reported as measured rather than reconciled -- see evidence.screen_vs_production_divergence.",
+        "screen_vs_production_divergence": "The full 17-season (2009-2025) screen population leans against the predeclared heat-fades-pace direction while the narrow 2020-2021, model-stacked production window leans FOR it (probability_positive 0.883). Both readings are reported; neither is discarded. This is disclosed heterogeneity, not a resolved finding either way.",
+        "trait_reliability": "Prior-season pace (seconds/play) year-over-year Pearson r=0.5233, 512 team-season pairs (docs/weather_interactions.md). Not zero -- no_split_half_reliability does not apply.",
+        "write_up": "docs/weather_interactions.md"
+      },
+      "known_gap": "bet_side is always recorded as PASS and edge is always NaN, mirroring every sibling overlay challenger's identical rationale: this tracks the tilt's forced-pick accuracy only, not an invented paper-bet edge. If the active model is promoted to a different configuration mid-season, recording refuses on a fingerprint mismatch (see model_note) rather than silently switching base models under this id. Nothing in this repository applies the tilt to the published card -- that remains a separate owner decision, not made by this registration. FAIL-OPEN, unconditionally: any live forecast fetch failure (missing/unmapped stadium, network timeout, malformed API response) is caught, logged as a warning, and folds into zero flags for the week rather than blocking recording or the publish -- see nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay.fetch_kickoff_nearest_forecasts_fail_open, reused directly by this module. The prior-season pace trait is read from the cached data/pbp/team_style/team_season_style.parquet at record time (nfl_ats.forecast_weather_kn_heat_pace_fade_overlay.team_pace_quartile_fail_open, the same cache pace_mismatch_dog_tilt_overlay already reads in production); if that read fails (missing file, schema drift) the challenger fails open to zero flags for the week rather than erroring the publish, logged as a warning. This challenger reuses forecast_temp_f from the SAME live kickoff-nearest, model=GFS fetch forecast_weather_kn_warm_team_cold_late_tilt already makes -- no new network call.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.forecast_weather_kn_heat_pace_fade_overlay.record_forecast_weather_kn_heat_pace_fade_challenger_decisions can refuse to record when the active model's live fingerprint no longer matches (a promotion under this challenger's feet must not silently convert into 'prospective evidence' for the tilt). The forecast signal itself is fetched LIVE, weekly, from the Iowa Environmental Mesonet's public MOS JSON API (kickoff-nearest cutoff, model=GFS -- the SAME live fetch forecast_weather_kn_warm_team_cold_late_tilt and forecast_weather_kn_precip_high_total_tilt already make, shared via fetch_shared_kickoff_nearest_forecasts_fail_open) -- that live fetch's success/failure is not part of this fingerprint, which pins only the ACTIVE model's own configuration. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the tilt should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration -- the [2020, 2021] window cited under evidence.on_production was already spent and recorded by docs/weather_interactions.md's own production screen, not by this registration.",
+      "reader_summary": "Tracks what would happen if, on a hot outdoor forecast (85F+), we picked against whichever team plays at the fastest tempo -- tried because that tilt scored a small positive edge on past seasons even though the wider historical read leans the other way.",
+      "registered_at_utc": "2026-09-11T03:35:00+00:00",
+      "registered_by": "ENV-05 follow-up lane (2026-09-10/11): docs/weather_interactions.md measured this cell's on-production read (opener grade, window [2020, 2021], 12 flagged games, 5 picks changed) at +0.658 accuracy points, probability_positive 0.883 -- expected value favours playing it, per AGENTS.md's 'a promotion bar is not a decision bar,' even though the broader 17-season screen population leans the other way (disclosed under evidence.screen_vs_production_divergence, not reconciled). This registration wires it as a no-window-cost, dual-tracked prospective challenger sharing the existing live kickoff-nearest GFS-MOS fetch (forecast_temp_f, already captured for forecast_weather_kn_warm_team_cold_late_tilt -- no new network call), mirroring how forecast_weather_kn_warm_team_cold_late_tilt and forecast_weather_kn_precip_high_total_tilt were wired 2026-08-20. NOT an owner decision to play this on the real card -- nothing in nfl_ats.forecast_weather_kn_heat_pace_fade_overlay is wired into publishing.py's production pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like the other overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.forecast_weather_kn_heat_pace_fade_overlay.apply_heat_pace_fade_tilt_overlay wherever a PARAMETER-FREE rule fires -- fade (flip away from) whichever team the model's pick is already on, home or away, whenever that team is playing outdoors with a LIVE kickoff-nearest GFS-MOS forecast temperature of 85F or more AND that team's own prior-season pace (data/pbp/team_style/team_season_style.parquet, seconds_per_play_pace) sits in the fastest global quartile, REG season only. This is the general, team-long, forecast-timed form of the mechanism docs/weather_interactions.md cell 3 measured (a heat x pace interaction never tried before this session per ENV-05's own row). registry/rotation_registry.json:weather_interactions_heat_pace_on_production (week-blocked, opener grade, window [2020, 2021], active model d49194e04945a5e5): 5 picks changed (7 fade-home + 5 fade-away flagged games), candidate 53.95% vs baseline 53.29%, +0.658 accuracy points, 95% [-0.229, +1.895], probability_positive 0.883 -- interval crosses zero, per AGENTS.md that is the EXPECTED shape for a real small signal, not grounds to decline; unresolved_below_power, does not spend a further rotation-registry window (the cited window was already spent by the production screen this registration reuses evidence from). The screen-level population (all 17 seasons) leans the OPPOSITE direction from this on-production read -- disclosed, not reconciled; see evidence.screen_vs_production_divergence.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.forecast_weather_kn_heat_pace_fade_overlay.record_forecast_weather_kn_heat_pace_fade_challenger_decisions -- there is no `prospective-record --challenger forecast_weather_kn_heat_pace_fade` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row)."
+    },
+    {
+      "challenger_id": "tv_attention_fade_overlay",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "mechanism_note": "docs/tv_attention_screen.md (MKT-14, 2026-09-11) predeclared that public betting money follows the teams people watch, so backing a team the public has watched heavily on national TV should cover LESS than backing a low-attention team (a 'public tax' on popular teams). Measured: stacking a fade of production's own opener pick whenever the picked team's own trailing national-broadcast audience (mean of its last 3 usable nationally-timestamped audiences, z-scored within time-slot bucket, pooled top decile/tercile edges fit on the same 2020-2021 window) sits in the top pooled tercile scored +1.9737 accuracy points on the [2020, 2021] opener window (456 games, 141 picks changed, week-blocked 95% [-4.3862, +8.6396], probability_positive 0.7171); per season 2020 +4.55 (probability_positive 0.813), 2021 -0.42 (probability_positive 0.459). The underlying team-popularity trait itself has split-half reliability Pearson r=0.6481 (odd/even season halves, n=31 teams, Spearman-Brown full-length 0.786), ruling out no_split_half_reliability as a closing ground; the interval crosses zero, ruling out wrong_sign_resolved. Registered classification: unresolved_below_power, matching registry/weak_signals.json and registry/rotation_registry.json (family tv_attention_fade_on_production).",
+        "registry_source": "registry/weak_signals.json:tv_attention_fade_on_production, registry/rotation_registry.json:tv_attention_fade_on_production",
+        "sample_games": 456,
+        "seasons_measured": [
+          2020,
+          2021
+        ],
+        "write_up": "docs/tv_attention_screen.md"
+      },
+      "known_gap": "The point-in-time-safe Sports Media Watch archive this challenger reads (data/raw/sports_media_watch_publications/20260902T235500Z, the newest COMPLETE snapshot) has usable rows only through the 2021 season. Measured 2026-09-11 while establishing this overlay's live path: Sports Media Watch has discontinued the season-by-season NFL TV-ratings table page this source's ingester (scripts/ingest_sports_media_watch.py) scrapes -- the site's own WordPress `pages` API lists 2014-season through 2022-season NFL ratings pages but no 2023/2024/2025/2026-season page (the dedicated URL 404s for each), and the one surviving base URL (nfl-tv-ratings-viewership/) is a frozen, unmaintained 2023-vintage page (article:modified_time 2025-08-28T03:33:08Z, zero rows matching the ingester's own weekday-date row pattern). A WordPress-posts search for a dedicated NFL weekly-ratings recap article published since 2026-08-01 returns none for the 2026 season yet (the equivalent college-football Week 1 recap already posted the same day this was checked), so there is currently no live NFL viewership content to ingest in either the old table format or a narrative-post format. Design consequence, disclosed and deliberate: this overlay computes each team's OWN current trailing-attention value only from observations at or after season 2022 (LIVE_ERA_START_SEASON in src/nfl_ats/tv_attention_fade_overlay.py) -- it never carries a 2014-2021 z-score forward as if it still described today's media market. With zero such rows on file, every team's live trailing value is undefined and the overlay never flips; confirmed live 2026-09-11 against the active Week 1 2026 card (0 of 16 games flipped, production's picks recorded 1:1). The day a usable 2022+ row is backfilled by a future ingest run, this same code starts scoring on it without further changes. The top-tercile THRESHOLD itself is still fit on the full 2014-2021 pooled historical distribution (all seasons strictly before the one being scored), a broader population than the screen's own 2020-2021-only decile fit -- a disclosed difference from the original screen, necessary because a live challenger has no fixed graded population to draw edges from. Both source scripts (scripts/ingest_sports_media_watch.py, scripts/backfill_sports_media_watch_timestamps.py) had been deleted from the repository by the 2026-09-10 hygiene cut (commit b7ed31d) as apparently one-off research scripts; both were restored from git history (commit 9f84d09, the last version before deletion) for this lane so the live path exists at all, and ingest_sports_media_watch.py gained one additive fix so a missing season page (HTTP 404) is recorded as pages_unavailable_404 and the run completes instead of crashing, making it safe to schedule weekly.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "This block is a SNAPSHOT of the active model's own configuration at registration time, identical to the other overlay challengers' -- it exists so nfl_ats.tv_attention_fade_overlay.record_tv_attention_fade_overlay_decisions can refuse to record when the active model's live fingerprint no longer matches. The trailing-attention signal itself is read live from the newest COMPLETE data/raw/sports_media_watch_publications/<snapshot>/ratings_rows.parquet -- neither that snapshot's identity nor its row count is part of this fingerprint, which pins only the ACTIVE model's own configuration. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the overlay should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration -- the [2020, 2021] window MKT-14 already spent (docs/tv_attention_screen.md) is never re-used as evidence for this challenger; this challenger is graded EXCLUSIVELY on 2026+ games recorded from this registration date forward, and (see known_gap) will record 0 flips against production until a usable post-2021 Sports Media Watch row exists.",
+      "reader_summary": "Tracks what would happen if the model faded, instead of backed, a team that has been unusually popular on national television lately -- tried because heavy public betting on a well-known team can push the point spread further than the game itself deserves. Currently inactive in practice: the outside source this needs stopped publishing the weekly viewership numbers it reads, so the overlay has nothing recent to flag and matches the regular picks exactly until that changes.",
+      "registered_at_utc": "2026-09-11T04:20:00+00:00",
+      "registered_by": "MKT-14 follow-up lane (2026-09-11): docs/tv_attention_screen.md measured a production-stacked fade of the model's own opener pick whenever the picked team's trailing national-broadcast audience sits in the pooled top tercile at +1.9737 accuracy points on the [2020, 2021] window (probability_positive 0.7171), unresolved_below_power. This lane wires that rule as a fresh ACTIVE_PROSPECTIVE challenger, graded exclusively on 2026+ games, and separately attempted to establish a live 2026 Sports Media Watch ingestion path -- see known_gap for the measured finding that the source has discontinued the format the ingester reads, so this challenger currently records 0 flips (production's picks 1:1) until that changes.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model, like the other pick-level overlay challengers: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.tv_attention_fade_overlay.apply_tv_attention_fade_overlay wherever a parameter-free rule fires -- fade OFF the model's picked team whenever that team's own trailing national-broadcast attention (last 3 qualifying point-in-time-usable appearances at season >= 2022, z-scored within time-slot bucket) sits at or above the top-tercile threshold fit on the full pooled historical (pre-target-season) distribution, REG season only. A team with fewer than 3 qualifying live-era appearances (every team, currently, per known_gap) is never eligible and the pick is left unchanged. See evidence and known_gap above for exactly what is and is not carried over from the MKT-14 screen's construction.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The overlay is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (records the active model's own paper ledger AND this challenger's ledger in the same call, via nfl_ats.tv_attention_fade_overlay.record_tv_attention_fade_overlay_decisions -- there is no `prospective-record --challenger tv_attention_fade_overlay` path; the generic prospective-record command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger would resolve to the ACTIVE model's own artifact and record its un-tilted picks, exactly the wrong ledger row). Live ingestion (once the source resumes): .\\.tools\\uv.exe run --no-sync python scripts\\ingest_sports_media_watch.py --output data\\raw\\sports_media_watch\\<snapshot> --seasons 2026, then .\\.tools\\uv.exe run --no-sync python scripts\\backfill_sports_media_watch_timestamps.py --source data\\raw\\sports_media_watch\\<snapshot> --output data\\raw\\sports_media_watch_publications\\<snapshot> --schedules data\\raw\\<snapshot>\\schedules.parquet -- only run the second command when the first reports structured_rows > 0."
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",

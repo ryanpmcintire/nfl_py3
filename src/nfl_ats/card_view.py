@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -198,6 +198,31 @@ def compute_v2_nomination(
 
 _UNSET: Any = object()
 
+SUNDAY_RENOMINATION_NOTE = (
+    "re-nominated on Sunday morning: of the games that had not kicked off yet, this is the "
+    "one the model was most sure about at the spread the pool locked on Tuesday."
+)
+
+
+def apply_sunday_renomination(
+    base: BestPickNomination, predictions: pd.DataFrame, renominated_game_id: str | None
+) -> BestPickNomination:
+
+    if not renominated_game_id or base.active_game_id is None:
+        return base
+    if renominated_game_id == base.active_game_id:
+        return base
+    if "game_id" not in predictions.columns:
+        return base
+    if renominated_game_id not in set(predictions["game_id"].astype(str)):
+        return base
+    return replace(
+        base,
+        active_game_id=renominated_game_id,
+        active_tie_note="",
+        method_note=SUNDAY_RENOMINATION_NOTE,
+    )
+
 
 def resolve_nomination(
     predictions: pd.DataFrame,
@@ -207,6 +232,7 @@ def resolve_nomination(
     *,
     v2_result: NominationV2Result | None = _UNSET,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
+    renominated_game_id: str | None = None,
 ) -> BestPickNomination:
 
     v1_id, v1_tie = _v1_nomination(predictions, sweep)
@@ -217,7 +243,7 @@ def resolve_nomination(
     )
 
     if NOMINATION_V2_ENABLED and resolved_v2 is not None:
-        return BestPickNomination(
+        base = BestPickNomination(
             v1_game_id=v1_id,
             v1_tie_note=v1_tie,
             v2_result=resolved_v2,
@@ -226,15 +252,17 @@ def resolve_nomination(
             active_tie_note=nomination_v2_tie_note(resolved_v2),
             method_note=nomination_v2_disclosure_note(resolved_v2),
         )
-    return BestPickNomination(
-        v1_game_id=v1_id,
-        v1_tie_note=v1_tie,
-        v2_result=resolved_v2,
-        active_rule="v1",
-        active_game_id=v1_id,
-        active_tie_note=v1_tie,
-        method_note="",
-    )
+    else:
+        base = BestPickNomination(
+            v1_game_id=v1_id,
+            v1_tie_note=v1_tie,
+            v2_result=resolved_v2,
+            active_rule="v1",
+            active_game_id=v1_id,
+            active_tie_note=v1_tie,
+            method_note="",
+        )
+    return apply_sunday_renomination(base, predictions, renominated_game_id)
 
 
 @dataclass(frozen=True)
@@ -259,10 +287,16 @@ def resolve_card_view(
     now: datetime | None = None,
     require_fresh_arrest_overlay: bool = True,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
+    renominated_game_id: str | None = None,
 ) -> CardView:
 
     nomination = resolve_nomination(
-        predictions, sweep, metadata, data_root, nominate_v2_fn=nominate_v2_fn
+        predictions,
+        sweep,
+        metadata,
+        data_root,
+        nominate_v2_fn=nominate_v2_fn,
+        renominated_game_id=renominated_game_id,
     )
     overlay = resolve_overlay(predictions, data_root)
     arrest_overlay = resolve_player_arrests_overlay(
@@ -316,6 +350,7 @@ __all__ = [
     "BestPickNomination",
     "CardView",
     "V2NominationInputs",
+    "apply_sunday_renomination",
     "compute_v2_nomination",
     "resolve_card_view",
     "resolve_nomination",

@@ -65,6 +65,13 @@ DEDICATED_LEDGERS: dict[str, dict[str, Any]] = {
         "recording_path": "publish/dedicated",
         "wired": True,
     },
+    "tiebreaker_lattice_centre": {
+        "ledger": "prospective/lattice_centre_decisions.parquet",
+        "loader": _parquet_ledger("prospective/lattice_centre_decisions.parquet"),
+        "written_by": "publish-predictions --record-decisions",
+        "recording_path": "publish/dedicated",
+        "wired": True,
+    },
     "totals_served_method": {
         "ledger": "prospective/totals_served_method_decisions.parquet",
         "loader": load_totals_served,

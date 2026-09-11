@@ -25,6 +25,7 @@ from nfl_ats.board_content import (
     TiebreakerView,
 )
 from nfl_ats.board_site_content import (
+    SEASON_SO_FAR_TITLE,
     ChallengerAssessment,
     FamilyWeightRow,
     FindingItemView,
@@ -37,7 +38,9 @@ from nfl_ats.board_site_content import (
     ModelPageContent,
     RecentActivityCategoryView,
     RecentActivityView,
+    SeasonChallengerRecord,
     SeasonGradeRow,
+    SeasonSoFar,
     SignalNotableRow,
     VerdictGroupView,
     WatchingLeadView,
@@ -1135,10 +1138,11 @@ def _findings_teaser_section(content: BoardContent) -> str:
     )
 
 
-def _week_change_side_html(team: str, best: bool) -> str:
+def _week_change_side_html(team: str, best: bool, *, ahead: bool = False) -> str:
 
     star = '<span class="star">&#9733;</span>' if best else ""
-    return f"{star}{escape(team)}"
+    flag = '<span class="flip-pill">not in the picks table yet</span>' if ahead else ""
+    return f"{star}{escape(team)}{flag}"
 
 
 def _week_changes_section(content: BoardContent) -> str:
@@ -1159,15 +1163,18 @@ def _week_changes_section(content: BoardContent) -> str:
         f'<td class="pick" data-label="Was">'
         f"{_week_change_side_html(row.was_team, row.was_best)}</td>"
         f'<td class="pick" data-label="Now">'
-        f"{_week_change_side_html(row.now_team, row.now_best)}</td>"
+        f"{_week_change_side_html(row.now_team, row.now_best, ahead=row.ahead_of_board)}</td>"
         f'<td data-label="Why"><span class="game-sub">{escape(row.reason)}</span></td>'
         "</tr>"
         for row in panel.rows
     )
+    catch_up = (
+        f'<p class="policy-note">{escape(panel.catch_up_note)}</p>' if panel.catch_up_note else ""
+    )
     return (
         head + '<div class="board-scroll"><table class="board"><thead><tr>'
         "<th>When</th><th>Game</th><th>Was</th><th>Now</th><th>Why</th>"
-        f"</tr></thead><tbody>{body}</tbody></table></div>"
+        f"</tr></thead><tbody>{body}</tbody></table></div>{catch_up}"
         f'<p class="micro">{escape(panel.method_note)}</p></section>'
     )
 
@@ -1409,10 +1416,16 @@ def _model_ledger_row_html(row: ModelLedgerRowView) -> str:
     )
     badge_class = "pill preview" if row.is_promoted else "pill"
     row_class = "game is-best" if row.is_promoted else "game"
+    season_record = (
+        f'<div class="game-sub">{escape(row.season_record_text)}</div>'
+        if row.season_record_text
+        else ""
+    )
     return (
         f'<tr class="{row_class}">'
         f'<td data-label="Arm"><b class="mono-id">{escape(row.display_name)}</b><br>'
-        f'<span class="{badge_class}">{escape(row.status_badge)}</span></td>'
+        f'<span class="{badge_class}">{escape(row.status_badge)}</span>'
+        f"{season_record}</td>"
         f'<td data-label="Grade">{escape(row.grade)}</td>'
         f'<td data-label="Games">{games}</td>'
         f'<td data-label="Accuracy" class="prob">{accuracy}</td>'
@@ -1630,10 +1643,13 @@ def render_model_page(content: ModelPageContent) -> str:
 
     from nfl_ats.model_weak_spots import (
         BUCKET_NOTE,
+        DISPLAYED_CONFIDENCE_NOTE,
         HOME_CORRECTION_LEAD,
         HOME_CORRECTION_NOTE,
         HOME_CORRECTION_UNAVAILABLE,
         HOME_SPLIT_NOTE,
+        SEASON_TIMING_LEAD,
+        SEASON_TIMING_UNAVAILABLE,
         UNAVAILABLE,
     )
 
@@ -1668,6 +1684,7 @@ def render_model_page(content: ModelPageContent) -> str:
             )
             + "</tbody></table></div>"
             + f'<p class="policy-note">{escape(BUCKET_NOTE)}</p>'
+            + f'<p class="policy-note">{escape(DISPLAYED_CONFIDENCE_NOTE)}</p>'
             + "".join(
                 f'<p class="policy-note">{escape(row.reliability)}</p>'
                 for row in content.weak_spots.rows
@@ -1744,6 +1761,40 @@ def render_model_page(content: ModelPageContent) -> str:
         )
     else:
         weak_spots_html += f'<p class="policy-note">{escape(HOME_CORRECTION_UNAVAILABLE)}</p>'
+    season_timing = content.weak_spots.season_timing
+    weak_spots_html += (
+        '<div class="section-head ledger-group-head">'
+        '<h3 id="weak-spots-season-h">Early season vs. late season</h3>'
+        f'<span class="sub">{len(season_timing.rows)} rows</span></div>'
+    )
+    if season_timing.available:
+        season_headers = (
+            "Time of season",
+            "Games",
+            "Model right",
+            "Resampled range",
+            "Stated confidence",
+        )
+        weak_spots_html += (
+            f'<p class="policy-note">{escape(SEASON_TIMING_LEAD)}</p>'
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            + "".join(f"<th>{escape(header)}</th>" for header in season_headers)
+            + "</tr></thead><tbody>"
+            + "".join(
+                '<tr class="game">'
+                + "".join(
+                    f'<td data-label="{escape(header)}">{escape(cell)}</td>'
+                    for header, cell in zip(season_headers, row.cells, strict=True)
+                )
+                + "</tr>"
+                for row in season_timing.rows
+            )
+            + "</tbody></table></div>"
+            + f'<p class="policy-note">{escape(season_timing.summary)}</p>'
+            + f'<p class="policy-note">{escape(season_timing.plain)}</p>'
+        )
+    else:
+        weak_spots_html += f'<p class="policy-note">{escape(SEASON_TIMING_UNAVAILABLE)}</p>'
     weak_spots_html += "</section>"
 
     season_chart_html = _season_dot_chart_svg(content)
@@ -1813,7 +1864,6 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
     best = '<span class="best-flag">Best pick</span>' if row.best_pick else ""
     confidence = f"{row.confidence:.1%}" if row.confidence is not None else "--"
     line = row.pick_line_text
-    model_id = f"<code>{escape(row.model_id[:8])}</code>" if row.model_id else "--"
     row_class = "game is-best" if row.best_pick else "game"
     return (
         f'<tr class="{row_class}">'
@@ -1823,7 +1873,6 @@ def _history_pick_row_html(row: HistoryPickRow) -> str:
         f'<td data-label="Pick"><b>{escape(row.pick_team)}</b> {escape(line)} {best}</td>'
         f'<td data-label="Confidence" class="prob">{confidence}</td>'
         f'<td data-label="Outcome">{_history_status_html(row)}</td>'
-        f'<td data-label="Model id"><span class="mono-id">{model_id}</span></td>'
         "</tr>"
     )
 
@@ -1900,6 +1949,66 @@ def _history_grading_section_html(content: HistoryPageContent) -> str:
     return "".join(parts)
 
 
+def _season_so_far_challenger_row_html(row: SeasonChallengerRecord) -> str:
+    return (
+        '<tr class="game">'
+        f'<td data-label="Rule"><b>{escape(row.display_name)}</b></td>'
+        f'<td data-label="This season">{escape(row.record_text)}</td>'
+        f'<td data-label="Against the card">'
+        f'<span class="game-sub">{escape(row.versus_card_text)}</span></td>'
+        "</tr>"
+    )
+
+
+def _season_so_far_section_html(block: SeasonSoFar | None) -> str:
+
+    if block is None:
+        return ""
+    season_label = str(block.season) if block.season is not None else "this season"
+    head = (
+        '<section aria-labelledby="season-so-far-h"><div class="section-head">'
+        f'<h2 id="season-so-far-h">{escape(SEASON_SO_FAR_TITLE)}</h2>'
+        f'<span class="sub">{escape(season_label)}, counting only games that have '
+        "finished</span></div>"
+    )
+    if not block.has_rows:
+        return (
+            f"{head}"
+            f'<div class="chart-empty">{escape(block.nothing_settled_text or "")}</div>'
+            "</section>"
+        )
+    games = "game" if block.settled_games == 1 else "games"
+    card_foot = f"{block.settled_games} {games} finished"
+    if block.accuracy_text:
+        card_foot = f"{block.accuracy_text} &middot; {card_foot}"
+    parts = [
+        head,
+        '<div class="kpi-grid">'
+        '<div class="kpi"><span class="label">The card&rsquo;s picks</span>'
+        f'<span class="value">{escape(block.card_record_text)}</span>'
+        f'<span class="foot">{card_foot}</span></div>'
+        '<div class="kpi"><span class="label">Strongest pick of the week</span>'
+        f'<span class="value">{escape(block.best_pick_record_text)}</span>'
+        f'<span class="foot">{escape(block.best_pick_text)}</span></div>'
+        "</div>",
+        f'<p class="policy-note">{escape(block.caveat_text)}</p>',
+        f'<p class="policy-note">{escape(block.tiebreaker_text)}</p>',
+    ]
+    if block.challengers:
+        body = "".join(_season_so_far_challenger_row_html(row) for row in block.challengers)
+        parts.append(
+            '<div class="section-head ledger-group-head">'
+            "<h3>Rules that came out differently from the card</h3>"
+            f'<span class="sub">{len(block.challengers)} of them</span></div>'
+            '<div class="board-scroll"><table class="board"><thead><tr>'
+            "<th>Rule being tried out</th><th>This season</th><th>Against the card</th>"
+            f"</tr></thead><tbody>{body}</tbody></table></div>"
+        )
+    parts.append(f'<p class="policy-note">{escape(block.challenger_summary_text)}</p>')
+    parts.append("</section>")
+    return "".join(parts)
+
+
 def _history_assessment_html(row: ChallengerAssessment) -> str:
     record = f"{row.wins}-{row.losses}-{row.pushes}"
     accuracy = f"{row.accuracy:.1%}" if row.accuracy is not None else "--"
@@ -1936,7 +2045,7 @@ def render_history_page(content: HistoryPageContent) -> str:
         picks_section = (
             '<div class="board-scroll"><table class="board"><thead><tr>'
             "<th>Season / week</th><th>Matchup</th><th>Pick at frozen line</th>"
-            "<th>Chosen-side confidence</th><th>Outcome</th><th>Model id</th>"
+            "<th>Chosen-side confidence</th><th>Outcome</th>"
             f"</tr></thead><tbody>{picks_body}</tbody></table></div>"
         )
     elif content.primary_error:
@@ -1976,6 +2085,7 @@ def render_history_page(content: HistoryPageContent) -> str:
             "The primary ledger at its frozen decision/opener line, plus running "
             "prospective challenger assessments.",
         )
+        + _season_so_far_section_html(content.season_so_far)
         + '<section aria-labelledby="history-picks-h"><div class="section-head">'
         '<h2 id="history-picks-h">Model picks</h2>'
         f'<span class="sub">{len(content.picks)} recorded rows</span></div>'

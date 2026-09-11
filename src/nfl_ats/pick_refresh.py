@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 from zoneinfo import ZoneInfo
 
 import numpy as np
@@ -60,6 +60,9 @@ from nfl_ats.sharp_book_movement_features import (
     THRESHOLD as LATE_WEEK_FOLLOW_OFF_THRESHOLD,
 )
 from nfl_ats.weekly import CARD_PATH_TABLES
+
+if TYPE_CHECKING:
+    from nfl_ats.best_pick_renomination import SundayRenomination
 
 PICK_LOCK_TIMEZONE = ZoneInfo("America/New_York")
 SUNDAY_PICK_LOCK_LOCAL_TIME = time(16, 0)
@@ -122,6 +125,8 @@ def handle_reading_opens(sunday_lock: pd.Timestamp) -> pd.Timestamp:
     local = datetime.combine(saturday, HANDLE_READING_LOCAL_TIME, tzinfo=PICK_LOCK_TIMEZONE)
     return pd.Timestamp(local).tz_convert("UTC")
 
+
+BEST_PICK_RENOMINATION_REASON = "The Best Pick moved to this game on the Sunday refresh"
 
 ROOKIE_CREW_POLICY = "rookie_crew_underdog_v1"
 ROOKIE_CREW_SEASON_FLOOR = 2010
@@ -221,6 +226,8 @@ PICK_REVISION_COLUMNS: tuple[str, ...] = (
     "follow_news_veto",
     "follow_news_source",
     "follow_news_team",
+    "best_pick_before",
+    "best_pick_after",
     "model_id",
     "feature_table_sha256",
     "reason",
@@ -273,6 +280,8 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
         "follow_news_veto": False,
         "follow_news_source": "",
         "follow_news_team": "",
+        "best_pick_before": "",
+        "best_pick_after": "",
     }
     for column, default in legacy_defaults.items():
         if column not in ledger.columns:
@@ -281,6 +290,26 @@ def load_pick_revisions(artifacts_root: Path) -> pd.DataFrame:
     if missing:
         raise DataContractError(f"Pick-revision ledger is missing columns: {', '.join(missing)}")
     return ledger[list(PICK_REVISION_COLUMNS)]
+
+
+def served_best_pick(artifacts_root: Path, *, season: int, week: int) -> str | None:
+
+    try:
+        revisions = load_pick_revisions(artifacts_root)
+    except (OSError, ValueError, DataContractError):
+        return None
+    if revisions.empty:
+        return None
+    after = revisions["best_pick_after"].fillna("").astype(str)
+    rows = revisions.loc[
+        revisions["season"].astype(int).eq(season)
+        & revisions["week"].astype(int).eq(week)
+        & after.ne("")
+    ]
+    if rows.empty:
+        return None
+    latest = rows.sort_values("revision_recorded_at_utc").iloc[-1]
+    return str(latest["best_pick_after"])
 
 
 def describe_week_revisions(
@@ -1346,6 +1375,23 @@ def refresh_summary(plan: RefreshResult, *, record_decisions: bool) -> dict[str,
         "model_id": plan.model_id,
         "games_considered": len(plan.games),
         "changed_game_ids": [game.game_id for game in plan.changed_games],
+        "changed_picks": [
+            {
+                "game_id": game.game_id,
+                "away_team": game.away_team,
+                "home_team": game.home_team,
+                "kickoff": game.kickoff.isoformat(),
+                "previous_pick_side": game.previous_pick_side,
+                "new_pick_side": game.new_pick_side,
+                "new_home_cover_probability": game.new_home_cover_probability,
+                "decision_home_spread": game.decision_home_spread,
+                "movement_policy": game.movement_policy,
+                "movement_delta": game.movement_delta,
+                "model_only_pick_side": game.model_only_pick_side,
+                "eligible": game.eligible,
+            }
+            for game in plan.changed_games
+        ],
         "post_kickoff_skipped": [
             game.game_id
             for game in plan.ineligible_games
@@ -1500,6 +1546,7 @@ def record_plan(
     trigger_type: str = TRIGGER_CLOCK_DISPATCH,
     trigger_source: str = "",
     trigger_observed_at_utc: datetime | None = None,
+    renomination: SundayRenomination | None = None,
 ) -> dict[str, Any]:
 
     if not record_decisions:
@@ -1515,10 +1562,24 @@ def record_plan(
     )
     existing = load_pick_revisions(artifacts_root)
     changed = [game for game in plan.changed_games if game.eligible]
+    star_moved = renomination is not None and renomination.moved
+    star_game_id = renomination.game_id if star_moved and renomination is not None else ""
+    if star_moved and star_game_id not in {game.game_id for game in changed}:
+        starred = next(
+            (game for game in plan.games if game.game_id == star_game_id and game.eligible), None
+        )
+        if starred is None:
+            star_moved = False
+            star_game_id = ""
+        else:
+            changed = [*changed, starred]
     if not changed:
         return {"recorded": 0, "ledger_rows": len(existing)}
 
     reason_text = f"pick_refresh recompute ({note})" if note else "pick_refresh recompute"
+    star_reason = (
+        f"{BEST_PICK_RENOMINATION_REASON} ({note})" if note else BEST_PICK_RENOMINATION_REASON
+    )
     handle_reason = f"{HANDLE_FOLLOW_REASON} ({note})" if note else HANDLE_FOLLOW_REASON
     veto_reason = f"{FOLLOW_NEWS_VETO_REASON} ({note})" if note else FOLLOW_NEWS_VETO_REASON
     big_spread_reason = f"{FOLLOW_BIG_SPREAD_REASON} ({note})" if note else FOLLOW_BIG_SPREAD_REASON
@@ -1574,10 +1635,16 @@ def record_plan(
             "follow_news_veto": [game.follow_news_veto for game in changed],
             "follow_news_source": [game.follow_news_source for game in changed],
             "follow_news_team": [game.follow_news_team for game in changed],
+            "best_pick_before": (
+                renomination.previous_game_id if star_moved and renomination is not None else ""
+            ),
+            "best_pick_after": star_game_id,
             "model_id": plan.model_id,
             "feature_table_sha256": plan.feature_table_sha256,
             "reason": [
-                handle_reason
+                star_reason
+                if game.game_id == star_game_id and not game.changed
+                else handle_reason
                 if game.movement_policy == HANDLE_FOLLOW_POLICY
                 else veto_reason
                 if game.movement_policy == LATE_WEEK_FOLLOW_NEWS_VETO_POLICY
@@ -1594,7 +1661,11 @@ def record_plan(
     )
     combined = pd.concat([existing, rows], ignore_index=True) if not existing.empty else rows
     atomic_parquet(combined[list(PICK_REVISION_COLUMNS)], pick_revision_ledger_path(artifacts_root))
-    return {"recorded": len(rows), "ledger_rows": len(combined)}
+    return {
+        "recorded": len(rows),
+        "ledger_rows": len(combined),
+        "best_pick_after": star_game_id,
+    }
 
 
 def record_refresh(
@@ -1624,7 +1695,13 @@ def record_refresh(
     )
     summary = refresh_summary(plan, record_decisions=record_decisions)
     from nfl_ats.best_pick_refresh_prospective import record_best_pick_refresh
+    from nfl_ats.best_pick_renomination import (
+        plan_best_pick_renomination,
+        renomination_summary,
+    )
 
+    renomination = plan_best_pick_renomination(artifacts_root, data_root, plan)
+    summary["best_pick_renomination"] = renomination_summary(renomination)
     summary["best_pick_refresh_ledger"] = record_best_pick_refresh(
         artifacts_root, data_root, plan, record_decisions=record_decisions
     )
@@ -1636,6 +1713,7 @@ def record_refresh(
         trigger_type=trigger_type,
         trigger_source=trigger_source,
         trigger_observed_at_utc=trigger_observed_at_utc,
+        renomination=renomination,
     )
     return summary
 
@@ -1688,12 +1766,25 @@ LATE_WEEK_REFRESH_START = "<!-- LATE_WEEK_REFRESH:START -->"
 LATE_WEEK_REFRESH_END = "<!-- LATE_WEEK_REFRESH:END -->"
 
 
-def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
+def _renomination_sentence(renomination: SundayRenomination | None) -> str:
+    if renomination is None or not renomination.moved:
+        return ""
+    return (
+        f"The Best Pick moved to {renomination.matchup} on the Sunday refresh: of the games that "
+        "have not kicked off yet, it is the one the model is now most sure about at the spread "
+        f"the pool locked on Tuesday. Tuesday's Best Pick was {renomination.previous_matchup}.\n\n"
+    )
+
+
+def _refresh_section_markdown(
+    result: RefreshResult, note: str, renomination: SundayRenomination | None = None
+) -> str:
     changed = result.changed_games
     heading = f"## Late-week refresh (as of {result.computed_at_utc.isoformat()})\n\n"
     label = f" ({note})" if note else ""
+    star = _renomination_sentence(renomination)
     if not changed:
-        return heading + f"No pick changes since the Tuesday card{label}.\n"
+        return heading + star + f"No pick changes since the Tuesday card{label}.\n"
 
     rows = []
     for game in changed:
@@ -1733,10 +1824,16 @@ def _refresh_section_markdown(result: RefreshResult, note: str) -> str:
         "and is recorded as the paired challenger `consensus_movement_1_0_off_incumbent` "
         "-- see docs/late_week_refresh.md's movement-policy sections.\n\n"
     )
-    return heading + intro + table + "\n"
+    return heading + star + intro + table + "\n"
 
 
-def append_refresh_to_card(destination: Path, result: RefreshResult, *, note: str = "") -> None:
+def append_refresh_to_card(
+    destination: Path,
+    result: RefreshResult,
+    *,
+    note: str = "",
+    renomination: SundayRenomination | None = None,
+) -> None:
 
     if not destination.is_file():
         raise ValueError(
@@ -1744,7 +1841,7 @@ def append_refresh_to_card(destination: Path, result: RefreshResult, *, note: st
             "run `nfl-ats publish-predictions` first."
         )
     text = destination.read_text(encoding="utf-8")
-    section = _refresh_section_markdown(result, note)
+    section = _refresh_section_markdown(result, note, renomination)
     block = f"{LATE_WEEK_REFRESH_START}\n{section.rstrip()}\n{LATE_WEEK_REFRESH_END}"
     if LATE_WEEK_REFRESH_START in text or LATE_WEEK_REFRESH_END in text:
         if text.count(LATE_WEEK_REFRESH_START) != 1 or text.count(LATE_WEEK_REFRESH_END) != 1:

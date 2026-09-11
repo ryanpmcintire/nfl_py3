@@ -364,9 +364,10 @@ def test_weekly_plan_includes_optional_drift_step_after_publish(tmp_path: Path) 
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root, skip_prospective=True)
     names = [step.name for step in steps]
     assert names[-1] == "publish-board"
-    assert names[-2] == "drift-report"
+    assert names[-2] == "waterfall-feed"
+    assert names[-3] == "drift-report"
     assert names.index("drift-report") > names.index("publish-predictions")
-    drift_step = steps[-2]
+    drift_step = steps[-3]
     assert drift_step.number == 13
     assert drift_step.optional is True
     assert drift_step.skipped is False

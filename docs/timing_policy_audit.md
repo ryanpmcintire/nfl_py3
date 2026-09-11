@@ -1,5 +1,16 @@
 # Timing-policy audit (MKT-08)
 
+> **Superseded in part, 2026-09-11.** The comparison this audit said could not
+> be scored has now been scored on the market archive rather than on prospective
+> ledger rows: `docs/refresh_timing_policy.md` measures the served late-week
+> follow rule held fixed at four different sets of refresh instants over
+> 2020-2025. The audit's own read-only command no longer exists —
+> `scripts/timing_policy_audit.py` was removed in the 2026-09-10 repository cut —
+> so the inventory below is a historical record of what the ledgers held on
+> 2026-09-02, not a command to re-run. What is still open is exactly the
+> prospective half the audit describes: a real news-triggered arm built from
+> post-lock refresh rows carrying non-default triggers.
+
 ## Status
 
 MKT-08 remains open. **[read: `ROADMAP.md`, MKT-08]** Its definition asks for

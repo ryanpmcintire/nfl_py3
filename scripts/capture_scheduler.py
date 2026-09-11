@@ -9,7 +9,9 @@ import subprocess
 import sys
 import threading
 import time
-from dataclasses import dataclass
+import urllib.error
+import urllib.request
+from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any, cast
@@ -17,7 +19,29 @@ from zoneinfo import ZoneInfo
 
 REPO = Path(__file__).resolve().parents[1]
 ET = ZoneInfo("America/New_York")
-UV = REPO / ".tools" / "uv.exe"
+UV = REPO / ".tools" / ("uv.exe" if sys.platform == "win32" else "uv")
+SCHEDULER_ROLE = os.environ.get("NFL_ATS_SCHEDULER_ROLE", "primary")
+CAPTURE_JOB_PREFIXES: tuple[str, ...] = (
+    "odds_",
+    "public_betting_",
+    "injuries_",
+    "sportradar_injuries_",
+    "nflverse_injuries_",
+    "player_snapshot_",
+    "injury_news_",
+    "inactives_",
+    "referee_assignments_",
+    "pfr_transactions_",
+    "player_arrests_",
+    "airnow_",
+)
+POSIX_EQUIVALENTS: dict[str, list[str]] = {
+    "odds_capture.ps1": ["nfl-ats", "odds-ingest", "--markets", "spreads,h2h,totals"],
+    "public_betting_capture.ps1": [
+        "python",
+        str(REPO / "scripts" / "public_betting_live_capture.py"),
+    ],
+}
 STATE_PATH = REPO / "data" / "scheduler_state.json"
 LOG_PATH = REPO / "data" / "scheduler_log.txt"
 HEARTBEAT_PATH = REPO / "data" / "scheduler_heartbeat.json"
@@ -65,6 +89,8 @@ class Job:
 
 
 def _ps(script: str) -> list[str]:
+    if sys.platform != "win32":
+        return [str(UV), "run", "--no-sync", *POSIX_EQUIVALENTS[script]]
     return [
         "powershell.exe",
         "-NoProfile",
@@ -663,6 +689,34 @@ SCHEDULE: tuple[Job, ...] = (
         True,
         "FINAL pass; the only one that touches the card, additively.",
     ),
+    *(
+        Job(
+            f"refresh_last_call_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            grace,
+            _cli("refresh-picks", "--record-decisions", "--note", f"last_call_{day}_{at}"),
+            True,
+            "MKT-08 (2026-09-10, docs/refresh_timing_policy.md): a refresh at each "
+            "game's own deadline beat the fixed passes by +0.20 accuracy points "
+            "(probability_positive 0.976) at fewer runs per week, and the fixed "
+            "schedule left four kinds of game with no look near kickoff: "
+            "Wednesday-afternoon games (no refresh before 18:15), Friday games "
+            "(20-25 h from the Thursday pass), Saturday 13:00 games (2.5 h from "
+            "the 10:30 pass) and Sunday 09:30 ET London games (14 h from the "
+            "Saturday evening pass). These four passes close those holes; on a "
+            "week without such a game they are an extra ordinary pass.",
+            season_guarded=True,
+            added_on="2026-09-10",
+            catch_up=False,
+        )
+        for day, at, grace in (
+            ("wed", "12:15", 60),
+            ("fri", "13:30", 60),
+            ("sat", "12:15", 40),
+            ("sun", "08:30", 45),
+        )
+    ),
     Job(
         "refresh_trigger_log_sun",
         "sun",
@@ -710,6 +764,92 @@ SCHEDULE: tuple[Job, ...] = (
         "a partial copy is not a corrupt state.",
         season_guarded=False,
         added_on="2026-08-27",
+        catch_up=True,
+    ),
+    Job(
+        "backup_offsite",
+        "sun",
+        "22:30",
+        300,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "offsite_backup.py"),
+        ],
+        True,
+        "Weekly encrypted off-site restic snapshot of data/, artifacts/ and "
+        "registry/ to the friend's server over the WireGuard tunnel "
+        "(sftp:backup-server:/data/restic). Runs 30 minutes after the E: "
+        "mirror so both copies hold the same week. Incremental after the "
+        "first seed, so a weekly run is minutes, not the hour the seed "
+        "took; restic is resumable, so a run cut off by the 1800s job "
+        "timeout leaves a repository the next run completes. The E: mirror "
+        "is on the same house's power and network; this copy is not.",
+        season_guarded=False,
+        added_on="2026-09-10",
+        catch_up=True,
+    ),
+    Job(
+        "coordinators_tue",
+        "tue",
+        "07:30",
+        120,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "ingest_coordinator_history.py"),
+            "--league",
+            "--inseason",
+            "--max-requests",
+            "100",
+            "--delay",
+            "1.0",
+        ],
+        True,
+        "2026-09-10: the post-bye new-playcaller prospective challenger and "
+        "the playcaller-change screens read OC/HC/DC tenure from the newest "
+        "data/raw/coordinators snapshot. The ingest script had been deleted in "
+        "the repository cut and the last snapshot had no 2026 row, so the "
+        "challenger was inert; restored the same night with a 2026 season "
+        "ceiling and run once (32 requests, 70 s). Weekly on Tuesday morning so "
+        "a midseason coordinator change is on disk before the noon lock. "
+        "Cache-backed and idempotent: an unchanged week costs a handful of "
+        "requests.",
+        season_guarded=False,
+        dedupe_dir="data/raw/coordinators",
+        dedupe_minutes=1440,
+        added_on="2026-09-10",
+        catch_up=True,
+    ),
+    Job(
+        "tv_audiences_tue",
+        "tue",
+        "07:45",
+        120,
+        [
+            str(UV),
+            "run",
+            "--no-sync",
+            "python",
+            str(REPO / "scripts" / "ingest_tv_audiences.py"),
+            "--discover",
+        ],
+        True,
+        "MKT-14 (2026-09-11): the tv_attention_fade_overlay prospective "
+        "challenger needs each week's national-TV audiences; the Sports Media "
+        "Watch season page it was built on stopped after 2022, so the weekly "
+        "Awful Announcing ratings recap (policy row awful_announcing_tv_ratings, "
+        "one dated post per week, publication time from the article meta) is "
+        "the live source. --discover polls the tag page and no-ops when nothing "
+        "new is posted; the snapshot lands under data/raw/tv_audiences/<stamp>.",
+        season_guarded=True,
+        dedupe_dir="data/raw/tv_audiences",
+        dedupe_minutes=1440,
+        added_on="2026-09-11",
         catch_up=True,
     ),
     Job(
@@ -1150,7 +1290,48 @@ SCHEDULE: tuple[Job, ...] = (
         added_on="2026-09-04",
         catch_up=True,
     ),
+    *(
+        Job(
+            f"sync_captures_{day}_{at.replace(':', '')}",
+            day,
+            at,
+            150,
+            [
+                str(UV),
+                "run",
+                "--no-sync",
+                "python",
+                str(REPO / "scripts" / "sync_captures.py"),
+            ],
+            True,
+            "OPS-06 (2026-09-10): the friend's server runs the same capture schedule "
+            "under NFL_ATS_SCHEDULER_ROLE=capture so a window this machine sleeps "
+            "through is still captured. Every three hours this job lists the server's "
+            "snapshot directories over SSH, pulls the ones that fill a gap here "
+            "(no local capture of that source within the job's dedupe window), marks "
+            "each pulled directory with a capture_host file, logs a file-level diff "
+            "for windows both hosts captured (this machine's copy is the one served), "
+            "and deletes a server copy only after the pulled files verify. Runs only "
+            "on the primary role; catch_up so a machine waking from sleep reconciles "
+            "before its next refresh.",
+            season_guarded=False,
+            added_on="2026-09-10",
+            catch_up=True,
+        )
+        for day in DAYS
+        for at in ("00:30", "03:30", "06:30", "09:30", "12:30", "15:30", "18:30", "21:30")
+    ),
 )
+
+
+def _role_enabled(job: Job) -> bool:
+    if SCHEDULER_ROLE != "capture":
+        return job.enabled
+    return job.enabled and job.name.startswith(CAPTURE_JOB_PREFIXES)
+
+
+if SCHEDULER_ROLE == "capture":
+    SCHEDULE = tuple(replace(job, enabled=_role_enabled(job)) for job in SCHEDULE)
 
 
 SNAPSHOT_NAME = re.compile(r"^(\d{8}T\d{6}Z)$")
@@ -1520,7 +1701,12 @@ def failure_detail(stderr: str | None, stdout_tail: str, *, limit: int = 300) ->
 
 
 def execute_job(command: list[str]) -> tuple[str, str]:
+    status, detail, _ = execute_job_with_output(command)
+    return status, detail
 
+
+def execute_job_with_output(command: list[str]) -> tuple[str, str, str]:
+    stdout = ""
     try:
         no_window = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
         proc = subprocess.run(
@@ -1531,7 +1717,8 @@ def execute_job(command: list[str]) -> tuple[str, str]:
             timeout=1800,
             creationflags=no_window,
         )
-        out = (proc.stdout or "").strip().splitlines()
+        stdout = proc.stdout or ""
+        out = stdout.strip().splitlines()
         tail = out[-1][:300] if out else ""
         status = "OK" if proc.returncode == 0 else f"FAIL({proc.returncode})"
         detail = tail if proc.returncode == 0 else failure_detail(proc.stderr, tail)
@@ -1539,7 +1726,90 @@ def execute_job(command: list[str]) -> tuple[str, str]:
         status, detail = "FAIL(timeout)", "exceeded 1800s"
     except OSError as exc:
         status, detail = "FAIL(oserror)", str(exc)[:300]
-    return status, detail
+    return status, detail, stdout
+
+
+NTFY_TOPIC = os.environ.get("NFL_ATS_NTFY_TOPIC", "")
+NTFY_URL = os.environ.get("NFL_ATS_NTFY_URL", "https://ntfy.sh")
+
+
+def send_notification(title: str, message: str, *, priority: str = "high") -> bool:
+    if not NTFY_TOPIC:
+        return False
+    request = urllib.request.Request(
+        f"{NTFY_URL.rstrip('/')}/{NTFY_TOPIC}",
+        data=message.encode("utf-8"),
+        headers={"Title": title, "Priority": priority, "Tags": "football"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            return 200 <= response.status < 300
+    except (urllib.error.URLError, OSError) as exc:
+        log(f"NOTIFY-FAIL {title}: {str(exc)[:200]}")
+        return False
+
+
+def parse_job_json(stdout: str) -> dict[str, Any] | None:
+    start = stdout.find("{")
+    if start < 0:
+        return None
+    try:
+        payload = json.loads(stdout[start:])
+    except json.JSONDecodeError:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
+def _side_label(game: dict[str, Any], side: str) -> str:
+    spread = game.get("decision_home_spread")
+    if spread is None:
+        return str(game.get("home_team" if side == "HOME" else "away_team", side))
+    home_line = -float(spread)
+    if side == "HOME":
+        return f"{game['home_team']} {home_line:+.1f}"
+    return f"{game['away_team']} {-home_line:+.1f}"
+
+
+def describe_pick_change(game: dict[str, Any]) -> str:
+    was = _side_label(game, str(game.get("previous_pick_side", "")))
+    now = _side_label(game, str(game.get("new_pick_side", "")))
+    probability = float(game.get("new_home_cover_probability") or 0.5)
+    if game.get("new_pick_side") == "AWAY":
+        probability = 1.0 - probability
+    reason = ""
+    policy = str(game.get("movement_policy") or "")
+    delta = game.get("movement_delta")
+    followed = game.get("new_pick_side") != game.get("model_only_pick_side")
+    if policy and delta is not None and followed:
+        reason = f"; line moved {float(delta):.1f} toward {now.split()[0]}, follow rule"
+    matchup = f"{game['away_team']} at {game['home_team']}"
+    return f"{matchup}: was {was}, now {now} ({probability:.0%}{reason})"
+
+
+def notify_after_job(job: Job, status: str, detail: str, stdout: str) -> None:
+    if not job.name.startswith("refresh_"):
+        return
+    if status not in {"OK", "CAUGHT_UP"}:
+        if "inactives" in job.name:
+            send_notification(
+                f"Refresh failed: {job.name}",
+                f"{status} {detail[:180]} -- the card was NOT refreshed after inactives.",
+            )
+        return
+    payload = parse_job_json(stdout)
+    if payload is None:
+        return
+    changes = [game for game in payload.get("changed_picks", []) if game.get("eligible", True)]
+    if not changes:
+        return
+    lines = [describe_pick_change(g) for g in changes]
+    log(f"PICK-CHANGE {job.name}: " + "; ".join(lines))
+    send_notification(
+        f"Pick change ({len(changes)}) after {job.name}",
+        "\n".join(lines),
+        priority="urgent",
+    )
 
 
 RECORDING_FLAGS: frozenset[str] = frozenset(
@@ -1699,7 +1969,8 @@ def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool 
     label = "RETRY" if previous is not None else ("CATCH-UP-RUN" if catch_up else "RUN")
     attempt_note = f", attempt {retries + 1}" if previous is not None else ""
     log(f"{label} {job.name} (window {start.isoformat()}{attempt_note})")
-    status, detail = execute_job(list(job.command))
+    status, detail, stdout = execute_job_with_output(list(job.command))
+    notify_after_job(job, status, detail, stdout)
     if catch_up and status == "OK":
         status = "CAUGHT_UP"
     record: dict[str, Any] = {

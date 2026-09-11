@@ -32,6 +32,7 @@ from nfl_ats.board_site_content import (
     HistoryPageContent,
     ModelPageContent,
     SeasonRecordHeadline,
+    SeasonSoFar,
     headline_with_season_record,
 )
 from nfl_ats.market_data import NFL_TEAM_NAMES
@@ -1057,7 +1058,9 @@ def build_knowledge_for_board(
     return resorted
 
 
-def _season_record_body(headline: HeadlineStats | None) -> str:
+def _season_record_body(
+    headline: HeadlineStats | None, season_so_far: SeasonSoFar | None = None
+) -> str:
     live = (
         headline.season_record_text
         if isinstance(headline, SeasonRecordHeadline)
@@ -1068,7 +1071,23 @@ def _season_record_body(headline: HeadlineStats | None) -> str:
         if headline is not None and headline.played_card_pct is not None
         else "The played card's archive score is unavailable"
     )
-    return f"{live} {archive}; that is the archive, not this season."
+    detail = _season_so_far_detail(season_so_far)
+    return f"{live}{detail} {archive}; that is the archive, not this season."
+
+
+def _season_so_far_detail(season_so_far: SeasonSoFar | None) -> str:
+    if season_so_far is None or not season_so_far.has_rows:
+        return ""
+    best_pick = season_so_far.best_pick_text
+    if season_so_far.best_pick_record_text != "--":
+        best_pick = f"The strongest pick of the week is {season_so_far.best_pick_record_text}."
+    parts = [
+        best_pick,
+        season_so_far.caveat_text,
+        season_so_far.tiebreaker_text,
+        season_so_far.challenger_summary_text,
+    ]
+    return " " + " ".join(part for part in parts if part)
 
 
 def _record_lines_for_headline(headline: Any) -> tuple[str, ...]:
@@ -1115,7 +1134,7 @@ def build_knowledge_for_history(history: HistoryPageContent) -> dict[str, Any]:
         generated_at_text=history.generated_at_text,
         model_id=None,
         method_label=history.ticker_chrome.model_method_label,
-        season_record_text=_season_record_body(headline),
+        season_record_text=_season_record_body(headline, history.season_so_far),
         games=history.ticker_chrome.games,
         best_pick_game_id=history.ticker_chrome.best_pick_game_id,
         best_pick_note=None,

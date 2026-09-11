@@ -137,12 +137,14 @@ def _schedules_row() -> pd.Series:
 
 
 def _finals() -> pd.DataFrame:
+    home = [23, 24, 20, 27, 17, 30, 24, 20, 27, 13, 21, 22, 21, 24, 23, 25, 26]
+    away = [20, 17, 23, 20, 24, 13, 24, 17, 24, 20, 22, 21, 20, 20, 19, 18, 17]
     return pd.DataFrame(
         {
-            "home_score": [24.0, 20.0, 30.0],
-            "away_score": [20.0, 23.0, 13.0],
-            "spread_line": [3.0, 2.5, 7.0],
-            "total_line": [43.5, 44.0, 41.0],
+            "home_score": [float(value) for value in home],
+            "away_score": [float(value) for value in away],
+            "spread_line": [3.0] * len(home),
+            "total_line": [43.0] * len(home),
         }
     )
 
@@ -159,11 +161,15 @@ def test_tiebreaker_record_present_when_configured() -> None:
 
     sources = tiebreaker_lineage_sources(report, fallback_effective_timestamp=FEATURE_BUILD)
 
-    assert [source.input_name for source in sources] == ["market_consensus"]
+    assert [source.input_name for source in sources] == [
+        "market_consensus",
+        "total_low_side_shade",
+    ]
     assert sources[0].source_snapshot == "20260902T180000Z"
     assert sources[0].source_captured_at == "2026-09-02T18:00:00+00:00"
     assert sources[0].effective_timestamp_basis == "source_capture"
     assert sources[0].unknown_source_reason is None
+    assert sources[1].unknown_source_reason is not None
 
     played = extend_card_lineage_for_publication(_base_lineage(), tiebreaker_sources=sources)
     assert "tiebreaker:market_consensus" in played.decision_bearing_fields()
@@ -198,7 +204,12 @@ def test_tiebreaker_adds_model_and_totals_views_when_present() -> None:
     sources = tiebreaker_lineage_sources(report, fallback_effective_timestamp=FEATURE_BUILD)
 
     names = [source.input_name for source in sources]
-    assert names == ["market_consensus", "model_margin_view", "model_total_view"]
+    assert names == [
+        "market_consensus",
+        "model_margin_view",
+        "model_total_view",
+        "total_low_side_shade",
+    ]
 
     consensus_source = sources[0]
     assert consensus_source.source_snapshot is None

@@ -1,0 +1,15 @@
+[Unit]
+Description=NFL ATS capture scheduler (capture role, second host)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/data/nfl_py3
+EnvironmentFile=-%h/.config/nfl_py3/env
+Environment=NFL_ATS_SCHEDULER_ROLE=capture
+ExecStart=/data/nfl_py3/.tools/uv run --no-sync python scripts/capture_scheduler.py
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target

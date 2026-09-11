@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import unicodedata
 from collections import defaultdict
 from collections.abc import Sequence
@@ -110,6 +111,10 @@ PLAYER_STATS_REQUIRED_COLUMNS = (
     "def_interceptions",
     "def_pass_defended",
 )
+
+PLAYER_IDENTITY_GLOB = "*/players.parquet"
+PLAYER_IDENTITY_COLUMNS = ("pfr_id", "gsis_id")
+_IDENTITY_CROSSWALK_CACHE: dict[tuple[str, int, int], dict[str, str]] = {}
 
 _ACTIVE_ROSTER_STATUSES = frozenset(("ACT", "INA"))
 _OFFENSIVE_LINE = frozenset(("C", "G", "OG", "OL", "OT", "T"))
@@ -981,7 +986,59 @@ def load_player_value_snapshot(
     )
 
 
-def _stable_crosswalk(rosters: pd.DataFrame) -> dict[str, str]:
+def _player_identity_root() -> Path:
+    return Path(os.environ.get("NFL_ATS_DATA_DIR", "data")) / "players" / "raw"
+
+
+def latest_player_identity_path(root: Path | None = None) -> Path | None:
+    directory = _player_identity_root() if root is None else Path(root)
+    if not directory.is_dir():
+        return None
+    candidates = sorted(directory.glob(PLAYER_IDENTITY_GLOB))
+    return candidates[-1] if candidates else None
+
+
+def load_player_identity(root: Path | None = None) -> pd.DataFrame:
+    path = latest_player_identity_path(root)
+    if path is None:
+        return pd.DataFrame(
+            {
+                "pfr_id": pd.Series(dtype="string"),
+                "gsis_id": pd.Series(dtype="string"),
+            }
+        )
+    return pd.read_parquet(path, columns=list(PLAYER_IDENTITY_COLUMNS))
+
+
+def _identity_crosswalk(players: pd.DataFrame) -> dict[str, str]:
+    if players.empty or not set(PLAYER_IDENTITY_COLUMNS).issubset(players.columns):
+        return {}
+    links = players.loc[
+        players["pfr_id"].notna() & players["gsis_id"].notna(), list(PLAYER_IDENTITY_COLUMNS)
+    ].copy()
+    links["pfr_id"] = links["pfr_id"].astype(str)
+    links["gsis_id"] = links["gsis_id"].astype(str)
+    if links.empty:
+        return {}
+    selected = links.drop_duplicates().sort_values(["pfr_id", "gsis_id"]).drop_duplicates("pfr_id")
+    return dict(zip(selected["pfr_id"], selected["gsis_id"], strict=True))
+
+
+def _cached_identity_crosswalk() -> dict[str, str]:
+    path = latest_player_identity_path()
+    if path is None:
+        return {}
+    stats = path.stat()
+    key = (str(path), int(stats.st_mtime_ns), int(stats.st_size))
+    cached = _IDENTITY_CROSSWALK_CACHE.get(key)
+    if cached is None:
+        cached = _identity_crosswalk(pd.read_parquet(path, columns=list(PLAYER_IDENTITY_COLUMNS)))
+        _IDENTITY_CROSSWALK_CACHE.clear()
+        _IDENTITY_CROSSWALK_CACHE[key] = cached
+    return cached
+
+
+def _roster_crosswalk(rosters: pd.DataFrame) -> dict[str, str]:
     links = rosters.loc[
         rosters["gsis_id"].notna() & rosters["pfr_id"].notna(), ["pfr_id", "gsis_id"]
     ].copy()
@@ -996,15 +1053,27 @@ def _stable_crosswalk(rosters: pd.DataFrame) -> dict[str, str]:
     return dict(zip(selected["pfr_id"], selected["gsis_id"], strict=True))
 
 
+def _stable_crosswalk(rosters: pd.DataFrame, players: pd.DataFrame | None = None) -> dict[str, str]:
+    merged = _roster_crosswalk(rosters)
+    identity = _cached_identity_crosswalk() if players is None else _identity_crosswalk(players)
+    if not identity:
+        return merged
+    known = set(rosters.loc[rosters["gsis_id"].notna(), "gsis_id"].astype(str))
+    merged.update({pfr_id: gsis_id for pfr_id, gsis_id in identity.items() if gsis_id in known})
+    return merged
+
+
 def _normalized_player_name(value: object) -> str:
     text = unicodedata.normalize("NFKD", str(value)).encode("ascii", "ignore").decode("ascii")
     return "".join(character for character in text.lower() if character.isalnum())
 
 
-def attach_snap_player_ids(snaps: pd.DataFrame, rosters: pd.DataFrame) -> pd.DataFrame:
+def attach_snap_player_ids(
+    snaps: pd.DataFrame, rosters: pd.DataFrame, players: pd.DataFrame | None = None
+) -> pd.DataFrame:
 
     result = snaps.copy()
-    result["gsis_id"] = result["pfr_player_id"].astype(str).map(_stable_crosswalk(rosters))
+    result["gsis_id"] = result["pfr_player_id"].astype(str).map(_stable_crosswalk(rosters, players))
     result["normalized_name"] = result["player"].map(_normalized_player_name)
     names = rosters.loc[rosters["full_name"].notna() & rosters["gsis_id"].notna()].copy()
     names["normalized_name"] = names["full_name"].map(_normalized_player_name)

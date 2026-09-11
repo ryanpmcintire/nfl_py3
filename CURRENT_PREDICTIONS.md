@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 1
 
-Published from the synchronized weak stack model, 2026-09-10 17:04 UTC.
+Published from the synchronized weak stack model, 2026-09-11 05:18 UTC.
 
-<!-- publication: model_id=96f294ae47c853a2 published_at_utc=2026-09-10T17:04:16.063157+00:00 -->
+<!-- publication: model_id=d49194e04945a5e5 published_at_utc=2026-09-11T05:18:34.686177+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -31,8 +31,8 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 | Sun, Sep 13 | WAS at PHI | WAS +5.5         | 55.7%            |
 | Mon, Sep 14 | DEN at KC  | DEN +2.5         | 56.9%            |
 
-**Tiebreaker (last game, DEN at KC):** KC 23 - DEN 21, total 44 (market total 43.5) -- consistent with the DEN +2.5 pick.
+**Tiebreaker (last game, DEN at KC):** KC 22 - DEN 20, total 42 (market total 43.5) -- consistent with the DEN +2.5 pick.
 
 **Source freshness: COMPLETE.** Complete: odds opener, odds refresh, injuries nflverse, injuries nflverse timestamps, inactives, projected lineups, referee assignments, player arrests, pfr transactions, airnow weather. Degraded (allowed fallback): none. Blocked: none. Not due yet: none. Not set up: injuries sportradar. Budgets, fallbacks and source states: `docs/source_freshness_policy.md`.
 
-`Decision score` is the computer's own chance that this side covers, adjusted for how the computer has actually done on spreads this size. Big favourites and big underdogs have been its weak spot, so a very confident-looking number there is pulled back toward what it has really hit. It is a per-game chance, not historical accuracy.
+`Decision score` is the computer's own chance that this side covers, adjusted for how the computer has actually done on spreads this size. Big favourites and big underdogs have been its weak spot, so a very confident-looking number there is pulled back toward what it has really hit, and it is never shown below 50% on a side this card is picking. It is a per-game chance, not historical accuracy.

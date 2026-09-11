@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Literal
 
 import pandas as pd
 
+from nfl_ats.clv import week_blocked_bootstrap
 from nfl_ats.spread_regime import BUCKETS, spread_bucket
 
 SPREAD_BUCKETS: tuple[tuple[str, float, float, Literal["both", "right", "neither"]], ...] = (
@@ -32,6 +33,14 @@ EXPLANATION_UNALIGNED = (
 BUCKET_NOTE = (
     "Opening lines, ties excluded; 7.5-point lines belong to 7.5-10, not 7-7.5. "
     "At level odds there is no favourite or underdog."
+)
+DISPLAYED_CONFIDENCE_NOTE = (
+    "The stated confidence column is the model's own number, before any correction. The score "
+    "shown beside each pick on the picks page is not: it is pulled toward what picks of that "
+    "size and that confidence have really hit, so a big favourite or big underdog is shown a "
+    "smaller number than the model asked for. It is never shown below 50% on a side the card is "
+    "picking. Past games that pointed that far down were few, and they finished nearer a coin "
+    "flip than the number suggested."
 )
 HOME_SPLIT_LEAD = (
     "The same games, split by whether the home team opened as the favourite or the underdog, "
@@ -62,10 +71,40 @@ HOME_CORRECTION_UNAVAILABLE = (
 HOME_SPLIT_NOTE = "Level-odds lines have no home favourite or underdog and are left out."
 HOME_FAVOURITE = "Home favourite"
 HOME_UNDERDOG = "Home underdog"
+SEASON_TIMING_EARLY_LABEL = "Weeks 1-9"
+SEASON_TIMING_LATE_LABEL = "Weeks 10-18"
+SEASON_TIMING_EARLY_MAX_WEEK = 9
+SEASON_TIMING_SAMPLES = 2_000
+SEASON_TIMING_SEED = 20260817
+SEASON_TIMING_UNAVAILABLE = (
+    "The time-of-season split has not been measured on the current model's opener record yet."
+)
+SEASON_TIMING_LEAD = (
+    "The same served picks, split by whether the game fell in the first nine weeks of a "
+    "season or the weeks after that, with a resampled range on the gap between the two halves."
+)
+SEASON_TIMING_PLAIN = (
+    "The model has been sharper early in the season than late; the confidence beside a "
+    "late-season pick does not yet say so."
+)
 
 
 def percent(value: float | None) -> str:
     return "--" if value is None else f"{value:.1%}"
+
+
+def signed_percent(value: float | None) -> str:
+    return "--" if value is None else f"{value:+.1%}"
+
+
+def range_text(lower: float | None, upper: float | None) -> str:
+    if lower is None or upper is None:
+        return "--"
+    return f"[{lower:.1%}, {upper:.1%}]"
+
+
+def likely_real(value: float | None) -> str:
+    return "--" if value is None else f"{value:.0%} likely real"
 
 
 def points(value: float | None) -> str:
@@ -200,15 +239,78 @@ class HomeCorrection:
 
 
 @dataclass(frozen=True)
+class SeasonTimingRow:
+    label: str
+    games: int
+    accuracy: float | None
+    accuracy_lower: float | None
+    accuracy_upper: float | None
+    stated_confidence: float | None
+
+    @property
+    def cells(self) -> tuple[str, ...]:
+        return (
+            self.label,
+            str(self.games),
+            percent(self.accuracy),
+            range_text(self.accuracy_lower, self.accuracy_upper),
+            percent(self.stated_confidence),
+        )
+
+
+@dataclass(frozen=True)
+class SeasonTiming:
+    rows: tuple[SeasonTimingRow, ...] = ()
+    accuracy_gap: float | None = None
+    accuracy_gap_lower: float | None = None
+    accuracy_gap_upper: float | None = None
+    accuracy_gap_probability_positive: float | None = None
+    confidence_gap: float | None = None
+    confidence_gap_lower: float | None = None
+    confidence_gap_upper: float | None = None
+    confidence_gap_probability_positive: float | None = None
+
+    @property
+    def available(self) -> bool:
+        return len(self.rows) == 2 and self.accuracy_gap is not None
+
+    @property
+    def summary(self) -> str:
+        if not self.available:
+            return SEASON_TIMING_UNAVAILABLE
+        return (
+            f"Early minus late, model right: {signed_percent(self.accuracy_gap)}, resampled "
+            f"range {range_text(self.accuracy_gap_lower, self.accuracy_gap_upper)} "
+            f"({likely_real(self.accuracy_gap_probability_positive)}). Stated confidence moved "
+            f"{signed_percent(self.confidence_gap)} over the same split, resampled range "
+            f"{range_text(self.confidence_gap_lower, self.confidence_gap_upper)} "
+            f"({likely_real(self.confidence_gap_probability_positive)})."
+        )
+
+    @property
+    def plain(self) -> str:
+        return SEASON_TIMING_PLAIN if self.available else SEASON_TIMING_UNAVAILABLE
+
+
+@dataclass(frozen=True)
 class WeakSpots:
     rows: tuple[WeakSpotRow, ...] = ()
     home_split: tuple[HomeSplitRow, ...] = ()
     home_correction: HomeCorrection | None = None
+    season_timing: SeasonTiming = field(default_factory=SeasonTiming)
 
     @property
     def explanation(self) -> str:
 
         return EXPLANATION if self.home_correction is not None else EXPLANATION_UNALIGNED
+
+    @property
+    def season_timing_text(self) -> str:
+        if not self.season_timing.available:
+            return SEASON_TIMING_UNAVAILABLE
+        return (
+            SEASON_TIMING_LEAD + " " + self.season_timing.summary + " " + self.season_timing.plain
+        )
 
     @property
     def home_split_lead(self) -> str:
@@ -248,6 +350,8 @@ class WeakSpots:
             self.explanation
             + " "
             + BUCKET_NOTE
+            + " "
+            + DISPLAYED_CONFIDENCE_NOTE
             + " "
             + " ".join(
                 row.reliability
@@ -373,4 +477,112 @@ def build_home_correction(
         accuracy_with=mean(with_push, valid),
         accuracy_without=mean(without, valid),
         this_week_available=this_week_offsets is not None,
+    )
+
+
+def build_season_timing(frame: pd.DataFrame) -> SeasonTiming:
+    needed = {
+        "season",
+        "week",
+        "tue_open_home_spread",
+        "margin_vs_open",
+        "correct_at_open_probability_rule",
+        "home_cover_probability_at_open",
+        "pick_home_at_open_probability_rule",
+    }
+    if not needed.issubset(frame.columns):
+        return SeasonTiming()
+    spread = pd.to_numeric(frame["tue_open_home_spread"], errors="coerce")
+    margin = pd.to_numeric(frame["margin_vs_open"], errors="coerce")
+    correct = pd.to_numeric(frame["correct_at_open_probability_rule"], errors="coerce")
+    probability = pd.to_numeric(frame["home_cover_probability_at_open"], errors="coerce")
+    pick = frame["pick_home_at_open_probability_rule"]
+    week = pd.to_numeric(frame["week"], errors="coerce")
+    season = pd.to_numeric(frame["season"], errors="coerce")
+    valid = (
+        spread.notna()
+        & margin.notna()
+        & margin.ne(0)
+        & correct.isin([0, 1])
+        & probability.between(0, 1)
+        & pick.notna()
+        & week.notna()
+        & season.notna()
+    )
+    if not valid.any():
+        return SeasonTiming()
+    confidence = probability.where(pick.eq(True), 1 - probability)
+    scored = pd.DataFrame(
+        {
+            "season": season[valid],
+            "week": week[valid],
+            "correct": correct[valid],
+            "confidence": confidence[valid],
+        }
+    )
+    scored["early"] = scored["week"] <= SEASON_TIMING_EARLY_MAX_WEEK
+    if scored["early"].nunique() < 2:
+        return SeasonTiming()
+
+    def group_metric(inner: pd.DataFrame) -> dict[str, float]:
+        return {
+            "accuracy": float(inner["correct"].mean()),
+            "confidence": float(inner["confidence"].mean()),
+        }
+
+    rows = []
+    for label, early_flag in (
+        (SEASON_TIMING_EARLY_LABEL, True),
+        (SEASON_TIMING_LATE_LABEL, False),
+    ):
+        group = scored.loc[scored["early"].eq(early_flag)]
+        if group.empty:
+            rows.append(SeasonTimingRow(label, 0, None, None, None, None))
+            continue
+        point = group_metric(group)
+        boot = week_blocked_bootstrap(
+            group,
+            group_metric,
+            block="week",
+            samples=SEASON_TIMING_SAMPLES,
+            seed=SEASON_TIMING_SEED,
+        )
+        accuracy_row = boot.loc[boot["metric"].eq("accuracy")].iloc[0]
+        rows.append(
+            SeasonTimingRow(
+                label,
+                len(group),
+                point["accuracy"],
+                float(accuracy_row["lower"]),
+                float(accuracy_row["upper"]),
+                point["confidence"],
+            )
+        )
+
+    def gap_metric(inner: pd.DataFrame) -> dict[str, float]:
+        early = inner.loc[inner["early"]]
+        late = inner.loc[~inner["early"]]
+        if early.empty or late.empty:
+            return {"accuracy_gap": 0.0, "confidence_gap": 0.0}
+        return {
+            "accuracy_gap": float(early["correct"].mean() - late["correct"].mean()),
+            "confidence_gap": float(early["confidence"].mean() - late["confidence"].mean()),
+        }
+
+    gap_point = gap_metric(scored)
+    gap_boot = week_blocked_bootstrap(
+        scored, gap_metric, block="week", samples=SEASON_TIMING_SAMPLES, seed=SEASON_TIMING_SEED
+    )
+    accuracy_gap_row = gap_boot.loc[gap_boot["metric"].eq("accuracy_gap")].iloc[0]
+    confidence_gap_row = gap_boot.loc[gap_boot["metric"].eq("confidence_gap")].iloc[0]
+    return SeasonTiming(
+        rows=tuple(rows),
+        accuracy_gap=gap_point["accuracy_gap"],
+        accuracy_gap_lower=float(accuracy_gap_row["lower"]),
+        accuracy_gap_upper=float(accuracy_gap_row["upper"]),
+        accuracy_gap_probability_positive=float(accuracy_gap_row["probability_positive"]),
+        confidence_gap=gap_point["confidence_gap"],
+        confidence_gap_lower=float(confidence_gap_row["lower"]),
+        confidence_gap_upper=float(confidence_gap_row["upper"]),
+        confidence_gap_probability_positive=float(confidence_gap_row["probability_positive"]),
     )

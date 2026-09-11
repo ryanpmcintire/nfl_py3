@@ -12,8 +12,9 @@ import pandas as pd
 DISPLAY_BUCKETS = ("0-6.5", "7", "7.5-10", "10.5+")
 PROBABILITY_BANDS = ("[0.50, 0.55)", "[0.55, 0.60)", "[0.60, 1]")
 PSEUDO_OBSERVATIONS = 20.0
+PICK_SIDE_FLOOR = 0.5
 
-DISPLAYED_CONFIDENCE_POLICY = "displayed_confidence_reliability_v1"
+DISPLAYED_CONFIDENCE_POLICY = "displayed_confidence_reliability_v2_pick_side_floor"
 DISPLAYED_CONFIDENCE_SERVED = True
 DISPLAYED_CONFIDENCE_FILENAME = "displayed_confidence.json"
 DISPLAYED_PICK_PROBABILITY_COLUMN = "displayed_pick_probability"
@@ -22,6 +23,10 @@ DISPLAYED_STRENGTH_WORD_COLUMN = "displayed_strength_word"
 STRENGTH_WORDS = ("slight", "lean", "strong")
 STRENGTH_BAND_QUANTILES = (1.0 / 3.0, 2.0 / 3.0)
 STRENGTH_ROUNDING_PLACES = 3
+
+
+class DisplayedConfidenceSourceError(RuntimeError):
+    pass
 
 
 def display_spread_bucket(spread: pd.Series) -> pd.Series:
@@ -71,7 +76,9 @@ class ReliabilityCells:
         calibrated = (prior_wins + PSEUDO_OBSERVATIONS * value) / (
             prior_games + PSEUDO_OBSERVATIONS
         )
-        return calibrated.where(keys.notna(), value)
+        calibrated = calibrated.where(keys.notna(), value)
+        inverted = value.ge(PICK_SIDE_FLOOR) & calibrated.lt(PICK_SIDE_FLOOR)
+        return calibrated.mask(inverted, PICK_SIDE_FLOOR)
 
     def to_frame(self) -> pd.DataFrame:
         rows = []
@@ -324,13 +331,12 @@ def fit_production_displayed_confidence(
         except Exception as error:
             warnings.append(f"matching opener evaluation lookup failed: {error}")
             evaluation = None
-    if evaluation is None:
-        evaluation = _newest_opener_evaluation(artifacts_root)
-        if evaluation is not None:
-            warnings.append(
-                "no opener evaluation matches the active model; display cells fitted from the "
-                f"newest evaluation {evaluation.name} instead"
-            )
+    if evaluation is None and _newest_opener_evaluation(artifacts_root) is not None:
+        raise DisplayedConfidenceSourceError(
+            "no opener evaluation matches the active model "
+            f"{active_model_id or '(unknown)'}; the displayed confidence would come from "
+            "another model's record. Re-run the opener evaluation for the active model."
+        )
     if evaluation is None or not (evaluation / "per_game.parquet").is_file():
         warnings.append("no opener evaluation archive found; displaying the stated probability")
         return _empty_production(active_model_id, warnings)
@@ -342,9 +348,10 @@ def fit_production_displayed_confidence(
     prior = prior_rows_before(stream, season, week)
     source_model_id = _evaluation_model_id(evaluation)
     if active_model_id and source_model_id and source_model_id != active_model_id:
-        warnings.append(
-            f"display history comes from model {source_model_id}, the active model is "
-            f"{active_model_id}"
+        raise DisplayedConfidenceSourceError(
+            f"the displayed confidence would be fitted from model {source_model_id} while the "
+            f"active model is {active_model_id}. Re-run the opener evaluation for the active "
+            "model."
         )
     try:
         bands = derive_strength_bands(stream)
@@ -385,7 +392,14 @@ def attach_displayed_confidence(
     if calibration is None or not calibration.served:
         frame[DISPLAYED_PICK_PROBABILITY_COLUMN] = stated
         return frame
-    frame[DISPLAYED_PICK_PROBABILITY_COLUMN] = calibration.calibrate(stated, frame["spread_line"])
+    displayed = calibration.calibrate(stated, frame["spread_line"])
+    contradicted = int((displayed.lt(PICK_SIDE_FLOOR) & stated.ge(PICK_SIDE_FLOOR)).sum())
+    if contradicted:
+        raise DisplayedConfidenceSourceError(
+            f"{contradicted} displayed scores fall below {PICK_SIDE_FLOOR:.0%} on a side the "
+            "card picks"
+        )
+    frame[DISPLAYED_PICK_PROBABILITY_COLUMN] = displayed
     if calibration.bands is not None:
         frame[DISPLAYED_STRENGTH_WORD_COLUMN] = calibration.bands.words(
             frame[DISPLAYED_PICK_PROBABILITY_COLUMN]
@@ -417,11 +431,13 @@ __all__ = [
     "DISPLAYED_PICK_PROBABILITY_COLUMN",
     "DISPLAYED_STRENGTH_WORD_COLUMN",
     "DISPLAY_BUCKETS",
+    "PICK_SIDE_FLOOR",
     "PROBABILITY_BANDS",
     "PSEUDO_OBSERVATIONS",
     "STRENGTH_BAND_QUANTILES",
     "STRENGTH_ROUNDING_PLACES",
     "STRENGTH_WORDS",
+    "DisplayedConfidenceSourceError",
     "ProductionDisplayedConfidence",
     "ReliabilityCells",
     "StrengthBands",

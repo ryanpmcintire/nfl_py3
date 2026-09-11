@@ -119,6 +119,12 @@ def record_tiebreaker_shade_decisions(
         season, week = int(payload["season"]), int(payload["week"])
         if season < 2026:
             return skip("prospective seasons start in 2026")
+        if float(payload.get("total_low_side_shade_points") or 0.0) <= -1.0 + 1e-9:
+            return skip(
+                "the served tiebreaker total already carries the low-side shade this "
+                "challenger tests, so its served and shaded arms are no longer a paired "
+                "contrast -- see docs/tiebreaker.md's 2026-09-10 section"
+            )
         recorded_week = (
             settled["season"].eq(season) & settled["week"].eq(week)
             if not settled.empty

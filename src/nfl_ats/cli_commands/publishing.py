@@ -15,6 +15,11 @@ from nfl_ats.best_pick_nomination import (
     record_nomination_v3_challenger_decisions,
 )
 from nfl_ats.best_pick_refresh_prospective import record_best_pick_refresh, record_best_pick_tuesday
+from nfl_ats.best_pick_renomination import (
+    apply_star_to_card,
+    plan_best_pick_renomination,
+    renomination_summary,
+)
 from nfl_ats.board_content import verify_number_provenance
 from nfl_ats.board_site import build_site
 from nfl_ats.bye_edge_fade_overlay import record_bye_edge_fade_challenger_decisions
@@ -46,12 +51,18 @@ from nfl_ats.expected_lineup_loss_challenger import record_expected_lineup_loss_
 from nfl_ats.forecast_cold_visitor_tilt_overlay import (
     record_forecast_cold_visitor_tilt_challenger_decisions,
 )
+from nfl_ats.forecast_weather_kn_heat_pace_fade_overlay import (
+    record_forecast_weather_kn_heat_pace_fade_challenger_decisions,
+)
 from nfl_ats.forecast_weather_kn_precip_high_total_tilt_overlay import (
     record_forecast_weather_kn_precip_high_total_tilt_challenger_decisions,
 )
 from nfl_ats.forecast_weather_kn_warm_team_cold_late_tilt_overlay import (
     fetch_shared_kickoff_nearest_forecasts_fail_open,
     record_forecast_weather_kn_warm_team_cold_late_tilt_challenger_decisions,
+)
+from nfl_ats.forecast_weather_kn_wind_pass_heavy_fade_overlay import (
+    record_forecast_weather_kn_wind_pass_heavy_fade_challenger_decisions,
 )
 from nfl_ats.four_overlay_incumbent import record_former_production_incumbent_decisions
 from nfl_ats.gaussian_mean_mapping_incumbent_overlay import (
@@ -71,9 +82,13 @@ from nfl_ats.io import atomic_text
 from nfl_ats.key_line_pick_read_incumbent_overlay import (
     record_key_line_pick_read_incumbent_challenger_decisions,
 )
+from nfl_ats.late_week_follow_no_sunday_blackout_overlay import (
+    record_late_week_follow_no_sunday_blackout_overlay,
+)
 from nfl_ats.late_week_move_follow_refresh_overlay import (
     record_late_week_move_follow_refresh_overlay,
 )
+from nfl_ats.lattice_centre_challenger import record_lattice_centre_decisions
 from nfl_ats.low_total_div_home_dog_challenger import (
     record_low_total_div_home_dog_challenger_decisions,
 )
@@ -85,6 +100,9 @@ from nfl_ats.pbp08_protection_mismatch_tilt_overlay import (
     record_pbp08_protection_mismatch_tilt_challenger_decisions,
 )
 from nfl_ats.pick_refresh import append_refresh_to_card, plan_refresh, record_plan, refresh_summary
+from nfl_ats.post_bye_new_playcaller_back_overlay import (
+    record_post_bye_new_playcaller_back_overlay_decisions,
+)
 from nfl_ats.prospective import (
     record_movement_rule_composed_challenger_decisions,
     record_nflcom_refresh_out2_starters_challenger_decisions,
@@ -96,6 +114,9 @@ from nfl_ats.qb_revenge_deadline_drag_stack_challenger import (
 from nfl_ats.rain_on_grass_dog_challenger import record_rain_on_grass_dog_challenger_decisions
 from nfl_ats.retired_four_member_union import record_retired_four_member_union_decisions
 from nfl_ats.retired_three_member_union import record_retired_three_member_union_decisions
+from nfl_ats.rookie_prior_surplus_tilt_overlay import (
+    record_rookie_prior_surplus_tilt_overlay_decisions,
+)
 from nfl_ats.served_total_challenger import record_totals_served_method_decisions
 from nfl_ats.special_teams_return_tilt_overlay import (
     record_special_teams_return_tilt_challenger_decisions,
@@ -113,9 +134,12 @@ from nfl_ats.tiebreaker_shade_prospective import record_tiebreaker_shade_decisio
 from nfl_ats.turnover_luck_rebound_tilt_overlay import (
     record_turnover_luck_rebound_tilt_challenger_decisions,
 )
+from nfl_ats.tv_attention_fade_overlay import record_tv_attention_fade_overlay_decisions
+from nfl_ats.veteran_rest_back_overlay import record_veteran_rest_back_overlay_decisions
 
 PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "tiebreaker_low_side_shade": "tiebreaker_shade_ledger",
+    "tiebreaker_lattice_centre": "lattice_centre_challenger_ledger",
     "weak_stack_deadline_drag": "deadline_drag_challenger_ledger",
     "weak_stack_expected_lineup_loss": "expected_lineup_loss_challenger_ledger",
     "hc_year_one_fade_overlay": "overlay_challenger_ledger",
@@ -143,6 +167,10 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "forecast_weather_kn_precip_high_total_tilt": (
         "forecast_weather_kn_precip_high_total_tilt_challenger_ledger"
     ),
+    "forecast_weather_kn_wind_pass_heavy_fade": (
+        "forecast_weather_kn_wind_pass_heavy_fade_challenger_ledger"
+    ),
+    "forecast_weather_kn_heat_pace_fade": ("forecast_weather_kn_heat_pace_fade_challenger_ledger"),
     "movement_rule_composed_v1": "movement_rule_composed_challenger_ledger",
     "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_challenger_ledger",
     "pbp08_protection_mismatch_tilt_overlay": ("pbp08_protection_mismatch_tilt_challenger_ledger"),
@@ -155,6 +183,12 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "totals_served_method": "totals_served_method_challenger_ledger",
     "low_total_div_home_dog_challenger": "low_total_div_home_dog_challenger_ledger",
     "rain_on_grass_dog_challenger": "rain_on_grass_dog_challenger_ledger",
+    "veteran_rest_back_overlay": "veteran_rest_back_overlay_challenger_ledger",
+    "post_bye_new_playcaller_back_overlay": (
+        "post_bye_new_playcaller_back_overlay_challenger_ledger"
+    ),
+    "tv_attention_fade_overlay": "tv_attention_fade_overlay_challenger_ledger",
+    "rookie_prior_surplus_tilt_overlay": "rookie_prior_surplus_tilt_overlay_challenger_ledger",
 }
 
 REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
@@ -175,6 +209,7 @@ REFRESH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "handle_follow_refresh_off_incumbent": "handle_follow_refresh_overlay",
     "rookie_crew_underdog_off_incumbent": "ledger",
     "consensus_movement_1_0_off_incumbent": "consensus_movement_refresh_overlay",
+    "late_week_follow_no_sunday_blackout": "late_week_follow_no_sunday_blackout_overlay",
 }
 
 
@@ -344,6 +379,21 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             )
         except Exception as error:
             result["tiebreaker_shade_ledger"] = {"recorded": 0, "error": str(error)}
+        try:
+            result["lattice_centre_challenger_ledger"] = record_lattice_centre_decisions(
+                _artifacts_root(),
+                _data_root(),
+                published_path=(
+                    Path(result["tiebreaker_json_path"])
+                    if result.get("tiebreaker_json_path")
+                    else None
+                ),
+                now=publish_instant,
+                forecast_artifact=request.record_from_forecast,
+                replace_week=request.replace_week,
+            )
+        except Exception as error:
+            result["lattice_centre_challenger_ledger"] = {"recorded": 0, "error": str(error)}
         try:
             result["overlay_challenger_ledger"] = record_overlay_challenger_decisions(
                 _artifacts_root(),
@@ -755,6 +805,38 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "error": str(error),
             }
         try:
+            result["forecast_weather_kn_wind_pass_heavy_fade_challenger_ledger"] = (
+                record_forecast_weather_kn_wind_pass_heavy_fade_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    _registry_root(),
+                    forecasts=shared_kn_forecasts,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["forecast_weather_kn_wind_pass_heavy_fade_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["forecast_weather_kn_heat_pace_fade_challenger_ledger"] = (
+                record_forecast_weather_kn_heat_pace_fade_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    _registry_root(),
+                    forecasts=shared_kn_forecasts,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["forecast_weather_kn_heat_pace_fade_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
             result["rain_on_grass_dog_challenger_ledger"] = (
                 record_rain_on_grass_dog_challenger_decisions(
                     _artifacts_root(),
@@ -829,6 +911,67 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
                 "recorded": 0,
                 "error": str(error),
             }
+        try:
+            result["veteran_rest_back_overlay_challenger_ledger"] = (
+                record_veteran_rest_back_overlay_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["veteran_rest_back_overlay_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["post_bye_new_playcaller_back_overlay_challenger_ledger"] = (
+                record_post_bye_new_playcaller_back_overlay_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["post_bye_new_playcaller_back_overlay_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["rookie_prior_surplus_tilt_overlay_challenger_ledger"] = (
+                record_rookie_prior_surplus_tilt_overlay_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    repo_root=Path.cwd(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["rookie_prior_surplus_tilt_overlay_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["tv_attention_fade_overlay_challenger_ledger"] = (
+                record_tv_attention_fade_overlay_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["tv_attention_fade_overlay_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
         result["failed_recorders"] = collect_failed_recorders(
             result, PUBLISH_CHALLENGER_RESULT_KEYS
         )
@@ -841,6 +984,11 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "reason": "pass --record-decisions",
         }
         result["tiebreaker_shade_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions",
+        }
+        result["lattice_centre_challenger_ledger"] = {
             "recorded": 0,
             "skipped": True,
             "reason": "pass --record-decisions",
@@ -1039,6 +1187,18 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "reason": "pass --record-decisions to append the forecast (kickoff-nearest) "
             "precip-high-total tilt's picks to the prospective challenger ledger",
         }
+        result["forecast_weather_kn_wind_pass_heavy_fade_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the forecast (kickoff-nearest) "
+            "wind pass-heavy fade's picks to the prospective challenger ledger",
+        }
+        result["forecast_weather_kn_heat_pace_fade_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the forecast (kickoff-nearest) "
+            "heat pace-fade's picks to the prospective challenger ledger",
+        }
         result["movement_rule_composed_challenger_ledger"] = {
             "recorded": 0,
             "skipped": True,
@@ -1062,6 +1222,30 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append this week's tiebreaker game under "
             "both served-total methods to the prospective challenger ledger",
+        }
+        result["veteran_rest_back_overlay_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the veteran rest-day BACK "
+            "overlay's picks to the prospective challenger ledger",
+        }
+        result["post_bye_new_playcaller_back_overlay_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the post-bye new-playcaller "
+            "BACK overlay's picks to the prospective challenger ledger",
+        }
+        result["rookie_prior_surplus_tilt_overlay_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the rookie-starter value "
+            "tilt's picks to the prospective challenger ledger",
+        }
+        result["tv_attention_fade_overlay_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the TV-attention FADE "
+            "overlay's picks to the prospective challenger ledger",
         }
     return result
 
@@ -1087,6 +1271,12 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     )
     result = refresh_summary(plan, record_decisions=args.record_decisions)
     try:
+        renomination = plan_best_pick_renomination(_artifacts_root(), _data_root(), plan)
+        result["best_pick_renomination"] = renomination_summary(renomination)
+    except Exception as error:
+        renomination = None
+        result["best_pick_renomination"] = {"served": False, "error": str(error)}
+    try:
         result["best_pick_refresh_ledger"] = record_best_pick_refresh(
             _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
         )
@@ -1100,6 +1290,7 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
             record_decisions=args.record_decisions,
             trigger_type=getattr(args, "trigger_type", "clock_dispatch"),
             trigger_source=getattr(args, "trigger_source", ""),
+            renomination=renomination,
         )
     except Exception as error:
         result["ledger"] = {"recorded": 0, "error": str(error)}
@@ -1165,17 +1356,31 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
         )
     except Exception as error:
         result["consensus_movement_refresh_overlay"] = {"recorded": 0, "error": str(error)}
+    try:
+        result["late_week_follow_no_sunday_blackout_overlay"] = (
+            record_late_week_follow_no_sunday_blackout_overlay(
+                _artifacts_root(), _data_root(), plan, record_decisions=args.record_decisions
+            )
+        )
+    except Exception as error:
+        result["late_week_follow_no_sunday_blackout_overlay"] = {"recorded": 0, "error": str(error)}
     result["failed_recorders"] = collect_failed_recorders(result, REFRESH_CHALLENGER_RESULT_KEYS)
     if args.publish_card:
-        if not plan.changed_games:
+        star_moved = renomination is not None and renomination.moved
+        if not plan.changed_games and not star_moved:
             result["card"] = {
                 "written": False,
-                "reason": "no eligible picks changed; nothing to append",
+                "reason": "no eligible picks changed and the Best Pick did not move",
             }
         else:
             try:
-                append_refresh_to_card(args.destination, plan, note=args.note)
-                result["card"] = {"written": True, "destination": str(args.destination)}
+                append_refresh_to_card(
+                    args.destination, plan, note=args.note, renomination=renomination
+                )
+                card: dict[str, Any] = {"written": True, "destination": str(args.destination)}
+                if star_moved and renomination is not None:
+                    card["best_pick"] = apply_star_to_card(args.destination, renomination)
+                result["card"] = card
             except (ValueError, FileNotFoundError) as error:
                 result["card"] = {"written": False, "error": str(error)}
     _print_json(result)

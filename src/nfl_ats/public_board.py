@@ -1297,7 +1297,7 @@ def _week_board(
     )
 
 
-def load_waterfall_feed(artifacts_root: Path) -> dict[str, dict[str, Any]]:
+def load_waterfall_feed_document(artifacts_root: Path) -> dict[str, Any]:
 
     pointer_path = artifacts_root / "waterfall_feed" / "latest.json"
     try:
@@ -1317,7 +1317,12 @@ def load_waterfall_feed(artifacts_root: Path) -> dict[str, dict[str, Any]]:
         feed = read_json(artifacts_root / "waterfall_feed" / latest / "feed.json")
     except (ValueError, OSError):
         return {}
-    games = feed.get("games") if isinstance(feed, dict) else None
+    return feed if isinstance(feed, dict) else {}
+
+
+def waterfall_games_by_id(feed: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
+
+    games = feed.get("games")
     if not isinstance(games, list):
         return {}
     return {
@@ -1325,6 +1330,11 @@ def load_waterfall_feed(artifacts_root: Path) -> dict[str, dict[str, Any]]:
         for entry in games
         if isinstance(entry, dict) and "game_id" in entry
     }
+
+
+def load_waterfall_feed(artifacts_root: Path) -> dict[str, dict[str, Any]]:
+
+    return waterfall_games_by_id(load_waterfall_feed_document(artifacts_root))
 
 
 _LEDGER_UNAVAILABLE_HTML = (
@@ -4003,6 +4013,7 @@ __all__ = [
     "load_public_board_artifacts",
     "load_served_union_measurement",
     "load_waterfall_feed",
+    "load_waterfall_feed_document",
     "pick_side",
     "render_findings_page",
     "render_models_page",
@@ -4012,4 +4023,5 @@ __all__ = [
     "render_team_explorer_page",
     "row_confidence_word",
     "spread_words",
+    "waterfall_games_by_id",
 ]

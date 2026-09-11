@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-10T18:24:56.237229+00:00`
+Refreshed at: `2026-09-11T05:27:46.404498+00:00`
 
 ## Start here
 
@@ -20,8 +20,29 @@ Refreshed at: `2026-09-10T18:24:56.237229+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `521f59b78fbe` — Injury news is polled every four hours, not once a day: the source page holds ~12 hours of posts and its monthly archive stops at June, so the daily pull was losing about half of each week's articles with nothing to backfill them
-- Pending change set: none
+- Baseline commit: `ef24943cf6d4` — Injury news is polled every four hours, not once a day: the source page holds ~12 hours of posts and its monthly archive stops at June, so the daily pull was losing about half of each week's articles with nothing to backfill them
+- Pending change set: 134 paths
+  - `M  .gitignore`
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  README.md`
+  - `M  ROADMAP.md`
+  - `M  artifacts/prospective/challengers.json`
+  - `M  config/source_policies.json`
+  - `A  deploy/nfl-ats-capture.service`
+  - `A  docs/altitude_fourth_quarter.md`
+  - `A  docs/bayesian_team_model_on_production.md`
+  - `A  docs/best_pick_sunday_renomination.md`
+  - `A  docs/coach_speak_base_rates.md`
+  - `M  docs/coaching_leads.md`
+  - `A  docs/contest_utility_optimizer.md`
+  - `M  docs/findings.html`
+  - `A  docs/friday_designation_momentum.md`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/late_season_crews.md`
+  - `M  docs/late_week_refresh.md`
+  - ...and 114 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -30,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `96f294ae47c853a2`
+- Model ID: `d49194e04945a5e5`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260910T165551Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.56%** on **1,537 games** (`opener_evaluation/20260910T211255Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-10T16:51:38.210957+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-10T21:08:52.849945+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `96f294ae47c853a2`, published `2026-09-10T17:04:16.063157+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `d49194e04945a5e5`, published `2026-09-11T05:18:34.686177+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

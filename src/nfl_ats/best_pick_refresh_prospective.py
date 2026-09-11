@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import math
 from datetime import UTC, datetime
 from pathlib import Path
@@ -8,7 +7,7 @@ from typing import Any, cast
 
 import pandas as pd
 
-from nfl_ats.best_pick_nomination import select_nominee
+from nfl_ats.best_pick_renomination import renomination_pool, select_renominee
 from nfl_ats.clv import refuse_if_outside_recording_lock_window
 from nfl_ats.io import atomic_parquet
 from nfl_ats.pick_refresh import RefreshResult, original_card, pick_deadline, sunday_pick_lock
@@ -214,12 +213,6 @@ def record_best_pick_refresh(
             }
             if not set(playable["game_id"]).issubset(refreshed):
                 return skip("refreshed probabilities missing for playable games")
-            pool = pd.DataFrame(json.loads(frozen["pool_json"]))
-            pool = pool.loc[
-                pool["game_id"].isin(playable["game_id"]) & pool["pool_pass"].eq(True)
-            ].copy()
-            if pool.empty:
-                return skip("no playable member of Tuesday's nomination pool")
             probabilities = {
                 game_id: refreshed[game_id].new_home_cover_probability
                 for game_id in playable["game_id"]
@@ -228,8 +221,22 @@ def record_best_pick_refresh(
                 math.isfinite(value) and 0 <= value <= 1 for value in probabilities.values()
             ):
                 return skip("invalid refreshed probability")
-            pool["candidate_dist"] = pool["game_id"].map(probabilities).sub(0.5).abs()
-            game_id, _, _ = select_nominee(pool)
+            playable_ids = playable["game_id"].astype(str).tolist()
+            pool_frame, _, _ = renomination_pool(data_root, playable_ids, instant=instant)
+            pool = playable[["game_id", "kickoff", "decision_home_spread", "pick_side"]].merge(
+                pool_frame[["game_id", "spread_std", "pool_pass"]], on="game_id", how="left"
+            )
+            pool = pool.loc[pool["pool_pass"].fillna(False).astype(bool)].copy()
+            if pool.empty:
+                return skip("no playable member of the Sunday nomination pool")
+            home_probability = pool["game_id"].map(probabilities)
+            played_side = pool["game_id"].map(
+                {game_id: str(refreshed[game_id].new_pick_side) for game_id in playable["game_id"]}
+            )
+            pool["statistic"] = home_probability.where(
+                played_side.eq("HOME"), 1.0 - home_probability
+            )
+            game_id, _, _ = select_renominee(pool)
             game = refreshed[game_id]
             anchor = playable.set_index("game_id").loc[game_id]
             if game.new_pick_side not in {"HOME", "AWAY"} or game.decision_home_spread != float(

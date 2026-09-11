@@ -118,7 +118,7 @@ def test_the_real_backup_job_is_guarded_and_runs_after_the_weeks_last_capture() 
     latest_capture = max(
         capture_scheduler.occurrence(job, sunday)
         for job in capture_scheduler.SCHEDULE
-        if job.name != "backup_data"
+        if not job.name.startswith(("backup_", "sync_captures_"))
         and capture_scheduler.occurrence(job, sunday).date() == sunday.date()
     )
     assert capture_scheduler.occurrence(backup, sunday) > latest_capture

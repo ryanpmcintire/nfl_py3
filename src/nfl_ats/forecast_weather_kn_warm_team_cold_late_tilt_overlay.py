@@ -51,6 +51,7 @@ WARM_TEAM_COLD_LATE_MIN_WEEK = 13
 
 MOS_MODEL = "GFS"
 LIVE_FORECAST_CUTOFF_MODE = "pool_decision"
+KNOTS_TO_MPH = 1.15078
 
 
 def _live_cutoff_metadata(kickoff_utc: pd.Timestamp) -> dict[str, str]:
@@ -88,6 +89,7 @@ def fetch_one_game_kickoff_nearest(
             time.sleep(delay_seconds)
             return {
                 "forecast_temp_f": None,
+                "forecast_wind_mph": None,
                 "forecast_precip_prob_pct": None,
                 "fetch_status": "transport_error",
                 "issuance_runtime_utc": None,
@@ -101,12 +103,14 @@ def fetch_one_game_kickoff_nearest(
             if pd.isna(issuance) or issuance > cutoff_utc:
                 return {
                     "forecast_temp_f": None,
+                    "forecast_wind_mph": None,
                     "forecast_precip_prob_pct": None,
                     "fetch_status": "invalid_issuance_timestamp",
                     "issuance_runtime_utc": row.get("runtime_utc"),
                     **cutoff_metadata,
                 }
             tmp = row.get("tmp")
+            wsp = row.get("wsp")
             precip_row = _nearest_row_with_field(
                 rows, kickoff_utc, "p06"
             ) or _nearest_row_with_field(rows, kickoff_utc, "p12")
@@ -118,6 +122,7 @@ def fetch_one_game_kickoff_nearest(
                     precip_prob_pct = float(precip_row["p12"])
             return {
                 "forecast_temp_f": float(tmp) if tmp is not None else None,
+                "forecast_wind_mph": (float(wsp) * KNOTS_TO_MPH if wsp is not None else None),
                 "forecast_precip_prob_pct": precip_prob_pct,
                 "fetch_status": "ok",
                 "issuance_runtime_utc": issuance.isoformat(),
@@ -125,6 +130,7 @@ def fetch_one_game_kickoff_nearest(
             }
     return {
         "forecast_temp_f": None,
+        "forecast_wind_mph": None,
         "forecast_precip_prob_pct": None,
         "fetch_status": "no_bulletin_within_lookback",
         "issuance_runtime_utc": None,
@@ -183,6 +189,7 @@ def _fetch_kickoff_nearest_forecasts(
                 {
                     "game_id": game_id,
                     "forecast_temp_f": None,
+                    "forecast_wind_mph": None,
                     "forecast_precip_prob_pct": None,
                     "fetch_status": "unmappable_international_stadium",
                     "issuance_runtime_utc": None,
@@ -226,6 +233,7 @@ def fetch_kickoff_nearest_forecasts_fail_open(
                 {
                     "game_id": str(game.game_id),
                     "forecast_temp_f": np.nan,
+                    "forecast_wind_mph": np.nan,
                     "forecast_precip_prob_pct": np.nan,
                     "fetch_status": "fetch_failed",
                     "issuance_runtime_utc": None,

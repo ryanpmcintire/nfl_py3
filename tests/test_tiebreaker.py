@@ -15,6 +15,7 @@ from nfl_ats.tiebreaker import (
     _MIN_NEIGHBORHOOD,
     _NEIGHBORHOOD_WINDOWS,
     MODEL_RESIDUAL_WEIGHT,
+    TOTAL_LOW_SIDE_SHADE_POINTS,
     MarketConsensus,
     ModelView,
     TiebreakerConsistencyError,
@@ -137,7 +138,7 @@ def test_tiebreaker_report_falls_back_to_schedules_when_no_snapshots(tmp_path: P
     assert report.game_id == "2026_01_DEN_KC"
     assert "schedules" in report.consensus.source
     assert report.consensus.home_expected_margin == pytest.approx(2.5)
-    assert report.implied_home == pytest.approx((43.0 + 2.5) / 2)
+    assert report.implied_home == pytest.approx((43.0 + TOTAL_LOW_SIDE_SHADE_POINTS + 2.5) / 2)
 
 
 def _artifacts_tree(tmp_path: Path) -> Path:
@@ -178,15 +179,7 @@ def test_active_model_view_reads_the_active_method_row(tmp_path: Path) -> None:
 
 
 def test_build_report_blends_the_model_residual_at_the_measured_weight() -> None:
-    schedules = _schedules()
-    finals = lined_finals(schedules)
-    game = schedules.iloc[4]
-    consensus = MarketConsensus(
-        game_id="2026_01_DEN_KC",
-        home_expected_margin=2.5,
-        total_line=43.0,
-        source="test",
-    )
+    game, consensus, finals = _den_kc_game_with_dense_finals()
     view = ModelView(predicted_margin=4.31, forecast_line=3.0, residual=1.31, source="test")
     report = build_report(game, consensus, finals, view)
     assert report.guess_margin == pytest.approx(2.5 + MODEL_RESIDUAL_WEIGHT * 1.31)
@@ -307,8 +300,12 @@ def test_tiebreaker_report_has_no_totals_view_without_a_feature_table(tmp_path: 
 
     report = tiebreaker_report(tmp_path, season=2026, week=1)
     assert report.totals_view is None
-    assert report.guess_total_line == pytest.approx(report.consensus.total_line)
-    assert report.implied_home + report.implied_away == pytest.approx(43.0)
+    assert report.guess_total_line == pytest.approx(
+        report.consensus.total_line + TOTAL_LOW_SIDE_SHADE_POINTS
+    )
+    assert report.implied_home + report.implied_away == pytest.approx(
+        43.0 + TOTAL_LOW_SIDE_SHADE_POINTS
+    )
 
 
 def test_tiebreaker_report_uses_the_wave2_totals_view_when_the_pbp_table_exists(
@@ -349,7 +346,7 @@ def test_tiebreaker_report_uses_the_wave2_totals_view_when_the_pbp_table_exists(
     assert calls == ["2026_01_DEN_KC"]
     assert report.totals_view is sentinel
     assert "wave 2" in report.totals_view.source
-    assert report.guess_total_line == pytest.approx(43.0 + 0.1 * 0.4)
+    assert report.guess_total_line == pytest.approx(43.0 + 0.1 * 0.4 + TOTAL_LOW_SIDE_SHADE_POINTS)
 
 
 def test_tiebreaker_report_falls_back_to_the_wave1_totals_view_when_the_pbp_table_is_absent(
@@ -416,7 +413,9 @@ def test_tiebreaker_report_fails_closed_when_wave2_input_is_misaligned(
 
     report = tiebreaker_report(tmp_path, season=2026, week=1)
     assert report.totals_view is None
-    assert report.guess_total_line == pytest.approx(report.consensus.total_line)
+    assert report.guess_total_line == pytest.approx(
+        report.consensus.total_line + TOTAL_LOW_SIDE_SHADE_POINTS
+    )
 
 
 def test_tiebreaker_report_unknown_game_id_raises(tmp_path: Path) -> None:
@@ -556,12 +555,14 @@ def test_weighted_score_counts_are_weighted_and_sum_to_the_total_weight() -> Non
         ),
         finals,
     )
-    ranked = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    shaded_hood = _neighborhood(finals, 2.5, 43.0 + TOTAL_LOW_SIDE_SHADE_POINTS)
+    shaded_counts = weighted_score_counts(shaded_hood.frame, shaded_hood.weights)
+    ranked = sorted(shaded_counts.items(), key=lambda item: (-item[1], item[0]))
     assert [(home, away) for (home, away), _ in ranked[:3]] == [
         (home, away) for home, away, _ in report.common_scores
     ]
-    assert report.common_scores[0][2] == pytest.approx(200.0)
-    assert "(200.0x)" in format_report(report)
+    assert report.common_scores[0][2] == pytest.approx(200.0 / 3.0)
+    assert "(66.7x)" in format_report(report)
 
 
 def test_neighborhood_does_not_widen_when_the_base_bandwidth_already_clears() -> None:
@@ -620,7 +621,7 @@ def test_kernel_neighborhood_does_not_flip_the_guess_on_a_sub_quantum_nudge() ->
         finals,
     )
     assert after.guess_total_line > before.guess_total_line
-    assert after.median_total == before.median_total == 43.0
+    assert after.median_total == before.median_total == 41.0
     assert (after.guess_home, after.guess_away) == (before.guess_home, before.guess_away)
     assert [(home, away) for home, away, _ in after.common_scores] == [
         (home, away) for home, away, _ in before.common_scores

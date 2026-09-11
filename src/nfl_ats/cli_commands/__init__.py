@@ -38,6 +38,7 @@ REGISTRARS: tuple[Registrar, ...] = (
     prediction.register,
     registry.register,
     evaluation.register_anytime,
+    operations.register_waterfall_feed,
     operations.register_weekly,
 )
 

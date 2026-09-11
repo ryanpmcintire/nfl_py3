@@ -44,8 +44,10 @@ from nfl_ats.model_ledger import (
 )
 from nfl_ats.model_weak_spots import (
     HomeCorrection,
+    SeasonTiming,
     WeakSpots,
     build_home_correction,
+    build_season_timing,
     build_weak_spots,
 )
 from nfl_ats.prospective_scoring import (
@@ -150,6 +152,7 @@ class ModelLedgerRowView:
     evidence: tuple[LedgerEvidenceItem, ...]
     agreement_text: str | None
     artifact_ref: str | None
+    season_record_text: str | None = None
 
 
 @dataclass(frozen=True)
@@ -365,6 +368,235 @@ class HistoryWeekGrade:
         return f"{delta:+.1%}" if delta is not None else "--"
 
 
+SEASON_SO_FAR_TITLE = "This season so far"
+
+SEASON_SO_FAR_NOTHING_SETTLED = (
+    "No game has finished yet this season, so there is nothing to grade. "
+    "The record appears here as soon as the first game is final."
+)
+
+SEASON_SO_FAR_TIEBREAKER_NOT_RECORDED = (
+    "No tiebreaker guess is on file for this week, so there is nothing to grade."
+)
+
+
+@dataclass(frozen=True)
+class SeasonChallengerRecord:
+    display_name: str
+    record_text: str
+    versus_card_text: str
+
+
+@dataclass(frozen=True)
+class SeasonSoFar:
+    season: int | None
+    settled_games: int
+    card_record_text: str
+    accuracy_text: str | None
+    caveat_text: str
+    best_pick_record_text: str
+    best_pick_text: str
+    tiebreaker_text: str
+    challengers: tuple[SeasonChallengerRecord, ...]
+    challenger_summary_text: str
+    nothing_settled_text: str | None
+
+    @property
+    def has_rows(self) -> bool:
+        return self.nothing_settled_text is None
+
+
+def _plain_record(wins: int, losses: int, pushes: int) -> str:
+    return f"{wins}-{losses}-{pushes}" if pushes else f"{wins}-{losses}"
+
+
+def _settled_pick_counts(rows: Sequence[HistoryPickRow]) -> tuple[int, int, int]:
+    wins = sum(row.status == "settled" and row.correct is True for row in rows)
+    losses = sum(row.status == "settled" and row.correct is False for row in rows)
+    pushes = sum(row.status == "push" for row in rows)
+    return wins, losses, pushes
+
+
+def _season_so_far_caveat(settled: int) -> str:
+    if settled >= 32:
+        return (
+            f"{settled} games is still a small slice of a season. Read it next to the "
+            "long-run numbers further down this page, not instead of them."
+        )
+    games = "game" if settled == 1 else "games"
+    return (
+        f"{settled} {games} is {settled} {games}. A run this short cannot tell a good "
+        "card from a lucky one, so treat it as news, not as evidence."
+    )
+
+
+def _season_challenger_rows(
+    assessments: Sequence[ChallengerAssessment],
+) -> tuple[tuple[SeasonChallengerRecord, ...], str]:
+
+    graded: list[tuple[int, SeasonChallengerRecord]] = []
+    ahead = level = behind = 0
+    for assessment in assessments:
+        settled = assessment.wins + assessment.losses + assessment.pushes
+        if settled == 0:
+            continue
+        difference: int | None = None
+        if assessment.delta_accuracy_points is not None and assessment.paired_games:
+            difference = round(assessment.delta_accuracy_points / 100.0 * assessment.paired_games)
+        if difference is None:
+            versus = "not lined up against the card yet"
+        elif difference > 0:
+            ahead += 1
+            picks = "pick" if difference == 1 else "picks"
+            versus = f"{difference} {picks} better than the card"
+        elif difference < 0:
+            behind += 1
+            picks = "pick" if difference == -1 else "picks"
+            versus = f"{-difference} {picks} worse than the card"
+        else:
+            level += 1
+            versus = "level with the card"
+        graded.append(
+            (
+                difference if difference is not None else 0,
+                SeasonChallengerRecord(
+                    display_name=assessment.display_name,
+                    record_text=_plain_record(
+                        assessment.wins, assessment.losses, assessment.pushes
+                    ),
+                    versus_card_text=versus,
+                ),
+            )
+        )
+    if not graded:
+        summary = (
+            "No rule being tried out has a graded pick yet. Each one is written down "
+            "before kickoff and graded here on the same games as the card."
+        )
+        return (), summary
+    differing = sorted(
+        (item for item in graded if item[1].versus_card_text != "level with the card"),
+        key=lambda item: (-item[0], item[1].display_name),
+    )
+    count = len(graded)
+    rules = "rule" if count == 1 else "rules"
+    summary = (
+        f"{count} {rules} being tried out alongside the card have graded picks this "
+        f"season: {ahead} got more right than the card, {level} got the same number "
+        f"right, {behind} got fewer. Every one was written down before kickoff and is "
+        "graded on the same games as the card."
+    )
+    return tuple(row for _, row in differing), summary
+
+
+def _build_season_so_far(
+    picks: Sequence[HistoryPickRow],
+    assessments: Sequence[ChallengerAssessment],
+    *,
+    season: int | None,
+    tiebreaker_text: str,
+) -> SeasonSoFar:
+
+    season_rows = [row for row in picks if season is None or row.season == season]
+    wins, losses, pushes = _settled_pick_counts(season_rows)
+    settled = wins + losses + pushes
+    challengers, challenger_summary = _season_challenger_rows(assessments)
+    if settled == 0:
+        return SeasonSoFar(
+            season=season,
+            settled_games=0,
+            card_record_text="--",
+            accuracy_text=None,
+            caveat_text="",
+            best_pick_record_text="--",
+            best_pick_text="",
+            tiebreaker_text=tiebreaker_text,
+            challengers=(),
+            challenger_summary_text="",
+            nothing_settled_text=SEASON_SO_FAR_NOTHING_SETTLED,
+        )
+    decided = wins + losses
+    accuracy_text = f"{wins / decided:.0%} right" if decided else None
+    best_rows = [row for row in season_rows if row.best_pick]
+    best_wins, best_losses, best_pushes = _settled_pick_counts(best_rows)
+    best_settled = best_wins + best_losses + best_pushes
+    best_pick_record_text = (
+        _plain_record(best_wins, best_losses, best_pushes) if best_settled else "--"
+    )
+    if best_settled:
+        weeks = "week" if best_settled == 1 else "weeks"
+        best_pick_text = (
+            f"The one pick singled out as the week's strongest, over {best_settled} "
+            f"finished {weeks}."
+        )
+    elif best_rows:
+        best_pick_text = "The pick singled out as this week's strongest has not finished yet."
+    else:
+        best_pick_text = "No pick has been singled out as a week's strongest yet."
+    return SeasonSoFar(
+        season=season,
+        settled_games=settled,
+        card_record_text=_plain_record(wins, losses, pushes),
+        accuracy_text=accuracy_text,
+        caveat_text=_season_so_far_caveat(settled),
+        best_pick_record_text=best_pick_record_text,
+        best_pick_text=best_pick_text,
+        tiebreaker_text=tiebreaker_text,
+        challengers=challengers,
+        challenger_summary_text=challenger_summary,
+        nothing_settled_text=None,
+    )
+
+
+def _season_tiebreaker_text(
+    artifacts_root: Path,
+    active: Mapping[str, Any],
+    outcomes: pd.DataFrame,
+) -> str:
+
+    from nfl_ats.active_model import active_artifact_path
+
+    try:
+        forecast_dir = active_artifact_path(artifacts_root, dict(active), "weekly_forecast")
+    except (OSError, ValueError):
+        forecast_dir = None
+    block: Any = None
+    if forecast_dir is not None:
+        path = forecast_dir / "tiebreaker.json"
+        if path.is_file():
+            try:
+                block = read_json(path)
+            except (ValueError, OSError):
+                block = None
+    if not isinstance(block, Mapping):
+        return SEASON_SO_FAR_TIEBREAKER_NOT_RECORDED
+    game_id = str(block.get("game_id") or "")
+    guess_home = _number(block.get("guess_home"))
+    guess_away = _number(block.get("guess_away"))
+    home = str(block.get("home") or "")
+    away = str(block.get("away") or "")
+    if not game_id or guess_home is None or guess_away is None or not home or not away:
+        return SEASON_SO_FAR_TIEBREAKER_NOT_RECORDED
+    guess = f"{away} {int(guess_away)}, {home} {int(guess_home)}"
+    final = pd.DataFrame()
+    if not outcomes.empty and "game_id" in outcomes.columns:
+        final = outcomes.loc[outcomes["game_id"].astype(str).eq(game_id)]
+    home_score = _number(final.iloc[0].get("home_score")) if not final.empty else None
+    away_score = _number(final.iloc[0].get("away_score")) if not final.empty else None
+    if home_score is None or away_score is None:
+        return (
+            f"The tiebreaker guess for {away} at {home} is {guess}. "
+            "It gets graded here once that game is final."
+        )
+    points_off = abs((home_score + away_score) - (guess_home + guess_away))
+    margin_off = abs((home_score - away_score) - (guess_home - guess_away))
+    return (
+        f"The tiebreaker guessed {guess} and the game finished {away} {int(away_score)}, "
+        f"{home} {int(home_score)}: {points_off:g} off on total points and "
+        f"{margin_off:g} off on the winning margin."
+    )
+
+
 @dataclass(frozen=True)
 class HistoryPageContent:
     generated_at_text: str
@@ -378,6 +610,7 @@ class HistoryPageContent:
     week_grades: tuple[HistoryWeekGrade, ...] = ()
     grade_caption: str = ""
     headline: HeadlineStats | None = None
+    season_so_far: SeasonSoFar | None = None
 
 
 @dataclass(frozen=True)
@@ -537,7 +770,12 @@ def load_model_weak_spots(artifacts_root: Path, active: Mapping[str, Any]) -> We
         spots = build_weak_spots(per_game)
     except (OSError, ValueError, KeyError):
         return WeakSpots()
-    return replace(spots, home_correction=_load_home_correction(artifacts_root, active, per_game))
+    spots = replace(spots, home_correction=_load_home_correction(artifacts_root, active, per_game))
+    try:
+        season_timing = build_season_timing(per_game)
+    except (ValueError, KeyError, TypeError):
+        season_timing = SeasonTiming()
+    return replace(spots, season_timing=season_timing)
 
 
 def _load_home_correction(
@@ -800,6 +1038,7 @@ _RECENT_ACTIVITY_EFFECT_UNIT_WORDS: dict[str, str] = {
     "mae": "points of average error",
     "mae_improvement": "points of average-error improvement",
     "correlation": "correlation",
+    "payout_first_pp": "percentage points of simulated chance of finishing first",
 }
 
 
@@ -1345,6 +1584,12 @@ def _load_history_page_content(
     archived_week_grades = _archive_week_grades(artifacts_root, active)
     week_grades = _combined_week_grades(recorded_week_grades, archived_week_grades)
     season_grades = _season_grade_rows(_season_rows(opener.seasons), active)
+    season_so_far = _build_season_so_far(
+        picks,
+        assessments,
+        season=board.ticker_chrome.season,
+        tiebreaker_text=_season_tiebreaker_text(artifacts_root, active, outcomes),
+    )
     grade_caption = HISTORY_GRADE_CAPTION if (season_grades or week_grades) else ""
     if archived_week_grades:
         grade_caption = f"{grade_caption} {HISTORY_WEEK_REPLAY_CAPTION}"
@@ -1366,6 +1611,7 @@ def _load_history_page_content(
         week_grades=week_grades,
         grade_caption=grade_caption,
         headline=board.headline,
+        season_so_far=season_so_far,
     )
 
 
@@ -1570,9 +1816,49 @@ def load_site_content(
 
     headline = headline_with_season_record(board.headline, history)
     board = replace(board, headline=headline)
-    model = replace(model, headline=headline)
+    model = _model_with_season_records(replace(model, headline=headline), history)
     history = replace(history, headline=headline)
     return SiteContent(board=board, model=model, history=history, findings=findings)
+
+
+def _model_with_season_records(
+    model: ModelPageContent, history: HistoryPageContent
+) -> ModelPageContent:
+
+    season = history.ticker_chrome.season
+    if season is None:
+        return model
+    records: dict[str, str] = {}
+    for assessment in history.challenger_assessments:
+        settled = assessment.wins + assessment.losses + assessment.pushes
+        if settled == 0:
+            continue
+        record = _plain_record(assessment.wins, assessment.losses, assessment.pushes)
+        records[assessment.challenger_id] = f"{season} so far: {record}"
+    card_rows = [row for row in history.picks if row.season == season]
+    card_wins, card_losses, card_pushes = _settled_pick_counts(card_rows)
+    if card_wins + card_losses + card_pushes:
+        card_text = f"{season} so far: {_plain_record(card_wins, card_losses, card_pushes)}"
+    else:
+        card_text = None
+    if not records and card_text is None:
+        return model
+
+    def apply(rows: tuple[ModelLedgerRowView, ...]) -> tuple[ModelLedgerRowView, ...]:
+        return tuple(
+            replace(
+                row,
+                season_record_text=(card_text if row.is_promoted else records.get(row.arm_id)),
+            )
+            for row in rows
+        )
+
+    return replace(
+        model,
+        rows=apply(model.rows),
+        graded_rows=apply(model.graded_rows),
+        waiting_rows=apply(model.waiting_rows),
+    )
 
 
 __all__ = [
@@ -1585,6 +1871,9 @@ __all__ = [
     "NO_OPENER_LINE_ARCHIVED_SEASON_NOTE",
     "NO_OPENER_LINE_ARCHIVED_WEEK_NOTE",
     "PLAIN_SUMMARY_PENDING",
+    "SEASON_SO_FAR_NOTHING_SETTLED",
+    "SEASON_SO_FAR_TIEBREAKER_NOT_RECORDED",
+    "SEASON_SO_FAR_TITLE",
     "ChallengerAssessment",
     "FamilyWeightRow",
     "FindingItemView",
@@ -1598,8 +1887,10 @@ __all__ = [
     "LedgerEvidenceItem",
     "ModelLedgerRowView",
     "ModelPageContent",
+    "SeasonChallengerRecord",
     "SeasonGradeRow",
     "SeasonRowView",
+    "SeasonSoFar",
     "SignalLedgerSummary",
     "SignalNotableRow",
     "SiteContent",

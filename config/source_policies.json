@@ -105,6 +105,23 @@
         "four_hour_cache_ttl"
       ]
     },
+    "awful_announcing_tv_ratings": {
+      "risk": "yellow",
+      "terms_url": "https://awfulannouncing.com/",
+      "terms_reviewed_on": "2026-09-11",
+      "acquisition_allowed": true,
+      "raw_retention": "private_local_only",
+      "raw_redistribution": "prohibited",
+      "derived_publication": "aggregates_only",
+      "conditions": [
+        "research_use_only",
+        "capture_timestamp_required",
+        "contact_user_agent",
+        "minimum_delay_seconds_2",
+        "never_refetch_cached_slug",
+        "prose_extraction_manual_audit_required"
+      ]
+    },
     "the_odds_api": {
       "risk": "green",
       "terms_url": "https://the-odds-api.com/terms-and-conditions.html",

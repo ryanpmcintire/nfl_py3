@@ -1,5 +1,39 @@
 {
   "families": {
+    "all_star_crew_underdog_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "LEAD-33: weeks 15-18 games worked by a referee with prior-season playoff assignment (all-star crew), BACK the favorite when the underdog is run-heavy (physical), stacked on production's opener pick",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/experiments/late_season_crews/20260911T035551Z/results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "Assigned window 2020-2021, opener grade: 466 games, 14 triggers, 2 flips, net zero accuracy delta. Full 2020-2025 archive (not a separate spend): -0.266 pts [-0.853,+0.267] P+0.169. Positive control +45.4/+46.7 pts P+1.000 confirms sensitivity. Per AGENTS.md an interval containing zero is not grounds to close; EV-decision rule (P+ vs 0.5, never a significance bar) should gate whether this is played going forward.",
+          "probability_positive": 0.5,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "altitude_deficit_4000ft": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -260,6 +294,41 @@
             2021
           ],
           "spent_at": "2026-09-05",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "bayesian_team_model_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "MOD-06 dynamic arm: a chronological state-space team-strength posterior (partial pooling across teams, weekly random walk, explicit offseason reversion, Kalman-filtered on games strictly before each prediction) screened on top of production's served opener pick, both as a residual feature and as a posterior-SD uncertainty signal",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "A running power rating for every team that updates each week and resets partway toward the middle each offseason, kept with an honest error bar. We check two things: whether the rating disagreeing with the betting line should move our pick, and whether the size of the error bar tells us which picks to trust.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/bayesian_team_model_on_production/20260911T043121Z/summary.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 0.8771929824561403,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.6651884700665188,
+            2.4282560706401766
+          ],
+          "leg_effects": null,
+          "notes": "Assigned window 2020-2021, opener grade: 456 non-push games, 35 weeks, 14 picks changed, candidate 9-5 on them, 54.167 percent against production's 53.289 percent. The predeclared PRIMARY is the full 2020-2025 archive and it runs the other way: -0.931 accuracy points, week-blocked 95% [-1.978, +0.066], probability_positive 0.0328, 68 picks changed at 27-41. The two seasons in this window are exactly the two positive seasons in the per-season table, so the window read is disclosed and not substituted for the primary. Per AGENTS.md an interval containing zero closes nothing; the EV rule (probability_positive against 0.5) on the primary points at keeping production, and production is unchanged. A separate arm, replacing production's decision rule with a weekly walk-forward two-column OLS, did resolve wrong-sign (-3.203 [-5.419, -0.994]) and is recorded as refuted_mechanism in the weak-signal registry",
+          "probability_positive": 0.8607,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
           "standard_error": null,
           "state": "spent",
           "verdict": "unresolved",
@@ -2177,6 +2246,41 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "friday_designation_momentum_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "Friday designation momentum (LEAD-08): revision-timing proxy (date_modified weekday static-vs-revised-late, the closest available substitute for the unmeasurable Wed/Thu/Fri per-player trajectory) stacked on PRODUCTION weak_stack, opener-graded forced-pick accuracy",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "Checks whether noting which players' injury reports got updated late in the week (versus settled early) adds anything on top of the current picks.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/experiments/friday_designation_momentum/20260911T015641Z/results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -0.43859649122807015,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.7660044150110374,
+            0.8888888888888888
+          ],
+          "leg_effects": null,
+          "notes": "Assigned window [2020,2021] (rotation assign; matches LEAD-62's window). Revision-timing proxy (date_modified weekday static-vs-revised-late) stacked on PRODUCTION weak_stack via a discrete asymmetric-flag fade rule; value-weighted expected-absence magnitude uses trailing snap share (reused role_share weighting from the injury-value construct) x a season-lagged walk-forward class-conditional absence rate. Interval crosses zero; per-season sign is not uniform (2020 +0.45 P+0.71, 2021 -1.27 P+0.12); reliability of the class-to-absence gap is 0.365 (n=32 teams), not zero. unresolved_below_power, not a closing ground.",
+          "probability_positive": 0.2679,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": 0.6900442519844749,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "graph_def_ypp_on_production": {
       "acknowledges_mined_2018_2025": false,
       "declared_at": "2026-08-31",
@@ -2933,6 +3037,113 @@
         }
       ]
     },
+    "latent_ratings_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "docs/latent_ratings_on_production.md frozen before scoring: season-lagged offense/defense RAPM aggregated to an expected-lineup rating sum (deadline-visible availability x strictly prior role share x player rating); tilt on top of the served production opener pick; thresholds fixed from pre-window seasons 2017-2019; reused mined-era and prior APM/EPA selection discount.",
+      "grade": "opener",
+      "inherits": [
+        "participation_offense_defense_rapm"
+      ],
+      "plain_summary": "Rates every player from past seasons, adds up the ratings of the players each team is actually expected to have on the field this week, and checks whether leaning toward the side with the healthier, better-rated lineup would have improved the picks.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/latent_ratings_on_production/20260911T000000Z/results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -1.0964912280701844,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.450031352131942,
+            2.2978003497314528
+          ],
+          "leg_effects": null,
+          "notes": "Primary arm (Screen A, expected-lineup RAPM sum tilt) on 456 non-push opener-graded games, active model d49194e04945a5e5: 53.29% baseline vs 52.19% candidate, 81 picks changed, observed at the 69th percentile of its own within-week permutation null (centre -1.726). Secondary arm (Screen B, lineup divergence) -0.439 pts, 95% [-4.626, +3.254], P+ 0.435, Brier improvement +0.001555 P+ 0.667, 83rd null percentile. Predeclared cell did not separate. Split-half reliability +0.174 offense / +0.154 defense. No admissible closing ground; incumbent card kept on EV.",
+          "probability_positive": 0.25625,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "lead28_post_bye_new_playcaller_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "LEAD-28: post-bye playcaller-tenure tilt (back post-bye teams with a year-1/2 offensive coordinator, fade post-bye teams with a year-3+ OC, clean-case only) stacked on PRODUCTION weak_stack, opener-graded.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "When a team comes off its bye week, this checks whether its offensive playcaller is new or a veteran, and leans with new playcallers, against veterans.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/playcaller_change_leads/production_results_lead28.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 0.8772,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.8869,
+            2.6432
+          ],
+          "leg_effects": null,
+          "notes": "Assigned 2020-2021 window: 456 graded games, 22 picks changed, +0.8772 accuracy points, week-blocked 95% [-0.8869,+2.6432], P+ 0.8287. Full 2020-2025 predeclared descriptive archive (not this window): +0.3327 pts, P+ 0.7337, separately weak-signals recorded as playcaller_change_lead28_production_screen_full_archive. No admissible closing ground; interval crosses zero.",
+          "probability_positive": 0.8287,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "lead29_playcaller_first_game_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "LEAD-29: first regular-season game after an in-season OC/DC playcaller change (revision instant strictly before kickoff), back the changed team, clean-case only, stacked on PRODUCTION weak_stack, opener-graded.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "When a team fires its offensive or defensive coordinator mid-season, this backs that team in its very next game, the way a bump in effort often follows a coaching change.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/playcaller_change_leads/production_results_lead29.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            0.0,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "Assigned 2020-2021 window: 456 graded games, 0 flagged (zero of the 12 counted in-season OC/DC changes, all 2022-2025, fall inside this window), 0 picks changed, degenerate 0.0 effect. Not a real test of the direction -- structural window/event non-overlap. Full 2020-2025 predeclared descriptive archive (all 12 events land inside it): -0.1331 pts, week-blocked P+ 0.16045, season-blocked 95% [-0.2630,0.0000] P+ 0.04305, separately weak-signals recorded as playcaller_change_lead29_production_screen_full_archive. No admissible closing ground on either read.",
+          "probability_positive": 0.5,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "learned_availability_ats": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -2946,6 +3157,41 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "lookahead_fade_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "LEAD-44/docs/lookahead_fade.md frozen before scoring: home favorite of 7+ points at the Tuesday opener whose next scheduled game (in the same paired opener archive) is a division game or against a top-quartile-rated opponent (trailing market-line rating); production probability-rule pick forced to the away side in flagged games, active-model opener accuracy, paired 1,537-game archive restricted to the assigned window for the registered look.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "Tests whether a big home favorite about to play a division rival or a strong team next week covers less often than usual, and whether fading that favorite beats the model's normal pick.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/lookahead_fade_screen/20260911T031622Z/results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 0.43859649122807015,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.672645739910314,
+            1.5838001867413627
+          ],
+          "leg_effects": null,
+          "notes": "Week-blocked primary (35 week-blocks, 456 games): +0.439 pts [-0.673,+1.584], P+ 0.7625. Season-blocked is degenerate at only 2 blocks ([0.000,+0.909], lower bound touches exactly zero -- a lean, not a resolution, same standard AGENTS.md's own week1_dog_on_production entry uses for a zero-touching bound) and is not used as the recorded figure. Per-season: 2020 +0.909pts P+0.798 (n=220); 2021 +0.000pts P+0.517 (n=236). 49 of 456 forced picks changed by the override. Raw home-cover rate on the eligible subset (48 flagged vs 48 control, not independently bootstrapped as a joint gap) actually leans the OPPOSITE way from the predeclared FADE mechanism (56.25% vs 50.00%, both CIs wide and overlapping) -- disclosed tension, not resolved either way. weak-signals entry nfl_lead44_lookahead_fade_on_production_window_2020_2021 carries the full writeup; a disclosed (unregistered) full-2020-2025-archive companion read is nfl_lead44_lookahead_fade_on_production_full_archive (-0.200pts, P+ 0.344).",
+          "probability_positive": 0.7625,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "low_total_div_home_dog_on_production": {
       "acknowledges_mined_2018_2025": true,
@@ -5764,6 +6010,41 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "qb_exit_mixture_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "LEAD-63 QB early-exit mixture: production served opener cover probability nudged by d*(home exit probability - away exit probability), d read from bias_battery_backup_qb_start_opener; docs/qb_exit_mixture.md",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "Some starting quarterbacks leave the game early. This estimates how likely that is before kickoff and shades the pick a little toward the team more likely to keep its starter.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/experiments/qb_exit_mixture/results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -0.21978021978021978,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.9070294784580499,
+            0.44943820224719105
+          ],
+          "leg_effects": null,
+          "notes": "LEAD-63 single opener look on the assigned 2020-2021 window. Mixture cover probability = production served opener probability + d*(home starter exit probability - away starter exit probability), d = -0.029095 imported from bias_battery_backup_qb_start_opener's raw_gap. 52.9670% vs production 53.1868% on 455 non-push games / 35 weeks; 3 picks changed; mean absolute probability shift 0.000554, maximum 0.003546. Season-blocked [-0.45455, 0.00000] P+=0.12363. Per season: 2020 n=220 -0.45455 pts P+=0.17883; 2021 n=235 0.00000 pts P+=0.50203. Permutation null mean -0.03077 sd 0.38292, observed at its 15th percentile. Asymmetric cell (exactly one starter on the injury report and active) 129 games, 0 picks changed, 0.00000 pts. Exit-flag split-half reliability 0.4868 per starting QB and 0.6873 per team, odd vs even seasons, so no_split_half_reliability is unavailable; the only card-moving control (oracle exit at d=-0.50, 11 flips) is itself unresolved at P+=0.63103 so positive_control_bound is unavailable; the interval does not sit below zero so wrong_sign_resolved is unavailable. Seven weak signals recorded under family qb_exit_mixture, all unresolved_below_power; the registry flags them as correlated decompositions of the same 2020-2021 window, which they are. Predeclaration, protocol, reused-window discount and full tables: docs/qb_exit_mixture.md.",
+          "probability_positive": 0.2924,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "qb_news_backup_visible_by_deadline_screen": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -6202,6 +6483,89 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "refresh_timing_policy": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "MKT-08 refresh-timing policy: the served late-week leader-median follow rule held FIXED, with only the refresh INSTANTS varied -- (a) the 12 served fixed scheduler passes, (b) one as-late-as-allowed pass at the last archive capture before min(kickoff, Sunday 16:00 ET), (c) news-triggered refresh when the leader-book median line has moved >= 0.5 / >= 1.0 since the last refresh (both predeclared), (d) Tuesday only. Opener-graded forced-pick accuracy paired against the Tuesday card on the same games, week-blocked block bootstrap, 20,000 samples. Predeclared before any accuracy was computed; reuses the mined 2018-2025 era and carries that discount.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "How often should the picks be looked at again during the week? This compares leaving Tuesday's picks alone, checking them on the current fixed schedule, checking each game as late as the pool allows, and only checking when the betting line has actually moved.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/refresh_timing_policy/20260911T000000Z/window_2020_2021.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -3.7280701754,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -6.9264069264,
+            -0.6507592191
+          ],
+          "leg_effects": null,
+          "notes": "MKT-08 headline cell: the twelve served fixed refresh passes against the frozen Tuesday card, opener-graded forced picks, 65 of 456 picks changed. The whole week-blocked interval sits below zero for THIS window, but the identical rule reads +2.2514 on 2024-2025, so no wrong sign is resolved for the family and wrong_sign_resolved is inadmissible; the leader-book net move has split-half reliability 0.947 (Spearman-Brown) so no_split_half_reliability is out; no positive control was run so bounded_by_control is out. Unresolved, nothing closed. The decision-relevant head-to-head in this window is as_late_as_allowed vs the fixed schedule: 0 picks differ at this archive cadence. 2020-2022 has only 7 NFL captures a week with no Wednesday and no Friday snapshot, so the follow rule has two informative readings a week here; mined 2018-2025 era reused and discounted.",
+          "probability_positive": 0.0101,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": 1.6022573214,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "artifacts/refresh_timing_policy/20260911T000000Z/window_2022_2023.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -1.3618677043,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.1584251998,
+            1.559454191
+          ],
+          "leg_effects": null,
+          "notes": "MKT-08 headline cell: the twelve served fixed refresh passes against the frozen Tuesday card, opener-graded forced picks, 73 of 514 picks changed. Interval spans zero; neither admissible closing ground applies (split-half reliability of the leader-book move 0.948 Spearman-Brown; no positive control run). Unresolved, nothing closed. Decision-relevant head-to-head in this window: as_late_as_allowed beats the fixed schedule by +0.3891 accuracy points, week-blocked [+0.0000, +0.9728], probability_positive 0.9381, on 2 differing picks. Mined 2018-2025 era reused and discounted.",
+          "probability_positive": 0.175725,
+          "sample_blocks": 36,
+          "seasons": [
+            2022,
+            2023
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": 1.4634505348,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        },
+        {
+          "artifact": "artifacts/refresh_timing_policy/20260911T000000Z/window_2024_2025.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 2.2514071295,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.575815739,
+            5.2141527002
+          ],
+          "leg_effects": null,
+          "notes": "MKT-08 headline cell: the twelve served fixed refresh passes against the frozen Tuesday card, opener-graded forced picks, 68 of 533 picks changed, and the refreshed side goes 58.8 percent on the picks it changes. Interval spans zero; probability_positive 0.9336 favours refreshing, which on a forced-pick pool is a play, not a promotion claim. Neither admissible closing ground applies (split-half reliability of the leader-book move 0.920 Spearman-Brown; no positive control run). Unresolved, nothing closed. Decision-relevant head-to-head in this window: as_late_as_allowed beats the fixed schedule by +0.1876 accuracy points, week-blocked [+0.0000, +0.5682], probability_positive 0.8175, on 1 differing pick. Mined 2018-2025 era reused and discounted.",
+          "probability_positive": 0.93365,
+          "sample_blocks": 36,
+          "seasons": [
+            2024,
+            2025
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": 1.500496631,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "residual_location_purged_cv_cfb": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -6531,6 +6895,41 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "roof_state_predicted_open_fade_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "ENV-02 roof-state screen: fade a home pick when the pregame roof-state predictor (walk-forward logistic on pool_decision forecast temp/precip + venue history) predicts the roof will be open at a venue that usually closes; docs/roof_state_screen.md",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "When the forecast and a stadium's own history say its retractable roof will likely be open on game day, this rule leans away from the home team, since an open roof strips their climate-controlled home-field identity.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/roof_state_screen/production_results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -0.4386,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.094,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "Predeclared tilt: fade a home pick to away when the walk-forward roof-state predictor (forecast temp/precip + venue history, chronological) calls the roof open at a venue that usually closes. Window [2020,2021], 456 paired opener games/35 weeks. n_predicted_open_in_window=7, only 2 flipped a home baseline pick (flag never flips an away pick). Week-blocked primary interval touches zero at its upper bound -- unresolved_below_power, not a negative. Season-blocked secondary is fully negative but is a 2-flip degenerate artifact, not resolved power. docs/roof_state_screen.md.",
+          "probability_positive": 0.063425,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "rookie_crew_underdog_on_production": {
       "acknowledges_mined_2018_2025": true,
       "declared_at": "2026-09-05",
@@ -6743,6 +7142,41 @@
         }
       ]
     },
+    "sharp_book_weighted_movement": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "MKT-15: late-week follow aggregated by a chronologically-estimated per-book leadership score (weights for season S come only from seasons before S) against the served hard-membership leader median of three books, graded at the opener on the played nine-member card. Predeclared in docs/sharp_book_weighted_movement.md before any score or arm was computed.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "Some sportsbooks move their line before the rest of the market does. This checks whether listening to each book in proportion to how early it usually moves beats the current rule, which listens to three books equally and ignores the other nine.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/sharp_book_weighted_movement/20260911T024752Z/results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -0.125156,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.896316,
+            0.630517
+          ],
+          "leg_effects": null,
+          "notes": "Headline cell: the leadership-weighted MEDIAN at the served per-game gate against the served three-book leader median, on the played nine-member card, opener-graded, 799 scored games, 11 picks changed. Weights are chronological (season S weighted only from seasons before S), so the assigned [2020, 2021] window is spent by the leadership estimation; the follow replay is disclosed as 2023-2025 because no hourly capture exists before 2023. Two leadership-weighted MEAN arms are separately recorded refuted_mechanism on wrong_sign_resolved; the weighted-median arm is not resolved either way.",
+          "probability_positive": 0.378725,
+          "sample_blocks": 54,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": 0.393452,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "shrunk_overlay_policy_walkforward": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -6756,6 +7190,41 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "snow_game_home_prep_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "LEAD-38 snow-game home-preparation tilt: forecast precip probability>=50% AND forecast temp<=32F at an outdoor venue (pool_decision cutoff), back the home team when production's opener pick disagrees. Stacked on PRODUCTION weak_stack, opener-graded.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "When the forecast calls for snow at kickoff, this rule backs the home team, since they are used to practicing and playing in it.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/snow_game_home_prep/production_results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -0.21929824561403508,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.672645739910314,
+            0.0
+          ],
+          "leg_effects": null,
+          "notes": "Home tilt in forecast-snow games (precip>=50%, temp<=32F outdoor, pool_decision cutoff) stacked on PRODUCTION weak_stack's opener pick: flips an away pick to home when snow-flagged. Window [2020,2021], 456 paired opener games, 2 snow games in the scored population (1 pick flipped). Week-blocked primary; season-blocked secondary CI [-0.4545,0.0], P+ 0.1238. No admissible closing ground: interval crosses/touches zero, N=2 flagged games is far below power. script scripts/snow_game_home_prep_screen.py production.",
+          "probability_positive": 0.182675,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "special_teams_composite_edge_bottom_quartile": {
       "acknowledges_mined_2018_2025": false,
@@ -7328,6 +7797,41 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "tv_attention_fade_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "MKT-14 docs/tv_attention_screen.md: lagged Sports Media Watch trailing team attention (N=3 prior nationally-timestamped games, normalised by primetime/Sunday-late/Sunday-early slot), predeclared public-tax fade rule (flip production's opener pick when the picked team's own trailing attention is in the top tercile) stacked on the production weak_stack opener pick.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "When the team we are backing has been getting unusually high TV audiences lately, this checks whether fading that popular team against the spread beats sticking with our normal pick.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/tv_attention_screen/20260911T031523Z/results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 1.9737,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -4.3862,
+            8.6396
+          ],
+          "leg_effects": null,
+          "notes": "Predeclared: flip production's weak_stack opener pick when the picked team's own trailing (N=3, slot-normalised) Sports Media Watch audience is in the top tercile of the pooled decile distribution (public-tax fade). 2020-2021 pooled, 456 non-push graded games, 141 picks changed, week-blocked bootstrap (20000 resamples). Per-season: 2020 +4.55 pts P+ 0.813 [-5.26,+14.82]; 2021 -0.42 pts P+ 0.459 [-8.79,+7.93]. Interval crosses zero; no admissible closing ground (split-half reliability of the underlying attention trait is r=0.65, so no_split_half_reliability does not apply). unresolved_below_power per AGENTS.md.",
+          "probability_positive": 0.7171,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "txn_away_churn_elevated": {
       "acknowledges_mined_2018_2025": false,
       "coverage_effect_units": [
@@ -7495,6 +7999,41 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "veteran_rest_day_tell_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "LEAD-11 veteran rest-day tell: Wednesday DNP-rest/NIR reason for a 30+ veteran that clears to practice later in the week, weighted by trailing starter snap share, screened as a fade signal stacked on PRODUCTION's opener probability-rule pick (see scripts/veteran_rest_day_tell.py, docs/veteran_rest_day_tell.md).",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "Checks whether teams that rest veteran players on a Wednesday practice day, then have them return to practice, should be faded on the spread.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/experiments/veteran_rest_day_tell/20260911T020731Z/results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -2.6315789473684212,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -5.764966740576496,
+            0.22172949002217296
+          ],
+          "leg_effects": null,
+          "notes": "Assigned window [2020,2021], 466 opener-graded games/35 weeks. Signed team-game flag = value-weighted (trailing snap-share) count of flagged 30+ veteran starters (Wed DNP/rest or NIR reason per nflverse practice_primary_injury/report_primary_injury text, age>=30 via nflreadpy.load_players birth_date, final observed practice_status NOT DNP i.e. cleared to practice later that week); stacked on PRODUCTION pick_home_at_open_probability_rule, FADE direction, flip only when production currently backs the flagged side. 39/466 forced picks flip; candidate 50.66% vs production 53.29%. Full 2020-2025 opener archive (1537 games, out-of-window, descriptive only): -2.7944 pts, 95%% [-4.573,-1.002], P+ 0.00105 -- reported for context, NOT used as the confirmation cell (would spend seasons never assigned to this family). Trait reliability (team rest-tag rate, odd vs even season halves, 32 teams): Pearson r=0.5633, 95%% [0.285,0.768], ruling out no_split_half_reliability. Positive control (candidate replaced by realized margin sign) +46.71 pts, P+ 1.0 on the same window -- harness proven sensitive. Starter-matched outcome check (docs/veteran_rest_day_tell.md item 2) points AWAY from the predeclared hidden-decline hypothesis (flagged veterans show LESS subsequent production drop and a LOWER 4-week miss rate than matched non-flagged starters), consistent with this screen's negative lean. Interval crosses zero at the assigned window -- unresolved_below_power, not a resolved wrong sign.",
+          "probability_positive": 0.038225,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     },
     "vi_disp_homecover_top_vs_bottom_tercile": {
       "acknowledges_mined_2018_2025": false,
@@ -7757,6 +8296,142 @@
       "status": "declared_for_coverage",
       "windows": []
     },
+    "weather_interactions_heat_pace_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "ENV-05 predeclared: fade the faster-pace team (prior-season seconds/play quartile 1, fastest) in outdoor forecast heat>=85F, stacked on production's opener pick, pool_decision cutoff.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\weather_interactions\\production_heat_pace_results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 0.6578947368421052,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -0.22935779816513763,
+            1.8947368421052633
+          ],
+          "leg_effects": null,
+          "notes": "ENV-05 predeclared fade tilt, opener grade, window [2020, 2021]. Picks changed: 5. Interval crosses zero; per AGENTS.md this is unresolved_below_power, not a negative. docs/weather_interactions.md has the full predeclaration.",
+          "probability_positive": 0.882525,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "weather_interactions_surface_switch_rush_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "ENV-05 predeclared: fade the grass-accustomed away team switching to turf AND run-heavy (prior-season pass-rate quartile 1), stacked on production's opener pick; no forecast archive dependency.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\weather_interactions\\production_surface_switch_rush_results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": -0.21929824561403508,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.948051948051948,
+            1.3761467889908259
+          ],
+          "leg_effects": null,
+          "notes": "ENV-05 predeclared fade tilt, opener grade, window [2020, 2021]. Picks changed: 17. Interval crosses zero; per AGENTS.md this is unresolved_below_power, not a negative. docs/weather_interactions.md has the full predeclaration.",
+          "probability_positive": 0.40825,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "weather_interactions_wind_fg_reliant_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "ENV-05 predeclared: fade the field-goal-reliant team (prior-season FG attempts/game quartile 4, attempt-based proxy) in outdoor forecast wind>=15mph, stacked on production's opener pick, pool_decision cutoff.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\weather_interactions\\production_wind_fg_reliant_results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 0.0,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.312910284463895,
+            1.5053763440860215
+          ],
+          "leg_effects": null,
+          "notes": "ENV-05 predeclared fade tilt, opener grade, window [2020, 2021]. Picks changed: 8. Interval crosses zero; per AGENTS.md this is unresolved_below_power, not a negative. docs/weather_interactions.md has the full predeclaration.",
+          "probability_positive": 0.48765,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
+    "weather_interactions_wind_pass_heavy_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "ENV-05 predeclared: fade the pass-heavier team (prior-season pass-rate quartile 4) in outdoor forecast wind>=15mph, stacked on production's opener pick, pool_decision cutoff.",
+      "grade": "opener",
+      "inherits": [],
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts\\weather_interactions\\production_wind_pass_heavy_results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 0.43859649122807015,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -1.1013215859030838,
+            2.1552887837938384
+          ],
+          "leg_effects": null,
+          "notes": "ENV-05 predeclared fade tilt, opener grade, window [2020, 2021]. Picks changed: 16. Interval crosses zero; per AGENTS.md this is unresolved_below_power, not a negative. docs/weather_interactions.md has the full predeclaration.",
+          "probability_positive": 0.698175,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
+    },
     "week1_dog_on_production": {
       "acknowledges_mined_2018_2025": true,
       "declared_at": "2026-09-05",
@@ -7905,6 +8580,41 @@
       "inherits": [],
       "status": "declared_for_coverage",
       "windows": []
+    },
+    "xlg06_rookie_prior_surplus_on_production": {
+      "acknowledges_mined_2018_2025": true,
+      "declared_at": "2026-09-11",
+      "description": "XLG-06: tilt TOWARD the side whose deadline-visible rookie prior surplus is larger. Per-rookie prior = walk-forward ridge on log(overall draft pick), class-standardised pre-draft grade and final-college-season usage share, fit on strictly earlier draft classes, mapped to the injury-value NFL scale (skill_epa/100 offensive snaps, defense_disruption/100 defensive snaps) and standardised as surplus over the position-group generic replacement. Decayed by N0=300 career snaps (frozen at XLG-06 Stage 3) and weighted by the completed-games snap share. Stacked on production weak_stack, opener grade. Predeclared docs/rookie_priors_on_production.md.",
+      "grade": "opener",
+      "inherits": [],
+      "plain_summary": "When one team is starting rookies whose college production and draft position say they should already be better than a typical replacement player, this rule leans toward that team, most strongly in the first weeks before there is any NFL evidence to go on.",
+      "status": "open",
+      "windows": [
+        {
+          "artifact": "artifacts/xlg06_rookie_priors/production_results.json",
+          "assigned_at": "2026-09-11",
+          "closing_ground": null,
+          "effect": 2.4122807,
+          "effect_units": "accuracy_points",
+          "interval": [
+            -2.4500254,
+            7.4561404
+          ],
+          "leg_effects": null,
+          "notes": "XLG-06 rookie-prior-surplus tilt stacked on production weak_stack, opener grade, assigned window [2020,2021]: 456 paired games / 35 weeks, 234 flagged, 118 forced picks changed (113 graded). Candidate 55.70% vs baseline 53.29%, week-blocked +2.4123 accuracy points 95% [-2.4500,+7.4561], P+ 0.8318 (20,000 resamples, seed 20260911). Season-blocked [+0.4237,+4.5455] P+ 1.000 on only 2 blocks -- not treated as informative at that block count. Positive control (candidate replaced by realised opener margin sign) +46.711 points, P+ 1.000 both blockings, so the harness is proven sensitive. Full 2020-2025 opener archive as a secondary read (not a separate spend): +1.0645 points, week-blocked 95% [-1.3780,+3.5076], P+ 0.8112 on 1,503 games / 107 weeks, 325 picks changed; per season 2020 +4.55, 2021 +0.42, 2022 +0.81, 2023 -3.01, 2024 +4.51, 2025 -0.37. Window intersects the 2018-2025 multiplicity ledger (acknowledged at declaration); apply the stated discount. Predeclared docs/rookie_priors_on_production.md before scoring.",
+          "probability_positive": 0.831825,
+          "sample_blocks": 35,
+          "seasons": [
+            2020,
+            2021
+          ],
+          "spent_at": "2026-09-11",
+          "standard_error": null,
+          "state": "spent",
+          "verdict": "unresolved",
+          "window_kind": "contiguous"
+        }
+      ]
     }
   },
   "no_rotation_needed": {
@@ -8611,12 +9321,12 @@
     "2015": 6,
     "2016": 5,
     "2017": 2,
-    "2020": 53,
-    "2021": 53,
-    "2022": 9,
-    "2023": 9,
-    "2024": 7,
-    "2025": 8
+    "2020": 72,
+    "2021": 72,
+    "2022": 10,
+    "2023": 10,
+    "2024": 8,
+    "2025": 9
   },
   "version": 1
 }

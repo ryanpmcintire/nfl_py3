@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import platform
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -215,6 +216,28 @@ def register_handoff(
         help="verify tracked handoff freshness without changing files",
     )
     handoff.set_defaults(handler=_cmd_handoff)
+
+
+def _cmd_waterfall_feed(args: argparse.Namespace) -> None:
+    script = Path(__file__).resolve().parents[3] / "scripts" / "waterfall_feed.py"
+    completed = subprocess.run([sys.executable, str(script), *args.passthrough], check=False)
+    if completed.returncode != 0:
+        raise SystemExit(completed.returncode)
+
+
+def register_waterfall_feed(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+    current_year: int,
+) -> None:
+    feed = subparsers.add_parser(
+        "waterfall-feed",
+        help=(
+            "rebuild the per-game attribution feed for the active model "
+            "(runs scripts/waterfall_feed.py); publish-board fails closed on a stale feed"
+        ),
+    )
+    feed.add_argument("passthrough", nargs=argparse.REMAINDER)
+    feed.set_defaults(handler=_cmd_waterfall_feed)
 
 
 def register_weekly(

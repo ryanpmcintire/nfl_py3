@@ -104,6 +104,8 @@ _PICK_REVISION_LEDGER_COLUMNS: tuple[str, ...] = (
     "follow_news_veto",
     "follow_news_source",
     "follow_news_team",
+    "best_pick_before",
+    "best_pick_after",
     "model_id",
     "feature_table_sha256",
     "reason",

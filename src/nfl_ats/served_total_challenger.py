@@ -173,7 +173,9 @@ def record_totals_served_method_decisions(
         }
 
     joint_value = (
-        report.served_total if report.served_total_method == "joint_residual" else float("nan")
+        report.served_total_before_shade
+        if report.served_total_method == "joint_residual"
+        else float("nan")
     )
     row = pd.DataFrame(
         [

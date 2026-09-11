@@ -28,7 +28,7 @@ def test_registration_order_is_the_help_listing_order() -> None:
     parser = cli.build_parser()
     action = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
     assert list(action.choices) == order
-    assert len(REGISTRARS) == 18
+    assert len(REGISTRARS) == 19
 
 
 def _parse(argv: list[str]) -> argparse.Namespace:

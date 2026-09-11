@@ -63,6 +63,7 @@ EFFECT_UNITS = (
     "mae_improvement",
     "brier_improvement",
     "log_loss_improvement",
+    "payout_first_pp",
 )
 
 CATEGORIES = (

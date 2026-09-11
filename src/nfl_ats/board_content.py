@@ -53,7 +53,13 @@ from nfl_ats.pick_refresh import (
     describe_week_revisions,
     load_pick_revisions,
     pick_deadline,
+    served_best_pick,
     sunday_pick_lock,
+)
+from nfl_ats.pick_revision_factors import (
+    FactorMove,
+    factor_move_sentence,
+    model_only_factor_moves,
 )
 from nfl_ats.prospective_scoring import load_challenger_decisions
 from nfl_ats.public_board import (
@@ -68,9 +74,10 @@ from nfl_ats.public_board import (
     load_public_board_artifacts,
     load_refresh_chain_measurement,
     load_served_union_measurement,
-    load_waterfall_feed,
+    load_waterfall_feed_document,
     pick_side,
     spread_words,
+    waterfall_games_by_id,
 )
 from nfl_ats.published_picks import frozen_picks, game_deadlines, record_published_picks
 from nfl_ats.reporting import artifact_directories, read_json
@@ -1053,6 +1060,7 @@ class WeekChangeRow:
     now_team: str
     now_best: bool
     reason: str
+    ahead_of_board: bool = False
 
     @property
     def side_moved(self) -> bool:
@@ -1066,6 +1074,7 @@ class WeekChangesPanel:
     count_text: str = ""
     rows: tuple[WeekChangeRow, ...] = ()
     method_note: str = WEEK_CHANGES_METHOD_NOTE
+    catch_up_note: str = ""
 
 
 def _default_week_changes() -> WeekChangesPanel:
@@ -1103,18 +1112,58 @@ def _recorded_card_states(
     return states
 
 
-def _late_week_change_reason(revision: Mapping[str, Any]) -> str:
+def _late_week_change_reason(
+    revision: Mapping[str, Any],
+    *,
+    home: str = "",
+    away: str = "",
+    factor_move: FactorMove | None = None,
+) -> str:
 
     policy = str(revision.get("movement_policy") or "")
-    sentence = _LATE_WEEK_CHANGE_REASONS.get(policy, "A late-week check moved this pick.")
+    if factor_move is not None and policy == MOVEMENT_POLICY_MODEL_ONLY:
+        sentence = factor_move_sentence(factor_move)
+    else:
+        sentence = _LATE_WEEK_CHANGE_REASONS.get(policy, "A late-week check moved this pick.")
     delta = _number(revision.get("movement_delta"))
     if delta:
         size = abs(delta)
-        sentence += f" The line moved {size:g} point{'' if size == 1 else 's'}."
+        toward = str(revision.get("movement_pick_side") or "")
+        team = home if toward == "HOME" else away if toward == "AWAY" else ""
+        target = f" toward {team}" if team else ""
+        sentence += f" The line moved {size:g} point{'' if size == 1 else 's'}{target}."
     referee = str(revision.get("rookie_crew_referee") or "")
     if referee and policy == ROOKIE_CREW_POLICY:
         sentence += f" {referee} has the whistle."
     return sentence
+
+
+def _latest_revision_by_game(revisions: pd.DataFrame) -> dict[str, dict[str, Any]]:
+
+    if revisions.empty:
+        return {}
+    if "game_id" not in revisions.columns or "revision_recorded_at_utc" not in revisions.columns:
+        return {}
+    ordered = revisions.sort_values("revision_recorded_at_utc")
+    latest: dict[str, dict[str, Any]] = {}
+    for _, row in ordered.iterrows():
+        latest[str(row["game_id"])] = dict(row)
+    return latest
+
+
+def _revision_side(revision: Mapping[str, Any] | None, key: str) -> str:
+
+    if revision is None:
+        return ""
+    side = str(revision.get(key) or "")
+    return side if side in ("HOME", "AWAY") else ""
+
+
+def _raw_read_team(game: GameRow, raw_home_cover_probability: float | None) -> str:
+
+    if raw_home_cover_probability is None:
+        return ""
+    return game.home if raw_home_cover_probability >= 0.5 else game.away
 
 
 def _recorded_change_reason(
@@ -1124,6 +1173,7 @@ def _recorded_change_reason(
     *,
     side_moved: bool,
     best_pick_note: str,
+    raw_home_cover_probability: float | None = None,
 ) -> str:
 
     if not side_moved:
@@ -1131,14 +1181,24 @@ def _recorded_change_reason(
     names = " and ".join(game.flip_member_labels)
     fires_now = bool(recorded.get("composed_overlay_flip"))
     fired_tuesday = bool(locked.get("composed_overlay_flip"))
+    raw_team = _raw_read_team(game, raw_home_cover_probability)
     if fires_now and not fired_tuesday:
-        return (
+        lead = (
             f"A situational adjustment now fires here: {names}."
             if names
             else "A situational adjustment now fires on this game."
         )
+        if raw_team and raw_team != game.pick_team:
+            lead += (
+                f" The computer's own read still favours {raw_team}, so the card is taken "
+                "the other way."
+            )
+        return lead
     if fired_tuesday and not fires_now:
-        return "The situational adjustment behind Tuesday's pick no longer fires here."
+        lead = "The situational adjustment behind Tuesday's pick no longer fires here."
+        if raw_team and raw_team == game.pick_team:
+            lead += f" The card is back on the computer's own read, {raw_team}."
+        return lead
     if str(recorded.get("decision_policy_id") or "") != str(locked.get("decision_policy_id") or ""):
         return (
             f"More situational adjustments were switched on this week: {names}."
@@ -1196,6 +1256,18 @@ def _week_change_summary(rows: tuple[WeekChangeRow, ...], n_games: int) -> tuple
     )
 
 
+def _catch_up_note(rows: tuple[WeekChangeRow, ...]) -> str:
+
+    behind = [row.matchup for row in rows if row.ahead_of_board]
+    if not behind:
+        return ""
+    named = behind[0] if len(behind) == 1 else " and ".join((", ".join(behind[:-1]), behind[-1]))
+    return (
+        f"The picks table higher up this page has not caught up yet on {named}. "
+        "Where the two disagree, the side in this table is the one being played."
+    )
+
+
 def _build_week_changes(
     games: tuple[GameRow, ...],
     paper_decisions: pd.DataFrame,
@@ -1205,21 +1277,44 @@ def _build_week_changes(
     week: Any,
     best_pick_note: str,
     published_at: Any,
+    data_root: Path | None = None,
+    raw_probabilities: Mapping[str, float] | None = None,
 ) -> WeekChangesPanel:
 
     if not games:
         return _default_week_changes()
-    states = _recorded_card_states(paper_decisions, artifacts_root, season=season, week=week)
-    if not states:
-        return _default_week_changes()
-    lock_index = _pool_line_lock_index(states)
-    locked_state = states[lock_index][1]
-    later_states = states[lock_index + 1 :]
     try:
         revisions = _week_ledger_rows(load_pick_revisions(artifacts_root), season=season, week=week)
     except (ValueError, OSError):
         revisions = pd.DataFrame()
+    raw_probabilities = dict(raw_probabilities or {})
+    factor_moves: dict[str, FactorMove] = {}
+    if data_root is not None and not revisions.empty:
+        try:
+            factor_moves = model_only_factor_moves(
+                revisions, artifacts_root=artifacts_root, data_root=data_root
+            )
+        except Exception:
+            factor_moves = {}
+    latest_revisions = _latest_revision_by_game(revisions)
+    states = _recorded_card_states(paper_decisions, artifacts_root, season=season, week=week)
     published = _utc_timestamp(published_at)
+    locked_state: dict[str, dict[str, Any]]
+    later_states: list[tuple[Any, dict[str, dict[str, Any]]]]
+    if states:
+        lock_index = _pool_line_lock_index(states)
+        locked_state = states[lock_index][1]
+        later_states = states[lock_index + 1 :]
+        fallback_when = states[0][0]
+    elif latest_revisions:
+        locked_state = {
+            game_id: {"pick_side": _revision_side(revision, "previous_pick_side")}
+            for game_id, revision in latest_revisions.items()
+        }
+        later_states = []
+        fallback_when = published
+    else:
+        return _default_week_changes()
     matchups = {game.game_id: _matchup_label(game.away, game.home) for game in games}
     starred_tuesday = next(
         (game_id for game_id, row in locked_state.items() if bool(row.get("is_best_pick"))), None
@@ -1236,14 +1331,18 @@ def _build_week_changes(
             continue
         was_team = game.home if was_side == "HOME" else game.away
         was_best = bool(locked.get("is_best_pick"))
-        now_side = "HOME" if game.pick_team == game.home else "AWAY"
-        side_moved = was_team != game.pick_team
+        revision = latest_revisions.get(game.game_id)
+        board_side = "HOME" if game.pick_team == game.home else "AWAY"
+        played_side = _revision_side(revision, "new_pick_side") or board_side
+        ahead_of_board = played_side != board_side
+        now_team = game.home if played_side == "HOME" else game.away
+        side_moved = was_team != now_team
         if not side_moved and was_best == game.is_best:
             continue
         when, reason = _week_change_attribution(
             game,
             locked,
-            now_side=now_side,
+            now_side=played_side,
             side_moved=side_moved,
             later_states=later_states,
             revisions=revisions,
@@ -1254,28 +1353,37 @@ def _build_week_changes(
                 starred_tuesday=starred_tuesday,
                 starred_now=starred_now,
             ),
+            factor_move=factor_moves.get(game.game_id),
+            raw_home_cover_probability=raw_probabilities.get(game.game_id),
         )
         moved_at = when if when is not None else published
         known = not pd.isna(moved_at)
         dated.append(
             (
-                moved_at if known else states[0][0],
+                moved_at if known else fallback_when,
                 WeekChangeRow(
                     game_id=game.game_id,
                     matchup=_matchup_label(game.away, game.home),
                     when_text=_timeline_time(moved_at) if known else "since Tuesday",
                     was_team=was_team,
                     was_best=was_best,
-                    now_team=game.pick_team,
+                    now_team=now_team,
                     now_best=game.is_best,
                     reason=reason,
+                    ahead_of_board=ahead_of_board,
                 ),
             )
         )
 
     rows = tuple(row for _when, row in sorted(dated, key=lambda entry: entry[0]))
     summary, count_text = _week_change_summary(rows, len(games))
-    return WeekChangesPanel(comparable=True, summary=summary, count_text=count_text, rows=rows)
+    return WeekChangesPanel(
+        comparable=True,
+        summary=summary,
+        count_text=count_text,
+        rows=rows,
+        catch_up_note=_catch_up_note(rows),
+    )
 
 
 def _week_change_attribution(
@@ -1287,6 +1395,8 @@ def _week_change_attribution(
     later_states: list[tuple[Any, dict[str, dict[str, Any]]]],
     revisions: pd.DataFrame,
     best_pick_note: str,
+    factor_move: FactorMove | None = None,
+    raw_home_cover_probability: float | None = None,
 ) -> tuple[Any, str]:
 
     if side_moved and not revisions.empty:
@@ -1299,7 +1409,9 @@ def _week_change_attribution(
             moved_at = _utc_timestamp(latest.get("revision_recorded_at_utc"))
             return (
                 None if pd.isna(moved_at) else moved_at,
-                _late_week_change_reason(latest),
+                _late_week_change_reason(
+                    latest, home=game.home, away=game.away, factor_move=factor_move
+                ),
             )
     for recorded_at, state in later_states:
         recorded = state.get(game.game_id)
@@ -1310,14 +1422,24 @@ def _week_change_attribution(
         if not side_moved and bool(recorded.get("is_best_pick")) != game.is_best:
             continue
         return recorded_at, _recorded_change_reason(
-            game, recorded, locked, side_moved=side_moved, best_pick_note=best_pick_note
+            game,
+            recorded,
+            locked,
+            side_moved=side_moved,
+            best_pick_note=best_pick_note,
+            raw_home_cover_probability=raw_home_cover_probability,
         )
     on_the_board = {
         "composed_overlay_flip": bool(game.flip_member_labels),
         "decision_policy_id": locked.get("decision_policy_id"),
     }
     return None, _recorded_change_reason(
-        game, on_the_board, locked, side_moved=side_moved, best_pick_note=best_pick_note
+        game,
+        on_the_board,
+        locked,
+        side_moved=side_moved,
+        best_pick_note=best_pick_note,
+        raw_home_cover_probability=raw_home_cover_probability,
     )
 
 
@@ -1824,6 +1946,10 @@ _MAX_ATTRIBUTION_CHANNELS = 4
 
 _PROBABILITY_RULE_LABEL = "Residual-sample calibration shift"
 
+_HOME_SIDE_OFFSET_LABEL = "Home-side correction on big spreads"
+
+_WATERFALL_FEED_REBUILD_COMMAND = ".\\.tools\\uv.exe run --no-sync python scripts/waterfall_feed.py"
+
 
 def _plain_family_label(family: str) -> str:
 
@@ -1831,8 +1957,44 @@ def _plain_family_label(family: str) -> str:
     return _sentence_case(phrase) if phrase else _sentence_case(family.replace("_", " "))
 
 
-def _build_attribution(entry: Mapping[str, Any] | None, game: GameRow | None) -> AttributionPanel:
+class StaleWaterfallFeedError(ValueError):
+    pass
 
+
+def require_active_waterfall_feed(
+    feed: Mapping[str, Any] | None, active: Mapping[str, Any] | None
+) -> None:
+
+    if not feed or not active:
+        return
+    expected_model = str(active.get("model_id") or "")
+    expected_digest = str(active.get("feature_table_sha256") or "")
+    feed_model = str(feed.get("active_model_id") or "")
+    feed_digest = str(feed.get("feature_table_sha256") or "")
+    if expected_model and feed_model != expected_model:
+        raise StaleWaterfallFeedError(
+            f"The per-game attribution feed was built for model {feed_model or 'unknown'!r}, "
+            f"but the active model is {expected_model!r}. Rebuild it before publishing: "
+            f"{_WATERFALL_FEED_REBUILD_COMMAND}"
+        )
+    if expected_digest and feed_digest != expected_digest:
+        raise StaleWaterfallFeedError(
+            "The per-game attribution feed was built from feature table "
+            f"{feed_digest[:8] or 'unknown'}, but the active model's table is "
+            f"{expected_digest[:8]}. Rebuild it before publishing: "
+            f"{_WATERFALL_FEED_REBUILD_COMMAND}"
+        )
+
+
+def _build_attribution(
+    entry: Mapping[str, Any] | None,
+    game: GameRow | None,
+    *,
+    feed: Mapping[str, Any] | None = None,
+    active: Mapping[str, Any] | None = None,
+) -> AttributionPanel:
+
+    require_active_waterfall_feed(feed, active)
     if game is None or not isinstance(entry, Mapping):
         return AttributionPanel(available=False)
     picked_side = str(entry.get("picked_side") or "").upper()
@@ -1874,18 +2036,19 @@ def _build_attribution(entry: Mapping[str, Any] | None, game: GameRow | None) ->
     if rest:
         rows.append(_row(f"Everything else ({len(rest)} more factors)", sum(v for _, v in rest)))
 
-    probability_rule_step = next(
-        (
-            step
-            for step in steps_raw
-            if isinstance(step, Mapping) and step.get("kind") == "probability_rule"
-        ),
-        None,
-    )
-    if probability_rule_step is not None:
-        raw_delta = _number(probability_rule_step.get("delta_points"))
+    for kind, label in (
+        ("home_side_offset", _HOME_SIDE_OFFSET_LABEL),
+        ("probability_rule", _PROBABILITY_RULE_LABEL),
+    ):
+        step = next(
+            (item for item in steps_raw if isinstance(item, Mapping) and item.get("kind") == kind),
+            None,
+        )
+        if step is None:
+            continue
+        raw_delta = _number(step.get("delta_points"))
         if raw_delta is not None and raw_delta != 0.0:
-            rows.append(_row(_PROBABILITY_RULE_LABEL, raw_delta * sign))
+            rows.append(_row(label, raw_delta * sign))
 
     net_points = sum(row.delta_points for row in rows if row.delta_points is not None)
     matchup_label = f"{game.pick_team} {game.pick_spread_text} at {game.home}"
@@ -2095,12 +2258,16 @@ def _build_dive(
     *,
     sweep: pd.DataFrame,
     waterfall_feed: Mapping[str, Mapping[str, Any]],
+    waterfall_document: Mapping[str, Any],
+    active: Mapping[str, Any] | None,
     spread_explorer_params: Mapping[str, SpreadExplorerGameParams],
     raw_home_cover_probability: float | None,
     lineups: Mapping[str, tuple[TeamLineup, TeamLineup]],
 ) -> GameDive:
 
-    attribution = _build_attribution(waterfall_feed.get(game.game_id), game)
+    attribution = _build_attribution(
+        waterfall_feed.get(game.game_id), game, feed=waterfall_document, active=active
+    )
     cover_curve = _build_cover_curve(sweep, game, spread_explorer_params)
     cover_curve_offset_zero_note = _cover_curve_offset_zero_note(cover_curve, game)
     adjuster = _build_adjuster(game, spread_explorer_params)
@@ -2565,6 +2732,11 @@ def load_board_content(
             data_root=resolved_data_root,
             now=generated,
             require_fresh_arrest_overlay=require_fresh_arrest_overlay,
+            renominated_game_id=served_best_pick(
+                artifacts_root,
+                season=int(artifacts.metadata.get("season") or 0),
+                week=int(artifacts.metadata.get("week") or 0),
+            ),
         )
         if game_type == "REG" and not artifacts.predictions.empty
         else None
@@ -2747,13 +2919,17 @@ def load_board_content(
         week=artifacts.metadata.get("week"),
     )
 
-    waterfall_feed = load_waterfall_feed(artifacts_root)
+    waterfall_document = load_waterfall_feed_document(artifacts_root)
+    require_active_waterfall_feed(waterfall_document, artifacts.active)
+    waterfall_feed = waterfall_games_by_id(waterfall_document)
     lineups = load_lineups(artifacts_root)
     dives = tuple(
         _build_dive(
             game,
             sweep=artifacts.sweep,
             waterfall_feed=waterfall_feed,
+            waterfall_document=waterfall_document,
+            active=artifacts.active,
             spread_explorer_params=spread_explorer_params,
             raw_home_cover_probability=raw_probability_by_game.get(game.game_id),
             lineups=lineups,
@@ -2818,6 +2994,8 @@ def load_board_content(
             week=artifacts.metadata.get("week"),
             best_pick_note=best_pick_note,
             published_at=_card_publication_time(forecast_dir),
+            data_root=resolved_data_root,
+            raw_probabilities=raw_probability_by_game,
         ),
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,

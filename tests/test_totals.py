@@ -251,6 +251,7 @@ def test_model_total_view_trains_only_on_games_before_the_target_week(tmp_path: 
 
 def test_tiebreaker_blends_the_totals_residual_at_the_measured_weight() -> None:
     from nfl_ats.tiebreaker import (
+        TOTAL_LOW_SIDE_SHADE_POINTS,
         TOTALS_RESIDUAL_WEIGHT,
         MarketConsensus,
         build_report,
@@ -288,12 +289,14 @@ def test_tiebreaker_blends_the_totals_residual_at_the_measured_weight() -> None:
 
     blended = build_report(game, consensus, finals, None, view)
     assert blended.totals_view is view
-    assert blended.guess_total_line == pytest.approx(43.0 + TOTALS_RESIDUAL_WEIGHT * 0.42)
+    assert blended.guess_total_line == pytest.approx(
+        43.0 + TOTALS_RESIDUAL_WEIGHT * 0.42 + TOTAL_LOW_SIDE_SHADE_POINTS
+    )
     assert blended.implied_home + blended.implied_away == pytest.approx(blended.guess_total_line)
 
     market_only = build_report(game, consensus, finals)
     assert market_only.totals_view is None
-    assert market_only.guess_total_line == pytest.approx(43.0)
+    assert market_only.guess_total_line == pytest.approx(43.0 + TOTAL_LOW_SIDE_SHADE_POINTS)
 
 
 def test_tiebreaker_report_line_names_the_totals_disagreement_and_the_weight() -> None:

@@ -39,7 +39,9 @@ Saturday            refresh-picks --record-decisions --note saturday_pass
                     v
 Sunday morning       refresh-picks --record-decisions --note sunday_morning_final --publish-card
                     |  FINAL pass: locks the rest of the week, including SNF/MNF,
-                    |  at Sunday 4:00 PM ET (see "Per-game deadline" below)
+                    |  at Sunday 4:00 PM ET (see "Per-game deadline" below), and
+                    |  the only pass that re-nominates the Best Pick (see
+                    |  "Sunday-morning Best Pick re-nomination" below)
 ```
 
 Four named passes, not a fixed weekly cadence bolted onto a single Tuesday-
@@ -382,7 +384,11 @@ own deadline.
 `artifacts/prospective/pick_revisions.parquet`
 (`nfl_ats.pick_refresh.PICK_REVISION_COLUMNS`), append-only, one row per
 **changed, eligible** game per refresh pass -- a pass that finds nothing to
-change writes zero rows (see "No-op refresh").
+change writes zero rows (see "No-op refresh"). One exception, added
+2026-09-10: a Sunday pass that moves the Best Pick writes a row for the newly
+starred game even when its own side did not change, so the re-nomination is on
+the ledger; that row's `previous_pick_side` equals its `new_pick_side` and its
+reason names the star.
 
 | Column | Meaning |
 |---|---|
@@ -410,6 +416,8 @@ change writes zero rows (see "No-op refresh").
 | `follow_news_veto` | True when the follow fired and post-Tuesday injury news pointed against it, so the Tuesday pick was kept. The un-vetoed side stays on `movement_pick_side`, which is the paired OFF arm |
 | `follow_news_source` | Which reader answered: `official` (the injury report, when that season's rows carry a real timestamp), `pft_fallback` (ProFootballTalk headlines when they do not), or `none` |
 | `follow_news_team` | The team the market moved TOWARD -- the one the contrary injury news is about; blank when the follow did not fire or nothing was readable |
+| `best_pick_before` | The game holding the Best Pick star before this pass; blank on a pass that did not move it |
+| `best_pick_after` | The game holding it after this pass; blank on a pass that did not move it. `nfl_ats.pick_refresh.served_best_pick` reads the week's latest non-blank value, and that is the star the card and the site render |
 | `model_id` | The active model this revision was computed under |
 | `feature_table_sha256` | Provenance: which exact feature-table build produced this revision |
 | `reason` | `"pick_refresh recompute"`, or `"pick_refresh recompute (<note>)"` when `--note` was passed |
@@ -454,11 +462,15 @@ pins every one of these):**
   simultaneously, so a season can eventually be scored both ways (Tuesday
   vs. final) without re-deriving either from the other.
 
-## `--publish-card`: additive, never touches the Tuesday section
+## `--publish-card`: additive, plus the one star it may move
 
 `CURRENT_PREDICTIONS.md` stays exactly what `publish-predictions` wrote by
-default. `refresh-picks --publish-card` is opt-in and appends (or, on a
-later pass, replaces just its own) a clearly-labeled section:
+default, with one deliberate exception added 2026-09-10: when the Sunday pass
+re-nominates the Best Pick, `--publish-card` moves the `★` marker between two
+rows of the Tuesday table and rewrites the Best Pick sentence above it (see
+"Sunday-morning Best Pick re-nomination" above). No pick, line or score in that
+table is touched. Otherwise `refresh-picks --publish-card` is opt-in and appends
+(or, on a later pass, replaces just its own) a clearly-labeled section:
 
 ```
 ## Late-week refresh (as of <timestamp>)
@@ -850,7 +862,7 @@ history, or a refit that will not fit each return the model-only side with the
 reason named in the pass's `rookie_crew.reason`. The refit itself is skipped
 entirely unless a flagged game exists, so an ordinary week pays nothing for it.
 
-**Ledger and paired arm.** Every pick-revision row carries `rookie_crew_flag`,
+**Ledger and paired arm (rookie crew).** Every pick-revision row carries `rookie_crew_flag`,
 `rookie_crew_referee` and `rookie_crew_pick_side` beside the governing
 `movement_policy`; the OFF arm is the `model_only_pick_side` column already on
 every row, registered as `rookie_crew_underdog_off_incumbent` in
@@ -866,6 +878,122 @@ prior season, working BUF at HOU, where the home team is the 1.5-point
 underdog, so the flag is `+1`. The refit's side is HOME, the model-only side is
 HOME, so the step changes nothing and the row is recorded `model_only`. The
 other fifteen crews carry three or more prior seasons.
+
+## Sunday-morning Best Pick re-nomination (LEAD-53 S3, served 2026-09-10)
+
+Closing-grounds taxonomy, verbatim, because this section reports intervals: an
+interval or CI that contains zero is NEVER grounds to reject, fail, or close an
+experiment. Only a RESOLVED wrong sign (whole interval on the wrong side of
+zero), zero split-half reliability, or a positive control proven able to detect
+an effect that size ever closes a line of work. Everything else is
+`unresolved_below_power`; report `probability_positive`, never "contains zero".
+
+The pool pays one Best Pick per week, and until now the star was chosen once,
+at the Tuesday lock, and never revisited -- even though every ordinary pick on
+the same card stays editable until `min(kickoff, Sunday 16:00 ET)`.
+`docs/best_pick_sunday_renomination.md` measured re-nominating it on Sunday
+morning over **107 weeks / 1,537 games, 2020-2025**, at a pool-cycle Sunday
+12:30 ET instant, grading every arm on the pool's own Best Pick rule (frozen
+Tuesday opener line, frozen played side). The full Sunday refresh (**S3**:
+refreshed probability plus a Sunday dispersion pool) scored **57.28% top-1
+against the frozen Tuesday nominee's 52.88%, +4.85 accuracy points, week-blocked
+95% [-5.83, +15.53], `probability_positive` 0.814**, changing the nominee in 70
+of 103 weeks and going 18-13 on the 31 whose outcome differed. The functional
+control at the Tuesday instant is exactly **0.00** (`probability_positive`
+0.503), so the whole effect is the move to the Sunday instant, not the change of
+ranking statistic. Every cell is `unresolved_below_power`; the positive control
+resolves at +34.62 points and was never shown able to see a 3-to-5 point effect,
+so it bounds nothing. The pool is forced picks -- a star is submitted every week
+either way -- so an arm 81% likely to be better is the arm that is played.
+
+**The rule, exactly as served (`nfl_ats.best_pick_renomination`).** On the
+**Sunday** pass, strictly before that week's Sunday 16:00 ET lock and strictly
+before the current Best Pick's own deadline:
+
+1. Take the games still playable at the pass instant -- own deadline strictly
+   after it. Games already kicked off are excluded, which is the defect the
+   historical read records: a pool rebuilt over kicked-off games is not the
+   pool the decision is made from.
+2. Rank them by the refreshed probability that the side this pass actually
+   serves covers **at the frozen Tuesday grading line**. That probability is
+   the same `new_home_cover_probability` the refresh already computes for every
+   game, oriented to the played side.
+3. Keep only the games strictly below the week's median **Sunday** cross-book
+   `spread_std`, read from the local market store at or before the instant, on
+   the pass's own calendar day, strictly before each game's kickoff, through
+   production's own `dispersion_pool_from_frame`.
+4. Break ties in the predeclared order and never alphabetically: higher
+   statistic, then lower Sunday dispersion, then smaller absolute frozen line,
+   then earlier kickoff. A tie that survives all four is resolved by ascending
+   `game_id` and reported as arbitrary (`tie_break: "arbitrary"`) -- the
+   historical read's level-5 rule takes the expectation over the tied set,
+   which a served card cannot do.
+
+**Played side, not the Tuesday side, and why.** The measured arm holds the
+archive's baseline pick fixed because nothing in that archive could move it. In
+production the late-week follow, the news veto, the heavy-handle rule and the
+rookie-crew step can all have changed the side by Sunday, and the star belongs
+on the game whose *served* pick the model is most confident in. On every game
+whose pick has not moved since Tuesday the two are the same number; the pass
+summary reports both (`played_side_cover_probability` and
+`frozen_tuesday_side_cover_probability`) so the difference is visible. Measured
+2026-09-10 on Week 1: ranking on the Tuesday side instead would have starred WAS
+at PHI at 0.632 -- a game whose served pick had already flipped to PHI, so the
+played side's own probability there is 0.368.
+
+**Fail-open at every step, like every other arm here.** No recorded Tuesday
+card, no Best Pick flag, a nominee whose own game has passed its deadline, a
+playable game with no refreshed probability, or an unusable probability all
+keep the current star and name the reason in the pass summary's
+`best_pick_renomination.reason`. If the Sunday cross-book read is empty the
+pool falls back to the Tuesday opener pool (production's
+`week_dispersion_pool`), and if that is unavailable too, to all playable games;
+`dispersion_pool` and `dispersion_pool_fallback` say which was used.
+
+**It is computed on every pass and served only on Sunday.** A Thursday or
+Saturday `refresh-picks` reports `candidate_game_id` -- what the arm would
+nominate at that instant -- with `served: false` and the reason, exactly as
+`plan_refresh` already reports what *would* change without
+`--record-decisions`. Only the Sunday pass moves the star.
+
+**Where the star lands.** `refresh-picks --publish-card` moves the `★` marker
+between rows of the published card and rewrites the Best Pick sentence above
+the table in plain English, naming the new pick and what Tuesday's was
+(`best_pick_renomination.apply_star_to_card`). The re-nomination is recorded in
+the pick-revision ledger: every row this pass writes carries `best_pick_before`
+and `best_pick_after`, and if the newly starred game's own side did not change,
+the pass writes one row for it whose reason is "The Best Pick moved to this
+game on the Sunday refresh". `nfl_ats.pick_refresh.served_best_pick` reads the
+latest `best_pick_after` for the week, and `publish-predictions` and
+`publish-board` both pass it into `resolve_card_view`, so the card, the site
+and the ledger agree on one star.
+
+**The Tuesday nominee is never overwritten.** `is_best_pick` on the
+paper-decision ledger stays exactly where `publish-predictions --record-decisions`
+put it (`record_paper_decisions` refuses to re-flag a week that already carries
+one), so the Tuesday arm remains recoverable for the ledger, the history page
+and the paired challenger.
+
+**Paired challenger.** `best_pick_sunday_renomination`
+(`artifacts/prospective/best_pick_refresh_decisions.parquet`,
+`nfl_ats.best_pick_refresh_prospective`) records the Tuesday nominee and the
+Sunday one as two arms on the same week, with recorded-line settlement. Its
+Sunday arm previously implemented S1 -- re-ranking by `|p - 0.5|` at the current
+line, the weakest arm measured, a near-no-op -- and now ranks with the served S3
+inputs, so the prospective record and the played card cannot drift apart.
+
+**A frozen nominee stays frozen.** If the current Best Pick's own deadline has
+already passed at the instant -- a Thursday, Friday, Saturday or 09:30 ET
+international game -- the nomination is held and nothing moves, which is the
+same frozen-nominee rule the historical read applied to 17 of its 107 weeks.
+
+**What is not established.** The instant itself. The sensitivity table in
+`docs/best_pick_sunday_renomination.md` reads S3 at +3.92
+(`probability_positive` 0.679) at 11:00 ET and +1.96 (0.603) at 12:30 ET on the
+52 weeks where both exist, which 52 weeks cannot separate; the served pass is
+whenever the Sunday `refresh_sun` job runs (10:00 ET). And the historical read
+could not reach the half of the live refresh that comes from a mid-week feature
+rebuild, so nothing above is evidence about that half.
 
 ## Exact commands
 

@@ -47,7 +47,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`96f294ae47c853a2`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`d49194e04945a5e5`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **54.56%** on **1,537 paired games**, week-blocked 95% interval [51.98%, 57.15%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.29%** (1,085 of 2,075 non-push games), week-blocked 95% interval [50.17%, 54.34%].
@@ -65,9 +65,9 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 5,584 results recorded -- 5,548 unresolved_below_power, 36 closed (32 refuted_mechanism, 4 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
-- **Rotation registry:** 436 declared research families -- 70 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
-- **Prospective challengers:** 51 of 57 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
+- **Weak-signal registry:** 6,065 results recorded -- 6,023 unresolved_below_power, 42 closed (38 refuted_mechanism, 4 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
+- **Prospective challengers:** 59 of 65 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->
 
 This repository is a ground-up successor to the original 2018–2023

@@ -287,3 +287,325 @@ was wired, no model, card or published page changed.
 - **Inferred:** preseason coverage gaps (2009 entirely, KC 2016 etc.)
   exclude rows rather than guessing; the 2010 season can only supply
   year-1 flags.
+
+## Rebuild, split-half reliability, and production screens (2026-09-10)
+
+**Read** (`git log`, `ROADMAP.md` PER-07/LEAD-28/LEAD-29 rows): the
+2026-08-18/09-09/09-10 repository cut (`b7ed31d`, "469,660 -> 216,083 Python
+lines") removed `scripts/playcaller_change_screen.py` and
+`src/nfl_ats/coordinator_changes.py` (only their `.pyc` files survive on
+disk); the underlying data (`data/raw/coordinators/20260907T213814366437Z/`,
+`data/processed/game_features.parquet`, the opener archive) was untouched.
+This session rebuilt the screen as a single standalone script with no
+dependency on the deleted module, reusing the exact cell definitions,
+sources and sign conventions above, and extended it with the production
+screens and split-half reliability this lane's brief asks for that the
+2026-09-07 run never computed. Closing-grounds taxonomy from the top of
+this document applies to every number below without restatement.
+
+### Rebuild fidelity check
+
+**Measured** (`scripts/playcaller_change_screen.py screen`,
+`artifacts/playcaller_change_leads/screen_results.json`): the rebuild
+reproduces the 2026-09-07 run within ordinary bootstrap-seed noise on every
+number that is a decision input. R1 population 3,006 (exact), R2 primary
+population 6,898 (exact), R2 secondary opener population 2,665 (exact), the
+same 12 first-game events at the same team/week/cover outcomes (6-6), and
+the signed fade/interaction gaps match to two decimal places (e.g. primary
+`post_bye_veteran_oc_fade` signed gap -2.90 both times; secondary opener
+interaction +7.43 both times). One descriptive-only count differs: R1's
+`games_2_to_4` cell reads 32 games here against 31 in the 2026-09-07 table,
+most likely a one-game difference between that run's schedule snapshot and
+the newer `data/raw/20260908T162105Z/schedules.parquet` used here (a
+rescheduled/added game); it does not change any cell's sign or population
+size and is descriptive, not a decision input. `first_game`'s P+ also moved
+from 0.450 to 0.511 on an unchanged +0.00 point estimate -- expected
+bootstrap-implementation variance around an exact tie, not a sign change.
+
+### Split-half reliability (odd vs even seasons)
+
+**LEAD-29 (`R1`):** `playcaller_first_game` is a rare in-season event flag
+(12 events across only 4 seasons, 2022-2025), not a repeated-measures
+per-team trait with enough seasons to correlate -- a formal split-half
+coefficient does not apply the way it would to a persistent trait, matching
+this project's convention for other thin per-event flags
+(`docs/snow_game_home_prep.md` section 4, `reliability_check.method =
+not_applicable`). **Measured**: the first-game-vs-population cover gap
+computed independently on odd-numbered seasons (7 first games, 2023+2025)
+reads +7.18 accuracy points, week-blocked 95% [-35.87, +50.20], P+ 0.6407;
+even-numbered seasons (5 first games, 2022+2024) reads -10.03 points, 95%
+[-50.10, +50.03], P+ 0.2858. The two halves disagree in sign, which is the
+expected shape of noise at n=7/n=5, not a zero-reliability finding -- the
+binding closing ground requires a *resolved* near-zero coefficient, not two
+noisy halves pointing different ways on a thin sample.
+
+**LEAD-28 (`R2`):** the `post_bye_oc_interaction` trait (new-OC post-bye
+cover rate minus veteran-OC post-bye cover rate) has enough seasons
+(2011-2024, since 2009-2010 can only supply year-1/2 flags) to run a real
+season-level correlation. **Measured**: pairing each odd season with the
+following even season (2011-2012, 2013-2014, ..., 2023-2024; 7 pairs, both
+seasons needed at least one back-flagged and one fade-flagged post-bye game)
+and correlating the two halves' per-season interaction gaps (season-pair
+bootstrap, 20,000 draws): Pearson r = **+0.2691**, 95% [-0.5674, +0.9187],
+`probability_positive` **0.754**, Spearman-Brown full-length correction
++0.4241. The interval crosses zero and is wide on 7 pairs, but it leans
+positive, not toward zero -- per the binding rule this stays
+`unresolved_below_power`, not a `no_split_half_reliability` closure (that
+ground needs a coefficient resolved AT zero, which this is not). A second,
+simpler read pooling each half wholesale (not pair-by-pair, same convention
+as `docs/tiebreaker_low_side_shading.md` section 2): odd-numbered seasons
+(154 back-flagged games) gap -2.497 points, P+ 0.296; even-numbered seasons
+(149 back-flagged games) gap -2.195 points, P+ 0.311 -- both halves lean the
+same (negative) direction as the pooled full-history primary read (-2.33
+points, P+ 0.230), i.e. the trait's *sign* replicates across halves even
+though the season-pair correlation of its *magnitude* is itself uncertain.
+These are different estimands (as `docs/coaching_leads.md`'s Denver Q4
+finding and `docs/tiebreaker_low_side_shading.md` section 2 both note for
+their own traits) and neither result closes the other.
+
+### Production screens (opener-graded, PRODUCTION weak_stack)
+
+**Measured**, `scripts/playcaller_change_screen.py production-lead28` /
+`production-lead29`, `artifacts/playcaller_change_leads/production_results_lead28.json`
+/ `_lead29.json`. Candidate: production's (`weak_stack`, active model
+`d49194e04945a5e5`) opener probability-rule pick, with a clean-case tilt
+applied on top (flip to the flagged side only when exactly one side of the
+game carries a signal; leave the pick untouched when both sides do or
+neither does, matching this repo's `coach_fade_overlay`/`bye_edge_fade_overlay`
+convention). Two reads each: the assigned rotation window (confirmation
+accounting) and the full 2020-2025 predeclared descriptive archive (the
+same 1,537-game opener archive R1/R2 use above).
+
+**LEAD-28** (`lead28_post_bye_new_playcaller_on_production`, window
+[2020, 2021] assigned via `nfl-ats rotation assign`, the same block other
+lanes drew tonight):
+
+| Read | Games (graded) | Flagged | Picks changed | Effect | 95% week-blocked | P+ (week) | P+ (season) |
+|---|---:|---:|---:|---:|---|---:|---:|
+| Assigned window 2020-2021 | 456 | 43 | 22 | **+0.877** pts | [-0.887, +2.643] | 0.8287 | 0.7494 |
+| Full archive 2020-2025 (descriptive) | 1,503 | 145 | 71 | **+0.333** pts | [-0.728, +1.390] | 0.7337 | 0.7631 |
+
+Both reads lean positive and both cross zero -- per the binding rule that
+is not grounds to reject; `probability_positive` of 0.73-0.83 favours
+playing this tilt on expected value, not vetoing it. Recorded
+`unresolved_below_power` (no admissible closing ground either way); the
+2020-2021 window is now spent for this family.
+
+**LEAD-29** (`lead29_playcaller_first_game_on_production`, window
+[2020, 2021] assigned the same way):
+
+| Read | Games (graded) | Flagged | Picks changed | Effect | 95% week-blocked | P+ (week) | P+ (season) |
+|---|---:|---:|---:|---:|---|---:|---:|
+| Assigned window 2020-2021 | 456 | 0 | 0 | 0.000 pts (degenerate) | [0.000, 0.000] | 0.5000 | 0.5000 |
+| Full archive 2020-2025 (descriptive) | 1,503 | 12 | 4 | **-0.133** pts | [-0.401, +0.132] | 0.1605 | 0.0431 (95% [-0.263, 0.000]) |
+
+**Inferred:** the assigned window is a structural zero -- none of the 12
+counted in-season OC/DC changes (all 2022-2025) fall inside 2020-2021, so
+the confirmation-accounting read is uninformative by construction, not
+evidence against the rule. The full-archive descriptive read (the one that
+actually contains all 12 events, only 4 of which disagree with production's
+existing pick) leans slightly negative; its week-blocked upper bound
+(+0.132) is positive and its season-blocked upper bound sits exactly at,
+not below, zero, so per the same rule this is **not** a resolved wrong sign
+either -- recorded `unresolved_below_power` on both reads, and the 2020-2021
+window is now spent for this family too.
+
+**Read plainly**, this production-conditional read (does flipping
+production's own pick help, on the residual cases where the model's pick
+disagrees with the flag) is not the same estimand as the unconditional
+subset-bias screen above (does the flagged group cover more/less than the
+population, full stop) -- R2's raw close-grade interaction cell leans P+
+0.20 (against the predeclared direction) over 2009-2025, its opener-grade
+secondary leans P+ 0.76 (for it) over a smaller 2020-2025 slice, and its
+production-conditional read leans P+ 0.73-0.83 (for it) over the same
+2020-2025 archive; R1's raw first-game cell is a coin flip (P+ 0.51) while
+its production-conditional read leans P+ 0.16 (against it). None of these
+four numbers resolves any other; they are reported side by side rather than
+collapsed into one verdict, per this file's own instruction to state the
+number and the interval rather than a one-word summary.
+
+### Registry and rotation
+
+**Measured** (`registry/weak_signals.json`, family `playcaller_change`, 6
+new entries, registry 5,900 -> 5,906): `playcaller_change_lead28_production
+_screen_window`, `_full_archive`, `playcaller_change_lead29_production
+_screen_window`, `_full_archive`, `playcaller_change_lead28_reliability
+_season_pair` (`--effect-units correlation`, the actually-measured unit, not
+accuracy_points), `playcaller_change_lead29_reliability_odd_even_seasons`.
+All six `unresolved_below_power`; none closed.
+
+**Measured** (`registry/rotation_registry.json`): both
+`lead28_post_bye_new_playcaller_on_production` and
+`lead29_playcaller_first_game_on_production` declared (grade `opener`,
+`--acknowledge-mined`), assigned the [2020, 2021] window (the block other
+lanes drew the same night), and recorded `unresolved` via `nfl-ats rotation
+record`; both windows are now spent. No overlay, challenger, model or
+published card was changed by this lane.
+
+### Files
+
+`scripts/playcaller_change_screen.py` (subcommands `screen`,
+`production-lead28`, `production-lead29`);
+`artifacts/playcaller_change_leads/screen_results.json`,
+`r1_population.parquet`, `r2_population.parquet`,
+`production_results_lead28.json`, `production_results_lead29.json`,
+`production_paired_lead{28,29}_{window,full}.parquet`.
+
+## Post-bye new-playcaller BACK overlay: a no-window-cost prospective challenger (2026-09-10)
+
+Follows the `veteran_rest_back_overlay` / `backup_qb_fade_overlay` precedent
+(`docs/veteran_rest_back_overlay.md`, `docs/backup_qb_fade_overlay.md`) for
+wiring a pick-level, post-prediction transform into the prospective
+challenger ledger at zero rotation-registry window cost. Closing-grounds
+taxonomy from the top of this document applies without restatement.
+
+### What is built, and what it is not
+
+This wires `post_bye_new_playcaller_back_overlay`: it flips production's
+opener pick onto a team playing its first game off its own bye
+(`nfl_ats.bye_edge_fade_overlay.bye_edge_flag_by_game`, the same >=12-day-gap
+definition the live `bye_edge_fade_overlay` challenger and the R2 screen
+above both use) whose offensive coordinator is in year 1 or 2 of tenure at
+that season's September-1 preseason observation, whenever the opponent is
+NOT also uniquely flagged and production's own pick is not already on that
+side. **This is deliberately ONLY the back half** of the production
+screen's combined tilt above (`lead28_post_bye_new_playcaller_on_production`,
+family `playcaller_change`) -- it never fades a post-bye team with a
+year-3+ ("veteran") offensive coordinator. The `+0.877` / `+0.333`
+accuracy-point registry entries quoted throughout this document
+(`playcaller_change_lead28_production_screen_window` /
+`_full_archive`) are readings of the COMBINED back+fade tilt, not an
+isolated remeasurement of this challenger's own back-only rule.
+
+**Measured 2026-09-10** against the saved production-screen ledgers
+(`artifacts/playcaller_change_leads/production_paired_lead28_{window,full}.parquet`),
+diagnostically, not as a new registry entry: of the picks the combined tilt
+changed, 16 of 23 (assigned window) and 53 of 73 (full archive) are
+attributable to the back-only signal, the remainder to the fade-only
+signal, with zero games in either read carrying both signals at once. The
+back component is the majority contributor to the combined read, but its
+own effect size was never isolated and bootstrapped on its own -- this
+challenger's 2026+ prospective ledger is the only measurement that will
+speak to the back-only construct specifically, exactly as
+`veteran_rest_back_overlay.md`'s own arithmetic-mirror section disclaims
+its own reversed figure.
+
+**Reused, not re-derived.** The OC-tenure classification (year 1: this
+season's OC differs from last season's; year 2: same as last season, which
+differed from the season before; year 3+: same OC three seasons running;
+unknown when a needed prior-season observation is missing) is the identical
+three-branch rule `scripts/playcaller_change_screen.py`'s
+`load_oc_tenure_table` uses, ported into
+`nfl_ats.post_bye_new_playcaller_back_overlay.oc_tenure_by_team_season`
+(same preseason-only OC rows, same disambiguator-stripped/case-folded name
+comparison) rather than importing the script -- production code depending on
+a `scripts/` file would be backwards, matching how
+`backup_qb_fade_overlay.md` describes its own construct as "ported, not
+redesigned" from its screen's script. The bye flag itself is not ported at
+all: it calls `nfl_ats.bye_edge_fade_overlay.bye_edge_flag_by_game` directly,
+the same function the screen imports.
+
+**Pregame-safe, and how a midseason change is dated.** Tenure is read only
+from each season's own September-1 preseason OC observation -- the in-season
+revision rows in `coordinator_history.parquet` are never read for this
+construct, matching R2's own design above ("the in-season rows are never
+read for this cell"). A coordinator fired or promoted mid-season therefore
+never changes that season's already-fixed year-1/2/3+ classification for any
+team; the earliest that classification can move is the FOLLOWING season's
+own September-1 cutoff. Since every preseason observation is dated at or
+before September 1 and every REG kickoff falls after it, tenure is fixed
+before any of that season's games are decided -- there is no path for a
+same-season event to leak into a game's flag.
+
+**Known gap, disclosed up front.** Measured 2026-09-10
+(`pandas.read_parquet` against the newest snapshot,
+`data/raw/coordinators/20260907T213814366437Z/coordinator_history.parquet`):
+the table's seasons run 2009-2025 only. There is no 2026 preseason OC
+observation for any team yet, so every 2026 team-game currently resolves to
+an "unknown" tenure and the back flag cannot fire for any 2026 game --
+independently of whether that week has any byes -- until a fresh
+coordinator-history snapshot with a 2026 preseason cutoff is captured. This
+fails closed (no flag, not a wrong flag) and does not compromise pregame
+safety; it just means the overlay is presently a structural no-op league-wide
+for 2026, not only in weeks with no byes.
+
+### Confirmed live against the current week (2026 Week 1)
+
+**Measured, 2026-09-10**, against the active forecast
+(`artifacts/margin_predictions/2026-week-01-20260910T210852Z`, model
+`d49194e04945a5e5`): 2026 Week 1 has zero post-bye games league-wide (a bye
+is structurally impossible in the first week of any season;
+`bye_edge_flag_by_game` on the newest schedule snapshot confirms 0 of 16
+Week 1 games have either side off a bye), and separately no team's 2026 OC
+tenure is yet classifiable (see known_gap above) -- both reasons
+independently guarantee zero flags this week, so the overlay produced:
+
+```
+flip_count: 0
+flipped_game_ids: []
+both_flagged_games: []
+```
+
+`record_post_bye_new_playcaller_back_overlay_decisions` was run once this
+session to confirm the recording path end to end: `recorded: 14`,
+`post_kickoff_skipped: 2` (`2026_01_NE_SEA` and `2026_01_SF_LA` had already
+kicked off by the time of the run, the same two games every other overlay
+recorded this week already excluded), `ledger_rows: 530` after the append.
+With zero flips, all 14 recorded rows are byte-identical to production's own
+raw pick on the same 14 games -- a clean 1:1 match, not a coincidence of a
+flip landing on an already-excluded game (there were no flips to exclude).
+This does not change what was confirmed: the overlay computed a correct,
+non-trivial-to-reach value (zero real flags is the mechanically correct
+answer for Week 1, not a silent failure) and the recording path wrote real
+rows to the shared ledger without touching `recommendations.csv`,
+`CURRENT_PREDICTIONS.md`, or any served page.
+
+### What is and is not wired in
+
+- `src/nfl_ats/post_bye_new_playcaller_back_overlay.py`: the transform
+  (`apply_post_bye_new_playcaller_back_overlay`), the signal readers
+  (`post_bye_new_oc_flag_by_game`, `oc_tenure_by_team_season`,
+  `load_coordinator_history`), the disclosure sentence
+  (`overlay_disclosure_note`, not currently surfaced anywhere), and the
+  recorder (`record_post_bye_new_playcaller_back_overlay_decisions`).
+- `src/nfl_ats/cli_commands/publishing.py`'s `orchestrate_publish_predictions`:
+  one more purely additive, fail-open `try`/`except` block (mirroring the
+  existing ones) that calls the recorder when `--record-decisions` is
+  passed, plus a `PUBLISH_CHALLENGER_RESULT_KEYS` entry
+  (`post_bye_new_playcaller_back_overlay` ->
+  `post_bye_new_playcaller_back_overlay_challenger_ledger`) and a matching
+  `skipped` placeholder in the no-`--record-decisions` branch. This writes
+  ONLY to `artifacts/prospective/challenger_decisions.parquet`; it never
+  touches `recommendations.csv`, `CURRENT_PREDICTIONS.md`, `README.md`, or
+  the public site. **The production pick path (`publish_active_predictions`)
+  is untouched by this build.**
+- `artifacts/prospective/challengers.json`: registered as
+  `post_bye_new_playcaller_back_overlay`, status `ACTIVE_PROSPECTIVE`, `model`
+  block a snapshot of the active configuration at registration time (for
+  fingerprint-mismatch detection only, mirroring every other overlay
+  challenger).
+- `src/nfl_ats/dashboard/findings_content.py`'s `CHALLENGER_DISPLAY_NAMES`:
+  `post_bye_new_playcaller_back_overlay` -> `"Post-bye new playcaller back"`.
+- **Not wired anywhere:** there is no switch that applies this overlay to
+  the published card. Playing this on the real card is a separate owner
+  decision this document does not make.
+- **Tracked independently against the active model's own card, not stacked
+  on the other overlays**, matching every sibling overlay's pattern exactly.
+
+### No new tests (moratorium)
+
+Per the standing test moratorium, no test file or test function was added
+for this module. Verification here is the direct run reported above
+(`record_post_bye_new_playcaller_back_overlay_decisions` against the live
+2026 Week 1 card), not a pytest fixture.
+
+### Decision left to the orchestrator
+
+Nothing here decides anything -- it only starts a free, honestly-labelled
+evidence stream. Once 2026 accrues enough weeks (and, separately, once a
+2026 preseason coordinator snapshot exists so the OC-tenure half of the flag
+can fire at all), `nfl-ats prospective-score` reports this challenger's
+`probability_positive` at both grades, paired against the active model,
+exactly like every other overlay challenger. That number -- not the combined
+back+fade production-screen figures quoted above -- is what will actually
+say whether backing a new playcaller off a bye holds up on its own.

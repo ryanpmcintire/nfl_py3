@@ -18,7 +18,13 @@ from nfl_ats.served_total import (
     served_total_blend_k01,
     served_total_joint_residual,
 )
-from nfl_ats.tiebreaker import TOTALS_RESIDUAL_WEIGHT, MarketConsensus, build_report, lined_finals
+from nfl_ats.tiebreaker import (
+    TOTAL_LOW_SIDE_SHADE_POINTS,
+    TOTALS_RESIDUAL_WEIGHT,
+    MarketConsensus,
+    build_report,
+    lined_finals,
+)
 from nfl_ats.totals import TotalsView, design_matrix
 
 _FEATURES = ("wind", "temp")
@@ -306,7 +312,9 @@ def test_build_report_serves_joint_residual_when_both_views_exist() -> None:
     report = build_report(game, consensus, finals, None, blend_view, joint_view)
 
     assert report.served_total_method == "joint_residual"
-    assert report.served_total == pytest.approx(43.0 + JOINT_TOTAL_BLEND_WEIGHT * 0.6)
+    assert report.served_total == pytest.approx(
+        43.0 + JOINT_TOTAL_BLEND_WEIGHT * 0.6 + TOTAL_LOW_SIDE_SHADE_POINTS
+    )
     assert report.guess_total_line == pytest.approx(report.served_total)
     assert report.comparison_total_blend_k01 == pytest.approx(43.0 + TOTALS_RESIDUAL_WEIGHT * 0.4)
     assert report.served_total != pytest.approx(report.comparison_total_blend_k01)
@@ -321,8 +329,12 @@ def test_build_report_falls_back_to_blend_when_no_joint_view_is_supplied() -> No
     report = build_report(game, consensus, finals, None, blend_view, None)
 
     assert report.served_total_method == "blend_k01"
-    assert report.served_total == pytest.approx(43.0 + TOTALS_RESIDUAL_WEIGHT * 0.4)
-    assert report.served_total == pytest.approx(report.comparison_total_blend_k01)
+    assert report.served_total == pytest.approx(
+        43.0 + TOTALS_RESIDUAL_WEIGHT * 0.4 + TOTAL_LOW_SIDE_SHADE_POINTS
+    )
+    assert report.served_total == pytest.approx(
+        report.comparison_total_blend_k01 + TOTAL_LOW_SIDE_SHADE_POINTS
+    )
 
 
 def test_tiebreaker_json_payload_carries_served_total_method_and_both_totals() -> None:

@@ -471,6 +471,18 @@ def plan_weekly_run(
     steps.append(
         WeeklyStep(
             number=14,
+            name="waterfall-feed",
+            description=(
+                "rebuild the per-game attribution feed for the active model; "
+                "publish-board fails closed on a feed built for another model"
+            ),
+            command=("waterfall-feed",),
+            optional=False,
+        )
+    )
+    steps.append(
+        WeeklyStep(
+            number=15,
             name="publish-board",
             description="regenerate the public site from the synchronized card and measurements",
             command=("publish-board",),

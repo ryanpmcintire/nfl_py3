@@ -113,10 +113,11 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
         "overlay-composition",
         "publish-predictions",
         "drift-report",
+        "waterfall-feed",
         "publish-board",
     ]
-    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 8, 13, 14]
-    assert steps[-2].optional is True
+    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 8, 13, 14, 15]
+    assert steps[-3].optional is True
     assert steps[-1].name == "publish-board"
     assert steps[-1].optional is False
     names = [step.name for step in steps]
@@ -268,6 +269,7 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
         "overlay-composition",
         "publish-predictions",
         "drift-report",
+        "waterfall-feed",
         "publish-board",
     ]
     assert payload["steps"][0]["command"][:4] == ["python", "-m", "nfl_ats", "ingest"]
@@ -303,6 +305,7 @@ def test_skip_ingest_marks_step_one_skipped(tmp_path: Path) -> None:
         "overlay-composition",
         "publish-predictions",
         "drift-report",
+        "waterfall-feed",
         "publish-board",
     ]
     assert summary["steps"][0] == {
@@ -343,9 +346,10 @@ def test_run_executes_every_step_in_order(tmp_path: Path) -> None:
         "overlay-composition",
         "publish-predictions",
         "drift-report",
+        "waterfall-feed",
         "publish-board",
     ]
-    assert [step["status"] for step in summary["steps"]] == ["ok"] * 13
+    assert [step["status"] for step in summary["steps"]] == ["ok"] * 14
     assert summary["historical_evaluation"]["accuracy"] == pytest.approx(0.5204819277)
 
 
@@ -636,7 +640,12 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
         "overlay-composition",
         "publish-predictions",
     ]
-    assert names[11:] == [*PROSPECTIVE_STEPS, "drift-report", "publish-board"]
+    assert names[11:] == [
+        *PROSPECTIVE_STEPS,
+        "drift-report",
+        "waterfall-feed",
+        "publish-board",
+    ]
     by_name = {step.name: step for step in steps}
     assert all(by_name[name].optional for name in PROSPECTIVE_STEPS)
     assert by_name["drift-report"].optional is True

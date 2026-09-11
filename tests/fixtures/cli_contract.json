@@ -107,6 +107,7 @@
         "rotation",
         "weak-signals",
         "anytime",
+        "waterfall-feed",
         "weekly-run"
       ],
       "choice_help": [
@@ -381,6 +382,10 @@
         {
           "name": "anytime",
           "help": "anytime-valid (continuous-monitoring) paired comparisons"
+        },
+        {
+          "name": "waterfall-feed",
+          "help": "rebuild the per-game attribution feed for the active model (runs scripts/waterfall_feed.py); publish-board fails closed on a stale feed"
         },
         {
           "name": "weekly-run",

@@ -52,7 +52,7 @@ from nfl_ats.lineage import (
     write_card_lineage,
 )
 from nfl_ats.margin import margin_feature_columns
-from nfl_ats.pick_refresh import load_pick_revisions
+from nfl_ats.pick_refresh import load_pick_revisions, served_best_pick
 from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
     arrest_overlay_disclosure_note,
@@ -148,8 +148,8 @@ def _decision_score_note(displayed_confidence: ProductionDisplayedConfidence) ->
         "`Decision score` is the computer's own chance that this side covers, adjusted "
         "for how the computer has actually done on spreads this size. Big favourites and "
         "big underdogs have been its weak spot, so a very confident-looking number there "
-        "is pulled back toward what it has really hit. It is a per-game chance, not "
-        "historical accuracy.\n"
+        "is pulled back toward what it has really hit, and it is never shown below 50% on a "
+        "side this card is picking. It is a per-game chance, not historical accuracy.\n"
     )
 
 
@@ -199,6 +199,9 @@ def _publication_context(
         now=published_at,
         require_fresh_arrest_overlay=require_fresh_arrest_overlay,
         nominate_v2_fn=nominate_v2_small_spread,
+        renominated_game_id=served_best_pick(
+            artifacts_root, season=int(metadata["season"]), week=int(metadata["week"])
+        ),
     )
     displayed_confidence = fit_production_displayed_confidence(
         artifacts_root,
@@ -302,6 +305,8 @@ def _tiebreaker_json_payload(
         "served_total": guess.served_total,
         "served_total_method": guess.served_total_method,
         "comparison_total_blend_k01": guess.comparison_total_blend_k01,
+        "total_low_side_shade_points": guess.low_side_shade_points,
+        "total_low_side_shade_source": guess.low_side_shade_source,
         "implied_margin": guess.guess_home - guess.guess_away,
         "pick_side": guess.pick_side,
         "lattice_centre_margin": (

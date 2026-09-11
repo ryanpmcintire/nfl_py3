@@ -61,6 +61,7 @@ sign-test code). How a caller gets to that sign varies by unit:
 | `mae_improvement` *(new)* | Points of MAE, but **higher is better** | Store `(baseline_mae − candidate_mae)` directly — no extra negation. `+0.00082` means the candidate's MAE was `0.00082` lower. |
 | `brier_improvement` *(new)* | Brier points, **higher is better** | Store `(baseline_brier − candidate_brier)` directly. |
 | `log_loss_improvement` *(new)* | Log-loss points, **higher is better** | Store `(baseline_log_loss − candidate_log_loss)` directly. |
+| `payout_first_pp` *(new 2026-09-11)* | Percentage points of a simulated pool-finish probability (P(first) under winner-take-all, or P(paid) under a stated payout structure) from a Monte Carlo contest simulator conditional on ASSUMED field parameters (entries, prize structure, public lean) | Natural: a bigger simulated payout probability already reads positive. **Never commensurable with `accuracy_points`** — one is a graded-outcome measurement, the other a simulation conditional on an assumed field — so `weak-signals pool` must be called once per unit and the two must never be combined by hand. Added for POL-05 (`docs/contest_utility_optimizer.md`) after 12 simulated payout deltas had been stored as `accuracy_points` conversions for lack of a native unit, contaminating that pool; see `docs/weak_signal_pooling.md`'s commensurability rule. |
 
 The three `*_improvement` units and `correlation` do not change any stored
 number's meaning versus the pre-existing convention — `favours_candidate`,
@@ -72,7 +73,7 @@ and prefer `correlation` over stuffing a correlation coefficient into
 `accuracy_points` as a bare numeric container.
 
 `weak-signals pool --effect-units <unit>` works the same way for every unit,
-including the four new ones, on any bucket size — zero eligible signals
+including the five new ones, on any bucket size — zero eligible signals
 returns `"pooled_by_unit": {}` with `"eligible": []` and no error; one
 eligible signal pools against itself (`sharpening_vs_best_single: 1.0`) with
 no error.
