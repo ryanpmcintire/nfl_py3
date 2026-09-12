@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 import os
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import pandas as pd
 
@@ -484,7 +485,7 @@ def human_update_time(raw: str | None) -> str:
     parsed = _parse_iso_utc((raw or "").replace(" UTC", "+00:00"))
     if parsed is None:
         return "at an unrecorded time"
-    parsed = parsed.astimezone(UTC)
+    parsed = parsed.astimezone(ZoneInfo("America/New_York"))
     period = "morning" if parsed.hour < 12 else "afternoon" if parsed.hour < 18 else "evening"
     return f"{parsed:%A} {period}"
 
@@ -539,6 +540,74 @@ def injury_pick_note(metadata: Mapping[str, Any], sources: SourcePolicyView) -> 
             f"(latest copy from {human_update_time(row.observed_at)})."
         )
     return f"{INJURY_NOTE_INFORMED_PREFIX}; the report time was not recorded."
+
+
+def _eastern_clock(stamp: datetime) -> str:
+    hour = stamp.hour % 12 or 12
+    return f"{stamp:%A} {hour}:{stamp:%M %p} ET"
+
+
+def injury_feed_coverage_note(
+    data_root: Path | None,
+    *,
+    season: Any,
+    week: Any,
+    teams_still_to_play: Iterable[str],
+    now: datetime,
+) -> str:
+    if data_root is None or season is None or week is None:
+        return ""
+    from nfl_ats.players import latest_player_snapshot
+
+    try:
+        snapshot = latest_player_snapshot(data_root / "players" / "raw")
+        injuries = pd.read_parquet(snapshot.injuries_path)
+        snapshot_name = snapshot.snapshot_id
+    except Exception:
+        return ""
+    needed = {"season", "week", "team", "report_status"}
+    if not needed.issubset(injuries.columns):
+        return ""
+    rows = injuries.loc[
+        pd.to_numeric(injuries["season"], errors="coerce").eq(float(season))
+        & pd.to_numeric(injuries["week"], errors="coerce").eq(float(week))
+    ]
+    pending = {str(team) for team in teams_still_to_play}
+    designated = rows.loc[rows["report_status"].notna() & rows["report_status"].astype(str).ne("")]
+    pending_designated = designated.loc[designated["team"].astype(str).isin(pending)]
+    pending_teams = sorted(set(pending_designated["team"].astype(str)))
+    arrived: pd.Timestamp | None = None
+    if "effective_observed_at" in rows.columns:
+        stamps = pd.to_datetime(rows["effective_observed_at"], utc=True, errors="coerce").dropna()
+        if not stamps.empty:
+            arrived = pd.Timestamp(stamps.max())
+    captured = pd.to_datetime(snapshot_name, format="%Y%m%dT%H%M%SZ", utc=True, errors="coerce")
+    eastern = ZoneInfo("America/New_York")
+    if pending:
+        if pending_designated.empty:
+            status = (
+                "No out, doubtful or questionable designations for the games still to be "
+                "played have reached the league injury feed we read"
+            )
+        else:
+            status = (
+                f"Game-status designations in hand for {len(pending_designated)} "
+                f"player{'s' if len(pending_designated) != 1 else ''} on "
+                f"{len(pending_teams)} of the {len(pending)} teams still to play"
+            )
+    else:
+        status = "Every game this week has kicked off, so no designations are pending"
+    if arrived is not None:
+        status += (
+            f"; the newest entries reached our copy {_eastern_clock(arrived.astimezone(eastern))}"
+        )
+    if captured is not None and not pd.isna(captured):
+        age_hours = max((now.astimezone(UTC) - captured.to_pydatetime()).total_seconds() / 3600, 0)
+        plural = "s" if round(age_hours) != 1 else ""
+        status += f", and the feed was last checked {age_hours:.0f} hour{plural} ago"
+    status += ". Designations announced in the news but not yet in the feed are read only as a "
+    status += "tiebreak when the books move a line."
+    return status
 
 
 @dataclass(frozen=True)
@@ -1546,6 +1615,7 @@ class BoardContent:
     link_preview: LinkPreview
     season_record: SeasonRecordStrip | None = None
     injury_note: str = "Whether injury reports informed these picks was not recorded."
+    injury_coverage_note: str = ""
     week_timeline: WeekTimeline = field(default_factory=WeekTimeline)
     refresh_lines: tuple[str, ...] = ()
     source_policy: SourcePolicyView = field(default_factory=_default_source_policy_view)
@@ -3068,6 +3138,18 @@ def load_board_content(
         disclaimer=Disclaimer(short=DISCLAIMER_SHORT, full=DISCLAIMER_FULL),
         source_policy=source_policy_view,
         injury_note=injury_pick_note(artifacts.metadata, source_policy_view),
+        injury_coverage_note=injury_feed_coverage_note(
+            resolved_data_root,
+            season=season_number,
+            week=week_number,
+            teams_still_to_play=[
+                team
+                for _, pending_row in ordered.iterrows()
+                if _number(outcome_by_game_id.get(str(pending_row["game_id"]), (None,))[0]) is None
+                for team in (str(pending_row["home_team"]), str(pending_row["away_team"]))
+            ],
+            now=generated,
+        ),
         tiebreaker=tiebreaker_view,
         rivals=_build_rival_rules(
             paper_decisions,

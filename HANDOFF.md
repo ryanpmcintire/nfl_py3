@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-11T19:10:49.494804+00:00`
+Refreshed at: `2026-09-12T11:57:49.664313+00:00`
 
 ## Start here
 
@@ -20,29 +20,22 @@ Refreshed at: `2026-09-11T19:10:49.494804+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `18fa1f4c7332` — Backlog night: Sunday Best Pick re-nomination, tiebreaker low-side shade, confidence floor and last-call refreshes served; six prospective challengers registered; two repo-cut deletions restored; off-site backup and second capture host live
-- Pending change set: 76 paths
+- Baseline commit: `6d1068f8dc01` — Friday backlog sweep: played side now consistent across card, board and ledger; props capture live; half-line challenger and interim play-caller challenger registered; MOD-18 answered on pool-shaped lines; served refresh chain re-measured on every refit
+- Pending change set: 14 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  artifacts/prospective/challengers.json`
-  - `M  config/source_policies.json`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `A  docs/mod18_pool_shaped_read.md`
   - `M  docs/model.html`
-  - `A  docs/overlay_union_line_shape.md`
-  - `M  docs/playcaller_change_leads.md`
-  - `M  docs/player_props_sourcing.md`
-  - `A  docs/single_book_opener_grade.md`
-  - `A  docs/whole_number_line_model_diagnosis.md`
-  - `A  registry/experiments/margin-backtest/20260911T160857Z.json`
-  - `A  registry/experiments/margin-backtest/20260911T164740Z.json`
-  - `A  registry/experiments/margin-backtest/20260911T164743Z.json`
-  - `A  registry/experiments/margin-backtest/20260911T164746Z.json`
-  - ...and 56 more
+  - `A  scripts/unserved_tilt_marginals.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/cli_commands/clv.py`
+  - `M  src/nfl_ats/weekly.py`
+  - `M  tests/fixtures/cli_contract.json`
+  - `M  tests/test_weekly.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

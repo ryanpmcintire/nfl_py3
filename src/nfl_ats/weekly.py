@@ -407,6 +407,18 @@ def plan_weekly_run(
             ),
             WeeklyStep(
                 number=7,
+                name="served-card-archive",
+                description=(
+                    "score the card as played against the matching opener evaluation "
+                    "(the board's headline archive number); reuse when it already names the "
+                    "active model, re-measure otherwise"
+                ),
+                command=("served-card-archive",),
+                optional=True,
+                notes=("self-checking: reuses on model id or archive digest, not on step order",),
+            ),
+            WeeklyStep(
+                number=7,
                 name="served-refresh-card",
                 description=(
                     "reuse the served refresh-chain measurement when its archive still matches "

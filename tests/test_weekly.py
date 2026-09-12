@@ -111,13 +111,14 @@ def test_plan_is_the_seven_specified_steps_in_order(tmp_path: Path) -> None:
         "ingest-player-arrests",
         "opener-evaluation",
         "overlay-composition",
+        "served-card-archive",
         "served-refresh-card",
         "publish-predictions",
         "drift-report",
         "waterfall-feed",
         "publish-board",
     ]
-    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 7, 8, 13, 14, 15]
+    assert [step.number for step in steps] == [1, 2, 3, 3, 4, 5, 6, 7, 7, 7, 7, 7, 8, 13, 14, 15]
     assert steps[-3].optional is True
     assert steps[-1].name == "publish-board"
     assert steps[-1].optional is False
@@ -268,6 +269,7 @@ def test_dry_run_prints_the_plan_and_runs_nothing(
         "ingest-player-arrests",
         "opener-evaluation",
         "overlay-composition",
+        "served-card-archive",
         "served-refresh-card",
         "publish-predictions",
         "drift-report",
@@ -305,6 +307,7 @@ def test_skip_ingest_marks_step_one_skipped(tmp_path: Path) -> None:
         "ingest-player-arrests",
         "opener-evaluation",
         "overlay-composition",
+        "served-card-archive",
         "served-refresh-card",
         "publish-predictions",
         "drift-report",
@@ -347,13 +350,14 @@ def test_run_executes_every_step_in_order(tmp_path: Path) -> None:
         "ingest-player-arrests",
         "opener-evaluation",
         "overlay-composition",
+        "served-card-archive",
         "served-refresh-card",
         "publish-predictions",
         "drift-report",
         "waterfall-feed",
         "publish-board",
     ]
-    assert [step["status"] for step in summary["steps"]] == ["ok"] * 15
+    assert [step["status"] for step in summary["steps"]] == ["ok"] * 16
     assert summary["historical_evaluation"]["accuracy"] == pytest.approx(0.5204819277)
 
 
@@ -631,7 +635,7 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
     names = [step.name for step in steps]
 
-    assert names[:12] == [
+    assert names[:13] == [
         "ingest",
         "build-features",
         "build-pbp-features",
@@ -642,10 +646,11 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
         "ingest-player-arrests",
         "opener-evaluation",
         "overlay-composition",
+        "served-card-archive",
         "served-refresh-card",
         "publish-predictions",
     ]
-    assert names[12:] == [
+    assert names[13:] == [
         *PROSPECTIVE_STEPS,
         "drift-report",
         "waterfall-feed",
@@ -655,7 +660,9 @@ def test_prospective_steps_trail_the_publish_and_are_optional(tmp_path: Path) ->
     assert all(by_name[name].optional for name in PROSPECTIVE_STEPS)
     assert by_name["drift-report"].optional is True
     assert by_name["served-refresh-card"].optional is True
-    assert not any(by_name[name].optional for name in names[:12] if name != "served-refresh-card")
+    assert by_name["served-card-archive"].optional is True
+    measurement_steps = {"served-refresh-card", "served-card-archive"}
+    assert not any(by_name[name].optional for name in names[:13] if name not in measurement_steps)
 
     processed = data_root / "processed"
     assert by_name["build-weak-stack-features"].command == (
@@ -770,7 +777,7 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
     (data_root / "processed" / "game_features_weak_stack.manifest.json").unlink()
 
     steps = plan_weekly_run(season=2026, week=1, data_root=data_root)
-    assert [step.name for step in steps][:12] == [
+    assert [step.name for step in steps][:13] == [
         "ingest",
         "build-features",
         "build-pbp-features",
@@ -781,10 +788,11 @@ def test_missing_challenger_manifest_skips_the_tail_without_breaking_the_plan(
         "ingest-player-arrests",
         "opener-evaluation",
         "overlay-composition",
+        "served-card-archive",
         "served-refresh-card",
         "publish-predictions",
     ]
-    tail = steps[12]
+    tail = steps[13]
     assert tail.name == "build-weak-stack-features"
     assert tail.skipped and tail.optional
     assert "challenger evidence unavailable" in tail.notes[0]

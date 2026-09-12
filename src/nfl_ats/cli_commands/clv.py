@@ -605,6 +605,53 @@ def _cmd_served_refresh_card(args: argparse.Namespace) -> None:
     _print_json(result)
 
 
+def _cmd_served_card_archive(args: argparse.Namespace) -> None:
+    from nfl_ats.overlay_composition import DEFAULT_FEATURES, DEFAULT_INCIDENTS
+    from nfl_ats.public_board import (
+        find_matching_opener_evaluation,
+        load_active_ats_model,
+        load_served_union_measurement,
+    )
+    from nfl_ats.unserved_tilt_marginals import run_unserved_tilt_marginals
+
+    artifacts_root = _artifacts_root()
+    active = load_active_ats_model(artifacts_root) or {}
+    existing = None if args.force else load_served_union_measurement(artifacts_root, active)
+    if existing is not None:
+        _print_json(
+            {
+                "status": "reused",
+                "active_model_id": active.get("model_id"),
+                "served_card_accuracy": existing.accuracy,
+                "n_scored_games": existing.scored_games,
+            }
+        )
+        return
+    match = find_matching_opener_evaluation(artifacts_root, active)
+    if match is None:
+        raise ValueError("No opener-evaluation matches the active model; run opener-evaluation")
+    data_root = _data_root()
+    result = run_unserved_tilt_marginals(
+        per_game_artifact=match[1] / "per_game.parquet",
+        data_root=data_root,
+        repo_root=Path.cwd(),
+        features=args.features or data_root / DEFAULT_FEATURES.relative_to("data"),
+        incidents=args.incidents or data_root / DEFAULT_INCIDENTS.relative_to("data"),
+        output_root=artifacts_root / "unserved_tilt_marginals",
+        samples=args.bootstrap_samples,
+        seed=args.bootstrap_seed,
+    )
+    _print_json(
+        {
+            "status": "measured",
+            "active_model_id": result.get("active_model_id"),
+            "served_card_accuracy": result.get("served_card_accuracy"),
+            "n_scored_games": result.get("n_scored_games"),
+            "output_dir": result.get("artifact_directory"),
+        }
+    )
+
+
 def _cmd_predict_close(args: argparse.Namespace) -> None:
     features = _load_features(args.features)
     market_root = _data_root() / "market" / "raw"
@@ -862,6 +909,22 @@ def register_diagnostics(
     )
     served_refresh_card_parser.add_argument("--registry-dir", type=Path, default=None)
     served_refresh_card_parser.set_defaults(handler=_cmd_served_refresh_card)
+
+    served_card_archive_parser = subparsers.add_parser(
+        "served-card-archive",
+        help="score the card as played (every served adjustment) against the active model's "
+        "matching opener evaluation: the board's headline archive number; reuses the latest "
+        "measurement when it already names the active model and re-measures otherwise",
+    )
+    served_card_archive_parser.add_argument("--features", type=Path)
+    served_card_archive_parser.add_argument("--incidents", type=Path)
+    served_card_archive_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="re-measure even when the existing artifact already matches the active model",
+    )
+    _add_bootstrap_args(served_card_archive_parser, samples=20_000, seed=20260821)
+    served_card_archive_parser.set_defaults(handler=_cmd_served_card_archive)
 
     predict_close = subparsers.add_parser(
         "predict-close",

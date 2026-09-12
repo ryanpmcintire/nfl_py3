@@ -86,6 +86,7 @@
         "opener-line-series",
         "overlay-composition",
         "served-refresh-card",
+        "served-card-archive",
         "predict-close",
         "build-features",
         "build-pbp-features",
@@ -301,6 +302,10 @@
         {
           "name": "served-refresh-card",
           "help": "score the whole served refresh chain (Tuesday card plus every through-the-week rule) against the active model's matching opener evaluation; reuses the latest measurement when its archive still matches the active model and re-measures otherwise"
+        },
+        {
+          "name": "served-card-archive",
+          "help": "score the card as played (every served adjustment) against the active model's matching opener evaluation: the board's headline archive number; reuses the latest measurement when it already names the active model and re-measures otherwise"
         },
         {
           "name": "predict-close",

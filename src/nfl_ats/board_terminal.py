@@ -614,7 +614,9 @@ def _injury_state_html(content: BoardContent) -> str:
         f'<p class="policy-note"><b>{escape(INJURY_STATE_NAME)}</b> '
         f'<span class="src-state {escape(content.injury_state_class)}">'
         f"{escape(content.injury_state_label)}</span> &mdash; "
-        f"{escape(content.injury_note)}</p>"
+        f"{escape(content.injury_note)}"
+        + (f" {escape(content.injury_coverage_note)}" if content.injury_coverage_note else "")
+        + "</p>"
     )
 
 
