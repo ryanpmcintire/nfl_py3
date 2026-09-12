@@ -116,6 +116,28 @@ def _fetch_current_week_injuries(
     season: int, week: int, schedule: pd.DataFrame, generated_at: datetime
 ) -> tuple[pd.DataFrame, str]:
 
+    generated_ts = pd.Timestamp(generated_at)
+    if generated_ts.tzinfo is None:
+        generated_ts = generated_ts.tz_localize("UTC")
+    try:
+        snapshot = latest_player_snapshot(PLAYER_SNAPSHOT_ROOT)
+        snapshot_injuries = pd.read_parquet(snapshot.injuries_path)
+    except (FileNotFoundError, OSError, ValueError):
+        snapshot = None
+        snapshot_injuries = pd.DataFrame()
+    if snapshot is not None and "effective_observed_at" in snapshot_injuries.columns:
+        rows = snapshot_injuries.loc[
+            pd.to_numeric(snapshot_injuries["season"], errors="coerce").eq(season)
+            & pd.to_numeric(snapshot_injuries["week"], errors="coerce").eq(week)
+        ].copy()
+        if not rows.empty:
+            observed = pd.to_datetime(rows["effective_observed_at"], utc=True, errors="coerce")
+            visible = rows.loc[observed <= generated_ts].copy()
+            return visible, (
+                f"player snapshot {snapshot.snapshot_id} (nflverse injury report stamped at "
+                f"the capture that first saw each row), {len(visible)}/{len(rows)} rows "
+                f"visible by {generated_ts.isoformat()}"
+            )
     try:
         raw = load_season_frame("injuries", season)
     except SeasonReleaseNotPublished as exc:
@@ -126,13 +148,11 @@ def _fetch_current_week_injuries(
     canonical = canonicalize_injuries(
         raw, include_postseason=False, timestamp_fallback="week_proxy", schedule=schedule
     )
-    generated_ts = pd.Timestamp(generated_at)
-    if generated_ts.tzinfo is None:
-        generated_ts = generated_ts.tz_localize("UTC")
     visible = canonical.loc[canonical["effective_observed_at"] <= generated_ts].copy()
     return visible, (
-        "live nflverse injury report, week_proxy fallback for a missing date_modified, "
-        f"{len(visible)}/{len(canonical)} rows visible by {generated_ts.isoformat()}"
+        "live nflverse injury report (no player snapshot on disk), week_proxy fallback for a "
+        f"missing date_modified, {len(visible)}/{len(canonical)} rows visible by "
+        f"{generated_ts.isoformat()}"
     )
 
 
@@ -255,6 +275,16 @@ def _team_payload(
             if isinstance(current_injury, pd.DataFrame):
                 current_injury = current_injury.iloc[-1]
         has_injury_designation = current_injury is not None
+        player_injury_status: str | None = None
+        if current_injury is not None:
+            report = current_injury.get("report_status")
+            practice = current_injury.get("practice_status")
+            if isinstance(report, str) and report.strip():
+                player_injury_status = report.strip()
+            elif isinstance(practice, str) and practice.strip():
+                player_injury_status = f"practice: {practice.strip()}"
+            else:
+                player_injury_status = "on the injury report"
         model_qb_start_probability = qb_probability if is_base_model_qb else None
         if gsis_id is not None and idx in model_predictions.index:
             predicted_row = model_predictions.loc[idx]
@@ -292,6 +322,7 @@ def _team_payload(
                 "probability_source": probability_source,
                 "probability_reason": probability_reason,
                 "has_injury_designation": has_injury_designation,
+                "injury_status": player_injury_status,
                 "model_role": "base_model" if gsis_id == model_qb_id else "context_only",
             }
         )

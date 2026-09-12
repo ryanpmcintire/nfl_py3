@@ -328,8 +328,21 @@ def write_market_snapshot(
     return snapshot
 
 
-def load_quote_history(root: Path) -> pd.DataFrame:
+def _snapshot_directory_instant(path: Path) -> pd.Timestamp | None:
+    stamp = pd.to_datetime(path.name[:16], format="%Y%m%dT%H%M%SZ", utc=True, errors="coerce")
+    return None if pd.isna(stamp) else pd.Timestamp(stamp)
+
+
+def load_quote_history(root: Path, *, since: pd.Timestamp | None = None) -> pd.DataFrame:
     paths = sorted(root.glob("*/quotes.parquet")) if root.is_dir() else []
+    if since is not None:
+        floor = pd.Timestamp(since)
+        floor = floor.tz_localize("UTC") if floor.tzinfo is None else floor.tz_convert("UTC")
+        paths = [
+            path
+            for path in paths
+            if (instant := _snapshot_directory_instant(path.parent)) is None or instant >= floor
+        ]
     if not paths:
         return pd.DataFrame(columns=QUOTE_COLUMNS)
     history = pd.concat((pd.read_parquet(path) for path in paths), ignore_index=True)

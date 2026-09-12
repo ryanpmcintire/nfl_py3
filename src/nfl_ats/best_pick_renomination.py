@@ -103,7 +103,9 @@ def refresh_day_dispersion(
 ) -> pd.DataFrame:
 
     columns = ["game_id", "spread_std"]
-    quotes = load_quote_history(data_root / "market" / "raw")
+    quotes = load_quote_history(
+        data_root / "market" / "raw", since=pd.Timestamp(instant) - pd.Timedelta(days=2)
+    )
     if quotes.empty:
         return pd.DataFrame(columns=columns)
     observed = pd.to_datetime(quotes["observed_at_utc"], utc=True)
@@ -138,7 +140,11 @@ def renomination_pool(
         pool = dispersion_pool_from_frame(anchor.merge(same_day, on="game_id", how="left"))
         return pool.frame, "refresh_day_cross_book", pool.fallback_reason or ""
     try:
-        opener = week_dispersion_pool(data_root / "market" / "raw", game_ids)
+        opener = week_dispersion_pool(
+            data_root / "market" / "raw",
+            game_ids,
+            since=pd.Timestamp(instant) - pd.Timedelta(days=21),
+        )
     except (OSError, ValueError, KeyError):
         fallback = anchor.copy()
         fallback["spread_std"] = float("nan")

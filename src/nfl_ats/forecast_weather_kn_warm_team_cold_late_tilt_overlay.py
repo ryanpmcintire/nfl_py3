@@ -82,7 +82,11 @@ def fetch_one_game_kickoff_nearest(
 
     cutoff_metadata = _live_cutoff_metadata(kickoff_utc)
     cutoff_utc = pd.Timestamp(cutoff_metadata["decision_cutoff_utc"])
+    issued_by = datetime.now(UTC)
     for runtime_utc in candidate_runtimes(cutoff_utc, max_lookback_steps):
+        runtime_aware = runtime_utc if runtime_utc.tzinfo else runtime_utc.replace(tzinfo=UTC)
+        if runtime_aware > issued_by:
+            continue
         try:
             rows = fetch_bulletin(station, runtime_utc, model=model)
         except MosFetchError:

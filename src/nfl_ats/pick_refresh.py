@@ -144,7 +144,11 @@ def current_captured_home_spread(
 ) -> tuple[dict[str, float], dict[str, Any]]:
 
     market_root = data_root / "market" / "raw"
-    quotes = load_quote_history(market_root)
+    now_floor = pd.Timestamp(now)
+    now_floor = (
+        now_floor.tz_localize("UTC") if now_floor.tzinfo is None else now_floor.tz_convert("UTC")
+    )
+    quotes = load_quote_history(market_root, since=now_floor - pd.Timedelta(days=21))
     if quotes.empty:
         return {}, {
             "fresh": False,

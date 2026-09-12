@@ -50,13 +50,19 @@ class DispersionPool:
     n_pool_pass: int
 
 
-def week_dispersion_pool(market_root: Path, game_ids: Sequence[str]) -> DispersionPool:
+def week_dispersion_pool(
+    market_root: Path, game_ids: Sequence[str], *, since: pd.Timestamp | None = None
+) -> DispersionPool:
 
     ids = [str(game_id) for game_id in game_ids]
     if not ids:
         raise ValueError("week_dispersion_pool needs at least one game_id")
 
-    quotes = load_quote_history(market_root)
+    quotes = (
+        load_quote_history(market_root, since=since)
+        if since is not None
+        else load_quote_history(market_root)
+    )
     opener = tuesday_opener_quotes(quotes)
     dispersion = (
         opener.rename(columns={"nflverse_game_id": "game_id", "opener_std": "spread_std"})[

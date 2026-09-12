@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-12T14:44:51.961308+00:00`
+Refreshed at: `2026-09-12T17:28:50.997634+00:00`
 
 ## Start here
 
@@ -20,21 +20,25 @@ Refreshed at: `2026-09-12T14:44:51.961308+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6958de0ce8fc` — Saturday status: the played-card archive number is back on the board and cannot be blanked by a refit again; the Injury reports line now says how many game-status designations are actually in hand
-- Pending change set: 14 paths
+- Baseline commit: `0899b5351985` — Saturday morning: the injury feed was mis-timed, not missing, and the odds had a 42-hour hole across Friday's designations; both closed in the schedule and the card refit on the Friday report and Saturday lines
+- Pending change set: 18 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260912T135818Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260912T135903Z.json`
-  - `A  registry/experiments/opener-evaluation/20260912T140227Z.json`
-  - `A  registry/experiments/waterfall-feed/20260912T141524Z.json`
-  - `M  scripts/capture_scheduler.py`
+  - `A  registry/experiments/margin-backtest/20260912T160802Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260912T160845Z.json`
+  - `A  registry/experiments/waterfall-feed/20260912T162445Z.json`
+  - `M  scripts/build_week_lineups.py`
+  - `M  src/nfl_ats/best_pick_nomination.py`
+  - `M  src/nfl_ats/best_pick_renomination.py`
+  - `M  src/nfl_ats/forecast_cold_visitor_tilt_overlay.py`
+  - `M  src/nfl_ats/forecast_weather_kn_warm_team_cold_late_tilt_overlay.py`
+  - `M  src/nfl_ats/market_data.py`
+  - `M  src/nfl_ats/pick_refresh.py`
   - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
@@ -49,13 +53,13 @@ trust live Git output after checkout.
 - Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260912T140227Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-12T13:59:03.303000+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-12T16:08:45.611456+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `1b9bfbddc10a39ef`, published `2026-09-12T14:18:28.712086+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `1b9bfbddc10a39ef`, published `2026-09-12T16:27:57.301905+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

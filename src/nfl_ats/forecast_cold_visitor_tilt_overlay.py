@@ -77,6 +77,54 @@ class MosFetchError(RuntimeError):
     pass
 
 
+MOS_BULLETIN_CACHE_ROOT = Path("data") / "raw" / "forecast_archive" / "mos_bulletins"
+_BULLETIN_MEMO: dict[tuple[str, str, str], list[dict[str, Any]]] = {}
+
+
+def _bulletin_cache_path(station: str, model: str, runtime_str: str) -> Path:
+    return MOS_BULLETIN_CACHE_ROOT / model / station / f"{runtime_str.replace(':', '')}.json"
+
+
+EMPTY_BULLETIN_FINAL_AFTER = timedelta(hours=36)
+EMPTY_BULLETIN_RECHECK_AFTER = timedelta(minutes=30)
+
+
+def _read_cached_bulletin(
+    path: Path, runtime_utc: datetime, now: datetime
+) -> list[dict[str, Any]] | None:
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    rows = payload.get("data") if isinstance(payload, dict) else None
+    if not isinstance(rows, list):
+        return None
+    if rows:
+        return list(rows)
+    cached_at = pd.to_datetime(payload.get("cached_at_utc"), utc=True, errors="coerce")
+    if pd.isna(cached_at):
+        return None
+    runtime = runtime_utc if runtime_utc.tzinfo else runtime_utc.replace(tzinfo=UTC)
+    if now - runtime >= EMPTY_BULLETIN_FINAL_AFTER:
+        return []
+    if now - cached_at.to_pydatetime() < EMPTY_BULLETIN_RECHECK_AFTER:
+        return []
+    return None
+
+
+def _write_cached_bulletin(path: Path, rows: list[dict[str, Any]], url: str) -> None:
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix(".json.tmp")
+        temporary.write_text(
+            json.dumps({"url": url, "cached_at_utc": datetime.now(UTC).isoformat(), "data": rows}),
+            encoding="utf-8",
+        )
+        temporary.replace(path)
+    except OSError:
+        return
+
+
 def fetch_mos_bulletin(
     station: str,
     runtime_utc: datetime,
@@ -87,16 +135,30 @@ def fetch_mos_bulletin(
 ) -> list[dict[str, Any]]:
 
     runtime_str = runtime_utc.strftime("%Y-%m-%dT%H:%MZ")
+    memo_key = (station, model, runtime_str)
+    if memo_key in _BULLETIN_MEMO:
+        return list(_BULLETIN_MEMO[memo_key])
+    cache_path = _bulletin_cache_path(station, model, runtime_str)
+    cached = _read_cached_bulletin(cache_path, runtime_utc, datetime.now(UTC))
+    if cached is not None:
+        _BULLETIN_MEMO[memo_key] = cached
+        return list(cached)
     url = f"{MOS_API}?station={station}&model={model}&runtime={runtime_str}"
     last_exc: Exception | None = None
     for attempt in range(retries + 1):
         try:
             request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-            with urllib.request.urlopen(request, timeout=timeout) as resp:
-                payload = json.load(resp)
-            if "data" in payload:
-                return list(payload["data"])
-            return []
+            try:
+                with urllib.request.urlopen(request, timeout=timeout) as resp:
+                    payload = json.load(resp)
+            except urllib.error.HTTPError as http_error:
+                if http_error.code != 404:
+                    raise
+                payload = {"data": []}
+            rows = list(payload["data"]) if "data" in payload else []
+            _BULLETIN_MEMO[memo_key] = rows
+            _write_cached_bulletin(cache_path, rows, url)
+            return list(rows)
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
             last_exc = exc
             time.sleep(1.0 * (attempt + 1))
