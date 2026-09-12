@@ -237,7 +237,23 @@ def _cmd_weak_signals_pool(args: argparse.Namespace) -> None:
         method=args.method,
         weighting=args.weighting,
     )
-    _print_json({"registry": str(path), **report})
+    if args.full:
+        _print_json({"registry": str(path), **report})
+        return
+    list_or_dict_keys = {
+        "eligible",
+        "excluded_with_reason",
+        "overlap_warnings",
+        "needs_remeasurement",
+        "seasons_touched_by_inputs",
+    }
+    summary = {k: v for k, v in report.items() if k not in list_or_dict_keys}
+    summary["registry"] = str(path)
+    for k in list_or_dict_keys:
+        if k in report:
+            summary[f"{k}_count"] = len(report[k])
+    summary["full_report"] = "rerun with --full for the per-row lists"
+    _print_json(summary)
 
 
 def _cmd_weak_signals_retag_units(args: argparse.Namespace) -> None:
@@ -632,6 +648,12 @@ def register(
         "below what its own sample size can support; inverse_variance is the superseded "
         "raw 1/SE^2 scheme, kept for audit only because bootstrap bands narrow as a cell "
         "gets smaller and it handed the thinnest cells the most weight",
+    )
+    weak_signals_pool.add_argument(
+        "--full",
+        action="store_true",
+        help="print every eligible row, exclusion reason and overlap warning; "
+        "default prints the pooled estimate and counts only",
     )
     weak_signals_pool.set_defaults(handler=_cmd_weak_signals_pool)
 

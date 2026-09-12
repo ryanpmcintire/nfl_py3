@@ -2353,42 +2353,79 @@ def describe_daemon(now: datetime) -> str:
     return f"RUNNING (pid {pid}, last poll {age}s ago, started {heartbeat.get('started_at')})"
 
 
-def show_status(now: datetime, state: dict[str, Any]) -> None:
+def job_last(job: Job, start: datetime, now: datetime, state: dict[str, Any]) -> str:
+    key = f"{job.name}@{start.date().isoformat()}"
+    record = state["runs"].get(key)
+    if record:
+        last = f"{record['status']} ({start.date()})"
+        if record.get("status") == "MISSED" and record.get("acknowledged"):
+            last = f"MISSED, acknowledged ({start.date()})"
+        retries = record.get("retries")
+        if retries:
+            last += f" after {retries} {'retry' if retries == 1 else 'retries'}"
+    elif predates_job(job, start):
+        last = f"added {job.added_on} (window predates job)"
+    elif job.season_guarded and not season_active(start):
+        last = f"offseason ({start.date()})"
+    elif now <= start + timedelta(minutes=job.grace_minutes) and not prerequisites_satisfied(
+        job, start, state
+    ):
+        last = f"waiting for {', '.join(job.requires)}"
+    elif now <= start + timedelta(minutes=job.grace_minutes):
+        open_until = (start + timedelta(minutes=job.grace_minutes)).strftime("%H:%M")
+        last = f"window OPEN until {open_until}"
+    else:
+        last = f"not run ({start.date()})"
+    if job.enabled and not has_ever_executed(state, job.name):
+        last += f" | NEVER RUN (exercise: --run-job {job.name})"
+    return last
+
+
+def show_status(now: datetime, state: dict[str, Any], brief: bool = False) -> None:
     print(f"capture scheduler status  ({now.isoformat(timespec='seconds')})")
-    print(f"state: {STATE_PATH}")
-    print(f"log:   {LOG_PATH}")
     print(f"daemon: {describe_daemon(now)}")
-    print()
-    print(f"{'job':<22} {'when':<14} {'grace':>6}  {'enabled':<8} last occurrence")
+    if not brief:
+        print(f"state: {STATE_PATH}")
+        print(f"log:   {LOG_PATH}")
+        print()
+        print(f"{'job':<22} {'when':<14} {'grace':>6}  {'enabled':<8} last occurrence")
+    attention: list[tuple[Job, str]] = []
+    total = len(SCHEDULE)
+    missed = never = open_windows = ok = 0
     for job in SCHEDULE:
         start = occurrence(job, now)
-        key = f"{job.name}@{start.date().isoformat()}"
-        record = state["runs"].get(key)
-        if record:
-            last = f"{record['status']} ({start.date()})"
-            if record.get("status") == "MISSED" and record.get("acknowledged"):
-                last = f"MISSED, acknowledged ({start.date()})"
-            retries = record.get("retries")
-            if retries:
-                last += f" after {retries} {'retry' if retries == 1 else 'retries'}"
-        elif predates_job(job, start):
-            last = f"added {job.added_on} (window predates job)"
-        elif job.season_guarded and not season_active(start):
-            last = f"offseason ({start.date()})"
-        elif now <= start + timedelta(minutes=job.grace_minutes) and not prerequisites_satisfied(
-            job, start, state
-        ):
-            last = f"waiting for {', '.join(job.requires)}"
-        elif now <= start + timedelta(minutes=job.grace_minutes):
-            open_until = (start + timedelta(minutes=job.grace_minutes)).strftime("%H:%M")
-            last = f"window OPEN until {open_until}"
-        else:
-            last = f"not run ({start.date()})"
-        if job.enabled and not has_ever_executed(state, job.name):
-            last += f" | NEVER RUN (exercise: --run-job {job.name})"
-        print(
+        last = job_last(job, start, now, state)
+        is_missed = "MISSED" in last
+        is_never = "NEVER RUN" in last
+        is_open = "window OPEN" in last
+        if is_missed:
+            missed += 1
+        if is_never:
+            never += 1
+        if is_open:
+            open_windows += 1
+        row = (
             f"{job.name:<22} {job.day} {job.at:<10} {job.grace_minutes:>5}m  "
             f"{'yes' if job.enabled else 'no':<8} {last}"
+        )
+        if is_missed or is_never or is_open:
+            if brief:
+                attention.append((row, last))
+            else:
+                print(row)
+        else:
+            ok += 1
+            if not brief:
+                print(row)
+    if brief:
+        if not attention:
+            print("all clear")
+        else:
+            for row, _ in attention:
+                print(row)
+        print(
+            f"summary: {total} jobs, {ok} ok, {missed} missed, "
+            f"{never} never run, {open_windows} windows open"
         )
 
 
@@ -2460,6 +2497,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--once", action="store_true", help="run what is due, then exit")
     parser.add_argument("--status", action="store_true", help="print schedule and exit")
+    parser.add_argument(
+        "--brief",
+        action="store_true",
+        help="with --status: daemon line plus only MISSED, NEVER RUN and window-open rows",
+    )
     parser.add_argument(
         "--health",
         action="store_true",
@@ -2584,7 +2626,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0 if report["ok"] else 1
 
     if args.status:
-        show_status(now, state)
+        show_status(now, state, brief=args.brief)
         return 0
 
     if args.once:

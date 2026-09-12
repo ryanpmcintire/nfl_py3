@@ -146,5 +146,5 @@ def test_pool_on_a_new_unit_handles_an_empty_bucket_from_the_cli(
     capsys.readouterr()
     assert cli.main(["weak-signals", "pool", "--effect-units", "correlation"]) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out["eligible"] == []
+    assert out["eligible_count"] == 0
     assert out["pooled_by_unit"] == {}
