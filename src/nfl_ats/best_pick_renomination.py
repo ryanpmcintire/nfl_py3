@@ -51,6 +51,7 @@ class SundayRenomination:
     played_pick_side: str
     frozen_pick_side: str
     frozen_side_statistic: float | None
+    ranking: tuple[dict[str, Any], ...] = ()
 
     @property
     def moved(self) -> bool:
@@ -281,6 +282,7 @@ def plan_best_pick_renomination(
     chosen = candidates.loc[candidates["game_id"].eq(candidate_game_id)].iloc[0]
     served = not serve_reason
     game_id = candidate_game_id if served else previous_game_id
+    ranking = _ranking_rows(plan, ranked, candidate_game_id)
     return SundayRenomination(
         season=plan.season,
         week=plan.week,
@@ -304,7 +306,49 @@ def plan_best_pick_renomination(
         played_pick_side=str(chosen["played_pick_side"]),
         frozen_pick_side=str(chosen["pick_side"]),
         frozen_side_statistic=float(chosen["tuesday_statistic"]),
+        ranking=ranking,
     )
+
+
+def _ranking_rows(
+    plan: RefreshResult, ranked: pd.DataFrame, candidate_game_id: str
+) -> tuple[dict[str, Any], ...]:
+    teams = {game.game_id: (game.away_team, game.home_team) for game in plan.games}
+    frame = ranked.copy()
+    frame["pool_pass"] = frame["pool_pass"].fillna(False).astype(bool)
+    frame["spread_std"] = pd.to_numeric(frame["spread_std"], errors="coerce")
+    frame["spread_size"] = pd.to_numeric(frame["decision_home_spread"], errors="coerce").abs()
+    frame["kickoff"] = pd.to_datetime(frame["kickoff"], utc=True)
+    ordered = frame.sort_values(
+        ["pool_pass", "statistic", "spread_std", "spread_size", "kickoff", "game_id"],
+        ascending=[False, False, True, True, True, True],
+        na_position="last",
+    )
+    rows: list[dict[str, Any]] = []
+    rank = 0
+    for _, row in ordered.iterrows():
+        game_id = str(row["game_id"])
+        away, home = teams.get(game_id, ("", ""))
+        side = str(row["played_pick_side"])
+        eligible = bool(row["pool_pass"])
+        if eligible:
+            rank += 1
+        dispersion = row["spread_std"]
+        rows.append(
+            {
+                "rank": rank if eligible else None,
+                "game_id": game_id,
+                "matchup": f"{away} at {home}" if away else game_id,
+                "pick_team": home if side == "HOME" else away,
+                "pick_side": side,
+                "decision_home_spread": float(row["decision_home_spread"]),
+                "cover_probability": float(row["statistic"]),
+                "book_dispersion": None if pd.isna(dispersion) else float(dispersion),
+                "eligible": eligible,
+                "is_candidate": game_id == candidate_game_id,
+            }
+        )
+    return tuple(rows)
 
 
 def renomination_summary(renomination: SundayRenomination) -> dict[str, Any]:

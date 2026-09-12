@@ -628,6 +628,69 @@ def injury_feed_coverage_note(
 
 
 @dataclass(frozen=True)
+class BestPickRank:
+    rank: int | None
+    game_id: str
+    matchup: str
+    pick_team: str
+    pick_spread_text: str
+    cover_probability: float
+    book_dispersion: float | None
+    eligible: bool
+    is_candidate: bool
+    kicked_off: bool = False
+
+
+def load_best_pick_ranking(
+    artifacts_root: Path, *, season: Any, week: Any, now: datetime
+) -> tuple[tuple[BestPickRank, ...], str | None]:
+    path = artifacts_root / "best_pick_ranking" / "latest.json"
+    try:
+        payload = read_json(path)
+    except (OSError, ValueError):
+        return (), None
+    if season is not None and _number(payload.get("season")) != _number(season):
+        return (), None
+    if week is not None and _number(payload.get("week")) != _number(week):
+        return (), None
+    rows: list[BestPickRank] = []
+    for item in payload.get("ranking") or []:
+        if not isinstance(item, Mapping):
+            continue
+        spread = _number(item.get("decision_home_spread"))
+        side = str(item.get("pick_side") or "")
+        if spread is None:
+            handicap = ""
+        else:
+            value = -spread if side == "HOME" else spread
+            handicap = "pick'em" if value == 0 else f"{value:+g}"
+        probability = _number(item.get("cover_probability"))
+        if probability is None:
+            continue
+        rank_value = _number(item.get("rank"))
+        rows.append(
+            BestPickRank(
+                rank=int(rank_value) if rank_value is not None else None,
+                game_id=str(item.get("game_id") or ""),
+                matchup=str(item.get("matchup") or ""),
+                pick_team=str(item.get("pick_team") or ""),
+                pick_spread_text=handicap,
+                cover_probability=probability,
+                book_dispersion=_number(item.get("book_dispersion")),
+                eligible=bool(item.get("eligible")),
+                is_candidate=bool(item.get("is_candidate")),
+            )
+        )
+    stamp = payload.get("computed_at_utc")
+    as_of = None
+    if isinstance(stamp, str):
+        parsed = _parse_iso_utc(stamp)
+        if parsed is not None:
+            as_of = _eastern_clock(parsed.astimezone(ZoneInfo("America/New_York")))
+    return tuple(rows), as_of
+
+
+@dataclass(frozen=True)
 class SourcePolicyRow:
     source_id: str
     state: str
@@ -1633,6 +1696,8 @@ class BoardContent:
     season_record: SeasonRecordStrip | None = None
     injury_note: str = "Whether injury reports informed these picks was not recorded."
     injury_coverage_note: str = ""
+    best_pick_ranking: tuple[BestPickRank, ...] = ()
+    best_pick_ranking_as_of: str | None = None
     week_timeline: WeekTimeline = field(default_factory=WeekTimeline)
     refresh_lines: tuple[str, ...] = ()
     source_policy: SourcePolicyView = field(default_factory=_default_source_policy_view)
@@ -3137,6 +3202,9 @@ def load_board_content(
     )
     market_now_by_game = _market_now_by_game(resolved_data_root, now=generated)
     qb_notes = _quarterback_notes(artifacts_root, ordered)
+    best_pick_ranking, best_pick_ranking_as_of = load_best_pick_ranking(
+        artifacts_root, season=season_number, week=week_number, now=generated
+    )
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         team, probability = pick_side(row)
@@ -3306,6 +3374,8 @@ def load_board_content(
         disclaimer=Disclaimer(short=DISCLAIMER_SHORT, full=DISCLAIMER_FULL),
         source_policy=source_policy_view,
         injury_note=injury_pick_note(artifacts.metadata, source_policy_view),
+        best_pick_ranking=best_pick_ranking,
+        best_pick_ranking_as_of=best_pick_ranking_as_of,
         injury_coverage_note=injury_feed_coverage_note(
             resolved_data_root,
             season=season_number,

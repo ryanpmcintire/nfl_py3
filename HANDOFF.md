@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-12T18:51:22.570679+00:00`
+Refreshed at: `2026-09-12T19:21:02.723157+00:00`
 
 ## Start here
 
@@ -20,26 +20,15 @@ Refreshed at: `2026-09-12T18:51:22.570679+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `00ea5a85b75e` — Refresh passes are minutes, not most of an hour; the lineup panel reads the same injury snapshot the card does; Sunday-game weather is readable on a Saturday
-- Pending change set: 18 paths
-  - `M  AGENTS.md`
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `9848f41ecbe0` — Board: one flip number in the adverse direction only, a Books-now column, Best Pick confidence, an explicit quarterback-injury sentence, and a lineup panel in projected order
+- Pending change set: 7 paths
   - `M  HANDOFF.md`
   - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
   - `M  docs/index.html`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260912T173846Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260912T173930Z.json`
-  - `A  registry/experiments/waterfall-feed/20260912T174709Z.json`
-  - `M  scripts/build_week_lineups.py`
+  - `M  src/nfl_ats/best_pick_renomination.py`
   - `M  src/nfl_ats/board_content.py`
   - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/lineup_view.py`
-  - `M  tests/test_board_flip_line.py`
-  - `M  tests/test_board_terminal.py`
-  - `M  tiebreaker.json`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

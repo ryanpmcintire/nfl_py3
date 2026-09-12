@@ -1327,6 +1327,24 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     try:
         renomination = plan_best_pick_renomination(_artifacts_root(), _data_root(), plan)
         result["best_pick_renomination"] = renomination_summary(renomination)
+        if renomination.ranking:
+            from nfl_ats.provenance import write_stamped_artifact
+
+            ranking_dir = _artifacts_root() / "best_pick_ranking"
+            ranking_dir.mkdir(parents=True, exist_ok=True)
+            write_stamped_artifact(
+                {
+                    "season": renomination.season,
+                    "week": renomination.week,
+                    "computed_at_utc": renomination.computed_at_utc.isoformat(),
+                    "refresh_note": args.note,
+                    "served_candidate_game_id": renomination.candidate_game_id,
+                    "current_best_pick_game_id": renomination.game_id,
+                    "pool_source": renomination.pool_source,
+                    "ranking": list(renomination.ranking),
+                },
+                ranking_dir / "latest.json",
+            )
     except Exception as error:
         renomination = None
         result["best_pick_renomination"] = {"served": False, "error": str(error)}

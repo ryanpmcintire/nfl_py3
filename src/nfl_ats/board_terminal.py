@@ -613,12 +613,47 @@ def _best_pick_note_html(content: BoardContent) -> str:
     best = next((game for game in content.games if game.is_best), None)
     if best is None:
         return ""
-    return (
+    lead = (
         '<p class="policy-note"><b>Best pick</b> &mdash; '
         f"{escape(best.pick_team)} {escape(best.pick_spread_text)} at "
         f"{escape(best.probability_text)} cover chance. It is the highest model chance among "
         "the games where the books agreed most closely on the line, not across the whole card, "
         "and it is re-nominated only on the Sunday-morning pass.</p>"
+    )
+    if not content.best_pick_ranking:
+        return lead
+    items: list[str] = []
+    for row in content.best_pick_ranking:
+        label = f"{escape(row.pick_team)} {escape(row.pick_spread_text)}".strip()
+        chance = f"{row.cover_probability:.1%}"
+        if row.eligible and row.rank is not None:
+            marker = f"<b>{row.rank}.</b>"
+            note = "current best pick" if row.is_candidate else ""
+        else:
+            marker = "&ndash;"
+            note = "not eligible: the books disagree on this line"
+        agreement = (
+            f"books within {row.book_dispersion:.2f}"
+            if row.book_dispersion is not None
+            else "no book spread yet"
+        )
+        items.append(
+            f"<li>{marker} {label} ({escape(row.matchup)}) &middot; {chance} &middot; "
+            f"{escape(agreement)}" + (f" &middot; <i>{escape(note)}</i>" if note else "") + "</li>"
+        )
+    stamp = (
+        f" as of {escape(content.best_pick_ranking_as_of)}"
+        if content.best_pick_ranking_as_of
+        else ""
+    )
+    return (
+        lead + '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
+        f"Best pick order{stamp}</summary>"
+        "<p>Games still to play, in the order the Sunday-morning pass would take them: the "
+        "played side's model cover chance, highest first, among games where the books agree "
+        "on the line (the spread's spread across books is shown). Games the books disagree on "
+        "are listed after, unranked.</p>"
+        f'<ol style="list-style:none;padding-left:0;">{"".join(items)}</ol></details>'
     )
 
 
