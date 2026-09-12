@@ -335,6 +335,7 @@ def _motion_status_rail(chrome: TickerChrome) -> str:
         best_html = (
             'BEST PICK <span class="rail-accent">'
             f"{escape(best_game.pick_team)} {escape(best_game.pick_spread_text)}</span>"
+            f" &middot; {escape(best_game.probability_text)}"
         )
     season_week = "SCHEDULE CONTEXT UNAVAILABLE"
     if chrome.season is not None and chrome.week is not None:
@@ -608,6 +609,19 @@ def _tiebreaker_panel_html(view: TiebreakerView) -> str:
     )
 
 
+def _best_pick_note_html(content: BoardContent) -> str:
+    best = next((game for game in content.games if game.is_best), None)
+    if best is None:
+        return ""
+    return (
+        '<p class="policy-note"><b>Best pick</b> &mdash; '
+        f"{escape(best.pick_team)} {escape(best.pick_spread_text)} at "
+        f"{escape(best.probability_text)} cover chance. It is the highest model chance among "
+        "the games where the books agreed most closely on the line, not across the whole card, "
+        "and it is re-nominated only on the Sunday-morning pass.</p>"
+    )
+
+
 def _injury_state_html(content: BoardContent) -> str:
 
     return (
@@ -714,7 +728,7 @@ def _board_section(content: BoardContent) -> str:
     default_game_id = _default_game_id(content)
     rows: list[str] = []
     for day, day_games in groupby(content.games, key=lambda game: game.kickoff_group_label):
-        rows.append(f'<tr class="grp"><td colspan="6">{escape(day)}</td></tr>')
+        rows.append(f'<tr class="grp"><td colspan="7">{escape(day)}</td></tr>')
         for game in day_games:
             pick_text = f"{escape(game.pick_team)} {escape(game.pick_spread_text)}"
             if game.is_best:
@@ -725,6 +739,10 @@ def _board_section(content: BoardContent) -> str:
             else:
                 pick_cell = pick_text
             pick_cell += _flip_pill_html(game)
+            if game.qb_note:
+                pick_cell += (
+                    f'<span class="best-flag" title="{escape(game.qb_note)}">QB1 out</span>'
+                )
             row_classes = ["game"]
             if game.is_best:
                 row_classes.append("is-best")
@@ -746,6 +764,8 @@ def _board_section(content: BoardContent) -> str:
                 f"{_lock_html(game.lock_text)}</td>"
                 f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
+                f'<td class="market-now" data-label="Books now" '
+                f'title="{escape(game.market_move_text)}">{escape(game.market_now_text)}</td>'
                 f'<td class="prob" data-label="Cover chance">{escape(game.probability_text)}</td>'
                 f'<td class="flipline" data-label="Flips at">{_flip_line_html(game)}</td>'
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'
@@ -755,6 +775,9 @@ def _board_section(content: BoardContent) -> str:
     table = (
         '<table class="board"><thead><tr>'
         "<th>Kickoff</th><th>Matchup</th><th>Pick</th>"
+        '<th><abbr title="The average line across the books in the latest capture, written '
+        "for the picked side. The pool's own line is the one in the Pick column and does not "
+        'move.">Books&nbsp;now</abbr></th>'
         "<th><abbr title=\"The computer's own chance that this side covers, adjusted for how "
         "it has actually done on spreads this size. Big favourites and big underdogs have "
         "been its weak spot, so a very confident-looking number there is pulled back toward "
@@ -778,6 +801,7 @@ def _board_section(content: BoardContent) -> str:
         "</div>"
         f"{_board_sort_toggle_html()}"
         f'<div class="board-scroll">{table}</div>'
+        f"{_best_pick_note_html(content)}"
         f"{_injury_state_html(content)}"
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
         f'<div class="policy-note"><b>Policy overlay</b> &mdash; {policy_html}</div>'
@@ -969,7 +993,13 @@ def _lineup_team_html(lineup: TeamLineup | None) -> str:
             '<div class="lineup-row">'
             f'<div class="lineup-pos">{escape(player.slot)}</div>'
             f'<div class="lineup-player"><b>{escape(player.name)}</b>'
-            f'<span class="{impact_tone}">{escape(injury)} &middot; {escape(impact)}</span></div>'
+            + (
+                ' <span style="font-weight:400;color:var(--text-faint);">'
+                f"(listed {escape(player.listed_slot)})</span>"
+                if player.listed_slot and player.listed_slot != player.slot
+                else ""
+            )
+            + f'<span class="{impact_tone}">{escape(injury)} &middot; {escape(impact)}</span></div>'
             f'<div class="lineup-prob {risk_tone}" title="{prob_title}">plays {escape(probability)}'
             f"{start_html}</div>"
             "</div>"

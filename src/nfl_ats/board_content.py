@@ -209,6 +209,27 @@ class GameRow:
     flip_held: bool = False
     flip_reason: str | None = None
     explanation_text: str = EXPLANATION_NOT_RECORDED_TEXT
+    market_now: float | None = None
+    market_now_books: int = 0
+    qb_note: str | None = None
+
+    @property
+    def market_now_text(self) -> str:
+        if self.market_now is None:
+            return "—"
+        sign = -1.0 if self.pick_team == self.home else 1.0
+        value = self.market_now * sign
+        return f"{self.pick_team} pick'em" if value == 0 else f"{self.pick_team} {value:+g}"
+
+    @property
+    def market_move_text(self) -> str:
+        if self.market_now is None:
+            return ""
+        sign = -1.0 if self.pick_team == self.home else 1.0
+        delta = (self.market_now - self.market_spread) * sign
+        if abs(delta) < 0.25:
+            return "unchanged since the pool line"
+        return f"{abs(delta):g} {'toward' if delta < 0 else 'against'} {self.pick_team}"
 
     @property
     def flip_line_text(self) -> str:
@@ -221,14 +242,10 @@ class GameRow:
 
         if self.flip_line is None:
             if self.flip_held:
-                edges = sorted(
-                    (
-                        self.market_spread - SWEEP_HALF_WIDTH,
-                        self.market_spread + SWEEP_HALF_WIDTH,
-                    ),
-                    key=lambda line: -(line * sign),
+                adverse_edge = self.market_spread + (
+                    SWEEP_HALF_WIDTH if sign < 0 else -SWEEP_HALF_WIDTH
                 )
-                return f"{self.pick_team} holds from {handicap(edges[0])} to {handicap(edges[1])}"
+                return f"{self.pick_team} holds through {handicap(adverse_edge)}"
             return ""
         flip_team = self.home if self.pick_team == self.away else self.away
         text = f"{self.pick_team} {handicap(self.flip_line)} → {flip_team}"
@@ -2287,19 +2304,19 @@ def _flip_line(
         if played_is_home(raw_home_at_card, params.card_line) != pick_is_home:
             return None, False, None
         steps = round(SWEEP_HALF_WIDTH / SPREAD_EXPLORER_STEP)
+        adverse = 1.0 if pick_is_home else -1.0
         for step_index in range(1, steps + 1):
-            for direction in (-1.0, 1.0):
-                line = params.card_line + direction * step_index * SPREAD_EXPLORER_STEP
-                if not SPREAD_EXPLORER_MIN_LINE <= line <= SPREAD_EXPLORER_MAX_LINE:
-                    continue
-                raw_is_home = (
-                    widget_home_cover_probability(
-                        line, params.center, params.residual_mean, params.residual_std
-                    )
-                    >= 0.5
+            line = params.card_line + adverse * step_index * SPREAD_EXPLORER_STEP
+            if not SPREAD_EXPLORER_MIN_LINE <= line <= SPREAD_EXPLORER_MAX_LINE:
+                continue
+            raw_is_home = (
+                widget_home_cover_probability(
+                    line, params.center, params.residual_mean, params.residual_std
                 )
-                if played_is_home(raw_is_home, line) != pick_is_home:
-                    return round(line, 1), False, "model"
+                >= 0.5
+            )
+            if played_is_home(raw_is_home, line) != pick_is_home:
+                return round(line, 1), False, "model"
         return None, True, None
     required = {"game_id", "line_offset", "alternative_line", "home_cover_probability"}
     if sweep.empty or not required.issubset(sweep.columns):
@@ -2307,8 +2324,11 @@ def _flip_line(
     rows = sweep.loc[
         sweep["game_id"].astype(str).eq(game_id) & sweep["line_offset"].abs().le(SWEEP_HALF_WIDTH)
     ].sort_values("line_offset", key=lambda offsets: offsets.abs(), kind="stable")
+    adverse_sign = 1.0 if pick_is_home else -1.0
     for _, row in rows.iterrows():
         if float(row["line_offset"]) == 0.0:
+            continue
+        if float(row["line_offset"]) * adverse_sign < 0:
             continue
         line = float(row["alternative_line"])
         raw_is_home = float(row["home_cover_probability"]) >= 0.5
@@ -2622,6 +2642,146 @@ def _build_refresh_lines(
 
 
 _KNOWN_SOURCE_POLICY_CARD_STATES = {COMPLETE, DEGRADED, BLOCKED}
+
+
+def _market_now_by_game(data_root: Path, *, now: datetime) -> dict[str, tuple[float | None, int]]:
+    from nfl_ats.market_data import load_quote_history, spread_consensus
+
+    try:
+        quotes = load_quote_history(
+            data_root / "market" / "raw",
+            since=pd.Timestamp(now) - pd.Timedelta(days=21),
+        )
+        if quotes.empty:
+            return {}
+        consensus = spread_consensus(quotes)
+    except Exception:
+        return {}
+    result: dict[str, tuple[float | None, int]] = {}
+    for _, row in consensus.iterrows():
+        game_id = str(row.get("nflverse_game_id") or "")
+        value = _number(row.get("consensus_home_spread"))
+        books = int(_number(row.get("bookmakers")) or 0)
+        if game_id and value is not None:
+            result[game_id] = (value, books)
+    return result
+
+
+def _waterfall_qb_points(artifacts_root: Path) -> dict[str, tuple[float, int, str]]:
+    latest = artifacts_root / "waterfall_feed" / "latest.json"
+    try:
+        pointer = read_json(latest)
+        feed = read_json(
+            artifacts_root / "waterfall_feed" / str(pointer.get("latest")) / "feed.json"
+        )
+    except (OSError, ValueError, TypeError):
+        return {}
+    games = feed.get("games")
+    if isinstance(games, Mapping):
+        entries: list[Any] = list(games.values())
+    elif isinstance(games, list):
+        entries = games
+    else:
+        entries = []
+    result: dict[str, tuple[float, int, str]] = {}
+    for entry in entries:
+        if not isinstance(entry, Mapping):
+            continue
+        picked_side = str(entry.get("picked_side") or "").upper()
+        for step in entry.get("steps") or []:
+            if isinstance(step, Mapping) and step.get("family") == "player_qb":
+                delta = _number(step.get("delta_points"))
+                direction = int(_number(step.get("direction")) or 0)
+                if delta is not None:
+                    result[str(entry.get("game_id"))] = (abs(delta), direction, picked_side)
+    return result
+
+
+def _quarterback_notes(artifacts_root: Path, ordered: pd.DataFrame) -> dict[str, str]:
+    lineup_path = artifacts_root / "lineups" / "current" / "lineups.json"
+    try:
+        payload = read_json(lineup_path)
+    except (OSError, ValueError):
+        return {}
+    games = payload.get("games") if isinstance(payload, Mapping) else None
+    if not isinstance(games, Mapping):
+        return {}
+    qb_points = _waterfall_qb_points(artifacts_root)
+    notes: dict[str, str] = {}
+    for _, row in ordered.iterrows():
+        game_id = str(row["game_id"])
+        block = games.get(game_id)
+        if not isinstance(block, Mapping):
+            continue
+        sentences: list[str] = []
+        for side in ("away", "home"):
+            team_block = block.get(side)
+            if not isinstance(team_block, Mapping):
+                continue
+            team = str(team_block.get("team") or row.get(f"{side}_team") or "")
+            quarterbacks = [
+                player
+                for player in team_block.get("players") or []
+                if isinstance(player, Mapping) and str(player.get("position")) == "QB"
+            ]
+            if not quarterbacks:
+                continue
+            listed = sorted(
+                quarterbacks,
+                key=lambda p: int(_number(p.get("listed_depth") or p.get("depth")) or 99),
+            )
+            starter = listed[0]
+            status = str(starter.get("injury_status") or "")
+            if not status.lower().startswith(("out", "doubtful")):
+                continue
+            text = f"{team}'s listed starter {starter.get('name')} is {status}"
+            others_out = [
+                p for p in listed[1:] if str(p.get("injury_status") or "").lower().startswith("out")
+            ]
+            projected = [
+                p
+                for p in listed
+                if p not in others_out
+                and p is not starter
+                and _number(p.get("play_probability")) not in (None, 0.0)
+            ]
+            if others_out:
+                text += (
+                    f"; the listed backup {others_out[0].get('name')} is Out as well, so the "
+                    "model has no read on the quarterback who will actually start"
+                )
+            elif projected:
+                text += f"; {projected[0].get('name')} is the projected starter"
+            start_probability = _number(row.get(f"{side}_qb_start_probability"))
+            if start_probability is not None:
+                text += (
+                    ". The model priced this game with a backup at quarterback "
+                    f"({start_probability:.0%} chance the listed starter plays)"
+                )
+            points = qb_points.get(game_id)
+            if points is not None and points[2] in {"HOME", "AWAY"}:
+                home_team = str(row.get("home_team"))
+                away_team = str(row.get("away_team"))
+                picked_home = points[2] == "HOME"
+                picked = home_team if picked_home else away_team
+                other = away_team if picked_home else home_team
+                toward = picked if points[1] >= 0 else other
+                text += (
+                    f"; its quarterback inputs move this game {points[0]:.1f} points toward "
+                    f"{toward}"
+                )
+            sentences.append(text + ".")
+        if sentences:
+            notes[game_id] = "Quarterback: " + " ".join(sentences)
+    return notes
+
+
+def _explanation_with_qb_note(explanation: str, qb_note: str | None) -> str:
+    if not qb_note:
+        return explanation
+    if explanation == EXPLANATION_NOT_RECORDED_TEXT:
+        return qb_note
+    return f"{qb_note} {explanation}"
 
 
 def _load_pick_explanations(forecast_dir: Path | None) -> dict[str, str]:
@@ -2975,6 +3135,8 @@ def load_board_content(
     played_overrides = _played_side_overrides(
         artifacts_root, season=season_number, week=week_number
     )
+    market_now_by_game = _market_now_by_game(resolved_data_root, now=generated)
+    qb_notes = _quarterback_notes(artifacts_root, ordered)
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         team, probability = pick_side(row)
@@ -3053,7 +3215,13 @@ def load_board_content(
                 flip_line=flip_line_value,
                 flip_held=flip_held_value,
                 flip_reason=flip_reason_value,
-                explanation_text=pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
+                explanation_text=_explanation_with_qb_note(
+                    pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
+                    qb_notes.get(game_id),
+                ),
+                market_now=market_now_by_game.get(game_id, (None, 0))[0],
+                market_now_books=market_now_by_game.get(game_id, (None, 0))[1],
+                qb_note=qb_notes.get(game_id),
             )
         )
 

@@ -156,6 +156,31 @@ def _fetch_current_week_injuries(
     )
 
 
+def _project_availability_order(players: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+    order: list[tuple[str, str]] = []
+    for player in players:
+        key = (str(player["unit"]), str(player["position"]))
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        groups[key].append(player)
+    projected: list[dict[str, Any]] = []
+    for key in order:
+        group = groups[key]
+        ruled_out = [
+            p for p in group if str(p.get("injury_status") or "").lower().startswith("out")
+        ]
+        available = [p for p in group if p not in ruled_out]
+        for index, player in enumerate([*available, *ruled_out], start=1):
+            player["listed_slot"] = player["slot"]
+            player["listed_depth"] = player["depth"]
+            player["slot"] = f"{player['position']}{index}"
+            player["depth"] = index
+            projected.append(player)
+    return projected
+
+
 def _visible_injuries_by_team(visible: pd.DataFrame) -> dict[str, pd.DataFrame]:
 
     if visible.empty:
@@ -326,7 +351,15 @@ def _team_payload(
                 "model_role": "base_model" if gsis_id == model_qb_id else "context_only",
             }
         )
-    current_qb = next((player for player in players if player["position"] == "QB"), None)
+    players = _project_availability_order(players)
+    current_qb = next(
+        (
+            player
+            for player in players
+            if player["position"] == "QB" and int(player.get("listed_depth") or 99) == 1
+        ),
+        None,
+    )
     note = None
     if model_qb_id and (current_qb is None or current_qb["gsis_id"] != model_qb_id):
         note = (

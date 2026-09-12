@@ -161,6 +161,7 @@ def test_terminal_stylesheet_class_set_is_subset_of_mockup_plus_allowlist() -> N
     mockup_defined = set(re.findall(r"\.([A-Za-z][\w-]*)", mockup_html))
     allowlist = {
         "attr-empty",
+        "market-now",
         "dash",
         "note",
         "chart-empty",

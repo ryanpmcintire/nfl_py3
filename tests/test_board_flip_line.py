@@ -153,7 +153,7 @@ def test_flip_line_text_names_the_pick_then_the_switch() -> None:
         flip_line=None,
         flip_held=True,
     )
-    assert held.flip_line_text == "IND holds from +7.5 to -0.5"
+    assert held.flip_line_text == "IND holds through -0.5"
     assert (
         GameRow(
             game_id="2026_01_GB_MIN",
@@ -178,11 +178,11 @@ def test_board_renders_the_flips_at_column() -> None:
     html = board_terminal.render(content)
     assert "Flips&nbsp;at" in html
     assert 'data-label="Flips at">NYJ +2.5 → TEN</td>' in html
-    assert "IND holds from +7.5 to -0.5" in html
+    assert "IND holds through -0.5" in html
     assert "ARI +10 → LAC (spread-gap rule)" in html
     assert "not the model changing its mind" in html
     assert "coach fade rule backs IND whichever side the model leans" in html
     assert "at any line" not in html
     assert "changes this pick" in html
-    assert 'colspan="6"' in html
+    assert 'colspan="7"' in html
     assert 'colspan="5"' not in html

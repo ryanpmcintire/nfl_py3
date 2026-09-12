@@ -24,6 +24,7 @@ class ProjectedPlayer:
     probability_source: str | None = None
     probability_reason: str | None = None
     has_injury_designation: bool = False
+    listed_slot: str | None = None
 
 
 @dataclass(frozen=True)
@@ -73,6 +74,7 @@ def _player(raw: Mapping[str, Any]) -> ProjectedPlayer:
         play_probability=float(probability) if probability is not None else None,
         start_probability=float(start_probability) if start_probability is not None else None,
         injury_status=str(raw["injury_status"]) if raw.get("injury_status") else None,
+        listed_slot=str(raw["listed_slot"]) if raw.get("listed_slot") else None,
         model_role=str(raw.get("model_role") or "context_only"),
         probability_source=str(raw["probability_source"])
         if raw.get("probability_source")

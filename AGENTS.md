@@ -273,6 +273,16 @@ cannot decide yet" — the exact output this file already bans twice.
 the number and the interval and let the owner judge; if a one-word verdict is
 genuinely needed, it comes after the number, not instead of it.
 
+### A flip point is one number, in the adverse direction only (binding, owner, 2026-09-12)
+
+The board's flip line answers one question: how far would the line have to move
+AGAINST the pick before the card would take the other side. It is a single
+number. A pick never flips because the line moved further in its favour, and
+no range, band or pair of edges is ever shown. When the sweep finds no flip
+before its adverse edge, the cell says the pick holds through that edge, one
+number again. Enforced in `_flip_line` (adverse direction only) and
+`flip_line_text` in `board_content.py`.
+
 ## The dashboard improves every session (binding)
 
 Added 2026-09-05 after the owner pointed out, again, that "improve the
