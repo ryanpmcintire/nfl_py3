@@ -625,21 +625,19 @@ def _best_pick_note_html(content: BoardContent) -> str:
     items: list[str] = []
     for row in content.best_pick_ranking:
         label = f"{escape(row.pick_team)} {escape(row.pick_spread_text)}".strip()
-        chance = f"{row.cover_probability:.1%}"
         if row.eligible and row.rank is not None:
             marker = f"<b>{row.rank}.</b>"
             note = "current best pick" if row.is_candidate else ""
+        elif row.cover_probability < 0.5:
+            marker = "&ndash;"
+            note = "out: the model has this side under an even chance to cover"
         else:
             marker = "&ndash;"
-            note = "not eligible: the books disagree on this line"
-        agreement = (
-            f"books within {row.book_dispersion:.2f}"
-            if row.book_dispersion is not None
-            else "no book spread yet"
-        )
+            note = "out: the books disagree on this line"
         items.append(
-            f"<li>{marker} {label} ({escape(row.matchup)}) &middot; {chance} &middot; "
-            f"{escape(agreement)}" + (f" &middot; <i>{escape(note)}</i>" if note else "") + "</li>"
+            f"<li>{marker} {label} ({escape(row.matchup)})"
+            + (f" &middot; <i>{escape(note)}</i>" if note else "")
+            + "</li>"
         )
     stamp = (
         f" as of {escape(content.best_pick_ranking_as_of)}"
@@ -649,10 +647,10 @@ def _best_pick_note_html(content: BoardContent) -> str:
     return (
         lead + '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
         f"Best pick order{stamp}</summary>"
-        "<p>Games still to play, in the order the Sunday-morning pass would take them: the "
-        "played side's model cover chance, highest first, among games where the books agree "
-        "on the line (the spread's spread across books is shown). Games the books disagree on "
-        "are listed after, unranked.</p>"
+        "<p>Games still to play, in the order the Sunday-morning pass would take them. A game "
+        "is in the running only if the books agree on its line and the model has the played "
+        "side better than an even chance to cover; the rest are listed after with the reason "
+        "they are out.</p>"
         f'<ol style="list-style:none;padding-left:0;">{"".join(items)}</ol></details>'
     )
 
@@ -812,12 +810,12 @@ def _board_section(content: BoardContent) -> str:
         "<th>Kickoff</th><th>Matchup</th><th>Pick</th>"
         '<th><abbr title="The average line across the books in the latest capture, written '
         "for the picked side. The pool's own line is the one in the Pick column and does not "
-        'move.">Books&nbsp;now</abbr></th>'
+        'move.">Books now</abbr></th>'
         "<th><abbr title=\"The computer's own chance that this side covers, adjusted for how "
         "it has actually done on spreads this size. Big favourites and big underdogs have "
         "been its weak spot, so a very confident-looking number there is pulled back toward "
         'what it has really hit.">'
-        "Cover&nbsp;chance</abbr></th>"
+        "Cover chance</abbr></th>"
         "<th><abbr title=\"Read it as: if the pick's own line reaches this number, the card "
         "switches to the team after the arrow. E.g. a NYJ +3 pick with NYJ +2.5 → TEN "
         "flips to TEN once NYJ gets only +2.5. Uses the spread adjuster's math plus the "
@@ -825,7 +823,7 @@ def _board_section(content: BoardContent) -> str:
         "7.5-10 fade zone's edge flips a pick too when the edge is that close. "
         "'Within ±4' means nothing in the adjuster's explored range changes the "
         'pick.">'
-        "Flips&nbsp;at</abbr></th><th>Confidence</th>"
+        "Flips at</abbr></th><th>Confidence</th>"
         "</tr></thead><tbody>" + "".join(rows) + "</tbody></table>"
     )
     return (

@@ -231,6 +231,7 @@
   td.pick .star{ color:var(--amber); margin-right:4px; }
   td.prob{ font-family:var(--font-mono); font-weight:700; color:var(--green); }
   td.flipline{ font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
+.market-now{ font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
 table.board td.kickoff .lock{display:block;font-size:9px;color:var(--text-faint);margin-top:2px;white-space:nowrap}
 
   td.flipline .flip-none{ color:var(--text-faint); }
@@ -816,12 +817,15 @@ table.board td.kickoff .lock{display:block;font-size:9px;color:var(--text-faint)
   @media (min-width:1100px){
     .board-col table.board{ table-layout:fixed; }
     .board-col table.board td{ white-space:normal; overflow-wrap:anywhere; min-width:0; }
-    .board-col table.board th:nth-child(1){ width:12%; }
-    .board-col table.board th:nth-child(2){ width:15%; }
-    .board-col table.board th:nth-child(3){ width:17%; }
-    .board-col table.board th:nth-child(4){ width:12%; }
-    .board-col table.board th:nth-child(5){ width:24%; }
-    .board-col table.board th:nth-child(6){ width:20%; }
+    .board-col table.board th{ white-space:normal; }
+    .board-col table.board th:nth-child(1){ width:13%; }
+    .board-col table.board th:nth-child(2){ width:13%; }
+    .board-col table.board th:nth-child(3){ width:16%; }
+    .board-col table.board th:nth-child(4){ width:10%; }
+    .board-col table.board th:nth-child(5){ width:12%; }
+    .board-col table.board th:nth-child(6){ width:18%; }
+    .board-col table.board th:nth-child(7){ width:18%; }
+    .board-col table.board td.kickoff, .board-col table.board td.kickoff .lock{ white-space:normal; }
     .board-col .meter{ flex-wrap:wrap; }
   }
   .week-grid > section{ margin-top:0; }

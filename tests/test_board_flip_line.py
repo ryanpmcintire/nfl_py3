@@ -176,7 +176,7 @@ def test_flip_line_text_names_the_pick_then_the_switch() -> None:
 def test_board_renders_the_flips_at_column() -> None:
     content = build_fixture_content()
     html = board_terminal.render(content)
-    assert "Flips&nbsp;at" in html
+    assert ">Flips at</abbr></th>" in html
     assert 'data-label="Flips at">NYJ +2.5 → TEN</td>' in html
     assert "IND holds through -0.5" in html
     assert "ARI +10 → LAC (spread-gap rule)" in html

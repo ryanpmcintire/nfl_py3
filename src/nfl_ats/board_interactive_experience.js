@@ -183,7 +183,6 @@
     $('.merged-scenario-link button', panel).addEventListener('click', e => { e.stopImmediatePropagation(); tab(panel, 'analysis'); $('.adjuster-slider', panel)?.focus(); }, true);
     tab(panel, 'field');
   });
-  const probabilityHeading = $('table.board th:nth-child(4)'); if (probabilityHeading) { probabilityHeading.textContent = 'Score'; probabilityHeading.title = 'On adjusted picks this is a mirrored decision score, not a newly calibrated probability. The analysis chart labels the original model estimate separately.'; }
   const keyboardHint = element('p', 'ball-keyboard-hint'); keyboardHint.innerHTML = '<kbd>↑</kbd> <kbd>↓</kbd> switch games &nbsp; <kbd>Enter</kbd> game room &nbsp; <kbd>Esc</kbd> return'; $('.board-col .sort-toggle').after(keyboardHint);
   function moveGame(direction) { const order = $$('table.board tr.game').map(r => r.dataset.gameId), index = order.indexOf(selectedPanel().id); window.atsSelectGame(order[(index + direction + order.length) % order.length]); }
   document.addEventListener('keydown', event => {

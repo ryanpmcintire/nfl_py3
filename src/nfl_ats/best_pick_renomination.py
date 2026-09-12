@@ -277,6 +277,14 @@ def plan_best_pick_renomination(
     if candidates.empty:
         candidates = ranked
         pool_reason = "empty_filter"
+    candidates = candidates.loc[candidates["statistic"].ge(BEST_PICK_MINIMUM_COVER_CHANCE)]
+    if candidates.empty:
+        return _held(
+            plan,
+            reason="no eligible game has a played side at or above an even chance to cover",
+            tuesday_game_id=tuesday_game_id,
+            previous_game_id=previous_game_id,
+        )
 
     candidate_game_id, n_tied, tie_break = select_renominee(candidates)
     chosen = candidates.loc[candidates["game_id"].eq(candidate_game_id)].iloc[0]
@@ -310,6 +318,9 @@ def plan_best_pick_renomination(
     )
 
 
+BEST_PICK_MINIMUM_COVER_CHANCE = 0.5
+
+
 def _ranking_rows(
     plan: RefreshResult, ranked: pd.DataFrame, candidate_game_id: str
 ) -> tuple[dict[str, Any], ...]:
@@ -330,7 +341,9 @@ def _ranking_rows(
         game_id = str(row["game_id"])
         away, home = teams.get(game_id, ("", ""))
         side = str(row["played_pick_side"])
-        eligible = bool(row["pool_pass"])
+        eligible = (
+            bool(row["pool_pass"]) and float(row["statistic"]) >= BEST_PICK_MINIMUM_COVER_CHANCE
+        )
         if eligible:
             rank += 1
         dispersion = row["spread_std"]
@@ -345,6 +358,7 @@ def _ranking_rows(
                 "cover_probability": float(row["statistic"]),
                 "book_dispersion": None if pd.isna(dispersion) else float(dispersion),
                 "eligible": eligible,
+                "in_book_pool": bool(row["pool_pass"]),
                 "is_candidate": game_id == candidate_game_id,
             }
         )
