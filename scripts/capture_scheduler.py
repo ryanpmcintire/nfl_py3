@@ -148,11 +148,11 @@ def _sportradar_injury_job(day: str, at: str, report: str) -> Job:
     )
 
 
-def _nflverse_injuries_job(day: str) -> Job:
+def _nflverse_injuries_job(day: str, at: str = "06:00", *, suffix: str = "") -> Job:
     return Job(
-        f"nflverse_injuries_{day}",
+        f"nflverse_injuries_{day}{suffix}",
         day,
-        "06:00",
+        at,
         180,
         [
             str(UV),
@@ -171,10 +171,16 @@ def _nflverse_injuries_job(day: str) -> Job:
         "specialist_absence_fade_refresh_overlay.latest_nflverse_injuries_snapshot reads. "
         "06:00 ET clears every same-day consumer with hours to spare (earliest same-day "
         "deadline: refresh_sun 10:00 ET); catch_up=True because a late run is still a "
-        "valid, un-mislabelled bulk snapshot, matching player_arrests_tue's own reasoning.",
+        "valid, un-mislabelled bulk snapshot, matching player_arrests_tue's own reasoning. "
+        "2026-09-12: the _0900 variant exists because the release is regenerated upstream "
+        "in the morning (measured last-modified Fri 12:12 UTC and Sat 11:35 UTC), after "
+        "the 06:00 pull and eight hours before the 16:30 one, so Friday's game-status "
+        "designations for the Sunday slate reached the card only by hand at 09:41 ET "
+        "Saturday; 09:00 lands after the regeneration and before refresh_sat (10:30) and "
+        "the noon lineups refit.",
         dedupe_dir="data/raw/nflverse_injuries",
-        dedupe_minutes=240,
-        added_on="2026-09-08",
+        dedupe_minutes=240 if not suffix else 60,
+        added_on="2026-09-08" if not suffix else "2026-09-12",
         catch_up=True,
     )
 
@@ -249,11 +255,11 @@ def _player_snapshot_pm_job(day: str) -> Job:
     )
 
 
-def _player_snapshot_job(day: str) -> Job:
+def _player_snapshot_job(day: str, at: str = "06:15", *, suffix: str = "") -> Job:
     return Job(
-        f"player_snapshot_{day}",
+        f"player_snapshot_{day}{suffix}",
         day,
-        "06:15",
+        at,
         180,
         _cli(
             "player-ingest",
@@ -293,10 +299,11 @@ def _player_snapshot_job(day: str) -> Job:
         "exactly this reason on the Wednesday opener). 06:15 ET (5m after "
         "nflverse_injuries_<day>, avoiding same-tick contention rather than any real "
         "dependency) clears every same-day consumer with hours to spare. catch_up=True: "
-        "a late run is still a valid snapshot, matching player_arrests_tue.",
+        "a late run is still a valid snapshot, matching player_arrests_tue. The _0915 "
+        "variant rebuilds from the 09:00 pull (see nflverse_injuries_<day>_0900).",
         dedupe_dir="data/players/raw",
-        dedupe_minutes=240,
-        added_on="2026-09-08",
+        dedupe_minutes=240 if not suffix else 60,
+        added_on="2026-09-08" if not suffix else "2026-09-12",
         catch_up=True,
     )
 
@@ -497,6 +504,30 @@ SCHEDULE: tuple[Job, ...] = (
         season_guarded=False,
         dedupe_dir="data/market/raw",
         dedupe_minutes=90,
+    ),
+    *(
+        Job(
+            name,
+            day,
+            at,
+            90,
+            _ps("odds_capture.ps1"),
+            True,
+            "2026-09-12: there was no capture between odds_thu_tnf (Thu 18:00) and odds_sat "
+            "(Sat 12:00), a 42-hour hole across the Friday injury designations that move "
+            "lines the most; ATL at PIT went from -3.5 to -6 in it and both Friday's 13:30 "
+            "last call and Saturday's 07:29 pass re-decided on Thursday's lines. Each of "
+            "these lands just before a refresh pass that reads it.",
+            season_guarded=False,
+            dedupe_dir="data/market/raw",
+            dedupe_minutes=60,
+            added_on="2026-09-12",
+        )
+        for name, day, at in (
+            ("odds_fri_1230", "fri", "12:30"),
+            ("odds_fri_1800", "fri", "18:00"),
+            ("odds_sat_1000", "sat", "10:00"),
+        )
     ),
     Job(
         "odds_sun_close",
@@ -1009,6 +1040,14 @@ SCHEDULE: tuple[Job, ...] = (
     ),
     *(_nflverse_injuries_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
     *(_player_snapshot_job(day) for day in ("wed", "thu", "fri", "sat", "sun")),
+    *(
+        _nflverse_injuries_job(day, "09:00", suffix="_0900")
+        for day in ("wed", "thu", "fri", "sat", "sun")
+    ),
+    *(
+        _player_snapshot_job(day, "09:15", suffix="_0915")
+        for day in ("wed", "thu", "fri", "sat", "sun")
+    ),
     *(_nflverse_injuries_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
     *(_player_snapshot_pm_job(day) for day in ("wed", "thu", "fri", "sat")),
     *(_injury_news_job(day) for day in ("wed", "thu", "fri", "sat", "sun", "mon")),
