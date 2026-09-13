@@ -508,3 +508,35 @@ it is the reason the composed read is the one that matters for a decision.
 Everything above is `unresolved_below_power`. Nothing here is refuted: no
 interval sits wholly on the wrong side of zero, and no positive control bounds
 any of it.
+
+---
+
+# 2026-09-12 re-run with the three fixes in place
+
+Run by an opencode lane on the evening of 2026-09-12 (report
+`tests/scratch/lanes/laneG_report.md`, artifacts under
+`artifacts/research/laneAD/`, all 23 cells re-recorded with `--replace`)
+after `officials_flag_features.py` and `crew_tilt_refresh_overlay.py` took
+changes (a), (b) and (c) from the section above, and the runner was restored
+from before the repository cut. Replay gate: 1,537 games, maximum
+probability gap 3.2e-15, zero pick disagreements.
+
+- 2020-2025 opener grade: every archive arm remains bit-identical to its
+  feed twin (zero flips). The fixes let the archive reach the traits, but no
+  2020-2025 game's flag depends on a pre-2015 crew row, so nothing the pool
+  grades moves.
+- 2011-2014 (close proxy, 996 games), the only era the archive changes:
+  rookie -0.301 [-1.102, +0.509] P+ 0.239; second meeting -0.100 [-0.799,
+  +0.506] P+ 0.390. Unresolved below power.
+- 2015-2019 (close proxy, 1,240 games): second meeting, archive-aware crew
+  population, -0.968 [-1.911, -0.080] P+ 0.019. The whole interval sits on
+  the wrong side of zero, so this era cell is recorded `refuted_mechanism`
+  on the `wrong_sign_resolved` ground. The 2020-2025 cell of the same arm
+  reads +0.253 [-0.253, +0.757] P+ 0.840 and stays unresolved.
+- Proxyline versus openerline, 2020-2025: rookie +0.665 [-0.131, +1.474] P+
+  0.952; second meeting +0.865 [-0.612, +2.279] P+ 0.879. Crew scramble
+  through the played card +0.266 [-0.265, +0.801] P+ 0.841.
+- Still open: with the archive on, `_build_referee_type_trait_data` raises
+  on duplicate quartile bin edges. It is a diagnostic in the traits stage;
+  no served arm reads the penalty-type traits.
+

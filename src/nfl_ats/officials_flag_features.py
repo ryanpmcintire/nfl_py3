@@ -54,6 +54,12 @@ def _require_penalty_table_columns(table: pd.DataFrame) -> None:
         raise DataContractError(f"officials penalty table is missing columns: {', '.join(missing)}")
 
 
+def _rookie_eligible_season_floor(seasons: pd.Series) -> int:
+    if seasons.empty:
+        return ROOKIE_ELIGIBLE_SEASON_FLOOR
+    return int(cast(Any, seasons.min())) + 1
+
+
 def home_away_penalty_game_table(repo_root: Path | None = None) -> pd.DataFrame:
 
     root = repo_root or REPO_ROOT
@@ -64,11 +70,24 @@ def home_away_penalty_game_table(repo_root: Path | None = None) -> pd.DataFrame:
         & (officials["season_type"] == _REFEREE_SEASON_TYPE)
     ].copy()
 
-    schedules = pd.read_parquet(latest_schedules_snapshot(root)).loc[:, ["game_id", "old_game_id"]]
+    schedules = pd.read_parquet(latest_schedules_snapshot(root)).loc[
+        :, ["game_id", "old_game_id", "home_team", "away_team"]
+    ]
     refs = refs.merge(
         schedules, left_on="game_id", right_on="old_game_id", how="inner", suffixes=("_legacy", "")
     )
-    refs = refs.loc[:, ["game_id", "official_name"]]
+    refs = refs.loc[
+        :,
+        [
+            "game_id",
+            "official_name",
+            "season",
+            "week",
+            "season_type",
+            "home_team",
+            "away_team",
+        ],
+    ]
 
     game_penalties = pd.read_parquet(game_penalties_path)
     required_gp = {
@@ -87,7 +106,12 @@ def home_away_penalty_game_table(repo_root: Path | None = None) -> pd.DataFrame:
             f"{game_penalties_path} is missing columns: {', '.join(missing_gp)}"
         )
 
-    merged = refs.merge(game_penalties, on="game_id", how="inner", suffixes=("", "_gp"))
+    merged = refs.merge(game_penalties, on="game_id", how="left", suffixes=("_crew", ""))
+    for column in sorted(
+        set(refs.columns).intersection(set(game_penalties.columns)).difference({"game_id"})
+    ):
+        merged[column] = merged[column].fillna(merged[f"{column}_crew"])
+        merged = merged.drop(columns=[f"{column}_crew"])
     merged["game_id"] = merged["game_id"].astype(str)
     merged["season"] = pd.to_numeric(merged["season"], errors="raise").astype(int)
     merged["week"] = pd.to_numeric(merged["week"], errors="raise").astype(int)
@@ -303,12 +327,13 @@ def describe_referee_left_censoring(repo_root: Path | None = None) -> dict[str, 
         & (officials["season_type"] == _REFEREE_SEASON_TYPE)
     ]
     first_season = refs.groupby("official_name")["season"].min()
-    n_censored = int((first_season == 2015).sum())
-    n_genuine = int((first_season >= 2016).sum())
+    floor = _rookie_eligible_season_floor(refs["season"])
+    n_censored = int((first_season < floor).sum())
+    n_genuine = int((first_season >= floor).sum())
     return {
         "n_officials_total": len(first_season),
         "n_censored_2015_debut": n_censored,
-        "n_genuine_debut_2016_2025": n_genuine,
+        "n_genuine_debut_after_floor": n_genuine,
     }
 
 
@@ -334,7 +359,8 @@ def derive_rookie_crew_underdog_features(
         raise DataContractError("opener_lines is missing the game_id join key")
 
     trait = rookie_crew_table(repo_root, trait=trait)
-    eligible_season = trait["season"] >= ROOKIE_ELIGIBLE_SEASON_FLOOR
+    floor = _rookie_eligible_season_floor(trait["season"])
+    eligible_season = trait["season"] >= floor
     is_rookie = trait["prior_seasons_experience"].le(ROOKIE_PRIOR_EXPERIENCE_MAX)
     rookie_crew = eligible_season & is_rookie
 

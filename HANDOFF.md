@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-12T23:22:08.579206+00:00`
+Refreshed at: `2026-09-13T01:13:18.484010+00:00`
 
 ## Start here
 
@@ -20,18 +20,29 @@ Refreshed at: `2026-09-12T23:22:08.579206+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `355e424790f4` — Board: the seven-column picks table lays out again, the market column is no longer labelled Score, and the Best Pick order skips games the model has under an even chance
-- Pending change set: 10 paths
+- Baseline commit: `d57ac7eac6b9` — Session context costs a fifth of what it did: pool summary by default, brief scheduler status, rules-only AGENTS.md, ROADMAP and README history archived
+- Pending change set: 28 paths
   - `M  AGENTS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `A  docs/agents_history.md`
-  - `A  docs/research_history.md`
-  - `A  docs/roadmap_archive.md`
-  - `M  scripts/capture_scheduler.py`
-  - `M  src/nfl_ats/cli_commands/registry.py`
-  - `M  tests/test_weak_signals_retag_units.py`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/injury_headlines.md`
+  - `A  docs/lanes/README.md`
+  - `A  docs/lanes/done/dashboard-2026-09-12-evening.md`
+  - `A  docs/lanes/done/halves-ledger-lockday.md`
+  - `A  docs/lanes/lead59-archive-battery.md`
+  - `A  docs/lanes/lead64-headline-parser.md`
+  - `A  docs/lanes/token-diet.md`
+  - `M  docs/model.html`
+  - `M  docs/officials_archive_battery.md`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/lockday_verify.py`
+  - `A  scripts/officials_archive_battery_eval.py`
+  - `M  src/nfl_ats/board_content.py`
+  - ...and 8 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

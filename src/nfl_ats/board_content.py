@@ -232,6 +232,25 @@ class GameRow:
         return f"{abs(delta):g} {'toward' if delta < 0 else 'against'} {self.pick_team}"
 
     @property
+    def market_move_label(self) -> str:
+        if self.market_now is None:
+            return ""
+        sign = -1.0 if self.pick_team == self.home else 1.0
+        delta = (self.market_now - self.market_spread) * sign
+        if abs(delta) < 0.25:
+            return "unchanged"
+        abs_d = abs(delta)
+        word = (
+            "half a point"
+            if abs_d == 0.5
+            else f"{abs_d:g} point"
+            if abs_d == 1
+            else f"{abs_d:g} points"
+        )
+        direction = "toward" if delta < 0 else "against"
+        return f"{word} {direction} {self.pick_team}"
+
+    @property
     def flip_line_text(self) -> str:
 
         sign = -1.0 if self.pick_team == self.home else 1.0

@@ -7,8 +7,10 @@ doc.
 
 ## Session startup
 
-- Read `HANDOFF.md` and the `## Recommended execution order` section of
-  `ROADMAP.md`. Do not read ROADMAP.md or README.md whole; completed rows
+- Read `HANDOFF.md`, `docs/lanes/README.md`, and the lane file the prompt
+  names (or the most recently modified lane when the prompt says to
+  continue). Read the `## Recommended execution order` section of
+  `ROADMAP.md` only when choosing new work. Do not read ROADMAP.md or README.md whole; completed rows
   live in `docs/roadmap_archive.md` and superseded results in
   `docs/research_history.md`, and both are for grep, not for reading.
 - Run `git status --short` and `git log -3 --oneline --decorate`; live Git
@@ -161,6 +163,28 @@ Edit/Write and by `scripts/strip_comments.py --check` in the pre-commit hook.
 Every subagent prompt says "no code comments". Rationale goes in the commit
 message, the ROADMAP row or a doc. CLI help text is a string literal passed
 to argparse, never `__doc__`.
+
+## Lanes and clearing (binding, owner, 2026-09-12)
+
+The owner clears the conversation as often as possible; the agent's job is
+to make that free. Every turn re-sends the whole transcript, so undistilled
+tool output is the cost and the lane file is the cure.
+
+- One file per task under `docs/lanes/` (format in its README): Goal, State,
+  Tried, Next, Open, under one page. Update it when a unit of work completes,
+  before saying the work is done. Finished lanes move to `docs/lanes/done/`.
+- **Every response ends with one line, the clear verdict**, enforced by the
+  Stop hook: `CLEAR OK - <what is saved and where>` when a fresh session
+  could continue from the lane file, memory and `HANDOFF.md` alone; or
+  `HOLD - <reason>` when the next step depends on state that exists only in
+  this conversation (a debugging loop mid-cycle, an answer awaited from a
+  running task, a decision the owner is about to make on numbers just
+  shown). HOLD is the exception and names what would be lost.
+- Anything the owner has had to explain twice is written to memory or a lane
+  file, never carried in the conversation.
+- Discovery that would dump files or logs into the main context goes to a
+  subagent or an opencode lane with a context packet; only the conclusion
+  comes back.
 
 ## Token discipline
 

@@ -62,9 +62,16 @@ def test_home_away_penalty_game_table_crosswalks_officials_to_game_penalties(
 ) -> None:
     raw_dir = tmp_path / "data" / "raw" / "20200101T000000Z"
     raw_dir.mkdir(parents=True)
-    pd.DataFrame([{"game_id": "2020_01_AAA_BBB", "old_game_id": "2020090100"}]).to_parquet(
-        raw_dir / "schedules.parquet"
-    )
+    pd.DataFrame(
+        [
+            {
+                "game_id": "2020_01_AAA_BBB",
+                "old_game_id": "2020090100",
+                "home_team": "BBB",
+                "away_team": "AAA",
+            }
+        ]
+    ).to_parquet(raw_dir / "schedules.parquet")
 
     officials_dir = tmp_path / "data" / "raw" / "officials" / "20200101T000000Z"
     officials_dir.mkdir(parents=True)
@@ -75,6 +82,7 @@ def test_home_away_penalty_game_table_crosswalks_officials_to_game_penalties(
                 "official_name": "REF_A",
                 "position": "Referee",
                 "season": 2020,
+                "week": 1,
                 "season_type": "REG",
             },
             {
@@ -82,6 +90,7 @@ def test_home_away_penalty_game_table_crosswalks_officials_to_game_penalties(
                 "official_name": "UMP_X",
                 "position": "Umpire",
                 "season": 2020,
+                "week": 1,
                 "season_type": "REG",
             },
         ]
@@ -411,4 +420,4 @@ def test_describe_referee_left_censoring_counts_2015_debuts(tmp_path: Path) -> N
     stats = describe_referee_left_censoring(tmp_path)
     assert stats["n_officials_total"] == 2
     assert stats["n_censored_2015_debut"] == 1
-    assert stats["n_genuine_debut_2016_2025"] == 1
+    assert stats["n_genuine_debut_after_floor"] == 1

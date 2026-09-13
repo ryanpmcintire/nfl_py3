@@ -194,6 +194,8 @@ def _referee_name_season(repo_root: Path, *, penalty_type: str | None) -> pd.Dat
     else:
         penalty_type_path, _ = _latest_penalty_type_snapshot(repo_root)
         game_penalty_types = pd.read_parquet(penalty_type_path)
+        covered = game_penalty_types["game_id"]
+        refs = refs.loc[refs["game_id"].isin(covered)].copy()
         type_counts = game_penalty_types.loc[
             game_penalty_types["penalty_type"] == penalty_type, ["game_id", "penalties_total"]
         ]

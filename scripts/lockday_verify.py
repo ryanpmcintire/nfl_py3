@@ -226,6 +226,17 @@ PENDING_REFRESH_LEDGERS: dict[str, dict[str, Any]] = {
             "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
         ),
     },
+    "half_line_2h_underdog_refresh_v1": {
+        "ledger": "prospective/half_line_refresh_decisions.parquet",
+        "loader": load_half_line_refresh_decisions,
+        "written_by": "refresh-picks --record-decisions",
+        "recording_path": "refresh/dedicated",
+        "wired": True,
+        "note": "wired into refresh-picks --record-decisions and nfl-ats settle since 2026-09-11",
+        "legitimately_empty": (
+            "records only on a late-week refresh pass; zero at the Tuesday lock is expected"
+        ),
+    },
 }
 
 WEEKLY_SINGLE_ROW = ("best_pick_nomination_v2", "best_pick_nomination_v3")

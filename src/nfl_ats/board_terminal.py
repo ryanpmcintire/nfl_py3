@@ -784,6 +784,7 @@ def _board_section(content: BoardContent) -> str:
             if game.final and game.cover_result:
                 row_classes.append(f"final-{game.cover_result}")
             conf_cell = _final_outcome_html(game) if game.final else _confidence_meter_html(game)
+            _move_cls = " against" if "against" in game.market_move_text else ""
             matchup_cell = (
                 f'<a class="row-link" href="#{escape(game.game_id)}" '
                 f'data-game-id="{escape(game.game_id)}" '
@@ -798,7 +799,13 @@ def _board_section(content: BoardContent) -> str:
                 f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
                 f'<td class="market-now" data-label="Books now" '
-                f'title="{escape(game.market_move_text)}">{escape(game.market_now_text)}</td>'
+                f'title="{escape(game.market_move_text)}">{escape(game.market_now_text)}'
+                + (
+                    f'<span class="market-move{_move_cls}">{escape(game.market_move_label)}</span>'
+                    if game.market_move_label
+                    else ""
+                )
+                + "</td>"
                 f'<td class="prob" data-label="Cover chance">{escape(game.probability_text)}</td>'
                 f'<td class="flipline" data-label="Flips at">{_flip_line_html(game)}</td>'
                 f'<td class="conf" data-label="Confidence">{conf_cell}</td>'

@@ -721,6 +721,23 @@ def _cmd_predict_close(args: argparse.Namespace) -> None:
     _print_json({**metadata, "artifact_directory": str(output)})
 
 
+def _cmd_injury_headlines(args: argparse.Namespace) -> None:
+    from datetime import date, timedelta
+
+    from nfl_ats.injury_headlines import run_injury_headlines
+
+    data_root = args.data_root or _data_root()
+    artifacts_root = args.artifacts_root or _artifacts_root()
+    since = date.fromisoformat(args.since) if args.since else date.today() - timedelta(days=14)
+    result = run_injury_headlines(
+        data_root=data_root,
+        artifacts_root=artifacts_root,
+        since=since,
+        dry=args.dry,
+    )
+    _print_json(result)
+
+
 def register_scoring(
     subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
     current_year: int,
@@ -925,6 +942,36 @@ def register_diagnostics(
     )
     _add_bootstrap_args(served_card_archive_parser, samples=20_000, seed=20260821)
     served_card_archive_parser.set_defaults(handler=_cmd_served_card_archive)
+
+    injury_headlines_parser = subparsers.add_parser(
+        "injury-headlines",
+        help="parse PFT injury headlines into a timestamped designation table "
+        "(fallback source for mornings when the official league feed is late)",
+    )
+    injury_headlines_parser.add_argument(
+        "--data-root",
+        type=Path,
+        default=None,
+        help="data directory (default: env NFL_ATS_DATA or ./data)",
+    )
+    injury_headlines_parser.add_argument(
+        "--artifacts-root",
+        type=Path,
+        default=None,
+        help="artifacts directory (default: env NFL_ATS_ARTIFACTS or ./artifacts)",
+    )
+    injury_headlines_parser.add_argument(
+        "--since",
+        type=str,
+        default=None,
+        help="ISO date; only include captures on or after this date (default: 14 days ago)",
+    )
+    injury_headlines_parser.add_argument(
+        "--dry",
+        action="store_true",
+        help="print summary and write nothing",
+    )
+    injury_headlines_parser.set_defaults(handler=_cmd_injury_headlines)
 
     predict_close = subparsers.add_parser(
         "predict-close",

@@ -87,6 +87,7 @@
         "overlay-composition",
         "served-refresh-card",
         "served-card-archive",
+        "injury-headlines",
         "predict-close",
         "build-features",
         "build-pbp-features",
@@ -306,6 +307,10 @@
         {
           "name": "served-card-archive",
           "help": "score the card as played (every served adjustment) against the active model's matching opener evaluation: the board's headline archive number; reuses the latest measurement when it already names the active model and re-measures otherwise"
+        },
+        {
+          "name": "injury-headlines",
+          "help": "parse PFT injury headlines into a timestamped designation table (fallback source for mornings when the official league feed is late)"
         },
         {
           "name": "predict-close",

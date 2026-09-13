@@ -233,6 +233,8 @@
   td.flipline{ font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
 .market-now{ font-family:var(--font-mono); color:var(--text-dim); white-space:nowrap; }
 table.board td.kickoff .lock{display:block;font-size:9px;color:var(--text-faint);margin-top:2px;white-space:nowrap}
+.market-now .market-move{display:block;font-size:9px;color:var(--text-faint);margin-top:2px;white-space:nowrap}
+.market-now .market-move.against{color:var(--red)}
 
   td.flipline .flip-none{ color:var(--text-faint); }
   td.conf{ min-width:150px; }
