@@ -28,13 +28,17 @@ positive-expected, graded at the opener.
 ## Next
 
 1. Split library, predeclared and versioned in `registry/split_library.json`
-   before any cell is scored: time in season (weeks 1-4 / 5-12 / 13-18),
+   before any cell is scored. The list below is a starting point and is not
+   exhaustive: any dimension the owner or a session can name and source
+   without leakage gets added to the library and scored, and the library is
+   expected to keep growing. Starting list: time in season (weeks 1-4 / 5-12 / 13-18),
    spread size band and side (favourite / dog), home / away, division game,
    rest and travel (short week, bye, long trip), weather and roof, primetime,
    era (2009-2013 / 2014-2019 / 2020+), market movement since open, public
    share, quarterback change since the window, head-coach change, offensive-
    line and pass-rush snap continuity (lagged player snaps, `players.py`),
-   injury load. Each split names its source column and a leakage note.
+   injury load, and whatever comes next. Each split names its source column
+   and a leakage note.
 2. Harness `nfl-ats signal-atlas --signal <id>` built on the leave-one-out
    convention in `tests/scratch/lanes/pbp08_early_season_split_20260913.py`
    (paired week-blocked bootstrap, seed fixed): one row per (signal, split,
