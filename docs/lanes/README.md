@@ -20,7 +20,7 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
-- [conditional-tilt-effects](conditional-tilt-effects.md) — MOD-19, owner direction 2026-09-13: tilts decided with the other relevant information (line/pass-rush continuity first); stage 1 is LEAD-65
+- [conditional-signal-atlas](conditional-signal-atlas.md) — MOD-19, owner direction 2026-09-13: every signal measured inside predeclared splits across any dimension and decided together; LEAD-65 is the worked case
 - [lead65-protection-window-split](lead65-protection-window-split.md) — owner question 2026-09-13: measured: the tilt's edge is IN weeks 1-4 (P+ 0.977), weeks 5-18 a probable drag (P+ 0.099); next a week-gated paired challenger
 - [sunday-gameday-2026-09-13](sunday-gameday-2026-09-13.md) — Week 1 Sunday: hand odds capture, new 09:30 lineups_sun_am refit job, daemon restarted; open: Week 1 --replace-week re-record (owner)
 - [lead64-headline-parser](lead64-headline-parser.md) — LEAD-64 headline designation parser, three passes done; next is the morning comparison against the official feed
