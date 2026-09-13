@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-13T12:54:06.322001+00:00`
+Refreshed at: `2026-09-13T16:50:39.170688+00:00`
 
 ## Start here
 
@@ -20,11 +20,28 @@ Refreshed at: `2026-09-13T12:54:06.322001+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `cf978e9eb107` — MOD-19 is the conditional signal atlas: every signal measured inside predeclared splits across any dimension, and the card decided from the conditional reads together
-- Pending change set: 3 paths
+- Baseline commit: `0e0169689b37` — MOD-19: the split library is a starting list, never a complete one
+- Pending change set: 20 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  docs/lanes/conditional-signal-atlas.md`
+  - `M  README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/sunday-1pm-last-call-2026-09-13.md`
+  - `M  docs/model.html`
+  - `M  docs/pick_change_notifications.md`
+  - `A  registry/experiments/margin-backtest/20260913T133822Z.json`
+  - `A  registry/experiments/margin-backtest/20260913T160755Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260913T133906Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260913T160839Z.json`
+  - `A  registry/experiments/opener-evaluation/20260913T134234Z.json`
+  - `A  registry/experiments/waterfall-feed/20260913T134741Z.json`
+  - `A  registry/experiments/waterfall-feed/20260913T161721Z.json`
+  - `M  scripts/capture_scheduler.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  tests/test_board_terminal.py`
+  - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -33,18 +50,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `425790b83c903fdb`
+- Model ID: `92b44dc9a3886a0a`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260913T113943Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260913T134234Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-13T11:35:46.061905+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-13T16:08:39.218030+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `425790b83c903fdb`, published `2026-09-13T12:23:37.298761+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `92b44dc9a3886a0a`, published `2026-09-13T16:19:04.377572+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

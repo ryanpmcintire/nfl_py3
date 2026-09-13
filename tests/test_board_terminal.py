@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import ast
+import importlib
 import json
 import re
+import sys
 from dataclasses import replace
 from datetime import UTC, datetime
 from html import escape
@@ -1006,35 +1007,14 @@ def test_board_lock_window_orders_clock_times_and_handles_single_lock() -> None:
 
 
 def test_week_refresh_schedule_matches_enabled_pick_refresh_commands() -> None:
-    tree = ast.parse((_REPO_ROOT / "scripts" / "capture_scheduler.py").read_text("utf-8"))
-    schedule = next(
-        node.value
-        for node in tree.body
-        if isinstance(node, ast.AnnAssign)
-        and isinstance(node.target, ast.Name)
-        and node.target.id == "SCHEDULE"
-    )
-    assert isinstance(schedule, (ast.List, ast.Tuple))
-    actual = []
-    for call in schedule.elts:
-        if not isinstance(call, ast.Call) or len(call.args) < 6:
-            continue
-        command = call.args[4]
-        if (
-            ast.literal_eval(call.args[5])
-            and isinstance(command, ast.Call)
-            and command.args
-            and isinstance(command.args[0], ast.Constant)
-            and command.args[0].value == "refresh-picks"
-        ):
-            args = [arg.value for arg in command.args if isinstance(arg, ast.Constant)]
-            actual.append(
-                (
-                    ast.literal_eval(call.args[1]),
-                    ast.literal_eval(call.args[2]),
-                    "--publish-card" in args,
-                )
-            )
+    if str(_REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(_REPO_ROOT))
+    module = importlib.import_module("scripts.capture_scheduler")
+    actual = [
+        (job.day, job.at, "--publish-card" in job.command)
+        for job in module.SCHEDULE
+        if job.enabled and "refresh-picks" in job.command
+    ]
     assert sorted(WEEK_REFRESH_PASSES) == sorted(actual)
 
 
@@ -1043,7 +1023,7 @@ def test_week_refresh_schedule_matches_enabled_pick_refresh_commands() -> None:
     [
         (
             "2026-09-08T17:00:00+00:00",
-            "the next check is Wednesday 6:15 PM ET",
+            "the next check is Wednesday 12:15 PM ET",
             "deadline passed",
         ),
         (

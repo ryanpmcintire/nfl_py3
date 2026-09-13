@@ -867,14 +867,15 @@ SCHEDULE: tuple[Job, ...] = (
             "Saturday evening pass). These four passes close those holes; on a "
             "week without such a game they are an extra ordinary pass.",
             season_guarded=True,
-            added_on="2026-09-10",
+            added_on=added_on,
             catch_up=False,
         )
-        for day, at, grace in (
-            ("wed", "12:15", 60),
-            ("fri", "13:30", 60),
-            ("sat", "12:15", 40),
-            ("sun", "08:30", 45),
+        for day, at, grace, added_on in (
+            ("wed", "12:15", 60, "2026-09-10"),
+            ("fri", "13:30", 60, "2026-09-10"),
+            ("sat", "12:15", 40, "2026-09-10"),
+            ("sun", "08:30", 45, "2026-09-10"),
+            ("sun", "12:45", 10, "2026-09-13"),
         )
     ),
     Job(
@@ -1919,15 +1920,35 @@ def execute_job_with_output(command: list[str]) -> tuple[str, str, str]:
     return status, detail, stdout
 
 
-NTFY_TOPIC = os.environ.get("NFL_ATS_NTFY_TOPIC", "")
-NTFY_URL = os.environ.get("NFL_ATS_NTFY_URL", "https://ntfy.sh")
+def _user_environment_value(name: str) -> str:
+    value = os.environ.get(name, "")
+    if value or sys.platform != "win32":
+        return value
+    import winreg
+
+    try:
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, "Environment") as key:
+            stored, _kind = winreg.QueryValueEx(key, name)
+    except OSError:
+        return ""
+    return str(stored)
+
+
+def ntfy_topic() -> str:
+    return _user_environment_value("NFL_ATS_NTFY_TOPIC")
+
+
+def ntfy_url() -> str:
+    return _user_environment_value("NFL_ATS_NTFY_URL") or "https://ntfy.sh"
 
 
 def send_notification(title: str, message: str, *, priority: str = "high") -> bool:
-    if not NTFY_TOPIC:
+    topic = ntfy_topic()
+    if not topic:
+        log(f"NOTIFY-SKIP {title}: no NFL_ATS_NTFY_TOPIC in the environment or user registry")
         return False
     request = urllib.request.Request(
-        f"{NTFY_URL.rstrip('/')}/{NTFY_TOPIC}",
+        f"{ntfy_url().rstrip('/')}/{topic}",
         data=message.encode("utf-8"),
         headers={"Title": title, "Priority": priority, "Tags": "football"},
         method="POST",
@@ -1941,14 +1962,22 @@ def send_notification(title: str, message: str, *, priority: str = "high") -> bo
 
 
 def parse_job_json(stdout: str) -> dict[str, Any] | None:
-    start = stdout.find("{")
-    if start < 0:
-        return None
-    try:
-        payload = json.loads(stdout[start:])
-    except json.JSONDecodeError:
-        return None
-    return payload if isinstance(payload, dict) else None
+    decoder = json.JSONDecoder()
+    found: list[dict[str, Any]] = []
+    position = stdout.find("{")
+    while position >= 0:
+        try:
+            payload, end = decoder.raw_decode(stdout, position)
+        except json.JSONDecodeError:
+            position = stdout.find("{", position + 1)
+            continue
+        if isinstance(payload, dict):
+            found.append(payload)
+        position = stdout.find("{", end)
+    for payload in reversed(found):
+        if "changed_picks" in payload:
+            return payload
+    return found[0] if found else None
 
 
 def _side_label(game: dict[str, Any], side: str) -> str:
@@ -1978,7 +2007,7 @@ def describe_pick_change(game: dict[str, Any]) -> str:
 
 
 def notify_after_job(job: Job, status: str, detail: str, stdout: str) -> None:
-    if not job.name.startswith("refresh_"):
+    if not job.name.startswith(("refresh_", "lineups_")):
         return
     if status not in {"OK", "CAUGHT_UP"}:
         if "inactives" in job.name:
@@ -2031,8 +2060,10 @@ def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> i
     command = dry_command(list(job.command)) if dry else list(job.command)
     label = "MANUAL-DRY-RUN" if dry else "MANUAL-RUN"
     log(f"{label} {job.name}: {' '.join(command)}")
-    status, detail = execute_job(command)
+    status, detail, stdout = execute_job_with_output(command)
     log(f"{label} {status} {job.name}: {detail}")
+    if not dry:
+        notify_after_job(job, status, detail, stdout)
     fresh = load_state()
     entry = _job_health_entry(fresh, job.name)
     entry["last_manual_run_at"] = datetime.now(tz=ET).isoformat(timespec="seconds")

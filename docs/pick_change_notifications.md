@@ -6,7 +6,11 @@ before kickoff while away from the computer.
 ## What fires
 
 The capture scheduler daemon (`scripts/capture_scheduler.py`) now keeps the
-full stdout of every job it runs. After any `refresh_*` job:
+full stdout of every job it runs. After any `refresh_*` or `lineups_*` job
+(the lineup refit chain ends in a `refresh-picks --publish-card` whose
+summary is the last JSON object in the job's output; added 2026-09-13 after
+the Sunday 12:00 refit was found to republish the card with no alert path),
+and after any manual `--run-job` of one of those jobs:
 
 - **Pick change.** `nfl-ats refresh-picks` reports a `changed_picks` list
   (game, previous side, new side, new home cover probability, eligibility;
@@ -26,9 +30,12 @@ the capture-role host: it runs no refresh jobs.
 [ntfy](https://ntfy.sh): an HTTP POST to `https://ntfy.sh/<topic>`, no
 account. The topic is a random name held in the user environment variable
 `NFL_ATS_NTFY_TOPIC` (set 2026-09-10; `NFL_ATS_NTFY_URL` overrides the server
-for a self-hosted ntfy). The daemon reads it at start, so a topic change needs
-a daemon restart. With the variable unset the daemon logs the change and
-sends nothing. Anyone who knows the topic name can read the notifications,
+for a self-hosted ntfy). Since 2026-09-13 the daemon resolves it at send
+time, from the process environment first and then from the user-level
+registry environment (`HKCU\Environment`), because a daemon or agent shell
+started before the variable was set inherits a stale environment and would
+otherwise send nothing without saying so. With no topic found anywhere the
+daemon logs a `NOTIFY-SKIP` line and sends nothing. Anyone who knows the topic name can read the notifications,
 so the name is random and lives only in the environment, never in the
 repository.
 
@@ -62,4 +69,8 @@ The pre-kickoff refreshes already sit inside each game's window: inactives
 land about 90 minutes before kickoff, the inactives capture runs at the
 next scheduled slot, and its refresh runs 25 minutes after that (Thursday
 primetime: capture 18:50, refresh 19:15, kickoff 20:15). A change from that
-refresh reaches the phone roughly an hour before kickoff.
+refresh reaches the phone roughly an hour before kickoff. Sunday adds a
+12:45 ET last-call pass (`refresh_last_call_sun_1245`, added 2026-09-13):
+the 12:00 lineup refit republishes the card at about 12:28 and the closing
+odds capture lands at 12:30, and before this pass nothing looked at the
+1pm games again after 11:55.

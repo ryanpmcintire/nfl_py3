@@ -867,17 +867,22 @@ def _default_tiebreaker_view() -> TiebreakerView:
 
 
 WEEK_REFRESH_PASSES: tuple[tuple[str, str, bool], ...] = (
+    ("wed", "12:15", False),
     ("wed", "18:15", False),
     ("wed", "19:15", False),
     ("thu", "11:55", False),
     ("thu", "15:00", False),
     ("thu", "15:25", False),
     ("thu", "19:15", False),
+    ("fri", "13:30", False),
     ("sat", "10:30", False),
+    ("sat", "12:15", False),
     ("sat", "15:50", False),
     ("sat", "19:15", False),
+    ("sun", "08:30", False),
     ("sun", "10:00", True),
     ("sun", "11:55", False),
+    ("sun", "12:45", False),
     ("sun", "15:00", False),
 )
 
