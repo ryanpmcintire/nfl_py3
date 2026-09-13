@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-13T01:13:18.484010+00:00`
+Refreshed at: `2026-09-13T12:38:53.346447+00:00`
 
 ## Start here
 
@@ -20,29 +20,29 @@ Refreshed at: `2026-09-13T01:13:18.484010+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d57ac7eac6b9` — Session context costs a fifth of what it did: pool summary by default, brief scheduler status, rules-only AGENTS.md, ROADMAP and README history archived
-- Pending change set: 28 paths
-  - `M  AGENTS.md`
+- Baseline commit: `1ece69e79151` — Evening backlog on free opencode lanes: headline injury parser, crew traits reach the officials archive and the battery re-run is recorded, the halves ledger is on lock-day verification, and the board says how the books have moved
+- Pending change set: 21 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `A  docs/injury_headlines.md`
-  - `A  docs/lanes/README.md`
-  - `A  docs/lanes/done/dashboard-2026-09-12-evening.md`
-  - `A  docs/lanes/done/halves-ledger-lockday.md`
-  - `A  docs/lanes/lead59-archive-battery.md`
-  - `A  docs/lanes/lead64-headline-parser.md`
-  - `A  docs/lanes/token-diet.md`
+  - `M  docs/lanes/README.md`
+  - `A  docs/lanes/conditional-tilt-effects.md`
+  - `M  docs/lanes/lead64-headline-parser.md`
+  - `A  docs/lanes/lead65-protection-window-split.md`
+  - `A  docs/lanes/sunday-gameday-2026-09-13.md`
   - `M  docs/model.html`
-  - `M  docs/officials_archive_battery.md`
-  - `M  registry/weak_signals.json`
-  - `M  scripts/lockday_verify.py`
-  - `A  scripts/officials_archive_battery_eval.py`
+  - `A  registry/experiments/margin-backtest/20260913T113502Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-01-20260913T113546Z.json`
+  - `A  registry/experiments/opener-evaluation/20260913T113943Z.json`
+  - `A  registry/experiments/waterfall-feed/20260913T114419Z.json`
+  - `M  scripts/capture_scheduler.py`
   - `M  src/nfl_ats/board_content.py`
-  - ...and 8 more
+  - `M  src/nfl_ats/board_terminal.py`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `1b9bfbddc10a39ef`
+- Model ID: `425790b83c903fdb`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260912T140227Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260913T113943Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-12T17:39:30.848478+00:00`
+- Linked forecast: **2026 Week 1**, created `2026-09-13T11:35:46.061905+00:00`
 
 The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `1b9bfbddc10a39ef`, published `2026-09-12T17:48:35.057548+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `425790b83c903fdb`, published `2026-09-13T12:23:37.298761+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

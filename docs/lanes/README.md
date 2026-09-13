@@ -20,6 +20,9 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [conditional-tilt-effects](conditional-tilt-effects.md) — MOD-19, owner direction 2026-09-13: tilts decided with the other relevant information (line/pass-rush continuity first); stage 1 is LEAD-65
+- [lead65-protection-window-split](lead65-protection-window-split.md) — owner question 2026-09-13: does the protection-mismatch tilt hold in weeks 1-4 when its window is last season's games; measurement in flight
+- [sunday-gameday-2026-09-13](sunday-gameday-2026-09-13.md) — Week 1 Sunday: hand odds capture, new 09:30 lineups_sun_am refit job, daemon restarted; open: Week 1 --replace-week re-record (owner)
 - [lead64-headline-parser](lead64-headline-parser.md) — LEAD-64 headline designation parser, three passes done; next is the morning comparison against the official feed
 - [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; open: type-trait binning with the archive on
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked

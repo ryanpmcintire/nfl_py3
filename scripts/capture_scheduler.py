@@ -1112,6 +1112,25 @@ SCHEDULE: tuple[Job, ...] = (
         for day, at in (("wed", "20:45"), ("thu", "17:00"), ("sat", "13:30"))
     ),
     Job(
+        "lineups_sun_am",
+        "sun",
+        "09:30",
+        120,
+        LINEUP_CAPTURE,
+        True,
+        "2026-09-13: refresh_sun (10:00) and refresh_sun_inactives_early (11:55) refit "
+        "the raw model on the feature table, and until this job the newest table on a "
+        "Sunday morning was Saturday's 13:30 refit. The league feed regenerates about "
+        "07:35-08:15 ET and nflverse_injuries_sun_0900 / player_snapshot_sun_0915 "
+        "capture it, so a 09:30 refit puts Sunday's designations on the card before "
+        "the first pick refresh instead of at lineups_sun's 12:00 refit, half an hour "
+        "before the early kickoffs. The 60-minute dedupe is deliberate: a hand-run "
+        "refit at breakfast must not cost the day this 09:30 pass.",
+        dedupe_dir="artifacts/margin_predictions",
+        dedupe_minutes=60,
+        added_on="2026-09-13",
+    ),
+    Job(
         "inactives_sun_early",
         "sun",
         "11:35",

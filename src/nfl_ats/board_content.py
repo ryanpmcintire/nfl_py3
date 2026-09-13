@@ -22,6 +22,7 @@ from nfl_ats.dashboard.findings_content import (
 from nfl_ats.displayed_confidence import (
     PICK_SIDE_FLOOR,
     ProductionDisplayedConfidence,
+    StrengthBands,
     attach_displayed_confidence,
     fit_production_displayed_confidence,
 )
@@ -1713,6 +1714,7 @@ class BoardContent:
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
     season_record: SeasonRecordStrip | None = None
+    confidence_legend_text: str = ""
     injury_note: str = "Whether injury reports informed these picks was not recorded."
     injury_coverage_note: str = ""
     best_pick_ranking: tuple[BestPickRank, ...] = ()
@@ -3098,6 +3100,17 @@ def _load_source_policy_view(
     )
 
 
+def _confidence_legend_text(bands: StrengthBands | None) -> str:
+    if bands is None:
+        return ""
+    lean_pct = f"{bands.lean_min:.1%}"
+    strong_pct = f"{bands.strong_min:.1%}"
+    return (
+        "Slight, Lean and Strong split the computer's chances into thirds of its own "
+        f"record: Lean from {lean_pct}, Strong from {strong_pct}."
+    )
+
+
 def load_board_content(
     artifacts_root: Path,
     *,
@@ -3386,6 +3399,7 @@ def load_board_content(
         best_pick_note=best_pick_note,
         flip_count=flip_count,
         strong_count=strong_count,
+        confidence_legend_text=_confidence_legend_text(strength_bands),
         headline=headline,
         policy=policy,
         dives=dives,

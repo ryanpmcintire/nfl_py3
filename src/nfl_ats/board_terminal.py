@@ -609,6 +609,13 @@ def _tiebreaker_panel_html(view: TiebreakerView) -> str:
     )
 
 
+def _confidence_legend_html(content: BoardContent) -> str:
+
+    if not content.confidence_legend_text:
+        return ""
+    return f'<p class="policy-note pick-lock-note">{escape(content.confidence_legend_text)}</p>'
+
+
 def _best_pick_note_html(content: BoardContent) -> str:
     best = next((game for game in content.games if game.is_best), None)
     if best is None:
@@ -841,6 +848,7 @@ def _board_section(content: BoardContent) -> str:
         "</div>"
         f"{_board_sort_toggle_html()}"
         f'<div class="board-scroll">{table}</div>'
+        f"{_confidence_legend_html(content)}"
         f"{_best_pick_note_html(content)}"
         f"{_injury_state_html(content)}"
         f"{_tiebreaker_panel_html(content.tiebreaker)}"
