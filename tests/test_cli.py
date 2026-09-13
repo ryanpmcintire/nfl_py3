@@ -1538,7 +1538,11 @@ def test_cli_refresh_picks_end_to_end(
     assert payload["record_decisions"] is True
     assert payload["changed_game_ids"] == [game_id]
     assert payload["ledger"] == {"recorded": 1, "ledger_rows": 1, "best_pick_after": ""}
-    assert payload["card"] == {"written": True, "destination": str(destination)}
+    assert payload["card"] == {
+        "written": True,
+        "destination": str(destination),
+        "trigger": "publish_card",
+    }
     assert payload["movement_policy"]["current_line_fresh"] is False
     assert payload["movement_policy"]["games_model_only"] == [game_id]
 

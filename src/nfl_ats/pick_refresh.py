@@ -1792,35 +1792,72 @@ def _renomination_sentence(renomination: SundayRenomination | None) -> str:
     )
 
 
-def _refresh_section_markdown(
-    result: RefreshResult, note: str, renomination: SundayRenomination | None = None
-) -> str:
-    changed = result.card_changed_games
-    heading = f"## Late-week refresh (as of {result.computed_at_utc.isoformat()})\n\n"
-    label = f" ({note})" if note else ""
-    star = _renomination_sentence(renomination)
-    if not changed:
-        return heading + star + f"No pick changes since the Tuesday card{label}.\n"
+def latest_revisions_by_game(
+    artifacts_root: Path, *, season: int, week: int
+) -> dict[str, dict[str, Any]]:
+    revisions = load_pick_revisions(artifacts_root)
+    if revisions.empty or "revision_recorded_at_utc" not in revisions.columns:
+        return {}
+    rows = revisions.loc[
+        revisions["season"].astype(int).eq(int(season))
+        & revisions["week"].astype(int).eq(int(week))
+    ].sort_values("revision_recorded_at_utc")
+    return {str(row["game_id"]): dict(row) for _, row in rows.iterrows()}
 
-    rows = []
-    for game in changed:
-        estimate = (
-            game.new_home_cover_probability
-            if game.new_pick_side == "HOME"
-            else 1.0 - game.new_home_cover_probability
-        )
-        market_move = "n/a" if game.movement_delta is None else f"{game.movement_delta:+.2f}"
+
+def _served_side_rows(
+    result: RefreshResult, ledger_latest: Mapping[str, Mapping[str, Any]] | None
+) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for game in result.games:
+        published = game.published_pick_side
+        if published not in ("HOME", "AWAY"):
+            continue
+        if game.eligible:
+            side = game.new_pick_side
+            home_probability = float(game.new_home_cover_probability)
+            policy = game.movement_policy
+            delta: float | None = game.movement_delta
+        else:
+            recorded = ledger_latest.get(game.game_id) if ledger_latest else None
+            if recorded is None:
+                continue
+            side = str(recorded.get("new_pick_side") or "")
+            home_probability = float(recorded.get("new_home_cover_probability") or 0.5)
+            policy = str(recorded.get("movement_policy") or "")
+            raw_delta = recorded.get("movement_delta")
+            delta = None if raw_delta is None or pd.isna(raw_delta) else float(raw_delta)
+        if side not in ("HOME", "AWAY") or side == published:
+            continue
+        estimate = home_probability if side == "HOME" else 1.0 - home_probability
         rows.append(
             {
                 "Matchup": f"{game.away_team} at {game.home_team}",
-                "Previous pick": game.published_pick_side,
-                "New pick": game.new_pick_side,
+                "Previous pick": published,
+                "New pick": side,
                 "Model estimate": f"{estimate:.1%}",
-                "Policy": game.movement_policy,
-                "Market move": market_move,
+                "Policy": policy,
+                "Market move": "n/a" if delta is None else f"{delta:+.2f}",
             }
         )
+    return rows
+
+
+def _refresh_section_markdown(
+    result: RefreshResult,
+    note: str,
+    renomination: SundayRenomination | None = None,
+    ledger_latest: Mapping[str, Mapping[str, Any]] | None = None,
+) -> str:
+    heading = f"## Late-week refresh (as of {result.computed_at_utc.isoformat()})\n\n"
+    label = f" ({note})" if note else ""
+    star = _renomination_sentence(renomination)
+    rows = _served_side_rows(result, ledger_latest)
+    if not rows:
+        return heading + star + f"No pick changes since the Tuesday card{label}.\n"
+
     table = pd.DataFrame(rows).to_markdown(index=False)
+    changed = rows
     plural = "s" if len(changed) != 1 else ""
     intro = (
         f"{len(changed)} pick{plural} changed since the Tuesday card{label}, recomputed with "
@@ -1850,6 +1887,7 @@ def append_refresh_to_card(
     *,
     note: str = "",
     renomination: SundayRenomination | None = None,
+    ledger_latest: Mapping[str, Mapping[str, Any]] | None = None,
 ) -> None:
 
     if not destination.is_file():
@@ -1858,7 +1896,7 @@ def append_refresh_to_card(
             "run `nfl-ats publish-predictions` first."
         )
     text = destination.read_text(encoding="utf-8")
-    section = _refresh_section_markdown(result, note, renomination)
+    section = _refresh_section_markdown(result, note, renomination, ledger_latest)
     block = f"{LATE_WEEK_REFRESH_START}\n{section.rstrip()}\n{LATE_WEEK_REFRESH_END}"
     if LATE_WEEK_REFRESH_START in text or LATE_WEEK_REFRESH_END in text:
         if text.count(LATE_WEEK_REFRESH_START) != 1 or text.count(LATE_WEEK_REFRESH_END) != 1:

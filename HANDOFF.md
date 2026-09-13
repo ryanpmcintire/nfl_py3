@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-13T16:51:04.919780+00:00`
+Refreshed at: `2026-09-13T17:34:06.144746+00:00`
 
 ## Start here
 
@@ -20,9 +20,19 @@ Refreshed at: `2026-09-13T16:51:04.919780+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `996763c0c326` — Sunday 1pm last call: pick-change alerts cover the lineup refit and manual runs, the ntfy topic is read from the user registry when the shell lacks it, and a 12:45 Sunday last-call pass
-- Pending change set: 1 paths
-  - `R  docs/lanes/sunday-1pm-last-call-2026-09-13.md -> docs/lanes/done/sunday-1pm-last-call-2026-09-13.md`
+- Baseline commit: `702195b7d10f` — Lane sunday-1pm-last-call-2026-09-13 done
+- Pending change set: 11 paths
+  - `M  CURRENT_PREDICTIONS.md`
+  - `M  HANDOFF.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/done/card-late-week-table-from-ledger-2026-09-13.md`
+  - `M  docs/model.html`
+  - `M  docs/pick_change_notifications.md`
+  - `M  src/nfl_ats/cli_commands/publishing.py`
+  - `M  src/nfl_ats/pick_refresh.py`
+  - `M  tests/test_cli.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

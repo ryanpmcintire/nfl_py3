@@ -105,7 +105,13 @@ from nfl_ats.pace_mismatch_dog_tilt_overlay import (
 from nfl_ats.pbp08_protection_mismatch_tilt_overlay import (
     record_pbp08_protection_mismatch_tilt_challenger_decisions,
 )
-from nfl_ats.pick_refresh import append_refresh_to_card, plan_refresh, record_plan, refresh_summary
+from nfl_ats.pick_refresh import (
+    append_refresh_to_card,
+    latest_revisions_by_game,
+    plan_refresh,
+    record_plan,
+    refresh_summary,
+)
 from nfl_ats.post_bye_new_playcaller_back_overlay import (
     record_post_bye_new_playcaller_back_overlay_decisions,
 )
@@ -1446,25 +1452,33 @@ def _cmd_refresh_picks(args: argparse.Namespace) -> None:
     except Exception as error:
         result["late_week_follow_no_sunday_blackout_overlay"] = {"recorded": 0, "error": str(error)}
     result["failed_recorders"] = collect_failed_recorders(result, REFRESH_CHALLENGER_RESULT_KEYS)
-    if args.publish_card:
+    recorded_change = bool(args.record_decisions and plan.changed_games)
+    if args.publish_card or recorded_change:
         star_moved = renomination is not None and renomination.moved
-        if not plan.card_changed_games and not star_moved:
-            result["card"] = {
-                "written": False,
-                "reason": "no eligible picks differ from the published card and the Best Pick "
-                "did not move",
+        try:
+            ledger_latest = latest_revisions_by_game(_artifacts_root(), season=season, week=week)
+            append_refresh_to_card(
+                args.destination,
+                plan,
+                note=args.note,
+                renomination=renomination,
+                ledger_latest=ledger_latest,
+            )
+            card: dict[str, Any] = {
+                "written": True,
+                "destination": str(args.destination),
+                "trigger": "publish_card" if args.publish_card else "recorded_pick_change",
             }
-        else:
+            if star_moved and renomination is not None:
+                card["best_pick"] = apply_star_to_card(args.destination, renomination)
+            result["card"] = card
+        except (ValueError, FileNotFoundError) as error:
+            result["card"] = {"written": False, "error": str(error)}
+        if result["card"].get("written"):
             try:
-                append_refresh_to_card(
-                    args.destination, plan, note=args.note, renomination=renomination
-                )
-                card: dict[str, Any] = {"written": True, "destination": str(args.destination)}
-                if star_moved and renomination is not None:
-                    card["best_pick"] = apply_star_to_card(args.destination, renomination)
-                result["card"] = card
-            except (ValueError, FileNotFoundError) as error:
-                result["card"] = {"written": False, "error": str(error)}
+                result["board"] = _write_public_site(Path("docs/index.html"))
+            except Exception as error:
+                result["board"] = {"written": False, "error": f"{type(error).__name__}: {error}"}
     try:
         check = check_card_ledger_consistency(_artifacts_root(), data_root=_data_root())
     except Exception as error:

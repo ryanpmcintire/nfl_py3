@@ -57,11 +57,12 @@ of the side actually picked, and the reason when a rule overrode the model:
 `WAS at PHI: was WAS +5.5, now PHI -5.5 (37%; line moved 1.0 toward PHI,
 follow rule)`.
 
-Note on the card: intermediate refresh passes only record to the
-pick-revision ledger; the Sunday-morning pass is the one that republishes
-`CURRENT_PREDICTIONS.md` (`--publish-card`). Between Tuesday and Sunday
-morning, the notification and the ledger are the record of a changed pick,
-not the card.
+Note on the card (changed 2026-09-13): a recorded refresh pass that changes
+a pick now republishes the card's late-week table and the board itself, so
+the phone message, the card and the board name the same side. Before this
+the intermediate passes only wrote the ledger, and on Week 1 Sunday the
+12:45 pass moved CHI at CAR back to CAR while the card and board kept
+saying CHI through the 13:00 lock.
 
 ## Timing
 
