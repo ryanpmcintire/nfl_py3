@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-13T12:38:53.346447+00:00`
+Refreshed at: `2026-09-13T12:42:24.653363+00:00`
 
 ## Start here
 
@@ -20,29 +20,15 @@ Refreshed at: `2026-09-13T12:38:53.346447+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `1ece69e79151` — Evening backlog on free opencode lanes: headline injury parser, crew traits reach the officials archive and the battery re-run is recorded, the halves ledger is on lock-day verification, and the board says how the books have moved
-- Pending change set: 21 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `6631aa0046bb` — Sunday gameday: a 09:30 Sunday lineup refit job, a legend for the confidence words, the Week 1 ledger realigned with the served card, and two owner lanes queued
+- Pending change set: 7 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `A  docs/lanes/conditional-tilt-effects.md`
-  - `M  docs/lanes/lead64-headline-parser.md`
-  - `A  docs/lanes/lead65-protection-window-split.md`
-  - `A  docs/lanes/sunday-gameday-2026-09-13.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260913T113502Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260913T113546Z.json`
-  - `A  registry/experiments/opener-evaluation/20260913T113943Z.json`
-  - `A  registry/experiments/waterfall-feed/20260913T114419Z.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - ...and 1 more
+  - `M  docs/lanes/conditional-tilt-effects.md`
+  - `M  docs/lanes/lead65-protection-window-split.md`
+  - `M  registry/weak_signals.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

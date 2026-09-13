@@ -14,8 +14,12 @@ served unconditional tilt.
 
 ## State
 
-- Queued 2026-09-13 with ROADMAP row MOD-19. Stage 1 is LEAD-65
-  (`docs/lanes/lead65-protection-window-split.md`), in flight.
+- Queued 2026-09-13 with ROADMAP row MOD-19. Stage 1 (LEAD-65,
+  `docs/lanes/lead65-protection-window-split.md`) is measured: the
+  protection tilt's edge sits in weeks 1-4 (probability_positive 0.977),
+  and weeks 5-18 read as a probable drag (0.099, unresolved). The first
+  conditioning variable that matters is therefore time since the window's
+  first game, not continuity; continuity is stage 2's split of the early cell.
 
 ## Tried
 

@@ -151544,6 +151544,62 @@
       "source": "docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
       "standard_error": null
     },
+    "pbp08_protection_mismatch_window_split_early_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [0.552, 4.408] sits wholly on the positive side but there is no admissible closing ground for a resolved-positive result in this registry (only refuted_mechanism, a resolved wrong sign, or bounded_by_control close a line of work); neither applies, so this stays unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "PBP08 protection-mismatch tilt leave-one-out marginal on the played 9-member card, weeks 1-4 only (window spans the offseason), opener grade, paired accuracy points",
+      "effect": 2.5,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch_window_split",
+      "interval": [
+        0.552,
+        4.408
+      ],
+      "league": "nfl",
+      "notes": "Leave-one-out marginal of pbp08_protection_mismatch_tilt inside the played 9-member card (marginal_ids = tilt's own flips minus the union of the other eight served members), split at week<=4 because WINDOW_GAMES=4/MIN_WINDOW_OBS=3 makes weeks 1-4 the only weeks whose 4-game pressure window can include a prior-season game (measured: 54/54 early flags and 21/21 early flips relied on a prior-season game in the flagged team's window). Paired week-blocked bootstrap, 2000 samples, seed 20260821, 90pct CI, 24 season x week blocks. Correlated with every other pbp08-family registry entry (same 2020-2025 opener archive); not predeclared. See sibling cell pbp08_protection_mismatch_window_split_late_2020_2025.",
+      "plain_summary": "In the first four weeks of a season, when this tilt's pressure-window reaches back into last year's games, it has picked up about 2.5 more correct games per hundred on that slice of the card so far.",
+      "probability_positive": 0.977,
+      "recorded_at": "2026-09-13",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lanes/pbp08_early_season_split_20260913.md; tests/scratch/lanes/pbp08_early_season_split_20260913.py; artifacts/opener_evaluation/20260913T113943Z",
+      "standard_error": 1.193
+    },
+    "pbp08_protection_mismatch_window_split_late_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.657, 0.264] contains zero (upper bound is positive), so per AGENTS.md this is NOT a resolved wrong sign; probability_positive 0.099 is a likely-negative but unresolved read, not a closing ground.",
+      "closing_ground": null,
+      "description": "PBP08 protection-mismatch tilt leave-one-out marginal on the played 9-member card, weeks 5-18 only (window is entirely current-season), opener grade, paired accuracy points",
+      "effect": -0.7,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch_window_split",
+      "interval": [
+        -1.657,
+        0.264
+      ],
+      "league": "nfl",
+      "notes": "Leave-one-out marginal of pbp08_protection_mismatch_tilt inside the played 9-member card (marginal_ids = tilt's own flips minus the union of the other eight served members), the complement of pbp08_protection_mismatch_window_split_early_2020_2025 (week<=4). Paired week-blocked bootstrap, 2000 samples, seed 20260821, 90pct CI, 83 season x week blocks. Correlated with every other pbp08-family registry entry (same 2020-2025 opener archive); not predeclared. An interval containing zero is never grounds to reject this member; see sibling cell for the early split.",
+      "plain_summary": "From week 5 on, when this tilt's pressure-window is built entirely from the current season, it has cost about 0.7 correct games per hundred on that slice of the card so far -- likely negative but not settled.",
+      "probability_positive": 0.099,
+      "recorded_at": "2026-09-13",
+      "reliability": null,
+      "sample_blocks": 83,
+      "sample_games": 1143,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lanes/pbp08_early_season_split_20260913.md; tests/scratch/lanes/pbp08_early_season_split_20260913.py; artifacts/opener_evaluation/20260913T113943Z",
+      "standard_error": 0.587
+    },
     "pbp_drive_bundle": {
       "category": "onfield",
       "classification": "unresolved_below_power",
