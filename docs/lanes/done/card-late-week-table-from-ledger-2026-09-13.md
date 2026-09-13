@@ -31,5 +31,15 @@ last recorded side for games already kicked off.
 
 ## Open
 
-- The owner's locked picks may have followed the stale board for CHI at
-  CAR; the paper ledger records CAR as served. Grading follows the ledger.
+- Resolved 17:30 ET: the played side is CHI, the live pick on the board at
+  the 13:00 lock (measured: commit 996763c `docs/index.html` ticker read
+  CHI -2.5 at 50.0%). Recorded as `board_at_lock` in the pick-revision
+  ledger, a `site_push` row at 16:50:36Z in `clv_ledger/published_picks`
+  (the board freezes from that ledger; its 12:45:29Z CAR row came from a
+  content build, not a site publish, which is a defect to fix), and the
+  card's late-week table by hand. Board republished: CHI -2.5.
+- `refresh-picks` fails after every deadline has passed when the paper
+  ledger carries two composition policy ids (v2 rows for the Wednesday and
+  Thursday games, v3 for the Sunday re-record): "Refresh requires one
+  frozen production composition policy". The 15:00 pass ran; the 17:16
+  publish did not. Must be fixed before the Tuesday lock.
