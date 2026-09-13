@@ -2867,6 +2867,15 @@ def _quarterback_notes(artifacts_root: Path, ordered: pd.DataFrame) -> dict[str,
     return notes
 
 
+def _played_side_explanation(explanation: str, *, pick_team: str, model_team: str) -> str:
+    if pick_team == model_team:
+        return explanation
+    return (
+        f"{pick_team} was the side on the board when picks locked, so that is the pick. "
+        f"The model's own read: {explanation}"
+    )
+
+
 def _explanation_with_qb_note(explanation: str, qb_note: str | None) -> str:
     if not qb_note:
         return explanation
@@ -3245,6 +3254,7 @@ def load_board_content(
     for _, row in ordered.iterrows():
         game_id = str(row["game_id"])
         team, probability = pick_side(row)
+        model_team = team
         word = confidence_word(probability, strength_bands)
         played = (
             _played_pick(row, played_overrides[game_id], displayed_confidence, strength_bands)
@@ -3321,7 +3331,11 @@ def load_board_content(
                 flip_held=flip_held_value,
                 flip_reason=flip_reason_value,
                 explanation_text=_explanation_with_qb_note(
-                    pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
+                    _played_side_explanation(
+                        pick_explanations.get(game_id, EXPLANATION_NOT_RECORDED_TEXT),
+                        pick_team=team,
+                        model_team=model_team,
+                    ),
                     qb_notes.get(game_id),
                 ),
                 market_now=market_now_by_game.get(game_id, (None, 0))[0],
