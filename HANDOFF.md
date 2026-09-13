@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-13T16:50:39.170688+00:00`
+Refreshed at: `2026-09-13T16:51:04.919780+00:00`
 
 ## Start here
 
@@ -20,28 +20,9 @@ Refreshed at: `2026-09-13T16:50:39.170688+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `0e0169689b37` — MOD-19: the split library is a starting list, never a complete one
-- Pending change set: 20 paths
-  - `M  CURRENT_PREDICTIONS.md`
-  - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `A  docs/lanes/sunday-1pm-last-call-2026-09-13.md`
-  - `M  docs/model.html`
-  - `M  docs/pick_change_notifications.md`
-  - `A  registry/experiments/margin-backtest/20260913T133822Z.json`
-  - `A  registry/experiments/margin-backtest/20260913T160755Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260913T133906Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-01-20260913T160839Z.json`
-  - `A  registry/experiments/opener-evaluation/20260913T134234Z.json`
-  - `A  registry/experiments/waterfall-feed/20260913T134741Z.json`
-  - `A  registry/experiments/waterfall-feed/20260913T161721Z.json`
-  - `M  scripts/capture_scheduler.py`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  tests/test_board_terminal.py`
-  - `M  tiebreaker.json`
+- Baseline commit: `996763c0c326` — Sunday 1pm last call: pick-change alerts cover the lineup refit and manual runs, the ntfy topic is read from the user registry when the shell lacks it, and a 12:45 Sunday last-call pass
+- Pending change set: 1 paths
+  - `R  docs/lanes/sunday-1pm-last-call-2026-09-13.md -> docs/lanes/done/sunday-1pm-last-call-2026-09-13.md`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
