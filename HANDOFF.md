@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-15T12:22:18.045999+00:00`
+Refreshed at: `2026-09-15T13:13:42.610817+00:00`
 
 ## Start here
 
@@ -20,29 +20,12 @@ Refreshed at: `2026-09-15T12:22:18.045999+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `de3956b764a6` — Board: when the played side differs from the model's, the explanation says the board showed that side at lock
-- Pending change set: 69 paths
-  - `M  AGENTS.md`
-  - `M  CLAUDE.md`
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `6131b6db0557` — Week 1 is 9-7 everywhere: the card's record reads the sides that were served
+- Pending change set: 4 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  ROADMAP.md`
-  - `A  docs/best_pick_served_score_ranker.md`
-  - `M  docs/findings.html`
-  - `A  docs/four_term_probability.md`
-  - `A  docs/handle_follow_override_distance.md`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `A  docs/joint_probability_model.md`
-  - `M  docs/lanes/README.md`
-  - `A  docs/lanes/best-pick-served-score-ranker.md`
-  - `A  docs/lanes/four-term-probability.md`
-  - `A  docs/lanes/handle-follow-override-defect.md`
-  - `A  docs/lanes/joint-probability-model.md`
-  - `A  docs/lanes/leader-median-model-confidence.md`
-  - `A  docs/lanes/market-updated-model.md`
-  - ...and 49 more
+  - ` M docs/index.html`
+  - `A  docs/lanes/statistical-audit-2026-09-15.md`
+  - `A  scripts/statistical_audit_20260915.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
