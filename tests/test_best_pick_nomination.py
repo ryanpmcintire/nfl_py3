@@ -234,8 +234,8 @@ def test_tie_note_is_empty_for_an_unambiguous_nomination() -> None:
 
 def test_tie_note_discloses_a_dispersion_resolved_tie_as_a_lean() -> None:
     note = nomination_v2_tie_note(_result(n_tied=3, tie_break="dispersion"))
-    assert "3 games tied" in note
-    assert "broken by lower cross-book dispersion, not chosen arbitrarily" in note
+    assert "3 games are level at the top of the card" in note
+    assert "the books disagree about least, not to an arbitrary choice" in note
 
 
 def test_tie_note_discloses_a_game_id_tie_as_arbitrary() -> None:
@@ -279,7 +279,7 @@ def test_disclosure_note_uses_the_owners_verbatim_method_sentence() -> None:
     assert note.startswith(NOMINATION_V2_METHOD_SENTENCE)
     assert (
         NOMINATION_V2_METHOD_SENTENCE
-        == "nominated by calibrated probability among low-disagreement games"
+        == "the one this card is most confident in, among the games the books agree on"
     )
 
 
@@ -297,7 +297,7 @@ def test_disclosure_note_states_an_empty_filter_fallback() -> None:
 def test_disclosure_note_appends_the_tie_note_when_present() -> None:
     note = nomination_v2_disclosure_note(_result(n_tied=2, tie_break="dispersion"))
     assert note.startswith(NOMINATION_V2_METHOD_SENTENCE)
-    assert "broken by lower cross-book dispersion" in note
+    assert "the books disagree about least" in note
 
 
 def _fake_probabilities(dist_by_game: dict[str, float]) -> pd.DataFrame:

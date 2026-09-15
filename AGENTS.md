@@ -93,13 +93,51 @@ on.
   Its `needs_remeasurement` rows are dead heats whose stored value should be
   0.5; flagging them closes nothing.
 
+### One calibrated probability decides every pick (binding, owner, 2026-09-14)
+
+Decisions are never made in isolation. The served side of a game is the
+side favoured by ONE probability that combines the model with every
+situational signal as a fitted term. Concretely:
+
+- **No rule changes a side on its own.** A line move, the money, a crew, a
+  coach, the weather or any other signal enters the model's probability as
+  evidence with a fitted weight; it never overrides the model outright. A
+  member that can only return `p` or `1 - p` is a flip, not a signal, and
+  is inadmissible on the served card. Off switches:
+  `LATE_WEEK_FOLLOW_SERVED`, `HANDLE_FOLLOW_SERVED`, `ROOKIE_CREW_SERVED`,
+  `OWNER_HELD_MEMBERS`.
+- **Every parameter is chosen out of season.** Weights, thresholds and cut
+  points are fitted leave-one-season-out and scored on the held-out season;
+  the in-sample number is reported beside the out-of-sample number with the
+  gap. A constant derived from the games it is scored on never reaches
+  `src/`.
+- **Probability, not just hit rate.** A served probability is calibrated:
+  report a reliability table and log loss or Brier against the market and
+  the model-only baselines, not only accuracy points. A combined model is
+  small enough to state its coefficients per fold; report their stability.
+- **Small splits get a null.** A lopsided record on a small subset
+  (shallow 12-7 against deep 7-11 on 37 flips) is compared with a
+  permutation or exact null before any sentence about "two populations".
+  A "flat" or "uniform" claim carries a slope with an interval.
+- **Count the looks.** Every band, cell, arm and continuous fit is a look;
+  state the count, name the family, and never present the best cell as the
+  finding. Report the decisive-game record (the games where arms differ)
+  before the headline effect.
+- **Subagents carry this section verbatim** alongside the closing-grounds
+  taxonomy whenever they fit, score or adjudicate anything.
+
 ### A promotion bar is not a decision bar
 
-The pool is forced picks, so declining a candidate that is more likely better
-than not is taking the other side of that bet. Predeclared thresholds govern
-what the docs may claim, never which card is played; that decision is
-expected value. **Grade the decision at the opener**; a close-graded number
-may never veto a play. When a result is in hand, state what it implies for
+Sample sizes here are rarely big enough to clear a p of 0.90 or 0.95. Failing
+such a threshold is therefore NOT grounds to reject, fail or close a signal.
+That is the whole rule, and it is a rule against one bad rejection reason.
+
+It is **not** a rule that anything above a coin flip gets served. Serving a
+rule that moves real picks needs a real reason; a `probability_positive` just
+above 0.5 is not one, and neither is a record like 19-18. Research closure and
+card serving are two different decisions and the thresholds above govern
+neither by themselves. **Grade the decision at the opener**; a close-graded
+number may never veto a play. When a result is in hand, state what it implies for
 the decision before stating what is wrong with it.
 
 ### Label how you know it (binding)

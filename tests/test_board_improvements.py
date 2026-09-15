@@ -90,7 +90,8 @@ def test_prospective_scoreboard_live_state_renders_with_detail() -> None:
     live = ProspectiveScoreboard(
         dormant=False,
         headline_text=(
-            "Prospective record at the decision line: played policy 9-5 vs. prior chain "
+            "Prospective record against the same games: the card as played 9-5 "
+            "vs. the former rule chain "
             "8-6 -- 14 of 15 recorded games settled."
         ),
         detail_text="1 recorded game not yet kicked off.",

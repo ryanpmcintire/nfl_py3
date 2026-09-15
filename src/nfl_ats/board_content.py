@@ -13,7 +13,7 @@ import pandas as pd
 from nfl_ats.active_model import active_artifact_path, load_active_ats_model
 from nfl_ats.card_explanation import BANNED_BOILERPLATE, PickExplanation
 from nfl_ats.card_view import resolve_card_view
-from nfl_ats.clv import load_paper_decisions, pick_correct
+from nfl_ats.clv import load_paper_decisions, pick_correct, served_paper_decisions
 from nfl_ats.dashboard.findings_content import (
     CHALLENGER_DISPLAY_NAMES,
     OVERLAY_UNION_SUBSET_COUNT,
@@ -42,6 +42,7 @@ from nfl_ats.home_side_location import center_offsets_from_metadata
 from nfl_ats.key_line_pick_read import pick_overrides_from_metadata
 from nfl_ats.lineup_view import TeamLineup, load_lineups
 from nfl_ats.market_decomposition import FAMILY_PHRASES
+from nfl_ats.pick_probability import landing_rate_sentence
 from nfl_ats.pick_refresh import (
     FOLLOW_NEWS_VETO_REASON,
     HANDLE_FOLLOW_POLICY,
@@ -79,10 +80,16 @@ from nfl_ats.public_board import (
     load_served_union_measurement,
     load_waterfall_feed_document,
     pick_side,
+    row_confidence_word,
     spread_words,
     waterfall_games_by_id,
 )
-from nfl_ats.published_picks import frozen_picks, game_deadlines, record_published_picks
+from nfl_ats.published_picks import (
+    frozen_picks,
+    game_deadlines,
+    locked_best_pick,
+    record_published_picks,
+)
 from nfl_ats.reporting import artifact_directories, read_json
 from nfl_ats.retired_four_member_union import INCUMBENT_CHALLENGER_ID
 from nfl_ats.settlement import results_artifact_path
@@ -795,13 +802,11 @@ CADENCE_NOTE = (
 )
 
 REFRESH_POLICY_NOTE = (
-    "Late-week refreshes can still move a pick: if the three books that usually move "
-    "first shift the line a full point or more after Tuesday -- or half a point on the "
-    "biggest spreads, where their move says the most -- the pick follows them, "
-    "unless an injury filed since Tuesday points the other way, in which case the "
-    "Tuesday pick stands. From Saturday lunchtime a pick can also switch to the side "
-    "holding at least 70% of the money bet on that game, when the line itself has not "
-    "moved enough to say so. Passes run Thursday, Saturday, and Sunday morning."
+    "Late-week refreshes re-read each game with the newest lineups and injury reports, "
+    "and a pick changes only when the number the model itself gives crosses to the other side. "
+    "No rule flips a pick on a line move or on where the money is by itself; those "
+    "readings are tracked and shown, not obeyed. Passes run Thursday, Saturday, and "
+    "Sunday morning."
 )
 
 TIEBREAKER_NOT_PUBLISHED_TEXT = "Tiebreaker not published for this week."
@@ -1385,7 +1390,7 @@ def _played_side_overrides(
 def _played_pick(
     row: pd.Series,
     revision: Mapping[str, Any],
-    calibration: ProductionDisplayedConfidence,
+    calibration: ProductionDisplayedConfidence | None,
     bands: Any,
 ) -> tuple[str, float, str] | None:
 
@@ -1403,12 +1408,13 @@ def _played_pick(
         else (home_probability if side == "HOME" else 1.0 - home_probability)
     )
     if stated is None or stated < PICK_SIDE_FLOOR:
-        displayed = PICK_SIDE_FLOOR
-    else:
-        calibrated = calibration.calibrate(
-            pd.Series([stated], dtype=float), pd.Series([float(row["spread_line"])], dtype=float)
-        )
-        displayed = max(float(calibrated.iloc[0]), PICK_SIDE_FLOOR)
+        return team, PICK_SIDE_FLOOR, confidence_word(PICK_SIDE_FLOOR, bands)
+    if calibration is None:
+        return team, stated, confidence_word(stated, bands)
+    calibrated = calibration.calibrate(
+        pd.Series([stated], dtype=float), pd.Series([float(row["spread_line"])], dtype=float)
+    )
+    displayed = max(float(calibrated.iloc[0]), PICK_SIDE_FLOOR)
     return team, displayed, confidence_word(displayed, bands)
 
 
@@ -2134,8 +2140,8 @@ def _build_prospective_scoreboard(
     prior_wins, prior_losses, prior_pushes, _prior_pending = _grade_decisions(prior, outcomes)
     settled = played_wins + played_losses + played_pushes
     headline_text = (
-        "Prospective record at the decision line: played policy "
-        f"{_record_text(played_wins, played_losses, played_pushes)} vs. prior chain "
+        "Prospective record against the same games: the card as played "
+        f"{_record_text(played_wins, played_losses, played_pushes)} vs. the former rule chain "
         f"{_record_text(prior_wins, prior_losses, prior_pushes)} -- "
         f"{settled} of {len(played)} recorded games settled."
     )
@@ -2175,8 +2181,9 @@ def _build_season_record(
         if week is not None and "week" in season_rows.columns
         else season_rows.iloc[0:0]
     )
-    week_wins, week_losses, week_pushes, _week_pending = _grade_decisions(week_rows, outcomes)
-    week_record_text = f"This week: {_record_text(week_wins, week_losses, week_pushes)} so far"
+    week_wins, week_losses, week_pushes, week_pending = _grade_decisions(week_rows, outcomes)
+    week_tail = " so far" if week_pending else ""
+    week_record_text = f"This week: {_record_text(week_wins, week_losses, week_pushes)}{week_tail}"
     season_record_text = (
         f"Season to date: {_record_text(season_wins, season_losses, season_pushes)}"
     )
@@ -2443,17 +2450,11 @@ def _cover_curve_offset_zero_note(
     gap_points = (current.probability - game.pick_probability) * 100
     if abs(gap_points) < _COVER_CURVE_DISAGREEMENT_THRESHOLD_POINTS:
         return None
-    if game.flip_member_labels:
-        return (
-            f"Situational rules changed this pick. The card's {game.probability_text} is a "
-            f"decision score; the original model estimates {current.probability:.1%} for "
-            "this side at the quoted line. The chart shows that model estimate."
-        )
     return (
-        f"This chart's own swept line reads {current.probability:.1%} at the card's quoted "
-        f"line -- the live cover probability shown elsewhere on this page is "
-        f"{game.probability_text}. These saved calculations disagree; "
-        "the live number is the one actually played."
+        f"This chart is the model's own read at each line: it puts {current.probability:.1%} on "
+        f"this side at the quoted number. The {game.probability_text} beside the pick is the "
+        "chance after the week's situational tilts and the late-week line move are counted in, "
+        "and that is the number the card plays."
     )
 
 
@@ -3114,15 +3115,16 @@ def _load_source_policy_view(
     )
 
 
-def _confidence_legend_text(bands: StrengthBands | None) -> str:
+def _confidence_legend_text(bands: StrengthBands | None, landing_sentence: str) -> str:
     if bands is None:
-        return ""
+        return landing_sentence
     lean_pct = f"{bands.lean_min:.1%}"
     strong_pct = f"{bands.strong_min:.1%}"
-    return (
-        "Slight, Lean and Strong split the computer's chances into thirds of its own "
-        f"record: Lean from {lean_pct}, Strong from {strong_pct}."
+    legend = (
+        "Slight, Lean and Strong split the chances into thirds of the card's own record: "
+        f"Lean from {lean_pct}, Strong from {strong_pct}."
     )
+    return f"{legend} {landing_sentence}".strip()
 
 
 def load_board_content(
@@ -3144,6 +3146,12 @@ def load_board_content(
     )
     week_label = _WEEK_LABELS.get(game_type, f"Week {artifacts.metadata.get('week')}")
 
+    displayed_confidence = fit_production_displayed_confidence(
+        artifacts_root,
+        artifacts.active,
+        season=int(artifacts.metadata.get("season") or 0),
+        week=int(artifacts.metadata.get("week") or 0),
+    )
     view = (
         resolve_card_view(
             artifacts.predictions,
@@ -3157,20 +3165,30 @@ def load_board_content(
                 season=int(artifacts.metadata.get("season") or 0),
                 week=int(artifacts.metadata.get("week") or 0),
             ),
+            locked_game_id=locked_best_pick(
+                artifacts_root,
+                season=int(artifacts.metadata.get("season") or 0),
+                week=int(artifacts.metadata.get("week") or 0),
+                now=generated,
+            ),
+            displayed_confidence=displayed_confidence,
+            artifacts_root=artifacts_root,
         )
         if game_type == "REG" and not artifacts.predictions.empty
         else None
     )
 
     final = view.predictions if view is not None else artifacts.predictions
-    displayed_confidence = fit_production_displayed_confidence(
-        artifacts_root,
-        artifacts.active,
-        season=int(artifacts.metadata.get("season") or 0),
-        week=int(artifacts.metadata.get("week") or 0),
-    )
-    strength_bands = displayed_confidence.bands
-    final = attach_displayed_confidence(final, displayed_confidence)
+    pick_probability = view.pick_probability if view is not None else None
+    if pick_probability is None:
+        strength_bands = displayed_confidence.bands
+        final = attach_displayed_confidence(final, displayed_confidence)
+        played_calibration: ProductionDisplayedConfidence | None = displayed_confidence
+    else:
+        strength_bands = StrengthBands(
+            lean_min=pick_probability.lean_minimum, strong_min=pick_probability.strong_minimum
+        )
+        played_calibration = None
     sort_columns = [column for column in ("kickoff", "game_id") if column in final]
     ordered = final.sort_values(sort_columns, na_position="last") if sort_columns else final
 
@@ -3255,9 +3273,9 @@ def load_board_content(
         game_id = str(row["game_id"])
         team, probability = pick_side(row)
         model_team = team
-        word = confidence_word(probability, strength_bands)
+        word = row_confidence_word(row, strength_bands)
         played = (
-            _played_pick(row, played_overrides[game_id], displayed_confidence, strength_bands)
+            _played_pick(row, played_overrides[game_id], played_calibration, strength_bands)
             if game_id in played_overrides
             else None
         )
@@ -3351,15 +3369,16 @@ def load_board_content(
     policy, flip_count = _build_policy_note(view, strong_count, len(games))
 
     paper_decisions = load_paper_decisions(artifacts_root)
+    served_decisions = served_paper_decisions(artifacts_root)
     challenger_decisions = load_challenger_decisions(artifacts_root)
     prospective_scoreboard = _build_prospective_scoreboard(
-        paper_decisions, challenger_decisions, outcomes
+        served_decisions, challenger_decisions, outcomes
     )
     headline = _build_headline_stats(
         artifacts_root, artifacts.active, prospective_scoreboard=prospective_scoreboard
     )
     season_record = _build_season_record(
-        paper_decisions,
+        served_decisions,
         outcomes,
         season=artifacts.metadata.get("season"),
         week=artifacts.metadata.get("week"),
@@ -3418,7 +3437,9 @@ def load_board_content(
         best_pick_note=best_pick_note,
         flip_count=flip_count,
         strong_count=strong_count,
-        confidence_legend_text=_confidence_legend_text(strength_bands),
+        confidence_legend_text=_confidence_legend_text(
+            strength_bands, landing_rate_sentence(pick_probability)
+        ),
         headline=headline,
         policy=policy,
         dives=dives,

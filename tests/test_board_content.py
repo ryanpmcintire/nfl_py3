@@ -882,7 +882,7 @@ def test_scoreboard_pairs_new_played_policy_with_retired_union() -> None:
     result = board_content._build_prospective_scoreboard(
         played, challengers, pd.DataFrame([{"game_id": "g", "result": 10.0}])
     )
-    assert "played policy 1-0 vs. prior chain 0-1" in result.headline_text
+    assert "the card as played 1-0 vs. the former rule chain 0-1" in result.headline_text
 
 
 def test_injury_report_state_covers_every_sentence_injury_pick_note_can_produce() -> None:

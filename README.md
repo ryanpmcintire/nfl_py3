@@ -15,26 +15,26 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 
 **Production policy active:** three situational rules run independently against the computer's first pick and flip it once when any one of them fires: coach fade, division revenge, and player arrests. This week they changed 4 picks. The spread-only threshold adjustment is retired because it has no explained mechanism. Its archive comparison reuses 127 similar combinations scored on the same games; it is not independent evidence of future accuracy. The planning estimate remains ≈55%. Paired prospective tracking against the former four-adjustment card begins at the Week 1 lock. Rules: coach fade, division revenge tilt, player arrests back side policy, bye edge fade, forecast cold visitor tilt, pbp08 protection mismatch tilt, interim hc first game tilt, tank zone fade tilt, precip high total tilt. See docs/spread_gap_zone_retired.md.
 
-**Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was nominated by calibrated probability among low-disagreement games with a spread of six and a half or less.
+**Best Pick of the week (★):** MIA +3.5 in MIA at LV. The pool scores one Best Pick per regular-season week. This pick was the star this card carried when the picks locked; once a game is past its deadline the star stays where the pool saw it.
 
-| Date        | Matchup    | ATS prediction   | Decision score   |
-|:------------|:-----------|:-----------------|:-----------------|
-| Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.2%            |
-| Thu, Sep 10 | SF at LA   | SF +3.5          | 55.4%            |
-| Sun, Sep 13 | ARI at LAC | ARI +9.5         | 53.4%            |
-| Sun, Sep 13 | ATL at PIT | PIT -3.5         | 57.0%            |
-| Sun, Sep 13 | BAL at IND | IND +3.5         | 57.1%            |
-| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 57.0%            |
-| Sun, Sep 13 | CHI at CAR | CAR +2.5         | 57.0%            |
-| Sun, Sep 13 | CLE at JAX | JAX -8.5         | 56.1%            |
-| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 56.9%            |
-| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 57.0%            |
-| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 55.0%            |
-| Sun, Sep 13 | NO at DET  | NO +6.5          | 54.9%            |
-| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 57.0%            |
-| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 57.0%            |
-| Sun, Sep 13 | WAS at PHI | WAS +5.5         | 56.0%            |
-| Mon, Sep 14 | DEN at KC  | DEN +2.5         | 56.9%            |
+| Date        | Matchup    | ATS prediction   | Cover chance   |
+|:------------|:-----------|:-----------------|:---------------|
+| Wed, Sep 09 | NE at SEA  | NE +3.5          | 50.2%          |
+| Thu, Sep 10 | SF at LA   | SF +3.5          | 55.4%          |
+| Sun, Sep 13 | ARI at LAC | LAC -9.5         | 50.0%          |
+| Sun, Sep 13 | ATL at PIT | PIT -3.5         | 57.0%          |
+| Sun, Sep 13 | BAL at IND | IND +3.5         | 57.1%          |
+| Sun, Sep 13 | BUF at HOU | HOU +1.5         | 57.0%          |
+| Sun, Sep 13 | CHI at CAR | CHI -2.5         | 50.0%          |
+| Sun, Sep 13 | CLE at JAX | JAX -8.5         | 56.1%          |
+| Sun, Sep 13 | DAL at NYG | DAL -2.5         | 56.9%          |
+| Sun, Sep 13 | GB at MIN  | MIN -1.5         | 57.0%          |
+| Sun, Sep 13 | MIA at LV  | ★ MIA +3.5       | 55.0%          |
+| Sun, Sep 13 | NO at DET  | NO +6.5          | 54.9%          |
+| Sun, Sep 13 | NYJ at TEN | NYJ +1.5         | 57.0%          |
+| Sun, Sep 13 | TB at CIN  | CIN -3.5         | 57.0%          |
+| Sun, Sep 13 | WAS at PHI | PHI -5.5         | 50.0%          |
+| Mon, Sep 14 | DEN at KC  | DEN +2.5         | 56.9%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -47,7 +47,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`92b44dc9a3886a0a`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`195222798c7e6edb`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **54.49%** on **1,537 paired games**, week-blocked 95% interval [51.86%, 57.09%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.29%** (1,085 of 2,075 non-push games), week-blocked 95% interval [50.21%, 54.41%].
@@ -65,7 +65,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 6,484 results recorded -- 6,441 unresolved_below_power, 43 closed (39 refuted_mechanism, 4 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 6,577 results recorded -- 6,534 unresolved_below_power, 43 closed (39 refuted_mechanism, 4 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 61 of 67 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

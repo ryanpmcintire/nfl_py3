@@ -752,7 +752,10 @@ def test_published_card_uses_v2_nomination_end_to_end(tmp_path: Path) -> None:
 
     card = destination.read_text(encoding="utf-8")
     assert NOMINATION_V2_METHOD_SENTENCE in card
-    assert "This pick was nominated by calibrated probability among low-disagreement games" in card
+    assert (
+        "This pick was the one this card is most confident in, among the games the books agree on"
+        in card
+    )
 
 
 def test_published_card_falls_back_to_v1_when_v2_infrastructure_is_absent(

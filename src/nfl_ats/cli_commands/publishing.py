@@ -1310,12 +1310,24 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
     return result
 
 
+def _require_served_pick_probability() -> None:
+    from nfl_ats.active_model import load_active_ats_model
+    from nfl_ats.pick_probability import load_pick_probability_model
+
+    artifacts_root = _artifacts_root()
+    if load_active_ats_model(artifacts_root) is None:
+        return
+    load_pick_probability_model(artifacts_root)
+
+
 def _cmd_publish_predictions(args: argparse.Namespace) -> None:
+    _require_served_pick_probability()
     result = orchestrate_publish_predictions(parse_publish_predictions_request(args))
     _print_json(result)
 
 
 def _cmd_publish_board(args: argparse.Namespace) -> None:
+    _require_served_pick_probability()
     _print_json(_write_public_site(args.site_destination or args.destination))
 
 

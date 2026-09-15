@@ -23,10 +23,23 @@ from nfl_ats.coach_fade_overlay import (
 )
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES
 from nfl_ats.data import DataContractError
+from nfl_ats.displayed_confidence import (
+    ProductionDisplayedConfidence,
+    attach_displayed_confidence,
+)
 from nfl_ats.four_overlay_composition import (
     FAIL_CLOSED_MEMBERS,
     FourOverlayCompositionResult,
     apply_four_overlay_composition_for_publication,
+    forecasts_for_card,
+    protection_flags_for_card,
+)
+from nfl_ats.pick_probability import (
+    PickProbabilityModel,
+    attach_pick_probability,
+    load_pick_probability_model_or_none,
+    market_move_toward_home,
+    signed_composition_flags_fail_open,
 )
 from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
@@ -198,6 +211,11 @@ def compute_v2_nomination(
 
 _UNSET: Any = object()
 
+LOCKED_BEST_PICK_NOTE = (
+    "the star this card carried when the picks locked; once a game is past its deadline the "
+    "star stays where the pool saw it."
+)
+
 SUNDAY_RENOMINATION_NOTE = (
     "re-nominated on Sunday morning: of the games that had not kicked off yet, this is the "
     "one the model was most sure about at the spread the pool locked on Tuesday."
@@ -224,6 +242,26 @@ def apply_sunday_renomination(
     )
 
 
+def apply_locked_best_pick(
+    base: BestPickNomination, predictions: pd.DataFrame, locked_game_id: str | None
+) -> BestPickNomination:
+
+    if not locked_game_id or base.active_game_id is None:
+        return base
+    if "game_id" not in predictions.columns:
+        return base
+    if locked_game_id not in set(predictions["game_id"].astype(str)):
+        return base
+    if locked_game_id == base.active_game_id:
+        return base
+    return replace(
+        base,
+        active_game_id=locked_game_id,
+        active_tie_note="",
+        method_note=LOCKED_BEST_PICK_NOTE,
+    )
+
+
 def resolve_nomination(
     predictions: pd.DataFrame,
     sweep: pd.DataFrame,
@@ -233,6 +271,7 @@ def resolve_nomination(
     v2_result: NominationV2Result | None = _UNSET,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
     renominated_game_id: str | None = None,
+    locked_game_id: str | None = None,
 ) -> BestPickNomination:
 
     v1_id, v1_tie = _v1_nomination(predictions, sweep)
@@ -262,7 +301,8 @@ def resolve_nomination(
             active_tie_note=v1_tie,
             method_note="",
         )
-    return apply_sunday_renomination(base, predictions, renominated_game_id)
+    renominated = apply_sunday_renomination(base, predictions, renominated_game_id)
+    return apply_locked_best_pick(renominated, predictions, locked_game_id)
 
 
 @dataclass(frozen=True)
@@ -272,10 +312,40 @@ class CardView:
     arrest_overlay: ArrestOverlayResult
     nomination: BestPickNomination
     production_overlay: FourOverlayCompositionResult | None = None
+    pick_probability: PickProbabilityModel | None = None
 
     @property
     def best_pick_game_id(self) -> str | None:
         return self.nomination.active_game_id
+
+
+def _arrest_incidents(data_root: Path, now: datetime | None) -> pd.DataFrame:
+
+    try:
+        snapshot = load_latest_complete_arrest_snapshot(data_root, now=now)
+        return pd.read_parquet(
+            snapshot.safe_index_path, columns=["record_id", "incident_date", "team"]
+        )
+    except (FileNotFoundError, OSError, ValueError, DataContractError):
+        return pd.DataFrame(columns=["record_id", "incident_date", "team"])
+
+
+def _served_probability_frame(
+    final_predictions: pd.DataFrame,
+    predictions: pd.DataFrame,
+    model: PickProbabilityModel,
+    *,
+    flags: pd.DataFrame | None,
+    move: pd.DataFrame | None,
+) -> pd.DataFrame:
+
+    frame = final_predictions.reset_index(drop=True).copy()
+    raw = predictions.reset_index(drop=True).copy()
+    raw["game_id"] = raw["game_id"].astype(str)
+    lookup = raw.set_index("game_id")["home_cover_probability"]
+    frame["game_id"] = frame["game_id"].astype(str)
+    frame["home_cover_probability"] = frame["game_id"].map(lookup).astype(float)
+    return attach_pick_probability(frame, model, flags=flags, move=move)
 
 
 def resolve_card_view(
@@ -288,16 +358,11 @@ def resolve_card_view(
     require_fresh_arrest_overlay: bool = True,
     nominate_v2_fn: Callable[..., NominationV2Result | None] = nominate_v2_small_spread,
     renominated_game_id: str | None = None,
+    locked_game_id: str | None = None,
+    displayed_confidence: ProductionDisplayedConfidence | None = None,
+    artifacts_root: Path | None = None,
 ) -> CardView:
 
-    nomination = resolve_nomination(
-        predictions,
-        sweep,
-        metadata,
-        data_root,
-        nominate_v2_fn=nominate_v2_fn,
-        renominated_game_id=renominated_game_id,
-    )
     overlay = resolve_overlay(predictions, data_root)
     arrest_overlay = resolve_player_arrests_overlay(
         overlay.overlaid_predictions,
@@ -306,17 +371,25 @@ def resolve_card_view(
         require_fresh=require_fresh_arrest_overlay,
     )
     production_overlay: FourOverlayCompositionResult | None = None
+    served_flags: pd.DataFrame | None = None
+    served_move: pd.DataFrame | None = None
     if data_root is None:
         if require_fresh_arrest_overlay:
             raise FileNotFoundError("Four-overlay production policy requires a data root")
     else:
         try:
             schedules, _team_stats = load_verified_snapshot(latest_snapshot(data_root / "raw"))
+            repo_root = data_root.resolve().parent
+            forecasts_tuesday, forecasts_kickoff = forecasts_for_card(
+                predictions, schedules, repo_root / "registry"
+            )
             production_overlay = apply_four_overlay_composition_for_publication(
                 predictions,
                 schedules,
                 data_root,
                 now=now,
+                forecasts_tuesday_noon=forecasts_tuesday,
+                forecasts_kickoff_nearest=forecasts_kickoff,
             )
             disabled = [
                 member.member_id
@@ -328,6 +401,14 @@ def resolve_card_view(
                 raise DataContractError(
                     "Four-overlay production policy has disabled members: " + ", ".join(disabled)
                 )
+            served_flags = signed_composition_flags_fail_open(
+                predictions,
+                schedules,
+                incidents=_arrest_incidents(data_root, now),
+                forecasts_tuesday_noon=forecasts_tuesday,
+                protection_back_side=protection_flags_for_card(predictions, data_root),
+            )
+            served_move = market_move_toward_home(predictions, data_root, now=now)
         except (FileNotFoundError, OSError, ValueError, DataContractError):
             if require_fresh_arrest_overlay:
                 raise
@@ -337,12 +418,35 @@ def resolve_card_view(
         if production_overlay is not None
         else arrest_overlay.overlaid_predictions
     )
+    pick_probability = (
+        load_pick_probability_model_or_none(artifacts_root) if artifacts_root is not None else None
+    )
+    if pick_probability is not None:
+        final_predictions = _served_probability_frame(
+            final_predictions,
+            predictions,
+            pick_probability,
+            flags=served_flags,
+            move=served_move,
+        )
+    else:
+        final_predictions = attach_displayed_confidence(final_predictions, displayed_confidence)
+    nomination = resolve_nomination(
+        final_predictions,
+        sweep,
+        metadata,
+        data_root,
+        nominate_v2_fn=nominate_v2_fn,
+        renominated_game_id=renominated_game_id,
+        locked_game_id=locked_game_id,
+    )
     return CardView(
         final_predictions,
         overlay,
         arrest_overlay,
         nomination,
         production_overlay,
+        pick_probability,
     )
 
 
@@ -350,6 +454,7 @@ __all__ = [
     "BestPickNomination",
     "CardView",
     "V2NominationInputs",
+    "apply_locked_best_pick",
     "apply_sunday_renomination",
     "compute_v2_nomination",
     "resolve_card_view",

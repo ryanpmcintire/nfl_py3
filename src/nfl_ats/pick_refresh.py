@@ -115,6 +115,9 @@ MOVEMENT_GOVERNED_POLICIES = (
 
 HANDLE_FOLLOW_POLICY = "handle_follow_0_70"
 HANDLE_FOLLOW_MONEY_THRESHOLD = 70.0
+HANDLE_FOLLOW_SERVED = False
+LATE_WEEK_FOLLOW_SERVED = False
+ROOKIE_CREW_SERVED = False
 HANDLE_FOLLOW_REASON = "Followed the heavy-money side"
 HANDLE_READING_LOCAL_TIME = time(12, 0)
 
@@ -1264,9 +1267,12 @@ def plan_refresh(
             rookie_crew_flag = 0.0 if rookie_crew is None else float(rookie_crew["flag"])
             rookie_crew_referee = "" if rookie_crew is None else str(rookie_crew["referee"])
             rookie_crew_side = "" if rookie_crew is None else str(rookie_crew["side"])
-            rookie_crew_fires = rookie_crew_side not in ("", model_only_side)
+            rookie_crew_fires = ROOKIE_CREW_SERVED and rookie_crew_side not in (
+                "",
+                model_only_side,
+            )
 
-            if late_week_fires:
+            if LATE_WEEK_FOLLOW_SERVED and late_week_fires:
                 policy = (
                     LATE_WEEK_FOLLOW_NEWS_VETO_POLICY
                     if follow_news_veto
@@ -1297,7 +1303,8 @@ def plan_refresh(
             handle_ticket = None if handle is None else handle.heavy_ticket_pct
             handle_pre_rule_side = new_side
             if (
-                policy == MOVEMENT_POLICY_MODEL_ONLY
+                HANDLE_FOLLOW_SERVED
+                and policy == MOVEMENT_POLICY_MODEL_ONLY
                 and handle_money is not None
                 and handle_money >= HANDLE_FOLLOW_MONEY_THRESHOLD
                 and handle_side != new_side
@@ -1305,7 +1312,9 @@ def plan_refresh(
                 policy = HANDLE_FOLLOW_POLICY
                 new_side = handle_side
             consensus_arm_side = (
-                consensus_side if consensus_fires and not late_week_fires else new_side
+                consensus_side
+                if consensus_fires and not (LATE_WEEK_FOLLOW_SERVED and late_week_fires)
+                else new_side
             )
             changed = eligible and new_side != prev_side
 

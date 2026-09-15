@@ -52,13 +52,14 @@ from nfl_ats.lineage import (
     write_card_lineage,
 )
 from nfl_ats.margin import margin_feature_columns
+from nfl_ats.pick_probability import PickProbabilityModel, landing_rate_sentence
 from nfl_ats.pick_refresh import load_pick_revisions, served_best_pick
 from nfl_ats.player_arrests_back_side_overlay import (
     ArrestOverlayResult,
     arrest_overlay_disclosure_note,
 )
 from nfl_ats.public_board import humanize_identifier, load_waterfall_feed
-from nfl_ats.published_picks import FrozenPick, frozen_picks
+from nfl_ats.published_picks import FrozenPick, frozen_picks, locked_best_pick
 from nfl_ats.readme_state import apply_generated_state_blocks
 from nfl_ats.source_freshness_policy import (
     BLOCKED as SOURCE_STATE_BLOCKED,
@@ -113,7 +114,7 @@ def _published_card(
         best = card["game_id"].astype(str).eq(best_pick_id)
         card.loc[best, "ATS prediction"] = BEST_PICK_MARK + card.loc[best, "ATS prediction"]
     stated = card["home_cover_probability"].where(home_pick, 1.0 - card["home_cover_probability"])
-    card["Decision score"] = (
+    card["Cover chance"] = (
         pd.to_numeric(card[DISPLAYED_PICK_PROBABILITY_COLUMN], errors="coerce").fillna(stated)
         if DISPLAYED_PICK_PROBABILITY_COLUMN in card
         else stated
@@ -126,31 +127,25 @@ def _published_card(
         line = (-pick.market_spread) if bool(frozen_home.iloc[0]) else pick.market_spread
         prefix = BEST_PICK_MARK if best_pick_id == game_id else ""
         card.loc[mask, "ATS prediction"] = f"{prefix}{pick.pick_team} {_line(line)}"
-        card.loc[mask, "Decision score"] = pick.displayed_score
+        card.loc[mask, "Cover chance"] = pick.displayed_score
     card["Matchup"] = card["away_team"] + " at " + card["home_team"]
     card["_gameday"] = pd.to_datetime(card["gameday"], errors="raise")
     card["Date"] = card["_gameday"].dt.strftime("%a, %b %d")
     card = card.sort_values(["_gameday", "game_id"], kind="stable")
-    published = card[["Date", "Matchup", "ATS prediction", "Decision score"]].copy()
-    published["Decision score"] = published["Decision score"].map(lambda value: f"{value:.1%}")
+    published = card[["Date", "Matchup", "ATS prediction", "Cover chance"]].copy()
+    published["Cover chance"] = published["Cover chance"].map(lambda value: f"{value:.1%}")
     return published
 
 
-def _decision_score_note(displayed_confidence: ProductionDisplayedConfidence) -> str:
+def _cover_chance_note(model: PickProbabilityModel | None) -> str:
 
-    if not displayed_confidence.served:
+    sentence = landing_rate_sentence(model)
+    if not sentence:
         return (
-            "`Decision score` is the computer's own chance that this side covers, "
-            "oriented to the final pick. On a flip it is a mirrored decision-strength "
-            "score; it is also not historical accuracy.\n"
+            "`Cover chance` is this card's own chance that the picked side covers. It is a "
+            "per-game chance, not historical accuracy.\n"
         )
-    return (
-        "`Decision score` is the computer's own chance that this side covers, adjusted "
-        "for how the computer has actually done on spreads this size. Big favourites and "
-        "big underdogs have been its weak spot, so a very confident-looking number there "
-        "is pulled back toward what it has really hit, and it is never shown below 50% on a "
-        "side this card is picking. It is a per-game chance, not historical accuracy.\n"
-    )
+    return f"`Cover chance` is the picked side's chance to cover. {sentence}\n"
 
 
 def _publication_context(
@@ -169,6 +164,7 @@ def _publication_context(
     FourOverlayCompositionResult | None,
     pd.DataFrame,
     ProductionDisplayedConfidence,
+    PickProbabilityModel | None,
 ]:
     active = load_active_ats_model(artifacts_root)
     if active is None:
@@ -191,6 +187,12 @@ def _publication_context(
         raise ValueError("Weekly recommendations contain a method other than the active method")
     sweep_path = forecast / "line_sweep.parquet"
     sweep = pd.read_parquet(sweep_path) if sweep_path.is_file() else pd.DataFrame()
+    displayed_confidence = fit_production_displayed_confidence(
+        artifacts_root,
+        active,
+        season=int(metadata["season"]),
+        week=int(metadata["week"]),
+    )
     view = resolve_card_view(
         predictions,
         sweep,
@@ -202,14 +204,20 @@ def _publication_context(
         renominated_game_id=served_best_pick(
             artifacts_root, season=int(metadata["season"]), week=int(metadata["week"])
         ),
+        locked_game_id=locked_best_pick(
+            artifacts_root,
+            season=int(metadata["season"]),
+            week=int(metadata["week"]),
+            now=published_at or datetime.now(UTC),
+        ),
+        displayed_confidence=displayed_confidence,
+        artifacts_root=artifacts_root,
     )
-    displayed_confidence = fit_production_displayed_confidence(
-        artifacts_root,
-        active,
-        season=int(metadata["season"]),
-        week=int(metadata["week"]),
+    served = (
+        view.predictions
+        if view.pick_probability is not None
+        else attach_displayed_confidence(view.predictions, displayed_confidence)
     )
-    served = attach_displayed_confidence(view.predictions, displayed_confidence)
     card = _published_card(
         served,
         view.nomination.active_game_id,
@@ -230,6 +238,7 @@ def _publication_context(
         view.production_overlay,
         served,
         displayed_confidence,
+        view.pick_probability,
     )
 
 
@@ -442,6 +451,7 @@ def publish_active_predictions(
         production_overlay,
         raw_predictions,
         displayed_confidence,
+        pick_probability,
     ) = _publication_context(
         artifacts_root,
         data_root,
@@ -526,7 +536,7 @@ def publish_active_predictions(
         + tiebreaker_card_line
         + source_report.summary_line()
         + "\n\n"
-        + _decision_score_note(displayed_confidence)
+        + _cover_chance_note(pick_probability)
     )
 
     played_card_lineage_path: str | None = None

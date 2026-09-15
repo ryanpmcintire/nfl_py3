@@ -135,9 +135,9 @@ def test_terminal_board_states_the_late_week_refresh_rule() -> None:
 
     html = board_terminal.render(build_fixture_content())
     assert REFRESH_POLICY_NOTE in html
-    assert "a full point" in html
-    assert "injury filed since Tuesday points the other way" in html
-    assert html.count("Late-week refreshes can still move a pick") == 1
+    assert "the newest lineups and injury reports" in html
+    assert "tracked and shown, not obeyed" in html
+    assert html.count("Late-week refreshes re-read each game") == 1
 
 
 def test_terminal_no_desk_references() -> None:

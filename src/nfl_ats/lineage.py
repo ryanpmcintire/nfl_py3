@@ -604,11 +604,12 @@ PUBLISHED_DISPLAY_FIELDS: dict[str, str] = {
     "Date": "formatted from the card's own gameday column; introduces no new source",
     "Matchup": "formatted from home_team/away_team, already covered by model_input:market",
     "ATS prediction": "rendering of pick and market_line, both of which carry their own lineage",
-    "Decision score": (
-        "rendering of model_probability from the picked side's perspective, calibrated by "
-        "the served displayed-confidence cells (docs/displayed_confidence.md); the cells "
-        "come from the opener evaluation matched to the active model, so it introduces no "
-        "independent source"
+    "Cover chance": (
+        "rendering of the served pick probability from the picked side's perspective: the "
+        "model's own read, the signed situational tilts and the late-week leader-median line "
+        "move, combined with coefficients fitted on the opener evaluation matched to the "
+        "active model (docs/serve_calibrated_probability.md), so it introduces no independent "
+        "source"
     ),
 }
 

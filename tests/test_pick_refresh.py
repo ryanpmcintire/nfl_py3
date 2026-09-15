@@ -1581,8 +1581,12 @@ def _late_week_plan(artifacts_root, data_root, features_path):
 
 def test_late_week_follow_governs_the_served_pick(
     refresh_env: tuple[Path, Path, pd.DataFrame],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
 
+    import nfl_ats.pick_refresh as pick_refresh
+
+    monkeypatch.setattr(pick_refresh, "LATE_WEEK_FOLLOW_SERVED", True)
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
     move = -1.25 if model_only_side == "HOME" else 1.25
     expected_side = "AWAY" if model_only_side == "HOME" else "HOME"
@@ -1637,8 +1641,12 @@ def test_late_week_follow_keeps_the_model_pick_below_threshold(
 
 def test_late_week_follow_takes_precedence_over_the_consensus_arm(
     refresh_env: tuple[Path, Path, pd.DataFrame],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
 
+    import nfl_ats.pick_refresh as pick_refresh
+
+    monkeypatch.setattr(pick_refresh, "LATE_WEEK_FOLLOW_SERVED", True)
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
     late_move = -1.25 if model_only_side == "HOME" else 1.25
     late_side = "AWAY" if model_only_side == "HOME" else "HOME"
@@ -1670,12 +1678,15 @@ def test_late_week_follow_takes_precedence_over_the_consensus_arm(
 
 def test_late_week_served_pick_matches_the_paired_challenger_module(
     refresh_env: tuple[Path, Path, pd.DataFrame],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
 
     import nfl_ats.late_week_move_follow_refresh_overlay as movement
+    import nfl_ats.pick_refresh as pick_refresh
     from nfl_ats.clv import LIVE_CAPTURE_KIND, load_decision_quotes
     from nfl_ats.pick_refresh import original_card
 
+    monkeypatch.setattr(pick_refresh, "LATE_WEEK_FOLLOW_SERVED", True)
     artifacts_root, data_root, features_path, _ = _late_week_setup(refresh_env)
     _write_live_intraday_archive(
         data_root,
@@ -1698,10 +1709,13 @@ def test_late_week_served_pick_matches_the_paired_challenger_module(
 
 def test_late_week_summary_ledger_and_card_carry_the_new_arm(
     refresh_env: tuple[Path, Path, pd.DataFrame],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
 
+    import nfl_ats.pick_refresh as pick_refresh
     from nfl_ats.pick_refresh import append_refresh_to_card, load_pick_revisions, refresh_summary
 
+    monkeypatch.setattr(pick_refresh, "LATE_WEEK_FOLLOW_SERVED", True)
     artifacts_root, data_root, features_path, model_only_side = _late_week_setup(refresh_env)
     move = -1.25 if model_only_side == "HOME" else 1.25
     _write_live_intraday_archive(

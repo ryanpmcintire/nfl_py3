@@ -18,6 +18,7 @@ from nfl_ats.totals import (
     blend_total,
     choose_weight,
     design_matrix,
+    feature_source_schedules_path,
     make_totals_estimator,
     newest_schedules_path,
     paired_error_frame,
@@ -87,7 +88,11 @@ def load_population_wave2(
     schedules_path: Path | None = None,
 ) -> pd.DataFrame:
 
-    path = schedules_path if schedules_path is not None else newest_schedules_path(data_root)
+    path = (
+        schedules_path
+        if schedules_path is not None
+        else feature_source_schedules_path(data_root, features_path)
+    )
     schedules = pd.read_parquet(path)
     lined = schedules.loc[
         schedules["home_score"].notna()

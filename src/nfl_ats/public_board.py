@@ -3855,6 +3855,7 @@ def build_public_site(
             data_root=resolved_data_root,
             now=generated,
             require_fresh_arrest_overlay=require_fresh_arrest_overlay,
+            artifacts_root=artifacts_root,
         )
         if game_type == "REG" and not artifacts.predictions.empty
         else None

@@ -7196,6 +7196,90 @@
       "source": "artifacts/body_clock_screen/20260821T182157Z/results.json",
       "standard_error": null
     },
+    "bp_rank_foresight_control_2020_2025": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control, not a closure: it demonstrates the instrument resolves a 41-point effect on 102 weeks and therefore bounds nothing at the 6-point scale the candidate arms live at.",
+      "closing_ground": null,
+      "description": "Perfect-foresight positive control inside the served Best Pick eligibility pool, 2020-2025 opener archive",
+      "effect": 41.1765,
+      "effect_units": "accuracy_points",
+      "family": "bp_rank_served_score_v1",
+      "interval": [
+        31.3725,
+        50.9804
+      ],
+      "league": "nfl",
+      "notes": "97.20% (104/107) inside the same eligibility pool.",
+      "plain_summary": "If the star always went on the game we later learned was right, it would win 97 weeks in 100 - the yardstick showing the test can see a big effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_served_score_ranker/20260914T163425Z/summary.json",
+      "standard_error": null
+    },
+    "bp_rank_served_score_no_dispersion_vs_alpha2000": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign and no positive control bound; the foresight control on the same pool reads +41.18 [31.37, 50.98].",
+      "closing_ground": null,
+      "description": "Best Pick nominee ranked by the card's own served decision score inside the 6.5-or-less spread screen alone, dispersion screen removed, against the served alpha=2000 ranker, 2020-2025 opener archive",
+      "effect": 5.8824,
+      "effect_units": "accuracy_points",
+      "family": "bp_rank_served_score_v1",
+      "interval": [
+        -3.9216,
+        15.6863
+      ],
+      "league": "nfl",
+      "notes": "Companion cell to bp_rank_served_score_vs_alpha2000; separates the ranker change from the dispersion screen. 61.90% (65/105).",
+      "plain_summary": "Dropping the book-disagreement filter and simply starring the card's most confident small-spread pick scored about the same as keeping the filter.",
+      "probability_positive": 0.878675,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": 102,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_served_score_ranker/20260914T163425Z/summary.json",
+      "standard_error": null
+    },
+    "bp_rank_served_score_vs_alpha2000": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign (interval spans zero with the mass positive) and no positive control bound: the perfect-foresight control on the same pool reads +41.18 [31.37, 50.98], far above this effect, so it bounds nothing here.",
+      "closing_ground": null,
+      "description": "Best Pick nominee ranked by the card's own served decision score instead of the alpha=2000 candidate distance, same below-median dispersion pool and 6.5-or-less spread screen, 2020-2025 opener archive",
+      "effect": 5.9406,
+      "effect_units": "accuracy_points",
+      "family": "bp_rank_served_score_v1",
+      "interval": [
+        -1.9802,
+        13.8614
+      ],
+      "league": "nfl",
+      "notes": "Sixth reuse of the 107-week opener population for the Best Pick family; discount accordingly. Paired within week, 20000 draws, seed 20260914. A0 55.88% (57/102), A1 62.14% (64/103); nominee differs in 37 of 101 paired weeks, outcome in 16.",
+      "plain_summary": "Putting the star on the pick the card itself rates highest, instead of on a separate model's favourite, won about six more Best Picks per hundred weeks over 2020-2025.",
+      "probability_positive": 0.933575,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 101,
+      "sample_games": 101,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/best_pick_served_score_ranker/20260914T163425Z/summary.json",
+      "standard_error": null
+    },
     "bye_overval_both_bye_sanity": {
       "category": "control",
       "classification": "unresolved_below_power",
@@ -23116,6 +23200,1098 @@
       "source": "scripts/nfl_forecast_weather_screen.py; artifacts/forecast_weather_screen/20260819T235541Z/results.json; docs/forecast_weather_screen.md; docs/forecast_archive_build.md",
       "standard_error": null
     },
+    "four_term_probability_v1__best_pick_m5_star_vs_a0_incumbent": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; a handful of decisive weeks cannot resolve a ranking at this evaluator's resolution.",
+      "closing_ground": null,
+      "description": "Weekly Best Pick nominated by the highest M5 probability for its pick, paired by week against the stored a0_incumbent nominee, accuracy points",
+      "effect": 5.882352941176472,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -8.823529411764696,
+        20.588235294117645
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether starring the game the four-term model likes best each week would have beaten the site's current Best Pick, week by week.",
+      "probability_positive": 0.7844,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 102,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__best_pick_m5_star_vs_a1_served_score": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; a handful of decisive weeks cannot resolve a ranking at this evaluator's resolution.",
+      "closing_ground": null,
+      "description": "Weekly Best Pick nominated by the highest M5 probability for its pick, paired by week against the stored a1_served_score nominee, accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -13.592233009708742,
+        13.592233009708742
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether starring the game the four-term model likes best each week would have beaten the site's current Best Pick, week by week.",
+      "probability_positive": 0.505125,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 103,
+      "sample_games": null,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m0__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m0 out-of-season paired comparison (accuracy_points)",
+      "effect": 2.528276779773786,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.13098868622519638,
+        5.133333333333335
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.96965,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m0__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m0 out-of-season paired comparison (brier)",
+      "effect": 0.006331878477950775,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.002191022318762049,
+        0.010595567641947834
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.9986,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m0__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m0 out-of-season paired comparison (log_loss)",
+      "effect": 0.012970451399963445,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.0044050098487771324,
+        0.021716661432880074
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.99855,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m1__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m1 out-of-season paired comparison (accuracy_points)",
+      "effect": 0.3326679973386537,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -1.5467644213058667,
+        2.2433931700443948
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.640225,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m1__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m1 out-of-season paired comparison (brier)",
+      "effect": 0.0013511023526041888,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.0016272734110143229,
+        0.004327130848266431
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.81435,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m1__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m1 out-of-season paired comparison (log_loss)",
+      "effect": 0.0027453318417509642,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.0034334263103399506,
+        0.008959567139095645
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.80875,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m3__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m3 out-of-season paired comparison (accuracy_points)",
+      "effect": 1.397205588822359,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.5340543124522358,
+        3.369272237196763
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.92155,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m3__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m3 out-of-season paired comparison (brier)",
+      "effect": 0.0023887357266600684,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.0002823951016304165,
+        0.004530893226155933
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.9874,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5_vs_m3__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5 vs m3 out-of-season paired comparison (log_loss)",
+      "effect": 0.004829929324635551,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.0004202102079109874,
+        0.00930900501881907
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.98465,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m0__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m0 out-of-season paired comparison (accuracy_points)",
+      "effect": 0.9980039920159722,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -1.8000300200133326,
+        3.7415420713740044
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.762125,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m0__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m0 out-of-season paired comparison (brier)",
+      "effect": 0.005167099121509755,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.0014205718449032069,
+        0.008943268842719624
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.9965,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m0__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m0 out-of-season paired comparison (log_loss)",
+      "effect": 0.010646808734383506,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.0029960522437248093,
+        0.018383825588735764
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.9966,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m1__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m1 out-of-season paired comparison (accuracy_points)",
+      "effect": -1.19760479041916,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -2.957029013170449,
+        0.5446160161296157
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.09465,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m1__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m1 out-of-season paired comparison (brier)",
+      "effect": 0.0001863229961631685,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.0025974515329976965,
+        0.002979341525429218
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.5585,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m1__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m1 out-of-season paired comparison (log_loss)",
+      "effect": 0.0004216891761710251,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.005289366888800754,
+        0.006147023952024389
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.5633,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m3__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m3 out-of-season paired comparison (accuracy_points)",
+      "effect": -0.13306719893545482,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -1.412239408204441,
+        1.181141163202174
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.4196,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m3__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m3 out-of-season paired comparison (brier)",
+      "effect": 0.0012239563702190481,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        6.0943279694889674e-05,
+        0.002401454936542942
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.9802,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5a_vs_m3__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5a vs m3 out-of-season paired comparison (log_loss)",
+      "effect": 0.002506286659055612,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.00010471456841025527,
+        0.004926873322313855
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.97955,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m0__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m0 out-of-season paired comparison (accuracy_points)",
+      "effect": 3.1936127744510934,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.3287256983051971,
+        6.052631578947365
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.98495,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m0__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m0 out-of-season paired comparison (brier)",
+      "effect": 0.006313603971335319,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.0016791316114519474,
+        0.011050336942702814
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.99615,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m0__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m0 out-of-season paired comparison (log_loss)",
+      "effect": 0.012959594649359696,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.003422891464477971,
+        0.022720191783999606
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.99595,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m1__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m1 out-of-season paired comparison (accuracy_points)",
+      "effect": 0.9980039920159611,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.9352193692197308,
+        2.9639791130078987
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.843325,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m1__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m1 out-of-season paired comparison (brier)",
+      "effect": 0.0013328278459887322,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.0018399444203543217,
+        0.004524931647450741
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.79495,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m1__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m1 out-of-season paired comparison (log_loss)",
+      "effect": 0.002734475091147215,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.0038296927945905396,
+        0.00936377810288509
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.7937,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m3__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m3 out-of-season paired comparison (accuracy_points)",
+      "effect": 2.0625415834996663,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.13289036544851224,
+        3.9867163919831423
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.981425,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m3__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m3 out-of-season paired comparison (brier)",
+      "effect": 0.002370461220044612,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.00011362581210132611,
+        0.004709374793614977
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.9807,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5b_vs_m3__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5b vs m3 out-of-season paired comparison (log_loss)",
+      "effect": 0.004819072574031802,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.00011645278871614216,
+        0.009686450453574273
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.97795,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m0__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m0 out-of-season paired comparison (accuracy_points)",
+      "effect": 2.7278775781769737,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.13140388765171016,
+        5.33335584064821
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.979075,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m0__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m0 out-of-season paired comparison (brier)",
+      "effect": 0.005641263653099721,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.0016762562677872799,
+        0.009722468587968278
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.9967,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m0__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m0 out-of-season paired comparison (log_loss)",
+      "effect": 0.011601360786906656,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        0.0034188188480103877,
+        0.01999483220740832
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.9967,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m1__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m1 out-of-season paired comparison (accuracy_points)",
+      "effect": 0.5322687957418415,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -1.3843111404087005,
+        2.4617841547265047
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.709525,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m1__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m1 out-of-season paired comparison (brier)",
+      "effect": 0.0006604875277531341,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.0023490796888648905,
+        0.003685996486781754
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.6718,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m1__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m1 out-of-season paired comparison (log_loss)",
+      "effect": 0.001376241228694175,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.004839276821652414,
+        0.007621156147510118
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.6736,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m3__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m3 out-of-season paired comparison (accuracy_points)",
+      "effect": 1.5968063872255467,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.33489618218353057,
+        3.576161174714682
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.946925,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m3__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m3 out-of-season paired comparison (brier)",
+      "effect": 0.0016981209018090138,
+      "effect_units": "brier_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.0005776404185019857,
+        0.004007039195266505
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.92995,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__m5c_vs_m3__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "m5c vs m3 out-of-season paired comparison (log_loss)",
+      "effect": 0.003460838711578762,
+      "effect_units": "log_loss_improvement",
+      "family": "four_term_probability_v1",
+      "interval": [
+        -0.0012842575821133684,
+        0.008266508944376425
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "One shared-weight logistic blend of the model, the nine situational flags and the market move, scored on games it never saw.",
+      "probability_positive": 0.92515,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
+    "four_term_probability_v1__positive_control_m5_vs_m1_diff": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bounds the ceiling of any rule agreeing with M5's disagreement set with M1; does not itself close the M5-vs-M1 comparison.",
+      "closing_ground": null,
+      "description": "Perfect foresight restricted to the games where M5's out-of-sample pick differs from the served flip chain (M1), scored against M1",
+      "effect": 8.915502328675974,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability_v1",
+      "interval": [
+        7.495065704046117,
+        10.347185612457995
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The best any rule could do if it always guessed right on the games where the four-term model and the site's current flip rules disagree.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 263,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/four_term_probability.md",
+      "standard_error": null
+    },
     "fourth_down_aggression_interaction_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -27036,6 +28212,34 @@
       "source": "docs/groupwise_ridge.md",
       "standard_error": null
     },
+    "handle_follow_deep_override_only": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "The week-blocked interval's upper end is +0.78, above zero, so the sign is NOT resolved and wrong_sign_resolved is inadmissible; the foresight control bounds nothing at this scale.",
+      "closing_ground": null,
+      "description": "Following the heavy handle only when it overrides a pick the served card holds beyond the frozen median override distance, against the ungated rule as served",
+      "effect": -1.9231,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_override_distance_v1",
+      "interval": [
+        -4.908,
+        0.7752
+      ],
+      "league": "nfl",
+      "notes": "18 flips. Season-blocked P+ 0.2344. Week 1's ARI at LAC sat at override distance 0.138, near this group's maximum 0.1394.",
+      "plain_summary": "When the big money would overturn a pick the card felt sure about, following it has hurt: the card was 11-7 on those and following the money makes it 7-11.",
+      "probability_positive": 0.0914,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_override_distance/20260914T180713Z/summary.json",
+      "standard_error": null
+    },
     "handle_follow_on_card_control_h1_2020_2025": {
       "category": "control",
       "classification": "unresolved_below_power",
@@ -27203,6 +28407,62 @@
       ],
       "source": "artifacts/handle_follow_on_card/20260909T232503Z/result.json; docs/handle_follow_on_card.md",
       "standard_error": 0.93342
+    },
+    "handle_follow_override_foresight_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "A control, not a closure: it shows the harness resolves a 6.9-point effect at 19 flips and therefore bounds nothing at the 1.5-to-2-point scale the candidate arms live at.",
+      "closing_ground": null,
+      "description": "Perfect-foresight control on the heavy-handle flip set, frozen lane-S population",
+      "effect": 6.9231,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_override_distance_v1",
+      "interval": [
+        3.9216,
+        10.1476
+      ],
+      "league": "nfl",
+      "notes": "19 oracle flips.",
+      "plain_summary": "If every heavy-money flip went the right way, the card would gain about seven points - the yardstick showing the test can see a big effect at this number of games.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_override_distance/20260914T180713Z/summary.json",
+      "standard_error": null
+    },
+    "handle_follow_shallow_override_only": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "No resolved wrong sign and no positive control bound; the foresight control on the same 19 flips reads +6.92 [+3.92, +10.15], well above this effect.",
+      "closing_ground": null,
+      "description": "Following the heavy handle only when it overrides a pick the served card holds within the frozen median override distance (0.0261), against the ungated rule as served",
+      "effect": 1.5385,
+      "effect_units": "accuracy_points",
+      "family": "handle_follow_override_distance_v1",
+      "interval": [
+        -1.5873,
+        4.6753
+      ],
+      "league": "nfl",
+      "notes": "Second look at the frozen lane-S population; H1 reproduced exactly (73 fires, 37 flips, +0.3846). Season-blocked P+ 0.8112.",
+      "plain_summary": "Following the big money helps when it only overturns a pick we were unsure about; on those the card was 7-12 and following the money makes it 12-7.",
+      "probability_positive": 0.8335,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 40,
+      "sample_games": 260,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/handle_follow_override_distance/20260914T180713Z/summary.json",
+      "standard_error": null
     },
     "hc_year_one_fade": {
       "category": "offfield",
@@ -31987,6 +33247,538 @@
         2021
       ],
       "source": "artifacts/roster_availability_flags_on_production/ir_return_bump/20260905T152026Z/results.json",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m1_vs_m0__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M1 (served nine-member flip chain, reproduced from production apply_* functions) vs M0 (raw model logit), out-of-season paired comparison (accuracy points)",
+      "effect": 2.1956087824351322,
+      "effect_units": "accuracy_points",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.5305039787798393,
+        4.835641213966997
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How the nine flip rules the site already runs compare to the plain model, on games those rules never saw.",
+      "probability_positive": 0.943775,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m1_vs_m0__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M1 (served nine-member flip chain, reproduced from production apply_* functions) vs M0 (raw model logit), out-of-season paired comparison (brier)",
+      "effect": 0.0049807761253465865,
+      "effect_units": "brier_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        0.0010383434043414056,
+        0.008965097997258215
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How the nine flip rules the site already runs compare to the plain model, on games those rules never saw.",
+      "probability_positive": 0.99315,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m1_vs_m0__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M1 (served nine-member flip chain, reproduced from production apply_* functions) vs M0 (raw model logit), out-of-season paired comparison (log loss)",
+      "effect": 0.010225119558212481,
+      "effect_units": "log_loss_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        0.0021621675014799123,
+        0.018435805000595634
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How the nine flip rules the site already runs compare to the plain model, on games those rules never saw.",
+      "probability_positive": 0.99325,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m2_vs_m0__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M2 (raw logit + nine flags + late market move, jointly fit, leave-one-season-out) vs M0, out-of-season paired comparison, 2023-2025 only (market move availability) (accuracy points)",
+      "effect": 0.5006257822277815,
+      "effect_units": "accuracy_points",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -3.620474406991259,
+        4.562866732385104
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How a single blended number using the model, the nine situational notes, and the late line move together compares to the plain model.",
+      "probability_positive": 0.595525,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m2_vs_m0__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M2 (raw logit + nine flags + late market move, jointly fit, leave-one-season-out) vs M0, out-of-season paired comparison, 2023-2025 only (market move availability) (brier)",
+      "effect": 0.002958632060228006,
+      "effect_units": "brier_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.0016124379828325987,
+        0.007827712711050766
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How a single blended number using the model, the nine situational notes, and the late line move together compares to the plain model.",
+      "probability_positive": 0.8917,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m2_vs_m0__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M2 (raw logit + nine flags + late market move, jointly fit, leave-one-season-out) vs M0, out-of-season paired comparison, 2023-2025 only (market move availability) (log loss)",
+      "effect": 0.006034693596633223,
+      "effect_units": "log_loss_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.0032684644243480255,
+        0.01595667659307131
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How a single blended number using the model, the nine situational notes, and the late line move together compares to the plain model.",
+      "probability_positive": 0.89265,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m2_vs_m1__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M2 (raw logit + nine flags + late market move, jointly fit) vs M1 (served flip chain), out-of-season paired comparison, 2023-2025 only (accuracy points)",
+      "effect": -0.25031289111389077,
+      "effect_units": "accuracy_points",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -3.1526846332174183,
+        2.6316614937594824
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether blending the model, the nine situational notes and the late line move into one number beats the site's current flip-rule chain.",
+      "probability_positive": 0.441025,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m2_vs_m1__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M2 (raw logit + nine flags + late market move, jointly fit) vs M1 (served flip chain), out-of-season paired comparison, 2023-2025 only (brier)",
+      "effect": -0.0001941352530213658,
+      "effect_units": "brier_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.004009700473563778,
+        0.003736068558648226
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether blending the model, the nine situational notes and the late line move into one number beats the site's current flip-rule chain.",
+      "probability_positive": 0.4611,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m2_vs_m1__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M2 (raw logit + nine flags + late market move, jointly fit) vs M1 (served flip chain), out-of-season paired comparison, 2023-2025 only (log loss)",
+      "effect": -0.000379292262219999,
+      "effect_units": "log_loss_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.008148367826359125,
+        0.007587911894395225
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether blending the model, the nine situational notes and the late line move into one number beats the site's current flip-rule chain.",
+      "probability_positive": 0.46305,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m3_vs_m0__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M3 (raw logit + nine flags jointly fit, leave-one-season-out, no market move) vs M0, out-of-season paired comparison (accuracy points)",
+      "effect": 1.131071190951427,
+      "effect_units": "accuracy_points",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -1.592594452977734,
+        3.823335530652605
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How a single blended number using the model plus all nine situational notes compares to the plain model, on games it never saw.",
+      "probability_positive": 0.7954,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m3_vs_m0__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M3 (raw logit + nine flags jointly fit, leave-one-season-out, no market move) vs M0, out-of-season paired comparison (brier)",
+      "effect": 0.003943142751290707,
+      "effect_units": "brier_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        0.00033507741737804367,
+        0.007554459689674192
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How a single blended number using the model plus all nine situational notes compares to the plain model, on games it never saw.",
+      "probability_positive": 0.98405,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m3_vs_m0__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M3 (raw logit + nine flags jointly fit, leave-one-season-out, no market move) vs M0, out-of-season paired comparison (log loss)",
+      "effect": 0.008140522075327894,
+      "effect_units": "log_loss_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        0.0007399015291619938,
+        0.015529832690351374
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How a single blended number using the model plus all nine situational notes compares to the plain model, on games it never saw.",
+      "probability_positive": 0.9847,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m3_vs_m1__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M3 (joint logistic model of raw logit + nine flags) vs M1 (the served flip chain built from the same nine flags), out-of-season paired comparison (accuracy points)",
+      "effect": -1.0645375914837052,
+      "effect_units": "accuracy_points",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -3.0982712634122036,
+        1.0209735784795835
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether blending the nine situational notes into one number beats just letting each one flip the pick the way the site does today.",
+      "probability_positive": 0.154325,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m3_vs_m1__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M3 (joint logistic model of raw logit + nine flags) vs M1 (the served flip chain built from the same nine flags), out-of-season paired comparison (brier)",
+      "effect": -0.0010376333740558796,
+      "effect_units": "brier_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.0039045642300559575,
+        0.001844027906784896
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether blending the nine situational notes into one number beats just letting each one flip the pick the way the site does today.",
+      "probability_positive": 0.2391,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m3_vs_m1__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M3 (joint logistic model of raw logit + nine flags) vs M1 (the served flip chain built from the same nine flags), out-of-season paired comparison (log loss)",
+      "effect": -0.002084597482884587,
+      "effect_units": "log_loss_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.007947334490582464,
+        0.0038143033602339666
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether blending the nine situational notes into one number beats just letting each one flip the pick the way the site does today.",
+      "probability_positive": 0.2435,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m4_vs_m0__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M4 (pure recalibration of raw logit, slope+intercept only, no flags, no market) vs M0, out-of-season paired comparison (accuracy points)",
+      "effect": -0.06653359946773296,
+      "effect_units": "accuracy_points",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.867823765020026,
+        0.73089700996678
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether just toning down how confident the plain model sounds (no new information, just less certainty) makes its stated odds line up better with what actually happens.",
+      "probability_positive": 0.4334,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m4_vs_m0__brier": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M4 (pure recalibration of raw logit, slope+intercept only, no flags, no market) vs M0, out-of-season paired comparison (brier)",
+      "effect": 0.002055423160221753,
+      "effect_units": "brier_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.0006096746423978845,
+        0.004777846598486451
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether just toning down how confident the plain model sounds (no new information, just less certainty) makes its stated odds line up better with what actually happens.",
+      "probability_positive": 0.9361,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__m4_vs_m0__log_loss": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "M4 (pure recalibration of raw logit, slope+intercept only, no flags, no market) vs M0, out-of-season paired comparison (log loss)",
+      "effect": 0.004418563515013241,
+      "effect_units": "log_loss_improvement",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        -0.0010909847935557735,
+        0.010013802733778068
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether just toning down how confident the plain model sounds (no new information, just less certainty) makes its stated odds line up better with what actually happens.",
+      "probability_positive": 0.9432,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
+      "standard_error": null
+    },
+    "joint_probability_model_v1__positive_control_foresight_on_m2_diff__accuracy_points": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval does not sit wholly on one side for a closing ground; AGENTS.md bars closing on a promotion-bar miss or on an interval touching zero.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight restricted to the 298 games where M2's out-of-sample pick differs from M0's, vs M0, 2023-2025",
+      "effect": 18.89862327909887,
+      "effect_units": "accuracy_points",
+      "family": "joint_probability_model_v1",
+      "interval": [
+        16.1289314516129,
+        21.744475627218982
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The ceiling: if we could perfectly know in advance every game where the blended model would want to disagree with the plain model, how many extra points that knowledge alone would be worth.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 298,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "docs/joint_probability_model.md",
       "standard_error": null
     },
     "key_number_seven_card_stage_line3_2020_2025": {
@@ -37325,6 +39117,631 @@
       "source": "artifacts/leader_books_walk_forward/20260910T032517Z/results.json (docs/leader_books_walk_forward.md)",
       "standard_error": 0.356781
     },
+    "leader_median_deep_overrides_vs_card": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "The leader-median line-move follow rule's deep overrides (model probability furthest below 0.5 for the served side) against the card they overturn",
+      "effect": 1.5019,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_override_distance_v1",
+      "interval": [
+        -1.4907,
+        4.602
+      ],
+      "invalidated_reason": "Superseded by a from-scratch redo at owner direction: the deep-override half was scored on the same flips its median cut was chosen from, and its point estimate needed independent verification. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.",
+      "league": "nfl",
+      "notes": "[2026-09-14T20:30:08.600876+00:00] invalidated: Superseded by a from-scratch redo at owner direction: the deep-override half was scored on the same flips its median cut was chosen from, and its point estimate needed independent verification. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.. Superseded by: 'leader_median_follow_median_split_deep'. Invalidation is not closure.",
+      "plain_summary": "The flips where the rule overrules the model hardest win at the same rate as its mildest flips.",
+      "probability_positive": 0.8331,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_override_distance/20260914T190753Z/summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "leader_median_follow_median_split_deep"
+    },
+    "leader_median_follow_conf_0_52_to_0_55": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on flips where model confidence is between 0.52 and 0.55 (67 of 220 flips), full 799-game policy against the card.",
+      "effect": 0.626,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.018,
+        2.369
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to a middle confidence band.",
+      "probability_positive": 0.764,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_0_55_to_0_58": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on flips where model confidence is between 0.55 and 0.58 (52 of 220 flips), full 799-game policy against the card.",
+      "effect": 1.502,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.5,
+        3.589
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to a firmer confidence band.",
+      "probability_positive": 0.926,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_gate_loso_recommended": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "A confidence-cut gate chosen by leave-one-season-out selection (candidates: deciles of confidence among flips, plus no gate; criterion: training-season accuracy-point effect vs card, minimum 15 training flips), scored on the held-out season and pooled across all three seasons, against the card.",
+      "effect": 3.254067584480602,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.5050664674558508,
+        7.0719602977667435
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The best confidence cutoff chosen honestly on two seasons and tested on the third, pooled across all three seasons.",
+      "probability_positive": 0.953925,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_gate_loso_recommended_vs_full_rule": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Head-to-head: the leave-one-season-out confidence-gated policy above against the full ungated rule (follow every flip), same games, same blocks.",
+      "effect": 0.25031289111389077,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.6321112515802807,
+        1.1306532663316493
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Whether the honestly-chosen confidence gate beats simply following every flip: a small, unresolved edge.",
+      "probability_positive": 0.6985,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_gt_0_58": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on flips where model confidence is above 0.58, the most confident quarter of flips (42 of 220 flips), full 799-game policy against the card.",
+      "effect": -0.25,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.533,
+        1.128
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the flips where the model was firmest on its own pick reads a small negative point estimate, not resolved either way.",
+      "probability_positive": 0.358,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_le_0_52": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on flips where the model's confidence in its own pick is at or below 0.52 (59 of 220 flips), full 799-game policy against the card.",
+      "effect": 1.126,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.752,
+        3.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the flips where the model was closest to a coin flip.",
+      "probability_positive": 0.879,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_tercile_high": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on the highest-confidence tercile of flips (card most sure of its own pick, 73 of 220 flips), scored as a full 799-game policy against the card.",
+      "effect": 1.126,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.118,
+        3.509
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the third of flips where the model was firmest on its own pick.",
+      "probability_positive": 0.831,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_tercile_low": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on the lowest-confidence tercile of flips (card least sure of its own pick, 74 of 220 flips), scored as a full 799-game policy against the card.",
+      "effect": 1.252,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.876,
+        3.383
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the third of flips where the model was closest to a coin flip on its own pick.",
+      "probability_positive": 0.876,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_conf_tercile_mid": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Follow only on the middle-confidence tercile of flips (73 of 220 flips), scored as a full 799-game policy against the card.",
+      "effect": 0.626,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.613,
+        2.803
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Restricting the follow rule to the middle third of flips by the model's own confidence.",
+      "probability_positive": 0.714,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_correlation_confidence": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Correlation between model confidence in its own pick and whether following the flip wins, among the 220 flips, week-blocked.",
+      "effect": -0.022360273879201836,
+      "effect_units": "correlation",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.14793820641482625,
+        0.09716801536898868
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How much the model's own certainty predicts whether following the late-week move pays off: essentially not at all in this sample.",
+      "probability_positive": 0.35345,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 220,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_correlation_move": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Correlation between the size of the leader-median move and whether following the flip wins, among the 220 flips, week-blocked.",
+      "effect": 0.02151255240969637,
+      "effect_units": "correlation",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.10842110065156804,
+        0.14711355471296625
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "How much the size of the sportsbook move predicts whether following it pays off: essentially not at all in this sample.",
+      "probability_positive": 0.624325,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 53,
+      "sample_games": 220,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_foresight_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight on exactly the 220 flips, forcing correct only the ones the card got wrong, as a full 799-game policy against the card. Proves the harness resolves an effect at this flip count.",
+      "effect": 15.269086357947437,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        12.484237074401017,
+        18.090452261306535
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A cheating benchmark that already knows the outcome, included only to prove the measuring stick can see a real difference at this sample size.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_headline_vs_card": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Full leader-median late-week follow rule (flat 0.5-point threshold, the S1 arm in the frozen sharp_weighted_follow population) against the raw opener card, reproduced from scratch with an independent implementation.",
+      "effect": 3.0037546933667114,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.9987515605493049,
+        6.979695431472077
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "When the three lead sportsbooks move the number half a point or more against our pick between Wednesday and the deadline, switching to their side scores about 55.8% against the card's 52.8% on the same 799 games.",
+      "probability_positive": 0.93225,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_median_split_deep": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "The deeper (firmer-model) half of flips by model confidence, split at the median (110 of 220 flips), full 799-game policy against the card. Reproduces the prior session's deep-half record independently; the point estimate is numerically identical to the shallow half, which this cell's writeup explains as a mathematical identity between this confidence metric and the prior session's override-distance metric plus the near-zero measured correlation, not a defect.",
+      "effect": 1.5018773466833557,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.4906832298136607,
+        4.601990049751247
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The half of flips where the model was firmer on its own pick.",
+      "probability_positive": 0.8331,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_median_split_shallow": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "The shallower (more coin-flip) half of flips by model confidence, split at the median (110 of 220 flips), full 799-game policy against the card. Reproduces the prior session's shallow-half record independently.",
+      "effect": 1.5018773466833557,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -1.104328394205688,
+        4.125000000000001
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The half of flips where the model was closer to undecided on its own pick.",
+      "probability_positive": 0.8745,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_nested_loso_threshold_only_in_sample": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "The same move-threshold-only candidate search (flat 0.5, flat 1.0, the served mechanism rule, no confidence gate) selected and scored on all 799 games at once, for side-by-side comparison against the out-of-sample read.",
+      "effect": 3.0037546933667114,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.9987515605493049,
+        6.979695431472077
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Picking the best version of the move-size rule using the same games it is graded on reads more favorably than doing it honestly.",
+      "probability_positive": 0.93225,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_nested_loso_threshold_only_out_of_sample": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Nested leave-one-season-out selecting only the move-size threshold (candidates: flat 0.5, flat 1.0, the served 1.0/0.5-big-spread mechanism rule), no confidence gate, chosen on training seasons and scored on the held-out season, pooled, against the card. The honest out-of-sample read of the served rule's own shape.",
+      "effect": 2.127659574468088,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.5050505050504972,
+        4.804045512010113
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "If you pick the best version of the move-size rule using only two seasons and test it on the third, it still beats the card, but by less than the in-sample number suggested.",
+      "probability_positive": 0.940975,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_nested_loso_with_gate_in_sample": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "The same joint move-threshold-and-confidence-gate candidate search selected and scored on all 799 games at once, for side-by-side comparison against the out-of-sample read.",
+      "effect": 3.254067584480602,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.24968789013732895,
+        6.766917293233076
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Picking the best combination of move-size rule and confidence gate using the same games it is graded on reads more favorably than doing it honestly.",
+      "probability_positive": 0.9651,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_follow_nested_loso_with_gate_out_of_sample": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "unresolved_below_power: the interval crossing zero is not a closing ground (AGENTS.md); no interval here sits wholly on the wrong side of zero, so wrong_sign_resolved is inadmissible; split-half reliability was not separately computed for this family, so no_split_half_reliability cannot be claimed either way; and the foresight positive control resolves an effect of roughly 15 accuracy points, which does not prove the instrument can detect the 0.3-to-3-point effects these cells sit at, so positive_control_bound is inadmissible too.",
+      "closing_ground": null,
+      "description": "Nested leave-one-season-out jointly selecting the move-size threshold AND a confidence gate (candidates: 3 thresholds x {0.52, 0.55, 0.58, no gate}), chosen on training seasons and scored on the held-out season, pooled, against the card.",
+      "effect": 1.8773466833541974,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_model_confidence_v1",
+      "interval": [
+        -0.7318195421218002,
+        4.477611940298509
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Adding a confidence gate on top of an honestly-chosen move-size rule does not improve the honest out-of-sample result; it reads slightly worse than the rule alone.",
+      "probability_positive": 0.9258,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_model_confidence/20260914T202723Z/summary.json (docs/leader_median_model_confidence.md)",
+      "standard_error": null
+    },
+    "leader_median_override_distance_foresight_control": {
+      "category": "control",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Foresight control: flipping only the leader-median fires the card got wrong, to show the harness resolves an effect at this flip count",
+      "effect": 12.2653,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_override_distance_v1",
+      "interval": [
+        9.7468,
+        14.899
+      ],
+      "invalidated_reason": "Superseded by a from-scratch redo at owner direction: replaced by an independently-implemented positive control on the same flip count. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.",
+      "league": "nfl",
+      "notes": "[2026-09-14T20:30:14.822511+00:00] invalidated: Superseded by a from-scratch redo at owner direction: replaced by an independently-implemented positive control on the same flip count. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.. Superseded by: 'leader_median_follow_foresight_control'. Invalidation is not closure.",
+      "plain_summary": "Positive control: a rule that only flipped the losers would gain 12 points, so this test can see an effect.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_override_distance/20260914T190753Z/summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "leader_median_follow_foresight_control"
+    },
+    "leader_median_shallow_only_vs_full_rule": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "",
+      "closing_ground": null,
+      "description": "Restricting the promoted leader-median line-move follow rule to its shallow half by override distance, against firing on every flip",
+      "effect": -1.5019,
+      "effect_units": "accuracy_points",
+      "family": "leader_median_override_distance_v1",
+      "interval": [
+        -4.602,
+        1.4907
+      ],
+      "invalidated_reason": "Superseded by a from-scratch redo at owner direction: the shallow/deep override-distance split was scored on the same flips its median cut was chosen from, and the identical 61-49 halves needed independent verification. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.",
+      "league": "nfl",
+      "notes": "[2026-09-14T20:30:01.913372+00:00] invalidated: Superseded by a from-scratch redo at owner direction: the shallow/deep override-distance split was scored on the same flips its median cut was chosen from, and the identical 61-49 halves needed independent verification. See docs/leader_median_model_confidence.md and docs/lanes/leader-median-model-confidence.md.. Superseded by: 'leader_median_follow_median_split_shallow'. Invalidation is not closure.",
+      "plain_summary": "Taking only the shallow half of the line-move rule's flips scores worse than taking them all.",
+      "probability_positive": 0.1669,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/leader_median_override_distance/20260914T190753Z/summary.json",
+      "standard_error": null,
+      "status": "invalidated",
+      "superseded_by": "leader_median_follow_median_split_shallow"
+    },
     "learned_availability_ats_2018_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -39676,6 +42093,202 @@
       ],
       "source": "artifacts/schedule_flag_on_production/low_total_div_dog/20260905T032318Z/results.json",
       "standard_error": null
+    },
+    "market_updated_model__c1_vs_c0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-0.999, +6.980] touches zero; not a resolved wrong sign and no positive-control bound established for effects this size",
+      "closing_ground": null,
+      "description": "Hard flip rule (flat 0.5 leader-median follow, s1 arm) vs the card, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 3.0038,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -0.999,
+        6.98
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The old hard rule that flips a pick whenever the sharp books moved the line at least half a point still beats just using the model, by about 3 points of accuracy across three seasons -- but the sample is too small to call that settled.",
+      "probability_positive": 0.9323,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 2.0356
+    },
+    "market_updated_model__c2_oos_vs_c0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-2.101, +6.045] crosses zero; not a resolved wrong sign and no positive-control bound established at this effect size",
+      "closing_ground": null,
+      "description": "Combined model+market logistic blend (LOSO, out-of-sample) vs the card, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 2.0025,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -2.1014,
+        6.0453
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A blended number that combines the model's own probability with how much the sharp books moved the line, tested honestly on seasons it was not tuned on, beats just using the model by about 2 points of accuracy -- promising, but not yet certain at this sample size.",
+      "probability_positive": 0.8381,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 2.0783
+    },
+    "market_updated_model__c2_oos_vs_c1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Week-blocked 95% interval [-2.390, +0.373] touches the positive side at its extreme, so this is not a resolved wrong sign despite P+ 0.075; unresolved_below_power per the binding rule",
+      "closing_ground": null,
+      "description": "Combined model+market logistic blend (LOSO, out-of-sample) vs the hard flip rule it replaces (s1 arm), 799 opener-graded games 2023-2025, week-blocked",
+      "effect": -1.0013,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -2.3899,
+        0.3731
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "The new blended pick, which mixes the model's own confidence with how much the sharp books moved the line, does not show it beats the old hard rule that flips a pick whenever the line moved enough -- if anything the evidence leans toward the old rule, though the sample is still too small to call it settled.",
+      "probability_positive": 0.075,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 0.7049
+    },
+    "market_updated_model__c3_oos_vs_c0": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bit-identical to market_updated_model__c2_oos_vs_c0: leader_median_net never takes a value strictly between 0 and 0.5 in magnitude on this population, so the 0.5 gate changes zero rows; same interval crosses zero",
+      "closing_ground": null,
+      "description": "Combined model+market blend with the move entered only when the leaders moved at least 0.5 (LOSO, out-of-sample) vs the card, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 2.0025,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -2.1014,
+        6.0453
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "A version of the blended pick that ignores sharp-book line moves smaller than half a point beats just using the model by about 2 points of accuracy -- the same result as not filtering at all, because the sharp books' line moves in this data never actually come in smaller than half a point.",
+      "probability_positive": 0.8381,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 2.0783
+    },
+    "market_updated_model__c3_oos_vs_c1": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Bit-identical to market_updated_model__c2_oos_vs_c1 for the same structural reason (the 0.5 gate is a no-op on this population's move variable); interval [-2.390, +0.373] touches the positive side, not a resolved wrong sign",
+      "closing_ground": null,
+      "description": "Combined model+market blend with the move entered only when the leaders moved at least 0.5 (LOSO, out-of-sample) vs the hard flip rule it replaces (s1 arm), 799 opener-graded games 2023-2025, week-blocked",
+      "effect": -1.0013,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        -2.3899,
+        0.3731
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Filtering out small sharp-book line moves before blending them with the model does not change whether the blend beats the old hard flip rule -- it still does not show that it does, for the same reason as the unfiltered version.",
+      "probability_positive": 0.075,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 0.7049
+    },
+    "market_updated_model__c3_oos_vs_c2_oos": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Exact zero on every bootstrap draw: leader_median_net is quantized to a 0.5-point grid with no nonzero values below 0.5 in magnitude, so gating at 0.5 changes zero rows -- a structural identity, not a resolved effect in either direction, so no closing ground applies",
+      "closing_ground": null,
+      "description": "Does gating the move at 0.5 add anything once the model logit is already in the equation -- C3 out-of-sample vs C2 out-of-sample, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "Filtering out small line moves before blending them with the model made no difference at all -- the filtered and unfiltered versions picked the exact same side in every one of 799 games, because the sharp books' smallest line move in this data is already half a point.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": null
+    },
+    "market_updated_model__positive_control_c2_diff_foresight": {
+      "category": "market",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "This is the instrument's ceiling on the 220-game C2 disagreement set (whole interval above zero by construction, forced-correct), not a candidate signal; it does not itself prove the instrument can detect the 0-3 point effects the other six cells in this family sit at, so positive_control_bound is inadmissible for those cells and this cell is recorded as the ceiling reading, unresolved_below_power",
+      "closing_ground": null,
+      "description": "Positive control: perfect foresight restricted to the 220 games where C2's out-of-sample pick differs from the card, vs the card, 799 opener-graded games 2023-2025, week-blocked",
+      "effect": 14.7685,
+      "effect_units": "accuracy_points",
+      "family": "market_updated_model_v1",
+      "interval": [
+        12.2194,
+        17.3697
+      ],
+      "league": "nfl",
+      "notes": "",
+      "plain_summary": "If a coach knew in advance exactly which 220 games a market-aware blended pick would want to change from the plain model's pick, and always got those right, that would be worth about 15 points of accuracy -- this is the ceiling on what any market-based adjustment touching those same games could ever be worth, not a real, usable rule.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-14",
+      "reliability": null,
+      "sample_blocks": 54,
+      "sample_games": 799,
+      "seasons": [
+        2023,
+        2025
+      ],
+      "source": "artifacts/market_updated_model/20260914T210317Z/summary.json",
+      "standard_error": 1.3139
     },
     "maxev_full_stack": {
       "category": "modeling",

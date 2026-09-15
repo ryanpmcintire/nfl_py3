@@ -39,6 +39,14 @@ CHALLENGER_ID = "best_pick_nomination_v2"
 
 CHALLENGER_ID_V3 = "best_pick_nomination_v3"
 
+RANKING_SCORE_COLUMN = "ranking_score"
+
+SERVED_SCORE_COLUMN = "displayed_pick_probability"
+
+SERVED_RANKER_ID = "served_decision_score"
+
+INCUMBENT_RANKER_ID = "candidate_alpha_2000_distance"
+
 
 @dataclass(frozen=True)
 class DispersionPool:
@@ -147,14 +155,30 @@ class NominationV2Result:
     base_game_id: str | None = None
 
 
+def served_ranking_scores(predictions: pd.DataFrame) -> pd.DataFrame | None:
+
+    if "game_id" not in predictions.columns or SERVED_SCORE_COLUMN not in predictions.columns:
+        return None
+    frame = predictions[["game_id", SERVED_SCORE_COLUMN]].copy()
+    frame["game_id"] = frame["game_id"].astype(str)
+    score = pd.to_numeric(frame[SERVED_SCORE_COLUMN], errors="coerce")
+    if score.isna().any() or frame["game_id"].duplicated().any():
+        return None
+    frame["served_dist"] = (score - 0.5).abs()
+    return frame[["game_id", "served_dist"]]
+
+
 def _select_nominee(
     candidates: pd.DataFrame, *, rule_name: str, dispersion_tiebreak: bool
 ) -> tuple[str, int, str]:
 
     if candidates.empty:
         raise ValueError(f"{rule_name} needs at least one candidate")
-    top_value = candidates["candidate_dist"].max()
-    tied = candidates.loc[candidates["candidate_dist"].eq(top_value)]
+    column = (
+        RANKING_SCORE_COLUMN if RANKING_SCORE_COLUMN in candidates.columns else "candidate_dist"
+    )
+    top_value = candidates[column].max()
+    tied = candidates.loc[candidates[column].eq(top_value)]
     n_tied = len(tied)
     if n_tied <= 1:
         tie_break = "none"
@@ -228,6 +252,14 @@ def _nominate(
     table = probabilities.merge(dispersion.frame, on="game_id", how="inner", validate="one_to_one")
     if len(table) != len(game_ids):
         raise DataContractError("Dispersion pool join dropped or duplicated games")
+
+    served = served_ranking_scores(predictions)
+    if served is not None:
+        table = table.merge(served, on="game_id", how="left", validate="one_to_one")
+    if served is not None and not table["served_dist"].isna().any():
+        table[RANKING_SCORE_COLUMN] = table["served_dist"]
+    else:
+        table[RANKING_SCORE_COLUMN] = table["candidate_dist"]
 
     candidates = table.loc[table["pool_pass"]]
     if candidates.empty:
@@ -320,6 +352,8 @@ def apply_spread_eligibility(
 
     table = base.probability_table.copy()
     table["game_id"] = table["game_id"].astype(str)
+    if RANKING_SCORE_COLUMN not in table.columns:
+        table[RANKING_SCORE_COLUMN] = table["candidate_dist"]
     table = table.merge(spreads, on="game_id", how="left", validate="one_to_one")
     if len(table) != len(spreads) or table["spread_line"].isna().any():
         raise DataContractError("Best-Pick spread eligibility join dropped or duplicated games")
@@ -467,8 +501,8 @@ def nomination_v2_tie_note(result: NominationV2Result) -> str:
         return ""
     if result.tie_break == "dispersion":
         return (
-            f"{result.n_tied_at_max} games tied on calibrated-probability distance this week; "
-            "the tie was broken by lower cross-book dispersion, not chosen arbitrarily."
+            f"{result.n_tied_at_max} games are level at the top of the card this week; "
+            "the star went to the one the books disagree about least, not to an arbitrary choice."
         )
     return (
         f"This week {result.n_tied_at_max} games tie at the top of that signal, and the "
@@ -489,7 +523,9 @@ def nomination_v3_tie_note(result: NominationV3Result) -> str:
     )
 
 
-NOMINATION_V2_METHOD_SENTENCE = "nominated by calibrated probability among low-disagreement games"
+NOMINATION_V2_METHOD_SENTENCE = (
+    "the one this card is most confident in, among the games the books agree on"
+)
 
 NOMINATION_SMALL_SPREAD_CLAUSE = " with a spread of six and a half or less"
 

@@ -28,7 +28,7 @@
     if (scores && kind === 'demo') card.append(element('div', 'ball-receipt-demo', 'ILLUSTRATIVE RESULT · NOT A RECORDED GAME'));
     card.append(element('div', 'ball-receipt-label', `WEEK ${String(data.week).padStart(2, '0')} / ${game.kickoff}${game.locks ? ` · ${game.locks}` : ''}`));
     card.append(element('h3', '', `${game.away} at ${game.home}`));
-    card.append(element('p', 'ball-receipt-original', `Original pick: ${pickText(game)} · Decision score: ${game.score}`));
+    card.append(element('p', 'ball-receipt-original', `Original pick: ${pickText(game)} · Cover chance: ${game.score}`));
     const stamp = element('div', 'ball-receipt-outcome', result.outcome === 'PENDING' ? 'AWAITING A FINAL' : result.outcome);
     stamp.dataset.outcome = result.outcome;
     card.append(stamp);
@@ -114,10 +114,9 @@
     const marker = add('circle', { class: 'adjuster-marker', cx: x(0), cy: y(zero), r: 4.5 });
     add('text', { x: 16, y: 97 }, signed(lo)); add('text', { x: 136, y: 97 }, '0'); add('text', { x: 250, y: 97 }, signed(hi));
     const chartHost = widget.parentElement;
-    $$('p', chartHost).filter(p => p.textContent.includes("This chart's own swept line")).forEach(p => p.remove());
+    $$('p', chartHost).filter(p => p.textContent.includes("This chart is the model's own read")).forEach(p => p.remove());
     const cap = $('.chart-cap', chartHost); if (cap) cap.textContent = `Model cover chance · ${game.pick}`;
-    if (game.adjusted) { const note = element('p', 'ball-model-note', `Situational rules changed this pick. The card’s ${game.score} is a decision score. The original model estimates ${(zero * 100).toFixed(1)}% for ${pickText(game)}; this chart shows that model estimate.`); widget.before(note); }
-    else if (Math.abs(zero * 100 - parseFloat(game.score)) > .06) { svg.hidden = true; widget.hidden = true; chartHost.append(element('p', 'ball-invalid-curve', 'This saved curve does not match the card. It needs to be regenerated before it can be shown.')); }
+    if (Math.abs(zero * 100 - parseFloat(game.score)) > .06) { widget.before(element('p', 'ball-model-note', `This chart is the model's own read at each line: it puts ${(zero * 100).toFixed(1)}% on ${pickText(game)} at the quoted number. The ${game.score} beside the pick is the chance after the week's situational tilts and the late-week line move are counted in, and that is the number the card plays.`)); }
     const update = () => { const offset = Number(slider.value), probability = modelProbability(widget, offset); marker.setAttribute('cx', x(offset).toFixed(2)); marker.setAttribute('cy', y(probability).toFixed(2)); marker.style.opacity = '1'; $('.adjuster-pct', widget).textContent = `${(probability * 100).toFixed(1)}%`; };
     slider.addEventListener('input', update); update();
     svg.dataset.probabilityAtQuote = zero.toFixed(8);
@@ -171,8 +170,6 @@
   $$('.dive-panel').forEach(panel => {
     const game = games.get(panel.id); if (!game) return;
     repairCurve(panel, game);
-    const coverLabel = $('.cover-read small', panel); if (coverLabel) coverLabel.textContent = 'decision score';
-    $$('.game-sub', $('.dive-head', panel)).forEach(n => { [...n.childNodes].filter(c => c.nodeType === 3).forEach(t => { t.textContent = t.textContent.replace('cover prob', 'decision score'); }); });
     const actions = element('div', 'ball-actions');
     const expand = element('button', 'ball-button ball-expand primary', '↗ Game room'); expand.type = 'button'; expand.addEventListener('click', openRoom);
     const receiptButton = element('button', 'ball-button ball-receipt-open', 'Receipt'); receiptButton.type = 'button'; receiptButton.addEventListener('click', () => openReceipt(game)); actions.append(expand, receiptButton); $('.dive-head', panel).after(actions);

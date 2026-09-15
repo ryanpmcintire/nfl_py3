@@ -286,8 +286,8 @@ def test_prospective_scoreboard_reports_paired_record_once_settled() -> None:
     )
     scoreboard = board_content._build_prospective_scoreboard(paper, challenger, outcomes)
     assert scoreboard.dormant is False
-    assert "played policy 1-1" in scoreboard.headline_text
-    assert "prior chain 0-2" in scoreboard.headline_text
+    assert "the card as played 1-1" in scoreboard.headline_text
+    assert "the former rule chain 0-2" in scoreboard.headline_text
     assert scoreboard.detail_text is not None
     assert "1 recorded game" in scoreboard.detail_text
 
@@ -316,7 +316,7 @@ def test_prospective_scoreboard_ignores_rows_from_a_different_policy_or_challeng
     )
     scoreboard = board_content._build_prospective_scoreboard(paper, challenger, _outcomes([]))
     assert scoreboard.dormant is False
-    assert "prior chain 0-0" in scoreboard.headline_text
+    assert "the former rule chain 0-0" in scoreboard.headline_text
     assert "0 of 1 recorded games settled" in scoreboard.headline_text
 
     empty = pd.DataFrame()

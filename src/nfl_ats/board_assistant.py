@@ -140,14 +140,15 @@ GLOSSARY: tuple[GlossaryEntry, ...] = (
     ),
     GlossaryEntry(
         "cover probability",
-        "The model's estimated chance the picked side covers, from a "
-        "smooth Gaussian read of its out-of-time residual distribution. "
-        "A decision-strength score, not a historical win rate.",
+        "The chance the picked side covers. It combines the model's own "
+        "read of the game, the week's situational tilts and the "
+        "late-week move in the books' line, and it is set from how "
+        "often picks like it have actually landed.",
     ),
     GlossaryEntry(
         "Best Pick",
         "The pool scores one Best Pick per week. This board nominates "
-        "it by calibrated probability among low-disagreement games "
+        "it by cover chance among low-disagreement games "
         "with a spread of six and a half or less.",
     ),
     GlossaryEntry(

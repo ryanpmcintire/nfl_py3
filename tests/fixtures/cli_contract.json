@@ -105,6 +105,7 @@
         "availability-ablation",
         "player-model-selection",
         "margin-predict",
+        "fit-pick-probability",
         "market-decomposition",
         "pool-card-at-lines",
         "key-number-calibration",
@@ -379,6 +380,10 @@
         {
           "name": "margin-predict",
           "help": "score one week with fair-margin and outcome models"
+        },
+        {
+          "name": "fit-pick-probability",
+          "help": "fit the served per-game cover chance from every completed season -- the model's own read, the situational tilts and the late-week line move -- and write it to artifacts/pick_probability"
         },
         {
           "name": "market-decomposition",

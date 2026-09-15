@@ -7,6 +7,7 @@ from typing import Any
 
 import pandas as pd
 
+from nfl_ats.data import DataContractError
 from nfl_ats.pick_refresh import pick_deadline, sunday_pick_lock
 
 PUBLISHED_PICKS_FILENAME = "published_picks.parquet"
@@ -73,6 +74,37 @@ def game_deadlines(frame: pd.DataFrame) -> dict[str, pd.Timestamp]:
     ):
         deadlines[game_id] = pick_deadline(pd.Timestamp(kickoff), sunday_lock)
     return deadlines
+
+
+def locked_best_pick(artifacts_root: Path, *, season: int, week: int, now: datetime) -> str | None:
+
+    from nfl_ats.clv import load_paper_decisions
+
+    try:
+        ledger = load_paper_decisions(artifacts_root)
+    except (OSError, ValueError, DataContractError):
+        return None
+    if ledger.empty or "is_best_pick" not in ledger.columns:
+        return None
+    rows = ledger.loc[
+        pd.to_numeric(ledger["season"], errors="coerce").eq(int(season))
+        & pd.to_numeric(ledger["week"], errors="coerce").eq(int(week))
+        & ledger["is_best_pick"].fillna(False).astype(bool)
+    ]
+    if rows.empty:
+        return None
+    game_id = str(rows.iloc[-1]["game_id"])
+    published = load_published_picks(artifacts_root)
+    if not published.empty:
+        published = published.loc[
+            pd.to_numeric(published["season"], errors="coerce").eq(int(season))
+            & pd.to_numeric(published["week"], errors="coerce").eq(int(week))
+        ]
+    deadlines = game_deadlines(published)
+    deadline = deadlines.get(game_id)
+    if deadline is None:
+        return None
+    return game_id if deadline <= pd.Timestamp(now.astimezone(UTC)) else None
 
 
 def _same_state(previous: pd.Series, row: dict[str, Any]) -> bool:

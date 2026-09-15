@@ -81,6 +81,10 @@ COMPOSITION_ORDER = (
 
 INPUT_UNAVAILABLE_STATUS = "disabled_input_unavailable"
 
+OWNER_HOLD_STATUS = "disabled_owner_hold"
+
+OWNER_HELD_MEMBERS: frozenset[str] = frozenset({INTERIM_HC_FIRST_GAME_TILT, PRECIP_HIGH_TOTAL_TILT})
+
 FAIL_CLOSED_MEMBERS: frozenset[str] = frozenset(
     {COACH_FADE, DIVISION_REVENGE_TILT, PLAYER_ARRESTS_BACK_SIDE_POLICY}
 )
@@ -371,6 +375,15 @@ def _guarded_member(
 ) -> MemberProvenance:
 
     disabled = _DisabledMemberResult(raw.reset_index(drop=True).copy(), (), False)
+    if member_id in OWNER_HELD_MEMBERS:
+        return _member_provenance(
+            member_id,
+            order,
+            disabled,
+            raw,
+            status=OWNER_HOLD_STATUS,
+            detail=f"{member_id} is held off the served card by the owner and contributed no flips",
+        )
     if not available:
         return _member_provenance(
             member_id,

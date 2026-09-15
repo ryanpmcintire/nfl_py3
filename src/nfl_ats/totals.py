@@ -113,6 +113,27 @@ def make_totals_estimator(*, ridge_alpha: float = TOTALS_RIDGE_ALPHA) -> BaseEst
     )
 
 
+def feature_source_schedules_path(data_root: Path, features_path: Path) -> Path:
+
+    manifest_path = features_path.with_name(f"{features_path.stem}.manifest.json")
+    try:
+        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return newest_schedules_path(data_root)
+    record: Any = payload.get("source_snapshot")
+    if record is None:
+        snapshots = payload.get("source_snapshots")
+        record = snapshots.get("source_snapshot") if isinstance(snapshots, dict) else None
+    if isinstance(record, dict):
+        snapshot_id = str(record.get("snapshot_id") or "")
+    else:
+        snapshot_id = str(record or "")
+    if not snapshot_id:
+        return newest_schedules_path(data_root)
+    candidate = data_root / "raw" / snapshot_id / "schedules.parquet"
+    return candidate if candidate.is_file() else newest_schedules_path(data_root)
+
+
 def load_population(
     data_root: Path,
     features_path: Path,
@@ -120,7 +141,11 @@ def load_population(
     schedules_path: Path | None = None,
 ) -> pd.DataFrame:
 
-    path = schedules_path if schedules_path is not None else newest_schedules_path(data_root)
+    path = (
+        schedules_path
+        if schedules_path is not None
+        else feature_source_schedules_path(data_root, features_path)
+    )
     schedules = pd.read_parquet(path)
     lined = schedules.loc[
         schedules["home_score"].notna()

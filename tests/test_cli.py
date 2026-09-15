@@ -687,6 +687,38 @@ def test_publish_challenger_result_map_covers_live_active_registry() -> None:
     assert len(set(cli.PUBLISH_CHALLENGER_RESULT_KEYS.values())) == len(expected)
 
 
+def _seed_pick_probability(artifacts: Path) -> None:
+    from nfl_ats.pick_probability import STRENGTH_WORDS
+
+    directory = artifacts / "pick_probability" / "20260101T000000Z"
+    directory.mkdir(parents=True, exist_ok=True)
+    atomic_json(
+        {
+            "schema_version": 1,
+            "policy": "four_term_pick_probability_v1",
+            "coefficients": {
+                "intercept": 0.0,
+                "model_logit": 0.25,
+                "flag_sum": 0.25,
+                "move_toward_home": 0.2,
+                "move_available": 0.0,
+            },
+            "strength_bands": [
+                {"word": word, "minimum": minimum, "games": 100, "accuracy": 0.55}
+                for word, minimum in zip(STRENGTH_WORDS, (0.5, 0.53, 0.57), strict=True)
+            ],
+            "confidence_bands": [],
+            "fitted_games": 300,
+            "fitted_seasons": [2024, 2025],
+        },
+        directory / "coefficients.json",
+    )
+    atomic_json(
+        {"artifact": "pick_probability/20260101T000000Z"},
+        artifacts / "active_pick_probability.json",
+    )
+
+
 def test_publish_new_overlay_recorders_are_opt_in(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
@@ -705,6 +737,7 @@ def test_publish_new_overlay_recorders_are_opt_in(
 
     artifacts = tmp_path / "artifacts"
     _write_board_fixture(artifacts)
+    _seed_pick_probability(artifacts)
     active, _ = _headline_artifacts(artifacts)
     active["weekly_forecast"] = {"artifact": "margin_predictions/forecast"}
     atomic_json(active, artifacts / "active_ats_model.json")
@@ -833,6 +866,7 @@ def test_publish_new_overlay_recorder_failures_do_not_unpublish(
 
     artifacts = tmp_path / "artifacts"
     _write_board_fixture(artifacts)
+    _seed_pick_probability(artifacts)
     active, _ = _headline_artifacts(artifacts)
     active["weekly_forecast"] = {"artifact": "margin_predictions/forecast"}
     atomic_json(active, artifacts / "active_ats_model.json")

@@ -1482,7 +1482,7 @@ def test_render_picks_page_uses_v2_nomination_end_to_end(tmp_path: Path) -> None
     pd.DataFrame(quotes_rows).to_parquet(snapshot_dir / "quotes.parquet")
 
     page = render_picks_page(predictions, metadata=metadata, data_root=data_root)
-    assert "nominated by calibrated probability among low-disagreement games" in page
+    assert "the one this card is most confident in, among the games the books agree on" in page
     assert "24 of the 35" not in page
 
 

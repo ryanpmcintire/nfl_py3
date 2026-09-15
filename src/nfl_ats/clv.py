@@ -1440,6 +1440,32 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
     return ledger[list(PAPER_DECISION_COLUMNS)]
 
 
+def served_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
+
+    from nfl_ats.pick_refresh import load_pick_revisions
+
+    ledger = load_paper_decisions(artifacts_root)
+    if ledger.empty or "game_id" not in ledger.columns:
+        return ledger
+    try:
+        revisions = load_pick_revisions(artifacts_root)
+    except (ValueError, OSError, DataContractError):
+        return ledger
+    if revisions.empty or "revision_recorded_at_utc" not in revisions.columns:
+        return ledger
+    sides = {
+        str(row["game_id"]): str(row["new_pick_side"])
+        for _, row in revisions.sort_values("revision_recorded_at_utc").iterrows()
+        if str(row.get("new_pick_side") or "") in VALID_PICK_SIDES
+    }
+    if not sides:
+        return ledger
+    served = ledger.copy()
+    mapped = served["game_id"].astype(str).map(sides)
+    served["pick_side"] = mapped.where(mapped.notna(), served["pick_side"])
+    return served
+
+
 RECORDING_LOCK_WINDOW = timedelta(days=7)
 
 
@@ -1573,6 +1599,7 @@ def current_played_card_view(
         data_root=data_root,
         now=recorded_at.to_pydatetime(),
         require_fresh_arrest_overlay=require_fresh_arrest_overlay,
+        artifacts_root=artifacts_root,
     )
     raw_card = card.reset_index(drop=True)
     coach_card = view.overlay.overlaid_predictions.reset_index(drop=True)

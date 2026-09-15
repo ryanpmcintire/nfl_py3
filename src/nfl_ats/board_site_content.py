@@ -1567,9 +1567,9 @@ def _load_history_page_content(
     primary_error: str | None = None
     primary_available = False
     try:
-        from nfl_ats.clv import load_paper_decisions
+        from nfl_ats.clv import served_paper_decisions
 
-        primary = load_paper_decisions(artifacts_root)
+        primary = served_paper_decisions(artifacts_root)
     except (ValueError, OSError) as error:
         primary = pd.DataFrame()
         primary_error = str(error) or "primary paper ledger unavailable"

@@ -101,6 +101,7 @@ from nfl_ats.outcomes import (
     walk_forward_key_number_mass,
     walk_forward_outcomes,
 )
+from nfl_ats.pick_probability import ACTIVE_PICK_PROBABILITY_FILENAME
 from nfl_ats.players import injury_reports_absent_reason
 from nfl_ats.pool import (
     build_ats_pool_card,
@@ -397,6 +398,27 @@ def orchestrate_margin_predict(request: MarginPredictRequest) -> PredictionArtif
 def _cmd_margin_predict(args: argparse.Namespace) -> None:
     result = orchestrate_margin_predict(parse_margin_predict_request(args))
     _print_json({**result.metadata, "artifact_directory": str(result.output)})
+
+
+def _cmd_fit_pick_probability(args: argparse.Namespace) -> None:
+    from nfl_ats.pick_probability_fit import fit_pick_probability
+
+    del args
+    artifacts_root = _artifacts_root()
+    model, directory, metadata = fit_pick_probability(artifacts_root, _data_root())
+    _print_json(
+        {
+            "artifact_directory": str(directory),
+            "active_pointer": str(artifacts_root / ACTIVE_PICK_PROBABILITY_FILENAME),
+            "coefficients": model.to_dict()["coefficients"],
+            "strength_bands": [band.to_dict() for band in model.strength_bands],
+            "confidence_bands": [band.to_dict() for band in model.confidence_bands],
+            "records": metadata["records"],
+            "graded_games": metadata["graded_games"],
+            "games_with_market_move": metadata["games_with_market_move"],
+            "seasons": metadata["seasons"],
+        }
+    )
 
 
 def _latest_margin_prediction_dir(artifacts_root: Path) -> Path | None:
@@ -863,6 +885,16 @@ def register(
         help="also write a per-game line-sweep confidence table (line_sweep.parquet)",
     )
     margin_predict.set_defaults(handler=_cmd_margin_predict)
+
+    fit_pick_probability_parser = subparsers.add_parser(
+        "fit-pick-probability",
+        help=(
+            "fit the served per-game cover chance from every completed season -- the model's "
+            "own read, the situational tilts and the late-week line move -- and write it to "
+            "artifacts/pick_probability"
+        ),
+    )
+    fit_pick_probability_parser.set_defaults(handler=_cmd_fit_pick_probability)
 
     market_decomposition = subparsers.add_parser(
         "market-decomposition",
