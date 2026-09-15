@@ -556,6 +556,10 @@ table.board td.kickoff .lock{display:block;font-size:9px;color:var(--text-faint)
     background:var(--panel); border:1px solid var(--line); border-radius:2px;
     padding:6px 10px;
   }
+  .pool-line-note{
+    font-family:var(--font-cond); font-size:12.5px; line-height:1.5;
+    color:var(--text-dim); margin:8px 0 0; max-width:70ch;
+  }
 
   /* sortable board -- appended to verbatim mockup sheet (item 5). Vanilla
      JS (see board_terminal._SORT_SCRIPT), native <button>s so keyboard use

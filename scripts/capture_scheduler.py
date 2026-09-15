@@ -1802,7 +1802,7 @@ def due_jobs(now: datetime, state: dict[str, Any]) -> list[tuple[Job, datetime]]
 
 def unsatisfied_prerequisites(job: Job, start: datetime, state: dict[str, Any]) -> list[str]:
 
-    accepted = {"OK", "ALREADY-CAPTURED"}
+    accepted = {"OK", "ALREADY-CAPTURED", "OK-MANUAL"}
     blocked = []
     for required_name in job.requires:
         record = state["runs"].get(f"{required_name}@{start.date().isoformat()}", {})
@@ -2071,6 +2071,13 @@ def run_job_manually(job: Job, state: dict[str, Any], *, dry: bool = False) -> i
     entry["last_manual_detail"] = detail[:300]
     if status != "OK":
         entry["last_error"] = detail[:300]
+    if status == "OK" and not dry:
+        key = f"{job.name}@{datetime.now(tz=ET).date().isoformat()}"
+        fresh["runs"][key] = {
+            "status": "OK-MANUAL",
+            "window_start": datetime.now(tz=ET).isoformat(),
+            "note": "exercised by hand; unblocks jobs that require this one today",
+        }
     save_state(fresh)
     _job_health_entry(state, job.name).update(entry)
     print(f"{label} {job.name}: {status}")

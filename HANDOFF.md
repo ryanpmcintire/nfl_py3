@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-15T13:13:42.610817+00:00`
+Refreshed at: `2026-09-15T18:47:53.918679+00:00`
 
 ## Start here
 
@@ -20,12 +20,29 @@ Refreshed at: `2026-09-15T13:13:42.610817+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `6131b6db0557` — Week 1 is 9-7 everywhere: the card's record reads the sides that were served
-- Pending change set: 4 paths
+- Baseline commit: `577fded41477` — Statistical audit: the card's edge is about a third the size it advertises
+- Pending change set: 22 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - ` M docs/index.html`
-  - `A  docs/lanes/statistical-audit-2026-09-15.md`
-  - `A  scripts/statistical_audit_20260915.py`
+  - `M  README.md`
+  - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
+  - `A  docs/lanes/week2-pool-board-lock.md`
+  - `M  docs/model.html`
+  - `A  registry/experiments/margin-backtest/20260915T171205Z.json`
+  - `A  registry/experiments/margin-backtest/20260915T183932Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-02-20260915T171255Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-02-20260915T172904Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-02-20260915T184015Z.json`
+  - `A  registry/experiments/opener-evaluation/20260915T171638Z.json`
+  - `A  registry/experiments/waterfall-feed/20260915T173009Z.json`
+  - `M  scripts/capture_scheduler.py`
+  - `M  src/nfl_ats/board_content.py`
+  - `M  src/nfl_ats/board_terminal.py`
+  - `M  src/nfl_ats/board_terminal_style.css`
+  - `M  src/nfl_ats/clv.py`
+  - ...and 2 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -34,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `195222798c7e6edb`
+- Model ID: `2b7790c47566874a`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260914T161406Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260915T171638Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
-- Secondary close-grade historical classification: **1,085 / 2,075 (52.29%)**
-- Linked forecast: **2026 Week 1**, created `2026-09-14T16:09:28.255682+00:00`
+- Secondary close-grade historical classification: **1,093 / 2,091 (52.27%)**
+- Linked forecast: **2026 Week 2**, created `2026-09-15T18:40:15.686250+00:00`
 
-The 52.29% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
+The 52.27% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 1** from model `195222798c7e6edb`, published `2026-09-15T10:45:38.695089+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `2b7790c47566874a`, published `2026-09-15T18:43:22.784061+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

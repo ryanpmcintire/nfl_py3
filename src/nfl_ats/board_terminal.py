@@ -592,8 +592,11 @@ def _source_policy_panel_html(view: SourcePolicyView) -> str:
 
 def _tiebreaker_panel_html(view: TiebreakerView) -> str:
 
+    season_line = (
+        f'<p class="micro">{escape(view.season_error_text)}</p>' if view.season_error_text else ""
+    )
     if not view.recorded:
-        body = f'<p class="game-sub">{escape(view.note)}</p>'
+        body = f'<p class="game-sub">{escape(view.note)}</p>' + season_line
     else:
         guess_line = f", guess {escape(view.guess_score_text)}" if view.guess_score_text else ""
         body = (
@@ -601,7 +604,7 @@ def _tiebreaker_panel_html(view: TiebreakerView) -> str:
             f"{escape(view.market_total_text)}, blended total "
             f"{escape(view.blended_total_text)}, implied margin "
             f"{escape(view.implied_margin_text)}{guess_line}.</p>"
-            f'<p class="micro">{escape(view.note)}</p>'
+            f'<p class="micro">{escape(view.note)}</p>' + season_line
         )
     return (
         '<details class="policy-note"><summary class="micro" style="cursor:pointer;">'
@@ -1364,6 +1367,13 @@ def _page_lead(kicker: str, title: str, sub: str) -> str:
     )
 
 
+def _pool_line_note_html(content: BoardContent) -> str:
+
+    if not content.pool_line_note:
+        return ""
+    return f'<div class="pool-line-note">{escape(content.pool_line_note)}</div>'
+
+
 def _season_record_strip_html(content: BoardContent) -> str:
 
     record = content.season_record
@@ -1404,6 +1414,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         )
         + '<main class="week-page">'
         + _season_record_strip_html(content)
+        + _pool_line_note_html(content)
         + _headline_section(content.headline)
         + _week_timeline_panel(content)
         + '<div class="week-grid">'

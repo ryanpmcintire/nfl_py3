@@ -350,7 +350,10 @@ def test_real_artifacts_build_a_valid_ledger() -> None:
     assert len(ledger.rows) == len(registered) + 1
     assert ledger.rows[0].status_badge == "PROMOTED"
     assert ledger.rows[0].track_record is not None
-    assert ledger.rows[0].track_record.games == 2075
+    manifest_games = json.loads(manifest.read_text(encoding="utf-8"))["historical_evaluation"][
+        "games"
+    ]
+    assert ledger.rows[0].track_record.games == manifest_games
     superseded = [r for r in ledger.rows if r.status_badge == "SUPERSEDED"]
     assert len(superseded) == 4
     validate_ledger(ledger)

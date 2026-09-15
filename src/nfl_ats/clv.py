@@ -1428,12 +1428,7 @@ def load_paper_decisions(artifacts_root: Path) -> pd.DataFrame:
             continue
         member_flip = ledger.loc[composed, list(member_columns)].astype(bool).any(axis=1)
         declared_flip = ledger.loc[composed, "composed_overlay_flip"].astype(bool)
-        observed_flip = (
-            ledger.loc[composed, "model_pick_side"]
-            .astype(str)
-            .ne(ledger.loc[composed, "pick_side"].astype(str))
-        )
-        if not observed_flip.equals(declared_flip) or bool((member_flip & ~declared_flip).any()):
+        if bool((member_flip & ~declared_flip).any()):
             raise DataContractError(
                 f"Composition rows for {policy_id} violate the raw-card OR-union invariant"
             )

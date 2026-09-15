@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from collections.abc import Iterable, Mapping
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -829,6 +829,7 @@ class TiebreakerView:
     guess_home: int | None
     guess_away: int | None
     note: str
+    season_error_text: str = ""
 
     @property
     def matchup_text(self) -> str:
@@ -1725,6 +1726,7 @@ class BoardContent:
     ticker_chrome: TickerChrome
     link_preview: LinkPreview
     season_record: SeasonRecordStrip | None = None
+    pool_line_note: str = ""
     confidence_legend_text: str = ""
     injury_note: str = "Whether injury reports informed these picks was not recorded."
     injury_coverage_note: str = ""
@@ -2152,6 +2154,71 @@ def _build_prospective_scoreboard(
     )
     return ProspectiveScoreboard(
         dormant=False, headline_text=headline_text, detail_text=detail_text
+    )
+
+
+def _tiebreaker_season_error_text(artifacts_root: Path | None, *, season: float | None) -> str:
+
+    if artifacts_root is None or season is None:
+        return ""
+    path = Path(artifacts_root) / "prospective" / "totals_served_method_decisions.parquet"
+    if not path.is_file():
+        return ""
+    try:
+        rows = pd.read_parquet(path)
+    except (OSError, ValueError):
+        return ""
+    needed = {"season", "week", "realised_total", "market_total", "served_total_method"}
+    if not needed.issubset(rows.columns):
+        return ""
+    rows = rows.loc[pd.to_numeric(rows["season"], errors="coerce").eq(float(season))]
+    our_errors: list[float] = []
+    market_errors: list[float] = []
+    for row in rows.to_dict("records"):
+        realised = _number(row.get("realised_total"))
+        served = _number(row.get(f"served_total_{row.get('served_total_method')}"))
+        if realised is None or served is None:
+            continue
+        our_errors.append(abs(served - realised))
+        market = _number(row.get("market_total"))
+        if market is not None:
+            market_errors.append(abs(market - realised))
+    if not our_errors:
+        return ""
+    played = len(our_errors)
+    game_word = "game" if played == 1 else "games"
+    ours = sum(our_errors) / played
+    text = (
+        f"Season so far: our combined-score guess has missed by "
+        f"{ours:.1f} points a game over {played} {game_word}"
+    )
+    if market_errors:
+        theirs = sum(market_errors) / len(market_errors)
+        text += f"; the betting total missed by {theirs:.1f}"
+    return text + "."
+
+
+def _build_pool_line_note(
+    data_root: Path | None,
+    *,
+    season: float | None,
+    week: float | None,
+) -> str:
+
+    if data_root is None or season is None or week is None:
+        return ""
+    from nfl_ats.data import DataContractError
+    from nfl_ats.splash_lines import load_splash_capture
+
+    try:
+        capture = load_splash_capture(Path(data_root), int(season), int(week))
+    except DataContractError:
+        return ""
+    if capture is None:
+        return ""
+    return (
+        f"Every spread here is the number the pool posted for Week {int(week)} and locked. "
+        "It will not move before kickoff, whatever the sportsbooks do."
     )
 
 
@@ -3248,6 +3315,12 @@ def load_board_content(
     tiebreaker_view = _load_tiebreaker_view(
         forecast_dir, artifacts.metadata, active=artifacts.active
     )
+    tiebreaker_view = replace(
+        tiebreaker_view,
+        season_error_text=_tiebreaker_season_error_text(
+            artifacts_root, season=_number(artifacts.metadata.get("season"))
+        ),
+    )
 
     games: list[GameRow] = []
     week_sunday_lock = _week_sunday_lock(ordered)
@@ -3383,6 +3456,11 @@ def load_board_content(
         season=artifacts.metadata.get("season"),
         week=artifacts.metadata.get("week"),
     )
+    pool_line_note = _build_pool_line_note(
+        resolved_data_root,
+        season=_number(artifacts.metadata.get("season")),
+        week=_number(artifacts.metadata.get("week")),
+    )
 
     waterfall_document = load_waterfall_feed_document(artifacts_root)
     require_active_waterfall_feed(waterfall_document, artifacts.active)
@@ -3483,6 +3561,7 @@ def load_board_content(
         ticker_chrome=ticker_chrome,
         link_preview=link_preview,
         season_record=season_record,
+        pool_line_note=pool_line_note,
         refresh_lines=refresh_lines,
     )
 
