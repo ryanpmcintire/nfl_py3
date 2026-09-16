@@ -1856,6 +1856,44 @@ def verify_number_provenance(artifacts_root: Path) -> tuple[NumberProvenance, ..
     return tuple(results)
 
 
+def _served_path_loso_record(
+    artifacts_root: Path, active: Mapping[str, Any]
+) -> tuple[float, str] | None:
+    pointer_path = Path(artifacts_root) / "active_pick_probability.json"
+    if not pointer_path.is_file():
+        return None
+    try:
+        pointer: Any = read_json(pointer_path)
+    except (OSError, ValueError):
+        return None
+    if not isinstance(pointer, Mapping):
+        return None
+    if str(pointer.get("active_model_id") or "") != str(active.get("model_id") or ""):
+        return None
+    relative = str(pointer.get("artifact") or "")
+    if not relative:
+        return None
+    try:
+        metadata: Any = read_json(Path(artifacts_root) / relative / "metadata.json")
+    except (OSError, ValueError):
+        return None
+    if not isinstance(metadata, Mapping):
+        return None
+    records = metadata.get("records")
+    record = records.get("calibrated_out_of_season") if isinstance(records, Mapping) else None
+    if not isinstance(record, str) or "-" not in record:
+        return None
+    wins_raw, _, losses_raw = record.partition("-")
+    try:
+        wins, losses = int(wins_raw), int(losses_raw)
+    except ValueError:
+        return None
+    games = wins + losses
+    if games <= 0:
+        return None
+    return wins / games, f"{wins:,}-{losses:,} across {games:,} past games"
+
+
 def _build_headline_stats(
     artifacts_root: Path,
     active: Mapping[str, Any],
@@ -1924,8 +1962,14 @@ def _build_headline_stats(
     close_grade_pct = close_accuracy * 100 if close_accuracy is not None else None
 
     served_union = load_served_union_measurement(artifacts_root, active)
-    played_union_fraction = served_union.accuracy if served_union is not None else None
-    if played_union_fraction is not None and served_union is not None:
+    served_loso = _served_path_loso_record(artifacts_root, active)
+    if served_loso is not None:
+        played_union_fraction, served_loso_text = served_loso
+        played_card_pct = played_union_fraction * 100
+        played_card_stale = False
+        played_games_text = served_loso_text
+    elif served_union is not None:
+        played_union_fraction = served_union.accuracy
         played_card_pct = played_union_fraction * 100
         played_card_stale = False
         played_games_text = f"{served_union.scored_games:,}"
@@ -1937,13 +1981,22 @@ def _build_headline_stats(
         f"{scored_games_int:,}" if scored_games_int is not None else "an unpublished count of"
     )
     played_card_caption = (
-        f"Opener-graded accuracy across {played_games_text} past games -- the full set of "
-        "adjustments that is actually on the board this week, not a hypothetical."
+        (
+            f"Opener-graded accuracy, {played_games_text} -- each past season scored "
+            "by a model fit that had not seen it, the served adjustments only."
+            if served_loso is not None
+            else f"Opener-graded accuracy across {played_games_text} past games -- the full set of "
+            "adjustments that is actually on the board this week, not a hypothetical."
+        )
         if not played_card_stale
         else "Archive score not recomputed for this model yet."
     )
     played_card_foot_text = (
-        f"{played_games_text} opener-graded games · the card as played"
+        (
+            f"{served_loso_text} · the served card held out, opener-graded"
+            if served_loso is not None
+            else f"{played_games_text} opener-graded games · the card as played"
+        )
         if not played_card_stale
         else "archive score not recomputed for this model"
     )
@@ -1951,7 +2004,8 @@ def _build_headline_stats(
         f"{prior_chain_pct:.1f}%" if prior_chain_pct is not None else "not yet measured"
     )
     selection_caveat_text = (
-        f"This archive comparison reuses {OVERLAY_UNION_SUBSET_COUNT} correlated subsets "
+        "This record holds each past season out in turn instead of naming the best "
+        f"of {OVERLAY_UNION_SUBSET_COUNT} correlated subsets "
         "of the same adjustment rules. The spread-only adjustment was retired because "
         "it lacks an explained mechanism. This is not a prospective expectation. "
         f"The planning figure remains {PLAYED_CARD_EXPECTATION_PERCENT}%. The current "
@@ -2161,25 +2215,25 @@ def _tiebreaker_season_error_text(artifacts_root: Path | None, *, season: float 
 
     if artifacts_root is None or season is None:
         return ""
-    path = Path(artifacts_root) / "prospective" / "totals_served_method_decisions.parquet"
+    path = Path(artifacts_root) / "prospective" / "tiebreaker_shade_decisions.parquet"
     if not path.is_file():
         return ""
     try:
         rows = pd.read_parquet(path)
     except (OSError, ValueError):
         return ""
-    needed = {"season", "week", "realised_total", "market_total", "served_total_method"}
+    needed = {"season", "shaded_total", "actual_total", "market_total"}
     if not needed.issubset(rows.columns):
         return ""
     rows = rows.loc[pd.to_numeric(rows["season"], errors="coerce").eq(float(season))]
     our_errors: list[float] = []
     market_errors: list[float] = []
     for row in rows.to_dict("records"):
-        realised = _number(row.get("realised_total"))
-        served = _number(row.get(f"served_total_{row.get('served_total_method')}"))
-        if realised is None or served is None:
+        realised = _number(row.get("actual_total"))
+        published = _number(row.get("shaded_total"))
+        if realised is None or published is None:
             continue
-        our_errors.append(abs(served - realised))
+        our_errors.append(abs(published - realised))
         market = _number(row.get("market_total"))
         if market is not None:
             market_errors.append(abs(market - realised))
@@ -2194,7 +2248,7 @@ def _tiebreaker_season_error_text(artifacts_root: Path | None, *, season: float 
     )
     if market_errors:
         theirs = sum(market_errors) / len(market_errors)
-        text += f"; the betting total missed by {theirs:.1f}"
+        text += f"; the sportsbook over/under line missed by {theirs:.1f}"
     return text + "."
 
 

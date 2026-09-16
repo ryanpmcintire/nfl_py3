@@ -146,6 +146,21 @@ def summarize_predictions(predictions: pd.DataFrame) -> dict[str, Any]:
     pushes = int((wagered["profit_units"] == 0).sum())
     net_profit = float(wagered["profit_units"].sum())
     ats_margin = pd.to_numeric(predictions["ats_margin"], errors="coerce").dropna()
+    model_margin_errors: pd.Series | None = None
+    if "predicted_margin" in predictions.columns:
+        predicted = pd.to_numeric(predictions["predicted_margin"], errors="coerce")
+        if "result" in predictions.columns:
+            actual_margin = pd.to_numeric(predictions["result"], errors="coerce")
+        elif "spread_line" in predictions.columns:
+            actual_margin = ats_margin.reindex(predictions.index) + pd.to_numeric(
+                predictions["spread_line"], errors="coerce"
+            )
+        else:
+            actual_margin = None
+        if actual_margin is not None:
+            paired = pd.concat([predicted, actual_margin], axis=1).dropna()
+            if not paired.empty:
+                model_margin_errors = (paired.iloc[:, 0] - paired.iloc[:, 1]).abs()
 
     return {
         "games_scored": len(predictions),
@@ -155,6 +170,17 @@ def summarize_predictions(predictions: pd.DataFrame) -> dict[str, Any]:
         "brier_score": float(brier_score_loss(actual, probability)),
         "log_loss": float(log_loss(actual, probability, labels=[0, 1])),
         "expected_calibration_error": _calibration_error(actual, probability),
+        "model_margin_mae": (
+            float(model_margin_errors.mean()) if model_margin_errors is not None else None
+        ),
+        "model_margin_rmse": (
+            float(np.sqrt(np.square(model_margin_errors.to_numpy()).mean()))
+            if model_margin_errors is not None
+            else None
+        ),
+        "model_margin_games": (
+            int(model_margin_errors.size) if model_margin_errors is not None else 0
+        ),
         "market_margin_mae": float(ats_margin.abs().mean()),
         "market_margin_rmse": float(np.sqrt(np.square(ats_margin).mean())),
         "bets": len(wagered),

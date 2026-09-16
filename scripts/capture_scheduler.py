@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import os
@@ -2190,7 +2191,70 @@ def rehearse_all(
     return 1 if failed else 0
 
 
+def job_lock_path(job: Job) -> Path:
+    return STATE_PATH.parent / "scheduler_locks" / f"{job.name}.lock"
+
+
+def job_lock_holder(job: Job) -> int | None:
+    path = job_lock_path(job)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    if not isinstance(payload, dict):
+        return None
+    pid = payload.get("pid")
+    if not isinstance(pid, int):
+        return None
+    if pid_is_alive(pid):
+        return pid
+    try:
+        path.unlink()
+    except OSError:
+        return None
+    return None
+
+
+def acquire_job_lock(job: Job) -> bool:
+    job_lock_path(job).parent.mkdir(parents=True, exist_ok=True)
+    if job_lock_holder(job) is not None:
+        return False
+    try:
+        with job_lock_path(job).open("x", encoding="utf-8") as handle:
+            handle.write(json.dumps({"pid": os.getpid(), "job": job.name}))
+    except OSError:
+        return False
+    return True
+
+
+def release_job_lock(job: Job) -> None:
+    path = job_lock_path(job)
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return
+    if not isinstance(payload, dict) or payload.get("pid") != os.getpid():
+        return
+    with contextlib.suppress(OSError):
+        path.unlink()
+
+
 def run_job(job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False) -> None:
+    holder = job_lock_holder(job)
+    if holder is None and not acquire_job_lock(job):
+        holder = job_lock_holder(job)
+    if holder is not None:
+        log(f"SKIP {job.name} (window {start.isoformat()}): already running (pid {holder})")
+        return
+    try:
+        run_job_locked(job, start, state, catch_up=catch_up)
+    finally:
+        release_job_lock(job)
+
+
+def run_job_locked(
+    job: Job, start: datetime, state: dict[str, Any], *, catch_up: bool = False
+) -> None:
     key = f"{job.name}@{start.date().isoformat()}"
     previous = state["runs"].get(key)
     retries = int(previous.get("retries", 0)) + 1 if previous is not None else 0
@@ -2552,7 +2616,11 @@ def daemon_is_running(now: datetime) -> tuple[bool, int | None]:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--once", action="store_true", help="run what is due, then exit")
+    parser.add_argument(
+        "--once",
+        action="store_true",
+        help="run what is due, then exit (defers to the live daemon when one is active)",
+    )
     parser.add_argument("--status", action="store_true", help="print schedule and exit")
     parser.add_argument(
         "--brief",
@@ -2687,10 +2755,18 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.once:
+        daemon_alive, daemon_pid = daemon_is_running(now)
         for job, start in due_jobs(now, state):
             satisfied, age = already_captured(job, now)
             if satisfied and age is not None:
                 record_already_captured(job, start, age, state)
+                continue
+            if daemon_alive:
+                closes = (start + timedelta(minutes=job.grace_minutes)).strftime("%H:%M")
+                log(
+                    f"DEFER {job.name} (window {start.isoformat()}, closes {closes}): "
+                    f"daemon active (pid {daemon_pid})"
+                )
                 continue
             run_job(job, start, state)
         sweep_missed(now, state)

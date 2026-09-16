@@ -162,66 +162,173 @@ def _cmd_weak_signals_invalidate(args: argparse.Namespace) -> None:
 
 
 def _cmd_weak_signals_record(args: argparse.Namespace) -> None:
-
-    path = weak_signal_registry_path()
-    interval = None
-    if args.interval_low is not None and args.interval_high is not None:
-        interval = (float(args.interval_low), float(args.interval_high))
-    signal = WeakSignal(
-        name=args.name,
-        recorded_at=args.recorded_at or datetime.now(UTC).date().isoformat(),
-        description=args.description,
-        source=args.source,
-        effect=float(args.effect),
-        effect_units=args.effect_units,
-        classification=args.classification,
-        league=args.league,
-        seasons=(int(args.season_start), int(args.season_end)),
-        standard_error=args.standard_error,
-        interval=interval,
-        probability_positive=args.probability_positive,
-        sample_games=args.sample_games,
-        sample_blocks=args.sample_blocks,
-        reliability=args.reliability,
-        family=args.family,
-        classification_evidence=args.classification_evidence,
-        closing_ground=args.closing_ground,
-        notes=args.notes,
-        plain_summary=args.plain_summary,
-        category=args.category,
+    if getattr(args, "batch", None) is not None:
+        _cmd_weak_signals_record_batch(args)
+        return
+    missing = [
+        flag
+        for flag, value in (
+            ("--name", args.name),
+            ("--description", args.description),
+            ("--source", args.source),
+            ("--effect", args.effect),
+            ("--effect-units", args.effect_units),
+            ("--classification", args.classification),
+            ("--league", args.league),
+            ("--season-start", args.season_start),
+            ("--season-end", args.season_end),
+        )
+        if value is None
+    ]
+    if missing:
+        raise ValueError(f"weak-signals record is missing required flags: {', '.join(missing)}")
+    signal = _record_weak_signal_entry(args)
+    _print_json(
+        {
+            "registry": str(weak_signal_registry_path()),
+            "recorded": signal.name,
+            "classification": signal.classification,
+            "effect": signal.effect,
+            "effect_units": signal.effect_units,
+            "favours_candidate": signal.favours_candidate,
+            "total_signals": _weak_signal_count(),
+        }
     )
-    with file_lock(path):
-        registry, quarantined = _load_weak_signals_for_write(path)
-        if signal.name in quarantined and not args.replace:
-            raise WeakSignalError(
-                f"Signal {signal.name!r} is already recorded but currently fails "
-                f"validation ({quarantined[signal.name].error}); pass --replace to "
-                "repair it with this record"
-            )
-        registry = record_signal(registry, signal, replace=args.replace)
-        _save_weak_signals_for_write(registry, quarantined, path)
     if not args.plain_summary:
         print(
-            f"warning: {signal.name!r} recorded with no --plain-summary; the public "
+            f"warning: {args.name!r} recorded with no --plain-summary; the public "
             "Signal Ledger page will show its raw description instead of plain "
             "English for this row",
             file=sys.stderr,
         )
     if not args.category:
         print(
-            f"warning: {signal.name!r} recorded with no --category; it will render "
+            f"warning: {args.name!r} recorded with no --category; it will render "
             "under 'Uncategorised' on the public Signal Ledger page",
             file=sys.stderr,
         )
+
+
+_BATCH_SHARED_FIELDS = (
+    "description",
+    "source",
+    "classification",
+    "league",
+    "season_start",
+    "season_end",
+    "family",
+    "classification_evidence",
+    "closing_ground",
+    "notes",
+    "plain_summary",
+    "category",
+    "recorded_at",
+)
+
+_BATCH_REQUIRED_FIELDS = (
+    "name",
+    "description",
+    "source",
+    "effect",
+    "effect_units",
+    "classification",
+    "league",
+    "season_start",
+    "season_end",
+)
+
+_RECORD_ENTRY_DEFAULTS = {
+    "recorded_at": None,
+    "standard_error": None,
+    "interval_low": None,
+    "interval_high": None,
+    "probability_positive": None,
+    "sample_games": None,
+    "sample_blocks": None,
+    "reliability": None,
+    "family": None,
+    "classification_evidence": "",
+    "closing_ground": None,
+    "notes": "",
+    "plain_summary": None,
+    "category": None,
+    "replace": False,
+}
+
+
+def _weak_signal_count() -> int:
+    return len(load_weak_signals(weak_signal_registry_path()).signals)
+
+
+def _record_weak_signal_entry(entry: Any) -> WeakSignal:
+    interval = None
+    if entry.interval_low is not None and entry.interval_high is not None:
+        interval = (float(entry.interval_low), float(entry.interval_high))
+    signal = WeakSignal(
+        name=entry.name,
+        recorded_at=entry.recorded_at or datetime.now(UTC).date().isoformat(),
+        description=entry.description,
+        source=entry.source,
+        effect=float(entry.effect),
+        effect_units=entry.effect_units,
+        classification=entry.classification,
+        league=entry.league,
+        seasons=(int(entry.season_start), int(entry.season_end)),
+        standard_error=entry.standard_error,
+        interval=interval,
+        probability_positive=entry.probability_positive,
+        sample_games=entry.sample_games,
+        sample_blocks=entry.sample_blocks,
+        reliability=entry.reliability,
+        family=entry.family,
+        classification_evidence=entry.classification_evidence,
+        closing_ground=entry.closing_ground,
+        notes=entry.notes,
+        plain_summary=entry.plain_summary,
+        category=entry.category,
+    )
+    path = weak_signal_registry_path()
+    with file_lock(path):
+        registry, quarantined = _load_weak_signals_for_write(path)
+        if signal.name in quarantined and not entry.replace:
+            raise WeakSignalError(
+                f"Signal {signal.name!r} is already recorded but currently fails "
+                f"validation ({quarantined[signal.name].error}); pass --replace to "
+                "repair it with this record"
+            )
+        registry = record_signal(registry, signal, replace=entry.replace)
+        _save_weak_signals_for_write(registry, quarantined, path)
+    return signal
+
+
+def _cmd_weak_signals_record_batch(args: argparse.Namespace) -> None:
+    from types import SimpleNamespace
+
+    try:
+        payload = json.loads(Path(str(args.batch)).read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        raise ValueError(f"batch file {args.batch!r} is unreadable: {error}") from error
+    if not isinstance(payload, dict) or not isinstance(payload.get("cells"), list):
+        raise ValueError("batch file must be an object with a cells array")
+    shared = {key: payload.get(key) for key in _BATCH_SHARED_FIELDS}
+    recorded: list[str] = []
+    for index, raw in enumerate(payload["cells"]):
+        if not isinstance(raw, dict):
+            raise ValueError(f"batch cell {index} is not an object")
+        merged = dict(shared)
+        merged.update({key: value for key, value in raw.items() if value is not None})
+        missing = [key for key in _BATCH_REQUIRED_FIELDS if merged.get(key) is None]
+        if missing:
+            raise ValueError(f"batch cell {index} is missing required fields: {', '.join(missing)}")
+        merged.setdefault("replace", args.replace)
+        entry = SimpleNamespace(**{**_RECORD_ENTRY_DEFAULTS, **merged})
+        recorded.append(_record_weak_signal_entry(entry).name)
     _print_json(
         {
-            "registry": str(path),
-            "recorded": signal.name,
-            "classification": signal.classification,
-            "effect": signal.effect,
-            "effect_units": signal.effect_units,
-            "favours_candidate": signal.favours_candidate,
-            "total_signals": len(registry.signals),
+            "registry": str(weak_signal_registry_path()),
+            "recorded": len(recorded),
+            "family": payload.get("family"),
+            "names": recorded,
         }
     )
 
@@ -547,19 +654,33 @@ def register(
         help="record one below-power result so it is kept instead of re-litigated; "
         "an interval containing zero is NOT a negative and belongs here",
     )
-    weak_signals_record.add_argument("--name", required=True)
-    weak_signals_record.add_argument("--description", required=True)
+    weak_signals_record.add_argument("--name", required=False, default=None)
+    weak_signals_record.add_argument("--description", required=False, default=None)
     weak_signals_record.add_argument(
-        "--source", required=True, help="artifact path or doc that records the measurement"
+        "--source",
+        required=False,
+        default=None,
+        help="artifact path or doc that records the measurement",
     )
-    weak_signals_record.add_argument("--effect", type=float, required=True)
-    weak_signals_record.add_argument("--effect-units", choices=tuple(EFFECT_UNITS), required=True)
+    weak_signals_record.add_argument("--effect", type=float, required=False, default=None)
     weak_signals_record.add_argument(
-        "--classification", choices=tuple(CLASSIFICATIONS), required=True
+        "--effect-units", choices=tuple(EFFECT_UNITS), required=False, default=None
     )
-    weak_signals_record.add_argument("--league", choices=tuple(LEAGUES), required=True)
-    weak_signals_record.add_argument("--season-start", type=int, required=True)
-    weak_signals_record.add_argument("--season-end", type=int, required=True)
+    weak_signals_record.add_argument(
+        "--classification", choices=tuple(CLASSIFICATIONS), required=False, default=None
+    )
+    weak_signals_record.add_argument(
+        "--league", choices=tuple(LEAGUES), required=False, default=None
+    )
+    weak_signals_record.add_argument("--season-start", type=int, required=False, default=None)
+    weak_signals_record.add_argument("--season-end", type=int, required=False, default=None)
+    weak_signals_record.add_argument(
+        "--batch",
+        default=None,
+        help="record many sibling cells under one family in one call: a JSON file "
+        "with shared defaults plus a cells array; each cell inherits the "
+        "defaults and overrides per field",
+    )
     weak_signals_record.add_argument("--standard-error", type=float, default=None)
     weak_signals_record.add_argument("--interval-low", type=float, default=None)
     weak_signals_record.add_argument("--interval-high", type=float, default=None)

@@ -566,6 +566,230 @@
       "source": "scripts/attention_followup_screen.py; artifacts/attention_followup/20260819T191700Z/results.json; docs/attention_followup.md",
       "standard_error": null
     },
+    "audit_verify_nested_flag_screen_loso": {
+      "category": null,
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Same held-out delta as the fixed served set (+2.395); positive in all six held-out seasons; decisive record 286-248 on 534 games; within-week flag-shuffle null over 200 draws mean +0.09 sd 0.62 max +2.33 so observed sits above every draw. Interval crosses zero at 95% so not terminal; no closing ground applies.",
+      "closing_ground": null,
+      "description": "Nested leave-one-season-out check of the served four-term probability: flag membership re-screened on the five training seasons only (keep flags with training delta above zero among the nine candidates), one flag_sum coefficient refit per fold, scored on the held-out season; paired delta vs raw model pick (p at or above 0.5)",
+      "effect": 2.5283,
+      "effect_units": "accuracy_points",
+      "family": "four_term_probability",
+      "interval": [
+        -0.1315,
+        5.1027
+      ],
+      "league": "nfl",
+      "notes": "Answers the 2026-09-15 audit's model-selection finding for the SERVED path: selection among the nine coded candidates does not inflate the held-out number. Does not cover selection of the nine from the wider look history or in-sample tuning of flag definitions. Correlated with four_term_probability_* rows; never pool as independent.",
+      "plain_summary": "When the card's extra situational flags are chosen using only past seasons and then tested on a season they never saw, the picks still land about two and a half games per hundred ahead of the raw model. That is a fair check, not a number tuned on the games it was scored on.",
+      "probability_positive": 0.969,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lanes/audit_verify_20260915/nested_out.txt",
+      "standard_error": null
+    },
+    "availability_experiments__market_residual_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: availability_experiments market_residual|ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 2.289156626506024,
+      "effect_units": "accuracy_points",
+      "family": "availability_experiments",
+      "interval": [
+        0.5555558216745281,
+        4.062047983487215
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.9965,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.8945133065848692
+    },
+    "availability_experiments__market_residual_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: availability_experiments market_residual|ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0030463609261684173,
+      "effect_units": "brier_improvement",
+      "family": "availability_experiments",
+      "interval": [
+        -0.00515995317239606,
+        -0.0008988441578515285
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0015,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0010870176057511559
+    },
+    "availability_experiments__market_residual_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: availability_experiments market_residual|ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.006514197468710617,
+      "effect_units": "log_loss_improvement",
+      "family": "availability_experiments",
+      "interval": [
+        -0.011069227278578524,
+        -0.0020013034048676965
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.001,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0023132458861507216
+    },
+    "availability_experiments__market_residual_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: availability_experiments market_residual|ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -4.5697213766632245,
+      "effect_units": "mae_improvement",
+      "family": "availability_experiments",
+      "interval": [
+        -4.79321554600572,
+        -4.31121940725223
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2127,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.12295819866160462
+    },
+    "backtests__single__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: backtests single on accuracy, 8 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.45783132530120485,
+      "effect_units": "accuracy_points",
+      "family": "backtests",
+      "interval": [
+        -2.257770738326823,
+        0.9472939172298497
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: behind the market.",
+      "probability_positive": 0.308,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.8176185345807838
+    },
+    "backtests__single__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: backtests single on brier, 8 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0008790819784442991,
+      "effect_units": "brier_improvement",
+      "family": "backtests",
+      "interval": [
+        -0.0020294746343286507,
+        0.0001458391349333988
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.05,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005549269819546044
+    },
+    "backtests__single__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: backtests single on log_loss, 8 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.001773191557633742,
+      "effect_units": "log_loss_improvement",
+      "family": "backtests",
+      "interval": [
+        -0.004098433165194286,
+        0.0002913142240001222
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.049,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0011198335176516346
+    },
     "backup_tenure_gap_on_production": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -7560,6 +7784,118 @@
       "source": "artifacts/cfb_lead_screens_wave1/altitude_cold/20260905T024538Z/results.json",
       "standard_error": null
     },
+    "cfb_benchmark__market_market_residual_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_benchmark market+market_residual|market+ridge on accuracy, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.7147707979626485,
+      "effect_units": "accuracy_points",
+      "family": "cfb_benchmark",
+      "interval": [
+        0.9212395302894308,
+        2.4297777961961486
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.38483119028232593
+    },
+    "cfb_benchmark__market_market_residual_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_benchmark market+market_residual|market+ridge on brier, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0006066155037337016,
+      "effect_units": "brier_improvement",
+      "family": "cfb_benchmark",
+      "interval": [
+        -0.0018116907482534092,
+        0.00038140868023866413
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.1245,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005594641399214473
+    },
+    "cfb_benchmark__market_market_residual_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_benchmark market+market_residual|market+ridge on log_loss, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0012878194008982074,
+      "effect_units": "log_loss_improvement",
+      "family": "cfb_benchmark",
+      "interval": [
+        -0.0038175525048462547,
+        0.0007478859477405442
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.1185,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0011646526664762244
+    },
+    "cfb_benchmark__market_market_residual_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_benchmark market+market_residual|market+ridge on margin_mae, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.6870301192438301,
+      "effect_units": "mae_improvement",
+      "family": "cfb_benchmark",
+      "interval": [
+        -0.9906162059594916,
+        -0.37355446537144543
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.15741370933368526
+    },
     "cfb_bias_battery_bowl_eligibility_opponent": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -8344,6 +8680,118 @@
       "source": "docs/fluview_cfb_replication.md; scripts/fluview_cfb_replication.py; artifacts/fluview_cfb_replication/20260901T185542Z/results.json (screen); artifacts/fluview_cfb_replication/20260901T185503Z/results.json (positive control); artifacts/fluview_cfb_replication/20260901T185447Z/results.json (null); artifacts/fluview_cfb_replication/coverage.json",
       "standard_error": null
     },
+    "cfb_james_stein_unit__market_market_residual_market_residual_js_unit_value_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_james_stein_unit market+market_residual+market_residual_js_unit_value|market+ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.2903225806451613,
+      "effect_units": "accuracy_points",
+      "family": "cfb_james_stein_unit",
+      "interval": [
+        0.41096810644911214,
+        2.2020369585100994
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.4569053194033131
+    },
+    "cfb_james_stein_unit__market_market_residual_market_residual_js_unit_value_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_james_stein_unit market+market_residual+market_residual_js_unit_value|market+ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.000774813918239438,
+      "effect_units": "brier_improvement",
+      "family": "cfb_james_stein_unit",
+      "interval": [
+        -0.001972369405647215,
+        0.00023324612602460248
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.069,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005626570233856677
+    },
+    "cfb_james_stein_unit__market_market_residual_market_residual_js_unit_value_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_james_stein_unit market+market_residual+market_residual_js_unit_value|market+ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0016316102122307364,
+      "effect_units": "log_loss_improvement",
+      "family": "cfb_james_stein_unit",
+      "interval": [
+        -0.004145266199865112,
+        0.00044878438839777594
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0685,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0011719516806793081
+    },
+    "cfb_james_stein_unit__market_market_residual_market_residual_js_unit_value_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_james_stein_unit market+market_residual+market_residual_js_unit_value|market+ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.6918001262046624,
+      "effect_units": "mae_improvement",
+      "family": "cfb_james_stein_unit",
+      "interval": [
+        -0.9915370764642389,
+        -0.3830459346027799
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.15522733210751505
+    },
     "cfb_lead44_sandwich_fade_on_benchmark": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -8931,6 +9379,118 @@
       ],
       "source": "docs/surgical_injury.md sec 3.3",
       "standard_error": null
+    },
+    "cfb_role_experiments__market_market_residual_market_residual_roles_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_role_experiments market+market_residual+market_residual_roles|market+ridge on accuracy, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.2139219015280136,
+      "effect_units": "accuracy_points",
+      "family": "cfb_role_experiments",
+      "interval": [
+        0.1055880738559187,
+        2.2611609550672003
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.9835,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.5498910411253269
+    },
+    "cfb_role_experiments__market_market_residual_market_residual_roles_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_role_experiments market+market_residual+market_residual_roles|market+ridge on brier, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.001079230391227179,
+      "effect_units": "brier_improvement",
+      "family": "cfb_role_experiments",
+      "interval": [
+        -0.00224826484936261,
+        -3.301622187117087e-05
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0205,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005651144457886324
+    },
+    "cfb_role_experiments__market_market_residual_market_residual_roles_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_role_experiments market+market_residual+market_residual_roles|market+ridge on log_loss, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0027267196751963544,
+      "effect_units": "log_loss_improvement",
+      "family": "cfb_role_experiments",
+      "interval": [
+        -0.0054841785619794,
+        -0.0002839557343961888
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0013265874560161254
+    },
+    "cfb_role_experiments__market_market_residual_market_residual_roles_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_role_experiments market+market_residual+market_residual_roles|market+ridge on margin_mae, 2 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.7097998513172369,
+      "effect_units": "mae_improvement",
+      "family": "cfb_role_experiments",
+      "interval": [
+        -1.0007574620471948,
+        -0.41337087940745104
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.14984351597952647
     },
     "cfb_served_tilt_bowl_dead_analogue_2012_2019": {
       "category": "schedule",
@@ -9940,6 +10500,118 @@
       "source": "artifacts/cfb_lead_screens_wave2/true_freshman_road_qb/20260905T174603Z/results.json",
       "standard_error": null
     },
+    "cfb_value_weighted_continuity__market_market_residual_market_residual_value_roles_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_value_weighted_continuity market+market_residual+market_residual_value_roles|market+ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.595925297113752,
+      "effect_units": "accuracy_points",
+      "family": "cfb_value_weighted_continuity",
+      "interval": [
+        0.797027601040156,
+        2.306305996351354
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.38501999880387705
+    },
+    "cfb_value_weighted_continuity__market_market_residual_market_residual_value_roles_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_value_weighted_continuity market+market_residual+market_residual_value_roles|market+ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0008622046065984746,
+      "effect_units": "brier_improvement",
+      "family": "cfb_value_weighted_continuity",
+      "interval": [
+        -0.001967814056322952,
+        7.91879624703764e-05
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.039,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005221943925493185
+    },
+    "cfb_value_weighted_continuity__market_market_residual_market_residual_value_roles_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_value_weighted_continuity market+market_residual+market_residual_value_roles|market+ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0026851323701485574,
+      "effect_units": "log_loss_improvement",
+      "family": "cfb_value_weighted_continuity",
+      "interval": [
+        -0.005273869616729193,
+        -0.0004632741018588621
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.008,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0012271927333852887
+    },
+    "cfb_value_weighted_continuity__market_market_residual_market_residual_value_roles_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_value_weighted_continuity market+market_residual+market_residual_value_roles|market+ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.7219057270305663,
+      "effect_units": "mae_improvement",
+      "family": "cfb_value_weighted_continuity",
+      "interval": [
+        -1.0262389834417918,
+        -0.41826583526301286
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.1550951908619334
+    },
     "cfb_value_weighted_role_continuity": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -9967,6 +10639,118 @@
       ],
       "source": "artifacts/cfb_value_weighted_continuity/20260818T211758Z/paired_comparisons.csv",
       "standard_error": null
+    },
+    "cfb_variance_experiments__market_market_residual_market_residual_variance_market_ridge_ridge_variance__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_variance_experiments market+market_residual+market_residual_variance|market+ridge+ridge_variance on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.6893039049235992,
+      "effect_units": "accuracy_points",
+      "family": "cfb_variance_experiments",
+      "interval": [
+        0.9143648020835381,
+        2.424563101301798
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.3852546681679234
+    },
+    "cfb_variance_experiments__market_market_residual_market_residual_variance_market_ridge_ridge_variance__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_variance_experiments market+market_residual+market_residual_variance|market+ridge+ridge_variance on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0007066581321684665,
+      "effect_units": "brier_improvement",
+      "family": "cfb_variance_experiments",
+      "interval": [
+        -0.001894422463943919,
+        0.00026126255002743246
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.081,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005499196464212631
+    },
+    "cfb_variance_experiments__market_market_residual_market_residual_variance_market_ridge_ridge_variance__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_variance_experiments market+market_residual+market_residual_variance|market+ridge+ridge_variance on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0014936010373139625,
+      "effect_units": "log_loss_improvement",
+      "family": "cfb_variance_experiments",
+      "interval": [
+        -0.003940152473842683,
+        0.0005134467970722181
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0765,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0011361222629884952
+    },
+    "cfb_variance_experiments__market_market_residual_market_residual_variance_market_ridge_ridge_variance__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: cfb_variance_experiments market+market_residual+market_residual_variance|market+ridge+ridge_variance on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.6870301192438301,
+      "effect_units": "mae_improvement",
+      "family": "cfb_variance_experiments",
+      "interval": [
+        -0.9906162059594916,
+        -0.37355446537144543
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.15741370933368526
     },
     "close_game_luck_early_season_fade": {
       "category": "onfield",
@@ -15173,6 +15957,118 @@
       "source": "scripts/era_weighting_cfb_screen.py; artifacts\\era_weighting_cfb_screen\\20260819T235500Z\\paired_comparisons.csv; docs/era_weighting_screen.md",
       "standard_error": null
     },
+    "era_weighting_cfb_screen__baseline_half_life_16_half_life_2_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: era_weighting_cfb_screen baseline+half_life_16+half_life_2|market+ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.5025466893039048,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_cfb_screen",
+      "interval": [
+        0.7750831561646494,
+        2.168085395362457
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 1.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.3553577140810733
+    },
+    "era_weighting_cfb_screen__baseline_half_life_16_half_life_2_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: era_weighting_cfb_screen baseline+half_life_16+half_life_2|market+ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0014778001729670311,
+      "effect_units": "brier_improvement",
+      "family": "era_weighting_cfb_screen",
+      "interval": [
+        -0.0026395487766237066,
+        -0.00043239116226365695
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005630504118265433
+    },
+    "era_weighting_cfb_screen__baseline_half_life_16_half_life_2_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: era_weighting_cfb_screen baseline+half_life_16+half_life_2|market+ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.003224756384693316,
+      "effect_units": "log_loss_improvement",
+      "family": "era_weighting_cfb_screen",
+      "interval": [
+        -0.005620499519444476,
+        -0.0010908249456178208
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.001155529228017004
+    },
+    "era_weighting_cfb_screen__baseline_half_life_16_half_life_2_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: era_weighting_cfb_screen baseline+half_life_16+half_life_2|market+ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.7140224289377648,
+      "effect_units": "mae_improvement",
+      "family": "era_weighting_cfb_screen",
+      "interval": [
+        -1.0289413986213232,
+        -0.3927025818993691
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.16230582059233525
+    },
     "era_weighting_half_life_8_opener_confirmation": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -15397,6 +16293,118 @@
       "source": "scripts/era_weighting_nfl_screen.py; artifacts\\era_weighting_nfl_screen\\20260820T000500Z\\paired_comparisons.csv; docs/era_weighting_screen.md",
       "standard_error": null
     },
+    "era_weighting_nfl_screen__baseline_half_life_16_half_life_2_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: era_weighting_nfl_screen baseline+half_life_16+half_life_2|ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 0.9037616023448949,
+      "effect_units": "accuracy_points",
+      "family": "era_weighting_nfl_screen",
+      "interval": [
+        -0.6499438061938062,
+        2.34439897411394
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.863,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2047,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.7638629541601394
+    },
+    "era_weighting_nfl_screen__baseline_half_life_16_half_life_2_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: era_weighting_nfl_screen baseline+half_life_16+half_life_2|ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.009427607860815618,
+      "effect_units": "brier_improvement",
+      "family": "era_weighting_nfl_screen",
+      "interval": [
+        -0.014611335578082455,
+        -0.00529501906449593
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2047,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0023766113555067666
+    },
+    "era_weighting_nfl_screen__baseline_half_life_16_half_life_2_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: era_weighting_nfl_screen baseline+half_life_16+half_life_2|ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.020440872620978948,
+      "effect_units": "log_loss_improvement",
+      "family": "era_weighting_nfl_screen",
+      "interval": [
+        -0.03166897619562688,
+        -0.011507865061271862
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2047,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0051431405954987285
+    },
+    "era_weighting_nfl_screen__baseline_half_life_16_half_life_2_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: era_weighting_nfl_screen baseline+half_life_16+half_life_2|ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -4.996981122390521,
+      "effect_units": "mae_improvement",
+      "family": "era_weighting_nfl_screen",
+      "interval": [
+        -5.412937137491633,
+        -4.636258585904274
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2111,
+      "seasons": [
+        2011,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.1981322835682037
+    },
     "estimation_variance_bagging_stability_cfb": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -15527,6 +16535,90 @@
       ],
       "source": "artifacts/experiments/expected_lineup_loss_cx5/production/screen/results.json",
       "standard_error": null
+    },
+    "experiments__single__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: experiments single on accuracy, 9 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 0.024096385542168672,
+      "effect_units": "accuracy_points",
+      "family": "experiments",
+      "interval": [
+        -1.6848782583730553,
+        1.3983432475829003
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.519,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.7865360984581519
+    },
+    "experiments__single__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: experiments single on brier, 9 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0008147478927645435,
+      "effect_units": "brier_improvement",
+      "family": "experiments",
+      "interval": [
+        -0.0017210484625085518,
+        -4.917930845479191e-05
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.023,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0004264972331769796
+    },
+    "experiments__single__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: experiments single on log_loss, 9 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0016425156509476155,
+      "effect_units": "log_loss_improvement",
+      "family": "experiments",
+      "interval": [
+        -0.003464457084645577,
+        -0.0001070704290587699
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.023,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0008564761876496957
     },
     "ffc_adp_cellA_highadp_underdog_back_ppr_w14": {
       "category": "attention",
@@ -35713,6 +36805,62 @@
       "source": "artifacts/rookie_kicker_flags_on_production/kicker_change/20260905T164558Z/results.json",
       "standard_error": null
     },
+    "lane_replay_feasibility_effect_se_k3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero on the low side; permutation p 0.046 at 12 positives; split-half reliability of the predictor not measured (unit 2); no positive control run",
+      "closing_ground": null,
+      "description": "ENG-45 unit 1: does the max |effect/SE| over a family's first 3 registry cells predict that the family eventually resolves (refuted or bounded)? Somers' D = 2*AUC-1 from AUC 0.688 [0.476, 0.860]; permutation p 0.046 within cell-count buckets; 36 families, 12 resolved; 6 looks in the family (k in 1,2,3 x 2 predictors)",
+      "effect": 0.376,
+      "effect_units": "correlation",
+      "family": "lane_replay_feasibility_v1",
+      "interval": [
+        -0.048,
+        0.72
+      ],
+      "league": "nfl",
+      "notes": "Dream-RSI replay feasibility; minor look-ahead: 2 of 12 resolved families carry their closing cell inside the first 3",
+      "plain_summary": "When a research idea's first few measurements already show a large effect relative to their noise, that idea is somewhat more likely to end up decisively settled later. The sample of settled ideas is small, so this is a lead, not a rule.",
+      "probability_positive": 0.964,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 36,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/lane_replay/20260916T144228Z/results.json",
+      "standard_error": null
+    },
+    "lane_replay_feasibility_prob_dev_k3": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval crosses zero; permutation p 0.246; reliability not measured; no positive control",
+      "closing_ground": null,
+      "description": "ENG-45 unit 1: does the mean |P+ - 0.5| over a family's first 3 registry cells predict eventual resolution? Somers' D from AUC 0.586 [0.443, 0.733]; permutation p 0.246; 80 families, 18 resolved; same 6-look family",
+      "effect": 0.172,
+      "effect_units": "correlation",
+      "family": "lane_replay_feasibility_v1",
+      "interval": [
+        -0.114,
+        0.466
+      ],
+      "league": "nfl",
+      "notes": "Dream-RSI replay feasibility, weaker predictor of the pair",
+      "plain_summary": "How far an idea's first few measurements sit from a coin flip says little about whether the idea gets settled later.",
+      "probability_positive": 0.877,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 80,
+      "sample_games": null,
+      "seasons": [
+        2009,
+        2025
+      ],
+      "source": "artifacts/lane_replay/20260916T144228Z/results.json",
+      "standard_error": null
+    },
     "late_season_crew_tightness_reliability": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -39770,6 +40918,62 @@
       "source": "artifacts/availability_experiments/20260813T133345Z/paired_comparisons.csv; docs/availability_confirmation.md sec 1.2 (M4); ROADMAP.md#PER-11",
       "standard_error": null
     },
+    "line_move_implied_pick_vs_served_loso": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval sits on the wrong side of zero for the implied-pick claim",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MKT-20 unit 1 companion: predicted move added to opener as a pick, graded cover accuracy at the opener vs served 841-662; ridge -3.6593 points [-5.7299, -1.7577], P+ 0.000; GBR -3.5928, same verdict",
+      "effect": -3.6593,
+      "effect_units": "accuracy_points",
+      "family": "line_move_target_v1",
+      "interval": [
+        -5.7299,
+        -1.7577
+      ],
+      "league": "nfl",
+      "notes": "companion cell; Brier and log-loss losses live in the artifact; SE corrected to bootstrap width after validator flagged the first offer",
+      "plain_summary": "Turning the predicted line move into picks trailed the served card by about three and a half games per hundred.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_target/20260916T192806Z",
+      "standard_error": 1.013
+    },
+    "line_move_predict_mae_vs_zero_loso": {
+      "category": "market",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval sits on the wrong side of zero for the predictability claim",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MKT-20 unit 1: ridge on opener-time features predicts close-minus-open, LOSO 2020-2025, paired on 1,503 games; MAE 0.9877 vs zero-move 0.9686, gain -0.0191 [-0.0363, -0.0047], P+ 0.003; GBR worse (-0.1058, IS-OOS gap -0.2051, overfit)",
+      "effect": -0.0191,
+      "effect_units": "mae_improvement",
+      "family": "line_move_target_v1",
+      "interval": [
+        -0.0363,
+        -0.0047
+      ],
+      "league": "nfl",
+      "notes": "8 looks, both candidates reported; label std move 1.485 vs margin 12.97",
+      "plain_summary": "Predicting how far the line will move did worse than predicting no move at all, so the move stays an input, never a forecast target.",
+      "probability_positive": 0.003,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/line_move_target/20260916T192806Z",
+      "standard_error": 0.00808
+    },
     "line_size_shrinkage_ak1_card_0_6p5_2020_2025": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -42093,6 +43297,118 @@
       ],
       "source": "artifacts/schedule_flag_on_production/low_total_div_dog/20260905T032318Z/results.json",
       "standard_error": null
+    },
+    "margins__direct_ats_fair_margin_market_logistic_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: margins direct_ats+fair_margin+market|logistic+market+ridge on accuracy, 55 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 2.271640363462458,
+      "effect_units": "accuracy_points",
+      "family": "margins",
+      "interval": [
+        0.8989182320887372,
+        3.534040077736352
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.999,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2091,
+      "seasons": [
+        2018,
+        2026
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.6722249606243916
+    },
+    "margins__direct_ats_fair_margin_market_logistic_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: margins direct_ats+fair_margin+market|logistic+market+ridge on brier, 55 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0024616230534399257,
+      "effect_units": "brier_improvement",
+      "family": "margins",
+      "interval": [
+        -0.0043671350628500865,
+        -0.0004844097756727046
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0065,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2091,
+      "seasons": [
+        2018,
+        2026
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0009904911446881077
+    },
+    "margins__direct_ats_fair_margin_market_logistic_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: margins direct_ats+fair_margin+market|logistic+market+ridge on log_loss, 55 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.005295541571839424,
+      "effect_units": "log_loss_improvement",
+      "family": "margins",
+      "interval": [
+        -0.009343233422148413,
+        -0.001170756417639382
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0045,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2091,
+      "seasons": [
+        2018,
+        2026
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.002084815562374753
+    },
+    "margins__direct_ats_fair_margin_market_logistic_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: margins direct_ats+fair_margin+market|logistic+market+ridge on margin_mae, 55 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -4.607787319953663,
+      "effect_units": "mae_improvement",
+      "family": "margins",
+      "interval": [
+        -4.83519133398913,
+        -4.3553383030739905
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 9,
+      "sample_games": 2143,
+      "seasons": [
+        2018,
+        2026
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.12241148747835184
     },
     "market_updated_model__c1_vs_c0": {
       "category": "market",
@@ -149400,6 +150716,90 @@
       "source": "artifacts/movement_composition_eval/20260822T144746Z/metadata.json and docs/movement_composition_eval.md",
       "standard_error": null
     },
+    "nested_evaluations__single__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: nested_evaluations single on accuracy, 5 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.6144578313253013,
+      "effect_units": "accuracy_points",
+      "family": "nested_evaluations",
+      "interval": [
+        0.28702005574571243,
+        2.961385336182461
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.993,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.6822360409277419
+    },
+    "nested_evaluations__single__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: nested_evaluations single on brier, 5 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0004404430842164994,
+      "effect_units": "brier_improvement",
+      "family": "nested_evaluations",
+      "interval": [
+        -0.0010045094816225613,
+        8.127433966305953e-05
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0525,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0002769856686953114
+    },
+    "nested_evaluations__single__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: nested_evaluations single on log_loss, 5 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0008898326439174338,
+      "effect_units": "log_loss_improvement",
+      "family": "nested_evaluations",
+      "interval": [
+        -0.0020215572380273858,
+        0.00015463161090604905
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0505,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005551502165646518
+    },
     "new_stadium_home_on_production": {
       "category": "schedule",
       "classification": "unresolved_below_power",
@@ -150883,6 +152283,118 @@
       ],
       "source": "docs/offseason_retention.md sec 3 (CFB screen table)",
       "standard_error": null
+    },
+    "offseason_retention_cfb_permetric__baseline_0_670_market_per_metric_vector_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: offseason_retention_cfb_permetric baseline_0_670+market+per_metric_vector|market+ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 0.9252971137521222,
+      "effect_units": "accuracy_points",
+      "family": "offseason_retention_cfb_permetric",
+      "interval": [
+        -0.03569317558438995,
+        1.8418911837848293
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.9685,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.4789756018799029
+    },
+    "offseason_retention_cfb_permetric__baseline_0_670_market_per_metric_vector_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: offseason_retention_cfb_permetric baseline_0_670+market+per_metric_vector|market+ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.000765343601200035,
+      "effect_units": "brier_improvement",
+      "family": "offseason_retention_cfb_permetric",
+      "interval": [
+        -0.0019663553040296213,
+        0.0002041854909446848
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.067,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005537093864730373
+    },
+    "offseason_retention_cfb_permetric__baseline_0_670_market_per_metric_vector_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: offseason_retention_cfb_permetric baseline_0_670+market+per_metric_vector|market+ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0016209045858690593,
+      "effect_units": "log_loss_improvement",
+      "family": "offseason_retention_cfb_permetric",
+      "interval": [
+        -0.004147384036790277,
+        0.0004207756169985339
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0625,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0011653468504563293
+    },
+    "offseason_retention_cfb_permetric__baseline_0_670_market_per_metric_vector_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: offseason_retention_cfb_permetric baseline_0_670+market+per_metric_vector|market+ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.6897310302559575,
+      "effect_units": "mae_improvement",
+      "family": "offseason_retention_cfb_permetric",
+      "interval": [
+        -0.9948545035252591,
+        -0.37533822886410434
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.15803986598498843
     },
     "offseason_retention_per_metric_cfb": {
       "category": "modeling",
@@ -154017,6 +155529,118 @@
       "source": "artifacts/pace_mismatch_dog_stacked/20260901T195112Z/results.json",
       "standard_error": null
     },
+    "participation_experiments__market_residual_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: participation_experiments market_residual|ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.566265060240964,
+      "effect_units": "accuracy_points",
+      "family": "participation_experiments",
+      "interval": [
+        -0.21563085934669526,
+        3.33341221012778
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.9595,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.9053681299679784
+    },
+    "participation_experiments__market_residual_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: participation_experiments market_residual|ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.003934416062950123,
+      "effect_units": "brier_improvement",
+      "family": "participation_experiments",
+      "interval": [
+        -0.006364094056928134,
+        -0.001673218494538513
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0011966519291810257
+    },
+    "participation_experiments__market_residual_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: participation_experiments market_residual|ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.00844309622656906,
+      "effect_units": "log_loss_improvement",
+      "family": "participation_experiments",
+      "interval": [
+        -0.013683485735740644,
+        -0.0036811337200850377
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0025516204121570425
+    },
+    "participation_experiments__market_residual_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: participation_experiments market_residual|ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -4.598631292077311,
+      "effect_units": "mae_improvement",
+      "family": "participation_experiments",
+      "interval": [
+        -4.824279997096719,
+        -4.325850028717861
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2127,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.12715050213746373
+    },
     "participation_offense_defense_rapm": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -154237,6 +155861,118 @@
       ],
       "source": "registry/rotation_registry.json (pbp_drive_bundle window, spent 2026-08-13, reclassified 2026-08-18); ROADMAP.md#RWB-16; docs/estimation_variance.md sec 12; scripts/audit_terminal_verdicts.py",
       "standard_error": 1.21
+    },
+    "pbp_replication__market_residual_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: pbp_replication market_residual|ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.4410585404971933,
+      "effect_units": "accuracy_points",
+      "family": "pbp_replication",
+      "interval": [
+        -2.4879614767255216,
+        2.247191011235955
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: behind the market.",
+      "probability_positive": 0.38,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 1247,
+      "seasons": [
+        2013,
+        2017
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 1.2079470632554785
+    },
+    "pbp_replication__market_residual_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: pbp_replication market_residual|ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.009673651690658331,
+      "effect_units": "brier_improvement",
+      "family": "pbp_replication",
+      "interval": [
+        -0.013179226532506826,
+        -0.006699591398907369
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 1247,
+      "seasons": [
+        2013,
+        2017
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0016529681463263919
+    },
+    "pbp_replication__market_residual_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: pbp_replication market_residual|ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.02072114683237789,
+      "effect_units": "log_loss_improvement",
+      "family": "pbp_replication",
+      "interval": [
+        -0.02870372420259122,
+        -0.014311832236948934
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 1247,
+      "seasons": [
+        2013,
+        2017
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0036714010116434405
+    },
+    "pbp_replication__market_residual_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: pbp_replication market_residual|ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -5.394782104671579,
+      "effect_units": "mae_improvement",
+      "family": "pbp_replication",
+      "interval": [
+        -5.969875243502488,
+        -4.931311323167612
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 5,
+      "sample_games": 1280,
+      "seasons": [
+        2013,
+        2017
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.2649397755956318
     },
     "pbp_trait_fourth_down_go_rate_reliability": {
       "category": "onfield",
@@ -155106,6 +156842,118 @@
       "source": "nfl-ats experiment run registry\\experiment_specs\\player_arrests_violent_person_recent_14d_fade_opener.json",
       "standard_error": 0.07645677693668411
     },
+    "player_experiments__market_residual_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: player_experiments market_residual|ridge on accuracy, 4 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 2.1927710843373496,
+      "effect_units": "accuracy_points",
+      "family": "player_experiments",
+      "interval": [
+        0.2660477188779075,
+        4.087587844712572
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.989,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.974882685161904
+    },
+    "player_experiments__market_residual_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: player_experiments market_residual|ridge on brier, 4 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.003109273595175397,
+      "effect_units": "brier_improvement",
+      "family": "player_experiments",
+      "interval": [
+        -0.00501484365487243,
+        -0.0011622521402798308
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0009828039578042346
+    },
+    "player_experiments__market_residual_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: player_experiments market_residual|ridge on log_loss, 4 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0066512673020332445,
+      "effect_units": "log_loss_improvement",
+      "family": "player_experiments",
+      "interval": [
+        -0.010663614566284917,
+        -0.0025744480132650917
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0005,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0020635628961785265
+    },
+    "player_experiments__market_residual_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: player_experiments market_residual|ridge on margin_mae, 4 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -4.573630084649329,
+      "effect_units": "mae_improvement",
+      "family": "player_experiments",
+      "interval": [
+        -4.798722827063665,
+        -4.311854289597938
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2127,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.12420115751676718
+    },
     "player_family_base_vs_continuity": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -155550,6 +157398,34 @@
       ],
       "source": "scripts/best_pick_composed_rule_eval.py; artifacts/best_pick_composed_rule/20260908T003306Z/summary.json; docs/best_pick_composed_rule.md",
       "standard_error": null
+    },
+    "pooled_signal_calibrated_vs_model_only_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "single whole-model LOSO read, no admissible closing ground; MOD-20 resolves no cell alone",
+      "closing_ground": null,
+      "description": "MOD-20 unit 1 close-out: first pooled model (model logit plus 7-flag sum plus market move, ridge 0.001, LOSO 2020-2025) versus model-only picks on the same 1,503 games; +1.464 accuracy points, season-block interval [+0.130, +2.660], P+ 0.9815, decisive 274-252 on 526, positive in 5 of 6 seasons (2023 -0.75)",
+      "effect": 1.4637,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        0.1302,
+        2.6603
+      ],
+      "league": "nfl",
+      "notes": "1 look; thresholds and flag set fixed before scoring; SE from season-block bootstrap width",
+      "plain_summary": "Combining the model with the seven situational flags and the line move beat the model alone by about one and a half games per hundred, holding up in five of six past seasons.",
+      "probability_positive": 0.9815,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/pooled_signal/20260916T191645Z",
+      "standard_error": 0.6454
     },
     "post_ot_fatigue_on_production": {
       "category": "schedule",
@@ -156839,6 +158715,230 @@
       "source": "artifacts/qb_age_curve_screen/20260821T182715Z/results.json",
       "standard_error": null
     },
+    "qb_continuity_replication__market_residual_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: qb_continuity_replication market_residual|ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 0.4513540621865597,
+      "effect_units": "accuracy_points",
+      "family": "qb_continuity_replication",
+      "interval": [
+        -0.30060120240480964,
+        1.2048192771084338
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.869,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 997,
+      "seasons": [
+        2014,
+        2017
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.38403583661052126
+    },
+    "qb_continuity_replication__market_residual_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: qb_continuity_replication market_residual|ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0064188010741078015,
+      "effect_units": "brier_improvement",
+      "family": "qb_continuity_replication",
+      "interval": [
+        -0.008682209683533367,
+        -0.004202312035256961
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 997,
+      "seasons": [
+        2014,
+        2017
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.001142831032723573
+    },
+    "qb_continuity_replication__market_residual_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: qb_continuity_replication market_residual|ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.013486155631627113,
+      "effect_units": "log_loss_improvement",
+      "family": "qb_continuity_replication",
+      "interval": [
+        -0.018463847225893577,
+        -0.008714359258797601
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 997,
+      "seasons": [
+        2014,
+        2017
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.002487114277320402
+    },
+    "qb_continuity_replication__market_residual_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: qb_continuity_replication market_residual|ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -5.402114034434364,
+      "effect_units": "mae_improvement",
+      "family": "qb_continuity_replication",
+      "interval": [
+        -5.969865282419061,
+        -4.904012414620956
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 4,
+      "sample_games": 1024,
+      "seasons": [
+        2014,
+        2017
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.27190124178523084
+    },
+    "qb_dependence_cfb__single__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: qb_dependence_cfb single on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 1.6213921901528014,
+      "effect_units": "accuracy_points",
+      "family": "qb_dependence_cfb",
+      "interval": [
+        0.5096086525314069,
+        2.7143059522400126
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.9985,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.5624227805379096
+    },
+    "qb_dependence_cfb__single__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: qb_dependence_cfb single on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0007531377738593278,
+      "effect_units": "brier_improvement",
+      "family": "qb_dependence_cfb",
+      "interval": [
+        -0.0019105511940605067,
+        0.00025005009352068233
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.069,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0005511737978523442
+    },
+    "qb_dependence_cfb__single__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: qb_dependence_cfb single on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0016008368963048997,
+      "effect_units": "log_loss_improvement",
+      "family": "qb_dependence_cfb",
+      "interval": [
+        -0.004039712329269938,
+        0.0004730196635006442
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0645,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11780,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0011512071410129036
+    },
+    "qb_dependence_cfb__single__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: qb_dependence_cfb single on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.6948749264370803,
+      "effect_units": "mae_improvement",
+      "family": "qb_dependence_cfb",
+      "interval": [
+        -0.994519530663801,
+        -0.3878224558902201
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 19,
+      "sample_games": 11989,
+      "seasons": [
+        2007,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.15476966193203595
+    },
     "qb_exit_mixture_on_production_opener": {
       "category": "health",
       "classification": "unresolved_below_power",
@@ -157174,6 +159274,62 @@
       ],
       "source": "artifacts/weather_venue_flags_on_production/rain_on_grass/20260905T132107Z/results.json",
       "standard_error": null
+    },
+    "ratings_residual_vs_served_accuracy_loso": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval sits on the wrong side of zero for the accuracy claim",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "MOD-21 unit 1: rating-implied line from closing spreads (walk-forward, decay 0.9, ridge 3.0, HFA 2.5); opener-minus-implied residual added to served logit (R2) vs served alone, LOSO 2020-2025, paired on 1,503 games; -1.9295 accuracy points [-3.3206, -0.2894], P+ 0.0093, decisive 309 (served 169-140), positive in 0 of 6 seasons outright (2021 tie)",
+      "effect": -1.9295,
+      "effect_units": "accuracy_points",
+      "family": "market_derived_ratings_v1",
+      "interval": [
+        -3.3206,
+        -0.2894
+      ],
+      "league": "nfl",
+      "notes": "16 looks, all reported; IS -1.2641 vs OOS -1.9295 (gap +0.6653); variance ratio close/margin 0.18, not 1/70",
+      "plain_summary": "Team ratings built from closing lines sounded smarter than scores, but adding their leftover gap to our picks lost about two games per hundred across six seasons, so it stays out of the model.",
+      "probability_positive": 0.0093,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_derived_ratings/20260916T192813Z",
+      "standard_error": 0.7732
+    },
+    "ratings_residual_vs_served_brier_loso": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "positive but tiny; accuracy axis refuted on the same run",
+      "closing_ground": null,
+      "description": "MOD-21 unit 1 companion: same R2 vs served LOSO on Brier; +0.00175 [+0.00001, +0.00411], P+ 0.9760; opposite sign from the accuracy axis, far too small to serve",
+      "effect": 0.00175,
+      "effect_units": "brier_improvement",
+      "family": "market_derived_ratings_v1",
+      "interval": [
+        1e-05,
+        0.00411
+      ],
+      "league": "nfl",
+      "notes": "companion cell to the refuted accuracy read; conflicting axes kept on the record",
+      "plain_summary": "The same ratings gap barely sharpened our weekly win chances, far too small to matter.",
+      "probability_positive": 0.976,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 6,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "artifacts/market_derived_ratings/20260916T192813Z",
+      "standard_error": 0.00105
     },
     "recurrence_flags_player_brier_validation": {
       "category": "health",
@@ -159639,6 +161795,118 @@
       "source": "docs/refresh_timing_policy.md; artifacts/refresh_timing_policy/20260911T000000Z/results.json",
       "standard_error": 1.153867
     },
+    "rehearsal_lockday__direct_ats_fair_margin_market_logistic_market_ridge__accuracy_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: rehearsal_lockday direct_ats+fair_margin+market|logistic+market+ridge on accuracy, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": 2.2409638554216866,
+      "effect_units": "accuracy_points",
+      "family": "rehearsal_lockday",
+      "interval": [
+        0.68359375,
+        3.795337231912499
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on winners picked: ahead of the market.",
+      "probability_positive": 0.9975,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.7938121127327804
+    },
+    "rehearsal_lockday__direct_ats_fair_margin_market_logistic_market_ridge__brier_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: rehearsal_lockday direct_ats+fair_margin+market|logistic+market+ridge on brier, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.0024886296317104344,
+      "effect_units": "brier_improvement",
+      "family": "rehearsal_lockday",
+      "interval": [
+        -0.004281889652199228,
+        -0.000570088973043232
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on sharpness of the weekly chances: behind the market.",
+      "probability_positive": 0.0065,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.0009468879283561216
+    },
+    "rehearsal_lockday__direct_ats_fair_margin_market_logistic_market_ridge__log_loss_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: rehearsal_lockday direct_ats+fair_margin+market|logistic+market+ridge on log_loss, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -0.005341973109922951,
+      "effect_units": "log_loss_improvement",
+      "family": "rehearsal_lockday",
+      "interval": [
+        -0.009099322517383374,
+        -0.0013642232730055276
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on confidence calibration: behind the market.",
+      "probability_positive": 0.0055,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2075,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.001973239603157614
+    },
+    "rehearsal_lockday__direct_ats_fair_margin_market_logistic_market_ridge__margin_mae_backfill": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "backfilled sibling metrics on preserved predictions; no adjudication in the backfill",
+      "closing_ground": null,
+      "description": "ENG-46 unit 2 backfill: rehearsal_lockday direct_ats+fair_margin+market|logistic+market+ridge on margin_mae, 1 preserved predictions files pooled with game_id dedupe (latest file wins), paired per game with the market baseline, season-block bootstrap 2000 draws",
+      "effect": -4.589592552557776,
+      "effect_units": "mae_improvement",
+      "family": "rehearsal_lockday",
+      "interval": [
+        -4.805207263041471,
+        -4.334159365019098
+      ],
+      "league": "nfl",
+      "notes": "ENG-46 unit 2 backfilled cell (flagged backfilled in the name); new metrics on old looks, not counted as new looks",
+      "plain_summary": "Re-reading these past forecasts on final-score closeness: behind the market.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2127,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z",
+      "standard_error": 0.12016528010774807
+    },
     "residual_location_purged_cv_cfb": {
       "category": "modeling",
       "classification": "unresolved_below_power",
@@ -161903,6 +164171,62 @@
       ],
       "source": "artifacts/served_card_harness/20260909T233923Z/results.json; docs/served_card_harness.md",
       "standard_error": 0.4663753391
+    },
+    "served_cover_accuracy_vs_market_2018_2025": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "interval above zero but no positive control and no reliability measured; recorded as the accuracy axis beside the margin-MAE axis of the same model",
+      "closing_ground": null,
+      "description": "ENG-46 unit 1 companion cell: the same served model's cover accuracy against a 50% market baseline, read from artifacts/active_ats_model.json historical_evaluation (1,093 of 2,091, season interval 0.508-0.536)",
+      "effect": 2.27,
+      "effect_units": "accuracy_points",
+      "family": "every_metric_served_backtest_v1",
+      "interval": [
+        0.83,
+        3.57
+      ],
+      "league": "nfl",
+      "notes": "Same model as served_margin_mae_vs_spread_2018_2025; opposite signs on the two axes",
+      "plain_summary": "Over eight seasons the model picked the covering side about 52 times in 100, a little better than a coin flip.",
+      "probability_positive": 0.998,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2091,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/active_ats_model.json",
+      "standard_error": null
+    },
+    "served_margin_mae_vs_spread_2018_2025": {
+      "category": "modeling",
+      "classification": "refuted_mechanism",
+      "classification_evidence": "whole season-block interval on the wrong side of zero and every one of 8 seasons worse than the spread; the claim that the served margin beats the spread as a margin forecast is resolved wrong",
+      "closing_ground": "wrong_sign_resolved",
+      "description": "ENG-46 unit 1: the served ridge market-residual model's predicted margin against the final margin, paired per game with the spread used as the margin; MAE model 9.952 vs market 9.844 over 2,127 games 2018-2025; worse than the spread in all 8 seasons; season-block bootstrap 2,000 draws",
+      "effect": -0.108,
+      "effect_units": "mae_improvement",
+      "family": "every_metric_served_backtest_v1",
+      "interval": [
+        -0.14,
+        -0.071
+      ],
+      "league": "nfl",
+      "notes": "Would not have been seen grading on cover accuracy alone; motivates ENG-46 units 2-3",
+      "plain_summary": "As a forecast of the final score margin, the model's number is slightly worse than the betting line itself, and it has been every season since 2018. The model still picks the covering side a little better than a coin flip, so its value is in the side it leans to, not the number it predicts.",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-16",
+      "reliability": null,
+      "sample_blocks": 8,
+      "sample_games": 2127,
+      "seasons": [
+        2018,
+        2025
+      ],
+      "source": "artifacts/every_metric/20260916T152725Z/results.json",
+      "standard_error": null
     },
     "served_refresh_card_best_pick_control_vs_incumbent_2020_2025": {
       "category": "control",

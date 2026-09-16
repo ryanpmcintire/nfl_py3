@@ -649,3 +649,68 @@ NOT independently verified, carried as reported:
   selected layers is arithmetic on the reported layer table, not an independent
   refit.
 - No code path was changed, so no claim here is confirmed by a behaviour change.
+
+## Verification 2026-09-15 evening: is the served card overfitted? (measured)
+
+Script and output: `tests/scratch/lanes/audit_verify_20260915/` (gitignored).
+Population: the four-term artifact `artifacts/four_term_probability/20260914T222345Z`
+rebuilt through `scripts/four_term_probability_eval.load_population` (1,503
+games, 2020-2025, pushes dropped). Baseline is the raw model pick.
+
+| arm | held-out acc | delta vs raw | per season (2020..2025) | decisive |
+|---|---|---|---|---|
+| A served: fixed 7 flags, one coefficient, LOSO | 56.22% | +2.40 | +4.1 +0.4 +4.8 +0.4 +1.9 +3.0 | |
+| B nested: flag set re-screened on training seasons only | 56.35% | +2.53 [-0.13, +5.10] P+ 0.969 | +3.6 +0.9 +4.4 +0.8 +2.3 +3.4 | 286-248 on 534 |
+| C nested: flag signs chosen on training seasons only | 56.29% | +2.46 | +3.2 -0.4 +5.7 +0.8 +2.3 +3.4 | |
+| D per-flag coefficients, LOSO | 56.09% | +2.26 [-0.53, +5.02] P+ 0.942 | +3.2 +0.4 +6.1 0.0 +0.8 +3.4 | 286-252 on 538 |
+
+Within-week flag-shuffle null for arm A (200 draws): mean +0.09, sd 0.62,
+max +2.33; observed +2.40 sits above every draw.
+
+Per-flag fold coefficients (arm D) keep the same sign in all six folds for
+coach, protection, cold_visitor, division, bye, arrests; tank_zone is the only
+member whose training-fold sign ever flips, and its full-sample marginal is 0.0.
+
+What this settles: selection among the nine coded candidates does not inflate
+the served number. The audit's finding 1 (127-subset argmax, LOSO 0.00) is
+true of the hard-flip chain the board headlines, not of the served flag_sum
+path. What it does not settle: the nine candidates came out of a far larger
+look history, and flag definitions (week caps, temperature gap) were tuned on
+this archive; neither can be nested from inside the repo. Recorded as
+`audit_verify_nested_flag_screen_loso`, unresolved_below_power.
+
+## Board fix 2026-09-15 evening: the tiebreaker season-error sentence (done)
+
+The sentence "our combined-score guess has missed by 2.7 points" read the
+totals METHOD ledger (`prospective/totals_served_method_decisions.parquet`),
+which deliberately stores the unshaded 43.73 so its two arms stay commensurable.
+The published guess was 42 (shade -1 applied), actual 41, miss 1.0. The
+sentence now reads `prospective/tiebreaker_shade_decisions.parquet`
+(`shaded_total` vs `actual_total`, the number the reader saw) and calls the
+comparison "the sportsbook over/under line" instead of "the betting total".
+Rendered on docs/index.html after `publish-board`: "missed by 1.0 points a game
+over 1 game; the sportsbook over/under line missed by 2.5." Historical
+expectation for that guess (read, docs/tiebreaker_low_side_shading.md): about
+10.1 points a game, the same as the over/under line. Not committed.
+
+## Owner directive 2026-09-15 (recorded in memory: objective-is-forward-consistency)
+
+The objective is the model that most consistently picks winners against the
+opening spread going forward. Archive headlines are ranked by their held-out
+number only. Follow-up for the next session: replace the board's 56.8%
+subset-argmax headline with the served path's leave-one-season-out record
+(841-662, 55.96%) read from the pick-probability artifact.
+
+## Follow-up done 2026-09-16 (measured)
+
+The 56.8% was a stale `unserved_tilt_marginals/20260912T112613Z` served-card
+number (0.5675 on model 7786467eabe418b8) while the active model is now
+f4c4a5a57c9414c6. Refitted the pick-probability model on the active model
+(`nfl-ats fit-pick-probability` -> `pick_probability/20260916T163620Z`,
+pointer updated, record still 841-662 vs model-only 819-684 on 1,503 games).
+`board_content.py` `_build_headline_stats` now prefers the pointer's
+`records.calibrated_out_of_season` behind a model-match guard, falling back
+to the old served-union path when the pointer is absent or stale; caption and
+caveat reframed as held-out served path instead of best-of-127. Republished:
+the board headline reads 841-662 across 1,503 past games. Full suite 4529
+passed 9 skipped, mypy clean, ruff clean on the touched file. Not committed.

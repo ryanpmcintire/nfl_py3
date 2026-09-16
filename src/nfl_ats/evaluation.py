@@ -9,7 +9,7 @@ from nfl_ats.backtest import BacktestResult, summarize_predictions, walk_forward
 from nfl_ats.constants import DEFAULT_MIN_TRAIN_GAMES, FEATURE_SETS
 from nfl_ats.modeling import MODEL_NAMES
 
-SELECTION_METRICS = ("brier_score", "log_loss")
+SELECTION_METRICS = ("brier_score", "log_loss", "model_margin_mae")
 
 
 @dataclass(frozen=True, order=True)

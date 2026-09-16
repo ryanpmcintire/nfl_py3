@@ -20,6 +20,12 @@ modified lane when the prompt just says to continue.
 
 ## Active
 
+- [pooled-signal-model](pooled-signal-model.md) — MOD-20, queued 2026-09-16, not started: every situational family as a shrunk term in one model, judged as a whole
+- [market-derived-ratings](market-derived-ratings.md) — MOD-21, queued 2026-09-16, not started: ratings from closing lines, opener residual as target
+- [line-move-target](line-move-target.md) — MKT-20, queued 2026-09-16, not started: close minus open as the model target
+- [pool-rank-card](pool-rank-card.md) — POOL-01, queued 2026-09-16, not started: card chosen to maximise pool finishing position
+- [every-metric-every-experiment](every-metric-every-experiment.md) — ENG-46, owner question 2026-09-16: experiments grade on the cover alone although predicted margins are preserved; unit 1 backfills accuracy, Brier, log loss and margin MAE from 105 predictions files, read-only
+- [lane-replay-dream-rsi](lane-replay-dream-rsi.md) — ENG-45, owner question 2026-09-16: can Dream-RSI's replay-the-history idea steer lane allocation; unit 1 measures whether a family's first cells predict its resolution
 - [week1-covers-settled](week1-covers-settled.md) — 2026-09-15: Week 1 graded, the card went 9-7; three surfaces were grading the Tuesday lock and showing 10-6, all now read the served card through `served_paper_decisions`; totals loaders join their own build snapshot
 - [serve-calibrated-probability](serve-calibrated-probability.md) — MKT-19, 2026-09-14: the per-game cover chance is back on every reader surface, sourced from MKT-18's four-term model instead of the raw model whose number ran backwards against its own record; coefficients live in `artifacts/pick_probability` behind an active pointer and are refit with `nfl-ats fit-pick-probability`, never as literals in `src/`; the nine-member flip chain still records as the paired challenger but no longer decides the card
 - [four-term-probability](four-term-probability.md) — MKT-18, owner directive: one shared flag weight (not nine) plus the model logit and the market move, LOSO 2020-2025; headline finding is a calibration ordering (M5's accuracy rises with its own confidence, M0's falls), M5 leans ahead of M1 on every metric (unresolved), the model term `a` is not distinguishable from zero in any fold while the flag weight and move both clear zero in nearly every fold — keeping the model term recommended anyway per rule (a); Best Pick tied exactly against the currently-served ranker
