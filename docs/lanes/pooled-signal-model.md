@@ -31,6 +31,19 @@ MOD-20: one hierarchical model with every situational family as a shrunk term, j
   (`pooled_signal_calibrated_vs_model_only_loso`,
    unresolved_below_power). Next: grow the reproducible feature set
    before any second pooled fit. Committed in 786a569.
+- Unit 2 inventory DONE 2026-09-17 (subagent, read-only, 82 families
+  inspected): 15 candidate families for reproducible point-in-time opener
+  columns — 9 easy (spread_size_calibration, key_number_seven,
+  ats_streak_regress_on_production, post_ot_fatigue_on_production,
+  division_dog_on_production, low_total_div_home_dog_on_production,
+  roof_state, sept_heat_home_on_production, altitude_fourth_quarter),
+  5 medium (open_corner_wind_dog, snow_game_home_prep,
+  ol_rush_continuity, rookie_qb_debut_fade, backup_tenure_gap),
+  1 hard (officials_archive_battery — assignment timestamps missing).
+  Never-at-opener families listed by class (post-open moves, T-90
+  inactives, in-game, wrong population, process meta). No cells scored,
+  no looks spent. Next: build the easy columns, then the second pooled
+  fit.
 
 ## Open
 - None yet.

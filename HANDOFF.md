@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-17T16:50:30.839176+00:00`
+Refreshed at: `2026-09-17T18:00:17.584395+00:00`
 
 ## Start here
 
@@ -20,21 +20,14 @@ Refreshed at: `2026-09-17T16:50:30.839176+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `07e3ad7485b6` — LEAD-64 headline dedupe shipped; Week 2 morning comparison re-run
-- Pending change set: 13 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `d209e1dbd6cb` — Noon lineups_thu card on f2a706ba; honesty chain repointed third time
+- Pending change set: 6 paths
   - `M  HANDOFF.md`
-  - `M  README.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
+  - `M  ROADMAP.md`
   - `M  docs/index.html`
-  - `M  docs/lanes/statistical-audit-2026-09-15.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260917T161058Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-02-20260917T161147Z.json`
-  - `A  registry/experiments/opener-evaluation/20260917T161504Z.json`
-  - `A  registry/experiments/waterfall-feed/20260917T162052Z.json`
-  - `M  tiebreaker.json`
+  - `M  docs/lanes/lead59-archive-battery.md`
+  - `M  docs/lanes/pooled-signal-model.md`
+  - `M  src/nfl_ats/pick_refresh.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always

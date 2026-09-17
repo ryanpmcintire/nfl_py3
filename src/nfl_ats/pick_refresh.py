@@ -1839,11 +1839,13 @@ def _served_side_rows(
         if side not in ("HOME", "AWAY") or side == published:
             continue
         estimate = home_probability if side == "HOME" else 1.0 - home_probability
+        previous_team = game.home_team if published == "HOME" else game.away_team
+        new_team = game.home_team if side == "HOME" else game.away_team
         rows.append(
             {
                 "Matchup": f"{game.away_team} at {game.home_team}",
-                "Previous pick": published,
-                "New pick": side,
+                "Previous pick": str(previous_team),
+                "New pick": str(new_team),
                 "Model estimate": f"{estimate:.1%}",
                 "Policy": policy,
                 "Market move": "n/a" if delta is None else f"{delta:+.2f}",

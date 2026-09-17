@@ -39,6 +39,19 @@ lines), and wrote the results into ROADMAP LEAD-59 and the tail of
 Commit. Then decide whether the penalty-type trait binning with the archive
 on needs a NaN filter (diagnostic only today).
 
+## 2009-2014 sweep probe 2026-09-17 (measured)
+
+Bounded probe of `scripts/officials_wayback_sweep.py` (subagent, defaults
+untouched, first 20 2009 REG games as the predeclared set, killed by its
+25-minute cap during game 8): 7 attempted, 42 rows, 6 officials-block hits.
+Throttle present but passable: 5 of 7 games drew CDX backoff (900 s total,
+60/120/240 s schedules), no final 403. Rate ~21-23 games/h, extrapolating to
+~51-102 h wall for all 1,536 REG 2009-2014 games. Implication: the full sweep
+is not a foreground task; it needs a background scheduler job spread over
+weeks, or a sampled archive. Probe wrote only under ignored `data/raw/`
+(`officials_pfr_wayback/probe20260917Tb20/`, no parquet — killed before final
+write); no tracked file touched.
+
 ## Open
 
 Whether the `n_censored_2015_debut` key should be renamed now that the
