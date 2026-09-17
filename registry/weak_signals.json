@@ -155781,6 +155781,62 @@
       "source": "docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
       "standard_error": null
     },
+    "pbp08_protection_mismatch__continuity_high_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Zero flips in 19 games: the marginal is unidentified, not a measured zero. No admissible closing ground applies; unresolved_below_power per AGENTS.md. Recorded without a standard error so the degenerate cell stays out of the inverse-variance pool.",
+      "closing_ground": null,
+      "description": "PBP08 protection-mismatch tilt leave-one-out marginal on the played 9-member card, weeks 1-4 games where all four unit continuities exceed median, opener grade, paired accuracy points. DEGENERATE: the tilt never fired in this cell, so the marginal is unidentified.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch__continuity",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "19 high-continuity early games, 0 tilt fires: the tilt's September flags all fall amid unit turnover, which is itself informative about the mechanism but identifies no marginal. No standard error stored (unidentified cell).",
+      "plain_summary": "In early-season games where every line and pass rush stayed intact, this signal never fired once in 19 games, so there is nothing to measure there yet.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 16,
+      "sample_games": 19,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lanes/pbp08_ol_rush_continuity_split_20260917.py; registry/split_library.json v1; artifacts/opener_evaluation/20260913T113943Z",
+      "standard_error": null
+    },
+    "pbp08_protection_mismatch__continuity_low_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [0.58, 4.65] sits wholly on the positive side but there is no admissible closing ground for a resolved-positive result in this registry; neither applies, so this stays unresolved_below_power per AGENTS.md. Decisive exact two-sided p=0.078.",
+      "closing_ground": null,
+      "description": "PBP08 protection-mismatch tilt leave-one-out marginal on the played 9-member card, weeks 1-4 games where continuity is NOT all-high, opener grade, paired accuracy points",
+      "effect": 2.6393,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch__continuity",
+      "interval": [
+        0.578,
+        4.6518
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: tilt wins 15, model side wins 6 on 21 decisive games (exact two-sided p=0.078). Split library v1 ol_rush_continuity: low means any of the four unit continuities at or below median (OL 0.6390, rush 0.5764 over 192 team-seasons, inputs only). Paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI. Correlated with every other pbp08-family entry (same 2020-2025 opener archive). See sibling high cell, which is degenerate (tilt never fired there).",
+      "plain_summary": "In early-season games where at least one side's line or pass rush turned over, this pass-rush mismatch signal has picked up about 2.6 more correct games per hundred on that slice so far.",
+      "probability_positive": 0.977,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 341,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lanes/pbp08_ol_rush_continuity_split_20260917.py; registry/split_library.json v1; artifacts/opener_evaluation/20260913T113943Z",
+      "standard_error": 1.2643
+    },
     "pbp08_protection_mismatch_early_window_v1_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",

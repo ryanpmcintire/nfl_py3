@@ -20,6 +20,19 @@ positive-expected, graded at the opener.
   edge sits in weeks 1-4 (probability_positive 0.977) and weeks 5-18 read as
   a probable drag (0.099, unresolved). Blanket read +0.40 was an average of
   a lift and a drag.
+- 2026-09-17: split library v1 predeclared at `registry/split_library.json`
+  (week_in_season recorded as already-scored; ol_rush_continuity with exact
+  cell rule, source columns and leakage note; eight further splits queued by
+  name only and must not be scored until specified). First scored split the
+  same day (subagent, parent-verified by rerun;
+  `tests/scratch/lanes/pbp08_ol_rush_continuity_split_20260917.*`): tilt
+  leave-one-out marginal in early low-continuity games +2.64
+  [+0.58, +4.65], P+ 0.977, decisive 15-6 on 21 (exact p 0.078); early
+  high-continuity cell degenerate (19 games, 0 fires, marginal
+  unidentified, recorded without a standard error so it stays out of the
+  pool). Both cells in `registry/weak_signals.json`, family
+  `pbp08_protection_mismatch__continuity`, unresolved_below_power
+  (registry now 6,663 signals).
 
 ## Tried
 

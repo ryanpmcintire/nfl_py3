@@ -68,6 +68,13 @@ LEAD-65 states what the read implies for the served rule.
   supports paired prospective tracking, not a served change.
 - MOD-19 stage 2 then tests the owner's continuity hypothesis directly:
   split the early cell by offensive-line and pass-rush snap continuity.
+- DONE 2026-09-17 (subagent, parent-verified by rerun; split predeclared in
+  `registry/split_library.json` v1 first): low-continuity early games +2.64
+  [+0.58, +4.65], P+ 0.977, decisive 15-6 on 21 (exact p 0.078);
+  high-continuity early games degenerate (19 games, 0 fires). The tilt's
+  September flags all fall amid unit turnover, which fits the priced-late
+  mechanism without identifying a high-continuity marginal. Recorded under
+  family `pbp08_protection_mismatch__continuity`, unresolved_below_power.
 
 ## Open
 

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-17T15:10:23.578618+00:00`
+Refreshed at: `2026-09-17T15:24:07.278233+00:00`
 
 ## Start here
 
@@ -20,16 +20,15 @@ Refreshed at: `2026-09-17T15:10:23.578618+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `b6c840a50939` — Serve honest headline on new model; decisive-game record beside it; close sweep rows
-- Pending change set: 9 paths
+- Baseline commit: `98125157c912` — LEAD-65 week-gated tilt variant graded; Thursday lineups on the board
+- Pending change set: 8 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
+  - `M  docs/lanes/conditional-signal-atlas.md`
   - `M  docs/lanes/lead65-protection-window-split.md`
-  - `M  docs/model.html`
+  - `A  registry/split_library.json`
   - `M  registry/weak_signals.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
