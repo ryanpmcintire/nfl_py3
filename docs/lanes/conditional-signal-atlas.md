@@ -46,6 +46,17 @@ positive-expected, graded at the opener.
   0 fires in 496 games, no standard error). Family
   `coach_fade__week_in_season`, all unresolved_below_power (registry now
   6,666 signals).
+- 2026-09-17 later still: all nine served members through the harness,
+  opener grade, 27 cells in one batch (`tests/scratch/atlas_week_batch.json`,
+  recorded with `--replace`). Headlines, decisive first: pbp08 early +2.50
+  P+ 0.977 dec 15-6/21 and late -1.21 P+ 0.055 dec 11-17/28; arrests late
+  +0.81 [+0.20, +1.42] P+ 0.988 dec 4-0/4 (exact p 0.125); everything else
+  inside ±0.6 with decisive splits near even; 9 of 27 cells degenerate
+  (ineligible weeks, recorded without SE). Every cell unresolved_below_power
+  — no admissible closing ground exists for a resolved-positive verdict
+  anywhere in the set. Families `<signal>__week_in_season`, registry now
+  6,690 signals. MOD-19 step 3 (nine served members) is done for the week
+  split; the remaining library splits score next.
 
 ## Tried
 
