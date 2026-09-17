@@ -50,12 +50,30 @@ without a source; 137 roster, 136 headline). The CLI contract fixture
 
 ## Next
 
-Dedupe `designations.parquet` on (url, player, team, designation) keeping the
-earliest filed time, then re-run the comparison script against the next
-official capture. Then the owner call in Open.
+- DONE 2026-09-17 (measured this session). Dedupe in
+  `src/nfl_ats/injury_headlines.py::build_artifacts` (and the dry-run twin):
+  parsed rows sort by filed time and drop duplicates on (url, player, team,
+  designation) keeping earliest; unparsed rows are kept whole by design (they
+  carry no designation, so collapsing them would lose headline coverage).
+  Measured `--dry`: 390 parsed raw rows over 79 captures collapse to 33
+  unique designations (out 8, questionable 6, doubtful 3, ir 15, active 1),
+  638 unparsed untouched. Real run wrote
+  `artifacts/injury_headline_designations/20260917T155516Z/`.
+- Morning comparison vs Week 2 official rows, same day (subagent, report
+  `tests/scratch/lanes/lead64_morning_compare_20260917.md`, parent-verified
+  by rerun of `lead64_compare_week2.py`): 6 official Week-2 game-status rows
+  (Q 4, Out 2; `date_modified` null on all 376 2026 rows, first-seen proxy
+  reused); 1/6 matched a headline (T.J. Sanders BUF questionable, headline
+  first by 137 h); 32 of 33 headline events have no Week-2 row (15 IR,
+  unmatchable by construction, rest mostly Week-1 names). Notable for
+  tonight: the 5 unmatched official rows are all DET/BUF first-seen this
+  morning, including DET linemen Mahogany and Miller Out. Parser defects
+  filed in the report (truncated `josh simmon`, IR over-scope on the Falcons
+  URL, dropped second player on the 09-16 49ers URL). No registry cell:
+  descriptive report, n=6/n=1 cannot carry one.
 
 ## Open
 
-Whether to feed the parsed designations into `report_status` when the
-league feed is older than the newest parsed headline (owner call: it changes
-the served injury features).
+- Whether to feed the parsed designations into `report_status` when the
+  league feed is older than the newest parsed headline (owner call: it changes
+  the served injury features).

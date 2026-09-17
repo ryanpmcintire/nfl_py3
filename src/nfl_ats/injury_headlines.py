@@ -634,6 +634,13 @@ def build_artifacts(
         }
     )
 
+    parsed_mask = out_df["parsed"].fillna(False).astype(bool)
+    parsed = out_df.loc[parsed_mask].sort_values(["filed_at_utc", "first_seen_utc"], kind="stable")
+    parsed = parsed.drop_duplicates(
+        subset=["url", "player_name", "team", "designation"], keep="first"
+    )
+    out_df = pd.concat([parsed, out_df.loc[~parsed_mask]], ignore_index=True)
+
     assert pd.api.types.is_datetime64_any_dtype(out_df["first_seen_utc"]), (
         "first_seen_utc must be datetime"
     )
@@ -740,6 +747,13 @@ def run_injury_headlines(
             "headline_guess": "headline",
         }
     )
+
+    parsed_mask = out_df["parsed"].fillna(False).astype(bool)
+    parsed = out_df.loc[parsed_mask].sort_values(["filed_at_utc", "first_seen_utc"], kind="stable")
+    parsed = parsed.drop_duplicates(
+        subset=["url", "player_name", "team", "designation"], keep="first"
+    )
+    out_df = pd.concat([parsed, out_df.loc[~parsed_mask]], ignore_index=True)
 
     des_counts = out_df["designation"].value_counts().to_dict() if not out_df.empty else {}
     unparsed_count = int((~out_df["parsed"]).sum()) if "parsed" in out_df.columns else 0
