@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-17T16:07:15.459952+00:00`
+Refreshed at: `2026-09-17T16:50:30.839176+00:00`
 
 ## Start here
 
@@ -20,17 +20,21 @@ Refreshed at: `2026-09-17T16:07:15.459952+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `bb5785615835` — MOD-19 split library v1; continuity split scored on early tilt cell
-- Pending change set: 9 paths
+- Baseline commit: `07e3ad7485b6` — LEAD-64 headline dedupe shipped; Week 2 morning comparison re-run
+- Pending change set: 13 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
+  - `M  README.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `M  docs/lanes/lead64-headline-parser.md`
+  - `M  docs/lanes/statistical-audit-2026-09-15.md`
   - `M  docs/model.html`
-  - `M  src/nfl_ats/injury_headlines.py`
-  - `?? data/scheduler_locks/lineups_thu.lock`
+  - `A  registry/experiments/margin-backtest/20260917T161058Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-02-20260917T161147Z.json`
+  - `A  registry/experiments/opener-evaluation/20260917T161504Z.json`
+  - `A  registry/experiments/waterfall-feed/20260917T162052Z.json`
+  - `M  tiebreaker.json`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -39,18 +43,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `f7b44c149b192b27`
+- Model ID: `f2a706ba20aee305`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260917T005909Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260917T161504Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,093 / 2,091 (52.27%)**
-- Linked forecast: **2026 Week 2**, created `2026-09-17T00:55:44.083207+00:00`
+- Linked forecast: **2026 Week 2**, created `2026-09-17T16:11:47.397505+00:00`
 
 The 52.27% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `f7b44c149b192b27`, published `2026-09-17T01:06:58.985280+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `f2a706ba20aee305`, published `2026-09-17T16:22:37.097992+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

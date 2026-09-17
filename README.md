@@ -21,17 +21,17 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Sep 17 | DET at BUF | BUF -4.5         | 54.1%          |
 | Sun, Sep 20 | CAR at ATL | CAR -1.5         | 52.9%          |
-| Sun, Sep 20 | CIN at HOU | CIN +2.5         | 52.8%          |
+| Sun, Sep 20 | CIN at HOU | CIN +2.5         | 53.1%          |
 | Sun, Sep 20 | CLE at TB  | TB -8.5          | 56.7%          |
 | Sun, Sep 20 | GB at NYJ  | GB -3.5          | 52.6%          |
 | Sun, Sep 20 | IND at KC  | IND +6.5         | 51.8%          |
 | Sun, Sep 20 | JAX at DEN | ★ DEN -2.5       | 57.8%          |
-| Sun, Sep 20 | LV at LAC  | LAC -7.5         | 50.3%          |
-| Sun, Sep 20 | MIA at SF  | SF -13.5         | 58.0%          |
+| Sun, Sep 20 | LV at LAC  | LAC -7.5         | 50.2%          |
+| Sun, Sep 20 | MIA at SF  | SF -13.5         | 57.7%          |
 | Sun, Sep 20 | MIN at CHI | MIN +5.5         | 50.1%          |
-| Sun, Sep 20 | NO at BAL  | NO +8.5          | 62.6%          |
-| Sun, Sep 20 | PHI at TEN | PHI -6.5         | 57.3%          |
-| Sun, Sep 20 | PIT at NE  | NE -4.5          | 56.4%          |
+| Sun, Sep 20 | NO at BAL  | NO +8.5          | 62.7%          |
+| Sun, Sep 20 | PHI at TEN | PHI -6.5         | 57.2%          |
+| Sun, Sep 20 | PIT at NE  | NE -4.5          | 56.5%          |
 | Sun, Sep 20 | SEA at ARI | SEA -4.5         | 55.2%          |
 | Sun, Sep 20 | WAS at DAL | WAS +3.5         | 50.5%          |
 | Mon, Sep 21 | NYG at LA  | LA -7.5          | 65.9%          |
@@ -47,7 +47,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`f7b44c149b192b27`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`f2a706ba20aee305`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **54.49%** on **1,537 paired games**, week-blocked 95% interval [51.86%, 57.09%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.27%** (1,093 of 2,091 non-push games), week-blocked 95% interval [50.10%, 54.30%].

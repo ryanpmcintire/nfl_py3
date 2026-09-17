@@ -733,3 +733,18 @@ guard and appends the decisive-game record to the served-path caption --
 side won 274 of them." -- rendered on index and model pages after
 `publish-board`; absent or stale artifact means no sentence, never a
 constant. Ruff, mypy clean; full suite 4529 passed 9 skipped.
+
+## Recurrence the same day: noon refit minted f2a706ba20aee305 (measured)
+
+The 12:00 ET `lineups_thu` refit rebuilt the feature table and activated a
+third model id in 24 hours, orphaning the pointer and the pooled provenance
+again (both still named f7b44c149b192b27). Repeated the identical procedure
+(`pick_probability/20260917T164806Z`, `pooled_signal/20260917T164828Z`):
+same coefficients, same 841-662 vs 819-684, same decisive 274-252 on 526.
+Structural note: every table rebuild mints a new model id, so the honest
+headline lapses after each refit until the pointer is refit by hand. The
+durable fix is making the refit pipeline re-run `fit-pick-probability` (and
+the pooled paired eval) itself, or keying the pointer to the feature table
+rather than the model id; both change production plumbing and are proposed,
+not done. Until then, each refit needs the manual repoint plus
+`publish-board` over the daemon's stale-headline render.
