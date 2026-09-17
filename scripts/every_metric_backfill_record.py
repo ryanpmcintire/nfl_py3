@@ -98,12 +98,9 @@ def per_game_metric_frame(path):
                 if "game_id" in df.columns
                 else ok.index.astype(str),
                 "season": pd.to_numeric(seasons, errors="coerce").loc[ok],
-                "diff": (mkt[ok].to_numpy() - mgn[ok].to_numpy())
-                - (predicted[ok].to_numpy() - mgn[ok].to_numpy()),
+                "diff": np.abs(mkt[ok].to_numpy() - mgn[ok].to_numpy())
+                - np.abs(predicted[ok].to_numpy() - mgn[ok].to_numpy()),
             }
-        )
-        frames["margin_mae"]["diff"] = (
-            mkt[ok].abs().to_numpy() - (predicted[ok] - mgn[ok]).abs().to_numpy()
         )
     return frames
 

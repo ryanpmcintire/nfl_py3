@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-16T21:27:41.845953+00:00`
+Refreshed at: `2026-09-17T14:47:29.942785+00:00`
 
 ## Start here
 
@@ -20,8 +20,8 @@ Refreshed at: `2026-09-16T21:27:41.845953+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `c46194473353` — Week 2 locked on the pool's own numbers; unblock the lock's OR-union invariant
-- Pending change set: 37 paths
+- Baseline commit: `786a569fa226` — Backlog sweep: scheduler once-defer and job locks, served-LOSO headline, four-metric runner with batch record; MOD-20 closed, MOD-21 and MKT-20 refuted, POOL-01 and ENG-45 measured, ENG-46 backfilled
+- Pending change set: 24 paths
   - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
@@ -30,19 +30,19 @@ Refreshed at: `2026-09-16T21:27:41.845953+00:00`
   - `M  docs/history.html`
   - `M  docs/index.html`
   - `M  docs/lanes/README.md`
-  - `A  docs/lanes/every-metric-every-experiment.md`
-  - `A  docs/lanes/lane-replay-dream-rsi.md`
-  - `A  docs/lanes/line-move-target.md`
-  - `A  docs/lanes/market-derived-ratings.md`
-  - `A  docs/lanes/pool-rank-card.md`
-  - `A  docs/lanes/pooled-signal-model.md`
-  - `A  docs/lanes/scheduler-once-timeout.md`
+  - `M  docs/lanes/every-metric-every-experiment.md`
+  - `M  docs/lanes/lane-replay-dream-rsi.md`
+  - `M  docs/lanes/pooled-signal-model.md`
+  - `M  docs/lanes/scheduler-once-timeout.md`
   - `M  docs/lanes/statistical-audit-2026-09-15.md`
   - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260916T160841Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-02-20260916T160925Z.json`
-  - `A  registry/experiments/opener-evaluation/20260916T161257Z.json`
-  - ...and 17 more
+  - `A  registry/experiments/margin-backtest/20260917T005413Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-02-20260917T005544Z.json`
+  - `A  registry/experiments/opener-evaluation/20260917T005909Z.json`
+  - `A  registry/experiments/waterfall-feed/20260917T010521Z.json`
+  - `M  registry/weak_signals.json`
+  - `M  scripts/every_metric_backfill_record.py`
+  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -51,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `f4c4a5a57c9414c6`
+- Model ID: `f7b44c149b192b27`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260916T161257Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260917T005909Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,093 / 2,091 (52.27%)**
-- Linked forecast: **2026 Week 2**, created `2026-09-16T16:09:25.778497+00:00`
+- Linked forecast: **2026 Week 2**, created `2026-09-17T00:55:44.083207+00:00`
 
 The 52.27% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `f4c4a5a57c9414c6`, published `2026-09-16T16:19:34.046628+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `f7b44c149b192b27`, published `2026-09-17T01:06:58.985280+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

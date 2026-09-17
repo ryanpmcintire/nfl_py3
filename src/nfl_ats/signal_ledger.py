@@ -55,6 +55,9 @@ _UNIT_META: dict[str, tuple[int, str]] = {
     "brier": (4, "Brier"),
     "log_loss": (4, "log-loss"),
     "mae": (3, "MAE"),
+    "mae_improvement": (3, "points of average-error improvement"),
+    "brier_improvement": (4, "Brier-score points of improvement"),
+    "log_loss_improvement": (4, "log-loss points of improvement"),
 }
 _ACCURACY_UNIT = "accuracy_points"
 

@@ -18,8 +18,8 @@ cell out of time, or the row closes on an admissible ground.
   (`tests/test_board_humanised.py`, a recent registry cell without a plain
   summary: `audit_verify_nested_flag_screen_loso` from the in-flight audit
   lane); fixed by adding the summary, file re-saved through `save_registry`,
-  test file passes. Registry diff is now 84 added lines, no rewrites.
-- Nothing committed.
+   test file passes. Registry diff is now 84 added lines, no rewrites.
+- Committed in 786a569.
 
 ## Tried
 - Tree from the registry: 195 named families, median 3 cells, max 1,800;

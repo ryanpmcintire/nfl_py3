@@ -691,7 +691,7 @@ comparison "the sportsbook over/under line" instead of "the betting total".
 Rendered on docs/index.html after `publish-board`: "missed by 1.0 points a game
 over 1 game; the sportsbook over/under line missed by 2.5." Historical
 expectation for that guess (read, docs/tiebreaker_low_side_shading.md): about
-10.1 points a game, the same as the over/under line. Not committed.
+10.1 points a game, the same as the over/under line. Committed in 786a569.
 
 ## Owner directive 2026-09-15 (recorded in memory: objective-is-forward-consistency)
 
@@ -713,4 +713,23 @@ pointer updated, record still 841-662 vs model-only 819-684 on 1,503 games).
 to the old served-union path when the pointer is absent or stale; caption and
 caveat reframed as held-out served path instead of best-of-127. Republished:
 the board headline reads 841-662 across 1,503 past games. Full suite 4529
-passed 9 skipped, mypy clean, ruff clean on the touched file. Not committed.
+passed 9 skipped, mypy clean, ruff clean on the touched file. Committed in 786a569.
+
+## Follow-up done 2026-09-17 (measured)
+
+The overnight refit moved the active model to f7b44c149b192b27 and the
+pointer still named f4c4a5a57c9414c6, so the model-match guard was hiding the
+honest headline again. Refitted (`nfl-ats fit-pick-probability` ->
+`pick_probability/20260917T143636Z`, pointer repointed): identical
+coefficients and the same 841-662 vs 819-684 on 1,503 games, so the new
+model's opener read matches the old on this population. Re-ran
+`scripts/pooled_signal_paired_eval.py` ->
+`artifacts/pooled_signal/20260917T143656Z/`: same +1.464 pts
+[+0.130, +2.660], P+ 0.9815, decisive 274-252 on 526, provenance names the
+new model. Cheapest audit fix 1 shipped with it: `_build_headline_stats`
+reads the newest model-matching pooled-signal `results.json` behind the same
+guard and appends the decisive-game record to the served-path caption --
+"When the card disagreed with the model alone (526 past games), the card's
+side won 274 of them." -- rendered on index and model pages after
+`publish-board`; absent or stale artifact means no sentence, never a
+constant. Ruff, mypy clean; full suite 4529 passed 9 skipped.

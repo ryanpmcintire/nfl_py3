@@ -1,8 +1,8 @@
 # NFL ATS predictions: 2026 Week 2
 
-Published from the synchronized weak stack model, 2026-09-16 16:19 UTC.
+Published from the synchronized weak stack model, 2026-09-17 01:06 UTC.
 
-<!-- publication: model_id=f4c4a5a57c9414c6 published_at_utc=2026-09-16T16:19:34.046628+00:00 -->
+<!-- publication: model_id=f7b44c149b192b27 published_at_utc=2026-09-17T01:06:58.985280+00:00 -->
 
 > **Lines, injuries, depth charts, and model inputs may change before kickoff.** Regenerate and republish this card as the week approaches.
 
@@ -38,9 +38,9 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 `Cover chance` is the picked side's chance to cover. The chance beside each pick is how often picks like this one have actually landed: across 1,503 past games scored the same way, the picks this card called strong won 59% of the time and the ones it called slight won 54%.
 
 <!-- LATE_WEEK_REFRESH:START -->
-## Late-week refresh (as of 2026-09-16T16:32:01.062203+00:00)
+## Late-week refresh (as of 2026-09-17T01:13:23.923317+00:00)
 
-3 picks changed since the Tuesday card (last_call_wed_12:15), recomputed with current data but scored at the frozen Tuesday grading line. Only games whose deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not yet passed were eligible. "Policy" is `late_week_leader_median_follow_1_0_big_spread_0_5` when the three leading books moved the line at least a full point since Tuesday -- or half a point on the biggest spreads, 10.5 or more -- and the pick followed them, `late_week_leader_median_follow_1_0_big_spread_0_5_news_veto` when they moved that far but the injury report points the other way, so Tuesday's pick stands, `handle_follow_0_70` when that rule did not fire and at least 70% of the money bet on the game sat on the other side, `rookie_crew_underdog_v1` when it did not fire and the officiating crew for that game is new this season, or `model_only` when nothing above fired (or no market evidence was available). The 1.0-point `movement_ge_1.0` consensus rule was retired from the served chain on 2026-09-10 and is recorded as the paired challenger `consensus_movement_1_0_off_incumbent` -- see docs/late_week_refresh.md's movement-policy sections. Where this table and the picks table above disagree, the side here is the one being played.
+3 picks changed since the Tuesday card (lineups_refresh), recomputed with current data but scored at the frozen Tuesday grading line. Only games whose deadline (their own kickoff, or that week's Sunday 4:00 PM ET if earlier) had not yet passed were eligible. "Policy" is `late_week_leader_median_follow_1_0_big_spread_0_5` when the three leading books moved the line at least a full point since Tuesday -- or half a point on the biggest spreads, 10.5 or more -- and the pick followed them, `late_week_leader_median_follow_1_0_big_spread_0_5_news_veto` when they moved that far but the injury report points the other way, so Tuesday's pick stands, `handle_follow_0_70` when that rule did not fire and at least 70% of the money bet on the game sat on the other side, `rookie_crew_underdog_v1` when it did not fire and the officiating crew for that game is new this season, or `model_only` when nothing above fired (or no market evidence was available). The 1.0-point `movement_ge_1.0` consensus rule was retired from the served chain on 2026-09-10 and is recorded as the paired challenger `consensus_movement_1_0_off_incumbent` -- see docs/late_week_refresh.md's movement-policy sections. Where this table and the picks table above disagree, the side here is the one being played.
 
 | Matchup    | Previous pick   | New pick   | Model estimate   | Policy     | Market move   |
 |:-----------|:----------------|:-----------|:-----------------|:-----------|:--------------|

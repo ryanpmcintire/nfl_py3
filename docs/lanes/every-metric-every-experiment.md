@@ -52,7 +52,36 @@ all four by default and the backfill cells are in the registry.
   correctly refused without --replace.
 - My one wrong SE offer (fraction vs points) was caught by the
   validator's plausibility floor and corrected with --replace; noted.
-- Unit 3 (pool + findings page read the margin family) not started.
+- Unit 3 DONE 2026-09-16, details below (measured this session).
+
+- Unit 3 DONE 2026-09-16 (measured this session). The Signal Ledger
+  renders the three improvement units in words
+  (`signal_ledger._UNIT_META`: points of average-error improvement,
+  Brier-score / log-loss points of improvement, same words as the
+  findings recent-activity list); the findings evergreen cites the
+  `mae_improvement` pool beside accuracy; live pool on the corrected
+  registry reads -0.0133 pts [-0.0200, -0.0067], P+ 0.00004 on 103
+  signals, sign test 38/103 (p 0.010), a diagnostic over correlated
+  inputs, not a verdict. No registry cell for the pool read, by the
+  evergreen's own rule. Full suite 4529 passed / 9 skipped, mypy
+  clean, ruff clean on touched files (37 pre-existing ruff errors in
+  `every_metric_backfill.py` left untouched).
+
+## Correction 2026-09-16: the 16 margin cells were wrong, now replaced
+(measured this session)
+- The record script's margin frame used the absolute line as the market
+  baseline instead of the absolute line-minus-final error, about 5 points
+  off on every cell (e.g. pbp_replication -5.39, true -0.37). Unit 1 was
+  never affected (its own path reads 10.40 vs 10.09 there). One-line fix in
+  `scripts/every_metric_backfill_record.py`, recomputed per (family, tag)
+  with identical files, dedupe, draws and seed (all corrected effects are
+  fractions of a point; margins-family -0.1052 on 2,143 corroborates the
+  served 9.952 vs 9.844 read), re-recorded through batch `--replace`
+  (validators accepted all 16), artifact
+  `artifacts/every_metric_backfill/20260916T220513Z/`. Registry still 6,660
+  signals. Several corrected cells sit wholly below zero and now meet the
+  letter of wrong_sign_resolved for "the model beats the spread on MAE";
+  left unresolved per the backfill's predeclared no-adjudication rule.
 
 ## Open
 - Whether backfilled cells count as new looks (they are new metrics on old

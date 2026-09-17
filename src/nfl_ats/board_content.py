@@ -1894,6 +1894,44 @@ def _served_path_loso_record(
     return wins / games, f"{wins:,}-{losses:,} across {games:,} past games"
 
 
+def _served_path_decisive_record(
+    artifacts_root: Path, active: Mapping[str, Any]
+) -> tuple[int, int, int] | None:
+    model_id = str(active.get("model_id") or "")
+    if not model_id:
+        return None
+    root = Path(artifacts_root) / "pooled_signal"
+    if not root.is_dir():
+        return None
+    for directory in sorted(root.iterdir(), reverse=True):
+        results_path = directory / "results.json"
+        if not results_path.is_file():
+            continue
+        try:
+            payload: Any = read_json(results_path)
+        except (OSError, ValueError):
+            continue
+        if not isinstance(payload, Mapping):
+            continue
+        provenance = payload.get("provenance")
+        if not isinstance(provenance, Mapping):
+            continue
+        if str(provenance.get("active_model_id") or "") != model_id:
+            continue
+        try:
+            cal_wins = int(payload["decisive_calibrated_wins"])
+            model_wins = int(payload["decisive_model_wins"])
+            games = int(payload["decisive_games"])
+        except (KeyError, TypeError, ValueError):
+            return None
+        if games <= 0 or cal_wins < 0 or model_wins < 0:
+            return None
+        if cal_wins + model_wins != games:
+            return None
+        return cal_wins, model_wins, games
+    return None
+
+
 def _build_headline_stats(
     artifacts_root: Path,
     active: Mapping[str, Any],
@@ -1963,6 +2001,13 @@ def _build_headline_stats(
 
     served_union = load_served_union_measurement(artifacts_root, active)
     served_loso = _served_path_loso_record(artifacts_root, active)
+    decisive = _served_path_decisive_record(artifacts_root, active)
+    decisive_text = ""
+    if served_loso is not None and decisive is not None:
+        decisive_text = (
+            f" When the card disagreed with the model alone ({decisive[2]:,} past games), "
+            f"the card's side won {decisive[0]:,} of them."
+        )
     if served_loso is not None:
         played_union_fraction, served_loso_text = served_loso
         played_card_pct = played_union_fraction * 100
@@ -1984,6 +2029,7 @@ def _build_headline_stats(
         (
             f"Opener-graded accuracy, {played_games_text} -- each past season scored "
             "by a model fit that had not seen it, the served adjustments only."
+            f"{decisive_text}"
             if served_loso is not None
             else f"Opener-graded accuracy across {played_games_text} past games -- the full set of "
             "adjustments that is actually on the board this week, not a hypothetical."

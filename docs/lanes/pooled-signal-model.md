@@ -29,8 +29,8 @@ MOD-20: one hierarchical model with every situational family as a shrunk term, j
   [+0.130, +2.660], P+ 0.9815, decisive 274-252 on 526, positive in 5
   of 6 seasons; recorded as the family's first cell
   (`pooled_signal_calibrated_vs_model_only_loso`,
-  unresolved_below_power). Next: grow the reproducible feature set
-  before any second pooled fit.
+   unresolved_below_power). Next: grow the reproducible feature set
+   before any second pooled fit. Committed in 786a569.
 
 ## Open
 - None yet.

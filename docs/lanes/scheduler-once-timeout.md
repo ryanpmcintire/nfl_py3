@@ -30,7 +30,7 @@ can never run a job twice, and the scheduler suites stay green.
   xdist order failure during development, fixed by the STATE_PATH-derived
   lock dir); ruff format + check clean on the script. Served card
   consistent: CURRENT_PREDICTIONS.md already carries the noon 3-pick
-  refresh section. Nothing committed.
+   refresh section. Committed in 786a569.
 
 ## Tried
 - Nothing before this session; the Sept-9 log (4 RUNs, 1 OK for
