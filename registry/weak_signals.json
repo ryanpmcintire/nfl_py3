@@ -155781,6 +155781,34 @@
       "source": "docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
       "standard_error": null
     },
+    "pbp08_protection_mismatch_early_window_v1_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.20, +1.27] crosses zero and the decisive-game exact two-sided null gives p=0.358, so neither admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Week-gated protection-mismatch tilt (fires weeks 1-4 only) versus the served unconditional tilt on the played 9-member card, opener grade, paired accuracy points",
+      "effect": 0.5323,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch_early_window_v1",
+      "interval": [
+        -0.1988,
+        1.2667
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: variant wins 33, served wins 25 on 58 decisive games (exact two-sided p=0.358, consistent with a coin flip). Mechanism: in September the market has not yet priced a line-versus-rush matchup that only last season's tail shows, while by mid-season pressure rates are public and priced. Variant union equals the served union minus late tilt-unique flips, so the paired delta lives only on the 58 late tilt-only scored games (variant reverts to the raw-model side there). Paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, 107 season x week blocks, 1537 REG games, 34 pushes dropped. Correlated with every other pbp08-family registry entry (same 2020-2025 opener archive); one new look. Parent-verified by rerun 2026-09-17.",
+      "plain_summary": "When this pass-rush mismatch signal is only allowed to flip picks in the first four weeks of the season, when its stats still reach back into last year, the card gains about half a correct game per hundred so far.",
+      "probability_positive": 0.8735,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "tests/scratch/lanes/pbp08_week_gated_variant_20260917.py; artifacts/opener_evaluation/20260913T113943Z",
+      "standard_error": 0.4476
+    },
     "pbp08_protection_mismatch_window_split_early_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",

@@ -25,6 +25,18 @@ LEAD-65 states what the read implies for the served rule.
     [-1.66, +0.26], probability_positive 0.099 (unresolved_below_power).
   Both cells are in `registry/weak_signals.json`, family
   `pbp08_protection_mismatch_window_split`.
+- Measured 2026-09-17 (subagent, parent-verified by rerun with
+  `uv run --no-sync python tests/scratch/lanes/pbp08_week_gated_variant_20260917.py`;
+  report `tests/scratch/lanes/pbp08_week_gated_variant_20260917.json`).
+  Week-gated variant (tilt fires weeks 1-4 only) versus the served
+  unconditional tilt, same archive and card, opener grade, paired
+  week-blocked bootstrap, 2000 draws, seed 20260821: +0.53 points,
+  90% [-0.20, +1.27], probability_positive 0.874, decisive 33-25 on 58
+  (exact two-sided p 0.358, consistent with a coin flip), per-season
+  +1.82 / +0.85 / +0.40 / -0.75 / -0.75 / +1.87. Fidelity check recomputed
+  the lane's own cells exactly (+2.50 P+ 0.977 early, -0.70 P+ 0.099 late).
+  Recorded `pbp08_protection_mismatch_early_window_v1_2020_2025`,
+  unresolved_below_power (registry now 6,661 signals).
 - Reading: the opposite of the hypothesis. The tilt's whole-card edge is
   concentrated where the window reaches into last season; from week 5 on it
   is a probable drag. Candidate mechanism: in September the market has not
@@ -49,6 +61,11 @@ LEAD-65 states what the read implies for the served rule.
   challenger `pbp08_protection_mismatch_early_window_v1` against the served
   unconditional tilt, graded at the opener, with the mechanism sentence in
   the challenger doc so the gate is not an unexplained threshold.
+- DONE 2026-09-17 as a graded measurement (not yet prospective tracking):
+  the variant grades +0.53 [-0.20, +1.27], P+ 0.874, decisive 33-25 on 58
+  with exact p 0.358, recorded unresolved_below_power. The positive-expected
+  direction holds but the decisive split is coin-flip consistent, so this
+  supports paired prospective tracking, not a served change.
 - MOD-19 stage 2 then tests the owner's continuity hypothesis directly:
   split the early cell by offensive-line and pass-rush snap continuity.
 

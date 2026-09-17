@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-17T14:47:29.942785+00:00`
+Refreshed at: `2026-09-17T15:10:23.578618+00:00`
 
 ## Start here
 
@@ -20,29 +20,17 @@ Refreshed at: `2026-09-17T14:47:29.942785+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `786a569fa226` — Backlog sweep: scheduler once-defer and job locks, served-LOSO headline, four-metric runner with batch record; MOD-20 closed, MOD-21 and MKT-20 refuted, POOL-01 and ENG-45 measured, ENG-46 backfilled
-- Pending change set: 24 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `b6c840a50939` — Serve honest headline on new model; decisive-game record beside it; close sweep rows
+- Pending change set: 9 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
   - `M  docs/history.html`
   - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `M  docs/lanes/every-metric-every-experiment.md`
-  - `M  docs/lanes/lane-replay-dream-rsi.md`
-  - `M  docs/lanes/pooled-signal-model.md`
-  - `M  docs/lanes/scheduler-once-timeout.md`
-  - `M  docs/lanes/statistical-audit-2026-09-15.md`
+  - `M  docs/lanes/lead65-protection-window-split.md`
   - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260917T005413Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-02-20260917T005544Z.json`
-  - `A  registry/experiments/opener-evaluation/20260917T005909Z.json`
-  - `A  registry/experiments/waterfall-feed/20260917T010521Z.json`
   - `M  registry/weak_signals.json`
-  - `M  scripts/every_metric_backfill_record.py`
-  - ...and 4 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
