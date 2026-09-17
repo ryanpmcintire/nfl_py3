@@ -33,6 +33,19 @@ positive-expected, graded at the opener.
   pool). Both cells in `registry/weak_signals.json`, family
   `pbp08_protection_mismatch__continuity`, unresolved_below_power
   (registry now 6,663 signals).
+- 2026-09-17 later: harness v1 built at `scripts/signal_atlas.py`
+  (subagent, reviewed in-session; split rules read from the library, only
+  week_in_season implemented, anything else errors; leave-one-out of
+  signal-unique flips, paired week-blocked bootstrap, seed fixed).
+  First harness run: coach fade across the three week cells, opener grade
+  on the current evaluation (`opener_evaluation/20260917T161504Z`, model
+  f2a706ba), parent-verified by rerun with identical output — weeks_1_4
+  0.00 [-3.33, +3.24], P+ 0.462, decisive 23-23 on 46 (exact p 1.0);
+  weeks_5_12 -0.31 [-1.28, +0.62], P+ 0.252, decisive 13-15 on 28
+  (exact p 0.851); weeks_13_18 degenerate (ineligible past week 8,
+  0 fires in 496 games, no standard error). Family
+  `coach_fade__week_in_season`, all unresolved_below_power (registry now
+  6,666 signals).
 
 ## Tried
 

@@ -10920,6 +10920,90 @@
       "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
       "standard_error": null
     },
+    "coach_fade__week_in_season_weeks_13_18_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Zero fires in 496 games: the marginal is unidentified, not a measured zero. No admissible closing ground applies; unresolved_below_power per AGENTS.md. Recorded without a standard error so the degenerate cell stays out of the inverse-variance pool.",
+      "closing_ground": null,
+      "description": "Coach-fade tilt leave-one-out marginal on the played 9-member card, weeks 13-18, opener grade, paired accuracy points. DEGENERATE: the tilt is ineligible past week 8 and never fires in this cell, so the marginal is unidentified.",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "coach_fade__week_in_season",
+      "interval": [
+        0.0,
+        0.0
+      ],
+      "league": "nfl",
+      "notes": "Coach fade eligibility ends at week 8; 0 fires in 496 weeks-13-18 games. No standard error stored (unidentified cell).",
+      "plain_summary": "Late in the season this rule never fires at all, so there is nothing to measure there.",
+      "probability_positive": 0.5,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 35,
+      "sample_games": 496,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1; artifacts/opener_evaluation/20260917T161504Z",
+      "standard_error": null
+    },
+    "coach_fade__week_in_season_weeks_1_4_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-3.33, +3.24] crosses zero and the decisive exact two-sided p=1.0 (23-23 on 46); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Coach-fade tilt leave-one-out marginal on the played 9-member card, weeks 1-4, opener grade, paired accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "coach_fade__week_in_season",
+      "interval": [
+        -3.3333,
+        3.2437
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: tilt wins 23, model side wins 23 on 46 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In the first four weeks of the season, playing the first-year-coach fade has been exactly even, winning as many extra games as it lost.",
+      "probability_positive": 0.462,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 24,
+      "sample_games": 360,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1; artifacts/opener_evaluation/20260917T161504Z",
+      "standard_error": 1.966
+    },
+    "coach_fade__week_in_season_weeks_5_12_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.28, +0.62] crosses zero and the decisive exact two-sided p=0.851 (13-15 on 28); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Coach-fade tilt leave-one-out marginal on the played 9-member card, weeks 5-12, opener grade, paired accuracy points",
+      "effect": -0.3091,
+      "effect_units": "accuracy_points",
+      "family": "coach_fade__week_in_season",
+      "interval": [
+        -1.2783,
+        0.624
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: tilt wins 13, model side wins 15 on 28 decisive games (exact two-sided p=0.851). Signal-atlas harness v1, leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "From week 5 to week 12, the first-year-coach fade has cost about a third of a correct game per hundred, with the range running either side of nothing.",
+      "probability_positive": 0.252,
+      "recorded_at": "2026-09-17",
+      "reliability": null,
+      "sample_blocks": 48,
+      "sample_games": 647,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1; artifacts/opener_evaluation/20260917T161504Z",
+      "standard_error": 0.6024
+    },
     "coach_speak_incremental_accuracy_2013_2024": {
       "category": "health",
       "classification": "unresolved_below_power",
