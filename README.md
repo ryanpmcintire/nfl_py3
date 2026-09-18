@@ -21,20 +21,20 @@ Active model: weak stack (market residual). Its distinct close-graded chronologi
 |:------------|:-----------|:-----------------|:---------------|
 | Thu, Sep 17 | DET at BUF | BUF -4.5         | 54.1%          |
 | Sun, Sep 20 | CAR at ATL | CAR -1.5         | 52.9%          |
-| Sun, Sep 20 | CIN at HOU | CIN +2.5         | 53.1%          |
+| Sun, Sep 20 | CIN at HOU | CIN +2.5         | 53.3%          |
 | Sun, Sep 20 | CLE at TB  | TB -8.5          | 56.7%          |
 | Sun, Sep 20 | GB at NYJ  | GB -3.5          | 52.6%          |
-| Sun, Sep 20 | IND at KC  | IND +6.5         | 51.8%          |
+| Sun, Sep 20 | IND at KC  | IND +6.5         | 51.6%          |
 | Sun, Sep 20 | JAX at DEN | ★ DEN -2.5       | 57.8%          |
-| Sun, Sep 20 | LV at LAC  | LAC -7.5         | 50.2%          |
-| Sun, Sep 20 | MIA at SF  | SF -13.5         | 57.7%          |
+| Sun, Sep 20 | LV at LAC  | LAC -7.5         | 50.3%          |
+| Sun, Sep 20 | MIA at SF  | SF -13.5         | 57.9%          |
 | Sun, Sep 20 | MIN at CHI | MIN +5.5         | 50.1%          |
 | Sun, Sep 20 | NO at BAL  | NO +8.5          | 62.7%          |
-| Sun, Sep 20 | PHI at TEN | PHI -6.5         | 57.2%          |
+| Sun, Sep 20 | PHI at TEN | PHI -6.5         | 57.3%          |
 | Sun, Sep 20 | PIT at NE  | NE -4.5          | 56.5%          |
-| Sun, Sep 20 | SEA at ARI | SEA -4.5         | 55.2%          |
+| Sun, Sep 20 | SEA at ARI | SEA -4.5         | 55.0%          |
 | Sun, Sep 20 | WAS at DAL | WAS +3.5         | 50.5%          |
-| Mon, Sep 21 | NYG at LA  | LA -7.5          | 65.9%          |
+| Mon, Sep 21 | NYG at LA  | LA -7.5          | 65.8%          |
 
 [Open the standalone card](CURRENT_PREDICTIONS.md) for provenance and interpretation.
 <!-- CURRENT_PREDICTIONS:END -->
@@ -47,7 +47,7 @@ close. A close-graded number alone is never grounds to reject a candidate
 (see `AGENTS.md`); it is reported below only as the secondary figure it is.
 
 <!-- ACTIVE_MODEL_STATE:START -->
-Active model: `market_residual` with `weak_stack` features (`f2a706ba20aee305`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
+Active model: `market_residual` with `weak_stack` features (`0d7f451b57c46382`), regressor `ridge`, ridge alpha `10.0`, calibration `none`.
 
 - **Opener-graded, probability-rule accuracy (the pool-relevant grade -- picks lock Tuesday against a frozen line):** **54.49%** on **1,537 paired games**, week-blocked 95% interval [51.86%, 57.09%].
 - Close-graded accuracy (secondary -- the market's sharpest, and least representative, decision point): **52.27%** (1,093 of 2,091 non-push games), week-blocked 95% interval [50.10%, 54.30%].
@@ -65,7 +65,7 @@ produce, the same way it already fails on a stale `HANDOFF.md`.
 ## Research state
 
 <!-- RESEARCH_STATE:START -->
-- **Weak-signal registry:** 6,690 results recorded -- 6,643 unresolved_below_power, 47 closed (43 refuted_mechanism, 4 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
+- **Weak-signal registry:** 6,708 results recorded -- 6,661 unresolved_below_power, 47 closed (43 refuted_mechanism, 4 bounded_by_control). An interval crossing zero is never by itself grounds to close a line of work; see `AGENTS.md`.
 - **Rotation registry:** 455 declared research families -- 89 open, 1 confirmed/closed/retired, 365 declared for coverage only (no window yet).
 - **Prospective challengers:** 61 of 67 registered challengers are actively tracked prospectively (`artifacts/prospective/challengers.json`).
 <!-- RESEARCH_STATE:END -->

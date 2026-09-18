@@ -1,0 +1,66 @@
+{
+  "artifact_directory": "artifacts\\opener_evaluation\\20260917T211240Z",
+  "backfill_note": null,
+  "code_diff_sha256": "c87f18d4a6c172165c4f7e9e9d30f745ca37c4692726c2e53809e7c036c431e4",
+  "code_dirty": true,
+  "code_revision": "d0b8071c1b3993f8bbd255917bc27c3c8535579f",
+  "command": "opener-evaluation",
+  "config_hash": "db9df65dc61114ed5a6fbc45c101ca74e53668a72431bc39c57a09734595fd3b",
+  "experiment_id": "opener-evaluation/20260917T211240Z",
+  "feature_table_sha256": "3361484567ef4dd4b735db99966c2a3d36a0f6c52271fb66b4c2814aa9ff4213",
+  "metrics": {
+    "_metrics_truncated_keys": [
+      "metrics",
+      "provenance",
+      "uncertainty"
+    ],
+    "active_model_config": {
+      "calibration_method": "none",
+      "feature_profile": "weak_stack",
+      "feature_table_sha256": "3361484567ef4dd4b735db99966c2a3d36a0f6c52271fb66b4c2814aa9ff4213",
+      "model_id": "97fe67b9b090d219",
+      "probability_method": "gaussian_median",
+      "regressor": "ridge",
+      "ridge_alpha": 10.0,
+      "target": "market_residual"
+    },
+    "active_model_id": "97fe67b9b090d219",
+    "bootstrap_samples": 2000,
+    "bootstrap_seed": 20260817,
+    "calibration_method": "none",
+    "command": "opener-evaluation",
+    "created_at_utc": "2026-09-17T21:12:40.369134+00:00",
+    "feature_profile": "weak_stack",
+    "feature_table_sha256": "3361484567ef4dd4b735db99966c2a3d36a0f6c52271fb66b4c2814aa9ff4213",
+    "games": 1537,
+    "home_side_offset": {
+      "fitted_from": "walk-forward on this evaluation's own raw out-of-time opener points",
+      "games_with_nonzero_offset": 401,
+      "mean_absolute_offset": 0.15756888178705342,
+      "opener_picks_changed_by_offset": 46,
+      "policy": "home_side_offset_big_spreads_v2",
+      "prior_weight_games": 100.0,
+      "served": true,
+      "trailing_seasons": 5
+    },
+    "hypothesis_frozen_before_scoring": true,
+    "mean_absolute_open_to_close_move": 0.9634027325959662,
+    "min_train_games": 500,
+    "opener_line_source": null,
+    "predeclaration": "docs/opener_evaluation.md",
+    "probability_method": "gaussian_median",
+    "regressor": "ridge",
+    "ridge_alpha": 10.0,
+    "timing": {
+      "total_seconds": 10.372679799998878
+    }
+  },
+  "notes": "",
+  "provenance_backfilled": false,
+  "recorded_at": "2026-09-17T21:12:40.369134+00:00",
+  "rotation_family": null,
+  "schema_version": 1,
+  "source": "nfl-ats opener-evaluation",
+  "uv_lock_sha256": "bd8759ed78c466872864514dcc35b23cc63daab0dcf9fc737175372a2a683945",
+  "weak_signal_name": null
+}

@@ -57,6 +57,22 @@ positive-expected, graded at the opener.
   anywhere in the set. Families `<signal>__week_in_season`, registry now
   6,690 signals. MOD-19 step 3 (nine served members) is done for the week
   split; the remaining library splits score next.
+- 2026-09-18: split library v2 (`spread_band`: short |spread|<=7.0, long
+  >=7.5, Tuesday opener, gapless in half-point steps) and the harness
+  extended to dispatch it (spread_line verified 100% equal to
+  tue_open_home_spread over 1,537 rows). All nine members re-run on the
+  current evaluation (`opener_evaluation/20260918T161301Z`, model
+  0d7f451b) and recorded in one batch (`tests/scratch/atlas_spread_batch.json`,
+  18 cells, families `<signal>__spread_band`, registry now 6,708).
+  Headlines, decisive first: bye long -1.53 [-2.79, -0.29] P+ 0.012
+  dec 2-7/9 and tank short -0.34 [-0.60, -0.09] P+ 0.0 dec 1-5/6 both sit
+  wholly negative but on 9 and 6 decisive games — held unresolved (the
+  ground permits closure, nothing requires it on a thin decisive basis),
+  noted not closed; pbp08 long -1.53 P+ 0.087 dec 7-12/19 crosses zero;
+  arrests short +0.42 P+ 0.927 dec 8-3/11 crosses zero; rest near even.
+  Batch-builder hiccup in-session (stale glob + leftover coach-append wrote
+  a 21-cell mix; caught by count check, rebuilt clean 18) — scratch only,
+  registry untouched until the clean batch.
 
 ## Tried
 

@@ -7504,6 +7504,62 @@
       "source": "artifacts/best_pick_served_score_ranker/20260914T163425Z/summary.json",
       "standard_error": null
     },
+    "bye_edge_fade__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-2.79, -0.29] with decisive exact two-sided p=0.18 (2-7 on 9); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Bye-week rest rule leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": -1.5337,
+      "effect_units": "accuracy_points",
+      "family": "bye_edge_fade__spread_band",
+      "interval": [
+        -2.7867,
+        -0.2924
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 2, model side wins 7 on 9 decisive games (exact two-sided p=0.18). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the bye-week rest rule cost about 1.53 correct games per hundred on that slice so far (2-7 on 9 games where it mattered).",
+      "probability_positive": 0.0115,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.7907
+    },
+    "bye_edge_fade__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.09, 1.51] with decisive exact two-sided p=0.291 (26-18 on 44); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Bye-week rest rule leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": 0.6797,
+      "effect_units": "accuracy_points",
+      "family": "bye_edge_fade__spread_band",
+      "interval": [
+        -0.0863,
+        1.5102
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 26, model side wins 18 on 44 decisive games (exact two-sided p=0.291). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the bye-week rest rule picked up about 0.68 more correct games per hundred on that slice so far (26-18 on 44 games where it mattered).",
+      "probability_positive": 0.911,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.4992
+    },
     "bye_edge_fade__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -11004,6 +11060,62 @@
       "source": "artifacts/close_game_luck_screen/20260821T182234Z/results.json",
       "standard_error": null
     },
+    "coach_fade__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-2.55, 1.31] with decisive exact two-sided p=0.791 (6-8 on 14); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "First-year-coach fade leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": -0.6135,
+      "effect_units": "accuracy_points",
+      "family": "coach_fade__spread_band",
+      "interval": [
+        -2.5478,
+        1.313
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 6, model side wins 8 on 14 decisive games (exact two-sided p=0.791). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the first-year-coach fade cost about 0.61 correct games per hundred on that slice so far (6-8 on 14 games where it mattered).",
+      "probability_positive": 0.252,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 1.1787
+    },
+    "coach_fade__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.97, 0.95] with decisive exact two-sided p=1.0 (30-30 on 60); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "First-year-coach fade leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "coach_fade__spread_band",
+      "interval": [
+        -0.9718,
+        0.9475
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 30, model side wins 30 on 60 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the first-year-coach fade has been about even on that slice so far (30-30 on 60 games where it mattered).",
+      "probability_positive": 0.4605,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.6
+    },
     "coach_fade__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -12151,6 +12263,62 @@
       ],
       "source": "artifacts/schedule_flag_on_production/division_dog/20260905T035808Z/results.json",
       "standard_error": null
+    },
+    "division_revenge_tilt__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-2.17, 4.13] with decisive exact two-sided p=0.743 (20-17 on 37); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Division-revenge rule leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": 0.9202,
+      "effect_units": "accuracy_points",
+      "family": "division_revenge_tilt__spread_band",
+      "interval": [
+        -2.1743,
+        4.1271
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 20, model side wins 17 on 37 decisive games (exact two-sided p=0.743). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the division-revenge rule picked up about 0.92 more correct games per hundred on that slice so far (20-17 on 37 games where it mattered).",
+      "probability_positive": 0.647,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 1.9031
+    },
+    "division_revenge_tilt__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.03, 1.03] with decisive exact two-sided p=1.0 (45-45 on 90); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Division-revenge rule leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "division_revenge_tilt__spread_band",
+      "interval": [
+        -1.0257,
+        1.0292
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 45, model side wins 45 on 90 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the division-revenge rule has been about even on that slice so far (45-45 on 90 games where it mattered).",
+      "probability_positive": 0.4715,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.6338
     },
     "division_revenge_tilt__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",
@@ -24096,6 +24264,62 @@
       "source": "artifacts/follow_vs_tilts/20260910T002107Z/results.json; artifacts/follow_vs_tilts/20260910T002107Z/confound.json; docs/follow_vs_tilts.md",
       "standard_error": 1.0036188906
     },
+    "forecast_cold_visitor_tilt__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.86, 2.74] with decisive exact two-sided p=0.581 (8-5 on 13); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Cold-visitor weather rule leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": 0.9202,
+      "effect_units": "accuracy_points",
+      "family": "forecast_cold_visitor_tilt__spread_band",
+      "interval": [
+        -0.8551,
+        2.7399
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 8, model side wins 5 on 13 decisive games (exact two-sided p=0.581). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the cold-visitor weather rule picked up about 0.92 more correct games per hundred on that slice so far (8-5 on 13 games where it mattered).",
+      "probability_positive": 0.7485,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 1.0859
+    },
+    "forecast_cold_visitor_tilt__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.61, 0.61] with decisive exact two-sided p=1.0 (11-11 on 22); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Cold-visitor weather rule leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": 0.0,
+      "effect_units": "accuracy_points",
+      "family": "forecast_cold_visitor_tilt__spread_band",
+      "interval": [
+        -0.6114,
+        0.6087
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 11, model side wins 11 on 22 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the cold-visitor weather rule has been about even on that slice so far (11-11 on 22 games where it mattered).",
+      "probability_positive": 0.4755,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.3845
+    },
     "forecast_cold_visitor_tilt__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -34620,6 +34844,62 @@
       ],
       "source": "nfl-ats experiment run registry\\experiment_specs\\interim_hc_first_game.json",
       "standard_error": 0.03673563471786325
+    },
+    "interim_hc_first_game_tilt__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [0.0, 0.91] with decisive exact two-sided p=1.0 (1-0 on 1); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Interim-coach first-game rule leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": 0.3067,
+      "effect_units": "accuracy_points",
+      "family": "interim_hc_first_game_tilt__spread_band",
+      "interval": [
+        0.0,
+        0.9094
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 1, model side wins 0 on 1 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the interim-coach first-game rule picked up about 0.31 more correct games per hundred on that slice so far (1-0 on 1 games where it mattered).",
+      "probability_positive": 0.627,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.3017
+    },
+    "interim_hc_first_game_tilt__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [0.0, 0.26] with decisive exact two-sided p=1.0 (1-0 on 1); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Interim-coach first-game rule leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": 0.085,
+      "effect_units": "accuracy_points",
+      "family": "interim_hc_first_game_tilt__spread_band",
+      "interval": [
+        0.0,
+        0.2555
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 1, model side wins 0 on 1 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the interim-coach first-game rule picked up about 0.09 more correct games per hundred on that slice so far (1-0 on 1 games where it mattered).",
+      "probability_positive": 0.629,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.11161850541531611
     },
     "interim_hc_first_game_tilt__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",
@@ -156285,6 +156565,62 @@
       "source": "tests/scratch/lanes/pbp08_week_gated_variant_20260917.py; artifacts/opener_evaluation/20260913T113943Z",
       "standard_error": 0.4476
     },
+    "pbp08_protection_mismatch_tilt__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-3.56, 0.6] with decisive exact two-sided p=0.359 (7-12 on 19); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Pass-rush mismatch rule leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": -1.5337,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch_tilt__spread_band",
+      "interval": [
+        -3.5614,
+        0.6006
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 7, model side wins 12 on 19 decisive games (exact two-sided p=0.359). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the pass-rush mismatch rule cost about 1.53 correct games per hundred on that slice so far (7-12 on 19 games where it mattered).",
+      "probability_positive": 0.0865,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 1.2515
+    },
+    "pbp08_protection_mismatch_tilt__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.54, 1.52] with decisive exact two-sided p=0.519 (33-27 on 60); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Pass-rush mismatch rule leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": 0.5098,
+      "effect_units": "accuracy_points",
+      "family": "pbp08_protection_mismatch_tilt__spread_band",
+      "interval": [
+        -0.5392,
+        1.5152
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 33, model side wins 27 on 60 decisive games (exact two-sided p=0.519). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the pass-rush mismatch rule picked up about 0.51 more correct games per hundred on that slice so far (33-27 on 60 games where it mattered).",
+      "probability_positive": 0.7605,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.634
+    },
     "pbp08_protection_mismatch_tilt__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -157290,6 +157626,62 @@
       "source": "artifacts/playcaller_change_leads/screen_results.json",
       "standard_error": null
     },
+    "player_arrests_back_side_policy__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.23, 0.59] with decisive exact two-sided p=1.0 (1-2 on 3); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Player-arrests rule leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": -0.3067,
+      "effect_units": "accuracy_points",
+      "family": "player_arrests_back_side_policy__spread_band",
+      "interval": [
+        -1.231,
+        0.5936
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 1, model side wins 2 on 3 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the player-arrests rule cost about 0.31 correct games per hundred on that slice so far (1-2 on 3 games where it mattered).",
+      "probability_positive": 0.183,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.5276
+    },
+    "player_arrests_back_side_policy__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [0.0, 0.86] with decisive exact two-sided p=0.227 (8-3 on 11); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Player-arrests rule leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": 0.4248,
+      "effect_units": "accuracy_points",
+      "family": "player_arrests_back_side_policy__spread_band",
+      "interval": [
+        0.0,
+        0.8606
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 8, model side wins 3 on 11 decisive games (exact two-sided p=0.227). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the player-arrests rule picked up about 0.42 more correct games per hundred on that slice so far (8-3 on 11 games where it mattered).",
+      "probability_positive": 0.927,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.2712
+    },
     "player_arrests_back_side_policy__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",
       "classification": "unresolved_below_power",
@@ -158126,6 +158518,62 @@
       ],
       "source": "artifacts/schedule_flag_on_production/post_ot/20260905T022034Z/results.json",
       "standard_error": null
+    },
+    "precip_high_total_tilt__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [0.0, 1.46] with decisive exact two-sided p=0.5 (2-0 on 2); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Rain-and-high-total rule leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": 0.6135,
+      "effect_units": "accuracy_points",
+      "family": "precip_high_total_tilt__spread_band",
+      "interval": [
+        0.0,
+        1.4622
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 2, model side wins 0 on 2 decisive games (exact two-sided p=0.5). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the rain-and-high-total rule picked up about 0.61 more correct games per hundred on that slice so far (2-0 on 2 games where it mattered).",
+      "probability_positive": 0.866,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.4356
+    },
+    "precip_high_total_tilt__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.62, 0.08] with decisive exact two-sided p=0.453 (2-5 on 7); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Rain-and-high-total rule leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": -0.2549,
+      "effect_units": "accuracy_points",
+      "family": "precip_high_total_tilt__spread_band",
+      "interval": [
+        -0.619,
+        0.0849
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 2, model side wins 5 on 7 decisive games (exact two-sided p=0.453). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the rain-and-high-total rule cost about 0.25 correct games per hundred on that slice so far (2-5 on 7 games where it mattered).",
+      "probability_positive": 0.077,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.2197
     },
     "precip_high_total_tilt__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",
@@ -180436,6 +180884,62 @@
       ],
       "source": "artifacts\\vegasinsider\\cx7_42d78f6_transactions\\suspension_rust_screen\\results.json",
       "standard_error": null
+    },
+    "tank_zone_fade_tilt__spread_band_long_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.61, 1.22] with decisive exact two-sided p=1.0 (2-1 on 3); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Tank-zone fade leave-one-out marginal on the played 9-member card, long, opener grade, paired accuracy points",
+      "effect": 0.3067,
+      "effect_units": "accuracy_points",
+      "family": "tank_zone_fade_tilt__spread_band",
+      "interval": [
+        -0.6061,
+        1.2232
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 2, model side wins 1 on 3 decisive games (exact two-sided p=1.0). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In long spreads of seven and a half or more, the tank-zone fade picked up about 0.31 more correct games per hundred on that slice so far (2-1 on 3 games where it mattered).",
+      "probability_positive": 0.5995,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 105,
+      "sample_games": 326,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.5323
+    },
+    "tank_zone_fade_tilt__spread_band_short_2020_2025": {
+      "category": "onfield",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.6, -0.09] with decisive exact two-sided p=0.219 (1-5 on 6); no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Tank-zone fade leave-one-out marginal on the played 9-member card, short, opener grade, paired accuracy points",
+      "effect": -0.3398,
+      "effect_units": "accuracy_points",
+      "family": "tank_zone_fade_tilt__spread_band",
+      "interval": [
+        -0.6045,
+        -0.0855
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: signal wins 1, model side wins 5 on 6 decisive games (exact two-sided p=0.219). Signal-atlas harness v1 (scripts/signal_atlas.py), leave-one-out of signal-unique flips, paired week-blocked bootstrap, 2000 draws, seed 20260821, 90pct CI, per-game artifacts/opener_evaluation/20260918T161301Z/per_game.parquet. Correlated with every other served-member entry (same 2020-2025 opener archive).",
+      "plain_summary": "In short spreads of seven or less, the tank-zone fade cost about 0.34 correct games per hundred on that slice so far (1-5 on 6 games where it mattered).",
+      "probability_positive": 0.0,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1177,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/signal_atlas.py; registry/split_library.json v1",
+      "standard_error": 0.162
     },
     "tank_zone_fade_tilt__week_in_season_weeks_13_18_2020_2025": {
       "category": "onfield",

@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-17T18:25:27.345277+00:00`
+Refreshed at: `2026-09-18T16:51:45.873933+00:00`
 
 ## Start here
 
@@ -20,14 +20,29 @@ Refreshed at: `2026-09-17T18:25:27.345277+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `101c018520cc` — MOD-19 atlas harness v1; coach-fade week cells recorded
-- Pending change set: 6 paths
+- Baseline commit: `d0b8071c1b39` — Atlas week cells for all nine served members; registry 6690
+- Pending change set: 21 paths
+  - `M  CURRENT_PREDICTIONS.md`
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
+  - `M  docs/history.html`
+  - `M  docs/index.html`
   - `M  docs/lanes/conditional-signal-atlas.md`
+  - `M  docs/model.html`
+  - `A  registry/experiments/margin-backtest/20260917T210805Z.json`
+  - `A  registry/experiments/margin-backtest/20260918T160820Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-02-20260917T210914Z.json`
+  - `A  registry/experiments/margin-predict/2026-week-02-20260918T160940Z.json`
+  - `A  registry/experiments/opener-evaluation/20260917T211240Z.json`
+  - `A  registry/experiments/opener-evaluation/20260918T161301Z.json`
+  - `A  registry/experiments/waterfall-feed/20260917T211834Z.json`
+  - `A  registry/experiments/waterfall-feed/20260918T161845Z.json`
+  - `M  registry/split_library.json`
   - `M  registry/weak_signals.json`
+  - `M  scripts/signal_atlas.py`
+  - ...and 1 more
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
@@ -36,18 +51,18 @@ trust live Git output after checkout.
 ## Current model evidence
 
 - Status: **SYNCHRONIZED**; linked artifacts present: **true**
-- Model ID: `f2a706ba20aee305`
+- Model ID: `0d7f451b57c46382`
 - Method/profile/regressor/alpha/calibration: `market_residual` / `weak_stack` / `ridge` / `10.0` / `none`
-- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260917T161504Z`)
+- Served-policy baseline (opener-graded probability rule, home-side push applied): **54.49%** on **1,537 games** (`opener_evaluation/20260918T161301Z`)
 - Promoted player-arrest policy component (opener-graded): **53.76%** versus **53.36%** on **1,503 games** (+0.399 accuracy points; `probability_positive=0.8562`); the live card applies this after the coach policy, while paired prospective tracking continues
 - Secondary close-grade historical classification: **1,093 / 2,091 (52.27%)**
-- Linked forecast: **2026 Week 2**, created `2026-09-17T16:11:47.397505+00:00`
+- Linked forecast: **2026 Week 2**, created `2026-09-18T16:09:40.165978+00:00`
 
 The 52.27% figure is the distinct secondary close-grade historical classification, not the raw-model opener baseline, the promoted player-arrest policy evaluation, a game-specific probability, or proof of a profitable or stable market edge.
 
 ## Last tracked weekly publication
 
-[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `f2a706ba20aee305`, published `2026-09-17T16:22:37.097992+00:00`. It is an early, mutable research preview.
+[CURRENT_PREDICTIONS.md](CURRENT_PREDICTIONS.md) contains **2026 Week 2** from model `0d7f451b57c46382`, published `2026-09-18T16:20:17.075115+00:00`. It is an early, mutable research preview.
 
 ## Local reproducibility inventory
 

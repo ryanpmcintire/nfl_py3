@@ -29,26 +29,45 @@ def load_split_library(repo_root: Path) -> dict:
 def assign_cells(split: str, library: dict, frame: pd.DataFrame) -> pd.Series:
     if split not in library.get("splits", {}):
         raise ValueError("split " + str(split) + " is not declared in the split library")
-    if split != "week_in_season":
-        raise ValueError(
-            "split " + str(split) + " is not implemented; only week_in_season is implemented"
-        )
     entry = library["splits"][split]
     cells = list(entry.get("cells", []))
-    expected = ["weeks_1_4", "weeks_5_12", "weeks_13_18"]
-    if cells != expected:
-        raise ValueError(
-            "week_in_season cells changed; expected " + str(expected) + " got " + str(cells)
-        )
-    weeks = pd.to_numeric(frame["week"], errors="coerce")
-    labels = pd.Series("", index=frame.index, dtype=object)
-    labels = labels.mask(weeks <= 4, "weeks_1_4")
-    labels = labels.mask((weeks >= 5) & (weeks <= 12), "weeks_5_12")
-    labels = labels.mask(weeks >= 13, "weeks_13_18")
-    unassigned = labels.eq("")
-    if bool(unassigned.any()):
-        raise ValueError("week_in_season left weeks unassigned")
-    return labels
+    if split == "week_in_season":
+        expected = ["weeks_1_4", "weeks_5_12", "weeks_13_18"]
+        if cells != expected:
+            raise ValueError(
+                "week_in_season cells changed; expected " + str(expected) + " got " + str(cells)
+            )
+        weeks = pd.to_numeric(frame["week"], errors="coerce")
+        labels = pd.Series("", index=frame.index, dtype=object)
+        labels = labels.mask(weeks <= 4, "weeks_1_4")
+        labels = labels.mask((weeks >= 5) & (weeks <= 12), "weeks_5_12")
+        labels = labels.mask(weeks >= 13, "weeks_13_18")
+        unassigned = labels.eq("")
+        if bool(unassigned.any()):
+            raise ValueError("week_in_season left weeks unassigned")
+        return labels
+    if split == "spread_band":
+        expected = ["short", "long"]
+        if cells != expected:
+            raise ValueError(
+                "spread_band cells changed; expected " + str(expected) + " got " + str(cells)
+            )
+        if "spread_line" not in frame.columns:
+            raise ValueError("spread_band requires spread_line from the served predictions frame")
+        spread = pd.to_numeric(frame["spread_line"], errors="coerce")
+        absolute = spread.abs()
+        labels = pd.Series("", index=frame.index, dtype=object)
+        labels = labels.mask(absolute <= 7.0, "short")
+        labels = labels.mask(absolute > 7.0, "long")
+        unassigned = labels.eq("")
+        if bool(unassigned.any()):
+            raise ValueError("spread_band left spreads unassigned")
+        return labels
+    raise ValueError(
+        "split "
+        + str(split)
+        + " is not implemented; only week_in_season and spread_band are implemented"
+    )
 
 
 def week_blocked_stats(delta: np.ndarray, frame: pd.DataFrame, samples: int, seed: int) -> dict:
@@ -144,7 +163,7 @@ def main(argv=None) -> int:
     for ids in members.values():
         served_union |= {str(v) for v in ids}
     unique_ids = {v for v in signal_ids if v not in other_union}
-    eval_frame = predictions[["game_id", "season", "week"]].merge(
+    eval_frame = predictions[["game_id", "season", "week", "spread_line"]].merge(
         per_game[["game_id", "correct_at_open_probability_rule"]], on="game_id", how="left"
     )
     eval_frame["game_id"] = eval_frame["game_id"].astype(str)
