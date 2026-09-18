@@ -102,6 +102,9 @@ from nfl_ats.nflcom_refresh_overlay import record_nflcom_refresh_overlay
 from nfl_ats.pace_mismatch_dog_tilt_overlay import (
     record_pace_mismatch_dog_tilt_challenger_decisions,
 )
+from nfl_ats.pbp08_protection_mismatch_early_window_overlay import (
+    record_pbp08_protection_mismatch_early_window_challenger_decisions,
+)
 from nfl_ats.pbp08_protection_mismatch_tilt_overlay import (
     record_pbp08_protection_mismatch_tilt_challenger_decisions,
 )
@@ -635,6 +638,21 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             )
         except Exception as error:
             result["pbp08_protection_mismatch_tilt_challenger_ledger"] = {
+                "recorded": 0,
+                "error": str(error),
+            }
+        try:
+            result["pbp08_protection_mismatch_early_window_challenger_ledger"] = (
+                record_pbp08_protection_mismatch_early_window_challenger_decisions(
+                    _artifacts_root(),
+                    _data_root(),
+                    now=publish_instant,
+                    forecast_artifact=request.record_from_forecast,
+                    replace_week=request.replace_week,
+                )
+            )
+        except Exception as error:
+            result["pbp08_protection_mismatch_early_window_challenger_ledger"] = {
                 "recorded": 0,
                 "error": str(error),
             }

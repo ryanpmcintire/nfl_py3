@@ -66,6 +66,15 @@ LEAD-65 states what the read implies for the served rule.
   with exact p 0.358, recorded unresolved_below_power. The positive-expected
   direction holds but the decisive split is coin-flip consistent, so this
   supports paired prospective tracking, not a served change.
+- DONE 2026-09-18: prospective tracking is live.
+  `src/nfl_ats/pbp08_protection_mismatch_early_window_overlay.py` (subagent-built,
+  reviewed in-session; imports the parent's flag build and flip logic, gates
+  flips to week ≤ 4 via `PREDECLARED_SPLIT_BOUNDARY_WEEK`, records the
+  raw-model side in week 5+; no fitted constants) wired into
+  `publish-predictions --record-decisions` beside the parent block and
+  registered ACTIVE_PROSPECTIVE paired vs the served unconditional tilt.
+  Recorded 15 Week 2 Sunday/Monday games (Thursday post-kickoff skipped);
+  variant flips LV_LAC and NO_BAL among them. Served picks untouched.
 - MOD-19 stage 2 then tests the owner's continuity hypothesis directly:
   split the early cell by offensive-line and pass-rush snap continuity.
 - DONE 2026-09-17 (subagent, parent-verified by rerun; split predeclared in

@@ -1542,7 +1542,7 @@
       "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision/Tuesday-opener) line, paired per game with the active model's own paper ledger (artifacts/clv_ledger/decisions.parquet) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). Track all season; evaluate after the season with the predeclared taxonomy only -- an interval crossing zero never grounds rejection. No rotation-registry window is spent or implied by this registration.",
       "registered_at_utc": "2026-08-23T00:28:52Z",
       "registered_by": "Production-wiring task 2026-08-22/23 per POL-10 conventions, before Week 1 locks Sep 8: register the NFL.com Friday Out>=2-starters refresh fade composed on the production chain as a frozen 2026 prospective challenger. Rule text pasted verbatim below from docs/nflcom_friday_refresh.md section '2026 prospective challenger registration (frozen rule text, ready to paste)'; evidence docs/nflcom_friday_refresh.md (+2.18 pts, P+ 0.9954 week-blocked on three seasons, flagged selection-inflated); registry key recorded centrally as registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain.",
-      "rule_frozen_text": "Challenger: nflcom_friday_refresh_out2_starters_v1\nStatus: PROSPECTIVE \u2014 registers a 2026-season prospective test; nothing here\n  is claimed as confirmed. The historical composed figure (+2.1795 pts,\n  P+ 0.9954 week-blocked, artifacts/nflcom_friday_refresh/20260822T231604Z/)\n  is attribution on already-looked-at data (the parent signal was selected\n  AND red-teamed on the same 2022-2024 seasons) and is an upper bound.\nRule (frozen): For each REG game on the weekly card, let CHAIN be the\n  production pick (raw model -> coach fade -> player-arrests policy), PICKED\n  the team CHAIN backs, OPP the opponent. From the current week's FINAL\n  NFL.com league injury page (ingested before the Saturday refresh pass),\n  count OUT designations on STARTER-CALIBER players for each team, where\n  starter-caliber = played >=50% of offensive or defensive snaps in that\n  team's most recent prior REG game of the same season (snap_counts.parquet;\n  Week 1 = proxy unavailable = no flag). If PICKED carries >=2 such Out\n  designations and OPP carries <2, replace CHAIN with the opposite side;\n  otherwise keep CHAIN unchanged (both-flagged keeps; page absent or failing\n  the freshness gate keeps).\nTiming: computed once per week by the late-week refresh pass, Saturday UTC,\n  after the week's final injury page is ingested and before card\n  regeneration; the Tuesday grading line is never re-picked.\nGrading: opener-grade (frozen Tuesday line) vs the incumbent chain's picks,\n  paired accuracy deltas in accuracy points, full slate, pushes excluded;\n  week-blocked primary / season-blocked secondary bootstrap.\nProspective decision rule: track all season; evaluate after the season with\n  the predeclared taxonomy only \u2014 an interval crossing zero never grounds\n  rejection; promotion claims require the owner's declared threshold; card\n  play remains expected value at the opener grade.\nFails open: any ingest or freshness failure leaves the incumbent card\n  untouched for affected games and logs the skip.",
+      "rule_frozen_text": "Challenger: nflcom_friday_refresh_out2_starters_v1\nStatus: PROSPECTIVE — registers a 2026-season prospective test; nothing here\n  is claimed as confirmed. The historical composed figure (+2.1795 pts,\n  P+ 0.9954 week-blocked, artifacts/nflcom_friday_refresh/20260822T231604Z/)\n  is attribution on already-looked-at data (the parent signal was selected\n  AND red-teamed on the same 2022-2024 seasons) and is an upper bound.\nRule (frozen): For each REG game on the weekly card, let CHAIN be the\n  production pick (raw model -> coach fade -> player-arrests policy), PICKED\n  the team CHAIN backs, OPP the opponent. From the current week's FINAL\n  NFL.com league injury page (ingested before the Saturday refresh pass),\n  count OUT designations on STARTER-CALIBER players for each team, where\n  starter-caliber = played >=50% of offensive or defensive snaps in that\n  team's most recent prior REG game of the same season (snap_counts.parquet;\n  Week 1 = proxy unavailable = no flag). If PICKED carries >=2 such Out\n  designations and OPP carries <2, replace CHAIN with the opposite side;\n  otherwise keep CHAIN unchanged (both-flagged keeps; page absent or failing\n  the freshness gate keeps).\nTiming: computed once per week by the late-week refresh pass, Saturday UTC,\n  after the week's final injury page is ingested and before card\n  regeneration; the Tuesday grading line is never re-picked.\nGrading: opener-grade (frozen Tuesday line) vs the incumbent chain's picks,\n  paired accuracy deltas in accuracy points, full slate, pushes excluded;\n  week-blocked primary / season-blocked secondary bootstrap.\nProspective decision rule: track all season; evaluate after the season with\n  the predeclared taxonomy only — an interval crossing zero never grounds\n  rejection; promotion claims require the owner's declared threshold; card\n  play remains expected value at the opener grade.\nFails open: any ingest or freshness failure leaves the incumbent card\n  untouched for affected games and logs the skip.",
       "status": "ACTIVE_PROSPECTIVE",
       "status_reason": "NOT a retrained model and NOT a change to the published card -- CHALLENGER-tracked only: this challenger's weekly picks are the PLAYED production-chain picks already frozen in the paper-decision ledger, transformed post-prediction by nfl_ats.prospective.record_nflcom_refresh_out2_starters_challenger_decisions using the frozen rule text above. Signal inputs reuse scripts/nflcom_friday_designation_screen.py's exact name-normalization/starter-proxy/join machinery (imported, not reimplemented), reading the newest data/raw/nflcom_injuries snapshot under the frozen freshness gate (page fetched >= Friday 16:00 ET of the game week AND < the week's earliest kickoff). Evidence registry/weak_signals.json:nflcom_refresh_out2_starters_on_chain: +2.1795 accuracy points vs the incumbent chain, week-blocked 95% [+0.5222, +3.8911], probability_positive 0.9954, season-blocked P+ 0.9623, 780 scored games -- THREE SEASONS ONLY (2022-2024, the snapshot's coverage), per-season deltas 2022 +0.000 / 2023 +1.504 / 2024 +4.888 pts. SELECTION-INFLATED, stated every time: the parent signal was selected AND red-teamed on these same seasons, so the composed figure is an upper bound and no fresh confirmation is claimed; classification unresolved_below_power, no window spent.",
       "weekly_generation_command": "N/A -- reuses the played production-chain picks already frozen in artifacts/clv_ledger/decisions.parquet plus the ingested NFL.com injury page; never a separate margin-predict run. Timing follows the frozen refresh-path integration contract (docs/nflcom_friday_refresh.md sections 97-123): computed at the late-week refresh pass after the week's final injury page is ingested; the Tuesday grading line is never re-picked.",
@@ -3645,6 +3645,65 @@
       "status_reason": "NOT a retrained model and NOT a change to the published card. This challenger's picks ARE the played production-chain picks as they stand at the refresh pass (nfl_ats.pick_refresh.RefreshedGame.new_pick_side), transformed post-decision by nfl_ats.half_line_refresh_overlay.build_half_line_refresh_rows only when a matched-book second-half/full-game sign disagreement is found. An unflagged or unquoted game is byte-identical to the incumbent by construction.",
       "weekly_generation_command": "N/A -- generated by `nfl-ats refresh-picks` itself on every pass, not a separate margin-predict card. Requires both a bulk board snapshot (nfl-ats odds-ingest, scheduled) and a halves snapshot (nfl-ats odds-ingest-halves, scheduled jobs odds_tue_open_halves / odds_wed_opener_halves / odds_thu_tnf_halves / odds_sat_halves / odds_sun_close_halves / odds_mon_mnf_halves) captured before the refresh pass.",
       "weekly_recording_command": "nfl-ats refresh-picks --record-decisions"
+    },
+    {
+      "challenger_id": "pbp08_protection_mismatch_early_window_v1",
+      "composition_correlation_warning": "Keep active for standalone attribution only. Its games are a week-gated subset of the served pbp08_protection_mismatch_tilt_overlay population; the two arms are correlated by construction and must not be pooled as independent votes, nor pooled with sibling tilt overlays.",
+      "config_fingerprint": "bc77638d47e2748c",
+      "evidence": {
+        "classification": "unresolved_below_power",
+        "registry_source": "ROADMAP LEAD-65; docs/pbp08_matchup_screen.md; artifacts/pbp08_matchup/20260823T000758Z/results.json",
+        "variant_vs_served_unconditional_tilt": {
+          "decisive_record": "33-25 on 58",
+          "effect_accuracy_points": 0.53,
+          "grade": "opener grade 2020-2025, paired week-blocked bootstrap",
+          "interval_points": [
+            -0.2,
+            1.27
+          ],
+          "probability_positive": 0.874,
+          "verdict": "unresolved_below_power; an interval crossing zero is not grounds for rejection"
+        },
+        "window_split": {
+          "grade": "leave-one-out marginal in the played card, 2020-2025, week-blocked bootstrap, 90 percent interval",
+          "weeks_1_4_effect_points": 2.5,
+          "weeks_1_4_flips": 21,
+          "weeks_1_4_interval_points": [
+            0.55,
+            4.41
+          ],
+          "weeks_1_4_probability_positive": 0.977,
+          "weeks_5_18_effect_points": -0.7,
+          "weeks_5_18_flips": 58,
+          "weeks_5_18_interval_points": [
+            -1.66,
+            0.26
+          ],
+          "weeks_5_18_probability_positive": 0.099
+        },
+        "write_up": "docs/pbp08_matchup_screen.md"
+      },
+      "known_gap": "bet_side is always recorded as PASS and edge as NaN, mirroring the parent tilt overlay: this tracks forced-pick accuracy only, not an invented paper-bet edge. The flag build is FAIL-OPEN through the parent's flags_for_week_fail_open (a missing snapshot or schedule yields zero flags and a documented no-op). In week 5+ the arm records the raw-model side by construction, so the ledger stays well-defined all season; a week-5+ row matching the served tilt is a dead heat by design, not evidence against it. If the active model is promoted mid-season, recording refuses on a fingerprint mismatch rather than silently switching base models under this id.",
+      "model": {
+        "calibration_method": "none",
+        "feature_profile": "weak_stack",
+        "feature_set": "full_weak_stack",
+        "feature_table": "data/processed/game_features_weak_stack.parquet",
+        "method": "market_residual",
+        "min_edge": 0.02,
+        "min_train_games": 500,
+        "regressor": "ridge",
+        "ridge_alpha": 10.0,
+        "target": "market_residual"
+      },
+      "model_note": "A SNAPSHOT of the active model's own configuration at registration time, identical in role and value to the parent pbp08_protection_mismatch_tilt_overlay's: the recorder refuses to write when the active model's live fingerprint no longer matches, so a promotion under this challenger's feet cannot silently convert into prospective evidence for the variant. The week-4 gate is the predeclared split-library boundary, not a fitted value, and the flag construction is byte-identical to the parent's. Re-register (new registered_at_utc and fingerprint) after any legitimate promotion if the variant should keep recording against the new active model.",
+      "prospective_protocol": "Score forced-pick ATS accuracy against the recorded (decision) line, paired per game with the served unconditional tilt arm (pbp08_protection_mismatch_tilt_overlay ledger rows) over the games both entrants recorded, via nfl-ats prospective-score (decision_line primary, close_line secondary). No promotion decision is implied by a partial season, and no rotation-registry window is spent or implied by this registration.",
+      "registered_at_utc": "2026-09-18T17:11:13.352303+00:00",
+      "registered_by": "Session 2026-09-18 task-driven build from ROADMAP LEAD-65: gate the served unconditional tilt to weeks 1-4 as measurement-only prospective tracking paired against the served arm. NOT an owner decision to play anything on the real card -- nothing in nfl_ats.pbp08_protection_mismatch_early_window_overlay is wired into any pick path. This registration exists ONLY to accrue dual-tracked prospective evidence.",
+      "status": "ACTIVE_PROSPECTIVE",
+      "status_reason": "NOT a retrained model: this challenger's weekly picks ARE the active model's own picks, transformed post-prediction by nfl_ats.pbp08_protection_mismatch_early_window_overlay.apply_pbp08_protection_mismatch_early_window_tilt, which equals the served unconditional tilt in weeks 1-4 and records the raw-model side in week 5+. Mechanism: a line-versus-rush matchup that only last season's tail shows is not yet priced in September; by mid-season pressure rates are public and priced. The week-4 gate is the predeclared split-library boundary, not a fitted value; every parameter stays as already fitted and no served side or served probability changes -- measurement-only prospective tracking paired against the served unconditional tilt.",
+      "weekly_generation_command": "N/A -- reuses the active model's own synchronized weekly forecast (margin-predict / publish-predictions). The early-window tilt is a post-prediction pick transform, never a separate margin-predict run, so there is no challenger card to generate.",
+      "weekly_recording_command": "nfl-ats publish-predictions --record-decisions (via weekly-run), which calls nfl_ats.pbp08_protection_mismatch_early_window_overlay.record_pbp08_protection_mismatch_early_window_challenger_decisions. There is no `prospective-record --challenger pbp08_protection_mismatch_early_window_v1` path: the generic command matches a challenger card by configuration fingerprint in artifacts/margin_predictions/, which for this challenger resolves to the ACTIVE model's own artifact and would record its un-tilted picks -- exactly the wrong ledger row."
     }
   ],
   "created_at_utc": "2026-08-16T14:48:00+00:00",
