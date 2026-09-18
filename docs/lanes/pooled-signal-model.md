@@ -57,6 +57,19 @@ MOD-20: one hierarchical model with every situational family as a shrunk term, j
   unresolved_below_power (registry now 6,710; SEs approximated from
   interval width, noted). 9 looks. Next: medium columns or a different
   pooling structure; the easy-column direction is spent.
+- Unit 3 DONE 2026-09-18 (subagent, parent-verified by rerun;
+  `scripts/pooled_signal_third_fit.py`, `tests/scratch/pooled_signal_third_fit.json`):
+  only 1 of 5 mediums faithfully buildable (Tuesday wind-dog flag, frozen
+  venue list, Tue wind ≥ 15, 112 games; snow needs Tuesday precip that does
+  not exist; rookie/backup depth ungateable pre-Tuesday; continuity has no
+  pick direction). Full vs four-term base -0.33 [-0.74, +0.07], P+ 0.039,
+  decisive 4-9 on 13 — reaches above zero, so not a resolved wrong sign;
+  full vs model-only +1.13 [-1.57, +3.68], P+ 0.800, decisive 272-255 on
+  527. Both cells recorded in family `pooled_signal_first_model_v1`,
+  unresolved_below_power (registry now 6,712). 5 looks. Standing read after
+  three fits: the four-term pool is not improved by growing it; the next
+  change of direction is structural (hierarchical shrinkage, interactions)
+  or nothing.
 
 ## Open
 - None yet.

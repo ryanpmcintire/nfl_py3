@@ -158547,6 +158547,62 @@
       "source": "scripts/pooled_signal_second_fit.py; tests/scratch/pooled_signal_second_fit.json",
       "standard_error": 1.9883
     },
+    "pooled_signal_third_fit_vs_four_term": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-0.74, +0.07] reaches above zero, so wrong_sign_resolved does not apply despite P+ 0.039; decisive 4-9 on 13 (exact p near 0.27 two-sided against either side mattering); unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Third pooled fit (4 base terms + Tuesday wind-dog flag) versus the four-term unit-1 fit, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": -0.3327,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -0.7423,
+        0.0667
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: full wins 4, base wins 9 on 13 decisive games. Tue-flag per-fold coefficients -0.039/-0.030/+0.113/-0.043/+0.214/-0.028 (mean +0.031, sd 0.098); full in-sample/OOS gap +1.00 vs base +0.80; OOS Brier 0.2461 vs 0.2456, logloss 0.6854 vs 0.6844 both favor base. Only 1 of 5 medium candidates was faithfully buildable (snow needs Tuesday precip that does not exist; rookie/backup depth ungateable pre-Tuesday; continuity has no pick direction). SE approximated from 90pct interval width. 5 looks.",
+      "plain_summary": "Adding a windy-day underdog flag to the combined model cost about a third of a point, with the range just touching the positive side.",
+      "probability_positive": 0.039,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_third_fit.py; tests/scratch/pooled_signal_third_fit.json",
+      "standard_error": 0.2459
+    },
+    "pooled_signal_third_fit_vs_model_only": {
+      "category": "modeling",
+      "classification": "unresolved_below_power",
+      "classification_evidence": "Interval [-1.57, +3.68] crosses zero with decisive 272-255 on 527; no admissible closing ground applies; unresolved_below_power per AGENTS.md.",
+      "closing_ground": null,
+      "description": "Third pooled fit (4 base terms + Tuesday wind-dog flag) versus model-only, LOSO 2020-2025 opener grade, paired accuracy points",
+      "effect": 1.1311,
+      "effect_units": "accuracy_points",
+      "family": "pooled_signal_first_model_v1",
+      "interval": [
+        -1.5702,
+        3.6795
+      ],
+      "league": "nfl",
+      "notes": "Decisive first: full wins 272, model wins 255 on 527 decisive games. Companion to the vs-four-term cell, which is the decision-relevant comparison. SE approximated from 90pct interval width.",
+      "plain_summary": "The wind-augmented combined model beats the model alone by about 1.1 games per hundred out of season, with a wide range running either side.",
+      "probability_positive": 0.7995,
+      "recorded_at": "2026-09-18",
+      "reliability": null,
+      "sample_blocks": 107,
+      "sample_games": 1503,
+      "seasons": [
+        2020,
+        2025
+      ],
+      "source": "scripts/pooled_signal_third_fit.py; tests/scratch/pooled_signal_third_fit.json",
+      "standard_error": 1.5955
+    },
     "post_ot_fatigue_on_production": {
       "category": "schedule",
       "classification": "unresolved_below_power",
