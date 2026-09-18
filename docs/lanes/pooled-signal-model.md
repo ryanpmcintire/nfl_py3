@@ -44,6 +44,19 @@ MOD-20: one hierarchical model with every situational family as a shrunk term, j
   inactives, in-game, wrong population, process meta). No cells scored,
   no looks spent. Next: build the easy columns, then the second pooled
   fit.
+- Unit 2 DONE 2026-09-18 (subagent, parent-verified by rerun;
+  `scripts/pooled_signal_second_fit.py`, `tests/scratch/pooled_signal_second_fit.json`):
+  8 of 9 easy columns assembled from existing builders (roof_state dropped,
+  needs new snapshot history); joint ridge fit LOSO, same population and
+  bootstrap as unit 1. Full vs model-only +1.33 [-2.00, +4.54], P+ 0.788,
+  decisive 300-280 on 580; full vs four-term base -0.13 [-1.99, +1.74],
+  P+ 0.429, decisive 101-103 on 204. In-sample vs OOS gap +2.06 for full
+  vs +0.80 for base; OOS Brier/log loss favor base too. Reading: growing
+  the pool this way adds nothing out of season — the extra terms overfit.
+  Both cells recorded in family `pooled_signal_first_model_v1`,
+  unresolved_below_power (registry now 6,710; SEs approximated from
+  interval width, noted). 9 looks. Next: medium columns or a different
+  pooling structure; the easy-column direction is spent.
 
 ## Open
 - None yet.

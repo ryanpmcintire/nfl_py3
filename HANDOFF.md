@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-18T16:51:45.873933+00:00`
+Refreshed at: `2026-09-18T17:05:18.165247+00:00`
 
 ## Start here
 
@@ -20,29 +20,15 @@ Refreshed at: `2026-09-18T16:51:45.873933+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `d0b8071c1b39` — Atlas week cells for all nine served members; registry 6690
-- Pending change set: 21 paths
-  - `M  CURRENT_PREDICTIONS.md`
+- Baseline commit: `35cae0ef3cab` — Spread-band atlas cells, model 0d7f451b card, chain repointed fourth time
+- Pending change set: 7 paths
   - `M  HANDOFF.md`
   - `M  README.md`
   - `M  ROADMAP.md`
   - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/conditional-signal-atlas.md`
-  - `M  docs/model.html`
-  - `A  registry/experiments/margin-backtest/20260917T210805Z.json`
-  - `A  registry/experiments/margin-backtest/20260918T160820Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-02-20260917T210914Z.json`
-  - `A  registry/experiments/margin-predict/2026-week-02-20260918T160940Z.json`
-  - `A  registry/experiments/opener-evaluation/20260917T211240Z.json`
-  - `A  registry/experiments/opener-evaluation/20260918T161301Z.json`
-  - `A  registry/experiments/waterfall-feed/20260917T211834Z.json`
-  - `A  registry/experiments/waterfall-feed/20260918T161845Z.json`
-  - `M  registry/split_library.json`
+  - `M  docs/lanes/pooled-signal-model.md`
   - `M  registry/weak_signals.json`
-  - `M  scripts/signal_atlas.py`
-  - ...and 1 more
+  - `A  scripts/pooled_signal_second_fit.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
