@@ -213,6 +213,7 @@ class GameRow:
     final_score_text: str | None = None
     lock_label: str | None = None
     locks_before_kickoff: bool = False
+    lock_deadline_utc: str | None = None
     flip_line: float | None = None
     flip_held: bool = False
     flip_reason: str | None = None
@@ -3455,6 +3456,12 @@ def load_board_content(
         if played is not None:
             team, probability, word = played
         lock_label, locks_before_kickoff = pick_lock_label(row.get("kickoff"), week_sunday_lock)
+        lock_deadline = deadlines.get(game_id)
+        lock_deadline_utc = (
+            lock_deadline.isoformat()
+            if lock_deadline is not None and not pd.isna(lock_deadline)
+            else None
+        )
         home_team = str(row["home_team"])
         away_team = str(row["away_team"])
         market_spread = float(row["spread_line"])
@@ -3518,6 +3525,7 @@ def load_board_content(
                 final_score_text=final_score_text,
                 lock_label=lock_label,
                 locks_before_kickoff=locks_before_kickoff,
+                lock_deadline_utc=lock_deadline_utc,
                 flip_line=flip_line_value,
                 flip_held=flip_held_value,
                 flip_reason=flip_reason_value,

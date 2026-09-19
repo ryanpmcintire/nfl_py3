@@ -41,6 +41,7 @@ modified lane when the prompt just says to continue.
 - [lead64-headline-parser](lead64-headline-parser.md) — LEAD-64 headline designation parser, three passes done; next is the morning comparison against the official feed
 - [lead59-archive-battery](lead59-archive-battery.md) — LEAD-59 src fix and battery re-run done, 23 cells recorded; open: type-trait binning with the archive on
 - [token-diet](token-diet.md) — session-startup token cost cut about 80%; remaining: trim the three 15 KB+ open ROADMAP rows (owner text) and decide whether `.claude/` hooks should be tracked
+- [odds-api-key-deactivated](odds-api-key-deactivated.md) — 2026-09-19: bulk odds captures failing HTTP 401 DEACTIVATED_KEY (billing); owner action needed before the next odds window
 
 ## Done
 

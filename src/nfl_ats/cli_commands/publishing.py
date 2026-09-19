@@ -189,6 +189,9 @@ PUBLISH_CHALLENGER_RESULT_KEYS: dict[str, str] = {
     "movement_rule_composed_v1": "movement_rule_composed_challenger_ledger",
     "nflcom_friday_refresh_out2_starters_v1": "nflcom_refresh_out2_starters_challenger_ledger",
     "pbp08_protection_mismatch_tilt_overlay": ("pbp08_protection_mismatch_tilt_challenger_ledger"),
+    "pbp08_protection_mismatch_early_window_v1": (
+        "pbp08_protection_mismatch_early_window_challenger_ledger"
+    ),
     "tank_zone_fade_tilt_overlay": "tank_zone_fade_tilt_challenger_ledger",
     "third_down_reversion_fade_overlay": ("third_down_reversion_fade_challenger_ledger"),
     "turnover_luck_rebound_tilt_overlay": ("turnover_luck_rebound_tilt_challenger_ledger"),
@@ -1188,6 +1191,12 @@ def orchestrate_publish_predictions(request: PublishPredictionsRequest) -> dict[
             "skipped": True,
             "reason": "pass --record-decisions to append the PBP-08 protection-mismatch "
             "tilt's picks to the prospective challenger ledger",
+        }
+        result["pbp08_protection_mismatch_early_window_challenger_ledger"] = {
+            "recorded": 0,
+            "skipped": True,
+            "reason": "pass --record-decisions to append the early-weeks-only "
+            "protection-mismatch challenger's picks to the prospective challenger ledger",
         }
         result["retired_four_member_union_challenger_ledger"] = {
             "recorded": 0,

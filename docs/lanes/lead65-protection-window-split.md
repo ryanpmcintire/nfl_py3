@@ -75,6 +75,16 @@ LEAD-65 states what the read implies for the served rule.
   registered ACTIVE_PROSPECTIVE paired vs the served unconditional tilt.
   Recorded 15 Week 2 Sunday/Monday games (Thursday post-kickoff skipped);
   variant flips LV_LAC and NO_BAL among them. Served picks untouched.
+- DONE 2026-09-19: publish surfacing completed.
+  `PUBLISH_CHALLENGER_RESULT_KEYS` gains the challenger id to ledger-key
+  mapping and `CHALLENGER_DISPLAY_NAMES` gains "Protection mismatch, early
+  weeks only"; both are required by contract tests
+  (`test_publish_challenger_result_map_covers_live_active_registry`,
+  `test_model_ledger_every_live_challenger_arm_has_a_human_display_name`),
+  which pass with the wiring in place. Same session: the no-record
+  (skipped) payload gains the matching ledger entry, required by
+  `test_publish_predictions_does_not_record_by_default`; `test_cli.py`
+  fully green after.
 - MOD-19 stage 2 then tests the owner's continuity hypothesis directly:
   split the early cell by offensive-line and pass-rush snap continuity.
 - DONE 2026-09-17 (subagent, parent-verified by rerun; split predeclared in

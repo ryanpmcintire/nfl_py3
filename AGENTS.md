@@ -192,6 +192,19 @@ cell says the pick holds through that edge. Enforced in `_flip_line` and
   are never promoted by moving the file.
 - The cut of existing test files is an owner decision; propose, do not delete.
 
+### Post-review research-residue sweep (binding, owner, 2026-09-19)
+
+After every code review, check that no redundant tests, assumed behaviors, or
+assertions that only needed to happen during research (not at runtime) remain.
+Redundant tests duplicate contract coverage, pin a research number, or exercise
+a one-off script. Assumed behaviors are mocks, stubs, or fixture constants that
+assert what was assumed instead of reading the artifact the production path
+reads. Research-only assertions are runtime checks that validated a research
+step and now duplicate (or fight) the fail-closed guards on the served path;
+their rationale belongs in the commit message, ROADMAP row, or a doc, not in
+`src/`. Sweep findings are proposed, never deleted outright: the cut of
+existing test files stays an owner decision.
+
 ## No code comments (binding)
 
 No `#` comments and no docstrings of any length in any `.py`, `.ps1`, `.sh`

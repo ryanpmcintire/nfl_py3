@@ -179,6 +179,7 @@ CHALLENGER_DISPLAY_NAMES: dict[str, str] = {
     "nflcom_friday_refresh_out2_starters_v1": "Fade 2+ Out designations",
     "inactives_refresh_v1": "Official-inactives refresh flip",
     "pbp08_protection_mismatch_tilt_overlay": "Protection-mismatch tilt",
+    "pbp08_protection_mismatch_early_window_v1": "Protection mismatch, early weeks only",
     "crew_tilt_refresh_v1": "Officiating-crew tilt",
     "half_line_2h_underdog_refresh_v1": "Back the underdog when the second-half line disagrees",
     "rookie_crew_underdog_off_incumbent": "Picks without the new-crew adjustment",

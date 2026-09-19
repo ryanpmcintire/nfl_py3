@@ -243,6 +243,36 @@ _TICKER_SCRIPT = """
 </script>
 """
 
+_LOCK_COUNTDOWN_SCRIPT = """
+<script>
+(function () {
+  function lockCountdownText(deadlineMs, nowMs) {
+    var remaining = deadlineMs - nowMs;
+    if (remaining <= 0) return "locked";
+    var minutes = Math.floor(remaining / 60000);
+    if (minutes < 1) return "locking now";
+    var hours = Math.floor(minutes / 60);
+    var days = Math.floor(hours / 24);
+    if (days > 0) return "locks in " + days + "d " + (hours % 24) + "h";
+    if (hours > 0) return "locks in " + hours + "h " + (minutes % 60) + "m";
+    return "locks in " + minutes + "m";
+  }
+  function updateCountdowns() {
+    var nowMs = Date.now();
+    document.querySelectorAll('td.kickoff[data-lock-deadline]').forEach(function (cell) {
+      var target = cell.querySelector('[data-countdown]');
+      if (!target) return;
+      var deadlineMs = Date.parse(cell.dataset.lockDeadline || "");
+      if (isNaN(deadlineMs)) { target.textContent = ""; return; }
+      target.textContent = lockCountdownText(deadlineMs, nowMs);
+    });
+  }
+  updateCountdowns();
+  setInterval(updateCountdowns, 60000);
+})();
+</script>
+"""
+
 
 def _nav_links(page: str) -> str:
 
@@ -801,11 +831,22 @@ def _board_section(content: BoardContent) -> str:
                 f'aria-label="Inspect {escape(game.away)} at {escape(game.home)}">'
                 f"{escape(game.away)} at <b>{escape(game.home)}</b></a>"
             )
+            kickoff_attrs = (
+                f' data-lock-deadline="{escape(game.lock_deadline_utc)}"'
+                if game.lock_deadline_utc
+                else ""
+            )
+            kickoff_countdown = (
+                '<span class="lock-countdown" data-countdown></span>'
+                if game.lock_deadline_utc
+                else ""
+            )
             rows.append(
                 f'<tr class="{" ".join(row_classes)}" data-game-id="{escape(game.game_id)}" '
                 f'data-prob="{game.pick_probability:.6f}">'
-                f'<td class="kickoff" data-label="Kickoff">{escape(game.kickoff_short_label)}'
-                f"{_lock_html(game.lock_text)}</td>"
+                f'<td class="kickoff" data-label="Kickoff"{kickoff_attrs}>'
+                f"{escape(game.kickoff_short_label)}"
+                f"{_lock_html(game.lock_text)}{kickoff_countdown}</td>"
                 f'<td class="matchup" data-label="Matchup">{matchup_cell}</td>'
                 f'<td class="pick" data-label="Pick">{pick_cell}</td>'
                 f'<td class="market-now" data-label="Books now" '
@@ -1436,6 +1477,7 @@ def render(content: BoardContent, *, page: str = PICKS_PAGE) -> str:
         + _SORT_SCRIPT
         + _LINEUP_SCRIPT
         + _TICKER_SCRIPT
+        + _LOCK_COUNTDOWN_SCRIPT
         + board_assistant.assistant_script(),
     )
 
