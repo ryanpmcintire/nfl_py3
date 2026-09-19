@@ -386,7 +386,7 @@ SCHEDULE: tuple[Job, ...] = (
         "12:05",
         180,
         _ps("odds_capture.ps1"),
-        True,
+        False,
         "Tuesday opener: the grade the pool settles on. The pool's spreads lock "
         "at 12:00 ET (owner, 2026-09-08: 'Spreads lock: Tue 12:00 PM'), so this "
         "is the first capture of the day and lands just after that lock -- it IS "
@@ -446,7 +446,7 @@ SCHEDULE: tuple[Job, ...] = (
         "picks are due at each game's own kickoff (Sunday 4 PM ET cap), so a "
         "lock after noon costs nothing.",
         added_on="2026-09-02",
-        requires=("odds_tue_open", "splash_board_tue"),
+        requires=("splash_board_tue",),
     ),
     Job(
         "airnow_tue_checkpoint",
@@ -474,7 +474,7 @@ SCHEDULE: tuple[Job, ...] = (
         "18:00",
         90,
         _ps("odds_capture.ps1"),
-        True,
+        False,
         "Pre-Wednesday-opener line, ~2h before an 8:20 kickoff; also the "
         "first post-Tuesday line every ordinary week.",
         season_guarded=False,
@@ -488,7 +488,7 @@ SCHEDULE: tuple[Job, ...] = (
         "18:00",
         90,
         _ps("odds_capture.ps1"),
-        True,
+        False,
         "Pre-TNF, ~2h before an 8:15 kickoff.",
         season_guarded=False,
         dedupe_dir="data/market/raw",
@@ -500,7 +500,7 @@ SCHEDULE: tuple[Job, ...] = (
         "12:00",
         180,
         _ps("odds_capture.ps1"),
-        True,
+        False,
         "Saturday state of the board.",
         season_guarded=False,
         dedupe_dir="data/market/raw",
@@ -513,7 +513,7 @@ SCHEDULE: tuple[Job, ...] = (
             at,
             90,
             _ps("odds_capture.ps1"),
-            True,
+            False,
             "2026-09-12: there was no capture between odds_thu_tnf (Thu 18:00) and odds_sat "
             "(Sat 12:00), a 42-hour hole across the Friday injury designations that move "
             "lines the most; ATL at PIT went from -3.5 to -6 in it and both Friday's 13:30 "
@@ -536,7 +536,7 @@ SCHEDULE: tuple[Job, ...] = (
         "12:30",
         25,
         _ps("odds_capture.ps1"),
-        True,
+        False,
         "CLOSING line for the 13:00 slate. Short grace on purpose: a capture "
         "after 13:00 is not a close, it is a live line, and mislabelling that "
         "would corrupt every CLV number computed from it.",
@@ -550,7 +550,7 @@ SCHEDULE: tuple[Job, ...] = (
         "16:15",
         60,
         _ps("odds_capture.ps1"),
-        True,
+        False,
         "Late-window close.",
         season_guarded=False,
         dedupe_dir="data/market/raw",
@@ -562,7 +562,7 @@ SCHEDULE: tuple[Job, ...] = (
         "19:00",
         90,
         _ps("odds_capture.ps1"),
-        True,
+        False,
         "Pre-MNF.",
         season_guarded=False,
         dedupe_dir="data/market/raw",
@@ -574,7 +574,7 @@ SCHEDULE: tuple[Job, ...] = (
         "12:05",
         180,
         _cli("odds-ingest-halves"),
-        True,
+        False,
         "LEAD-61 per-event half/quarter-game market capture riding the "
         "Tuesday opener window; requires=('odds_tue_open',) for its event "
         "ids and quota reading.",
@@ -588,7 +588,7 @@ SCHEDULE: tuple[Job, ...] = (
         "12:00",
         180,
         _cli("odds-ingest-halves"),
-        True,
+        False,
         "LEAD-61 per-event half/quarter-game market capture riding the "
         "Saturday board window; requires=('odds_sat',) for its event ids "
         "and quota reading.",
@@ -602,7 +602,7 @@ SCHEDULE: tuple[Job, ...] = (
         "18:00",
         90,
         _cli("odds-ingest-halves"),
-        True,
+        False,
         "LEAD-61 per-event half/quarter-game market capture riding the "
         "Wednesday opener window; requires=('odds_wed_opener',) for its "
         "event ids and quota reading. Added 2026-09-11: the Tuesday/"
@@ -618,7 +618,7 @@ SCHEDULE: tuple[Job, ...] = (
         "18:00",
         90,
         _cli("odds-ingest-halves"),
-        True,
+        False,
         "LEAD-61 per-event half/quarter-game market capture riding the "
         "Thursday TNF window; requires=('odds_thu_tnf',) for its event "
         "ids and quota reading. Added 2026-09-11, same gap as "
@@ -633,7 +633,7 @@ SCHEDULE: tuple[Job, ...] = (
         "12:30",
         25,
         _cli("odds-ingest-halves"),
-        True,
+        False,
         "LEAD-61 per-event half/quarter-game market capture riding the "
         "Sunday closing-line window; requires=('odds_sun_close',) for its "
         "event ids and quota reading. Added 2026-09-11 to complete the "
@@ -649,7 +649,7 @@ SCHEDULE: tuple[Job, ...] = (
         "19:00",
         90,
         _cli("odds-ingest-halves"),
-        True,
+        False,
         "LEAD-61 per-event half/quarter-game market capture riding the "
         "Monday MNF window; requires=('odds_mon_mnf',) for its event ids "
         "and quota reading. Added 2026-09-11, same gap as "
@@ -681,7 +681,7 @@ SCHEDULE: tuple[Job, ...] = (
             "--quota-floor",
             "600",
         ],
-        True,
+        False,
         "MKT-13 v2 archive contract: earliest-kickoff-only player_pass_yds "
         "tranche at Saturday noon ET, one immutable snapshot per run under "
         "data/raw/odds_api_props. Budget 200 covers a full 2026-season sweep "
@@ -715,7 +715,7 @@ SCHEDULE: tuple[Job, ...] = (
             "--quota-floor",
             "600",
         ],
-        True,
+        False,
         "MKT-13 v2 archive contract: earliest-kickoff-only player_pass_yds "
         "tranche at Tuesday 12:30 ET, 30m after the pool's own noon lock so "
         "the week's books have had a chance to post the early game's props. "

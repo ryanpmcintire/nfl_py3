@@ -29,12 +29,25 @@ blocking on their parents.
 
 ## Next
 
-- Owner: check The Odds API billing/subscription, reactivate the key, then
-  confirm with `capture_scheduler.py --run-job odds_sat` (or the next due
-  bulk job) and watch the halves job follow on its `requires=(...)` link.
-- If the key is replaced rather than reactivated, update it in the user
-  environment where `scripts/odds_capture.ps1` reads it (process env, then
-  HKCU) and on the second capture host, which shares the quota.
+- Owner decision 2026-09-19: NO re-subscribe (too expensive). The paid API
+  was only ever needed for the historical backfill; present odds move to
+  free sources. Nothing in this lane needs billing action.
+- DONE 2026-09-19: all 18 paid jobs disabled (`enabled=False`): 10 bulk
+  `odds_*` via `odds_capture.ps1`, all six `*_halves` via
+  `odds-ingest-halves`, and both `player_props_*` (same dead key).
+  `weekly_lock` requires now `("splash_board_tue",)` only, otherwise the
+  Tuesday lock could never fire; scheduler suites green (70 passed),
+  daemon restarted (pid 19452), `--status --brief` shows the paid rows
+  `no` with no new FAILs possible. Owner's free-source answer: no
+  specific agreement exists ("assumed multiple sources").
+- Open: which free sources to build on (no record in the repo); candidates
+  visible in-tree are the hand-captured Splash board and
+  `public_betting_live_capture.py` (Action Network, free, already
+  scheduled). Next unit: free-source feasibility probe.
+- Open: what happens to the board features that read the latest capture
+  (Books-now column, market-move labels, Best Pick dispersion pool,
+  Sunday re-nomination pool) with no cross-book feed.
+- Open: whether the historical backfill finished before deactivation.
 
 ## Open
 

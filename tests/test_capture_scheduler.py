@@ -482,7 +482,7 @@ def test_odds_halves_jobs_ride_their_paired_bulk_capture_window() -> None:
     assert sat_halves.requires == ("odds_sat",)
 
     for job in (tue_halves, sat_halves):
-        assert job.enabled is True
+        assert job.enabled is False
         assert job.season_guarded is False
         assert job.added_on == "2026-09-05"
         assert job.dedupe_dir == ""
@@ -757,7 +757,7 @@ def test_tuesday_opener_is_captured_after_the_pool_locks_at_noon() -> None:
     assert opener_start == datetime(2026, 9, 8, 12, 5, tzinfo=ET)
     assert opener_start > pool_lock
     assert lock_start == datetime(2026, 9, 8, 12, 20, tzinfo=ET)
-    assert lock.requires == ("odds_tue_open", "splash_board_tue")
+    assert lock.requires == ("splash_board_tue",)
     assert (halves.day, halves.at) == ("tue", "12:05")
     assert lineups_start >= lock_start + timedelta(minutes=lock.grace_minutes)
     assert "odds_tue_noon" not in schedule

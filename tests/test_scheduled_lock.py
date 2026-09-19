@@ -134,12 +134,10 @@ def test_scheduler_waits_for_successful_same_day_opener() -> None:
     state = {"runs": {}}
     assert not capture_scheduler.prerequisites_satisfied(job, start, state)
 
-    key = f"odds_tue_open@{start.date().isoformat()}"
     board_key = f"splash_board_tue@{start.date().isoformat()}"
-    state["runs"][key] = {"status": "FAIL(1)"}
-    state["runs"][board_key] = {"status": "OK"}
+    state["runs"][board_key] = {"status": "FAIL(1)"}
     assert not capture_scheduler.prerequisites_satisfied(job, start, state)
-    state["runs"][key] = {"status": "OK"}
+    state["runs"][board_key] = {"status": "OK"}
     assert capture_scheduler.prerequisites_satisfied(job, start, state)
 
 
@@ -151,14 +149,14 @@ def test_failed_opener_becomes_durable_missed_alarm_after_grace(
     monkeypatch.setattr(capture_scheduler, "LOG_PATH", tmp_path / "scheduler.log")
     monkeypatch.setattr(capture_scheduler, "season_active", lambda _: True)
     start = capture_scheduler.occurrence(job, NOW)
-    state = {"runs": {f"odds_tue_open@{start.date().isoformat()}": {"status": "FAIL(1)"}}}
+    state = {"runs": {f"splash_board_tue@{start.date().isoformat()}": {"status": "FAIL(1)"}}}
 
     capture_scheduler.sweep_missed(datetime.fromisoformat("2026-09-08T14:21:00-04:00"), state)
 
     record = state["runs"][f"weekly_lock@{start.date().isoformat()}"]
     assert record["status"] == "MISSED"
-    assert record["blocked_by"] == ["odds_tue_open", "splash_board_tue"]
-    assert "prerequisites not successful: odds_tue_open, splash_board_tue" in (
+    assert record["blocked_by"] == ["splash_board_tue"]
+    assert "prerequisites not successful: splash_board_tue" in (
         tmp_path / "scheduler.log"
     ).read_text(encoding="utf-8")
 
@@ -167,7 +165,7 @@ def test_real_job_has_no_backdate_flags_and_closes_by_1420() -> None:
     job = {job.name: job for job in capture_scheduler.SCHEDULE}["weekly_lock"]
 
     assert (job.day, job.at, job.grace_minutes) == ("tue", "12:20", 120)
-    assert job.requires == ("odds_tue_open", "splash_board_tue")
+    assert job.requires == ("splash_board_tue",)
     assert not job.catch_up
     assert "--season" not in job.command
     assert "--week" not in job.command

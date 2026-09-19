@@ -6,7 +6,7 @@ index, not a substitute for inspecting them.
 
 Handoff schema: `1`
 
-Refreshed at: `2026-09-19T10:02:12.784187+00:00`
+Refreshed at: `2026-09-19T11:11:00.662857+00:00`
 
 ## Start here
 
@@ -20,23 +20,13 @@ Refreshed at: `2026-09-19T10:02:12.784187+00:00`
 ## Commit context before this refresh
 
 - Branch: `master`
-- Baseline commit: `06205561c18e` — MOD-20 unit 3: wind-augmented pool also adds nothing
-- Pending change set: 15 paths
-  - `M  AGENTS.md`
+- Baseline commit: `0e9af628ef49` — Early-window publish surfacing, kickoff countdown, odds-key incident lane, post-review sweep rule
+- Pending change set: 5 paths
   - `M  HANDOFF.md`
-  - `M  ROADMAP.md`
-  - `M  docs/findings.html`
-  - `M  docs/history.html`
-  - `M  docs/index.html`
-  - `M  docs/lanes/README.md`
-  - `M  docs/lanes/lead65-protection-window-split.md`
-  - `A  docs/lanes/odds-api-key-deactivated.md`
-  - `M  docs/model.html`
-  - `M  src/nfl_ats/board_content.py`
-  - `M  src/nfl_ats/board_terminal.py`
-  - `M  src/nfl_ats/board_terminal_style.css`
-  - `M  src/nfl_ats/cli_commands/publishing.py`
-  - `M  src/nfl_ats/dashboard/findings_content.py`
+  - `M  docs/lanes/odds-api-key-deactivated.md`
+  - `M  scripts/capture_scheduler.py`
+  - `M  tests/test_capture_scheduler.py`
+  - `M  tests/test_scheduled_lock.py`
 
 The baseline commit and pending paths were observed before the automatic refresh.
 They normally describe the parent and contents of the handoff-bearing commit. Always
